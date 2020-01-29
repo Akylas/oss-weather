@@ -1,0 +1,69 @@
+﻿@import './variables';
+.lato {
+    font-family: 'Lato', 'Lato Regular', 'res/lato';
+}
+.forecastfont {
+    font-family: 'iconvault_forecastfont', 'iconvault';
+}
+.mdi {
+    font-family: 'Material Design Icons', 'materialdesignicons-webfont';
+}
+
+
+htmllabel,
+label {
+    color: $text-color;
+}
+
+label,
+htmllabel,
+button,
+tabview,
+tabviewitem,
+mdbutton {
+    @extend .lato;
+}
+
+.actionBar {
+    z-index: 0;
+    border-radius: 0;
+    background-color: $primary-color;
+    height: $actionbar-height;
+}
+
+.actionBarButton {
+    @extend .mdi;
+    width: $actionbar-height;
+    height: $actionbar-height;
+    color: black;
+    margin: 0;
+    padding: 0;
+    font-size: 32;
+    border-radius: $actionbar-height/2;
+}
+
+.actionBarTitle {
+    @extend .lato;
+    vertical-alignment: center;
+    font-size: 18;
+    font-weight: 500;
+    color: white;
+}
+
+.actionBarSubtitle {
+    font-size: 13;
+    color: #88ffffff;
+}
+
+.icon-btn {
+    @extend .mdi;
+    background-color: transparent;
+    ripple-color: white;
+    color: white;
+    width: 44;
+    height: 44;
+    border-radius:22;
+    font-size: 24;
+    margin: 0;
+    padding: 0;
+}

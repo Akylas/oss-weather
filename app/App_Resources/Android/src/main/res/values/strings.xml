@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="select">"select"</string>
+  <string name="no_network">"no network"</string>
+  <string name="error">"error"</string>
+  <string name="authorize">"authorize"</string>
+  <string name="ok">"OK"</string>
+  <string name="non_valid_email">"non valid email"</string>
+  <string name="email">"email"</string>
+  <string name="email_required">"a valid email is required"</string>
+  <string name="send_bug_report_desc">"enter a mail and a description for the encountered error"</string>
+  <string name="send">"send"</string>
+  <string name="file">"file"</string>
+  <string name="close">"close"</string>
+  <string name="cancel">"cancel"</string>
+  <string name="name">"name"</string>
+  <string name="bug_report_sent">"bug report sent"</string>
+  <string name="please_describe_error">"please describe error"</string>
+  <string name="send_bug_report">"send bug report"</string>
+  <string name="gps_not_authorized">"please enable GPS and authorize NS Forecastie to use it to determine your location"</string>
+  <string name="gps_not_enabled">"please enable GPS to allow NS Forecastie to determine your location"</string>
+  <string name="settings">"settings"</string>
+  <string name="_title_activity_kimera_PKGla">"NS Forecastie"</string>
+  <string name="_app_name_1k3Sbz">"NS Forecastie"</string>
+  <string name="app_name">"NS Forecastie"</string>
+  <string name="title_activity_kimera">"NS Forecastie"</string>
+  <string name="_ios_info_plist_NSLocationWhenInUseUsageDescription_ZpKiIF">"\'NS Forecastie\' uses your GPS location to display your weather"</string>
+  <string name="loading">"loading"</string>
+  <string name="description_required">"description_required"</string>
+  <string name="description">"description"</string>
+  <string name="connection">"connection"</string>
+</resources>

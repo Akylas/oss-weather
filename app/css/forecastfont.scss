@@ -1,0 +1,33 @@
+$mdi-filename: 'iconvault_forecastfont';
+$mdi-font-name: 'iconvault';
+$mdi-font-family: 'iconvault';
+$mdi-font-weight: 'normal';
+$mdi-font-path: './fonts' !default;
+$mdi-font-size-base: 24px !default;
+$mdi-css-prefix: forecastfont !default;
+$mdi-version: '4.8.95' !default;
+
+$forecastfont-icons: (
+    'forecastfont-night': f100,
+    'forecastfont-sunny': f101,
+    'forecastfont-frosty': f102,
+    'forecastfont-windysnow': f103,
+    'forecastfont-showers': f104,
+    'forecastfont-basecloud': f105,
+    'forecastfont-cloud': f106,
+    'forecastfont-rainy': f107,
+    'forecastfont-mist': f108,
+    'forecastfont-windysnowcloud': f109,
+    'forecastfont-drizzle': f10a,
+    'forecastfont-snowy': f10b,
+    'forecastfont-sleet': f10c,
+    'forecastfont-moon': f10d,
+    'forecastfont-windyrain': f10e,
+    'forecastfont-hail': f10f,
+    'forecastfont-sunset': f110,
+    'forecastfont-windyraincloud': f111,
+    'forecastfont-sunrise': f112,
+    'forecastfont-sun': f113,
+    'forecastfont-thunder': f114,
+    'forecastfont-windy': f115
+);

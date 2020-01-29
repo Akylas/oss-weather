@@ -1,0 +1,77 @@
+{
+    "nativescript": {
+        "id": "org.nativescript.forecastie",
+        "tns-android": {
+            "version": "6.4.0-2020-01-23-172710-02"
+        },
+        "tns-ios": {
+            "version": "6.4.0-rc-2020-01-27-202154-02"
+        }
+    },
+    "description": "NativeScript Application",
+    "license": "SEE LICENSE IN <your-license-filename>",
+    "repository": "<fill-your-repository-here>",
+    "dependencies": {
+        "@mdi/font": "4.8.95",
+        "@nativescript/core": "~6.3.2",
+        "dayjs": "1.8.19",
+        "make-error": "^1.3.5",
+        "nativescript-akylas-sentry": "^0.0.3",
+        "nativescript-carto": "^1.2.37",
+        "nativescript-chart": "0.0.13",
+        "nativescript-extendedinfo": "~1.0.7",
+        "nativescript-gps": "^2.0.14",
+        "nativescript-htmllabel": "1.0.14",
+        "nativescript-localize": "~4.2.0",
+        "nativescript-material-activityindicator": "3.1.3",
+        "nativescript-material-bottomsheet": "3.1.3",
+        "nativescript-material-button": "3.1.3",
+        "nativescript-material-cardview": "3.1.3",
+        "nativescript-material-dialogs": "3.1.3",
+        "nativescript-material-progress": "3.1.3",
+        "nativescript-material-slider": "3.1.3",
+        "nativescript-material-snackbar": "3.1.3",
+        "nativescript-material-textfield": "3.0.4",
+        "nativescript-perms": "2.0.3",
+        "nativescript-systemui": "1.0.0",
+        "nativescript-tween": "0.0.5",
+        "svelte-native-akylas": "^0.7.4-alpha.3",
+        "tinycolor2": "1.4.1"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^8.3.5",
+        "@commitlint/config-conventional": "^8.3.4",
+        "@pyoner/svelte-ts-preprocess": "^1.2.1",
+        "@pyoner/svelte-types": "^3.4.4-2",
+        "@sentry/webpack-plugin": "^1.9.3",
+        "@typescript-eslint/eslint-plugin": "2.18.0",
+        "@typescript-eslint/parser": "2.18.0",
+        "clean-webpack-plugin": "3.0.0",
+        "del": "5.1.0",
+        "eslint": "6.8.0",
+        "eslint-plugin-svelte3": "2.7.3",
+        "husky": "^4.2.1",
+        "merge-options": "^2.0.0",
+        "nativescript-dev-appium": "6.1.3",
+        "nativescript-dev-webpack": "1.4.1",
+        "nativescript-set-version": "0.1.6",
+        "node-sass": "^4.13.1",
+        "prettier-plugin-svelte": "0.7.0",
+        "scss-symbols-parser": "^2.0.1",
+        "source-map": "0.6.1",
+        "string-replace-loader": "^2.2.0",
+        "svelte": "~3.18.1",
+        "svelte-loader-hot": "0.1.2",
+        "svelte-native-preprocessor": "^0.1.4",
+        "svelte-preprocess": "^3.3.0",
+        "tns-platform-declarations": "6.3.2",
+        "typescript": "3.7.5",
+        "webpack": "4.41.5",
+        "webpack-cli": "3.3.10"
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    }
+}

@@ -1,0 +1,40 @@
+{
+  "app": {
+    "name": "NS Forecastie"
+  },
+  "title": {
+    "activity": {
+      "kimera": "NS Forecastie"
+    }
+  },
+  "ios": {
+    "info": {
+      "plist": {
+        "NSLocationWhenInUseUsageDescription": "'NS Forecastie' utilise le GPS pour afficher votre météo"
+      }
+    }
+  },
+  "cancel": "annuler",
+  "close": "fermer",
+  "connection": "connexion",
+  "settings": "réglages",
+  "gps_not_enabled": "activez le GPS pour permettre à NS Forecastie de vous localiser",
+  "gps_not_authorized": "activez le GPS et autorisez NS Forecastie à l'utiliser pour vous localiser",
+  "send_bug_report": "envoyer le rapport de bug",
+  "please_describe_error": "veuillez décrire l'erreur",
+  "bug_report_sent": "rapport de bug envoyé",
+  "name": "nom",
+  "send_bug_report_desc": "entrez un mail et une description du bug rencontré",
+  "send": "envoyer",
+  "email_required": "un email valide est requis",
+  "email": "email",
+  "description": "description",
+  "non_valid_email": "email non valide",
+  "description_required": "une description est requise",
+  "ok": "OK",
+  "error": "erreur",
+  "loading": "chargement",
+  "authorize": "autoriser",
+  "no_network": "pas de réseau",
+  "select": "sélectionner"
+}

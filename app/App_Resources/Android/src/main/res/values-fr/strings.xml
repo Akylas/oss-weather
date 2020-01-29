@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="select">"sélectionner"</string>
+  <string name="no_network">"pas de réseau"</string>
+  <string name="authorize">"autoriser"</string>
+  <string name="loading">"chargement"</string>
+  <string name="error">"erreur"</string>
+  <string name="ok">"OK"</string>
+  <string name="description_required">"une description est requise"</string>
+  <string name="non_valid_email">"email non valide"</string>
+  <string name="description">"description"</string>
+  <string name="email">"email"</string>
+  <string name="email_required">"un email valide est requis"</string>
+  <string name="send">"envoyer"</string>
+  <string name="send_bug_report_desc">"entrez un mail et une description du bug rencontré"</string>
+  <string name="name">"nom"</string>
+  <string name="bug_report_sent">"rapport de bug envoyé"</string>
+  <string name="please_describe_error">"veuillez décrire l\'erreur"</string>
+  <string name="send_bug_report">"envoyer le rapport de bug"</string>
+  <string name="gps_not_authorized">"activez le GPS et autorisez NS Forecastie à l\'utiliser pour vous localiser"</string>
+  <string name="gps_not_enabled">"activez le GPS pour permettre à NS Forecastie de vous localiser"</string>
+  <string name="settings">"réglages"</string>
+  <string name="connection">"connexion"</string>
+  <string name="close">"fermer"</string>
+  <string name="cancel">"annuler"</string>
+  <string name="_ios_info_plist_NSLocationWhenInUseUsageDescription_ZpKiIF">"\'NS Forecastie\' utilise le GPS pour afficher votre météo"</string>
+  <string name="_title_activity_kimera_PKGla">"NS Forecastie"</string>
+  <string name="_app_name_1k3Sbz">"NS Forecastie"</string>
+  <string name="app_name">"NS Forecastie"</string>
+  <string name="title_activity_kimera">"NS Forecastie"</string>
+  <string name="file">"file"</string>
+</resources>

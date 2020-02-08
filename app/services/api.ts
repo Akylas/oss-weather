@@ -1,13 +1,20 @@
 import * as http from '@nativescript/core/http';
 import { CustomError } from '~/utils/error';
 import { device } from '@nativescript/core/platform';
-import { getNumber, getString, setBoolean, setNumber, setString } from '@nativescript/core/application-settings';
+import { getString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 
 import { EventData, Observable } from '@nativescript/core/data/observable';
 import { clog } from '~/utils/logging';
 import { IMapPos } from '~/helpers/geo';
 import { CityWeather, Coord, ListWeather } from './owm';
+import dayjs from 'dayjs';
+// const { getSunrise, getSunset } = require('sunrise-sunset-js');
+import { UNITS, colorFromTempC, convertTime, formatValueToUnit, kelvinToCelsius, lang, titlecase } from '~/helpers/formatter';
+import { Photon } from './photon';
+import { DarkSky } from './darksky';
+
+const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 
 type HTTPOptions = http.HttpRequestOptions;
 
@@ -21,6 +28,18 @@ export interface NetworkConnectionStateEventData extends EventData {
 
 export interface HttpRequestOptions extends HTTPOptions {
     queryParams?: {};
+}
+
+function isDayTime(sunrise, sunset, time) {
+    // const sunrise = weatherData.sunrise;
+    // const sunset = weatherData.sunset;
+    if (sunrise && sunset) {
+        return time.isBefore(sunset) && time.isAfter(sunrise);
+    } else {
+        // fallback
+        const hourOfDay = time.get('h');
+        return hourOfDay >= 7 && hourOfDay < 20;
+    }
 }
 
 function timeout(ms) {
@@ -210,7 +229,7 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
         // console.log('failed to parse result to JSON', e);
         content = response.content;
     }
-    const isJSON = !!jsonContent;
+    // const isJSON = !!jsonContent;
     clog('handleRequestResponse response', statusCode, Math.round(statusCode / 100), typeof content);
     if (Math.round(statusCode / 100) !== 2) {
         // let jsonReturn;
@@ -226,7 +245,7 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
             return Promise.reject(
                 new HTTPError({
                     statusCode,
-                    message: match ? match[1] : 'HTTP error',
+                    message: match ? match[1] : content.toString(),
                     requestParams
                 })
             );
@@ -274,7 +293,7 @@ function getRequestHeaders(requestParams?: HttpRequestOptions) {
 
     return headers;
 }
-export function request(requestParams: HttpRequestOptions, retry = 0) {
+export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     if (!networkService.connected) {
         throw new NoNetworkError();
     }
@@ -286,26 +305,9 @@ export function request(requestParams: HttpRequestOptions, retry = 0) {
 
     clog('request', requestParams);
     const requestStartTime = Date.now();
-    return http.request(requestParams).then(response => handleRequestResponse(response, requestParams, requestStartTime, retry));
+    return http.request(requestParams).then(response => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
 }
 
-function getOwmLanguage() {
-    const language = device.language.split('-')[0].toLowerCase();
-
-    if (language === 'cs') {
-        // Czech
-        return 'cz';
-    } else if (language === 'ko') {
-        // Korean
-        return 'kr';
-    } else if (language === 'lv') {
-        // Latvian
-        return 'la';
-    } else {
-        return language;
-    }
-}
-const ownLanguge = getOwmLanguage();
 const apiKey = getString('apiKey', OWM_KEY);
 
 export interface OWMParams extends Partial<IMapPos> {
@@ -319,7 +321,7 @@ export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
         url: `https://api.openweathermap.org/data/2.5/${apiName}`,
         method: 'GET',
         queryParams: {
-            lang: ownLanguge,
+            lang,
             appid: apiKey,
             ...queryParams
         }
@@ -336,23 +338,172 @@ export async function getCityName(pos: Coord) {
 
     return result;
 }
-export async function findCitiesByName(q: string) {
-    clog('findCitiesByName', q);
-    const result: {
-        list: CityWeather[];
-    } = await fetchOWM('find', {
-        q
-    });
-    console.log('findCitiesByName', 'done', result);
+// export async function findCitiesByName(q: string) {
+//     clog('findCitiesByName', q);
+//     const result: {
+//         list: CityWeather[];
+//     } = await fetchOWM('find', {
+//         q
+//     });
+//     console.log('findCitiesByName', 'done', result);
 
-    return result.list;
+//     return result.list;
+// }
+
+// export interface WeatherData {
+//     date: dayjs.Dayjs;
+//     sunrise: dayjs.Dayjs;
+//     sunset: dayjs.Dayjs;
+//     temp: string;
+//     tempC: number;
+//     feels_like: string;
+//     feels_likeC: number;
+//     pressure: string;
+//     pressureHpa: number;
+//     humidity: string;
+//     humidityPerc: number;
+//     desc: string;
+//     id: number;
+//     icon: string;
+//     windSpeed: string;
+//     windSpeedKMH: number;
+//     windDeg: number;
+//     fallPHour: number;
+//     fallDesc: string;
+//     frontAlpha: number;
+//     tempColor: string;
+//     // nightTime
+// }
+
+// export async function getForecast(cityId: number) {
+//     clog('getForecast', cityId);
+//     const result = (await fetchOWM('forecast', {
+//         id: cityId
+//     })) as {
+//         city: {
+//             coord: {
+//                 lat: number;
+//                 lon: number;
+//             };
+//         };
+//         list: ListWeather[];
+//     };
+
+//     let sunrise;
+//     let sunset;
+//     let lastDateStart: dayjs.Dayjs;
+//     const lat = result.city.coord.lat;
+//     const lon = result.city.coord.lon;
+
+//     const results: WeatherData[][] = [];
+//     let weatherResult: WeatherData[];
+//     result.list.forEach(result => {
+//         const dateDate = new Date(result.dt * 1000);
+//         const date = dayjs(result.dt * 1000);
+//         const dateStart = date.startOf('d');
+//         if (!lastDateStart || !lastDateStart.isSame(dateStart)) {
+//             weatherResult = [];
+//             results.push(weatherResult);
+//             sunrise = dayjs(getSunrise(lat, lon, dateDate));
+//             sunset = dayjs(getSunset(lat, lon, dateDate));
+//             lastDateStart = dateStart;
+//         }
+//         const rain = result.rain ? result.rain['3h'] || result.rain['1h'] || 0 : 0;
+//         const snow = result.snow ? result.snow['3h'] || result.snow['1h'] || 0 : 0;
+//         const icon = result.weather[0].icon.slice(0, 2) + (isDayTime(sunrise, sunset, date) ? 'd' : 'n');
+//         const fallPHour = rain > 0 ? rain : snow;
+//         const temp = result.main.temp;
+//         weatherResult.push({
+//             date,
+//             sunrise,
+//             sunset,
+//             temp: formatValueToUnit(temp, UNITS.Celcius),
+//             tempC: kelvinToCelsius(temp),
+//             feels_like: formatValueToUnit(result.main.feels_like, UNITS.Celcius),
+//             feels_likeC: result.main.feels_like,
+//             pressure: formatValueToUnit(result.main.pressure, UNITS.hPa),
+//             pressureHpa: result.main.pressure,
+//             humidity: result.main.humidity + '%',
+//             humidityPerc: result.main.humidity,
+//             desc: titlecase(result.weather[0].description),
+//             id: result.weather[0].id,
+//             icon,
+//             windSpeed: formatValueToUnit(result.wind.speed, UNITS.Speed),
+//             windSpeedKMH: result.wind.speed,
+//             windDeg: result.wind.deg,
+//             fallPHour,
+//             fallDesc: formatValueToUnit(fallPHour, UNITS.MM),
+//             frontAlpha: Math.min(fallPHour / 5, 1),
+//             tempColor: colorFromTempC(kelvinToCelsius(temp))
+//             // nightTime
+//         });
+//         // clog(convertTime(date, 'dddd MMM D HH:mm'), JSON.stringify(result), icon, JSON.stringify(weatherData));
+//         // if (date.isBefore(tomorrow)) {
+//         //     (weatherData.time = convertTime(date, 'HH:mm')), todayWeather.push(weatherData);
+//         // } else if (date.isBefore(later)) {
+//         //     (weatherData.time = convertTime(date, 'HH:mm')), tomorrowWeather.push(weatherData);
+//         // } else {
+//         //     (weatherData.time = convertTime(date, 'dddd MMM D HH:mm')), weather.push(weatherData);
+//         // }
+//     });
+//     return results;
+// }
+
+export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
+    const result = await request<DarkSky>({
+        url: `https://api.darksky.net/forecast/${dsApiKey}/${lat},${lon}`,
+        method: 'GET',
+        queryParams: {
+            lang,
+            units: 'ca',
+            ...queryParams
+        }
+    });
+    result.currently && (result.currently.time *= 1000);
+    result.daily.data.forEach(d => {
+        d.time = d.time * 1000;
+        d.sunriseTime = d.sunriseTime * 1000;
+        d.sunsetTime = d.sunsetTime * 1000;
+        d.hourly = [];
+    });
+    let dailyIndex = 0;
+    let currentDateData = result.daily.data[dailyIndex];
+    let dayEnd = dayjs(currentDateData.time).endOf('d');
+    result.hourly.data.forEach((h, i) => {
+        h.time = h.time * 1000;
+        const dateStart = dayjs(h.time).startOf('d');
+        // console.log('handling hourly', i,dailyIndex, convertTime(h.time, 'dddd  HH:mm'),convertTime(dayEnd, 'dddd'),convertTime(dateStart, 'dddd'), dateStart.isBefore(dayEnd));
+        if (!dateStart.isBefore(dayEnd)) {
+            dailyIndex++;
+            currentDateData = result.daily.data[dailyIndex];
+            dayEnd = dayjs(currentDateData.time).endOf('d');
+        }
+        h.index = currentDateData.hourly.length;
+        currentDateData.hourly.push(h);
+    });
+    delete result.hourly;
+    return result;
 }
 
-export async function getForecast(cityId: number) {
-    clog('getForecast', cityId);
-    return (await fetchOWM('forecast', {
-        id: cityId
-    })) as {
-        list: ListWeather[];
-    };
+export const defaultDarkSky = null as DarkSky;
+export async function photonSearch(q, lat?, lon?, queryParams = {}) {
+    return request({
+        url: 'http://photon.komoot.de/api',
+        method: 'GET',
+        queryParams: {
+            q,
+            lat,
+            lon,
+            lang,
+            limit: 40
+        }
+    }).then(function(results: Photon) {
+        return results.features
+            .filter(r => r.properties.osm_key === 'place' || r.properties.osm_key === 'natural')
+            .map(f => ({
+                name: f.properties.name,
+                sys: f.properties,
+                coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
+            }));
+    });
 }

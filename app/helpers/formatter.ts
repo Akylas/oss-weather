@@ -2,11 +2,33 @@ import { device } from '@nativescript/core/platform';
 import dayjs from 'dayjs';
 // import utc from 'dayjs/plugin/utc';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import 'dayjs/locale/fr';
 dayjs.extend(LocalizedFormat);
 
+
+
+function getOwmLanguage() {
+    const language = device.language.split('-')[0].toLowerCase();
+
+    if (language === 'cs') {
+        // Czech
+        return 'cz';
+    } else if (language === 'ko') {
+        // Korean
+        return 'kr';
+    } else if (language === 'lv') {
+        // Latvian
+        return 'la';
+    } else {
+        return language;
+    }
+}
+export const lang = getOwmLanguage();
+console.log('deviceLang', lang);
+
+
+// const rtf = new Intl.RelativeTimeFormat('es');
+
 import nativeLocalize from 'nativescript-localize';
-import { clog } from '~/utils/logging';
 export function localize(s: string, ...args) {
     let result = nativeLocalize(s, ...args);
     if (!result || result.length === 0) {
@@ -20,11 +42,9 @@ export function localize(s: string, ...args) {
 
 // const supportedLanguages = ['en', 'fr'];
 
-const deviceLang = device.language;
-const dayjsLocale = deviceLang.split('-')[0].toLowerCase();
-console.log('deviceLang', deviceLang, dayjsLocale);
-if (['en', 'fr'].indexOf(dayjsLocale) >= 0) {
-    dayjs.locale(dayjsLocale); // switch back to default English locale globally
+import 'dayjs/locale/fr';
+if (['en', 'fr'].indexOf(lang) >= 0) {
+    dayjs.locale(lang); // switch back to default English locale globally
 }
 export enum UNITS {
     InchHg = 'InchHg',
@@ -80,6 +100,10 @@ export function kelvinToCelsius(kelvinTemp) {
 function kelvinToFahrenheit(kelvinTemp) {
     return (9 * kelvinToCelsius(kelvinTemp)) / 5 + 32;
 }
+function celciusToFahrenheit(kelvinTemp) {
+    return (9 * (kelvinTemp)) / 5 + 32;
+}
+
 
 export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [string, string] {
     if (value === undefined || value === null) {
@@ -102,9 +126,9 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
                 return [value, 'mm'];
             }
         case UNITS.Celcius:
-            return [kelvinToCelsius(value).toFixed(1), '°C'];
+            return [(value).toFixed(1), '°'];
         case UNITS.Farenheit:
-            return [kelvinToFahrenheit(value).toFixed(1), '°F'];
+            return [celciusToFahrenheit(value).toFixed(1), '°'];
         case UNITS.Duration:
             return [convertDuration(value, 'HH:mm:ss'), ''];
 

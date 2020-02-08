@@ -46,5 +46,10 @@
     </array>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>'NS Forecastie' uses your GPS location to display your weather</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
   </dict>
 </plist>

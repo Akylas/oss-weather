@@ -35,7 +35,7 @@ desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
   sh("rm", "-fr", "platforms/" + platform)
-  sh("tns", "prepare", platform, "--release", "--clean", "--env.production", "--env.uglify", "--env.adhoc")
+  sh("tns", "prepare", platform, "--release", "--clean", "--env.production", "--env.uglify", "--env.adhoc", "--env.snapshot", "--env.compileSnapshot")
 
 end
 
@@ -44,35 +44,50 @@ lane :build_flavor do |params|
   flavor = params[:flavor]
   version = ""
   versionCode = ""
-  sentry_prefix = ENV['SENTRY_PREFIX']
 
   
-  sourceDist = ""
   Dir.chdir("..") do
     version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
     versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
-    sourceDist  =  sh("node", "./fastlane/getDist.js", platform).gsub(/\n/,'')
   end
   
-  # there we add the platform to the dist paramater. The idea is to have different dist for ios android
-  # this is because we generate different sources for android and ios so we have different sourceMaps
-  # and so to map errors correctly we use different dist for ios and android
-  sentryDist =  versionCode + '.' + platform # optional distribution of the release usually the buildnumber
   puts "platform:"  + platform
   puts "flavor:"  + flavor
   puts "version:"  + version
   puts "versionCode:"  + versionCode
-  puts "sentry_prefix:"  + sentry_prefix
-  puts "sentryDist:"  + sentryDist
-
-  build
 
   sentry_create_release(
     version: version, # release version to create
-    # app_identifier: 'com.microoled.activelook.mobile', # pass in the bundle_identifer of your app
   )
 
+  # build will use adhoc env option which also activate sentry which will upload sourcemaps.
+  build
 
+  # sentry_upload_sourcemaps(platform:platform, version: version, versionCode: versionCode);
+  
+  sentry_upload
+
+  changelog = get_changelog(platform:platform, flavor:flavor)
+
+  upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
+  add_git_tag(tag: "#{platform}/#{flavor}/#{version}/#{versionCode}")
+
+  push_git_tags
+end
+
+lane :sentry_upload_sourcemaps do |params|
+  # there we add the platform to the dist paramater. The idea is to have different dist for ios android
+  # this is because we generate different sources for android and ios so we have different sourceMaps
+  # and so to map errors correctly we use different dist for ios and android
+  version = params[:version]
+  versionCode = params[:versionCode]
+  platform = params[:platform]
+  sentry_prefix = ENV['SENTRY_PREFIX']
+  sentryDist =  versionCode + '.' + platform # optional distribution of the release usually the buildnumber
+  sourceDist = ""
+  Dir.chdir("..") do
+    sourceDist  =  sh("node", "./fastlane/getDist.js", platform).gsub(/\n/,'')
+  end
   sourceMapeDirPath = "#{sourceDist}/#{ENV['SOURCEMAP_REL_DIR']}"
   Dir.chdir(sourceDist) do
     Dir.glob('*.js').each do|f|
@@ -101,15 +116,6 @@ lane :build_flavor do |params|
       
     end
   end
-
-  sentry_upload
-
-  changelog = get_changelog(platform:platform, flavor:flavor)
-
-  upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
-  add_git_tag(tag: "#{platform}/#{flavor}/#{version}/#{versionCode}")
-
-  push_git_tags
 end
 
 

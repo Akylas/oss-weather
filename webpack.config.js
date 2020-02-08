@@ -91,8 +91,8 @@ module.exports = (env, params = {}) => {
     const alias = mergeOptions(
         {
             '~': appFullPath,
-            '@': appFullPath,
-            'svelte-native': 'svelte-native-akylas'
+            '@': appFullPath
+            // 'svelte-native': 'svelte-native-akylas'
         },
         params.alias || {}
     );
@@ -154,10 +154,11 @@ module.exports = (env, params = {}) => {
             'gVars.isIOS': platform === 'ios',
             'gVars.isAndroid': platform === 'android',
             TNS_ENV: JSON.stringify(mode),
-            'gVars.sentry': !!sentry || !!production,
+            'gVars.sentry': !!sentry,
             SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
-            SENTRY_PREFIX: `"${process.env.SENTRY_PREFIX}"`,
+            SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
             OWM_KEY: `"${process.env.OWM_KEY}"`,
+            DARK_SKY_KEY: `"${process.env.DARK_SKY_KEY}"`,
             LOG_LEVEL: devlog ? '"full"' : '""',
             TEST_LOGS: adhoc || !production
         },
@@ -171,6 +172,15 @@ module.exports = (env, params = {}) => {
     const forecastSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'app/css/forecastfont.scss')).toString());
     const forecastIcons = JSON.parse(`{${forecastSymbols.variables[forecastSymbols.variables.length - 1].value.replace(/'forecastfont-(\w+)' (F|f|0)(.*?)([,\n]|$)/g, '"$1": "$2$3"$4')}}`);
 
+    const weatherIcons = JSON.parse(
+        `{${[
+            ...readFileSync(resolve(projectRoot, 'node_modules/weather-icons/weather-icons/variables.less'))
+                .toString()
+                .matchAll(/@(.*)\s*:\s*"\\(.*?)"/g)
+        ]
+            .map(r => `"${r[1]}": "${r[2]}"`)
+            .join(',')}}`
+    );
     nsWebpack.processAppComponents(appComponents, platform);
     const config = {
         mode,
@@ -324,6 +334,19 @@ module.exports = (env, params = {}) => {
                                 },
                                 flags: 'g'
                             }
+                        },
+                        {
+                            loader: 'string-replace-loader',
+                            options: {
+                                search: 'wi-([a-z0-9-]+)',
+                                replace: (match, p1, offset, string) => {
+                                    if (weatherIcons[p1]) {
+                                        return String.fromCharCode(parseInt(weatherIcons[p1], 16));
+                                    }
+                                    return match;
+                                },
+                                flags: 'g'
+                            }
                         }
                     ]
                 },
@@ -393,23 +416,20 @@ module.exports = (env, params = {}) => {
                     exclude: /node_modules/,
                     use: [
                         {
-                            loader: 'svelte-loader-hot',
+                            loader: 'svelte-loader',
                             options: {
-                                preprocess: svelteNativePreprocessor(),
-                                // require('svelte-preprocess')(
-                                // Object.assign(
-                                //     {
-                                //         /* options */
-
-                                //         typescript: {
-                                //             compilerOptions: {
-                                //                 module: 'es6'
-                                //             }
-                                //         }
-                                //     },
-
-                                // )
-                                // ),
+                                preprocess: require('svelte-preprocess')(
+                                    Object.assign(
+                                        {
+                                            typescript: {
+                                                compilerOptions: {
+                                                    module: 'es6'
+                                                }
+                                            }
+                                        },
+                                        svelteNativePreprocessor()
+                                    )
+                                ),
                                 hotReload: true,
                                 hotOptions: {
                                     native: true
@@ -448,6 +468,10 @@ module.exports = (env, params = {}) => {
                     {
                         from: '../node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
                         to: 'fonts'
+                    },
+                    {
+                        from: '../node_modules/weather-icons/font/weathericons-regular-webfont.ttf',
+                        to: 'fonts'
                     }
                 ].concat(params.copyPlugin || []),
                 {
@@ -470,20 +494,20 @@ module.exports = (env, params = {}) => {
     };
 
     if (hiddenSourceMap || sourceMap) {
-        const sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
-
-        config.plugins.push(
-            new webpack.SourceMapDevToolPlugin(
-                mergeOptions(
-                    {
-                        append: `\n//# sourceMappingURL=${process.env.SENTRY_PREFIX}[name].js.map`,
-                        filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
-                    },
-                    params.sourceMapPlugin || {}
-                )
-            )
-        );
         if (!!sentry) {
+            // const sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
+
+            config.plugins.push(
+                new webpack.SourceMapDevToolPlugin(
+                    mergeOptions(
+                        {
+                            append: `\n//# sourceMappingURL=${process.env.SENTRY_PREFIX}[name].js.map`,
+                            filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
+                        },
+                        params.sourceMapPlugin || {}
+                    )
+                )
+            );
             let appVersion;
             let buildNumber;
             if (platform === 'android') {
@@ -504,6 +528,32 @@ module.exports = (env, params = {}) => {
                     ignore: ['tns-java-classes', 'hot-update'],
                     include: [dist, join(dist, process.env.SOURCEMAP_REL_DIR)]
                 })
+            );
+        } else {
+            config.plugins.push(
+                new webpack.SourceMapDevToolPlugin(
+                    mergeOptions(
+                        {
+                            noSources: true
+                            //  fileContext:params.sourceMapPublicPath
+                            // publicPath: params.sourceMapPublicPath || '~/',
+                            // fileContext:sourceMapsDist,
+                            // noSources:true,
+                            // moduleFilenameTemplate: info => {
+                            //     let filePath = info.identifier;
+                            //     console.log( 'filePath', filePath);
+                            //     if (filePath.startsWith('./')) {
+                            //         filePath = './app' + filePath.slice(1);
+                            //     }
+                            //     // if (filePath.startsWith('file:///')) {
+                            //     //     filePath = './app' + filePath.slice(1);
+                            //     // }
+                            //     return filePath.replace('file:///', '');
+                            // }
+                        },
+                        params.sourceMapPlugin || {}
+                    )
+                )
             );
         }
     }

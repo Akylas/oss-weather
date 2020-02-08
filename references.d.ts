@@ -9,6 +9,7 @@ declare const PRODUCTION: boolean;
 declare const SENTRY_DSN: string;
 declare const SENTRY_PREFIX: string;
 declare const OWM_KEY: string;
+declare const DARK_SKY_KEY: string;
 // declare const process: { env: any };
 
 // Augment the NodeJS global type with our own extensions
@@ -26,5 +27,7 @@ interface LatLonKeys {
     altitude?: number;
 }
 
-
 declare module '*.scss';
+declare module '*.svelte' {
+    export { SvelteComponentDev as default } from 'svelte/internal';
+}

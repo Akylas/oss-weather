@@ -7,15 +7,10 @@ export let isSentryEnabled = false;
 
 export async function startSentry() {
     try {
-        console.log('sentry startup', PRODUCTION, gVars.sentry);
-
         if (PRODUCTION || gVars.sentry) {
             Sentry = require('nativescript-akylas-sentry');
-            console.log('required sentry', PRODUCTION, gVars.sentry);
             const version = await getVersionName();
-            console.log('version', version);
             const versionCode = await getBuildNumber();
-            console.log(' sentry init', gVars.platform, SENTRY_DSN, SENTRY_PREFIX, version, versionCode);
             Sentry.init({
                 dsn: SENTRY_DSN,
                 appPrefix: SENTRY_PREFIX,

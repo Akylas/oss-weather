@@ -1,7 +1,8 @@
 import { BaseError } from 'make-error';
-import { localize as l } from 'nativescript-localize';
+import { localize as l } from '~/helpers/formatter';
 import { confirm, alert as mdAlert } from 'nativescript-material-dialogs';
 import { Sentry, isSentryEnabled } from '~/utils/sentry';
+import { showSnack } from 'nativescript-material-snackbar';
 
 function evalTemplateString(resource: string, obj: {}) {
     if (!obj) {
@@ -89,6 +90,11 @@ export class CustomError extends BaseError {
 
 export async function showError(err: Error | string) {
     if (!err) {
+        return;
+    }
+
+    if (err['customErrorConstructorName'] === 'NoNetworkError') {
+        showSnack({ message: l('no_network') });
         return;
     }
     const message: string = typeof err === 'string' ? err : err.message;

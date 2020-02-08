@@ -5,14 +5,21 @@
 .forecastfont {
     font-family: 'iconvault_forecastfont', 'iconvault';
 }
+.wi {
+    font-family: 'weathericons-regular-webfont', 'Weather Icons';
+}
 .mdi {
     font-family: 'Material Design Icons', 'materialdesignicons-webfont';
 }
 
-
 htmllabel,
 label {
     color: $text-color;
+    white-space: normal;
+}
+mdtextfield {
+    color: $text-color;
+    placeholder-color: $text-color;
 }
 
 label,
@@ -44,7 +51,7 @@ mdbutton {
 
 .actionBarTitle {
     @extend .lato;
-    vertical-alignment: center;
+    vertical-text-alignment: center;
     font-size: 18;
     font-weight: 500;
     color: white;
@@ -62,7 +69,7 @@ mdbutton {
     color: white;
     width: 44;
     height: 44;
-    border-radius:22;
+    border-radius: 22;
     font-size: 24;
     margin: 0;
     padding: 0;

@@ -14,11 +14,9 @@
         "noImplicitUseStrict": true,
         "lib": ["es6", "dom", "es2015.iterable", "es2017.string", "es2018.promise"],
         "baseUrl": ".",
-        "types": ["svelte"],
+        "types": ["svelte"],  
         "paths": {
             "~/*": ["app/*"],
-            "svelte-native": ["./node_modules/svelte-native-akylas"],
-            "svelte-native/*": ["./node_modules/svelte-native-akylas/*"],
             "tns-core-modules": ["./node_modules/@nativescript/core"],
             "tns-core-modules/*": ["./node_modules/@nativescript/core/*"],
             "*": ["./node_modules/*"]

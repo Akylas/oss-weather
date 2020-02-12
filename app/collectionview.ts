@@ -88,10 +88,8 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         super.onInsertedChild(childNode, index);
         if (childNode instanceof TemplateElement) {
             const key = childNode.getAttribute('key') || 'default';
-            if (!this.nativeView.itemTemplates || typeof this.nativeView.itemTemplates === 'string') {
-                this.nativeView.itemTemplates = [];
-            }
-            this.nativeView.itemTemplates.push(new SvelteKeyedTemplate(key, childNode));
+            const templates = !this.nativeView.itemTemplates || typeof this.nativeView.itemTemplates === 'string' ? [] : (this.nativeView.itemTemplates as any[]);
+            this.nativeView.itemTemplates = templates.concat([new SvelteKeyedTemplate(key, childNode)]);
         }
     }
 
@@ -105,19 +103,18 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         }
     }
     private updateListItem(args: ItemEventData & { bindingContext }) {
-
         const _view = args.view as any;
         const props = { item: args.bindingContext };
         const componentInstance: SvelteComponent = _view.__SvelteComponent__;
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
-                _view.__SvelteComponentBuilder__(props.item);
+                _view.__SvelteComponentBuilder__(props);
                 _view.__SvelteComponentBuilder__ = null;
                 return;
             }
         } else {
-            console.log('updateListItem', args.index, props.item);
-            componentInstance.$set(props.item);
+            // console.log('updateListItem', args.index, props.item);
+            componentInstance.$set(props);
             flush(); // we need to flush to make sure update is applied right away
         }
     }

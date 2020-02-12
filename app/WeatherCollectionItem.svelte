@@ -2,41 +2,60 @@
     // @ts-ignore
     import WeatherIcon from './WeatherIcon.svelte';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
-    import { colorFromTempC, UNITS } from '~/helpers/formatter';
+    import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
+    import { mdiFontFamily } from '~/variables';
     export let item;
 
+    let textHtml;
+
+    export function colorForItem(item) {
+        const color = colorForIcon(item.icon);
+        if (item.icon === 'rain' || item.icon === 'snow') {
+            return;
+        }
+        return colorForIcon(item.icon);
+    }
+
     $: {
-        console.log('item changed!', item.time);
+        textHtml = `<big><font color="${colorFromTempC(item.temperature)}">${formatValueToUnit(item.temperature, UNITS.Celcius)}</font></big><br>
+        <font face="${mdiFontFamily}">mdi-navigation</font>
+        ${formatValueToUnit(item.windSpeed, UNITS.Speed)}<br>
+        ${item.summary}`;
     }
 </script>
 
-<stackLayout borderRadius="6" backgroundColor="#333" margin="2">
-    <label paddingTop="10" width="100%" textAlignment="center">
-        <span fontSize="16" fontWeight="bold" text={convertTime(item.time, 'HH:mm')} />
-    </label>
-    <WeatherIcon icon={item.icon} />
-    <label width="100%" textAlignment="center">
-        <span fontSize="16" text={formatValueToUnit(item.temperature, UNITS.Celcius) + '\n'} color={colorFromTempC(item.temperature)} />
+<gridlayout height="100%" rows="auto,auto,auto,*">
+    <label paddingTop="10" width="100%" textAlignment="center" fontSize="14" fontWeight="bold" text={convertTime(item.time, 'HH:mm')} />
+    <WeatherIcon row="1" icon={item.icon} autoPlay="true" />
+    <!-- <label width="100%" textAlignment="center">
         <span fontSize="10" text={item.summary + '\n'} />
-        <span fontSize="10" class="mdi" text="mdi-hand" />
-        <span fontSize="10" text={formatValueToUnit(item.apparentTemperature, UNITS.Celcius)} />
+        <span fontSize="14" text={formatValueToUnit(item.temperature, UNITS.Celcius)} color={colorFromTempC(item.temperature)} />
+    </label> -->
+    <!-- <label row="2" fontSize="12" paddingTop="5" horizontalAlignment="center" textAlignment="center" html={textHtml}/> -->
+
+    <label row="2" fontSize="12" textAlignment="center">
+        <span fontSize="16" text={formatValueToUnit(item.temperature, UNITS.Celcius) + '\n'} color={colorFromTempC(item.temperature)} />
+        <span class="wi" fontSize="18" text={item.windIcon} />
+        <span text=" {formatValueToUnit(item.windSpeed, UNITS.Speed) + '\n'}" />
+        <span fontSize="10" text={item.summary} />
     </label>
-    <stackLayout orientation="horizontal" paddingTop="5" horizontalAlignment="center">
-        <label fontSize="14" ios:padding="0 -7 0 -7" android:paddingRight="2" class="mdi" text="mdi-navigation" verticalAlignment="center" rotate={item.windBearing + 180} />
+    <!-- <stackLayout orientation="horizontal" paddingTop="5" horizontalAlignment="center">
+        <label fontSize="14" ios:padding="0 -7 0 -7" class="mdi" text="mdi-navigation" verticalAlignment="center" rotate={item.windBearing + 180} />
         <label fontSize="12" text={formatValueToUnit(item.windSpeed, UNITS.Speed)} verticalAlignment="center" />
     </stackLayout>
     <label fontSize="12" horizontalAlignment="center">
         <span fontSize="14" class="wi" text="wi-cloud" />
         <span text=" {Math.round(item.cloudCover * 100)}%{'\n'}" />
-    </label>
+    </label> -->
 
-    {#if item.precipProbability > 0}
-        <label
-            text={formatValueToUnit(item.precipIntensity, UNITS.MM)}
-            horizontalAlignment="center"
-            verticalAlignment="bottom"
-            padding="2"
-            borderRadius="2"
-            backgroundColor="rgba(70, 129, 195, {item.precipProbability})" />
-    {/if}
-</stackLayout>
+    <label
+        row="3"
+        verticalAlignment="bottom"
+        backgroundColor={item.color}
+        height="20"
+        text={item.precipProbability > 0 ? formatValueToUnit(item.precipIntensity, UNITS.MM) : ''}
+        textAlignment="center"
+        verticalTextAlignment="middle"
+        fontSize="10" />
+
+</gridlayout>

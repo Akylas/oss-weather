@@ -91,8 +91,8 @@ module.exports = (env, params = {}) => {
     const alias = mergeOptions(
         {
             '~': appFullPath,
-            '@': appFullPath
-            // 'svelte-native': 'svelte-native-akylas'
+            '@': appFullPath,
+            'svelte-native': 'svelte-native-akylas'
         },
         params.alias || {}
     );
@@ -181,6 +181,13 @@ module.exports = (env, params = {}) => {
             .map(r => `"${r[1]}": "${r[2]}"`)
             .join(',')}}`
     );
+
+    const scssPrepend = `$lato-fontFamily: ${platform === 'android' ? 'res/lato' : 'Lato'};
+$forecastfont-fontFamily: ${platform === 'android' ? 'iconvault_forecastfont' : 'iconvault'};
+$wi-fontFamily: ${platform === 'android' ? 'weathericons-regular-webfont' : 'Weather Icons'};
+$mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Material Design Icons'};`;
+
+    console.log('scssPrepend', scssPrepend);
     nsWebpack.processAppComponents(appComponents, platform);
     const config = {
         mode,
@@ -370,12 +377,25 @@ module.exports = (env, params = {}) => {
                             loader: 'nativescript-dev-webpack/css2json-loader',
                             options: { useForImports: true }
                         },
-                        'sass-loader'
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                data: scssPrepend
+                            }
+                        }
                     ]
                 },
                 {
                     test: /\.module\.scss$/,
-                    use: [{ loader: 'css-loader', options: { url: false } }, 'sass-loader']
+                    use: [
+                        { loader: 'css-loader', options: { url: false } },
+                        {
+                            loader: 'sass-loader',
+                            options: {
+                                data: scssPrepend
+                            }
+                        }
+                    ]
                 },
                 // {
                 //     test: /\.js$/,

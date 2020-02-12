@@ -1,19 +1,20 @@
 ﻿@import './variables';
 .lato {
-    font-family: 'Lato', 'Lato Regular', 'res/lato';
+    font-family: $lato-fontFamily;
 }
 .forecastfont {
-    font-family: 'iconvault_forecastfont', 'iconvault';
+    font-family: $forecastfont-fontFamily;
 }
 .wi {
-    font-family: 'weathericons-regular-webfont', 'Weather Icons';
+    font-family: $wi-fontFamily;
 }
 .mdi {
-    font-family: 'Material Design Icons', 'materialdesignicons-webfont';
+    font-family: $mdi-fontFamily;
 }
 
 htmllabel,
 label {
+    // background-color: rgba(255, 0,0,0.2);
     color: $text-color;
     white-space: normal;
 }

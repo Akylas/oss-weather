@@ -1,34 +1,34 @@
 {
     "nativescript": {
-        "id": "org.nativescript.forecastie",
-        "tns-ios": {
-            "version": "6.3.0"
-        },
+        "id": "com.akylas.weather",
         "tns-android": {
-            "version": "6.4.0"
+            "version": "6.4.1"
         }
     },
     "scripts": {
-        "run.android.production": "tns run android --env.adhoc  --env.snapshot --env.compileSnapshot"
+        "run.android.production": "cross-var tns run android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASS --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_PASS --env.adhoc  --env.snapshot --env.compileSnapshot --aab",
+        "pandroid": "cross-var tns build android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASS --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_PASS --env.adhoc  --env.snapshot --env.compileSnapshot --aab",
+        "pios": "tns build ios --bundle --release --env.uglify --for-device --provision 'Akylas Weather'"
     },
     "description": "NativeScript Application",
     "license": "SEE LICENSE IN <your-license-filename>",
     "repository": "<fill-your-repository-here>",
     "dependencies": {
         "@mdi/font": "4.9.95",
-        "@nativescript/core": "~6.3.2",
-        "@nativescript/theme": "2.2.1",
+        "@nativescript/core": "~6.4.0",
+        "@nativescript/theme": "2.3.0",
         "dayjs": "1.8.20",
         "make-error": "^1.3.5",
         "nativescript-akylas-sentry": "^0.0.5",
         "nativescript-canvas": "^2.1.24",
         "nativescript-carto": "^1.2.37",
         "nativescript-chart": "0.0.14",
-        "nativescript-collectionview": "2.0.0",
+        "nativescript-collectionview": "2.0.4",
         "nativescript-extendedinfo": "~1.0.7",
         "nativescript-gps": "^2.0.14",
-        "nativescript-htmllabel": "1.0.15",
+        "nativescript-htmllabel": "1.0.16",
         "nativescript-localize": "~4.2.0",
+        "nativescript-lottie": "^4.0.1",
         "nativescript-material-activityindicator": "3.1.5",
         "nativescript-material-bottomsheet": "3.1.5",
         "nativescript-material-button": "3.1.5",
@@ -40,6 +40,8 @@
         "nativescript-tween": "0.0.5",
         "sunrise-sunset-js": "^2.1.1",
         "svelte-native": "0.7.3",
+        "svelte-native-akylas": "0.7.4-alpha.5",
+        "tinycolor2": "^1.4.1",
         "weather-icons": "^1.3.2"
     },
     "devDependencies": {
@@ -48,29 +50,33 @@
         "@pyoner/svelte-ts-preprocess": "^1.2.1",
         "@pyoner/svelte-types": "^3.4.4-2",
         "@sentry/webpack-plugin": "^1.10.0",
+        "@types/tinycolor2": "^1.4.2",
         "@typescript-eslint/eslint-plugin": "2.19.0",
-        "@typescript-eslint/parser": "2.19.0",
+        "@typescript-eslint/parser": "2.19.2",
+        "ansi-styles": "^4.2.1",
         "clean-webpack-plugin": "3.0.0",
+        "cross-var": "^1.1.0",
+        "del": "5.1.0",
         "eslint": "6.8.0",
         "eslint-plugin-svelte3": "2.7.3",
-        "husky": "^4.2.1",
+        "husky": "^4.2.2",
         "merge-options": "^2.0.0",
         "nativescript-dev-appium": "6.1.3",
-        "nativescript-dev-webpack": "1.4.1",
+        "nativescript-dev-webpack": "1.5.0",
         "nativescript-set-version": "0.1.6",
         "node-sass": "^4.13.1",
         "prettier-plugin-svelte": "0.7.0",
         "scss-symbols-parser": "^2.0.1",
         "source-map": "0.6.1",
         "string-replace-loader": "^2.2.0",
-        "svelte": "~3.18.0",
+        "svelte": "~3.18.2",
         "svelte-loader": "github:rixo/svelte-loader#2204a8f7e66e441f5e0ce6e70a5fa0f9e6bb2103",
         "svelte-native-preprocessor": "~0.1.4",
         "svelte-preprocess": "^3.4.0",
         "tns-platform-declarations": "6.3.2",
         "typescript": "3.7.5",
-        "webpack": "4.41.5",
-        "webpack-cli": "3.3.10"
+        "webpack": "4.41.6",
+        "webpack-cli": "3.3.11"
     },
     "commitlint": {
         "extends": [

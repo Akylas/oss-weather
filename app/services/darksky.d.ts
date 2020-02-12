@@ -21,6 +21,7 @@ export interface Currently {
 export interface HourlyData {
     index: number;
     time: number;
+    color?: string;
     summary: string;
     icon: string;
     precipIntensity: number;
@@ -33,6 +34,7 @@ export interface HourlyData {
     windSpeed: number;
     windGust: number;
     windBearing: number;
+    windIcon?: string;
     cloudCover: number;
     uvIndex: number;
     visibility: number;
@@ -75,6 +77,7 @@ export interface DailyData {
     windGust: number;
     windGustTime: number;
     windBearing: number;
+    windIcon?: string;
     cloudCover: number;
     uvIndex: number;
     uvIndexTime: number;
@@ -89,11 +92,35 @@ export interface DailyData {
     apparentTemperatureMax: number;
     apparentTemperatureMaxTime: number;
 }
+export interface MinutelyData {
+    time: number;
+    summary: string;
+    icon: string;
+    precipIntensity: number;
+    precipProbability: number;
+    precipType: string;
+    dewPoint: number;
+    humidity: number;
+    pressure: number;
+    windSpeed: number;
+    windGust: number;
+    windBearing: number;
+    cloudCover: number;
+    uvIndex: number;
+    visibility: number;
+    ozone: number;
+}
 
 export interface Daily {
     summary: string;
     icon: string;
     data: DailyData[];
+}
+
+export interface Minutely {
+    summary: string;
+    icon: string;
+    data: MinutelyData[];
 }
 
 export interface Alert {
@@ -118,6 +145,7 @@ export interface DarkSky {
     longitude: number;
     timezone: string;
     currently: Currently;
+    minutly: any;
     hourly: Hourly;
     daily: Daily;
     alerts: Alert[];

@@ -1,18 +1,14 @@
-<script lang="typescript">
+<script>
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
     import { Frame } from '@nativescript/core/ui/frame';
     export let title;
-    export let row;
-    export let col;
-    export let colSpan;
     // export let subtitle;
     export let showLogo = false;
     export let showMenuIcon = false;
     export let canGoBack = false;
     export let modalWindow = false;
     export let disableBackButton = false;
-    export let backgroundColor;
     export let onClose;
     let menuIcon;
     let menuIconVisible;
@@ -38,9 +34,9 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
 </script>
 
-<gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" {col} {row} {colSpan} {backgroundColor}>
+<gridLayout {...$$props} class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" >
     <!-- <stackLayout col="1" colSpan="3"> -->
-    <label col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} />
+    <label col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center"/>
     <!-- <label visibility={!!subtitle ? 'visible' : 'collapse'} textAlignment="left" class="actionBarSubtitle" text={subtitle} /> -->
     <!-- </stackLayout> -->
     {#if showLogo && !title}

@@ -1,17 +1,19 @@
 import { DomTraceCategory, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 
-// import { setMapPosKeys } from 'nativescript-carto/core';
+import { setMapPosKeys } from 'nativescript-carto/core';
 // we need to use lat lon
-// setMapPosKeys('lat', 'lon');
-// import { installMixins as installUIMixins } from 'nativescript-systemui';
-// installUIMixins();
+setMapPosKeys('lat', 'lon');
+import { installMixins as installUIMixins } from 'nativescript-systemui';
+installUIMixins();
 
 registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField);
-// registerNativeViewElement('button', () => require('nativescript-material-button').Button);
-// registerNativeViewElement('label', () => require('nativescript-htmllabel').Label);
-// registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
+registerNativeViewElement('button', () => require('nativescript-material-button').Button);
+registerNativeViewElement('label', () => require('nativescript-htmllabel').Label);
+registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
 registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
+registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
+registerNativeViewElement('lottie', () => require('nativescript-lottie').LottieView);
 
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
@@ -35,6 +37,7 @@ addCategories(DomTraceCategory);
 // }
 
 startSentry();
+
 
 import Theme from '@nativescript/theme';
 Theme.setMode(Theme.Dark); // Or Theme.Light
@@ -76,5 +79,4 @@ if (gVars.isIOS) {
 
 import { svelteNative } from 'svelte-native';
 import App from './App.svelte';
-import App2 from './App2.svelte';
 svelteNative(App, {});

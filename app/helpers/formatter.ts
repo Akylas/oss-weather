@@ -3,8 +3,7 @@ import dayjs from 'dayjs';
 // import utc from 'dayjs/plugin/utc';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(LocalizedFormat);
-
-
+import Color from 'tinycolor2';
 
 function getOwmLanguage() {
     const language = device.language.split('-')[0].toLowerCase();
@@ -24,7 +23,6 @@ function getOwmLanguage() {
 }
 export const lang = getOwmLanguage();
 console.log('deviceLang', lang);
-
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
@@ -101,9 +99,8 @@ function kelvinToFahrenheit(kelvinTemp) {
     return (9 * kelvinToCelsius(kelvinTemp)) / 5 + 32;
 }
 function celciusToFahrenheit(kelvinTemp) {
-    return (9 * (kelvinTemp)) / 5 + 32;
+    return (9 * kelvinTemp) / 5 + 32;
 }
-
 
 export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [string, string] {
     if (value === undefined || value === null) {
@@ -121,12 +118,12 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
             return [(value * 0.0295299830714).toFixed(), 'in Hg'];
         case UNITS.MM:
             if (value < 0.1) {
-                return ['<0.1', 'mm'];
+                return ['', ''];
             } else {
-                return [value, 'mm'];
+                return [value.toFixed(1), 'mm'];
             }
         case UNITS.Celcius:
-            return [(value).toFixed(1), '°'];
+            return [value.toFixed(1), '°'];
         case UNITS.Farenheit:
             return [celciusToFahrenheit(value).toFixed(1), '°'];
         case UNITS.Duration:
@@ -192,5 +189,35 @@ export function colorFromTempC(tempC) {
     const h0 = 179;
     const h1 = -190;
     const h = h0 * (1 - a) + h1 * a;
-    return 'hsl(' + [h, '75%', '40%'] + ')';
+    return Color('hsl(' + [h, '75%', '40%'] + ')').toHexString();
+}
+
+export function colorForIcon(icon) {
+    const sunnyColor = '#ffa500';
+    const nightColor = '#6B4985';
+    const scatteredCloudyColor = '#cccccc';
+    const cloudyColor = '#929292';
+    const rainColor = 'rgb(70, 129, 195)';
+    const snowColor = 'rgb(133, 216, 247)';
+    // console.log('colorForIcon', icon);
+    switch (icon) {
+        case 'clear-night':
+            return nightColor;
+        case 'clear-day':
+            return sunnyColor;
+        // break;
+        // return cloudyColor;
+        // break;
+        case 'partly-cloudy-night':
+        case 'partly-cloudy-day':
+        case 'partly-cloudy':
+            return scatteredCloudyColor;
+            break;
+        case 'cloudy':
+            return cloudyColor;
+            break;
+        case 'rain':
+            return rainColor;
+            break;
+    }
 }

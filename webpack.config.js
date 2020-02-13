@@ -474,6 +474,8 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             new webpack.DefinePlugin(defines),
             // Remove all files from the out dir.
             new CleanWebpackPlugin({
+                dangerouslyAllowCleanPatternsOutsideProject: true,
+                dry: false,
                 verbose: !!verbose,
                 cleanOnceBeforeBuildPatterns: itemsToClean
             }),

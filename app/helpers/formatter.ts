@@ -84,20 +84,20 @@ export function convertTime(date: number | string | dayjs.Dayjs, formatStr: stri
 //     return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
 // }
 
-export function convertDuration(date, formatStr: string) {
-    const test = new Date(date);
-    test.setTime(test.getTime() + test.getTimezoneOffset() * 60 * 1000);
-    const result = dayjs(test).format(formatStr);
-    // clog('convertDuration', date, formatStr, test, result);
-    return result;
-}
+// export function convertDuration(date, formatStr: string) {
+//     const test = new Date(date);
+//     test.setTime(test.getTime() + test.getTimezoneOffset() * 60 * 1000);
+//     const result = dayjs(test).format(formatStr);
+//     // clog('convertDuration', date, formatStr, test, result);
+//     return result;
+// }
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
 }
 
-function kelvinToFahrenheit(kelvinTemp) {
-    return (9 * kelvinToCelsius(kelvinTemp)) / 5 + 32;
-}
+// function kelvinToFahrenheit(kelvinTemp) {
+//     return (9 * kelvinToCelsius(kelvinTemp)) / 5 + 32;
+// }
 function celciusToFahrenheit(kelvinTemp) {
     return (9 * kelvinTemp) / 5 + 32;
 }
@@ -126,9 +126,8 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
             return [value.toFixed(1), '°'];
         case UNITS.Farenheit:
             return [celciusToFahrenheit(value).toFixed(1), '°'];
-        case UNITS.Duration:
-            return [convertDuration(value, 'HH:mm:ss'), ''];
-
+        // case UNITS.Duration:
+        // return [convertDuration(value, 'HH:mm:ss'), ''];
         case UNITS.Date:
             return [convertTime(value, 'M/d/yy h:mm a'), ''];
 
@@ -212,12 +211,10 @@ export function colorForIcon(icon) {
         case 'partly-cloudy-day':
         case 'partly-cloudy':
             return scatteredCloudyColor;
-            break;
         case 'cloudy':
+        case 'foggy':
             return cloudyColor;
-            break;
         case 'rain':
             return rainColor;
-            break;
     }
 }

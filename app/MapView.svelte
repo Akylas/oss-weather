@@ -1,17 +1,6 @@
 <script context="module">
-    import { PersistentCacheTileDataSource } from 'nativescript-carto/datasources/cache';
     import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
-    import { HTTPTileDataSource } from 'nativescript-carto/datasources/http';
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
-    const dataSource = new PersistentCacheTileDataSource({
-        dataSource: new HTTPTileDataSource({
-            minZoom: 2,
-            subdomains: 'abc',
-            maxZoom: 18,
-            url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
-        }),
-        databasePath: cacheFolder.path
-    });
 </script>
 
 <script>
@@ -19,43 +8,48 @@
     import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
     import { RasterTileLayer } from 'nativescript-carto/layers/raster';
     import { Template } from 'svelte-native/components';
-    let cartoMap;
-    let rasterLayer;
+    import { VectorLayer } from 'nativescript-carto/layers/vector';
+    import { primaryColor } from '~/variables';
+    import { PersistentCacheTileDataSource } from 'nativescript-carto/datasources/cache';
+    import { HTTPTileDataSource } from 'nativescript-carto/datasources/http';
+
     export let focusPos;
 
-    function onMapReady() {
-        console.log('onMapready', focusPos);
+    function onMapReady(event) {
+        const cartoMap = event.object;
         const options = cartoMap.getOptions();
-        options.setWatermarkScale(0.2);
-        options.setRestrictedPanning(true);
-        options.setSeamlessPanning(true);
-        options.setEnvelopeThreadPoolSize(2);
-        options.setTileThreadPoolSize(2);
-        options.setZoomGestures(true);
-        options.setRotatable(true);
+        options.setWatermarkScale(0);
+        // options.setEnvelopeThreadPoolSize(2);
+        // options.setTileThreadPoolSize(2);
 
-        const rasterLayer = new RasterTileLayer({
-            zoomLevelBias: 1,
-            dataSource
+        const dataSource = new PersistentCacheTileDataSource({
+            dataSource: new HTTPTileDataSource({
+                minZoom: 10,
+                subdomains: 'abc',
+                maxZoom: 10,
+                url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
+            }),
+            databasePath: cacheFolder.path
         });
+
+        const rasterLayer = new RasterTileLayer({ dataSource });
 
         cartoMap.addLayer(rasterLayer);
 
-        const localVectorDataSource = new LocalVectorDataSource({ projection: cartoMap.mapProjection });
+        const localVectorDataSource = new LocalVectorDataSource({ projection: cartoMap.projection });
         const point = new Point({
-            focusPos,
+            position: focusPos,
             styleBuilder: {
-                size: 17,
-                color: 'red'
+                size: 10,
+                color: primaryColor
             }
         });
         localVectorDataSource.add(point);
-        const localVectorLayer = new VectorLayer({ visibleZoomRange: [0, 24], dataSource: localVectorDataSource });
+        const localVectorLayer = new VectorLayer({  dataSource: localVectorDataSource });
         cartoMap.addLayer(localVectorLayer);
-        console.log('onMapready2', focusPos);
         // always add it at 1 to respect local order
         cartoMap.setFocusPos(focusPos);
     }
 </script>
 
-<cartomap bind:this={cartoMap} zoom="10" on:mapReady={onMapReady} isUserInteractionEnabled="false" />
+<cartomap zoom="10" on:mapReady={onMapReady} isUserInteractionEnabled="false" />

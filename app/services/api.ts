@@ -469,6 +469,16 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     result.currently && (result.currently.time *= 1000);
     result.daily.data.forEach(d => {
         d.time = d.time * 1000;
+        const color = colorForIcon(d.icon);
+        let alpha = 1;
+        if (/rain|snow/.test(d.icon)) {
+            alpha = d.precipProbability;
+        } else if (/cloudy/.test(d.icon)) {
+            alpha = d.cloudCover;
+        }
+        d.color = Color(color)
+            .setAlpha(alpha)
+            .toRgbString();
         d.sunriseTime = d.sunriseTime * 1000;
         d.sunsetTime = d.sunsetTime * 1000;
         d.windIcon = windIcon(d.windBearing);
@@ -478,7 +488,7 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     //     result.daily.data[0].minutly = result.minutly;
     // }
     let dailyIndex = 0;
-    let currentDateData = result.daily.data[dailyIndex] as any;
+    const currentDateData = result.daily.data[dailyIndex] as any;
     if (result.hourly) {
         currentDateData.hourlyData = {
             icon: result.hourly.icon,
@@ -504,7 +514,7 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         // console.log('handling hourly', i,dailyIndex, convertTime(h.time, 'dddd  HH:mm'),convertTime(dayEnd, 'dddd'),convertTime(dateStart, 'dddd'), dateStart.isBefore(dayEnd));
         if (!dateStart.isBefore(dayEnd)) {
             dailyIndex++;
-            currentDateData = result.daily.data[dailyIndex];
+            // currentDateData = result.daily.data[dailyIndex];
             dayEnd = dayjs(currentDateData.time).endOf('d');
         }
         h.index = currentDateData.hourly.length;

@@ -13,14 +13,14 @@ registerNativeViewElement('label', () => require('nativescript-htmllabel').Label
 registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
 registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
 registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
-registerNativeViewElement('lottie', () => require('nativescript-lottie').LottieView);
+registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
 
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
 // registerElement('collectionview', () => new CollectionViewElement());
 
-import { addCategories, enable } from 'tns-core-modules/trace';
-addCategories(DomTraceCategory);
+// import { addCategories, enable } from 'tns-core-modules/trace';
+// addCategories(DomTraceCategory);
 // enable();
 
 // import { ScrollView } from '@nativescript/core/ui/scroll-view';
@@ -38,11 +38,12 @@ addCategories(DomTraceCategory);
 
 startSentry();
 
-
 import Theme from '@nativescript/theme';
 Theme.setMode(Theme.Dark); // Or Theme.Light
 if (gVars.isAndroid) {
-    androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+    (function() {
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+    })();
 }
 import { installMixins, themer } from 'nativescript-material-core';
 installMixins();

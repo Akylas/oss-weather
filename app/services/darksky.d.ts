@@ -78,6 +78,7 @@ export interface DailyData {
     windGustTime: number;
     windBearing: number;
     windIcon?: string;
+    color?: string;
     cloudCover: number;
     uvIndex: number;
     uvIndexTime: number;

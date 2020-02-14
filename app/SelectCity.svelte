@@ -1,3 +1,5 @@
+
+
 <script>
     /// <reference path="../references.d.ts" />
 
@@ -30,7 +32,8 @@
     // let cityId = getNumber('cityId', -1);
 
     function focus() {
-        // textField.requestFocus();
+        console.log('focus', !!textField)
+        textField && textField.nativeView.requestFocus();
     }
     function unfocus() {
         if (searchAsTypeTimer) {
@@ -96,9 +99,9 @@
         }
     }
 
-    onMount(() => {
-        focus();
-    });
+    // onMount(() => {
+    //     focus();
+    // });
 </script>
 
 <page class="page" actionBarHidden="true" statusBarStyle="dark" navigationBarColor="black" statusBarColor="#424242" backgroundColor="#424242">
@@ -106,7 +109,7 @@
         <CActionBar title={l('search_city')} modalWindow={true}>
             <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
-        <textfield row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} />
+        <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus}/>
         <collectionview row="2" rowHeight="110" items={searchResults}>
             <Template let:item>
                 <gridLayout rippleColor="white" on:tap={() => closeModal(item)} height="200" columns="130,*" padding="10">

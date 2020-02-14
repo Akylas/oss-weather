@@ -5,6 +5,7 @@
         "moduleResolution": "node",
         "removeComments": false,
         "sourceMap": true,
+        "skipLibCheck": true,
         "importHelpers": true,
         "noEmitHelpers": true,
         "noEmitOnError": true,

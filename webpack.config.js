@@ -174,9 +174,9 @@ module.exports = (env, params = {}) => {
 
     const weatherIcons = JSON.parse(
         `{${[
-            ...readFileSync(resolve(projectRoot, 'node_modules/weather-icons/weather-icons/variables.less'))
+            ...(readFileSync(resolve(projectRoot, 'node_modules/weather-icons/weather-icons/variables.less'))
                 .toString()
-                .matchAll(/@(.*)\s*:\s*"\\(.*?)"/g)
+                .match(/@(.*)\s*:\s*"\\(.*?)"/g))
         ]
             .map(r => `"${r[1]}": "${r[2]}"`)
             .join(',')}}`
@@ -474,6 +474,8 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             new webpack.DefinePlugin(defines),
             // Remove all files from the out dir.
             new CleanWebpackPlugin({
+                dangerouslyAllowCleanPatternsOutsideProject: true,
+                dry: false,
                 verbose: !!verbose,
                 cleanOnceBeforeBuildPatterns: itemsToClean
             }),

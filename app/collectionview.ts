@@ -3,6 +3,7 @@ import { View } from '@nativescript/core/ui/core/view';
 import { NativeViewElementNode, TemplateElement, ViewNode, createElement, logger, registerElement } from 'svelte-native/dom';
 import { flush } from 'svelte/internal';
 import { CollectionView } from 'nativescript-collectionview';
+import { profile } from '@nativescript/core/profiling';
 
 class SvelteKeyedTemplate {
     _key: string;
@@ -25,12 +26,12 @@ class SvelteKeyedTemplate {
 
         const nativeEl = wrapper.nativeView;
 
-        (nativeEl as any).__SvelteComponentBuilder__ = props => {
+        (nativeEl as any).__SvelteComponentBuilder__ = profile('__SvelteComponentBuilder__', props => {
             (nativeEl as any).__SvelteComponent__ = new this.component({
                 target: wrapper,
                 props
             });
-        };
+        });
         return nativeEl;
     }
 }
@@ -81,7 +82,7 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
 
         const templateEl = this.childNodes.find(n => n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType) as any;
         if (!templateEl) return null;
-        return templateEl.component as typeof SvelteComponent;
+        return templateEl.component;
     }
 
     onInsertedChild(childNode: ViewNode, index: number) {
@@ -105,12 +106,11 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
     private updateListItem(args: ItemEventData & { bindingContext }) {
         const _view = args.view as any;
         const props = { item: args.bindingContext };
-        const componentInstance: SvelteComponent = _view.__SvelteComponent__;
+        const componentInstance = _view.__SvelteComponent__;
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
                 _view.__SvelteComponentBuilder__(props);
                 _view.__SvelteComponentBuilder__ = null;
-                return;
             }
         } else {
             // console.log('updateListItem', args.index, props.item);

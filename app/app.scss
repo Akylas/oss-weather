@@ -16,21 +16,21 @@ htmllabel,
 label {
     // background-color: rgba(255, 0,0,0.2);
     color: $text-color;
-    white-space: normal;
+    // white-space: normal;
 }
 mdtextfield {
     color: $text-color;
     placeholder-color: $text-color;
 }
 
-label,
-htmllabel,
-button,
-tabview,
-tabviewitem,
-mdbutton {
-    @extend .lato;
-}
+// label,
+// htmllabel,
+// button,
+// tabview,
+// tabviewitem,
+// mdbutton {
+//     @extend .lato;
+// }
 
 .actionBar {
     z-index: 0;

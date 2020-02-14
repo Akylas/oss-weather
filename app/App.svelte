@@ -37,6 +37,7 @@
     import HourlyView from './HourlyView.svelte';
     // @ts-ignore
     import SelectCity from './SelectCity.svelte';
+    import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
     // let gps;
@@ -46,7 +47,12 @@
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
     // let dayIndex = 0;
-    let weatherLocation = JSON.parse(getString('weatherLocation', '{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}'));
+    let weatherLocation = JSON.parse(
+        getString(
+            'weatherLocation',
+            '{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}'
+        )
+    );
     let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
     // let currentWeather;
     // let chartInitialized = false;
@@ -62,7 +68,7 @@
 
     async function refreshWeather() {
         if (!networkService.connected) {
-            showSnack({ message: l('no_network') }); 
+            showSnack({ message: l('no_network') });
         }
         loading = true;
         try {
@@ -126,7 +132,7 @@
                     .valueOf();
                 newItems.push(
                     Object.assign(d, {
-                        index:newItems.length,
+                        index: newItems.length,
                         scrollIndex: items.findIndex(h => h.time >= sunriseTime)
                     })
                 );
@@ -230,6 +236,17 @@
             showError(err);
         }
     }
+    async function searchOnMap() {
+        try {
+            const result = await showModal({ page: SelectLocationOnMap, animated: true, fullscreen: true, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+            clog('searchOnMap', result);
+            if (result) {
+                saveLocation(result);
+            }
+        } catch (err) {
+            showError(err);
+        }
+    }
 
     // async function getLocationAndWeather() {
     //     const result = await confirm;
@@ -272,12 +289,11 @@
             // } else {
             // getLocationAndWeather();
         } else {
-
         }
     }
 
     function itemTemplateSelector(item, index, items) {
-        return index === 0 ? 'topView' : (index === 1 ? 'info' : 'daily');
+        return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
     }
 
     function onDailyLongPress(item) {
@@ -291,7 +307,7 @@
 
     onMount(() => {
         networkService.on('connection', event => {
-            if (event.connected && !lastUpdate || Date.now() - lastUpdate > 10 * 60 * 1000) {
+            if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }
         });
@@ -310,6 +326,7 @@
         <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2" backgroundColor="black">
             <button variant="flat" class="icon-btn" text="mdi-refresh" on:tap={refresh} />
             <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
+            <button variant="flat" class="icon-btn" text="mdi-map" on:tap={searchOnMap} />
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" />
         </CActionBar>
         <collectionview row="1" {items} {itemTemplateSelector}>
@@ -323,7 +340,7 @@
                 </stacklayout>
             </Template>
             <Template key="daily" let:item>
-                <DailyView {item} on:longPress={()=>onDailyLongPress(item)}/>
+                <DailyView {item} on:longPress={() => onDailyLongPress(item)} />
             </Template>
         </collectionview>
         <!-- </gridLayout> -->

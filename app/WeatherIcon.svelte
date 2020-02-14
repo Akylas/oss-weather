@@ -131,9 +131,10 @@
     // }
 </script>
 
-<gridLayout {...$$props} horizontalAlignment="center"  width={fontSize} height={fontSize}>
-    <lottie width={fontSize} height={fontSize} src={iconSrc} loop="true" {autoPlay}/>
+<!-- <gridLayout {...$$props} horizontalAlignment="center"  width={fontSize} height={fontSize}> -->
+    <lottie {...$$props} width={fontSize} height={fontSize} src="~/assets/lottie/{iconSrc}" loop="true" {autoPlay}/>
      <!-- <label fontSize={fontSize} class="forecastfont" text={backIcon} color={backColor}  /> -->
     <!-- <label {fontSize} class="forecastfont" text={middleIcon} color={middleColor} /> -->
     <!-- <label {fontSize} class="forecastfont" text={frontIcon} color={frontColor}  /> -->
-</gridLayout>
+<!-- </gridLayout> -->
+ 

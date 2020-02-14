@@ -120,7 +120,7 @@ module.exports = (env, params = {}) => {
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'src', 'main', 'assets', 'snapshots')}`);
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'build', 'configurations', 'nativescript-android-snapshot')}`);
     }
-
+    console.log('itemsToClean', itemsToClean);
     // const babelLoader = {
     //     loader: 'babel-loader',
     //     options: mergeOptions.call(
@@ -276,8 +276,8 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                     collapse_vars: platform !== 'android',
                                     sequences: platform !== 'android',
                                     passes: 2
-                                }
-                                // keep_fnames: true
+                                },
+                                keep_fnames: true
                             }
                         },
                         params.terserOptions || {}
@@ -436,7 +436,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     exclude: /node_modules/,
                     use: [
                         {
-                            loader: 'svelte-loader',
+                            loader: 'svelte-loader-hot',
                             options: {
                                 preprocess: require('svelte-preprocess')(
                                     Object.assign(
@@ -635,7 +635,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 useTypescriptIncrementalApi: true,
                 checkSyntacticErrors: true,
                 memoryLimit: 4096,
-                workers: 2
+                workers: 1
             })
         );
     }

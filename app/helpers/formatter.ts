@@ -163,8 +163,14 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
     }
 }
 
-export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; otherParam? }) {
-    let result = convertValueToUnit(value, unit, options ? options.otherParam : undefined).join(' ');
+export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; otherParam?; join?: string }) {
+    options = options || {};
+    if (unit === UNITS.Celcius) {
+        options.join = options.join || '';
+    } else {
+        options.join = options.join || ' ';
+    }
+    let result = convertValueToUnit(value, unit, options?.otherParam).join(options?.join);
     if (options && options.prefix && result.length > 0) {
         result = options.prefix + result;
     }
@@ -190,14 +196,27 @@ export function colorFromTempC(tempC) {
     const h = h0 * (1 - a) + h1 * a;
     return Color('hsl(' + [h, '75%', '40%'] + ')').toHexString();
 }
+export function colorForUV(uvIndex) {
+    if (uvIndex >= 11) {
+        return '#B567A4';
+    } else if (uvIndex >= 8) {
+        return '#E53210';
+    } else if (uvIndex >= 6) {
+        return '#F18B00';
+    } else if (uvIndex >= 3) {
+        return '#FFF300';
+    } else {
+        return '#3EA72D';
+    }
+}
 
-export function colorForIcon(icon) {
-    const sunnyColor = '#ffa500';
+export function colorForIcon(icon, time, sunrise, sunset) {
+    const sunnyColor = '#FFC82F';
     const nightColor = '#6B4985';
     const scatteredCloudyColor = '#cccccc';
     const cloudyColor = '#929292';
-    const rainColor = 'rgb(70, 129, 195)';
-    const snowColor = 'rgb(133, 216, 247)';
+    const rainColor = '#4681C3';
+    const snowColor = '#ACE8FF';
     // console.log('colorForIcon', icon);
     switch (icon) {
         case 'clear-night':
@@ -212,9 +231,53 @@ export function colorForIcon(icon) {
         case 'partly-cloudy':
             return scatteredCloudyColor;
         case 'cloudy':
-        case 'foggy':
+        case 'fog':
             return cloudyColor;
         case 'rain':
             return rainColor;
+        case 'snow':
+            return snowColor;
+        default:
+            if (time > sunset || time < sunrise) {
+                return nightColor;
+            } else {
+                return sunnyColor;
+            }
     }
+}
+
+const moonIcons = [
+    'wi-moon-new',
+    'wi-moon-waxing-crescent-1',
+    'wi-moon-waxing-crescent-2',
+    'wi-moon-waxing-crescent-3',
+    'wi-moon-waxing-crescent-4',
+    'wi-moon-waxing-crescent-5',
+    'wi-moon-waxing-crescent-6',
+    'wi-moon-first-quarter',
+    'wi-moon-waxing-gibbous-1',
+    'wi-moon-waxing-gibbous-2',
+    'wi-moon-waxing-gibbous-3',
+    'wi-moon-waxing-gibbous-4',
+    'wi-moon-waxing-gibbous-5',
+    'wi-moon-waxing-gibbous-6',
+    'wi-moon-full',
+    'wi-moon-waning-gibbous-1',
+    'wi-moon-waning-gibbous-2',
+    'wi-moon-waning-gibbous-3',
+    'wi-moon-waning-gibbous-4',
+    'wi-moon-waning-gibbous-5',
+    'wi-moon-waning-gibbous-6',
+    'wi-moon-3rd-quarter',
+    'wi-moon-waning-crescent-1',
+    'wi-moon-waning-crescent-2',
+    'wi-moon-waning-crescent-3',
+    'wi-moon-waning-crescent-4',
+    'wi-moon-waning-crescent-5',
+    'wi-moon-waning-crescent-6',
+    'wi-moon-new'
+];
+
+export function moonIcon(moonPhase) {
+    return moonIcons[Math.floor(moonPhase * (moonIcons.length - 1))];
 }

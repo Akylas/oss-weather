@@ -5,21 +5,10 @@
     import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
     import { mdiFontFamily, wiFontFamily } from '~/variables';
     export let item;
-
     let textHtml;
-
-    export function colorForItem(item) {
-        const color = colorForIcon(item.icon);
-        if (item.icon === 'rain' || item.icon === 'snow') {
-            return;
-        }
-        return colorForIcon(item.icon);
-    }
-
     $: {
         textHtml = `<big><font color="${colorFromTempC(item.temperature)}">${formatValueToUnit(item.temperature, UNITS.Celcius)}</font></big><br>
-        <font face="${wiFontFamily}">${item.windIcon}</font>
-        ${formatValueToUnit(item.windSpeed, UNITS.Speed)}<br>
+        ${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}<br>
         ${item.summary}`;
     }
 </script>
@@ -33,12 +22,13 @@
     </label> -->
     <!-- <label row="2" fontSize="12" paddingTop="5" horizontalAlignment="center" textAlignment="center" html={textHtml}/> -->
 
-    <label row="2" fontSize="12" textAlignment="center" html={textHtml}>
-        <!-- <span fontSize="16" text={formatValueToUnit(item.temperature, UNITS.Celcius) + '\n'} color={colorFromTempC(item.temperature)} />
+    <label row="2" fontSize="12" textAlignment="center" html={textHtml}/>
+    <!-- <label row="2" fontSize="12" textAlignment="center">
+        <span fontSize="16" text={formatValueToUnit(item.temperature, UNITS.Celcius) + '\n'} color={colorFromTempC(item.temperature)} />
         <span fontFamily={wiFontFamily} fontSize="18" text={item.windIcon} />
         <span text=" {formatValueToUnit(item.windSpeed, UNITS.Speed) + '\n'}" />
-        <span fontSize="10" text={item.summary} /> -->
-    </label>
+        <span fontSize="10" text={item.summary} />
+    </label> -->
     <!-- <stackLayout orientation="horizontal" paddingTop="5" horizontalAlignment="center">
         <label fontSize="14" ios:padding="0 -7 0 -7" class="mdi" text="mdi-navigation" verticalAlignment="center" rotate={item.windBearing + 180} />
         <label fontSize="12" text={formatValueToUnit(item.windSpeed, UNITS.Speed)} verticalAlignment="center" />

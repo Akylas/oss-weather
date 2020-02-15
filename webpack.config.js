@@ -174,13 +174,14 @@ module.exports = (env, params = {}) => {
 
     const weatherIcons = JSON.parse(
         `{${[
-            ...(readFileSync(resolve(projectRoot, 'node_modules/weather-icons/weather-icons/variables.less'))
+            ...readFileSync(resolve(projectRoot, 'node_modules/weather-icons/weather-icons/variables.less'))
                 .toString()
-                .match(/@(.*)\s*:\s*"\\(.*?)"/g))
+                .matchAll(/@(.*?)\s*:\s*"\\(.*?)"/g)
         ]
             .map(r => `"${r[1]}": "${r[2]}"`)
             .join(',')}}`
     );
+    // console.log('weatherIcons', weatherIcons);
 
     const scssPrepend = `$lato-fontFamily: ${platform === 'android' ? 'res/lato' : 'Lato'};
 $forecastfont-fontFamily: ${platform === 'android' ? 'iconvault_forecastfont' : 'iconvault'};

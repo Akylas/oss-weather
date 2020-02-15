@@ -95,7 +95,6 @@ lane :sentry_upload_sourcemaps do |params|
       puts "uploading source file:"  + filePath
       sentry_upload_file(
         version: version,
-        # app_identifier: 'com.microoled.activelook.mobile', # pass in the bundle_identifer of your app
         dist: sentryDist, # optional distribution of the release usually the buildnumber
         file:filePath,
         file_url: sentry_prefix + f
@@ -107,7 +106,6 @@ lane :sentry_upload_sourcemaps do |params|
         sentry_upload_sourcemap(
           rewrite:true,
           version: version,
-          # app_identifier: 'com.microoled.activelook.mobile', # pass in the bundle_identifer of your app
           dist: sentryDist, # optional distribution of the release usually the buildnumber
           url_prefix:sentry_prefix,
           sourcemap: sourceMapFilePath
@@ -135,6 +133,15 @@ end
 
 platform :ios do
 
+  desc 'Register device'
+  lane :registerDevice do
+    register_devices(
+      devices: {
+        "Martin Guillon's iPhone" => "f911ed373b7926e57111c8e5b1352d3c1c4f9667"
+      }
+    ) 
+  end
+
   desc 'Upload Dsyms to Sentry'
   lane :sentry_upload do 
     sentry_upload_dsym
@@ -143,11 +150,11 @@ platform :ios do
     upload_to_testflight(
         changelog:params[:changelog],
         beta_app_feedback_email: "martin.guillon@akylas.fr",
-        beta_app_description: "Mobile application for your ActiveLook Glasses",
+        beta_app_description: "Application to get the Weather from Dark Sky",
         demo_account_required: false,
         distribute_external: true,
         groups: [params[:flavor]],
-        team_name:"Microoled",
+        team_name:"Akylas",
         notify_external_testers: true,
         beta_app_review_info: {
           contact_email: "martin.guillon@akylas.fr",
@@ -173,8 +180,8 @@ platform :ios do
       prepare(platform:'ios')
       build_ios_app(
         output_directory:"dist",
-        scheme: "ActiveLook",
-        workspace: './platforms/ios/ActiveLook.xcworkspace'
+        scheme: "nsforecastie",
+        workspace: './platforms/ios/nsforecastie.xcworkspace'
       )
   end
 
@@ -218,7 +225,7 @@ end
     write_changelog(version:params[:versionCode], changelog:params[:changelog]);
     upload_to_play_store(
       track: track,
-      package_name:'com.microoled.activelook.mobile',
+      package_name:'com.akylas.weather',
       track_promote_to: track,
       json_key: ENV["PLAYSTORE_JSON_KEY_DATA"],
       aab: './platforms/android/app/build/outputs/bundle/release/app-release.aab'

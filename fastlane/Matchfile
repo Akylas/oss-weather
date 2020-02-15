@@ -9,7 +9,7 @@ type "development" # The default type, can be: appstore, adhoc, enterprise or de
 # Remove the # in the beginning of the line to enable the other options
 
 
-app_identifier "org.nativescript.forecastie"
+app_identifier "com.akylas.weather"
 username "martin.guillon@akylas.fr"  # Your Apple Developer Portal username
 
 team_id('3UUB5NM43K')

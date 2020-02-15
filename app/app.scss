@@ -18,19 +18,20 @@ label {
     color: $text-color;
     // white-space: normal;
 }
+
 mdtextfield {
     color: $text-color;
     placeholder-color: $text-color;
 }
 
-// label,
-// htmllabel,
-// button,
-// tabview,
-// tabviewitem,
-// mdbutton {
-//     @extend .lato;
-// }
+label,
+htmllabel,
+button,
+tabview,
+tabviewitem,
+mdbutton {
+    @extend .lato;
+}
 
 .actionBar {
     z-index: 0;
@@ -51,8 +52,7 @@ mdtextfield {
 }
 
 .actionBarTitle {
-    @extend .lato;
-    vertical-text-alignment: center;
+    // @extend .lato;
     font-size: 18;
     font-weight: 500;
     color: white;

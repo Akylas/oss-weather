@@ -38,6 +38,7 @@
     // @ts-ignore
     import SelectCity from './SelectCity.svelte';
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
     // let gps;
@@ -282,11 +283,18 @@
     //     }
     // }
 
-    function refresh() {
+    let pullRefresh;
+
+    async function refresh(args) {
         clog('refresh', weatherLocation);
+        if (pullRefresh) {
+            pullRefresh.nativeView.refreshing = true;
+        }
         if (weatherLocation) {
-            refreshWeather();
-            // } else {
+            await refreshWeather();
+            if (pullRefresh) {
+                pullRefresh.nativeView.refreshing = false;
+            } // } else {
             // getLocationAndWeather();
         } else {
         }
@@ -324,25 +332,28 @@
     <gridLayout rows="auto,*" backgroundColor="black">
         <!-- <gridLayout rows="auto,*" columns="*,auto" padding="10" backgroundColor="#424242"> -->
         <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2" backgroundColor="black">
-            <button variant="flat" class="icon-btn" text="mdi-refresh" on:tap={refresh} />
+            <!-- <button variant="flat" class="icon-btn" text="mdi-refresh" on:tap={refresh} /> -->
             <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
-            <button variant="flat" class="icon-btn" text="mdi-map" on:tap={searchOnMap} />
+            <!-- <button variant="flat" class="icon-btn" text="mdi-map" on:tap={searchOnMap} /> -->
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" />
         </CActionBar>
-        <collectionview row="1" {items} {itemTemplateSelector}>
-            <Template key="topView" let:item>
-                <TopWeatherView {item} height={topHeight} />
-            </Template>
-            <Template key="info" let:item>
-                <stacklayout row="2" colSpan="2" borderRadius="4" backgroundColor="#222" orientation="horizontal" verticalAlignment="center" margin="10" padding="10" width="100%">
-                    <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.icon} autoPlay="true" />
-                    <label fontSize="18" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
-                </stacklayout>
-            </Template>
-            <Template key="daily" let:item>
-                <DailyView {item} on:longPress={() => onDailyLongPress(item)} />
-            </Template>
-        </collectionview>
+        <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
+            <collectionview {items} {itemTemplateSelector}>
+                <Template key="topView" let:item>
+                    <TopWeatherView {item} height={topHeight} />
+                </Template>
+                <Template key="info" let:item>
+                    <stacklayout row="2" colSpan="2" borderRadius="4" backgroundColor="#222" orientation="horizontal" verticalAlignment="center" margin="10" padding="10">
+                        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.icon} autoPlay="true" />
+                        <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
+                    </stacklayout>
+                </Template>
+                <Template key="daily" let:item>
+                    <DailyView {item} />
+                </Template>
+            </collectionview>
+        </pullrefresh>
+
         <!-- </gridLayout> -->
         <!-- <scrollview row="1">
             <gridlayout row="1" height={bottomHeight + (gVars.isAndroid ? 70 : 115)} rows="*,200,200">

@@ -1,6 +1,6 @@
 import { ItemEventData, ItemsSource } from '@nativescript/core/ui/list-view';
 import { View } from '@nativescript/core/ui/core/view';
-import { NativeViewElementNode, TemplateElement, ViewNode, createElement, logger, registerElement } from 'svelte-native/dom';
+import { NativeViewElementNode, TemplateElement, ViewNode, createElement, logger, registerElement } from 'svelte-native-akylas/dom';
 import { flush } from 'svelte/internal';
 import { CollectionView } from 'nativescript-collectionview';
 import { profile } from '@nativescript/core/profiling';
@@ -26,12 +26,17 @@ class SvelteKeyedTemplate {
 
         const nativeEl = wrapper.nativeView;
 
-        (nativeEl as any).__SvelteComponentBuilder__ = profile('__SvelteComponentBuilder__', props => {
-            (nativeEl as any).__SvelteComponent__ = new this.component({
-                target: wrapper,
-                props
-            });
-        });
+        // because of the way {N} works we cant use that wrapper as the target for the component
+        // it will trigger uncessary {N} component updates because the parent view is already attached
+
+        (nativeEl as any).__SvelteComponentBuilder__ = (parentView, props) => {
+            profile('__SvelteComponentBuilder__', () => {
+                (nativeEl as any).__SvelteComponent__ = new this.component({
+                    target: parentView,
+                    props
+                });
+            })();
+        };
         return nativeEl;
     }
 }
@@ -58,12 +63,13 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         const wrapper = createElement('StackLayout') as NativeViewElementNode<View>;
         const nativeEl = wrapper.nativeView;
 
-        const builder = (props: any) => {
+        const builder = (parentView, props: any) => {
             (nativeEl as any).__SvelteComponent__ = new componentClass({
-                target: wrapper,
+                target: parentView,
                 props
             });
         };
+        // in svelte we want to add the wrapper as a child of the collectionview ourselves
         (nativeEl as any).__SvelteComponentBuilder__ = builder;
         return nativeEl;
     }
@@ -107,10 +113,16 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         const _view = args.view as any;
         const props = { item: args.bindingContext };
         const componentInstance = _view.__SvelteComponent__;
+
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
-                _view.__SvelteComponentBuilder__(props);
+                const wrapper = createElement('ProxyViewContainer') as NativeViewElementNode<View>;
+                _view.__SvelteComponentBuilder__(wrapper, props);
                 _view.__SvelteComponentBuilder__ = null;
+                const nativeEl = wrapper.nativeView;
+                // if ((_view as any).dontAddToCollectionView) {
+                _view.addChild(nativeEl);
+                // }
             }
         } else {
             // console.log('updateListItem', args.index, props.item);

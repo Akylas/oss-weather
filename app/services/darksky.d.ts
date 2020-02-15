@@ -53,6 +53,7 @@ export interface DailyData {
     time: number;
     summary: string;
     icon: string;
+    hourlyData?;
     sunriseTime: number;
     sunsetTime: number;
     moonPhase: number;
@@ -78,7 +79,9 @@ export interface DailyData {
     windGustTime: number;
     windBearing: number;
     windIcon?: string;
+    moonIcon?: string;
     color?: string;
+    uvIndexColor?: string;
     cloudCover: number;
     uvIndex: number;
     uvIndexTime: number;
@@ -128,6 +131,7 @@ export interface Alert {
     title: string;
     regions: string[];
     severity: string;
+    alertColor?: string;
     time: number;
     expires: number;
     description: string;

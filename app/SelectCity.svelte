@@ -1,5 +1,3 @@
-
-
 <script>
     /// <reference path="../references.d.ts" />
 
@@ -32,7 +30,7 @@
     // let cityId = getNumber('cityId', -1);
 
     function focus() {
-        console.log('focus', !!textField)
+        console.log('focus', !!textField);
         textField && textField.nativeView.requestFocus();
     }
     function unfocus() {
@@ -79,7 +77,7 @@
         try {
             loading = true;
             searchResults = await photonSearch(query);
-            // console.log('searchResults', searchResults);
+            console.log('searchResults', JSON.stringify(searchResults.map(r => [r.name, r.sys.osm_key, r.sys.osm_value])));
             // let selectedCity;
             // if (cities.length > 0) {
             //     const resultAction = await action(l('select'), l('cancel'), cities.map(c => c.name));
@@ -99,20 +97,25 @@
         }
     }
 
+    function close(item) {
+        clearTimeout(searchAsTypeTimer);
+        closeModal(item);
+    }
+
     // onMount(() => {
     //     focus();
     // });
 </script>
 
-<page class="page" actionBarHidden="true" statusBarStyle="dark" navigationBarColor="black" statusBarColor="#424242" backgroundColor="#424242">
+<page class="page" actionBarHidden="true" statusBarStyle="dark" navigationBarColor="black" statusBarColor="black" backgroundColor="black">
     <gridLayout rows="auto,auto,*">
         <CActionBar title={l('search_city')} modalWindow={true}>
             <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
-        <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus}/>
+        <textfield bind:this={textField} backgroundColor="#424242" row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
         <collectionview row="2" rowHeight="110" items={searchResults}>
             <Template let:item>
-                <gridLayout rippleColor="white" on:tap={() => closeModal(item)} height="200" columns="130,*" padding="10">
+                <gridLayout rippleColor="white" on:tap={() => close(item)} height="200" columns="130,*" padding="10">
                     <MapView focusPos={item.coord} />
                     <label col="1" paddingLeft="10" fontSize="18" verticalAlignment="center" text={item.name} />
                     <!-- <label fontSize="14" verticalAlignment="center" text={JSON.stringify(item.coord)} /> -->

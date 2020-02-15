@@ -15,8 +15,19 @@
 
     export let focusPos;
 
+    let point;
+    let cartoMap;
+
+    $: {
+        if (cartoMap) {
+            point.position = focusPos;
+            // cartoMap.focusPos = focusPos;
+            cartoMap.setFocusPos(focusPos, 0);
+        }
+    }
+
     function onMapReady(event) {
-        const cartoMap = event.object;
+        cartoMap = event.object;
         const options = cartoMap.getOptions();
         options.setWatermarkScale(0);
         // options.setEnvelopeThreadPoolSize(2);
@@ -37,7 +48,7 @@
         cartoMap.addLayer(rasterLayer);
 
         const localVectorDataSource = new LocalVectorDataSource({ projection: cartoMap.projection });
-        const point = new Point({
+        point = new Point({
             position: focusPos,
             styleBuilder: {
                 size: 10,
@@ -45,10 +56,10 @@
             }
         });
         localVectorDataSource.add(point);
-        const localVectorLayer = new VectorLayer({  dataSource: localVectorDataSource });
+        const localVectorLayer = new VectorLayer({ dataSource: localVectorDataSource });
         cartoMap.addLayer(localVectorLayer);
         // always add it at 1 to respect local order
-        cartoMap.setFocusPos(focusPos);
+        cartoMap.setFocusPos(focusPos, 0);
     }
 </script>
 

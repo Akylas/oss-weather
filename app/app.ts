@@ -7,6 +7,9 @@ setMapPosKeys('lat', 'lon');
 import { installMixins as installUIMixins } from 'nativescript-systemui';
 installUIMixins();
 
+import { install as installBottomSheets } from 'nativescript-material-bottomsheet';
+installBottomSheets();
+
 registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField);
 registerNativeViewElement('button', () => require('nativescript-material-button').Button);
 registerNativeViewElement('label', () => require('nativescript-htmllabel').Label);
@@ -14,6 +17,7 @@ registerNativeViewElement('activityIndicator', () => require('nativescript-mater
 registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
 registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
 registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
+registerNativeViewElement('pullrefresh', () => require('@nstudio/nativescript-pulltorefresh').PullToRefresh);
 
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
@@ -79,5 +83,5 @@ if (gVars.isIOS) {
 // }
 
 import { svelteNative } from 'svelte-native';
-import App from './App.svelte';
-svelteNative(App, {});
+import WeatherPage from './WeatherPage.svelte';
+svelteNative(WeatherPage, {});

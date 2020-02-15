@@ -15,36 +15,41 @@
 
 
     let iconSrc;
+    let p
+    $:{
+        let {icon, autoPlay,...p2} = $$props
+        p = p2;
+    }
 
     $:{
         switch (icon) {
             case 'clear-day':
-                iconSrc = '4804-weather-sunny.json'
+                iconSrc = '4804-weather-sunny'
                 break;
             case 'clear-night':
-                iconSrc = '4799-weather-night.json'
+                iconSrc = '4799-weather-night'
                 break;
             case 'rain':
-                iconSrc = '4801-weather-partly-shower.json'
+                iconSrc = '4801-weather-partly-shower'
                 break;
             case 'snow':
             case 'sleet':
-                iconSrc = '4793-weather-snow.json'
+                iconSrc = '4793-weather-snow'
                 break;
             case 'wind':
-                iconSrc = '4806-weather-windy.json'
+                iconSrc = '4806-weather-windy'
                 break;
             case 'fog':
-                iconSrc = '4795-weather-mist.json'
+                iconSrc = '4795-weather-mist'
                 break;
             case 'cloudy':
-                iconSrc = '4791-foggy.json'
+                iconSrc = '4791-foggy'
                 break;
             case 'partly-cloudy-day':
-                iconSrc = '4800-weather-partly-cloudy.json'
+                iconSrc = '4800-weather-partly-cloudy'
                 break;
             case 'partly-cloudy-night':
-                iconSrc = '4796-weather-cloudynight.json'
+                iconSrc = '4796-weather-cloudynight'
                 break;
         }
     }
@@ -132,7 +137,7 @@
 </script>
 
 <!-- <gridLayout {...$$props} horizontalAlignment="center"  width={fontSize} height={fontSize}> -->
-    <lottie {...$$props} width={fontSize} height={fontSize} src="~/assets/lottie/{iconSrc}" loop="true" {autoPlay}/>
+    <lottie {...p} src="~/assets/lottie/{iconSrc}.json" width={fontSize} height={fontSize} loop="true" {autoPlay}/>
      <!-- <label fontSize={fontSize} class="forecastfont" text={backIcon} color={backColor}  /> -->
     <!-- <label {fontSize} class="forecastfont" text={middleIcon} color={middleColor} /> -->
     <!-- <label {fontSize} class="forecastfont" text={frontIcon} color={frontColor}  /> -->

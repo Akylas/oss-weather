@@ -1,20 +1,17 @@
-import * as http from '@nativescript/core/http';
-import { CustomError } from '~/utils/error';
-import { device } from '@nativescript/core/platform';
 import { getString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
-
 import { EventData, Observable } from '@nativescript/core/data/observable';
-import { clog } from '~/utils/logging';
-import { IMapPos } from '~/helpers/geo';
-import { CityWeather, Coord, ListWeather } from './owm';
+import * as http from '@nativescript/core/http';
 import dayjs from 'dayjs';
-// const { getSunrise, getSunset } = require('sunrise-sunset-js');
-import { UNITS, colorForIcon, colorFromTempC, convertTime, formatValueToUnit, kelvinToCelsius, lang, titlecase } from '~/helpers/formatter';
-import { Photon } from './photon';
-import { DarkSky } from './darksky';
-
 import Color from 'tinycolor2';
+// const { getSunrise, getSunset } = require('sunrise-sunset-js');
+import { colorForIcon, colorForUV, lang, moonIcon } from '~/helpers/formatter';
+import { IMapPos } from '~/helpers/geo';
+import { CustomError } from '~/utils/error';
+import { clog } from '~/utils/logging';
+import { DarkSky } from './darksky';
+import { CityWeather, Coord } from './owm';
+import { Photon } from './photon';
 
 const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 
@@ -450,9 +447,9 @@ export async function getCityName(pos: Coord) {
 //     });
 //     return results;
 // }
-const cardinals = ['wi-wind-north', 'wi-wind-north-east', 'wi-wind-east', 'wi-wind-south-east', 'wi-wind-south', 'wi-wind-south', 'wi-wind-west', 'wi-wind-north-west', 'wi-wind-north'];
+const cardinals = ['↓', '↙︎', '←', '↖︎', '↑', '↗︎', '→', '↘︎', '↓'];
 function windIcon(degrees) {
-    return cardinals[Math.round(((degrees + 180) % 360) / 45)];
+    return cardinals[Math.round((degrees % 360) / 45)];
 }
 export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     const result = await request<DarkSky>({
@@ -469,7 +466,7 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     result.currently && (result.currently.time *= 1000);
     result.daily.data.forEach(d => {
         d.time = d.time * 1000;
-        const color = colorForIcon(d.icon);
+        const color = colorForIcon(d.icon, d.time, d.sunriseTime, d.sunsetTime);
         let alpha = 1;
         if (/rain|snow/.test(d.icon)) {
             alpha = d.precipProbability;
@@ -479,16 +476,36 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         d.color = Color(color)
             .setAlpha(alpha)
             .toRgbString();
+        d.uvIndexColor = colorForUV(d.uvIndex);
+        d.moonIcon = moonIcon(d.moonPhase);
         d.sunriseTime = d.sunriseTime * 1000;
         d.sunsetTime = d.sunsetTime * 1000;
         d.windIcon = windIcon(d.windBearing);
         d.hourly = [];
     });
+    console.log('minutely', result.minutly);
+    if (result.alerts) {
+        result.alerts.forEach(a => {
+            const severity = a.severity;
+            switch (severity) {
+                case 'advisory':
+                    a.alertColor = '#33d860';
+                    break;
+                case 'watch':
+                    a.alertColor = '#ffe13c';
+                    break;
+                case 'warning':
+                    a.alertColor = '#ff4f3c';
+                    break;
+            }
+        });
+    }
     // if (result.minutly) {
     //     result.daily.data[0].minutly = result.minutly;
     // }
     let dailyIndex = 0;
-    const currentDateData = result.daily.data[dailyIndex] as any;
+    const firstDay = result.daily.data[0];
+    let currentDateData = result.daily.data[dailyIndex];
     if (result.hourly) {
         currentDateData.hourlyData = {
             icon: result.hourly.icon,
@@ -500,7 +517,14 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     result.hourly.data.forEach((h, i) => {
         h.time = h.time * 1000;
         h.windIcon = windIcon(h.windBearing);
-        const color = colorForIcon(h.icon);
+        const dateStart = dayjs(h.time).startOf('d');
+        if (!dateStart.isBefore(dayEnd)) {
+            dailyIndex++;
+            currentDateData = result.daily.data[dailyIndex];
+            dayEnd = dayjs(currentDateData.time).endOf('d');
+        }
+
+        const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
         let alpha = 1;
         if (/rain|snow/.test(h.icon)) {
             alpha = h.precipProbability;
@@ -510,21 +534,19 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         h.color = Color(color)
             .setAlpha(alpha)
             .toRgbString();
-        const dateStart = dayjs(h.time).startOf('d');
         // console.log('handling hourly', i,dailyIndex, convertTime(h.time, 'dddd  HH:mm'),convertTime(dayEnd, 'dddd'),convertTime(dateStart, 'dddd'), dateStart.isBefore(dayEnd));
-        if (!dateStart.isBefore(dayEnd)) {
-            dailyIndex++;
-            // currentDateData = result.daily.data[dailyIndex];
-            dayEnd = dayjs(currentDateData.time).endOf('d');
-        }
+
         h.index = currentDateData.hourly.length;
-        currentDateData.hourly.push(h);
+        firstDay.hourly.push(h);
     });
     delete result.hourly;
     return result;
 }
 
 export const defaultDarkSky = null as DarkSky;
+
+const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
+const supportedOSMValues = ['winter_sports'];
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
     return request({
         url: 'http://photon.komoot.de/api',
@@ -537,14 +559,12 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
             limit: 40
         }
     }).then(function(results: Photon) {
-        return (
-            results.features
-                // .filter(r => r.properties.osm_key === 'place' || r.properties.osm_key === 'natural')
-                .map(f => ({
-                    name: f.properties.name,
-                    sys: f.properties,
-                    coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
-                }))
-        );
+        return results.features
+            .filter(r => supportedOSMKeys.indexOf(r.properties.osm_key) !== -1 || supportedOSMValues.indexOf(r.properties.osm_value) !== -1)
+            .map(f => ({
+                name: f.properties.name,
+                sys: f.properties,
+                coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
+            }));
     });
 }

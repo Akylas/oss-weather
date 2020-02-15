@@ -11,7 +11,7 @@
     "scripts": {
         "run.android.production": "cross-var tns run android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASS --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_PASS --env.adhoc  --env.snapshot --env.compileSnapshot --aab",
         "pandroid": "cross-var tns build android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASS --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_PASS --env.adhoc --env.snapshot --env.compileSnapshot --aab",
-        "pios": "tns build ios --bundle --release --env.uglify --for-device --provision 'Akylas Weather'"
+        "pios": "tns run ios --release --env.adhoc --env.snapshot --env.compileSnapshot --for-device --provision 'match AppStore com.akylas.weather'"
     },
     "description": "NativeScript Application",
     "license": "SEE LICENSE IN <your-license-filename>",
@@ -20,8 +20,10 @@
         "@mdi/font": "4.9.95",
         "@nativescript/core": "6.4.0",
         "@nativescript/theme": "2.3.0",
+        "@nstudio/nativescript-pulltorefresh": "^1.1.1",
         "dayjs": "1.8.20",
         "make-error": "^1.3.5",
+        "nativescript-akylas-lottie": "^4.0.4",
         "nativescript-akylas-sentry": "^0.0.5",
         "nativescript-canvas": "^2.1.24",
         "nativescript-carto": "^1.2.37",
@@ -29,9 +31,8 @@
         "nativescript-collectionview": "2.0.4",
         "nativescript-extendedinfo": "~1.0.7",
         "nativescript-gps": "^2.0.14",
-        "nativescript-htmllabel": "1.0.17",
+        "nativescript-htmllabel": "1.0.18",
         "nativescript-localize": "~4.2.0",
-        "nativescript-akylas-lottie": "^4.0.3",
         "nativescript-material-activityindicator": "3.1.5",
         "nativescript-material-bottomsheet": "3.1.5",
         "nativescript-material-button": "3.1.5",

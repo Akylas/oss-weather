@@ -215,7 +215,13 @@ lane :write_changelog do |params|
   system 'mkdir', '-p', metadata_dir
   File.write("#{metadata_dir}/#{version}.txt", changelog)
   # Create a new branch and upload a PR for it.
-  sh("git add #{metadata_dir}; git commit -m '#{version} release notes'")
+  sh("git add #{metadata_dir}")
+  repo_status = Actions.sh("git status --porcelain -uno")
+  repo_clean = repo_status.empty?
+  if repo_clean
+  else
+    sh("git commit -m '#{version} release notes'")
+  end
 end
   lane :upload_store   do |params| 
     track = params[:flavor]

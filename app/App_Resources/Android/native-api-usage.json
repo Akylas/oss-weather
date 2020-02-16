@@ -1,5 +1,17 @@
 {
     "whitelist-plugins-usages": true,
-    "whitelist": [],
+    "whitelist": [
+        "com.carto*:*",
+        "io.sentry*:*",
+        "android.support.v4*:*",
+        "com.nativescript.collectionview*:*",
+        "androidx.recyclerview*:*",
+        "com.h6ah4i.android.widget.advrecyclerview.animator:RefactoredDefaultItemAnimator",
+        "com.nativescript.label*:*",
+        "com.akylas.canvas*:*",
+        "androidx.swiperefreshlayout.widget*:*",
+        "com.swmansion.gesturehandler*:*",
+        "com.airbnb.lottie*:*"
+    ],
     "blacklist": []
 }

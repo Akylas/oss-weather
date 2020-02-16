@@ -219,15 +219,15 @@ lane :write_changelog do |params|
 end
   lane :upload_store   do |params| 
     track = params[:flavor]
-    if (track == 'beta') 
-      track = 'internal'
-    end
+    # if (track == 'beta') 
+    #   track = 'internal'
+    # end
     write_changelog(version:params[:versionCode], changelog:params[:changelog]);
     upload_to_play_store(
       track: track,
       package_name:'com.akylas.weather',
       track_promote_to: track,
-      json_key: ENV["PLAYSTORE_JSON_KEY_DATA"],
+      json_key_data: ENV["PLAYSTORE_JSON_KEY_DATA"],
       aab: './platforms/android/app/build/outputs/bundle/release/app-release.aab'
     )
   end

@@ -9,8 +9,8 @@
         }
     },
     "scripts": {
-        "run.android.production": "cross-var tns run android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASS --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_PASS --env.adhoc  --env.snapshot --env.compileSnapshot --aab",
-        "pandroid": "cross-var tns build android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASS --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_PASS --env.adhoc --env.snapshot --env.compileSnapshot --aab",
+        "run.android.production": "cross-var tns run android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASSWORD --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_ALIAS_PASSWORD --env.adhoc  --env.snapshot --env.compileSnapshot --aab",
+        "pandroid": "cross-var tns build android --release --keyStorePath $KEYSTORE_PATH --keyStorePassword $KEYSTORE_PASSWORD --keyStoreAlias $KEYSTORE_ALIAS --keyStoreAliasPassword $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.snapshot --env.compileSnapshot --aab",
         "pios": "tns run ios --release --env.adhoc --env.snapshot --env.compileSnapshot --for-device --provision 'match AppStore com.akylas.weather'"
     },
     "description": "NativeScript Application",

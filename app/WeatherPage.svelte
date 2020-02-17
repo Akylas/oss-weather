@@ -17,7 +17,7 @@
     import { localize as l } from '~/helpers/formatter';
     import { GenericGeoLocation, GPS, LocationMonitor, Options as GeolocationOptions, setGeoLocationKeys, setMockEnabled } from 'nativescript-gps';
     import { request as requestPerm, Status as PermStatus, setDebug as setPermsDebug } from 'nativescript-perms';
-    import { actionBarHeight, darkColor, primaryColor } from '~/variables';
+    import { actionBarHeight, darkColor, navigationBarHeight, primaryColor, statusBarHeight } from '~/variables';
     import { colorFromTempC, UNITS } from '~/helpers/formatter';
 
     import LineChart from 'nativescript-chart/charts/LineChart';
@@ -60,11 +60,7 @@
     // let chartSet;
     // let scrollIndex;
 
-    let topHeight = screenHeightDips - actionBarHeight - 22;
-    if (gVars.isAndroid) {
-        topHeight -= 50;
-    }
-
+    let topHeight = screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight;
     let items;
 
     async function refreshWeather() {

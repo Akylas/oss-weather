@@ -248,12 +248,12 @@ export function colorForIcon(icon, time, sunrise, sunset) {
 
 const moonIcons = [
     'wi-moon-new',
-    'wi-moon-waxing-crescent-1',
-    'wi-moon-waxing-crescent-2',
-    'wi-moon-waxing-crescent-3',
-    'wi-moon-waxing-crescent-4',
-    'wi-moon-waxing-crescent-5',
-    'wi-moon-waxing-crescent-6',
+    'wi-moon-waxing-cresent-1',
+    'wi-moon-waxing-cresent-2',
+    'wi-moon-waxing-cresent-3',
+    'wi-moon-waxing-cresent-4',
+    'wi-moon-waxing-cresent-5',
+    'wi-moon-waxing-cresent-6',
     'wi-moon-first-quarter',
     'wi-moon-waxing-gibbous-1',
     'wi-moon-waxing-gibbous-2',

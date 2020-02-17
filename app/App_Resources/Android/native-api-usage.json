@@ -2,13 +2,18 @@
     "whitelist-plugins-usages": true,
     "whitelist": [
         "com.carto*:*",
+        "com.akylas.carto.additions*:*",
         "io.sentry*:*",
         "android.support.v4*:*",
         "com.nativescript.collectionview*:*",
         "androidx.recyclerview*:*",
         "com.h6ah4i.android.widget.advrecyclerview.animator:RefactoredDefaultItemAnimator",
         "com.nativescript.label*:*",
+        "com.lsjwzh.widget.text:FastTextView",
         "com.akylas.canvas*:*",
+        "com.google.android.material.shape:MaterialShapeDrawable",
+        "com.google.android.material.textfield:TextInputEditText",
+        "com.google.android.material.textfield:TextInputLayout",
         "androidx.swiperefreshlayout.widget*:*",
         "com.swmansion.gesturehandler*:*",
         "com.airbnb.lottie*:*"

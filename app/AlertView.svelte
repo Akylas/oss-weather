@@ -3,20 +3,23 @@
     import { convertTime, titlecase } from '~/helpers/formatter';
     import { localize as l } from '~/helpers/formatter';
     export let alerts;
+    $: {
+        console.log('alerts', alerts);
+    }
 </script>
 
-<scrollview height="300" backgroundColor="black">
+<scrollview>
     <stackLayout>
         {#each alerts as alert}
-            <stacklayout class="alertView" row="2" colSpan="2" orientation="horizontal">
-                <label color={alert.alertColor} colSpan="2" fontSize="36" fontFamily={mdiFontFamily} text="mdi-alert" />
-                <label fontSize="14" paddingLeft="4">
+            <gridLayout class="alertView" orientation="horizontal" columns="auto,*">
+                <label col="0" verticalAlignment="top" marginLeft="10" color={alert.alertColor} fontSize="36" fontFamily={mdiFontFamily} text="mdi-alert" />
+                <label col="1" fontSize="14" marginLeft="4" verticalAlignment="top">
                     <span fontSize="17" text="{alert.title}{'\n'}" />
                     <span text="{titlecase(l('expires'))}: {convertTime(alert.expires, 'HH:mm dddd')}{'\n'}" />
                     <span color="#aaa" text={alert.description} />
                 </label>
 
-            </stacklayout>
+            </gridLayout>
         {/each}
 
     </stackLayout>

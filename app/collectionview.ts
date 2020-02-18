@@ -116,10 +116,11 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
 
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
-                const wrapper = createElement('ProxyViewContainer') as NativeViewElementNode<View>;
-                _view.__SvelteComponentBuilder__(wrapper, props);
+                const dummy = createElement('fragment');
+                // const wrapper = createElement('ProxyViewContainer') as NativeViewElementNode<View>;
+                _view.__SvelteComponentBuilder__(dummy, props);
                 _view.__SvelteComponentBuilder__ = null;
-                const nativeEl = wrapper.nativeView;
+                const nativeEl = (dummy.firstElement() as NativeViewElementNode<View>).nativeView;
                 // if ((_view as any).dontAddToCollectionView) {
                 _view.addChild(nativeEl);
                 // }

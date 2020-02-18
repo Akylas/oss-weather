@@ -32,6 +32,7 @@
     function focus() {
         console.log('focus', !!textField);
         textField && textField.nativeView.requestFocus();
+        // alert('test')
     }
     function unfocus() {
         if (searchAsTypeTimer) {
@@ -115,7 +116,7 @@
         <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
         <collectionview row="2" rowHeight="110" items={searchResults}>
             <Template let:item>
-                <gridLayout rippleColor="white" on:tap={() => close(item)} height="200" columns="130,*" padding="10">
+                <gridLayout rippleColor="#aaa" on:tap={() => close(item)} height="200" columns="130,*" padding="10">
                     <MapView focusPos={item.coord} />
                     <label col="1" paddingLeft="10" fontSize="18" verticalAlignment="center" text={item.name} />
                     <!-- <label fontSize="14" verticalAlignment="center" text={JSON.stringify(item.coord)} /> -->

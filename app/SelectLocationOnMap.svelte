@@ -55,7 +55,7 @@
     }
 </script>
 
-<page class="page" actionBarHidden="true" statusBarStyle="dark" navigationBarColor="black" statusBarColor="#424242" backgroundColor="#424242">
+<page class="page" actionBarHidden="true" >
     <gridLayout rows="auto,auto,*">
         <CActionBar title={l('select_location')} modalWindow={true}>
             <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />

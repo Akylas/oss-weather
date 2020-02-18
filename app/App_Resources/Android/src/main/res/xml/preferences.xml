@@ -4,7 +4,7 @@
     <!-- <PreferenceCategory app:title="@string/settings_title_display"> -->
     <PreferenceCategory app:title="settings_title_display">
         <ListPreference
-        app:defaultValue="fresh"
+        app:defaultValue="dark"
         app:entries="@array/themes"
         app:entryValues="@array/themesValues"
         app:key="theme"

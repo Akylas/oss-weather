@@ -42,13 +42,79 @@ CollectionViewElement.register();
 
 startSentry();
 
+import { prefs } from '~/services/preferences';
 import Theme from '@nativescript/theme';
-Theme.setMode(Theme.Dark); // Or Theme.Light
+import { android as androidApp, systemAppearance } from '@nativescript/core/application';
+let theme = prefs.getValue('theme');
+// on startup we need to say what we are using
 if (gVars.isAndroid) {
-    (function() {
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
-    })();
+    switch (theme) {
+        case 'auto':
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+            break;
+        case 'light':
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+            break;
+        case 'dark':
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+            break;
+    }
 }
+
+prefs.on('key:theme', () => {
+    const newTheme = prefs.getValue('theme');
+    // on pref change we are updating
+    if (newTheme === theme) {
+        return;
+    }
+    console.log('theme change', theme, newTheme);
+    theme = newTheme;
+
+    // changing {N} theme. On android wont really make a difference as we restart the activity
+    // but we might not need to restart the activity. `nativescript-themes` do live css update
+    switch (theme) {
+        case 'auto':
+            Theme.setMode(Theme.Auto);
+            break;
+        case 'light':
+            Theme.setMode(Theme.Light);
+            break;
+        case 'dark':
+            Theme.setMode(Theme.Dark);
+            break;
+    }
+
+    if (gVars.isAndroid) {
+        // dont think we need this if we restart the activity
+        switch (theme) {
+            case 'auto':
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case 'light':
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case 'dark':
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
+        // we recreate the activity to get the change
+        const activity = androidApp.startActivity as androidx.appcompat.app.AppCompatActivity;
+        activity.recreate();
+    }
+});
+console.log('applying app theme', theme);
+switch (theme) {
+    case 'auto':
+        Theme.setMode(Theme.Auto);
+        break;
+    case 'light':
+        Theme.setMode(Theme.Light);
+        break;
+    case 'dark':
+        Theme.setMode(Theme.Dark);
+        break;
+}
+
 import { installMixins, themer } from 'nativescript-material-core';
 installMixins();
 if (gVars.isIOS) {

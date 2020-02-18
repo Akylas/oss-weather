@@ -13,16 +13,16 @@
     }
 </script>
 
-<gridlayout height="100%" rows="auto,auto,auto,*" paddingTop="10" >
+<gridlayout height="100%" rows="auto,auto,auto,*" paddingTop="10">
     <label textAlignment="center" fontSize="14" fontWeight="bold" text={convertTime(item.time, 'HH:mm')} />
-    <WeatherIcon row="1" icon={item.icon} autoPlay="true" />
+    <WeatherIcon row="1" icon={item.icon} />
     <!-- <label width="100%" textAlignment="center">
         <span fontSize="10" text={item.summary + '\n'} />
         <span fontSize="14" text={formatValueToUnit(item.temperature, UNITS.Celcius)} color={colorFromTempC(item.temperature)} />
     </label> -->
     <!-- <label row="2" fontSize="12" paddingTop="5" horizontalAlignment="center" textAlignment="center" html={textHtml}/> -->
 
-    <label row="2" fontSize="12" textAlignment="center" html={textHtml}/>
+    <label row="2" fontSize="12" textAlignment="center" html={textHtml} />
     <!-- <label row="2" fontSize="12" textAlignment="center">
         <span fontSize="16" text={formatValueToUnit(item.temperature, UNITS.Celcius) + '\n'} color={colorFromTempC(item.temperature)} />
         <span fontFamily={wiFontFamily} fontSize="18" text={item.windIcon} />
@@ -43,7 +43,7 @@
         verticalAlignment="bottom"
         backgroundColor={item.color}
         height="20"
-        text={item.precipProbability > 0 ? formatValueToUnit(item.precipIntensity, UNITS.MM) : ''}
+        text={item.precipProbability > 0.05 && item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + ` (${Math.round(item.precipProbability * 100)}%)` : ''}
         textAlignment="center"
         verticalTextAlignment="middle"
         fontSize="10" />

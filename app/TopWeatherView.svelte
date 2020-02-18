@@ -23,7 +23,7 @@
     function showAlerts() {
         showBottomSheet({
             page: AlertView,
-            transparent: true,
+            transparent: gVars.isIOS,
             props: {
                 alerts: item.alerts
             }
@@ -63,34 +63,34 @@
     // }
 </script>
 
-<gridLayout rows="auto,2*,*,auto" {height} columns="*,auto" backgroundColor="black">
+<gridLayout rows="auto,2*,*,auto" {height} columns="*,auto" >
     <label marginRight="10" row="0" colSpan="2" fontSize="18" textAlignment="right" verticalTextAlignment="top">
         <span color="#6B4985" fontFamily={wiFontFamily} fontSize="22" text={item.moonIcon} />
         <span text={convertTime(item.time, 'dddd')} />
     </label>
     <!-- <label row="0" colSpan="2" fontSize="18" marginTop="40" horizontalAlignment="right" text={item.uvIndex} backgroundColor={item.uvIndexColor} /> -->
 
-    <label marginLeft="10" fontSize="12" row="0" rowSpan="2" verticalTextAlignment="top" >
-     {#if item.temperature !== undefined}
+    <label marginLeft="10" fontSize="12" row="0" rowSpan="2" verticalTextAlignment="top">
+        {#if item.temperature !== undefined}
             <!-- <label fontSize="12" row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
-                <span fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius) } color={colorFromTempC(item.temperature)} />
-                <!-- <span text="({formatValueToUnit(item.temperatureMin, UNITS.Celcius)} | {formatValueToUnit(item.temperatureMax, UNITS.Celcius)}){'\n'}" /> -->
-                <!-- <span fontFamily={mdiFontFamily} text="mdi-hand" /> -->
-                <span text={formatValueToUnit(item.apparentTemperature, UNITS.Celcius)} />
+            <span fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} color={colorFromTempC(item.temperature)} />
+            <!-- <span text="({formatValueToUnit(item.temperatureMin, UNITS.Celcius)} | {formatValueToUnit(item.temperatureMax, UNITS.Celcius)}){'\n'}" /> -->
+            <!-- <span fontFamily={mdiFontFamily} text="mdi-hand" /> -->
+            <span text={formatValueToUnit(item.apparentTemperature, UNITS.Celcius)} />
             <!-- </label> -->
         {:else}
             <!-- <label row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
-                <span fontSize="26" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} color={colorFromTempC(item.temperatureMin)} />
-                <span color="#777" fontSize="26" text=" | " />
-                <span fontSize="26" text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} color={colorFromTempC(item.temperatureMax)} />
-        {/if} 
-        <span text="{'\n'}&nbsp;&nbsp;{item.uvIndex}&nbsp;&nbsp;" backgroundColor={item.uvIndexColor} />
-          </label>
+            <span fontSize="26" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} color={colorFromTempC(item.temperatureMin)} />
+            <span color="#777" fontSize="26" text=" | " />
+            <span fontSize="26" text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} color={colorFromTempC(item.temperatureMax)} />
+        {/if}
+    </label>
+    <label marginLeft="10" width="24" row="1" height="24" fontSize="14" borderRadius="12" text={item.uvIndex} backgroundColor={item.uvIndexColor} horizontalAlignment="left" verticalAlignment="top" verticalTextAlignment="center" textAlignment="center"/>
     <!-- <label marginLeft="10" row="0" rowSpan="2" fontSize="14" html={textHtmlBottom} verticalTextAlignment="bottom" /> -->
 
-    <label marginLeft="10" fontSize="14" row="0" rowSpan="2" verticalTextAlignment="bottom">
+    <label id="testSpan" marginLeft="10" fontSize="14" row="0" rowSpan="2" verticalTextAlignment="bottom">
         <span fontSize="18" fontFamily={wiFontFamily} color="#4681C3" text={item.precipProbability > 0.05 ? 'wi-umbrella' : ''} />
-        <span text=" {item.precipProbability > 0.05 ? Math.round(item.precipProbability * 100) + '%' : ''}" />
+        <span text=" {item.precipProbability > 0.05 ? Math.round(item.precipProbability * 100) + '%' + '\n' : ''}" />
         <span fontSize="18" text={item.windIcon} />
         <span text=" {formatValueToUnit(item.windSpeed, UNITS.Speed) + '\n'}" />
         <span fontFamily={wiFontFamily} fontSize="16" text="wi-cloud" />
@@ -104,16 +104,16 @@
         <label row="0" textAlignment="center" color={alerts[0].alertColor} colSpan="2" fontSize="36" fontFamily={mdiFontFamily} text="mdi-alert" on:tap={showAlerts} />
     {/if}
     {#if item.hourlyData}
-        <stacklayout row="2" colSpan="2" borderRadius="4" backgroundColor="#222" orientation="horizontal" verticalAlignment="center" margin="10" paddingTop="10" paddingBottom="10">
-            <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} autoPlay="true" />
-            <label fontSize="16" paddingLeft="4" verticalAlignment="top" text={item.hourlyData.summary} />
+        <stacklayout row="2" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center">
+            <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon}  />
+            <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} />
 
         </stacklayout>
     {/if}
     <stacklayout rowSpan="2" col="1" verticalAlignment="center" marginTop="20">
-        <WeatherIcon fontSize="140" icon={item.icon} autoPlay="true" />
-        <label marginRight="10" fontSize="14" fontStyle="italic" textAlignment="right" text={item.summary} />
+        <WeatherIcon fontSize="140" icon={item.icon} />
+        <label marginRight="10" fontSize="14" fontStyle="italic" textAlignment="right" text={item.summary} verticalAlignment="top" />
     </stacklayout>
-    <label marginRight="10" row="1" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}:   {formatLastUpdate(item.lastUpdate)}" />
+    <label marginRight="10" row="1" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
     <HourlyView row="3" colSpan="2" items={item.hourly} scrollIndex="0" />
 </gridLayout>

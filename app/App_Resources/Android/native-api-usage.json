@@ -14,9 +14,13 @@
         "com.google.android.material.shape:MaterialShapeDrawable",
         "com.google.android.material.textfield:TextInputEditText",
         "com.google.android.material.textfield:TextInputLayout",
+        "com.google.android.material.bottomsheet:BottomSheetDialogFragment",
+        "com.google.android.material.bottomsheet:BottomSheetDialog",
+        "androidx.appcompat.app:AlertDialog*",
         "androidx.swiperefreshlayout.widget*:*",
         "com.swmansion.gesturehandler*:*",
-        "com.airbnb.lottie*:*"
+        "com.airbnb.lottie*:*",
+        "com.nativescript.preferences*:*"
     ],
     "blacklist": []
 }

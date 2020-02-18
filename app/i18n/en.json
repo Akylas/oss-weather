@@ -15,6 +15,10 @@
     }
   },
   "settings": "settings",
+  "setting.theme": "theme",
+  "setting.theme.light": "light",
+  "setting.theme.dark": "dark",
+  "setting.theme.black": "black",
   "gps_not_enabled": "please enable GPS to allow NS Forecastie to determine your location",
   "gps_not_authorized": "please enable GPS and authorize NS Forecastie to use it to determine your location",
   "send_bug_report": "send bug report",

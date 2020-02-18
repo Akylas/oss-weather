@@ -3,7 +3,7 @@
     export let icon;
     // export let frontAlpha = 1;
     export let fontSize = 40;
-    export let autoPlay = false;
+    export let autoPlay = PRODUCTION;
 
     // const sunnyColor = '#ffa500';
     // const scatteredCloudyColor = '#cccccc';
@@ -137,7 +137,7 @@
 </script>
 
 <!-- <gridLayout {...$$props} horizontalAlignment="center"  width={fontSize} height={fontSize}> -->
-    <lottie {...p} src="~/assets/lottie/{iconSrc}.json" width={fontSize} height={fontSize} loop="true" {autoPlay}/>
+    <lottie {...p} src="~/assets/lottie/{iconSrc}.json" width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5}/>
      <!-- <label fontSize={fontSize} class="forecastfont" text={backIcon} color={backColor}  /> -->
     <!-- <label {fontSize} class="forecastfont" text={middleIcon} color={middleColor} /> -->
     <!-- <label {fontSize} class="forecastfont" text={frontIcon} color={frontColor}  /> -->

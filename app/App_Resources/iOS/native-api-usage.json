@@ -3,11 +3,29 @@
     "$comment": "Whitelist native constants used by core modules because {N} webpack's typescript transpiler is configured not to remove them like tsc does",
     "whitelist": [
       "CoreFoundation.CFStringEncodingExt:kCF*",
-      "MaterialComponents.MDCTabBarAlignment:*",
-      "MaterialComponents.MDCTabBarItemAppearance:*",
-      "Photos.PhotosTypes:*",
-      "WebKit.WKNavigationAction:*"
+      "MaterialComponents.MDCSemanticColorScheme:*",
+      "MaterialComponents.MDCSnackbarManager:*",
+      "MaterialComponents.MDCTextInputControllerBase:*",
+      "MaterialComponents.MDCTextField:*",
+      "MaterialComponents.MDCAlertController:*",
+      "MaterialComponents.MDCDialogPresentationController:*",
+      "MaterialComponents.MDCTextInputControllerUnderline:*",
+      "MaterialComponents.MDCTextInputControllerOutlined:*",
+      "MaterialComponents.MDCTextInputControllerFilled:*",
+      "MaterialComponents.MDCBottomSheetController:*",
+      "MaterialComponents.MDCButton:*",
+      "MaterialComponents.MDCButtonColorThemer:*",
+      "MaterialComponents.MDCButtonShapeThemer:*",
+      "MaterialComponents.MDCActivityIndicator:*",
+      "MaterialComponents.MDCActivityIndicatorThemer:*",
+      "MaterialComponents.MDCShapeScheme:*",
+      "MaterialComponents.MDCShapeCategory:*",
+      "MaterialComponents.MDCCornerTreatment*:*",
+      "CoreLocation.CLLocationManagerDelegate:*",
+      "CartoMobileSDK*:*",
+      "Lottie*:*",
+      "CoreBluetooth.CBPeripheralManager:*",
+      "CoreBluetooth.CBPeripheralManagerDelegate:*"
     ],
-    "blacklist": [
-    ]
+    "blacklist": []
   }

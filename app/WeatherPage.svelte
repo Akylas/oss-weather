@@ -19,13 +19,14 @@
     import { request as requestPerm, Status as PermStatus, setDebug as setPermsDebug } from 'nativescript-perms';
     import { actionBarHeight, darkColor, navigationBarHeight, primaryColor, statusBarHeight } from '~/variables';
     import { colorFromTempC, UNITS } from '~/helpers/formatter';
+    import { showBottomSheet } from '~/bottomsheet';
+    import { prefs } from '~/services/preferences';
 
-    import LineChart from 'nativescript-chart/charts/LineChart';
-    import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
-    import { LineData } from 'nativescript-chart/data/LineData';
-    import { LinearGradient, RadialGradient, TileMode } from 'nativescript-canvas';
+    // import LineChart from 'nativescript-chart/charts/LineChart';
+    // import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
+    // import { LineData } from 'nativescript-chart/data/LineData';
+    // import { LinearGradient, RadialGradient, TileMode } from 'nativescript-canvas';
 
-    import { layout } from '@nativescript/core/utils/utils';
     // @ts-ignore
     import CActionBar from './CActionBar.svelte';
     // @ts-ignore
@@ -38,6 +39,7 @@
     // @ts-ignore
     import SelectCity from './SelectCity.svelte';
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+    import ActionSheet from './ActionSheet.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -62,6 +64,41 @@
 
     let topHeight = screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight;
     let items;
+
+    function showOptions() {
+        // console.log('showOptions');
+        showBottomSheet({
+            page: ActionSheet,
+            transparent: gVars.isIOS,
+            props: {
+                options: [
+                    {
+                        icon: 'mdi-refresh',
+                        id: 'refresh',
+                        text: l('refresh')
+                    },
+                    {
+                        icon: 'mdi-map',
+                        id: 'select_on_map',
+                        text: l('select_on_map')
+                    },
+                    {
+                        icon: 'mdi-settings',
+                        id: 'preferences',
+                        text: l('preferences')
+                    }
+                ]
+            }
+        }).then(result => {
+            if (result) {
+                switch (result.id) {
+                    case 'preferences':
+                        prefs.openSettings();
+                        break;
+                }
+            }
+        });
+    }
 
     async function refreshWeather() {
         if (!networkService.connected) {
@@ -323,15 +360,15 @@
     });
 </script>
 
-<page class="page" actionBarHidden="true" statusBarStyle="dark" navigationBarColor="black" statusBarColor="black" backgroundColor="black">
+<page class="page" actionBarHidden="true">
 
-    <gridLayout rows="auto,*" backgroundColor="black">
+    <gridLayout rows="auto,*">
         <!-- <gridLayout rows="auto,*" columns="*,auto" padding="10" backgroundColor="#424242"> -->
-        <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2" backgroundColor="black">
+        <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2">
             <!-- <button variant="flat" class="icon-btn" text="mdi-refresh" on:tap={refresh} /> -->
             <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
             <!-- <button variant="flat" class="icon-btn" text="mdi-map" on:tap={searchOnMap} /> -->
-            <button variant="flat" class="icon-btn" text="mdi-dots-vertical" />
+            <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
             <collectionview {items} {itemTemplateSelector}>
@@ -339,8 +376,8 @@
                     <TopWeatherView {item} height={topHeight} />
                 </Template>
                 <Template key="info" let:item>
-                    <stacklayout row="2" colSpan="2" borderRadius="4" backgroundColor="#222" orientation="horizontal" verticalAlignment="center" margin="10" padding="10">
-                        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.icon} autoPlay="true" />
+                    <stacklayout class="alertView" row="2" colSpan="2" orientation="horizontal" verticalAlignment="center">
+                        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.icon} />
                         <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
                     </stacklayout>
                 </Template>

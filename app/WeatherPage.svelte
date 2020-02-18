@@ -3,7 +3,7 @@
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
-    import { showModal } from 'svelte-native';
+    import { navigate, showModal } from 'svelte-native';
     import { showSnack } from 'nativescript-material-snackbar';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { IMapPos } from '~/helpers/geo';

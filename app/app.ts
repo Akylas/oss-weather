@@ -45,7 +45,7 @@ startSentry();
 import { prefs } from '~/services/preferences';
 import Theme from '@nativescript/theme';
 import { android as androidApp, systemAppearance } from '@nativescript/core/application';
-let theme = prefs.getValue('theme');
+let theme = prefs.getValue('theme', 'dark');
 // on startup we need to say what we are using
 if (gVars.isAndroid) {
     switch (theme) {

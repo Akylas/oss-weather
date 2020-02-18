@@ -43,7 +43,7 @@
     }
 </script>
 
-<gridLayout rows="173" columns="*,*" backgroundColor="black" borderTopColor="#333" borderTopWidth="1">
+<gridLayout class="dailyView" rows="173" columns="*,*" borderTopWidth="1">
     <label marginTop="10" row="0" col="1" fontSize="18" textAlignment="right">
         <span color="#6B4985" fontFamily={wiFontFamily} fontSize="22" text={item.moonIcon} />
         <span text={convertTime(item.time, 'dddd')} />
@@ -63,6 +63,6 @@
         <span fontFamily={wiFontFamily} fontSize="14" text="wi-sunset" color="#ff7200" />
         <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" /> 
      </label> -->
-    <WeatherIcon row="0" col="1" verticalAlignment="middle" horizontalAlignment="right" fontSize="80" icon={item.icon} autoPlay="true" />
+    <WeatherIcon row="0" col="1" verticalAlignment="middle" horizontalAlignment="right" fontSize="80" icon={item.icon} />
     <stackLayout horizontalAlignment="left" backgroundColor={item.color} width="5" />
 </gridLayout>

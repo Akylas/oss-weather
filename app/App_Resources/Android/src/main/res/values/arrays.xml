@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="themes">
+        <!-- <item name="light">@string/setting_theme_light</item>
+        <item name="dark">@string/setting_theme_dark</item>
+        <item name="black">@string/setting_theme_black</item> -->
+        <!-- <item name="auto">@string/setting_theme_auto</item> -->
+        <item name="auto">setting_theme_auto</item>
+        <item name="light">setting_theme_light</item>
+        <item name="dark">setting_theme_dark</item>
+        <item name="black">setting_theme_black</item>
+    </string-array>
+    <string-array name="themesValues">
+        <item name="auto">auto</item>
+        <item name="light">light</item>
+        <item name="dark">dark</item>
+        <item name="black">black</item>
+    </string-array>
+</resources>

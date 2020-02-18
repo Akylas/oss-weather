@@ -13,15 +13,46 @@
 }
 
 htmllabel,
-label {
+label,
+.label,
+mdbutton {
     // background-color: rgba(255, 0,0,0.2);
-    color: $text-color;
+    // .ns-light & {
+        color: black;
+    // }
+    .ns-dark & {
+        color: white;
+    }
     // white-space: normal;
 }
 
+.dailyView {
+    border-top-color: #ccc;
+    .ns-dark & {
+        border-top-color: #333;
+    }
+}
+
+.alertView {
+    margin:10;
+    padding-top:10;
+    padding-bottom:10;
+    border-radius:4;
+    background-color: #ccc;
+    .ns-dark & {
+        background-color: #222;
+    }
+}
+
 mdtextfield {
-    color: $text-color;
-    placeholder-color: $text-color;
+    color: black;
+    backgroundColor-color: white;
+    placeholder-color: black;
+    .ns-dark & {
+        color: white;
+        backgroundColor-color: black;
+        placeholder-color: white;
+    }
 }
 
 label,
@@ -33,10 +64,28 @@ mdbutton {
     @extend .lato;
 }
 
+.page {
+    // .ns-light & {
+    status-bar-style: light;
+    navigation-bar-color: white;
+    status-bar-color: white;
+    background-color: white;
+    // }
+    .ns-dark & {
+        status-bar-style: dark;
+        navigation-bar-color: black;
+        status-bar-color: black;
+        background-color: black;
+    }
+}
+
 .actionBar {
     z-index: 0;
     border-radius: 0;
-    background-color: $primary-color;
+    ackground-color: white;
+    ns-dark & {
+        ackground-color: black;
+    }
     height: $actionbar-height;
 }
 
@@ -45,6 +94,9 @@ mdbutton {
     width: $actionbar-height;
     height: $actionbar-height;
     color: black;
+    ns-dark & {
+        color: white;
+    }
     margin: 0;
     padding: 0;
     font-size: 32;
@@ -55,7 +107,10 @@ mdbutton {
     // @extend .lato;
     font-size: 18;
     font-weight: 500;
-    color: white;
+    color: black;
+    ns-dark & {
+        color: white;
+    }
 }
 
 .actionBarSubtitle {
@@ -67,7 +122,10 @@ mdbutton {
     @extend .mdi;
     background-color: transparent;
     ripple-color: white;
-    color: white;
+    color: black;
+    ns-dark & {
+        color: white;
+    }
     width: 44;
     height: 44;
     border-radius: 22;

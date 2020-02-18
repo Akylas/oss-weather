@@ -29,4 +29,8 @@
   <string name="app_name">"NS Forecastie"</string>
   <string name="title_activity_kimera">"NS Forecastie"</string>
   <string name="file">"file"</string>
+  <string name="_setting_theme_black_Z24MSTR">"black"</string>
+  <string name="_setting_theme_dark_JVEvk">"dark"</string>
+  <string name="_setting_theme_light_Z248zpT">"light"</string>
+  <string name="_setting_theme_23gl2n">"theme"</string>
 </resources>

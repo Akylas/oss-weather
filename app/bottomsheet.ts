@@ -50,7 +50,7 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
     });
 }
 
-export function closeModal(result: any): void {
+export function closeBottomSheet(result: any): void {
     const modalPageInstanceInfo = modalStack.pop();
     (modalPageInstanceInfo.element.nativeView as any).closeBottomSheet(result);
 }

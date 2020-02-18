@@ -24,50 +24,16 @@
         <item name="colorPrimaryDark">@color/ns_primaryDark</item>
         <item name="colorSecondary">@color/ns_secondary</item>
         <item name="colorAccent">@color/ns_accent</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+    </style>
+    <style name="WindowAnimationTransition">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
     <style name="AppTheme" parent="AppThemeBase"></style>
     <!-- theme for action-bar -->
-    <!-- <style name="NativeScriptToolbarStyleBase" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/ns_primary</item>
-        <item name="theme">@style/ThemeOverlay.AppCompat.ActionBar</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat</item>
-    </style> -->
+    <!-- <style name="NativeScriptToolbarStyleBase" parent="Widget.AppCompat.Toolbar"><item name="android:background">@color/ns_primary</item><item name="theme">@style/ThemeOverlay.AppCompat.ActionBar</item><item name="popupTheme">@style/ThemeOverlay.AppCompat</item></style> -->
     <!-- <style name="NativeScriptToolbarStyle" parent="NativeScriptToolbarStyleBase"></style> -->
     <!-- nativescript-material-components -->
-    <!-- <style name="UnelevatedButton.Custom" parent="@style/Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:padding">0dp</item>
-        <item name="android:minWidth">88dp</item>
-        <item name="android:minHeight">36dp</item>
-        <item name="android:insetLeft">0dp</item>
-        <item name="android:insetRight">0dp</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
-    </style>
-    <style name="TextButton.Custom" parent="@style/Widget.MaterialComponents.Button.TextButton">
-        <item name="android:padding">0dp</item>
-        <item name="android:minWidth">88dp</item>
-        <item name="android:minHeight">36dp</item>
-        <item name="android:insetLeft">0dp</item>
-        <item name="android:insetRight">0dp</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
-    </style>
-    <style name="Button.Custom" parent="@style/Widget.MaterialComponents.Button">
-        <item name="android:padding">0dp</item>
-        <item name="android:minWidth">88dp</item>
-        <item name="android:minHeight">36dp</item>
-        <item name="android:insetLeft">0dp</item>
-        <item name="android:insetRight">0dp</item>
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
-    </style>
-    <style name="AppThemeMaterialButton" parent="AppTheme">
-        <item name="materialButtonStyle">@style/Button.Custom</item>
-    </style>
-    <style name="AppThemeFlatMaterialButton" parent="AppTheme">
-        <item name="materialButtonStyle">@style/UnelevatedButton.Custom</item>
-    </style>
-    <style name="AppThemeTextMaterialButton" parent="AppTheme">
-        <item name="materialButtonStyle">@style/TextButton.Custom</item>
-    </style> -->
+    <!-- <style name="UnelevatedButton.Custom" parent="@style/Widget.MaterialComponents.Button.UnelevatedButton"><item name="android:padding">0dp</item><item name="android:minWidth">88dp</item><item name="android:minHeight">36dp</item><item name="android:insetLeft">0dp</item><item name="android:insetRight">0dp</item><item name="android:insetTop">0dp</item><item name="android:insetBottom">0dp</item></style><style name="TextButton.Custom" parent="@style/Widget.MaterialComponents.Button.TextButton"><item name="android:padding">0dp</item><item name="android:minWidth">88dp</item><item name="android:minHeight">36dp</item><item name="android:insetLeft">0dp</item><item name="android:insetRight">0dp</item><item name="android:insetTop">0dp</item><item name="android:insetBottom">0dp</item></style><style name="Button.Custom" parent="@style/Widget.MaterialComponents.Button"><item name="android:padding">0dp</item><item name="android:minWidth">88dp</item><item name="android:minHeight">36dp</item><item name="android:insetLeft">0dp</item><item name="android:insetRight">0dp</item><item name="android:insetTop">0dp</item><item name="android:insetBottom">0dp</item></style><style name="AppThemeMaterialButton" parent="AppTheme"><item name="materialButtonStyle">@style/Button.Custom</item></style><style name="AppThemeFlatMaterialButton" parent="AppTheme"><item name="materialButtonStyle">@style/UnelevatedButton.Custom</item></style><style name="AppThemeTextMaterialButton" parent="AppTheme"><item name="materialButtonStyle">@style/TextButton.Custom</item></style> -->
 </resources> 

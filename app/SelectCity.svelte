@@ -107,12 +107,12 @@
     // });
 </script>
 
-<page class="page" actionBarHidden="true" statusBarStyle="dark" navigationBarColor="black" statusBarColor="black" backgroundColor="black">
+<page class="page" actionBarHidden="true">
     <gridLayout rows="auto,auto,*">
         <CActionBar title={l('search_city')} modalWindow={true}>
             <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
-        <textfield bind:this={textField} backgroundColor="#424242" row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
+        <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
         <collectionview row="2" rowHeight="110" items={searchResults}>
             <Template let:item>
                 <gridLayout rippleColor="white" on:tap={() => close(item)} height="200" columns="130,*" padding="10">

@@ -41,5 +41,6 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="com.tns.ErrorReportActivity"/>
+		<activity android:name="com.nativescript.preferences.NativescriptSettingsActivity"/>
 	</application>
 </manifest>

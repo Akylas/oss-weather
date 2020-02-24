@@ -4,7 +4,8 @@ import { Frame, View, ViewBase } from '@nativescript/core/ui/frame/frame';
 import { BottomSheetOptions } from 'nativescript-material-bottomsheet';
 
 export interface ShowBottomSheetOptions extends Omit<BottomSheetOptions, 'view'> {
-    page: PageSpec;
+    view: PageSpec;
+    parent: NativeViewElementNode<View>;
     props?: any;
     // android?: { cancelable: boolean };
     // // ios?: { presentationStyle: any };
@@ -14,24 +15,23 @@ export interface ShowBottomSheetOptions extends Omit<BottomSheetOptions, 'view'>
 }
 interface ComponentInstanceInfo {
     element: NativeViewElementNode<View>;
-    pageInstance: SvelteComponent;
+    viewInstance: SvelteComponent;
 }
 
 const modalStack: ComponentInstanceInfo[] = [];
 
-function resolveComponentElement(pageSpec: PageSpec, props?: any): ComponentInstanceInfo {
+function resolveComponentElement(viewSpec: PageSpec, props?: any): ComponentInstanceInfo {
     const dummy = createElement('fragment');
-    const pageInstance = new pageSpec({ target: dummy, props });
+    const viewInstance = new viewSpec({ target: dummy, props });
     const element = dummy.firstElement() as NativeViewElementNode<View>;
-    return { element, pageInstance };
+    return { element, viewInstance };
 }
 export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promise<T> {
-    const { page, props = {}, ...options } = modalOptions;
-
+    const { view, parent, props = {}, ...options } = modalOptions;
     // Get this before any potential new frames are created by component below
-    const modalLauncher = Frame.topmost().currentPage;
+    const modalLauncher = parent?.nativeView || Frame.topmost().currentPage;
 
-    const componentInstanceInfo = resolveComponentElement(page, props);
+    const componentInstanceInfo = resolveComponentElement(view, props);
     const modalView: ViewBase = componentInstanceInfo.element.nativeView;
 
     return new Promise((resolve, reject) => {
@@ -39,11 +39,11 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
         const closeCallback = (result: T) => {
             if (resolved) return;
             resolved = true;
-            try {
-                componentInstanceInfo.pageInstance.$destroy(); // don't let an exception in destroy kill the promise callback
-            } finally {
-                resolve(result);
-            }
+            resolve(result);
+            // try {
+            componentInstanceInfo.viewInstance.$destroy(); // don't let an exception in destroy kill the promise callback
+            // } finally {
+            // }
         };
         modalStack.push(componentInstanceInfo);
         modalLauncher.showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });

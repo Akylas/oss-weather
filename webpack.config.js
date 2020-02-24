@@ -113,6 +113,9 @@ module.exports = (env, params = {}) => {
     if (platform === 'ios' && !areCoreModulesExternal) {
         entries['tns_modules/tns-core-modules/inspector_modules'] = 'inspector_modules';
     }
+    // if (platform === 'android') {
+    //     entries['application'] = './application.android';
+    // }
     console.log(`Bundling application for entryPath ${entryPath}...`);
 
     const itemsToClean = [`${dist}/**/*`];
@@ -451,9 +454,9 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                         svelteNativePreprocessor()
                                     )
                                 ),
-                                hotReload: true,
+                                hotReload: hmr,
                                 hotOptions: {
-                                    native: true
+                                    native: hmr
                                 }
                             }
                         }

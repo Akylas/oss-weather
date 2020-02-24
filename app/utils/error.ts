@@ -1,5 +1,5 @@
 import { BaseError } from 'make-error';
-import { localize as l } from '~/helpers/formatter';
+import {l } from '~/helpers/locale';
 import { confirm, alert as mdAlert } from 'nativescript-material-dialogs';
 import { Sentry, isSentryEnabled } from '~/utils/sentry';
 import { showSnack } from 'nativescript-material-snackbar';

@@ -1,41 +1,43 @@
 ﻿{
-  "ios": {
-    "info": {
-      "plist": {
-        "NSLocationWhenInUseUsageDescription": "'NS Forecastie' uses your GPS location to display your weather"
-      }
-    }
-  },
-  "app": {
-    "name": "NS Forecastie"
-  },
-  "title": {
-    "activity": {
-      "kimera": "NS Forecastie"
-    }
-  },
-  "settings": "settings",
-  "setting.theme": "theme",
-  "setting.theme.light": "light",
-  "setting.theme.dark": "dark",
-  "setting.theme.black": "black",
-  "gps_not_enabled": "please enable GPS to allow NS Forecastie to determine your location",
-  "gps_not_authorized": "please enable GPS and authorize NS Forecastie to use it to determine your location",
-  "send_bug_report": "send bug report",
-  "please_describe_error": "please describe error",
-  "bug_report_sent": "bug report sent",
-  "name": "name",
-  "cancel": "cancel",
-  "close": "close",
-  "file": "file",
-  "send": "send",
-  "send_bug_report_desc": "enter a mail and a description for the encountered error",
-  "email_required": "a valid email is required",
-  "email": "email",
-  "non_valid_email": "non valid email",
-  "ok": "OK",
-  "authorize": "authorize",
-  "error": "error",
-  "no_network": "no network",
-  "select": "select"
+    "ios": {
+        "info": {
+            "plist": {
+                "NSLocationWhenInUseUsageDescription": "'NS Forecastie' uses your GPS location to display your weather"
+            }
+        }
+    },
+    "app": {
+        "name": "NS Forecastie"
+    },
+    "settings":{
+      "title":"settings"
+    },
+    "theme": {
+        "title": "theme",
+        "auto": "auto",
+        "light": "light",
+        "dark": "dark",
+        "black": "black"
+    },
+    "gps_not_enabled": "please enable GPS to allow NS Forecastie to determine your location",
+    "gps_not_authorized": "please enable GPS and authorize NS Forecastie to use it to determine your location",
+    "send_bug_report": "send bug report",
+    "please_describe_error": "please describe error",
+    "bug_report_sent": "bug report sent",
+    "name": "name",
+    "cancel": "cancel",
+    "close": "close",
+    "file": "file",
+    "send": "send",
+    "send_bug_report_desc": "enter a mail and a description for the encountered error",
+    "email_required": "a valid email is required",
+    "email": "email",
+    "non_valid_email": "non valid email",
+    "ok": "OK",
+    "authorize": "authorize",
+    "error": "error",
+    "no_network": "no network",
+    "select": "select",
+    "refresh": "refresh",
+    "animations": "animations"
 }

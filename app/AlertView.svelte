@@ -1,14 +1,14 @@
 <script>
     import { mdiFontFamily, wiFontFamily } from '~/variables';
     import { convertTime, titlecase } from '~/helpers/formatter';
-    import { localize as l } from '~/helpers/formatter';
+    import {l } from '~/helpers/locale';
     export let alerts;
     $: {
         console.log('alerts', alerts);
     }
 </script>
 
-<scrollview>
+<scrollview class="bottomsheet">
     <stackLayout>
         {#each alerts as alert}
             <gridLayout class="alertView" orientation="horizontal" columns="auto,*">

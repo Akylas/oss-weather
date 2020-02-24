@@ -1,4 +1,6 @@
 ﻿@import './variables';
+@use "sass:color";
+
 .lato {
     font-family: $lato-fontFamily;
 }
@@ -20,7 +22,7 @@ mdbutton {
     // .ns-light & {
         color: black;
     // }
-    .ns-dark & {
+    .ns-dark &, .ns-black & {
         color: white;
     }
     // white-space: normal;
@@ -28,7 +30,7 @@ mdbutton {
 
 .dailyView {
     border-top-color: #ccc;
-    .ns-dark & {
+    .ns-dark &, .ns-black & {
         border-top-color: #333;
     }
 }
@@ -40,6 +42,9 @@ mdbutton {
     border-radius:4;
     background-color: #ccc;
     .ns-dark & {
+        background-color: #444;
+    }
+    .ns-black & {
         background-color: #222;
     }
 }
@@ -64,14 +69,22 @@ mdbutton {
     @extend .lato;
 }
 
-.page {
+page {
     // .ns-light & {
     status-bar-style: light;
     navigation-bar-color: white;
     status-bar-color: white;
     background-color: white;
     // }
+
+
     .ns-dark & {
+        status-bar-style: dark;
+        navigation-bar-color: black;
+        status-bar-color: black;
+        background-color: #1C1C1E;
+    }
+    .ns-black & {
         status-bar-style: dark;
         navigation-bar-color: black;
         status-bar-color: black;
@@ -79,12 +92,22 @@ mdbutton {
     }
 }
 
+
+.bottomsheet {
+    // background-color: white;
+    .ns-dark &, .ns-black & {
+        background-color: #1C1C1E;
+    }
+}
 .actionBar {
     z-index: 0;
     border-radius: 0;
-    ackground-color: white;
-    ns-dark & {
-        ackground-color: black;
+    background-color: scale-color(white, $alpha: -30%);
+    .ns-black &  {
+        background-color: scale-color(black, $alpha: -30%);
+    }
+    .ns-dark & {
+        background-color: scale-color(#1C1C1E, $alpha: -30%);
     }
     height: $actionbar-height;
 }
@@ -94,7 +117,7 @@ mdbutton {
     width: $actionbar-height;
     height: $actionbar-height;
     color: black;
-    ns-dark & {
+    .ns-dark &, .ns-black & {
         color: white;
     }
     margin: 0;
@@ -108,7 +131,7 @@ mdbutton {
     font-size: 18;
     font-weight: 500;
     color: black;
-    ns-dark & {
+    .ns-dark &, .ns-black & {
         color: white;
     }
 }
@@ -121,10 +144,11 @@ mdbutton {
 .icon-btn {
     @extend .mdi;
     background-color: transparent;
-    ripple-color: white;
+    ripple-color: gray;
     color: black;
-    ns-dark & {
+    .ns-dark &, .ns-black & {
         color: white;
+        ripple-color: white;
     }
     width: 44;
     height: 44;

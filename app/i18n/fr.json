@@ -1,18 +1,20 @@
 {
-  "app": {
-    "name": "NS Forecastie"
-  },
-  "title": {
-    "activity": {
-      "kimera": "NS Forecastie"
-    }
-  },
   "ios": {
     "info": {
       "plist": {
         "NSLocationWhenInUseUsageDescription": "'NS Forecastie' utilise le GPS pour afficher votre météo"
       }
     }
+  },
+  "app": {
+    "name": "NS Forecastie"
+  },
+  "theme": {
+    "title": "theme",
+    "auto": "auto",
+    "light": "light",
+    "dark": "dark",
+    "black": "black"
   },
   "cancel": "annuler",
   "close": "fermer",
@@ -36,5 +38,7 @@
   "loading": "chargement",
   "authorize": "autoriser",
   "no_network": "pas de réseau",
-  "select": "sélectionner"
+  "select": "sélectionner",
+  "refresh": "rafraîchir",
+  "animations": "animations"
 }

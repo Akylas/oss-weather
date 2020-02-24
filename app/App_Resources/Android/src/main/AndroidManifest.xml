@@ -19,7 +19,7 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.location.gps" />
 	<application
-		android:name="com.tns.NativeScriptApplication"
+		android:name="com.akylas.weather.NightModeApplication"
 		android:allowBackup="true"
 		android:hardwareAccelerated="true"
 		android:networkSecurityConfig="@xml/network_security_config"
@@ -41,6 +41,6 @@
 			</intent-filter>
 		</activity>
 		<activity android:name="com.tns.ErrorReportActivity"/>
-		<activity android:name="com.nativescript.preferences.NativescriptSettingsActivity"/>
+		<activity android:name="com.nativescript.preferences.NativescriptSettingsActivity" android:theme="@style/SettingsTheme"/>
 	</application>
 </manifest>

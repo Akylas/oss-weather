@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="animations">"animations"</string>
+  <string name="refresh">"rafraîchir"</string>
   <string name="select">"sélectionner"</string>
   <string name="no_network">"pas de réseau"</string>
   <string name="authorize">"autoriser"</string>
@@ -23,14 +25,13 @@
   <string name="connection">"connexion"</string>
   <string name="close">"fermer"</string>
   <string name="cancel">"annuler"</string>
-  <string name="_ios_info_plist_NSLocationWhenInUseUsageDescription_ZpKiIF">"\'NS Forecastie\' utilise le GPS pour afficher votre météo"</string>
-  <string name="_title_activity_kimera_PKGla">"NS Forecastie"</string>
-  <string name="_app_name_1k3Sbz">"NS Forecastie"</string>
+  <string name="theme.black">"black"</string>
+  <string name="theme.dark">"dark"</string>
+  <string name="theme.light">"light"</string>
+  <string name="theme.auto">"auto"</string>
+  <string name="theme.title">"theme"</string>
   <string name="app_name">"NS Forecastie"</string>
   <string name="title_activity_kimera">"NS Forecastie"</string>
   <string name="file">"file"</string>
-  <string name="_setting_theme_black_Z24MSTR">"black"</string>
-  <string name="_setting_theme_dark_JVEvk">"dark"</string>
-  <string name="_setting_theme_light_Z248zpT">"light"</string>
-  <string name="_setting_theme_23gl2n">"theme"</string>
+  <string name="settings.title">"settings"</string>
 </resources>

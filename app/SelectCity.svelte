@@ -10,7 +10,7 @@
     import { clog, DEV_LOG } from '~/utils/logging';
     import { photonSearch } from '~/services/api';
     import { Page } from '@nativescript/core/ui/page';
-    import { localize as l } from '~/helpers/formatter';
+    import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
 
     import { darkColor, primaryColor } from '~/variables';
@@ -108,21 +108,23 @@
     // });
 </script>
 
-<page class="page" actionBarHidden="true">
-    <gridLayout rows="auto,auto,*">
-        <CActionBar title={l('search_city')} modalWindow={true}>
-            <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-        </CActionBar>
-        <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
-        <collectionview row="2" rowHeight="110" items={searchResults}>
-            <Template let:item>
-                <gridLayout rippleColor="#aaa" on:tap={() => close(item)} height="200" columns="130,*" padding="10">
-                    <MapView focusPos={item.coord} />
-                    <label col="1" paddingLeft="10" fontSize="18" verticalAlignment="center" text={item.name} />
-                    <!-- <label fontSize="14" verticalAlignment="center" text={JSON.stringify(item.coord)} /> -->
-                    <!-- <label fontSize="10" verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
-                </gridLayout>
-            </Template>
-        </collectionview>
-    </gridLayout>
-</page>
+<frame>
+    <page actionBarHidden="true">
+        <gridLayout rows="auto,auto,*">
+            <CActionBar title={l('search_city')} modalWindow={true}>
+                <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
+            </CActionBar>
+            <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
+            <collectionview row="2" rowHeight="110" items={searchResults}>
+                <Template let:item>
+                    <gridLayout rippleColor="#aaa" on:tap={() => close(item)} height="200" columns="130,*" padding="10">
+                        <MapView focusPos={item.coord} />
+                        <label col="1" paddingLeft="10" fontSize="18" verticalAlignment="center" text={item.name} />
+                        <!-- <label fontSize="14" verticalAlignment="center" text={JSON.stringify(item.coord)} /> -->
+                        <!-- <label fontSize="10" verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
+                    </gridLayout>
+                </Template>
+            </collectionview>
+        </gridLayout>
+    </page>
+</frame>

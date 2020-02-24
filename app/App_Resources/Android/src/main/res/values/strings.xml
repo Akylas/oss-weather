@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="animations">"animations"</string>
+  <string name="refresh">"refresh"</string>
   <string name="select">"select"</string>
   <string name="no_network">"no network"</string>
   <string name="error">"error"</string>
@@ -19,18 +21,17 @@
   <string name="send_bug_report">"send bug report"</string>
   <string name="gps_not_authorized">"please enable GPS and authorize NS Forecastie to use it to determine your location"</string>
   <string name="gps_not_enabled">"please enable GPS to allow NS Forecastie to determine your location"</string>
-  <string name="_setting_theme_black_Z24MSTR">"black"</string>
-  <string name="_setting_theme_dark_JVEvk">"dark"</string>
-  <string name="_setting_theme_light_Z248zpT">"light"</string>
-  <string name="_setting_theme_23gl2n">"theme"</string>
-  <string name="settings">"settings"</string>
-  <string name="_title_activity_kimera_PKGla">"NS Forecastie"</string>
-  <string name="_app_name_1k3Sbz">"NS Forecastie"</string>
+  <string name="theme.black">"black"</string>
+  <string name="theme.dark">"dark"</string>
+  <string name="theme.light">"light"</string>
+  <string name="theme.auto">"auto"</string>
+  <string name="theme.title">"theme"</string>
+  <string name="settings.title">"settings"</string>
   <string name="app_name">"NS Forecastie"</string>
   <string name="title_activity_kimera">"NS Forecastie"</string>
-  <string name="_ios_info_plist_NSLocationWhenInUseUsageDescription_ZpKiIF">"\'NS Forecastie\' uses your GPS location to display your weather"</string>
   <string name="loading">"loading"</string>
   <string name="description_required">"description_required"</string>
   <string name="description">"description"</string>
+  <string name="settings">"settings"</string>
   <string name="connection">"connection"</string>
 </resources>

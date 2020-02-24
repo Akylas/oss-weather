@@ -31,3 +31,10 @@ declare module '*.scss';
 // declare module '*.svelte' {
 //     export { SvelteComponentDev as default } from 'svelte/internal';
 // }
+declare namespace com {
+    export namespace akylas {
+        export namespace weather {
+            export class NightModeApplication extends android.app.Application {}
+        }
+    }
+}

@@ -1,49 +1,20 @@
-import { device } from '@nativescript/core/platform';
 import dayjs from 'dayjs';
+
+// import required dayjs locales
 // import utc from 'dayjs/plugin/utc';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(LocalizedFormat);
 import Color from 'tinycolor2';
 
-function getOwmLanguage() {
-    const language = device.language.split('-')[0].toLowerCase();
-
-    if (language === 'cs') {
-        // Czech
-        return 'cz';
-    } else if (language === 'ko') {
-        // Korean
-        return 'kr';
-    } else if (language === 'lv') {
-        // Latvian
-        return 'la';
-    } else {
-        return language;
-    }
-}
-export const lang = getOwmLanguage();
-console.log('deviceLang', lang);
-
-// const rtf = new Intl.RelativeTimeFormat('es');
-
-import nativeLocalize from 'nativescript-localize';
-export function localize(s: string, ...args) {
-    let result = nativeLocalize(s, ...args);
-    if (!result || result.length === 0) {
-        result = s;
-    }
-    return result;
-}
+// export function localize(s: string, ...args) {
+//     return l(s, ...args);
+// }
 // dayjs.extend(utc);
 // const dayjs: (...args) => Dayjs = require('dayjs');
 // const Duration = require('duration');
 
 // const supportedLanguages = ['en', 'fr'];
 
-import 'dayjs/locale/fr';
-if (['en', 'fr'].indexOf(lang) >= 0) {
-    dayjs.locale(lang); // switch back to default English locale globally
-}
 export enum UNITS {
     InchHg = 'InchHg',
     MMHg = 'MMHg',
@@ -78,6 +49,7 @@ export function convertTime(date: number | string | dayjs.Dayjs, formatStr: stri
         }
         return (date as dayjs.Dayjs).format(formatStr);
     }
+    return '';
 }
 
 // function createDateAsUTC(date) {

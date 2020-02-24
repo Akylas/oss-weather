@@ -44,11 +44,11 @@
 </script>
 
 <gridLayout class="dailyView" rows="173" columns="*,*" borderTopWidth="1">
-    <label marginTop="10" row="0" col="1" fontSize="18" textAlignment="right">
+    <label marginTop="10" marginRight="10" row="0" col="1" fontSize="18" textAlignment="right">
         <span color="#6B4985" fontFamily={wiFontFamily} fontSize="22" text={item.moonIcon} />
         <span text={convertTime(item.time, 'dddd')} />
     </label>
-    <label marginBottom="10" row="0" col="1" horizontalAlignment="right" fontSize="14" textAlignment="right" fontStyle="italic" verticalTextAlignment="bottom" text={item.summary} />
+    <label marginBottom="10" marginRight="10" row="0" col="1" horizontalAlignment="right" fontSize="14" textAlignment="right" fontStyle="italic" verticalTextAlignment="bottom" text={item.summary} />
     <label id="testHTML" marginTop="10" marginLeft="10" row="0" fontSize="12" html={textHtml} />
     <!-- <label marginTop="10" id="test" marginLeft="10" row="0" fontSize="12" >
      <span fontSize="22" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} color={colorFromTempC(item.temperatureMin)} />

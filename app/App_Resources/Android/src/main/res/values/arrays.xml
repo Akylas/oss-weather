@@ -5,10 +5,10 @@
         <item name="dark">@string/setting_theme_dark</item>
         <item name="black">@string/setting_theme_black</item> -->
         <!-- <item name="auto">@string/setting_theme_auto</item> -->
-        <item name="auto">setting_theme_auto</item>
-        <item name="light">setting_theme_light</item>
-        <item name="dark">setting_theme_dark</item>
-        <item name="black">setting_theme_black</item>
+        <item name="auto">@string/theme.auto</item>
+        <item name="light">@string/theme.light</item>
+        <item name="dark">@string/theme.dark</item>
+        <item name="black">@string/theme.black</item>
     </string-array>
     <string-array name="themesValues">
         <item name="auto">auto</item>

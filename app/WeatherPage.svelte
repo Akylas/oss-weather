@@ -14,7 +14,7 @@
     import { getNumber, getString, remove as removeSetting, setBoolean, setNumber, setString } from '@nativescript/core/application-settings';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
     import { Page } from '@nativescript/core/ui/page';
-    import { localize as l } from '~/helpers/formatter';
+    import { l } from '~/helpers/locale';
     import { GenericGeoLocation, GPS, LocationMonitor, Options as GeolocationOptions, setGeoLocationKeys, setMockEnabled } from 'nativescript-gps';
     import { request as requestPerm, Status as PermStatus, setDebug as setPermsDebug } from 'nativescript-perms';
     import { actionBarHeight, darkColor, navigationBarHeight, primaryColor, statusBarHeight } from '~/variables';
@@ -44,7 +44,7 @@
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
     // let gps;
-    // let page;
+    let page;
     // let collectionView;
     let lineChart;
     let loading = false;
@@ -68,8 +68,9 @@
     function showOptions() {
         // console.log('showOptions');
         showBottomSheet({
-            page: ActionSheet,
-            transparent: gVars.isIOS,
+            parent: page,
+            view: ActionSheet,
+            // transparent: gVars.isIOS,
             props: {
                 options: [
                     {
@@ -357,17 +358,15 @@
         if (dsWeather) {
             items = prepareItems();
         }
+
     });
 </script>
 
-<page class="page" actionBarHidden="true">
+<page bind:this={page} actionBarHidden="true" id="home">
 
     <gridLayout rows="auto,*">
-        <!-- <gridLayout rows="auto,*" columns="*,auto" padding="10" backgroundColor="#424242"> -->
         <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2">
-            <!-- <button variant="flat" class="icon-btn" text="mdi-refresh" on:tap={refresh} /> -->
             <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
-            <!-- <button variant="flat" class="icon-btn" text="mdi-map" on:tap={searchOnMap} /> -->
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>

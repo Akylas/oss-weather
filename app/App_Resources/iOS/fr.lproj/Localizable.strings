@@ -1,3 +1,4 @@
+"refresh" = "rafraîchir";
 "select" = "sélectionner";
 "no_network" = "pas de réseau";
 "authorize" = "autoriser";
@@ -21,7 +22,12 @@
 "connection" = "connexion";
 "close" = "fermer";
 "cancel" = "annuler";
-"_ios_info_plist_NSLocationWhenInUseUsageDescription_ZpKiIF" = "'NS Forecastie' utilise le GPS pour afficher votre météo";
-"_title_activity_kimera_PKGla" = "NS Forecastie";
-"_app_name_1k3Sbz" = "NS Forecastie";
+"theme.black" = "black";
+"theme.dark" = "dark";
+"theme.light" = "light";
+"theme.auto" = "auto";
+"theme.title" = "theme";
+"app.name" = "NS Forecastie";
+"ios.info.plist.NSLocationWhenInUseUsageDescription" = "'NS Forecastie' utilise le GPS pour afficher votre météo";
 "file" = "file";
+"settings.title" = "settings";

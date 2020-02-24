@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!-- <PreferenceCategory app:title="@string/settings_title_display"> -->
-    <PreferenceCategory app:title="settings_title_display">
+    <PreferenceCategory app:title="@string/settings.title">
         <ListPreference
         app:defaultValue="dark"
         app:entries="@array/themes"
         app:entryValues="@array/themesValues"
         app:key="theme"
-        app:title="setting_theme" />
-        <!-- app:title="@string/setting_theme" /> -->
+        app:title="@string/theme.title" />
+        <SwitchPreference
+        app:defaultValue="false"
+        app:key="animations"
+        app:title="@string/animations" />
     </PreferenceCategory>
 </PreferenceScreen>

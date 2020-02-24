@@ -12,7 +12,7 @@
     import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
     import { photonSearch } from '~/services/api';
     import { Page } from '@nativescript/core/ui/page';
-    import { localize as l } from '~/helpers/formatter';
+    import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
 
     import { darkColor, primaryColor } from '~/variables';
@@ -55,12 +55,14 @@
     }
 </script>
 
-<page class="page" actionBarHidden="true" >
-    <gridLayout rows="auto,auto,*">
-        <CActionBar title={l('select_location')} modalWindow={true}>
-            <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-        </CActionBar>
-        <label row="1" text={l('click_on_map_to_select_location')} />
-        <cartomap row="2" zoom="10" on:mapReady={onMapReady} />
-    </gridLayout>
-</page>
+<frame>
+    <page actionBarHidden="true">
+        <gridLayout rows="auto,auto,*">
+            <CActionBar title={l('select_location')} modalWindow={true}>
+                <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
+            </CActionBar>
+            <label row="1" text={l('click_on_map_to_select_location')} />
+            <cartomap row="2" zoom="10" on:mapReady={onMapReady} />
+        </gridLayout>
+    </page>
+</frame>

@@ -26,6 +26,9 @@
   <string name="theme.light">"light"</string>
   <string name="theme.auto">"auto"</string>
   <string name="theme.title">"theme"</string>
+  <string name="language">"language"</string>
+  <string name="french">"french"</string>
+  <string name="english">"english"</string>
   <string name="settings.title">"settings"</string>
   <string name="app_name">"NS Forecastie"</string>
   <string name="title_activity_kimera">"NS Forecastie"</string>

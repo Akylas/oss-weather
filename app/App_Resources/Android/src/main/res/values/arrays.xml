@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="themes">
-        <!-- <item name="light">@string/setting_theme_light</item>
-        <item name="dark">@string/setting_theme_dark</item>
-        <item name="black">@string/setting_theme_black</item> -->
-        <!-- <item name="auto">@string/setting_theme_auto</item> -->
         <item name="auto">@string/theme.auto</item>
         <item name="light">@string/theme.light</item>
         <item name="dark">@string/theme.dark</item>
@@ -15,5 +11,13 @@
         <item name="light">light</item>
         <item name="dark">dark</item>
         <item name="black">black</item>
+    </string-array>
+    <string-array name="langs">
+        <item name="fr">@string/french</item>
+        <item name="en">@string/english</item>
+    </string-array>
+    <string-array name="langsValues">
+        <item name="french">fr</item>
+        <item name="en">en</item>
     </string-array>
 </resources>

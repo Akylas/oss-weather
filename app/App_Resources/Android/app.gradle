@@ -6,12 +6,22 @@ android {
     multiDexEnabled true
     minSdkVersion 18
     targetSdkVersion 29
-    versionCode 2
+    versionCode 3
     versionName "1.0.0"
     ndk {
       abiFilters.clear()
     }
   }
+  splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a'
+            // include 'x86'
+            // include 'armeabi-v7a' //only x86 for now to test on emulator
+            universalApk false
+        }
+    }
   aaptOptions {
     additionalParameters "--no-version-vectors"  
   }

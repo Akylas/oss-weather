@@ -3,6 +3,7 @@
     "whitelist": [
         "com.carto*:*",
         "com.akylas.carto.additions*:*",
+        "com.nativescript.swiperefreshlayout*:*",
         "io.sentry*:*",
         "android.support.v4*:*",
         "com.nativescript.collectionview*:*",

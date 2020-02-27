@@ -12,6 +12,9 @@
     "settings":{
       "title":"settings"
     },
+    "english":"english",
+    "french":"french",
+    "language":"language",
     "theme": {
         "title": "theme",
         "auto": "auto",

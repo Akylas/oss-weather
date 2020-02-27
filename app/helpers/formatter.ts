@@ -95,7 +95,7 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
                 return [value.toFixed(1), 'mm'];
             }
         case UNITS.Celcius:
-            return [value.toFixed(1), '°'];
+            return [value.toFixed(1), ''];
         case UNITS.Farenheit:
             return [celciusToFahrenheit(value).toFixed(1), '°'];
         // case UNITS.Duration:
@@ -220,12 +220,12 @@ export function colorForIcon(icon, time, sunrise, sunset) {
 
 const moonIcons = [
     'wi-moon-new',
-    'wi-moon-waxing-cresent-1',
-    'wi-moon-waxing-cresent-2',
-    'wi-moon-waxing-cresent-3',
-    'wi-moon-waxing-cresent-4',
-    'wi-moon-waxing-cresent-5',
-    'wi-moon-waxing-cresent-6',
+    'wi-moon-waxing-crescent-1',
+    'wi-moon-waxing-crescent-2',
+    'wi-moon-waxing-crescent-3',
+    'wi-moon-waxing-crescent-4',
+    'wi-moon-waxing-crescent-5',
+    'wi-moon-waxing-crescent-6',
     'wi-moon-first-quarter',
     'wi-moon-waxing-gibbous-1',
     'wi-moon-waxing-gibbous-2',
@@ -250,6 +250,52 @@ const moonIcons = [
     'wi-moon-new'
 ];
 
+const windIcons = [
+    'wi-wind-beaufort-0',
+    'wi-wind-beaufort-1',
+    'wi-wind-beaufort-2',
+    'wi-wind-beaufort-3',
+    'wi-wind-beaufort-4',
+    'wi-wind-beaufort-5',
+    'wi-wind-beaufort-6',
+    'wi-wind-beaufort-7',
+    'wi-wind-beaufort-8',
+    'wi-wind-beaufort-9',
+    'wi-wind-beaufort-10',
+    'wi-wind-beaufort-11',
+    'wi-wind-beaufort-12'
+];
+
 export function moonIcon(moonPhase) {
     return moonIcons[Math.floor(moonPhase * (moonIcons.length - 1))];
+}
+
+export function windBeaufortIcon(windSpeed) {
+    let beaufortLevel = 0;
+    if (windSpeed >= 118) {
+        beaufortLevel = 12;
+    } else if (windSpeed >= 103) {
+        beaufortLevel = 11;
+    } else if (windSpeed >= 89) {
+        beaufortLevel = 10;
+    } else if (windSpeed >= 75) {
+        beaufortLevel = 9;
+    } else if (windSpeed >= 62) {
+        beaufortLevel = 8;
+    } else if (windSpeed >= 50) {
+        beaufortLevel = 7;
+    } else if (windSpeed >= 39) {
+        beaufortLevel = 6;
+    } else if (windSpeed >= 29) {
+        beaufortLevel = 5;
+    } else if (windSpeed >= 20) {
+        beaufortLevel = 4;
+    } else if (windSpeed >= 12) {
+        beaufortLevel = 3;
+    } else if (windSpeed >= 6) {
+        beaufortLevel = 2;
+    } else if (windSpeed >= 2) {
+        beaufortLevel = 1;
+    }
+    return windIcons[beaufortLevel];
 }

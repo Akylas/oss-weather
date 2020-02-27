@@ -60,12 +60,12 @@
                 iconSrc = '4796-weather-cloudynight';
                 break;
         }
+        // iconSrc = path.join('~/assets/lottie', iconSrc + '.json');
         iconJSON = loadLottieJSON(iconSrc);
     }
 
     $: prefs.on('key:animations', () => {
         autoPlay = prefs.getValue('animations');
-        console.log('autoPlay', 'changed', autoPlay);
     });
 </script>
 

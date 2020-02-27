@@ -108,7 +108,7 @@
     // });
 </script>
 
-<frame>
+<frame backgroundColor="transparent">
     <page actionBarHidden="true">
         <gridLayout rows="auto,auto,*">
             <CActionBar title={l('search_city')} modalWindow={true}>

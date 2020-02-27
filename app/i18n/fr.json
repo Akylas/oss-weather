@@ -40,5 +40,8 @@
   "no_network": "pas de réseau",
   "select": "sélectionner",
   "refresh": "rafraîchir",
-  "animations": "animations"
+  "animations": "animations",
+  "english": "anglais",
+  "french": "français",
+  "language": "langue"
 }

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="language">"langue"</string>
+  <string name="french">"français"</string>
+  <string name="english">"anglais"</string>
   <string name="animations">"animations"</string>
   <string name="refresh">"rafraîchir"</string>
   <string name="select">"sélectionner"</string>

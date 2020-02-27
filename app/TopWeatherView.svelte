@@ -5,7 +5,7 @@
     import AlertView from './AlertView.svelte';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { colorFromTempC, UNITS } from '~/helpers/formatter';
-    import { mdiFontFamily, wiFontFamily } from '~/variables';
+    import { mdiFontFamily, wiFontFamily, textLightColor } from '~/variables';
     import { showBottomSheet } from '~/bottomsheet';
     import { l } from '~/helpers/locale';
     import dayjs from 'dayjs';
@@ -22,7 +22,7 @@
 
     function showAlerts() {
         showBottomSheet({
-            parent:this,
+            parent: this,
             view: AlertView,
             // transparent: gVars.isIOS,
             props: {
@@ -65,30 +65,26 @@
 </script>
 
 <gridLayout rows="auto,2*,*,auto" {height} columns="*,auto">
-    <label marginRight="10" row="0" colSpan="2" fontSize="18" textAlignment="right" verticalTextAlignment="top">
-        <span color="#6B4985" fontFamily={wiFontFamily} fontSize="22" text={item.moonIcon} />
-        <span text={convertTime(item.time, 'dddd')} />
-    </label>
-    <!-- <label row="0" colSpan="2" fontSize="18" marginTop="40" horizontalAlignment="right" text={item.uvIndex} backgroundColor={item.uvIndexColor} /> -->
+    <label marginRight="10" row="0" colSpan="2" fontSize="20" textAlignment="right" verticalTextAlignment="top" text={convertTime(item.time, 'dddd')}/>
 
     <label marginLeft="10" fontSize="12" row="0" rowSpan="2" verticalTextAlignment="top">
         {#if item.temperature !== undefined}
             <!-- <label fontSize="12" row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
-            <span fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} color={colorFromTempC(item.temperature)} />
+            <span fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} />
             <!-- <span text="({formatValueToUnit(item.temperatureMin, UNITS.Celcius)} | {formatValueToUnit(item.temperatureMax, UNITS.Celcius)}){'\n'}" /> -->
             <!-- <span fontFamily={mdiFontFamily} text="mdi-hand" /> -->
             {#if item.temperature !== item.apparentTemperature}
-            <span text={formatValueToUnit(item.apparentTemperature, UNITS.Celcius)} />
+                <span color={textLightColor} text={' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius)} />
             {/if}
             <!-- </label> -->
         {:else}
             <!-- <label row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
-            <span fontSize="26" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} color={colorFromTempC(item.temperatureMin)} />
+            <span fontSize="26" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <span color="#777" fontSize="26" text=" | " />
-            <span fontSize="26" text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} color={colorFromTempC(item.temperatureMax)} />
+            <span fontSize="26" text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
         {/if}
     </label>
-    <label
+    <!-- <label
         marginLeft="10"
         width="24"
         row="1"
@@ -100,29 +96,46 @@
         horizontalAlignment="left"
         verticalAlignment="top"
         verticalTextAlignment="center"
-        textAlignment="center" />
+        textAlignment="center" /> -->
+
+    <wraplayout row="1" width="120" verticalAlignment="top" horizontalAlignment="left">
+        <label width="60" fontSize="14" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`}>
+            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={item.windIcon + '\n'} />
+            <span text={formatValueToUnit(item.windSpeed, UNITS.Speed)} /> -->
+        </label>
+        <label width="60" fontSize="14" color="#999" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`}>
+            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-cloud' + '\n'} />
+            <span text={Math.round(item.cloudCover * 100) + '%'} /> -->
+        </label>
+        <label width="60" fontSize="14" color="#4681C3" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${Math.round(item.precipProbability * 100)}%`}>
+            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-raindrop' + '\n'} />
+            <span text={Math.round(item.precipProbability * 100) + '%'} /> -->
+        </label>
+        <label width="60" fontSize="14" color={item.uvIndexColor} horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>wi-day-sunny</font></big></big><br>${item.uvIndex}`}>
+            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-day-sunny' + '\n'} />
+            <span text={item.uvIndex} /> -->
+        </label>
+        <label width="60" fontSize="14" color="#6B4985" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>`}>
+            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={item.moonIcon + '\n'} /> -->
+            <!-- <span text={Math.round(item.precipProbability * 100) + '%'} /> -->
+        </label>
+    </wraplayout>
     <!-- <label marginLeft="10" row="0" rowSpan="2" fontSize="14" html={textHtmlBottom} verticalTextAlignment="bottom" /> -->
 
-    <label id="testSpan" marginLeft="10" fontSize="14" row="0" rowSpan="2" verticalTextAlignment="bottom">
-        <span fontSize="18" fontFamily={wiFontFamily} color="#4681C3" text={item.precipProbability > 0.05 ? 'wi-umbrella' : ''} />
-        <span text=" {item.precipProbability > 0.05 ? Math.round(item.precipProbability * 100) + '%' + '\n' : ''}" />
-        <span fontSize="18" text={item.windIcon} />
-        <span text=" {formatValueToUnit(item.windSpeed, UNITS.Speed) + '\n'}" />
-        <span fontFamily={wiFontFamily} fontSize="16" text="wi-cloud" />
-        <span text=" {Math.round(item.cloudCover * 100)}%{'\n'}" />
-        <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunrise" color="#ffa500" />
+    <label id="testSpan" marginLeft="10" fontSize="14" row="0" rowSpan="2" verticalTextAlignment="bottom" html={`<font face="${wiFontFamily}" color="#ffa500">wi-sunrise</font>${convertTime(item.sunriseTime, 'HH:mm')}<font face="${wiFontFamily}" color="#ff7200">wi-sunset</font>${convertTime(item.sunsetTime, 'HH:mm')}`}>
+
+        <!-- <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunrise" color="#ffa500" />
         <span text=" {convertTime(item.sunriseTime, 'HH:mm')} " />
         <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunset" color="#ff7200" />
-        <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" />
+        <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" /> -->
     </label>
     {#if alerts && alerts.length > 0}
         <label row="0" textAlignment="center" color={alerts[0].alertColor} colSpan="2" fontSize="36" fontFamily={mdiFontFamily} text="mdi-alert" on:tap={showAlerts} />
     {/if}
     {#if item.hourlyData}
-        <stacklayout row="2" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center">
+        <stacklayout row="2" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
             <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
             <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} />
-
         </stacklayout>
     {/if}
     <stacklayout rowSpan="2" col="1" verticalAlignment="center" marginTop="20">

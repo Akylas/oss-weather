@@ -1,4 +1,4 @@
-import { DomTraceCategory, registerElement, registerNativeViewElement } from 'svelte-native/dom';
+import { registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 
 import { setMapPosKeys } from 'nativescript-carto/core';
@@ -17,7 +17,7 @@ registerNativeViewElement('activityIndicator', () => require('nativescript-mater
 registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
 registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
 registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
-registerNativeViewElement('pullrefresh', () => require('@nstudio/nativescript-pulltorefresh').PullToRefresh);
+registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pulltorefresh').PullToRefresh);
 
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();

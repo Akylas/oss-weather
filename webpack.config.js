@@ -1,4 +1,4 @@
-const { join, relative, resolve, sep } = require('path');
+const { dirname, join, relative, resolve, sep } = require('path');
 
 const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -175,15 +175,16 @@ module.exports = (env, params = {}) => {
     const forecastSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'app/css/forecastfont.scss')).toString());
     const forecastIcons = JSON.parse(`{${forecastSymbols.variables[forecastSymbols.variables.length - 1].value.replace(/'forecastfont-(\w+)' (F|f|0)(.*?)([,\n]|$)/g, '"$1": "$2$3"$4')}}`);
 
-    const weatherIcons = JSON.parse(
-        `{${[
-            ...readFileSync(resolve(projectRoot, 'node_modules/weather-icons/weather-icons/variables.less'))
-                .toString()
-                .matchAll(/@(.*?)\s*:\s*"\\(.*?)"/g)
-        ]
-            .map(r => `"${r[1]}": "${r[2]}"`)
-            .join(',')}}`
-    );
+    const weatherIconsCss = resolve(projectRoot, 'app/css/weather-icons/weather-icons-variables.scss');
+    const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function(acc, value) {
+        console.log('test', resolve(dirname(weatherIconsCss), value.filepath));
+        return acc.concat(symbolsParser.parseSymbols(readFileSync(resolve(dirname(weatherIconsCss), value.filepath)).toString()).variables);
+    }, []);
+    // console.log('weatherSymbols', weatherSymbols);
+    const weatherIcons = weatherSymbols.reduce(function(acc, value) {
+        acc[value.name.slice(1)] = '\\u' + value.value.slice(2, -1);
+        return acc;
+    }, {});
     // console.log('weatherIcons', weatherIcons);
 
     const scssPrepend = `$lato-fontFamily: ${platform === 'android' ? 'res/lato' : 'Lato'};
@@ -191,7 +192,7 @@ $forecastfont-fontFamily: ${platform === 'android' ? 'iconvault_forecastfont' : 
 $wi-fontFamily: ${platform === 'android' ? 'weathericons-regular-webfont' : 'Weather Icons'};
 $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Material Design Icons'};`;
 
-    console.log('scssPrepend', scssPrepend);
+    // console.log('scssPrepend', scssPrepend);
     nsWebpack.processAppComponents(appComponents, platform);
     const config = {
         mode,
@@ -216,7 +217,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             hashSalt
         },
         resolve: {
-            extensions: ['.ts', '.mjs', '.js', '.svelte', '.scss', '.css'],
+            extensions: ['.mjs', '.js', '.ts', '.svelte', '.scss', '.css'],
             // Resolve {N} system modules from tns-core-modules
             modules: [resolve(projectRoot, `node_modules/${coreModulesPackageName}`), resolve(projectRoot, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'],
             alias,
@@ -350,12 +351,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                             loader: 'string-replace-loader',
                             options: {
                                 search: 'wi-([a-z0-9-]+)',
-                                replace: (match, p1, offset, string) => {
-                                    if (weatherIcons[p1]) {
-                                        return String.fromCharCode(parseInt(weatherIcons[p1], 16));
-                                    }
-                                    return match;
-                                },
+                                replace: (match, p1, offset, string) => weatherIcons[p1] || match,
                                 flags: 'g'
                             }
                         }
@@ -494,10 +490,10 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     {
                         from: '../node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
                         to: 'fonts'
-                    },
-                    {
-                        from: '../node_modules/weather-icons/font/weathericons-regular-webfont.ttf',
-                        to: 'fonts'
+                        // },
+                        // {
+                        //     from: '../node_modules/weather-icons/font/weathericons-regular-webfont.ttf',
+                        //     to: 'fonts'
                     }
                 ].concat(params.copyPlugin || []),
                 {
@@ -619,7 +615,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 chunk: 'vendor',
                 requireModules: ['tns-core-modules/bundle-entry-points'],
                 projectRoot,
-                targetArchs: params.targetArchs,
+                targetArchs: params.targetArchs || ['arm'],
                 snapshotInDocker,
                 skipSnapshotTools,
                 useLibs

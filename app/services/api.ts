@@ -5,7 +5,7 @@ import * as http from '@nativescript/core/http';
 import dayjs from 'dayjs';
 import Color from 'tinycolor2';
 // const { getSunrise, getSunset } = require('sunrise-sunset-js');
-import { colorForIcon, colorForUV, moonIcon } from '~/helpers/formatter';
+import { colorForIcon, colorForUV, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { IMapPos } from '~/helpers/geo';
 import { CustomError } from '~/utils/error';
@@ -479,6 +479,7 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
             .toRgbString();
         d.uvIndexColor = colorForUV(d.uvIndex);
         d.moonIcon = moonIcon(d.moonPhase);
+        d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
         d.sunriseTime = d.sunriseTime * 1000;
         d.sunsetTime = d.sunsetTime * 1000;
         d.windIcon = windIcon(d.windBearing);
@@ -518,6 +519,7 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     result.hourly.data.forEach((h, i) => {
         h.time = h.time * 1000;
         h.windIcon = windIcon(h.windBearing);
+        h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
         const dateStart = dayjs(h.time).startOf('d');
         if (!dateStart.isBefore(dayEnd)) {
             dailyIndex++;

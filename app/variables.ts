@@ -1,6 +1,7 @@
 import { locals } from '~/variables.module.scss';
 import { screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
+import { prefs } from '~/services/preferences';
 
 console.log('loading variables', locals);
 
@@ -29,3 +30,21 @@ if (gVars.isAndroid) {
 } else {
     navigationBarHeight = 0;
 }
+
+export let textColor;
+export let textLightColor;
+
+let theme;
+function updateThemeColors() {
+    theme = prefs.getValue('theme', 'dark') ;
+    if (theme === 'light') {
+        textColor = '#000000';
+        textLightColor = '#444444';
+    } else {
+        textColor = '#ffffff';
+        textLightColor = '#aaaaaa';
+    }
+}
+
+updateThemeColors();
+prefs.on('key:theme', updateThemeColors);

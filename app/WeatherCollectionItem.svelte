@@ -3,19 +3,22 @@
     import WeatherIcon from './WeatherIcon.svelte';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
-    import { mdiFontFamily, wiFontFamily } from '~/variables';
+    import { mdiFontFamily, wiFontFamily, textLightColor } from '~/variables';
     export let item;
     let textHtml;
     $: {
-        textHtml = `<big><font color="${colorFromTempC(item.temperature)}">${formatValueToUnit(item.temperature, UNITS.Celcius)}</font></big><br>
-        ${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}<br>
-        ${item.summary}`;
+        textHtml = `<big>${formatValueToUnit(item.temperature, UNITS.Celcius)}°</big><br>
+        <font color="${textLightColor}">${item.summary}</font>`;
+    }
+    let textBottomHtml;
+    $: {
+        textBottomHtml = `<big><big>${item.windIcon}</big></big> ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`
     }
 </script>
 
-<gridlayout height="100%" rows="auto,auto,auto,*" paddingTop="10">
+<gridlayout height="100%" rows="auto,auto,auto,*,20" paddingTop="10">
     <label textAlignment="center" fontSize="14" fontWeight="bold" text={convertTime(item.time, 'HH:mm')} />
-    <WeatherIcon row="1" icon={item.icon} />
+    <WeatherIcon row="1" icon={item.icon} marginTop="4" marginBottom="4"/>
     <!-- <label width="100%" textAlignment="center">
         <span fontSize="10" text={item.summary + '\n'} />
         <span fontSize="14" text={formatValueToUnit(item.temperature, UNITS.Celcius)} color={colorFromTempC(item.temperature)} />
@@ -23,6 +26,8 @@
     <!-- <label row="2" fontSize="12" paddingTop="5" horizontalAlignment="center" textAlignment="center" html={textHtml}/> -->
 
     <label row="2" fontSize="12" textAlignment="center" html={textHtml} />
+    <label row="3" fontSize="11" textAlignment="center" verticalTextAlignment="bottom" html={textBottomHtml} />
+    <!-- <label row="3" fontSize="12" textAlignment="center" html={textBottomHtml} /> -->
     <!-- <label row="2" fontSize="12" textAlignment="center">
         <span fontSize="16" text={formatValueToUnit(item.temperature, UNITS.Celcius) + '\n'} color={colorFromTempC(item.temperature)} />
         <span fontFamily={wiFontFamily} fontSize="18" text={item.windIcon} />
@@ -39,8 +44,7 @@
     </label> -->
 
     <label
-        row="3"
-        verticalAlignment="bottom"
+        row="4"
         backgroundColor={item.color}
         height="20"
         text={item.precipProbability > 0.05 && item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + ` (${Math.round(item.precipProbability * 100)}%)` : ''}

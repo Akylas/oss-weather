@@ -21,6 +21,7 @@
     import { colorFromTempC, UNITS } from '~/helpers/formatter';
     import { showBottomSheet } from '~/bottomsheet';
     import { prefs } from '~/services/preferences';
+    import { onLanguageChanged } from '~/helpers/locale';
 
     // import LineChart from 'nativescript-chart/charts/LineChart';
     // import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
@@ -360,6 +361,13 @@
         }
 
     });
+
+    onLanguageChanged(lang=>{
+        console.log('refresh triggered by lang change');
+        refresh();
+
+    })
+
 </script>
 
 <page bind:this={page} actionBarHidden="true" id="home">
@@ -375,7 +383,7 @@
                     <TopWeatherView {item} height={topHeight} />
                 </Template>
                 <Template key="info" let:item>
-                    <stacklayout class="alertView" row="2" colSpan="2" orientation="horizontal" verticalAlignment="center">
+                    <stacklayout class="alertView" row="2" colSpan="2" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
                         <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.icon} />
                         <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
                     </stacklayout>

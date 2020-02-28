@@ -2,6 +2,7 @@ import { locals } from '~/variables.module.scss';
 import { screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
 import { prefs } from '~/services/preferences';
+import { getString } from '@nativescript/core/application-settings';
 
 console.log('loading variables', locals);
 
@@ -36,7 +37,7 @@ export let textLightColor;
 
 let theme;
 function updateThemeColors() {
-    theme = prefs.getValue('theme', 'dark') ;
+    theme = getString('theme', 'dark') ;
     if (theme === 'light') {
         textColor = '#000000';
         textLightColor = '#444444';

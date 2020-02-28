@@ -16,10 +16,11 @@
 <script>
     import { prefs } from '~/services/preferences';
     import { wiFontFamily } from '~/variables';
+    import { getBoolean } from '@nativescript/core/application-settings';
 
     export let icon;
     export let fontSize = 40;
-    export let autoPlay = prefs.getValue('animations', false);
+    export let autoPlay = getBoolean('animations', false);
 
     let iconSrc;
     let iconJSON;
@@ -65,7 +66,7 @@
     }
 
     $: prefs.on('key:animations', () => {
-        autoPlay = prefs.getValue('animations');
+        autoPlay = getBoolean('animations');
     });
 </script>
 

@@ -12,16 +12,16 @@ android {
       abiFilters.clear()
     }
   }
-  splits {
-        abi {
-            enable true
-            reset()
-            include 'armeabi-v7a'
-            // include 'x86'
-            // include 'armeabi-v7a' //only x86 for now to test on emulator
-            universalApk false
-        }
-    }
+  // splits {
+  //       abi {
+  //           enable true
+  //           reset()
+  //           include 'armeabi-v7a'
+  //           // include 'x86'
+  //           // include 'armeabi-v7a' //only x86 for now to test on emulator
+  //           universalApk false
+  //       }
+  //   }
   aaptOptions {
     additionalParameters "--no-version-vectors"  
   }

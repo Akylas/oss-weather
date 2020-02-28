@@ -6,13 +6,14 @@ import dayjs from 'dayjs';
 const supportedLanguages = ['en', 'fr'];
 import { getString, setString } from '@nativescript/core/application-settings';
 
+
 function setLang(newLang) {
     newLang = getOwmLanguage(newLang);
     if (supportedLanguages.indexOf(newLang) === -1) {
         newLang = 'en';
     }
     lang = newLang;
-    console.log('changed lang', lang);
+    console.log('changed lang', lang, device.region);
     require(`dayjs/locale/${newLang}`);
     dayjs.locale(lang); // switch back to default English locale globally
     const localeData = require(`~/i18n/${lang}.json`);
@@ -24,11 +25,11 @@ export function onLanguageChanged(callback) {
     onLanguageChangedCallbacks.push(callback);
 }
 
-let deviceLanguage = prefs.getValue('language');
+let deviceLanguage = getString('language');
 if (!deviceLanguage) {
     deviceLanguage = device.language.split('-')[0].toLowerCase();
     setString('language', deviceLanguage);
-    console.log('prefs language not set', deviceLanguage, prefs.getValue('language'));
+    // console.log('prefs language not set', deviceLanguage, getString('language'));
 }
 // console.log('deviceLanguage', deviceLanguage);
 function getOwmLanguage(language) {
@@ -50,7 +51,7 @@ export let lang;
 // const rtf = new Intl.RelativeTimeFormat('es');
 
 prefs.on('key:language', () => {
-    const newLanguage = prefs.getValue('language') as string;
+    const newLanguage = getString('language') ;
     console.log('language changed', newLanguage);
     // on pref change we are updating
     if (newLanguage === lang) {

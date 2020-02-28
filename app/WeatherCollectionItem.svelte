@@ -8,11 +8,11 @@
     let textHtml;
     $: {
         textHtml = `<big>${formatValueToUnit(item.temperature, UNITS.Celcius)}°</big><br>
-        <font color="${textLightColor}">${item.summary}</font>`;
+        `;
     }
     let textBottomHtml;
     $: {
-        textBottomHtml = `<big><big>${item.windIcon}</big></big> ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`
+        textBottomHtml = `<font color="${textLightColor}">${item.summary}</font><br><big><big>${item.windIcon}</big></big> ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`
     }
 </script>
 
@@ -46,6 +46,7 @@
     <label
         row="4"
         backgroundColor={item.color}
+        color="white"
         height="20"
         text={item.precipProbability > 0.05 && item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + ` (${Math.round(item.precipProbability * 100)}%)` : ''}
         textAlignment="center"

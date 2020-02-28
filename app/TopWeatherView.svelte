@@ -64,10 +64,10 @@
     // }
 </script>
 
-<gridLayout rows="auto,2*,*,auto" {height} columns="*,auto">
-    <label marginRight="10" row="0" colSpan="2" fontSize="20" textAlignment="right" verticalTextAlignment="top" text={convertTime(item.time, 'dddd')}/>
+<gridLayout rows="auto,auto,2*,*,auto" {height} columns="*,auto">
+    <label marginRight="10" row="0" colSpan="2" fontSize="20" textAlignment="right" verticalTextAlignment="top" text={convertTime(item.time, 'dddd')} />
 
-    <label marginLeft="10" fontSize="12" row="0" rowSpan="2" verticalTextAlignment="top">
+    <label marginLeft="10" fontSize="12" row="0" verticalTextAlignment="top">
         {#if item.temperature !== undefined}
             <!-- <label fontSize="12" row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
             <span fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} />
@@ -98,31 +98,76 @@
         verticalTextAlignment="center"
         textAlignment="center" /> -->
 
-    <wraplayout row="1" width="120" verticalAlignment="top" horizontalAlignment="left">
-        <label width="60" fontSize="14" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`}>
+    <wraplayout row="1" colSpan="2" verticalAlignment="top" horizontalAlignment="center">
+        <label
+            width="60"
+            fontSize="14"
+            horizontalAlignment="left"
+            verticalAlignment="top"
+            textAlignment="center"
+            paddingTop="10"
+            html={`<big><big><font face=${wiFontFamily}>${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={item.windIcon + '\n'} />
             <span text={formatValueToUnit(item.windSpeed, UNITS.Speed)} /> -->
         </label>
-        <label width="60" fontSize="14" color="#999" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`}>
+        <label
+            width="60"
+            fontSize="14"
+            color={item.cloudColor}
+            visibility={item.cloudCover > 0.1 ? 'visible':'collapsed'}
+            horizontalAlignment="left"
+            verticalAlignment="top"
+            textAlignment="center"
+            paddingTop="10"
+            html={`<big><big><font face=${wiFontFamily}>wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-cloud' + '\n'} />
             <span text={Math.round(item.cloudCover * 100) + '%'} /> -->
         </label>
-        <label width="60" fontSize="14" color="#4681C3" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${Math.round(item.precipProbability * 100)}%`}>
+        <label
+            width="60"
+            fontSize="14"
+            color="#4681C3"
+            horizontalAlignment="left"
+            verticalAlignment="top"
+            textAlignment="center"
+            paddingTop="10"
+            html={`<big><big><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${Math.round(item.precipProbability * 100)}%`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-raindrop' + '\n'} />
             <span text={Math.round(item.precipProbability * 100) + '%'} /> -->
         </label>
-        <label width="60" fontSize="14" color={item.uvIndexColor} horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>wi-day-sunny</font></big></big><br>${item.uvIndex}`}>
+        <label
+            width="60"
+            fontSize="14"
+            color={item.uvIndexColor}
+            horizontalAlignment="left"
+            verticalAlignment="top"
+            textAlignment="center"
+            paddingTop="10"
+            html={`<big><big><font face=${wiFontFamily}>wi-day-sunny</font></big></big><br>${item.uvIndex}`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-day-sunny' + '\n'} />
             <span text={item.uvIndex} /> -->
         </label>
-        <label width="60" fontSize="14" color="#6B4985" horizontalAlignment="left" verticalAlignment="top" textAlignment="center" paddingTop="10" html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>`}>
+        <label
+            width="60"
+            fontSize="14"
+            color="#6B4985"
+            horizontalAlignment="left"
+            verticalAlignment="top"
+            textAlignment="center"
+            paddingTop="10"
+            html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>${l('moon')}`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={item.moonIcon + '\n'} /> -->
-            <!-- <span text={Math.round(item.precipProbability * 100) + '%'} /> -->
         </label>
     </wraplayout>
     <!-- <label marginLeft="10" row="0" rowSpan="2" fontSize="14" html={textHtmlBottom} verticalTextAlignment="bottom" /> -->
 
-    <label id="testSpan" marginLeft="10" fontSize="14" row="0" rowSpan="2" verticalTextAlignment="bottom" html={`<font face="${wiFontFamily}" color="#ffa500">wi-sunrise</font>${convertTime(item.sunriseTime, 'HH:mm')}<font face="${wiFontFamily}" color="#ff7200">wi-sunset</font>${convertTime(item.sunsetTime, 'HH:mm')}`}>
+    <label
+        id="testSpan"
+        marginLeft="10"
+        fontSize="14"
+        row="2"
+        verticalTextAlignment="bottom"
+        html={`<font face="${wiFontFamily}" color="#ffa500">wi-sunrise</font>${convertTime(item.sunriseTime, 'HH:mm')}<font face="${wiFontFamily}" color="#ff7200">wi-sunset</font>${convertTime(item.sunsetTime, 'HH:mm')}`}>
 
         <!-- <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunrise" color="#ffa500" />
         <span text=" {convertTime(item.sunriseTime, 'HH:mm')} " />
@@ -130,18 +175,31 @@
         <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" /> -->
     </label>
     {#if alerts && alerts.length > 0}
-        <label row="0" textAlignment="center" color={alerts[0].alertColor} colSpan="2" fontSize="36" fontFamily={mdiFontFamily} text="mdi-alert" on:tap={showAlerts} />
+        <button
+            variant="text"
+            row="2"
+            marginLeft="10"
+            verticalAlignment="center"
+            horizontalAlignment="left"
+            rippleColor={alerts[0].alertColor}
+            color={alerts[0].alertColor}
+            fontSize="36"
+            fontFamily={mdiFontFamily}
+            text="mdi-alert"
+            on:tap={showAlerts}
+            width="50"
+            height="50" />
     {/if}
     {#if item.hourlyData}
-        <stacklayout row="2" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+        <stacklayout row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
             <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
             <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} />
         </stacklayout>
     {/if}
-    <stacklayout rowSpan="2" col="1" verticalAlignment="center" marginTop="20">
+    <stacklayout row="2" rowSpan="1" col="1" verticalAlignment="center">
         <WeatherIcon fontSize="140" icon={item.icon} />
         <label marginRight="10" fontSize="14" fontStyle="italic" textAlignment="right" text={item.summary} verticalAlignment="top" />
     </stacklayout>
-    <label marginRight="10" row="1" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
-    <HourlyView row="3" colSpan="2" items={item.hourly} scrollIndex="0" />
+    <label marginRight="10" row="2" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
+    <HourlyView row="4" colSpan="2" items={item.hourly} scrollIndex="0" />
 </gridLayout>

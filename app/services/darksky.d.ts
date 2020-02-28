@@ -37,6 +37,7 @@ export interface HourlyData {
     windIcon?: string;
     windBeaufortIcon?: string;
     cloudCover: number;
+    cloudColor?: string;
     uvIndex: number;
     visibility: number;
     ozone: number;
@@ -84,6 +85,7 @@ export interface DailyData {
     moonIcon?: string;
     color?: string;
     uvIndexColor?: string;
+    cloudColor?: string;
     cloudCover: number;
     uvIndex: number;
     uvIndexTime: number;

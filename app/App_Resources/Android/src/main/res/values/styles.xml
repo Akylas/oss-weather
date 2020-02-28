@@ -9,7 +9,8 @@
         <item name="colorSecondary">@color/ns_secondary</item>
         <item name="colorAccent">@color/ns_accent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
-    </style>
+        <item name="android:fontFamily">@font/lato</item>
+     </style>
     <!-- theme to use FOR launch screen-->
     <style name="LaunchScreenThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_screen</item>
@@ -19,6 +20,7 @@
     <style name="LaunchScreenTheme" parent="LaunchScreenThemeBase"></style>
     <!-- theme to use AFTER launch screen is loaded-->
     <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:fontFamily">@font/lato</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="colorPrimary">@color/ns_primary</item>
         <item name="colorPrimaryDark">@color/ns_primaryDark</item>

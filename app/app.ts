@@ -43,6 +43,7 @@ CollectionViewElement.register();
 startSentry();
 
 import { prefs } from '~/services/preferences';
+import { getString } from '@nativescript/core/application-settings';
 import Theme from '@nativescript/theme';
 import { android as androidApp, ios as iosApp, on as onApp, systemAppearance } from '@nativescript/core/application';
 
@@ -87,17 +88,14 @@ function applyTheme(theme: Themes) {
     }
 }
 
-let theme: Themes;
-
-// theme = 'light';
-theme = prefs.getValue('theme', 'dark') || 'dark';
+let theme: Themes = getString('theme', 'dark') || 'dark' as any;
 // on startup we need to say what we are using
 console.log('applying app theme', theme);
 onApp('launch', () => {
     applyTheme(theme);
 });
 prefs.on('key:theme', () => {
-    const newTheme = prefs.getValue('theme') as Themes;
+    const newTheme = getString('theme') as Themes;
     // on pref change we are updating
     if (newTheme === theme) {
         return;

@@ -198,17 +198,17 @@ export function colorForIcon(icon, time, sunrise, sunset) {
         // break;
         // return cloudyColor;
         // break;
-        case 'partly-cloudy-night':
-        case 'partly-cloudy-day':
-        case 'partly-cloudy':
-            return scatteredCloudyColor;
-        case 'cloudy':
-        case 'fog':
-            return cloudyColor;
-        case 'rain':
-            return rainColor;
-        case 'snow':
-            return snowColor;
+        // case 'partly-cloudy-night':
+        // case 'partly-cloudy-day':
+        // case 'partly-cloudy':
+        //     return scatteredCloudyColor;
+        // case 'cloudy':
+        // case 'fog':
+        //     return cloudyColor;
+        // case 'rain':
+        //     return rainColor;
+        // case 'snow':
+        //     return snowColor;
         default:
             if (time > sunset || time < sunrise) {
                 return nightColor;

@@ -177,7 +177,6 @@ module.exports = (env, params = {}) => {
 
     const weatherIconsCss = resolve(projectRoot, 'app/css/weather-icons/weather-icons-variables.scss');
     const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function(acc, value) {
-        console.log('test', resolve(dirname(weatherIconsCss), value.filepath));
         return acc.concat(symbolsParser.parseSymbols(readFileSync(resolve(dirname(weatherIconsCss), value.filepath)).toString()).variables);
     }, []);
     // console.log('weatherSymbols', weatherSymbols);
@@ -251,6 +250,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                             return (
                                 /[\\/]node_modules[\\/]/.test(moduleName) ||
                                 /@nativescript\/core/.test(moduleName) ||
+                                /nativescript-core/.test(moduleName) || // this one is for linked nativescript core build
                                 appComponents.some(comp => comp === moduleName) ||
                                 (params.chunkTestCallback && params.chunkTestCallback(moduleName))
                             );
@@ -615,7 +615,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 chunk: 'vendor',
                 requireModules: ['tns-core-modules/bundle-entry-points'],
                 projectRoot,
-                targetArchs: params.targetArchs || ['arm'],
+                // targetArchs: params.targetArchs || ['arm'],
                 snapshotInDocker,
                 skipSnapshotTools,
                 useLibs
@@ -629,18 +629,18 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
         config.plugins.push(new webpack.HotModuleReplacementPlugin());
     }
 
-    if (!!production) {
-        config.plugins.push(
-            new ForkTsCheckerWebpackPlugin({
-                tsconfig: resolve(tsconfig),
-                async: false,
-                useTypescriptIncrementalApi: true,
-                checkSyntacticErrors: true,
-                memoryLimit: 4096,
-                workers: 1
-            })
-        );
-    }
+    // if (!!production) {
+    //     config.plugins.push(
+    //         new ForkTsCheckerWebpackPlugin({
+    //             tsconfig: resolve(tsconfig),
+    //             async: false,
+    //             useTypescriptIncrementalApi: true,
+    //             checkSyntacticErrors: true,
+    //             memoryLimit: 4096,
+    //             workers: 1
+    //         })
+    //     );
+    // }
 
     return config;
 };

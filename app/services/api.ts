@@ -468,21 +468,24 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     result.daily.data.forEach(d => {
         d.time = d.time * 1000;
         const color = colorForIcon(d.icon, d.time, d.sunriseTime, d.sunsetTime);
-        let alpha = 1;
-        if (/rain|snow/.test(d.icon)) {
-            alpha = d.precipProbability;
+        if (/rain/.test(d.icon)) {
+            d.color = Color.mix('#FFC82F', '#4681C3', d.precipProbability * 100).toRgbString();
+        } else if (/snow/.test(d.icon)) {
+            d.color = Color.mix('#FFC82F', '#ACE8FF', d.precipProbability * 100).toRgbString();
         } else if (/cloudy/.test(d.icon)) {
-            alpha = d.cloudCover;
+            d.color = Color.mix('#FFC82F', '#929292', d.cloudCover * 100).toRgbString();
+        } else {
+            d.color = color;
         }
-        d.color = Color(color)
-            .setAlpha(alpha)
-            .toRgbString();
         d.uvIndexColor = colorForUV(d.uvIndex);
         d.moonIcon = moonIcon(d.moonPhase);
         d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
         d.sunriseTime = d.sunriseTime * 1000;
         d.sunsetTime = d.sunsetTime * 1000;
         d.windIcon = windIcon(d.windBearing);
+        d.cloudColor = Color('#929292')
+            .setAlpha(d.cloudCover)
+            .toRgbString();
         d.hourly = [];
     });
     console.log('minutely', result.minutly);
@@ -528,14 +531,31 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         }
 
         const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
-        let alpha = 1;
-        if (/rain|snow/.test(h.icon)) {
-            alpha = h.precipProbability;
+
+        if (/rain/.test(h.icon)) {
+            h.color = Color.mix(color, '#4681C3', h.precipProbability * 100).toRgbString();
+            // alpha = d.precipProbability;
+        } else if (/snow/.test(h.icon)) {
+            h.color = Color.mix(color, '#ACE8FF', h.precipProbability * 100).toRgbString();
+            // alpha = d.precipProbability;
         } else if (/cloudy/.test(h.icon)) {
-            alpha = h.cloudCover;
+            h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
+            // alpha = d.cloudCover;
+        } else {
+            h.color = color;
         }
-        h.color = Color(color)
-            .setAlpha(alpha)
+        // let alpha = 1;
+        // if (/rain|snow/.test(h.icon)) {
+        //     alpha = h.precipProbability;
+        // } else if (/cloudy/.test(h.icon)) {
+        //     alpha = h.cloudCover;
+        // }
+        // h.color = Color(color)
+        //     .setAlpha(alpha)
+        //     .toRgbString();
+
+        h.cloudColor = Color('#929292')
+            .setAlpha(h.cloudCover)
             .toRgbString();
         // console.log('handling hourly', i,dailyIndex, convertTime(h.time, 'dddd  HH:mm'),convertTime(dayEnd, 'dddd'),convertTime(dateStart, 'dddd'), dateStart.isBefore(dayEnd));
 

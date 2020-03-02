@@ -1,9 +1,37 @@
 import { ItemEventData, ItemsSource } from '@nativescript/core/ui/list-view';
 import { View } from '@nativescript/core/ui/core/view';
+import { ViewBase } from '@nativescript/core/ui/core/view-base';
 import { NativeViewElementNode, TemplateElement, ViewNode, createElement, logger, registerElement } from 'svelte-native-akylas/dom';
 import { flush } from 'svelte/internal';
 import { CollectionView } from 'nativescript-collectionview';
 import { profile } from '@nativescript/core/profiling';
+
+declare module '@nativescript/core/ui/core/view-base' {
+    interface ViewBase {
+        _recursiveSuspendNativeUpdates(type);
+        _recursiveResumeNativeUpdates(type);
+        _recursiveBatchUpdates<T>(callback: () => T): T;
+    }
+}
+ViewBase.prototype._recursiveSuspendNativeUpdates = profile('_recursiveSuspendNativeUpdates', function(type) {
+    // console.log('_recursiveSuspendNativeUpdates', this, this._suspendNativeUpdatesCount);
+    this._suspendNativeUpdates(type);
+    this.eachChild(c=>c._recursiveSuspendNativeUpdates(type));
+});
+ViewBase.prototype._recursiveResumeNativeUpdates = profile('_recursiveResumeNativeUpdates', function(type) {
+    // console.log('_recursiveResumeNativeUpdates', this, this._suspendNativeUpdatesCount);
+    this._resumeNativeUpdates(type);
+    this.eachChild(c=>c._recursiveResumeNativeUpdates(type));
+});
+ViewBase.prototype._recursiveBatchUpdates = profile('_recursiveBatchUpdates', function <T>(callback: () => T): T {
+    try {
+        this._recursiveSuspendNativeUpdates(0);
+
+        return callback();
+    } finally {
+        this._recursiveResumeNativeUpdates(0);
+    }
+});
 
 class SvelteKeyedTemplate {
     _key: string;
@@ -126,9 +154,10 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
                 // }
             }
         } else {
-            // console.log('updateListItem', args.index, props.item);
-            componentInstance.$set(props);
-            flush(); // we need to flush to make sure update is applied right away
+            _view._recursiveBatchUpdates(()=>{
+                componentInstance.$set(props);
+                flush(); // we need to flush to make sure update is applied right away
+            });
         }
     }
 

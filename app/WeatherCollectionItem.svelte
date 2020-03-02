@@ -7,7 +7,7 @@
     export let item;
     let textHtml;
     $: {
-        textHtml = `<big>${formatValueToUnit(item.temperature, UNITS.Celcius)}°</big><br>
+        textHtml = `<big>${formatValueToUnit(item.temperature, UNITS.Celcius)}°</big>
         `;
     }
     let textBottomHtml;

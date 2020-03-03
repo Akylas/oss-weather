@@ -16,14 +16,16 @@ declare module '@nativescript/core/ui/core/view-base' {
 ViewBase.prototype._recursiveSuspendNativeUpdates = profile('_recursiveSuspendNativeUpdates', function(type) {
     // console.log('_recursiveSuspendNativeUpdates', this, this._suspendNativeUpdatesCount);
     this._suspendNativeUpdates(type);
-    this.eachChild(c=>c._recursiveSuspendNativeUpdates(type));
+    this.eachChild(c => c._recursiveSuspendNativeUpdates(type));
 });
 ViewBase.prototype._recursiveResumeNativeUpdates = profile('_recursiveResumeNativeUpdates', function(type) {
     // console.log('_recursiveResumeNativeUpdates', this, this._suspendNativeUpdatesCount);
     this._resumeNativeUpdates(type);
-    this.eachChild(c=>c._recursiveResumeNativeUpdates(type));
+    this.eachChild(c => c._recursiveResumeNativeUpdates(type));
 });
-ViewBase.prototype._recursiveBatchUpdates = profile('_recursiveBatchUpdates', function <T>(callback: () => T): T {
+
+// right now _recursiveBatchUpdates suppose no view is added in the callback. If so it will crash from _resumeNativeUpdates
+ViewBase.prototype._recursiveBatchUpdates = profile('_recursiveBatchUpdates', function<T>(callback: () => T): T {
     try {
         this._recursiveSuspendNativeUpdates(0);
 
@@ -154,7 +156,7 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
                 // }
             }
         } else {
-            _view._recursiveBatchUpdates(()=>{
+            _view._recursiveBatchUpdates(() => {
                 componentInstance.$set(props);
                 flush(); // we need to flush to make sure update is applied right away
             });

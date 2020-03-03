@@ -48,7 +48,7 @@
 
     let alerts;
     $: {
-        const now = Date.now() / 1000 + 3600;
+        const now = Date.now() + 3600;
         alerts = item.alerts && item.alerts.filter(a => a.expires > now);
     }
     // $: {
@@ -67,23 +67,23 @@
 <gridLayout rows="auto,auto,2*,*,auto" {height} columns="*,auto">
     <label marginRight="10" row="0" colSpan="2" fontSize="20" textAlignment="right" verticalTextAlignment="top" text={convertTime(item.time, 'dddd')} />
 
-    <label marginLeft="10" fontSize="12" row="0" verticalTextAlignment="top">
-        {#if item.temperature !== undefined}
+    {#if item.temperature !== undefined}
+        <label marginLeft="10" fontSize="12" row="0" verticalTextAlignment="top">
             <!-- <label fontSize="12" row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
             <span fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} />
             <!-- <span text="({formatValueToUnit(item.temperatureMin, UNITS.Celcius)} | {formatValueToUnit(item.temperatureMax, UNITS.Celcius)}){'\n'}" /> -->
             <!-- <span fontFamily={mdiFontFamily} text="mdi-hand" /> -->
-            {#if item.temperature !== item.apparentTemperature}
-                <span color={textLightColor} text={' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius)} />
-            {/if}
+            <span color={textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : ''} />
             <!-- </label> -->
-        {:else}
+        </label>
+    {:else}
+        <label marginLeft="10" fontSize="12" row="0" verticalTextAlignment="top">
             <!-- <label row="0" rowSpan="2" paddingLeft="10" verticalAlignment="top"> -->
             <span fontSize="26" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <span color="#777" fontSize="26" text=" | " />
             <span fontSize="26" text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
-        {/if}
-    </label>
+        </label>
+    {/if}
     <!-- <label
         marginLeft="10"
         width="24"
@@ -114,7 +114,7 @@
             width="60"
             fontSize="14"
             color={item.cloudColor}
-            visibility={item.cloudCover > 0.1 ? 'visible':'collapsed'}
+            visibility={item.cloudCover > 0.1 ? 'visible' : 'collapsed'}
             horizontalAlignment="left"
             verticalAlignment="top"
             textAlignment="center"
@@ -126,12 +126,13 @@
         <label
             width="60"
             fontSize="14"
+            visibility={item.precipIntensity >= 0.1 && item.precipProbability > 0.1 ? 'visible' : 'collpased'}
             color="#4681C3"
             horizontalAlignment="left"
             verticalAlignment="top"
             textAlignment="center"
             paddingTop="10"
-            html={`<big><big><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${Math.round(item.precipProbability * 100)}%`}>
+            html={`<big><big><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + '<br>' : ''}${Math.round(item.precipProbability * 100)}%`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-raindrop' + '\n'} />
             <span text={Math.round(item.precipProbability * 100) + '%'} /> -->
         </label>
@@ -174,28 +175,25 @@
         <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunset" color="#ff7200" />
         <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" /> -->
     </label>
-    {#if alerts && alerts.length > 0}
-        <button
-            variant="text"
-            row="2"
-            marginLeft="10"
-            verticalAlignment="center"
-            horizontalAlignment="left"
-            rippleColor={alerts[0].alertColor}
-            color={alerts[0].alertColor}
-            fontSize="36"
-            fontFamily={mdiFontFamily}
-            text="mdi-alert"
-            on:tap={showAlerts}
-            width="50"
-            height="50" />
-    {/if}
-    {#if item.hourlyData}
-        <stacklayout row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
-            <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
-            <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} />
-        </stacklayout>
-    {/if}
+    <button
+        variant="text"
+        row="2"
+        visibility={alerts && alerts.length ? 'visible' : 'collapsed'}
+        marginLeft="10"
+        verticalAlignment="center"
+        horizontalAlignment="left"
+        rippleColor={alerts && alerts.length && alerts[0].alertColor}
+        color={alerts && alerts.length && alerts[0].alertColor}
+        fontSize="36"
+        fontFamily={mdiFontFamily}
+        text="mdi-alert"
+        on:tap={showAlerts}
+        width="50"
+        height="50" />
+    <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
+        <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} />
+    </stacklayout>
     <stacklayout row="2" rowSpan="1" col="1" verticalAlignment="center">
         <WeatherIcon fontSize="140" icon={item.icon} />
         <label marginRight="10" fontSize="14" fontStyle="italic" textAlignment="right" text={item.summary} verticalAlignment="top" />

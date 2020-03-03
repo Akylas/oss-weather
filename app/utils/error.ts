@@ -30,7 +30,8 @@ export class CustomError extends BaseError {
 
         // we need to understand if we are duplicating or not
         const isError = props instanceof Error;
-        if (props.customErrorConstructorName || isError) {
+        console.log('creating customErrorConstructorName', customErrorConstructorName, props, isError)
+        if (customErrorConstructorName || isError) {
             // duplicating
             // use getOwnPropertyNames to get hidden Error props
             const keys = Object.getOwnPropertyNames(props);

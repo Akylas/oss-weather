@@ -10,8 +10,9 @@
     import { showError } from '~/utils/error';
     import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
     import { clog, DEV_LOG } from '~/utils/logging';
-    import { getCityName, findCitiesByName, networkService, getDarkSkyWeather } from '~/services/api';
+    import { getCityName, findCitiesByName, networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
     import { getNumber, getString, remove as removeSetting, setBoolean, setNumber, setString } from '@nativescript/core/application-settings';
+    import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
     import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
@@ -22,6 +23,7 @@
     import { showBottomSheet } from '~/bottomsheet';
     import { prefs } from '~/services/preferences';
     import { onLanguageChanged } from '~/helpers/locale';
+    import { android as androidApp, ios as iosApp } from '@nativescript/core/application';
 
     // import LineChart from 'nativescript-chart/charts/LineChart';
     // import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
@@ -115,7 +117,13 @@
             setNumber('lastUpdate', lastUpdate);
             setString('lastDsWeather', JSON.stringify(dsWeather));
         } catch (err) {
-            showError(err);
+            console.log(err);
+            if (err.statusCode === 403) {
+                setDSApiKey(null);
+                askForApiKey();
+            } else {
+                showError(err);
+            }
         } finally {
             loading = false;
         }
@@ -322,16 +330,24 @@
 
     async function refresh(args) {
         clog('refresh', weatherLocation);
+        if (!hasDSApiKey()) {
+            return;
+        }
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = true;
         }
         if (weatherLocation) {
+            // try {
             await refreshWeather();
+            // }catch(err) {
+            //     if (err.statusCode === 403) {
+            //         askForApiKey();
+            //     }
+            // } finally {
             if (pullRefresh) {
                 pullRefresh.nativeView.refreshing = false;
-            } // } else {
-            // getLocationAndWeather();
-        } else {
+            }
+            // }
         }
     }
 
@@ -347,8 +363,48 @@
             items.setItem(index, item);
         }
     }
+    async function askForApiKey() {
+        try {
+            const result = await prompt({
+                title: l('api_key_required'),
+                okButtonText: l('ok'),
+                cancelable: false,
+                neutralButtonText: l('open_website'),
+                cancelButtonText: l('quit'),
+                message: l('api_key_required_description')
+            });
+            console.log('result', result);
+            if (result.result === true) {
+                if (result.text) {
+                    setDSApiKey(result.text);
+                    refresh();
+                }
+            } else if (result.result === false) {
+                if (gVars.isIOS) {
+                    exit(0);
+                } else {
+                    androidApp.startActivity.finish();
+                }
+            } else {
+                openUrl('https://darksky.net/dev');
+                if (gVars.isIOS) {
+                    exit(0);
+                } else {
+                    androidApp.startActivity.finish();
+                }
+            }
 
-    onMount(() => {
+            return result;
+        } catch (err) {
+            console.log('error', err);
+        }
+    }
+    onMount(async () => {
+        const dsApiKey = getString('dsApiKey');
+        // console.log('onMount', dsApiKey);
+        if (!dsApiKey) {
+            askForApiKey();
+        }
         networkService.on('connection', event => {
             if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
@@ -359,15 +415,12 @@
         if (dsWeather) {
             items = prepareItems();
         }
-
     });
 
-    onLanguageChanged(lang=>{
+    onLanguageChanged(lang => {
         console.log('refresh triggered by lang change');
         refresh();
-
-    })
-
+    });
 </script>
 
 <page bind:this={page} actionBarHidden="true" id="home">

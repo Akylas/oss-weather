@@ -1,4 +1,4 @@
-import { getString } from '@nativescript/core/application-settings';
+import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import { EventData, Observable } from '@nativescript/core/data/observable';
 import * as http from '@nativescript/core/http';
@@ -14,7 +14,8 @@ import { DarkSky } from './darksky';
 import { CityWeather, Coord } from './owm';
 import { Photon } from './photon';
 
-const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
+// const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
+let dsApiKey = getString('dsApiKey');
 
 type HTTPOptions = http.HttpRequestOptions;
 
@@ -28,6 +29,18 @@ export interface NetworkConnectionStateEventData extends EventData {
 
 export interface HttpRequestOptions extends HTTPOptions {
     queryParams?: {};
+}
+
+export function setDSApiKey(apiKey) {
+    dsApiKey = apiKey;
+    if (apiKey) {
+        setString('dsApiKey', apiKey);
+    } else {
+        remove('dsApiKey');
+    }
+}
+export function hasDSApiKey() {
+    return !!dsApiKey;
 }
 
 function isDayTime(sunrise, sunset, time) {
@@ -452,6 +465,29 @@ const cardinals = ['↓', '↙︎', '←', '↖︎', '↑', '↗︎', '→', '�
 function windIcon(degrees) {
     return cardinals[Math.round((degrees % 360) / 45)];
 }
+
+function getRainColor(precipIntensity: number) {
+    if (precipIntensity > 50) {
+        return '#0D47A2';
+    } else if (precipIntensity > 7.6) {
+        return '#1976D3';
+    } else if (precipIntensity > 2.5) {
+        return '#1E89E6';
+    } else {
+        return '#2197F4';
+    }
+}
+function getRainFactor(precipIntensity: number) {
+    if (precipIntensity > 50) {
+        return 1;
+    } else if (precipIntensity > 7.6) {
+        return 0.9;
+    } else if (precipIntensity > 2.0) {
+        return 0.8;
+    } else {
+        return 0.5;
+    }
+}
 export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     const result = await request<DarkSky>({
         url: `https://api.darksky.net/forecast/${dsApiKey}/${lat},${lon}`,
@@ -467,15 +503,16 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     result.currently && (result.currently.time *= 1000);
     result.daily.data.forEach(d => {
         d.time = d.time * 1000;
-        const color = colorForIcon(d.icon, d.time, d.sunriseTime, d.sunsetTime);
+        // const color = colorForIcon(d.icon, d.time, d.sunriseTime, d.sunsetTime);
         if (/rain/.test(d.icon)) {
-            d.color = Color.mix('#FFC82F', '#4681C3', d.precipProbability * 100).toRgbString();
+            // d.color = Color.mix('#FFC82F', '#0D47A2', (d.precipProbability * getRainFactor(d.precipIntensity)) * 100).toRgbString();
+            d.color = Color.mix('#FFC82F', getRainColor(d.precipIntensity), ((d.precipProbability + 1) / 2) * 100).toRgbString();
         } else if (/snow/.test(d.icon)) {
-            d.color = Color.mix('#FFC82F', '#ACE8FF', d.precipProbability * 100).toRgbString();
-        } else if (/cloudy/.test(d.icon)) {
+            d.color = Color.mix('#FFC82F', '#00E6FF', d.precipProbability * 100).toRgbString();
+        } else if (/cloudy|fog/.test(d.icon)) {
             d.color = Color.mix('#FFC82F', '#929292', d.cloudCover * 100).toRgbString();
         } else {
-            d.color = color;
+            d.color = '#FFC82F';
         }
         d.uvIndexColor = colorForUV(d.uvIndex);
         d.moonIcon = moonIcon(d.moonPhase);
@@ -490,8 +527,11 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     });
     console.log('minutely', result.minutly);
     if (result.alerts) {
+        console.log('alerts', result.alerts);
         result.alerts.forEach(a => {
             const severity = a.severity;
+            a.time *= 1000;
+            a.expires *= 1000;
             switch (severity) {
                 case 'advisory':
                     a.alertColor = '#33d860';
@@ -533,18 +573,35 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
 
         if (/rain/.test(h.icon)) {
-            h.color = Color.mix(color, '#4681C3', h.precipProbability * 100).toRgbString();
+            if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+                h.icon += '-night';
+            } else {
+                h.icon += '-day';
+            }
+            h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
             // alpha = d.precipProbability;
         } else if (/snow/.test(h.icon)) {
+            if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+                h.icon += '-night';
+            } else {
+                h.icon += '-day';
+            }
             h.color = Color.mix(color, '#ACE8FF', h.precipProbability * 100).toRgbString();
             // alpha = d.precipProbability;
         } else if (/cloudy/.test(h.icon)) {
+            // if (h.icon === 'cloudy') {
+            //     if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+            //         h.icon += '-night';
+            //     } else {
+            //         h.icon += '-day';
+            //     }
+            // }
             h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
             // alpha = d.cloudCover;
         } else {
             h.color = color;
         }
-        // let alpha = 1;
+        // let alpha = 1;z
         // if (/rain|snow/.test(h.icon)) {
         //     alpha = h.precipProbability;
         // } else if (/cloudy/.test(h.icon)) {

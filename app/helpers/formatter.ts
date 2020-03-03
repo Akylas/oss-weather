@@ -184,7 +184,7 @@ export function colorForUV(uvIndex) {
 
 export function colorForIcon(icon, time, sunrise, sunset) {
     const sunnyColor = '#FFC82F';
-    const nightColor = '#6B4985';
+    const nightColor = '#845987';
     const scatteredCloudyColor = '#cccccc';
     const cloudyColor = '#929292';
     const rainColor = '#4681C3';

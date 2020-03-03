@@ -65,10 +65,8 @@
         marginTop="10"
         html={`${convertTime(item.time, 'ddd ')}<br><small><small><font color=${textLightColor}>${convertTime(item.time, 'DD/MM')}</font></small></small>`} />
 
-    {#if item.windSpeed > 6}
-        <label col="0" color={textLightColor} fontSize="22" verticalTextAlignment="bottom" marginLeft="10" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
-    {/if}
-    <label width="60%" colSpan="7" color={textLightColor} fontSize="15" textAlignment="center" fontStyle="italic" verticalTextAlignment="bottom" paddingBottom="10" text={item.summary} />
+    <label col="0" visibility={item.windSpeed > 6 ? 'visible':'collapsed'} color={textLightColor} fontSize="22" verticalTextAlignment="bottom" marginLeft="10" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
+    <label width="60%" colSpan="7" color={textLightColor} fontSize="15" textAlignment="center" fontStyle="italic" verticalTextAlignment="bottom" paddingBottom="4" text={item.summary} />
     <stacklayout col="2" paddingTop="15" orientation="horizontal" >
         <label
             fontSize="14"
@@ -87,7 +85,7 @@
             color="#4681C3"
             textAlignment="center"
             width="60"
-            html={`<big><big></label><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${Math.round(item.precipProbability * 100)}%`} />
+            html={`<big><big></label><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${item.precipIntensity >= 0.1 ? formatValueToUnit(Math.floor(item.precipIntensity * 24), UNITS.MM) + "<br>": ''}${Math.round(item.precipProbability * 100)}%`} />
         <label
             width="60"
             fontSize="14"

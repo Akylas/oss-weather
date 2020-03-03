@@ -14,8 +14,8 @@ import { DarkSky } from './darksky';
 import { CityWeather, Coord } from './owm';
 import { Photon } from './photon';
 
-// const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
-let dsApiKey = getString('dsApiKey');
+let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
+// let dsApiKey = getString('dsApiKey');
 
 type HTTPOptions = http.HttpRequestOptions;
 

@@ -10,6 +10,7 @@ declare const SENTRY_DSN: string;
 declare const SENTRY_PREFIX: string;
 declare const OWM_KEY: string;
 declare const DARK_SKY_KEY: string;
+declare const DEFAULT_LOCATION: string;
 // declare const process: { env: any };
 
 // Augment the NodeJS global type with our own extensions

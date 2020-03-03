@@ -65,6 +65,8 @@ module.exports = (env, params = {}) => {
         skipSnapshotTools, // --env.skipSnapshotTools
         compileSnapshot, // --env.compileSnapshots
         sentry, // --env.sentry
+        includeDarkSkyKey, // --env.includeDarkSkyKey
+        includeDefaultLocation, // --env.includeDefaultLocation
         devlog, // --env.devlog
         adhoc // --env.adhoc
     } = env;
@@ -161,7 +163,8 @@ module.exports = (env, params = {}) => {
             SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
             SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
             OWM_KEY: `"${process.env.OWM_KEY}"`,
-            DARK_SKY_KEY: `"${process.env.DARK_SKY_KEY}"`,
+            DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',
+            DEFAULT_LOCATION: includeDefaultLocation ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\'' : 'undefined',
             LOG_LEVEL: devlog ? '"full"' : '""',
             TEST_LOGS: adhoc || !production
         },
@@ -615,7 +618,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 chunk: 'vendor',
                 requireModules: ['tns-core-modules/bundle-entry-points'],
                 projectRoot,
-                // targetArchs: params.targetArchs || ['arm'],
+                targetArchs: params.targetArchs || ['arm'],
                 snapshotInDocker,
                 skipSnapshotTools,
                 useLibs

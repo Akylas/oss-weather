@@ -1,4 +1,5 @@
 <script>
+    import { NativeViewElementNode } from 'svelte-native-akylas/dom';
     import { screenHeightDips, screenWidthDips } from '~/variables';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
@@ -10,7 +11,7 @@
     import { showError } from '~/utils/error';
     import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
     import { clog, DEV_LOG } from '~/utils/logging';
-    import { getCityName, findCitiesByName, networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
+    import { getCityName, networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
     import { getNumber, getString, remove as removeSetting, setBoolean, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
@@ -34,46 +35,36 @@
     import CActionBar from './CActionBar.svelte';
     // @ts-ignore
     import WeatherIcon from './WeatherIcon.svelte';
+    // @ts-ignore
     import DailyView from './DailyView.svelte';
     // @ts-ignore
-    // import WeatherListItem from './WeatherListItem.svelte';
     import TopWeatherView from './TopWeatherView.svelte';
+    // @ts-ignore
     import HourlyView from './HourlyView.svelte';
     // @ts-ignore
     import SelectCity from './SelectCity.svelte';
+    // @ts-ignore
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+    // @ts-ignore
     import ActionSheet from './ActionSheet.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
     // let gps;
     let page;
-    // let collectionView;
     let lineChart;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
-    // let dayIndex = 0;
-    let weatherLocation = JSON.parse(
-        getString(
-            'weatherLocation',
-            '{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}'
-        )
-    );
+    let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION));
     let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
-    // let currentWeather;
-    // let chartInitialized = false;
-    // let chartSet;
-    // let scrollIndex;
 
     let topHeight = screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight;
     let items;
 
     function showOptions() {
-        // console.log('showOptions');
-        showBottomSheet({
+        showBottomShee({
             parent: page,
             view: ActionSheet,
-            // transparent: gVars.isIOS,
             props: {
                 options: [
                     {
@@ -81,11 +72,11 @@
                         id: 'refresh',
                         text: l('refresh')
                     },
-                    {
-                        icon: 'mdi-map',
-                        id: 'select_on_map',
-                        text: l('select_on_map')
-                    },
+                    // {
+                    //     icon: 'mdi-map',
+                    //     id: 'select_on_map',
+                    //     text: l('select_on_map')
+                    // },
                     {
                         icon: 'mdi-settings',
                         id: 'preferences',
@@ -98,6 +89,9 @@
                 switch (result.id) {
                     case 'preferences':
                         prefs.openSettings();
+                        break;
+                    case 'refresh':
+                        refreshWeather();
                         break;
                 }
             }
@@ -355,14 +349,14 @@
         return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
     }
 
-    function onDailyLongPress(item) {
-        const index = item.index;
-        console.log('onDailyLongPress', index, item.index, item.scrollIndex);
-        if (index) {
-            item.showHourly = !item.showHourly;
-            items.setItem(index, item);
-        }
-    }
+    // function onDailyLongPress(item) {
+    //     const index = item.index;
+    //     // console.log('onDailyLongPress', index, item.index, item.scrollIndex);
+    //     if (index) {
+    //         item.showHourly = !item.showHourly;
+    //         items.setItem(index, item);
+    //     }
+    // }
     async function askForApiKey() {
         try {
             const result = await prompt({
@@ -400,12 +394,12 @@
         }
     }
     onMount(async () => {
-        const dsApiKey = getString('dsApiKey');
+        const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
         // console.log('onMount', dsApiKey);
         if (!dsApiKey) {
             askForApiKey();
         }
-        networkService.on('connection', event => {
+        networkService.on('connection', (event) => {
             if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }

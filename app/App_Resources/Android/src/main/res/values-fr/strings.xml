@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="select_on_map">"sélectionner sur une carte"</string>
+  <string name="quit">"quitter"</string>
+  <string name="preferences">"préférences"</string>
+  <string name="open_website">"site web ouvert"</string>
+  <string name="file">"fichier"</string>
+  <string name="api_key_required_description">"pour obtenir les données météorologiques de Dark Sky, une clé API gratuite est requise.\nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API.\nVous pouvez le faire en créant un compte sur leur site Web"</string>
+  <string name="api_key_required">"Clé API requise"</string>
+  <string name="expires">"expire"</string>
+  <string name="search_city">"rechercher"</string>
+  <string name="last_updated">"dernière mise à jour"</string>
+  <string name="moon">"lune"</string>
   <string name="language">"langue"</string>
   <string name="french">"français"</string>
   <string name="english">"anglais"</string>
@@ -24,8 +35,7 @@
   <string name="send_bug_report">"envoyer le rapport de bug"</string>
   <string name="gps_not_authorized">"activez le GPS et autorisez NS Forecastie à l\'utiliser pour vous localiser"</string>
   <string name="gps_not_enabled">"activez le GPS pour permettre à NS Forecastie de vous localiser"</string>
-  <string name="settings">"réglages"</string>
-  <string name="connection">"connexion"</string>
+  <string name="settings.title">"réglages"</string>
   <string name="close">"fermer"</string>
   <string name="cancel">"annuler"</string>
   <string name="theme.black">"black"</string>
@@ -35,6 +45,4 @@
   <string name="theme.title">"theme"</string>
   <string name="app_name">"NS Forecastie"</string>
   <string name="title_activity_kimera">"NS Forecastie"</string>
-  <string name="file">"file"</string>
-  <string name="settings.title">"settings"</string>
 </resources>

@@ -29,6 +29,7 @@
         "nativescript-extendedinfo": "~1.0.7",
         "nativescript-gps": "^2.0.14",
         "nativescript-htmllabel": "1.0.23",
+        "nativescript-iqkeyboardmanager": "^1.5.1",
         "nativescript-l": "~4.2.3",
         "nativescript-material-activityindicator": "3.1.10",
         "nativescript-material-bottomsheet": "3.1.10",

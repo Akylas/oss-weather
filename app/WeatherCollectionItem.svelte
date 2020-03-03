@@ -48,7 +48,7 @@
         backgroundColor={item.color}
         color="white"
         height="20"
-        text={item.precipProbability > 0.05 && item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + ` (${Math.round(item.precipProbability * 100)}%)` : ''}
+        text={item.precipProbability > 0.1 && item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + ` (${Math.round(item.precipProbability * 100)}%)` : ''}
         textAlignment="center"
         verticalTextAlignment="middle"
         fontSize="10" />

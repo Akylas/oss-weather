@@ -38,9 +38,17 @@
             case 'clear-night':
                 iconSrc = '4799-weather-night';
                 break;
+            case 'rain-night':
+                iconSrc = '4797-weather-rainynight';
+                break;
+            case 'rain-day':
             case 'rain':
                 iconSrc = '4801-weather-partly-shower';
                 break;
+            case 'snow-night':
+                iconSrc = '4798-weather-snownight';
+                break;
+            case 'snow-day':
             case 'snow':
             case 'sleet':
                 iconSrc = '4793-weather-snow';
@@ -52,7 +60,8 @@
                 iconSrc = '4795-weather-mist';
                 break;
             case 'cloudy':
-                iconSrc = '4791-foggy';
+                // iconSrc = '4791-foggy';
+                iconSrc = '4806-weather-windy';
                 break;
             case 'partly-cloudy-day':
                 iconSrc = '4800-weather-partly-cloudy';

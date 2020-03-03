@@ -18,8 +18,9 @@
   },
   "cancel": "annuler",
   "close": "fermer",
-  "connection": "connexion",
-  "settings": "réglages",
+  "settings": {
+    "title": "réglages"
+  },
   "gps_not_enabled": "activez le GPS pour permettre à NS Forecastie de vous localiser",
   "gps_not_authorized": "activez le GPS et autorisez NS Forecastie à l'utiliser pour vous localiser",
   "send_bug_report": "envoyer le rapport de bug",
@@ -43,5 +44,16 @@
   "animations": "animations",
   "english": "anglais",
   "french": "français",
-  "language": "langue"
+  "language": "langue",
+  "moon": "lune",
+  "last_updated": "dernière mise à jour",
+  "search_city": "rechercher",
+  "expires": "expire",
+  "api_key_required": "Clé API requise",
+  "api_key_required_description": "pour obtenir les données météorologiques de Dark Sky, une clé API gratuite est requise.\nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API.\nVous pouvez le faire en créant un compte sur leur site Web",
+  "file": "fichier",
+  "open_website": "site web ouvert",
+  "preferences": "préférences",
+  "quit": "quitter",
+  "select_on_map": "sélectionner sur une carte"
 }

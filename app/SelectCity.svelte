@@ -1,6 +1,4 @@
 <script>
-    /// <reference path="../references.d.ts" />
-
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
@@ -13,7 +11,7 @@
     import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
 
-    import { darkColor, primaryColor } from '~/variables';
+    import { darkColor, primaryColor, textLightColor } from '~/variables';
     import { layout } from '@nativescript/core/utils/utils';
     // @ts-ignore
     import CActionBar from './CActionBar.svelte';
@@ -27,10 +25,8 @@
     let loading = false;
     let searchResults = [];
     let searchAsTypeTimer;
-    // let cityId = getNumber('cityId', -1);
 
     function focus() {
-        console.log('focus', !!textField);
         textField && textField.nativeView.requestFocus();
         // alert('test')
     }
@@ -39,22 +35,16 @@
             clearTimeout(searchAsTypeTimer);
             searchAsTypeTimer = null;
         }
-        // if (gVars.isAndroid) {
-        //     textField.nativeViewProtected.clearFocus();
-        // }
-        // textField.dismissSoftInput();
     }
     let hasFocus = false;
     let currentSearchText;
     function onFocus(e) {
-        // clog('onFocus');
         hasFocus = true;
         if (currentSearchText && searchResultsCount === 0) {
             searchCity(this.currentSearchText);
         }
     }
     function onBlur(e) {
-        // clog('onBlur');
         hasFocus = false;
     }
     function onTextChange(e) {
@@ -78,19 +68,7 @@
         try {
             loading = true;
             searchResults = await photonSearch(query);
-            console.log('searchResults', JSON.stringify(searchResults.map(r => [r.name, r.sys.osm_key, r.sys.osm_value])));
-            // let selectedCity;
-            // if (cities.length > 0) {
-            //     const resultAction = await action(l('select'), l('cancel'), cities.map(c => c.name));
-            //     if (resultAction) {
-            //         selectedCity = cities.find(c => c.name === resultAction);
-            //     }
-            // } else {
-            //     selectedCity = cities[0];
-            // }
-            // if (selectedCity) {
-            //     saveLocation(selectedCity);
-            // }
+            // console.log('searchResults', JSON.stringify(searchResults));
         } catch (err) {
             showError(err);
         } finally {
@@ -117,10 +95,13 @@
             <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
             <collectionview row="2" rowHeight="110" items={searchResults}>
                 <Template let:item>
-                    <gridLayout rippleColor="#aaa" on:tap={() => close(item)} height="200" columns="130,*" padding="10">
+                    <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="130,*" padding="10">
                         <MapView focusPos={item.coord} />
-                        <label col="1" paddingLeft="10" fontSize="18" verticalAlignment="center" text={item.name} />
-                        <!-- <label fontSize="14" verticalAlignment="center" text={JSON.stringify(item.coord)} /> -->
+                        <gridLayout col="1" paddingLeft="10" verticalAlignment="center" rows="auto,auto,auto">
+                            <label fontSize="18" text={item.name} />
+                            <label row="1" color={textLightColor} fontSize="14" text={item.sys.state || item.sys.country} />
+                            <label row="2" color={textLightColor} fontSize="14" text={item.sys.state ? item.sys.country : ''} />
+                        </gridLayout>
                         <!-- <label fontSize="10" verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
                     </gridLayout>
                 </Template>

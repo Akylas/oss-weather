@@ -7,7 +7,6 @@ import { getString } from '@nativescript/core/application-settings';
 console.log('loading variables', locals);
 
 export const primaryColor: string = locals.primaryColor;
-export const glassesColor: string = locals.glassesColor;
 export const accentColor: string = locals.accentColor;
 export const darkColor: string = locals.darkColor;
 export const backgroundColor: string = locals.backgroundColor;

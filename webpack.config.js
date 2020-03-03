@@ -632,18 +632,18 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
         config.plugins.push(new webpack.HotModuleReplacementPlugin());
     }
 
-    if (!!production) {
-        config.plugins.push(
-            new ForkTsCheckerWebpackPlugin({
-                tsconfig: resolve(tsconfig),
-                async: false,
-                useTypescriptIncrementalApi: true,
-                checkSyntacticErrors: true,
-                memoryLimit: 4096,
-                workers: 1
-            })
-        );
-    }
+    // if (!!production) {
+    //     config.plugins.push(
+    //         new ForkTsCheckerWebpackPlugin({
+    //             tsconfig: resolve(tsconfig),
+    //             async: false,
+    //             useTypescriptIncrementalApi: true,
+    //             checkSyntacticErrors: true,
+    //             memoryLimit: 4096,
+    //             workers: 1
+    //         })
+    //     );
+    // }
 
     return config;
 };

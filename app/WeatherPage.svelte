@@ -62,7 +62,7 @@
     let items;
 
     function showOptions() {
-        showBottomShee({
+        showBottomSheet({
             parent: page,
             view: ActionSheet,
             props: {

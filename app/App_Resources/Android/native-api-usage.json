@@ -15,6 +15,7 @@
         "com.google.android.material.shape:MaterialShapeDrawable",
         "com.google.android.material.textfield:TextInputEditText",
         "com.google.android.material.textfield:TextInputLayout",
+        "com.google.android.material.bottomsheet:BottomSheetBehavior",
         "com.google.android.material.bottomsheet:BottomSheetDialogFragment",
         "com.google.android.material.bottomsheet:BottomSheetDialog",
         "androidx.appcompat.app:AlertDialog*",

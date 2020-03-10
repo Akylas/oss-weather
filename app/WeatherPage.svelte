@@ -55,7 +55,7 @@
     let lineChart;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
-    let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION));
+    let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
 
     let topHeight = screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight;

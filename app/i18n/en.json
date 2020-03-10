@@ -2,12 +2,12 @@
   "ios": {
     "info": {
       "plist": {
-        "NSLocationWhenInUseUsageDescription": "'NS Forecastie' uses your GPS location to display your weather"
+        "NSLocationWhenInUseUsageDescription": "'NS Weather' uses your GPS location to display your weather"
       }
     }
   },
   "app": {
-    "name": "NS Forecastie"
+    "name": "NS Weather"
   },
   "settings": {
     "title": "settings"

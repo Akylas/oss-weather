@@ -99,6 +99,9 @@
     }
 
     async function refreshWeather() {
+        if (!weatherLocation) {
+            return;
+        }
         if (!networkService.connected) {
             showSnack({ message: l('no_network') });
         }

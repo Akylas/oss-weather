@@ -43,6 +43,6 @@
   <string name="french">"french"</string>
   <string name="english">"english"</string>
   <string name="settings.title">"settings"</string>
-  <string name="app_name">"NS Forecastie"</string>
-  <string name="title_activity_kimera">"NS Forecastie"</string>
+  <string name="app_name">"NS Weather"</string>
+  <string name="title_activity_kimera">"NS Weather"</string>
 </resources>

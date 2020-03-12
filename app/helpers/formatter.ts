@@ -240,7 +240,7 @@ const moonIcons = [
     'wi-moon-waning-gibbous-4',
     'wi-moon-waning-gibbous-5',
     'wi-moon-waning-gibbous-6',
-    'wi-moon-3rd-quarter',
+    'wi-moon-third-quarter',
     'wi-moon-waning-crescent-1',
     'wi-moon-waning-crescent-2',
     'wi-moon-waning-crescent-3',

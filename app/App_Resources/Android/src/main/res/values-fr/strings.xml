@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="search">"chercher"</string>
+  <string name="api_key">"clé API"</string>
   <string name="select_on_map">"sélectionner sur une carte"</string>
   <string name="quit">"quitter"</string>
   <string name="preferences">"préférences"</string>
@@ -45,4 +47,5 @@
   <string name="theme.title">"theme"</string>
   <string name="app_name">"NS Météo"</string>
   <string name="title_activity_kimera">"NS Météo"</string>
+  <string name="about_to_quit">"the app is about to close because it does not have an API Key"</string>
 </resources>

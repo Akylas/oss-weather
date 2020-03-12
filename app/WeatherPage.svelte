@@ -1,6 +1,6 @@
 <script>
     import { NativeViewElementNode } from 'svelte-native-akylas/dom';
-    import { screenHeightDips, screenWidthDips } from '~/variables';
+    import { screenHeightDips, screenWidthDips, screenScale } from '~/variables';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
@@ -60,6 +60,8 @@
 
     let topHeight = screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight;
     let items;
+
+    let screenHeightPixels = screenHeightDips * screenScale;
 
     function showOptions() {
         showBottomSheet({
@@ -428,7 +430,7 @@
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-            <collectionview {items} {itemTemplateSelector}>
+            <collectionview {items} {itemTemplateSelector} extraLayoutSpace={screenHeightPixels*2}>
                 <Template key="topView" let:item>
                     <TopWeatherView {item} height={topHeight} />
                 </Template>

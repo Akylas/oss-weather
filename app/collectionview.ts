@@ -147,15 +147,15 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
                 const dummy = createElement('fragment');
-                // const wrapper = createElement('ProxyViewContainer') as NativeViewElementNode<View>;
                 _view.__SvelteComponentBuilder__(dummy, props);
                 _view.__SvelteComponentBuilder__ = null;
+                _view.__CollectionViewCurrentIndex__ = args.index;
                 const nativeEl = (dummy.firstElement() as NativeViewElementNode<View>).nativeView;
-                // if ((_view as any).dontAddToCollectionView) {
                 _view.addChild(nativeEl);
-                // }
             }
-        } else {
+        } else if (_view.__CollectionViewCurrentIndex__ !== args.index) {
+            // ensure we dont do unnecessary tasks if index did not change
+            _view.__CollectionViewCurrentIndex__ = args.index;
             _view._recursiveBatchUpdates(() => {
                 componentInstance.$set(props);
                 flush(); // we need to flush to make sure update is applied right away

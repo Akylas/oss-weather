@@ -92,7 +92,7 @@
             <CActionBar title={l('search_city')} modalWindow={true}>
                 <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
-            <textfield bind:this={textField} row="1" hint="Search" placeholder="search" floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
+            <textfield bind:this={textField} row="1" hint={l('search')} placeholder={l('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
             <collectionview row="2" rowHeight="110" items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="130,*" padding="10">

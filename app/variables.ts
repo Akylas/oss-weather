@@ -19,6 +19,7 @@ export const statusBarHeight: number = parseFloat(locals.statusBarHeight);
 export const actionBarButtonHeight: number = parseFloat(locals.actionBarButtonHeight);
 export const screenHeightDips = screen.mainScreen.heightDIPs;
 export const screenWidthDips = screen.mainScreen.widthDIPs;
+export const screenScale = screen.mainScreen.scale;
 export let navigationBarHeight: number = parseFloat(locals.navigationBarHeight);
 
 if (gVars.isAndroid) {

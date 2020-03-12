@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="search">"search"</string>
+  <string name="api_key">"api key"</string>
+  <string name="about_to_quit">"the app is about to close because it does not have an API Key"</string>
   <string name="description_required">"a description is required"</string>
   <string name="description">"description"</string>
   <string name="loading">"loading"</string>

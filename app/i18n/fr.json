@@ -55,5 +55,7 @@
   "open_website": "site web ouvert",
   "preferences": "préférences",
   "quit": "quitter",
-  "select_on_map": "sélectionner sur une carte"
+  "select_on_map": "sélectionner sur une carte",
+  "api_key": "clé API",
+  "search": "chercher"
 }

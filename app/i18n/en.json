@@ -55,5 +55,8 @@
   "expires": "expires",
   "loading": "loading",
   "description": "description",
-  "description_required": "a description is required"
+  "description_required": "a description is required",
+  "about_to_quit": "the app is about to close because it does not have an API Key",
+  "api_key": "api key",
+  "search": "search"
 }

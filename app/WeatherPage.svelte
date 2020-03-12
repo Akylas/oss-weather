@@ -362,6 +362,14 @@
     //         items.setItem(index, item);
     //     }
     // }
+
+    function quitApp() {
+        if (gVars.isIOS) {
+            exit(0);
+        } else {
+            androidApp.startActivity.finish();
+        }
+    }
     async function askForApiKey() {
         try {
             const result = await prompt({
@@ -370,27 +378,34 @@
                 cancelable: false,
                 neutralButtonText: l('open_website'),
                 cancelButtonText: l('quit'),
-                message: l('api_key_required_description')
+                message: l('api_key_required_description'),
+                textFieldProperties:{
+                    hint:l('api_key')
+                }
             });
             console.log('result', result);
             if (result.result === true) {
                 if (result.text) {
                     setDSApiKey(result.text);
                     refresh();
+                } else {
+                    // for now we cant ignore the button click so let s tell the user we are going to close
+                    const result = await confirm({
+                        title: l('quit'),
+                        okButtonText: l('about_to_quit'),
+                        message
+                    });
+                    quitApp();
                 }
             } else if (result.result === false) {
-                if (gVars.isIOS) {
-                    exit(0);
-                } else {
-                    androidApp.startActivity.finish();
-                }
+                const result = await confirm({
+                    title: l('quit'),
+                    okButtonText: l('about_to_quit'),
+                    message
+                });
             } else {
                 openUrl('https://darksky.net/dev');
-                if (gVars.isIOS) {
-                    exit(0);
-                } else {
-                    androidApp.startActivity.finish();
-                }
+                quitApp();
             }
 
             return result;
@@ -404,7 +419,7 @@
         if (!dsApiKey) {
             askForApiKey();
         }
-        networkService.on('connection', (event) => {
+        networkService.on('connection', event => {
             if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }

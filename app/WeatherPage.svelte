@@ -435,10 +435,10 @@
                     <TopWeatherView {item} height={topHeight} />
                 </Template>
                 <Template key="info" let:item>
-                    <stacklayout class="alertView" row="2" colSpan="2" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
-                        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.icon} />
-                        <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
-                    </stacklayout>
+                    <gridLayout columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+                        <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
+                        <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
+                    </gridLayout>
                 </Template>
                 <Template key="daily" let:item>
                     <DailyView {item} />

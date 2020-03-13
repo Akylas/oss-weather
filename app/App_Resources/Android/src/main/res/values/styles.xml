@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"  xmlns:tools="http://schemas.android.com/tools">
 
     <style name="SettingsTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:statusBarColor">@color/background</item>
@@ -10,6 +10,9 @@
         <item name="colorAccent">@color/ns_accent</item>
         <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
         <item name="android:fontFamily">@font/lato</item>
+        <!-- Window decor -->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>
      </style>
     <!-- theme to use FOR launch screen-->
     <style name="LaunchScreenThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">

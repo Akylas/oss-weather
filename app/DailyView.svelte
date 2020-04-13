@@ -55,7 +55,7 @@
     // }
 </script>
 
-<gridLayout class="dailyView" height="120" rows="auto,*" columns="60,60,60,60,*,80" borderTopWidth="1" paddingTop="0" paddingBottom="0">
+<gridLayout  height="120" rows="auto,*" columns="60,60,60,60,*,80"  borderRightWidth="5" borderRightColor={item.color}>
 
     <label
         col="0"
@@ -110,5 +110,5 @@
         marginTop="5"
         marginRight="10"
         html={`<small><font color=${textLightColor}>${formatValueToUnit(item.temperatureMin, UNITS.Celcius)}</font></small> ${formatValueToUnit(item.temperatureMax, UNITS.Celcius)}`} />
-    <label rowSpan="2" col="5" horizontalAlignment="right" backgroundColor={item.color} width="5" />
+    <image  class="dailyViewBorder" row="1" colSpan="6" verticalAlignment="bottom"/>
 </gridLayout>

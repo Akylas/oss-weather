@@ -190,15 +190,13 @@
         on:tap={showAlerts}
         width="50"
         height="50" />
-   
-    <stacklayout row="2" rowSpan="1" col="1" verticalAlignment="center">
-        <WeatherIcon fontSize="140" icon={item.icon} />
-        <label marginRight="10" fontSize="14" fontStyle="italic" textAlignment="right" text={item.summary} verticalAlignment="top" />
-    </stacklayout>
+
+    <WeatherIcon row="2" col="1" verticalAlignment="center" fontSize="140" icon={item.icon} />
+    <label row="2" col="0" marginLeft="10" fontSize="14" fontStyle="italic" textAlignment="left" text={item.summary} verticalTextAlignment="center" />
     <label marginRight="10" row="2" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
-     <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+    <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
         <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
         <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} maxLines="2" ellipsis="end" />
     </stacklayout>
-    <HourlyView row="4" colSpan="2" items={item.hourly}/>
+    <HourlyView row="4" colSpan="2" items={item.hourly} />
 </gridLayout>

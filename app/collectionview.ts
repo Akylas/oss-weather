@@ -80,7 +80,6 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
     }
 
     private loadView(viewType: string): View {
-        console.log('loadView', viewType);
         if (Array.isArray(this.nativeElement.itemTemplates)) {
             const keyedTemplate = this.nativeElement.itemTemplates.find((t) => t.key === 'default');
             if (keyedTemplate) {
@@ -116,9 +115,7 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
 
     private getComponentForView(viewType: string) {
         const normalizedViewType = viewType.toLowerCase();
-        console.log('normalizedViewType', normalizedViewType);
         const templateEl = this.childNodes.find((n) => {
-            console.log('test', n.tagName, n.getAttribute('type'));
             return n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType;
         }) as any;
         if (!templateEl) return null;

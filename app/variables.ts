@@ -4,7 +4,7 @@ import { ad } from '@nativescript/core/utils/utils';
 import { prefs } from '~/services/preferences';
 import { getString } from '@nativescript/core/application-settings';
 
-console.log('loading variables', locals);
+// console.log('loading variables', locals);
 
 export const primaryColor: string = locals.primaryColor;
 export const accentColor: string = locals.accentColor;

@@ -34,7 +34,7 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
 </script>
 
-<gridLayout {...$$props} class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" >
+<gridLayout {...$$restProps} class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" >
     <!-- <stackLayout col="1" colSpan="3"> -->
     <label col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center"/>
     <!-- <label visibility={!!subtitle ? 'visible' : 'collapse'} textAlignment="left" class="actionBarSubtitle" text={subtitle} /> -->

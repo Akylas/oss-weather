@@ -11,7 +11,7 @@
     import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
 
-    import { darkColor, primaryColor, textLightColor } from '~/variables';
+    import { textLightColor } from '~/variables';
     import { layout } from '@nativescript/core/utils/utils';
     // @ts-ignore
     import CActionBar from './CActionBar.svelte';
@@ -40,7 +40,7 @@
     let currentSearchText;
     function onFocus(e) {
         hasFocus = true;
-        if (currentSearchText && searchResultsCount === 0) {
+        if (currentSearchText) {
             searchCity(this.currentSearchText);
         }
     }

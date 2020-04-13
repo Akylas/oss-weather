@@ -94,7 +94,7 @@ module.exports = (env, params = {}) => {
         {
             '~': appFullPath,
             '@': appFullPath,
-            'svelte-native': 'svelte-native-akylas'
+            // 'svelte-native': 'svelte-native-akylas'
         },
         params.alias || {}
     );
@@ -383,6 +383,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                         {
                             loader: 'sass-loader',
                             options: {
+                                sourceMap: false,
                                 data: scssPrepend
                             }
                         }
@@ -395,6 +396,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                         {
                             loader: 'sass-loader',
                             options: {
+                                sourceMap: false,
                                 data: scssPrepend
                             }
                         }

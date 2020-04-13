@@ -1,5 +1,10 @@
 ext {
     androidxVersion = "1.1.0"
     androidXAppCompat = "1.1.0"
-    androidXMaterial = "1.2.0-alpha01"
+    androidXMaterial = "1.2.0-alpha02"
 }
+// ext {
+//     androidxVersion = "1.2.0"
+//     androidXAppCompat = "1.2.0-alpha03"
+//     androidXMaterial = "1.2.0-alpha02"
+// }

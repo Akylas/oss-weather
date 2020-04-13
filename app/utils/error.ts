@@ -1,5 +1,5 @@
 import { BaseError } from 'make-error';
-import {l } from '~/helpers/locale';
+import { l } from '~/helpers/locale';
 import { confirm, alert as mdAlert } from 'nativescript-material-dialogs';
 import { Sentry, isSentryEnabled } from '~/utils/sentry';
 import { showSnack } from 'nativescript-material-snackbar';
@@ -30,7 +30,7 @@ export class CustomError extends BaseError {
 
         // we need to understand if we are duplicating or not
         const isError = props instanceof Error;
-        console.log('creating customErrorConstructorName', customErrorConstructorName, props, isError)
+        console.log('creating customErrorConstructorName', customErrorConstructorName, props, isError);
         if (customErrorConstructorName || isError) {
             // duplicating
             // use getOwnPropertyNames to get hidden Error props
@@ -109,7 +109,7 @@ export async function showError(err: Error | string) {
         cancelButtonText: l('cancel'),
         message
     });
-    console.log('showError', 'confirmed',result,  isSentryEnabled);
+    console.log('showError', 'confirmed', result, isSentryEnabled);
     if (result && isSentryEnabled) {
         Sentry.captureException(err);
         // .notify({

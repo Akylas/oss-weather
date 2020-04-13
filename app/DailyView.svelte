@@ -3,10 +3,10 @@
     import WeatherIcon from './WeatherIcon.svelte';
     import { Template } from 'svelte-native/components';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
-    import { colorFromTempC, UNITS } from '~/helpers/formatter';
+    import { UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
     // import { createEventDispatcher } from 'svelte';
-    import { mdiFontFamily, wiFontFamily, textLightColor } from '~/variables';
+    import { wiFontFamily, textLightColor } from '~/variables';
     // const dispatch = createEventDispatcher();
 
     // function forward(event) {
@@ -55,7 +55,7 @@
     // }
 </script>
 
-<gridLayout class="dailyView" rows="120" columns="80,*,auto,*,80" borderTopWidth="1" paddingTop="0" paddingBottom="0">
+<gridLayout class="dailyView" height="120" rows="auto,*" columns="80,*,80" borderTopWidth="1" paddingTop="0" paddingBottom="0">
 
     <label
         col="0"
@@ -66,8 +66,8 @@
         html={`${convertTime(item.time, 'ddd ')}<br><small><small><font color=${textLightColor}>${convertTime(item.time, 'DD/MM')}</font></small></small>`} />
 
     <label col="0" visibility={item.windSpeed > 6 ? 'visible':'collapsed'} color={textLightColor} fontSize="22" verticalTextAlignment="bottom" marginLeft="10" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
-    <label width="60%" colSpan="7" color={textLightColor} fontSize="15" textAlignment="center" fontStyle="italic" verticalTextAlignment="bottom" paddingBottom="4" text={item.summary} />
-    <stacklayout col="2" paddingTop="15" orientation="horizontal" >
+    <label col="1" rowSpan="2" width="80%" color={textLightColor} fontSize="15" textAlignment="left" fontStyle="italic" verticalTextAlignment="top" marginTop="18" text={item.summary}  maxLines="2"/>
+    <stacklayout row="1" col="0" colSpan="3" orientation="horizontal"verticalAlignment="bottom" >
         <label
             fontSize="14"
             textAlignment="center"
@@ -93,15 +93,15 @@
             textAlignment="center"
             html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>${l('moon')}`} />
     </stacklayout>
-    <WeatherIcon col="4" marginRight="10" marginTop="10" horizontalAlignment="right" fontSize="60" icon={item.icon} />
+    <WeatherIcon  rowSpan="2" col="2" marginRight="10" marginTop="10" horizontalAlignment="right" fontSize="60" icon={item.icon} />
 
     <label
-        col="4"
+        col="2"
         fontSize="20"
         verticalTextAlignment="top"
         textAlignment="right"
         marginTop="5"
         marginRight="10"
         html={`<small><font color=${textLightColor}>${formatValueToUnit(item.temperatureMin, UNITS.Celcius)}</font></small> ${formatValueToUnit(item.temperatureMax, UNITS.Celcius)}`} />
-    <stackLayout col="4" horizontalAlignment="right" backgroundColor={item.color} width="5" />
+    <stackLayout rowSpan="2" col="4" horizontalAlignment="right" backgroundColor={item.color} width="5" />
 </gridLayout>

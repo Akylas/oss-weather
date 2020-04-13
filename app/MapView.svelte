@@ -1,30 +1,23 @@
-<script context="module">
-    import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
-    const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
-</script>
-
 <script>
+    import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
     import { Point } from 'nativescript-carto/vectorelements/point';
     import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
     import { RasterTileLayer } from 'nativescript-carto/layers/raster';
     import { Template } from 'svelte-native/components';
     import { VectorLayer } from 'nativescript-carto/layers/vector';
+    import { CartoMap } from 'nativescript-carto/ui';
     import { primaryColor } from '~/variables';
     import { PersistentCacheTileDataSource } from 'nativescript-carto/datasources/cache';
     import { HTTPTileDataSource } from 'nativescript-carto/datasources/http';
+    import { GenericMapPos } from 'nativescript-carto/core';
 
+    const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
+    // export let focusPos: GenericMapPos<LatLonKeys>;
     export let focusPos;
 
     let point;
+    // let cartoMap: CartoMap<LatLonKeys>;
     let cartoMap;
-
-    $: {
-        if (cartoMap) {
-            point.position = focusPos;
-            // cartoMap.focusPos = focusPos;
-            cartoMap.setFocusPos(focusPos, 0);
-        }
-    }
 
     function onMapReady(event) {
         cartoMap = event.object;
@@ -61,6 +54,17 @@
         // always add it at 1 to respect local order
         cartoMap.setFocusPos(focusPos, 0);
     }
+
+    $: {
+        if (cartoMap) {
+            point.position = focusPos;
+            cartoMap.setFocusPos(focusPos, 0);
+        }
+    }
 </script>
 
+<!-- <script context="module">
+    import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
+    const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
+</script> -->
 <cartomap zoom="10" on:mapReady={onMapReady} isUserInteractionEnabled="false" />

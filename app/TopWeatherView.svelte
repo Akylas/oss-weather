@@ -64,7 +64,7 @@
     // }
 </script>
 
-<gridLayout rows="auto,auto,2*,*,auto" {height} columns="*,auto">
+<gridLayout rows="auto,auto,3*,auto,auto" {height} columns="*,auto">
     <label marginRight="10" row="0" colSpan="2" fontSize="20" textAlignment="right" verticalTextAlignment="top" text={convertTime(item.time, 'dddd')} />
 
     {#if item.temperature !== undefined}
@@ -126,7 +126,7 @@
         <label
             width="60"
             fontSize="14"
-            visibility={item.precipIntensity >= 0.1 && item.precipProbability > 0.1 ? 'visible' : 'collpased'}
+            visibility={item.precipIntensity >= 0.1 && item.precipProbability > 0.1 ? 'visible' : 'collapsed'}
             color="#4681C3"
             horizontalAlignment="left"
             verticalAlignment="top"
@@ -190,14 +190,15 @@
         on:tap={showAlerts}
         width="50"
         height="50" />
-    <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
-        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
-        <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} />
-    </stacklayout>
+   
     <stacklayout row="2" rowSpan="1" col="1" verticalAlignment="center">
         <WeatherIcon fontSize="140" icon={item.icon} />
         <label marginRight="10" fontSize="14" fontStyle="italic" textAlignment="right" text={item.summary} verticalAlignment="top" />
     </stacklayout>
     <label marginRight="10" row="2" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
-    <HourlyView row="4" colSpan="2" items={item.hourly} scrollIndex="0" />
+     <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+        <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
+        <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} maxLines="2" ellipsis="end" />
+    </stacklayout>
+    <HourlyView row="4" colSpan="2" items={item.hourly}/>
 </gridLayout>

@@ -86,6 +86,7 @@ if (gVars.sentry) {
 
 function actualLog(level: 'info' | 'log' | 'error' | 'warn', ...args) {
     if (gVars.sentry) {
+        console.log('addBreadcrumb', level, args, args.join(' '));
         Sentry.addBreadcrumb({
             category: 'console',
             message: args.join(' '),

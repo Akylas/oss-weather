@@ -1,7 +1,7 @@
 import { ItemEventData, ItemsSource } from '@nativescript/core/ui/list-view';
 import { View } from '@nativescript/core/ui/core/view';
 import { ViewBase } from '@nativescript/core/ui/core/view-base';
-import { NativeViewElementNode, TemplateElement, ViewNode, createElement, logger, registerElement } from 'svelte-native-akylas/dom';
+import { NativeViewElementNode, TemplateElement, ViewNode, createElement, logger, registerElement } from 'svelte-native/dom';
 import { flush } from 'svelte/internal';
 import { CollectionView } from 'nativescript-collectionview';
 import { profile } from '@nativescript/core/profiling';
@@ -13,19 +13,19 @@ declare module '@nativescript/core/ui/core/view-base' {
         _recursiveBatchUpdates<T>(callback: () => T): T;
     }
 }
-ViewBase.prototype._recursiveSuspendNativeUpdates = profile('_recursiveSuspendNativeUpdates', function(type) {
+ViewBase.prototype._recursiveSuspendNativeUpdates = profile('_recursiveSuspendNativeUpdates', function (type) {
     // console.log('_recursiveSuspendNativeUpdates', this, this._suspendNativeUpdatesCount);
     this._suspendNativeUpdates(type);
-    this.eachChild(c => c._recursiveSuspendNativeUpdates(type));
+    this.eachChild((c) => c._recursiveSuspendNativeUpdates(type));
 });
-ViewBase.prototype._recursiveResumeNativeUpdates = profile('_recursiveResumeNativeUpdates', function(type) {
+ViewBase.prototype._recursiveResumeNativeUpdates = profile('_recursiveResumeNativeUpdates', function (type) {
     // console.log('_recursiveResumeNativeUpdates', this, this._suspendNativeUpdatesCount);
     this._resumeNativeUpdates(type);
-    this.eachChild(c => c._recursiveResumeNativeUpdates(type));
+    this.eachChild((c) => c._recursiveResumeNativeUpdates(type));
 });
 
 // right now _recursiveBatchUpdates suppose no view is added in the callback. If so it will crash from _resumeNativeUpdates
-ViewBase.prototype._recursiveBatchUpdates = profile('_recursiveBatchUpdates', function<T>(callback: () => T): T {
+ViewBase.prototype._recursiveBatchUpdates = profile('_recursiveBatchUpdates', function <T>(callback: () => T): T {
     try {
         this._recursiveSuspendNativeUpdates(0);
 
@@ -63,7 +63,7 @@ class SvelteKeyedTemplate {
             profile('__SvelteComponentBuilder__', () => {
                 (nativeEl as any).__SvelteComponent__ = new this.component({
                     target: parentView,
-                    props
+                    props,
                 });
             })();
         };
@@ -80,8 +80,9 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
     }
 
     private loadView(viewType: string): View {
+        console.log('loadView', viewType);
         if (Array.isArray(this.nativeElement.itemTemplates)) {
-            const keyedTemplate = this.nativeElement.itemTemplates.find(t => t.key === 'default');
+            const keyedTemplate = this.nativeElement.itemTemplates.find((t) => t.key === 'default');
             if (keyedTemplate) {
                 return keyedTemplate.createView();
             }
@@ -96,7 +97,7 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         const builder = (parentView, props: any) => {
             (nativeEl as any).__SvelteComponent__ = new componentClass({
                 target: parentView,
-                props
+                props,
             });
         };
         // in svelte we want to add the wrapper as a child of the collectionview ourselves
@@ -115,8 +116,11 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
 
     private getComponentForView(viewType: string) {
         const normalizedViewType = viewType.toLowerCase();
-
-        const templateEl = this.childNodes.find(n => n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType) as any;
+        console.log('normalizedViewType', normalizedViewType);
+        const templateEl = this.childNodes.find((n) => {
+            console.log('test', n.tagName, n.getAttribute('type'));
+            return n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType;
+        }) as any;
         if (!templateEl) return null;
         return templateEl.component;
     }
@@ -125,8 +129,10 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         super.onInsertedChild(childNode, index);
         if (childNode instanceof TemplateElement) {
             const key = childNode.getAttribute('key') || 'default';
-            const templates = !this.nativeView.itemTemplates || typeof this.nativeView.itemTemplates === 'string' ? [] : (this.nativeView.itemTemplates as any[]);
-            this.nativeView.itemTemplates = templates.concat([new SvelteKeyedTemplate(key, childNode)]);
+            // const templates = !this.nativeView.itemTemplates || typeof this.nativeView.itemTemplates === 'string' ? [] : (this.nativeView.itemTemplates as any[]);
+            // we need to reassign or the update wont be seen
+            this.nativeView.addTemplate(key, new SvelteKeyedTemplate(key, childNode));
+            // = templates.concat([new SvelteKeyedTemplate(key, childNode)]);
         }
     }
 
@@ -134,9 +140,7 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         super.onRemovedChild(childNode);
         if (childNode instanceof TemplateElement) {
             const key = childNode.getAttribute('key') || 'default';
-            if (this.nativeView.itemTemplates && typeof this.nativeView.itemTemplates !== 'string') {
-                this.nativeView.itemTemplates = this.nativeView.itemTemplates.filter(t => t.key !== key);
-            }
+            this.nativeView.removeTemplate(key);
         }
     }
     private updateListItem(args: ItemEventData & { bindingContext }) {

@@ -243,7 +243,7 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
         content = response.content;
     }
     // const isJSON = !!jsonContent;
-    clog('handleRequestResponse response', statusCode, Math.round(statusCode / 100), typeof content);
+    clog('handleRequestResponse response', requestParams.url, statusCode, Math.round(statusCode / 100), content);
     if (Math.round(statusCode / 100) !== 2) {
         // let jsonReturn;
         if (!jsonContent) {

@@ -24,8 +24,8 @@
         "types": ["svelte"],  
         "paths": {
             "~/*": ["app/*"],
-            "svelte-native": ["./node_modules/svelte-native-akylas"],
-            "svelte-native/*": ["./node_modules/svelte-native-akylas/*"],
+            // "svelte-native": ["./node_modules/svelte-native-akylas"],
+            // "svelte-native/*": ["./node_modules/svelte-native-akylas/*"],
             "tns-core-modules": ["./node_modules/@nativescript/core"],
             "tns-core-modules/*": ["./node_modules/@nativescript/core/*"],
             "*": ["./node_modules/*"]

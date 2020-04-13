@@ -28,11 +28,12 @@ mdbutton {
     // white-space: normal;
 }
 
-.dailyView {
-    border-top-color: #ccc;
+.dailyViewBorder {
+    height: 1;
+   background-color: #ccc;
     .ns-dark &,
     .ns-black & {
-        border-top-color: #333;
+        background-color: #333;
     }
 }
 

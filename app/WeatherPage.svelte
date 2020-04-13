@@ -104,6 +104,7 @@
         }
         if (!networkService.connected) {
             showSnack({ message: l('no_network') });
+            return;
         }
         loading = true;
         try {
@@ -136,15 +137,17 @@
     }
 
     function prepareItems() {
-        // console.log('prepareItems', dsWeather);
         const newItems = new ObservableArray([]);
+        const now = dayjs()
+            // .add(46, 'h')
+            .endOf('h')
+            .valueOf();
+        // console.log('prepareItems', now);
         dsWeather.daily.data.forEach((d, index) => {
             if (index === 0) {
-                const now = dayjs()
-                    .endOf('h')
-                    .valueOf();
                 let currentWeather = dsWeather.daily.data[index];
                 const firstHourIndex = currentWeather.hourly.findIndex(h => h.time >= now);
+                // console.log('firstHourIndex', firstHourIndex);
                 // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
                 // console.log('prepareItems', index, now, firstHourIndex);
                 if (firstHourIndex > 0) {
@@ -156,7 +159,7 @@
                     Object.assign(currentWeather, {
                         showHourly: false,
                         lastUpdate: lastUpdate,
-                        hourly: currentWeather.hourly.slice(firstHourIndex),
+                        hourly: firstHourIndex > 0 ? currentWeather.hourly.slice(firstHourIndex) : [],
                         minutely: dsWeather.minutely,
                         alerts: dsWeather.alerts
                     })
@@ -334,7 +337,7 @@
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = true;
         }
-        if (weatherLocation) {
+        // if (weatherLocation) {
             // try {
             await refreshWeather();
             // }catch(err) {
@@ -346,7 +349,7 @@
                 pullRefresh.nativeView.refreshing = false;
             }
             // }
-        }
+        // }
     }
 
     function itemTemplateSelector(item, index, items) {
@@ -419,6 +422,7 @@
             askForApiKey();
         }
         networkService.on('connection', event => {
+            console.log('connection', event.connected, lastUpdate, Date.now());
             if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }
@@ -452,7 +456,7 @@
                 <Template key="info" let:item>
                     <gridLayout rows="auto" columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
                         <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
-                        <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2"/>
+                        <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2" />
                     </gridLayout>
                 </Template>
                 <Template key="daily" let:item>

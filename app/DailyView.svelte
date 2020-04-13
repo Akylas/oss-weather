@@ -55,7 +55,7 @@
     // }
 </script>
 
-<gridLayout class="dailyView" height="120" rows="auto,*" columns="80,*,80" borderTopWidth="1" paddingTop="0" paddingBottom="0">
+<gridLayout class="dailyView" height="120" rows="auto,*" columns="60,60,60,60,*,80" borderTopWidth="1" paddingTop="0" paddingBottom="0">
 
     <label
         col="0"
@@ -65,43 +65,50 @@
         marginTop="10"
         html={`${convertTime(item.time, 'ddd ')}<br><small><small><font color=${textLightColor}>${convertTime(item.time, 'DD/MM')}</font></small></small>`} />
 
-    <label col="0" visibility={item.windSpeed > 6 ? 'visible':'collapsed'} color={textLightColor} fontSize="22" verticalTextAlignment="bottom" marginLeft="10" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
-    <label col="1" rowSpan="2" width="80%" color={textLightColor} fontSize="15" textAlignment="left" fontStyle="italic" verticalTextAlignment="top" marginTop="18" text={item.summary}  maxLines="2"/>
-    <stacklayout row="1" col="0" colSpan="3" orientation="horizontal"verticalAlignment="bottom" >
-        <label
-            fontSize="14"
-            textAlignment="center"
-            width="60"
-            html={`<big><big><font face=${wiFontFamily}>${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`} />
-        <label
-            fontSize="14"
-            visibility={item.cloudCover > 0.1 ? 'visible':'collapsed'}
-            color={item.cloudColor}
-            textAlignment="center"
-            width="60"
-            html={`<big><big><font face=${wiFontFamily}>wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`} />
-        <label
-            fontSize="14"
-            color="#4681C3"
-            textAlignment="center"
-            width="60"
-            html={`<big><big></label><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${item.precipIntensity >= 0.1 ? formatValueToUnit(Math.floor(item.precipIntensity * 24), UNITS.MM) + "<br>": ''}${Math.round(item.precipProbability * 100)}%`} />
-        <label
-            width="60"
-            fontSize="14"
-            color="#6B4985"
-            textAlignment="center"
-            html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>${l('moon')}`} />
-    </stacklayout>
-    <WeatherIcon  rowSpan="2" col="2" marginRight="10" marginTop="10" horizontalAlignment="right" fontSize="60" icon={item.icon} />
+    <label
+        col="0"
+        visibility={item.windSpeed > 6 ? 'visible' : 'collapsed'}
+        color={textLightColor}
+        fontSize="22"
+        verticalTextAlignment="bottom"
+        marginLeft="10"
+        fontFamily={wiFontFamily}
+        text={item.windBeaufortIcon} />
+    <label col="1" colSpan="4" rowSpan="2" width="80%" color={textLightColor} fontSize="15" textAlignment="left" fontStyle="italic" verticalTextAlignment="top" marginTop="18" text={item.summary} maxLines="2" />
+    <!-- <stacklayout row="1" col="0" colSpan="3" orientation="horizontal"verticalAlignment="top" marginTop="10"> -->
+    <label
+        row="1"
+        col="0"
+        fontSize="14"
+        textAlignment="center"
+        html={`<big><big><font face=${wiFontFamily}>${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`} />
+    <label
+        row="1"
+        col="1"
+        fontSize="14"
+        visibility={item.cloudCover > 0.1 ? 'visible' : 'collapsed'}
+        color={item.cloudColor}
+        textAlignment="center"
+        html={`<big><big><font face=${wiFontFamily}>wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`} />
+    <label
+        fontSize="14"
+        color="#4681C3"
+        textAlignment="center"
+        row="1"
+        col="2"
+        html={`<big><big></label><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${item.precipIntensity >= 0.1 ? formatValueToUnit(Math.floor(item.precipIntensity * 24), UNITS.MM) + '<br>' : ''}${Math.round(item.precipProbability * 100)}%`} />
+    <label row="1" col="3" fontSize="14" color="#6B4985" textAlignment="center" html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>${l('moon')}`} />
+    <!-- </stacklayout> -->
+    <WeatherIcon rowSpan="2" col="5" marginRight="10" marginTop="10" horizontalAlignment="right" fontSize="60" icon={item.icon} />
 
     <label
-        col="2"
+        col="1"
+        colSpan="5"
         fontSize="20"
         verticalTextAlignment="top"
         textAlignment="right"
         marginTop="5"
         marginRight="10"
         html={`<small><font color=${textLightColor}>${formatValueToUnit(item.temperatureMin, UNITS.Celcius)}</font></small> ${formatValueToUnit(item.temperatureMax, UNITS.Celcius)}`} />
-    <stackLayout rowSpan="2" col="4" horizontalAlignment="right" backgroundColor={item.color} width="5" />
+    <label rowSpan="2" col="5" horizontalAlignment="right" backgroundColor={item.color} width="5" />
 </gridLayout>

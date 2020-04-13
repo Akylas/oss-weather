@@ -1,7 +1,6 @@
 {
     "main": "app.js",
     "profiling": "none",
-    "discardUncaughtJsExceptions":"false",
     "android": {
         "maxLogcatObjectSize": 2048,
         "markingMode": "none",

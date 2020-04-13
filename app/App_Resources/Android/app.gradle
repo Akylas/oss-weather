@@ -10,6 +10,7 @@ android {
     versionName "1.0.0"
     ndk {
       abiFilters.clear()
+      // abiFilters "armeabi-v7a"
     }
   }
   // splits {

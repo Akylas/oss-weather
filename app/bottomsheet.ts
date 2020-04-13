@@ -1,5 +1,5 @@
-import { PageSpec } from 'svelte-native-akylas/dom/navigation';
-import { NativeViewElementNode, createElement } from 'svelte-native-akylas/dom';
+import { PageSpec } from 'svelte-native/dom/navigation';
+import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import { Frame, View, ViewBase } from '@nativescript/core/ui/frame/frame';
 import { BottomSheetOptions } from 'nativescript-material-bottomsheet';
 

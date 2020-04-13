@@ -4,8 +4,6 @@
 </script>
 
 <script>
-    /// <reference path="../references.d.ts" />
-
     import { Template } from 'svelte-native/components';
     import { IMapPos } from '~/helpers/geo';
     import { showError } from '~/utils/error';

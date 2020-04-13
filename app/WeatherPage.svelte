@@ -1,35 +1,30 @@
 <script>
-    import { NativeViewElementNode } from 'svelte-native-akylas/dom';
-    import { screenHeightDips, screenWidthDips, screenScale } from '~/variables';
+    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { screenHeightDips, screenScale } from '~/variables';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
-    import { navigate, showModal } from 'svelte-native';
+    import { showModal } from 'svelte-native';
     import { showSnack } from 'nativescript-material-snackbar';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { IMapPos } from '~/helpers/geo';
     import { showError } from '~/utils/error';
-    import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
-    import { clog, DEV_LOG } from '~/utils/logging';
-    import { getCityName, networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
-    import { getNumber, getString, remove as removeSetting, setBoolean, setNumber, setString } from '@nativescript/core/application-settings';
+    import { confirm, prompt } from 'nativescript-material-dialogs';
+    import { clog } from '~/utils/logging';
+    import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
+    import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
     import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
-    import { GenericGeoLocation, GPS, LocationMonitor, Options as GeolocationOptions, setGeoLocationKeys, setMockEnabled } from 'nativescript-gps';
+    import { setGeoLocationKeys } from 'nativescript-gps';
     import { request as requestPerm, Status as PermStatus, setDebug as setPermsDebug } from 'nativescript-perms';
-    import { actionBarHeight, darkColor, navigationBarHeight, primaryColor, statusBarHeight } from '~/variables';
+    import { actionBarHeight, navigationBarHeight, statusBarHeight } from '~/variables';
     import { colorFromTempC, UNITS } from '~/helpers/formatter';
     import { showBottomSheet } from '~/bottomsheet';
     import { prefs } from '~/services/preferences';
     import { onLanguageChanged } from '~/helpers/locale';
-    import { android as androidApp, ios as iosApp } from '@nativescript/core/application';
-
-    // import LineChart from 'nativescript-chart/charts/LineChart';
-    // import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
-    // import { LineData } from 'nativescript-chart/data/LineData';
-    // import { LinearGradient, RadialGradient, TileMode } from 'nativescript-canvas';
+    import { android as androidApp } from '@nativescript/core/application';
 
     // @ts-ignore
     import CActionBar from './CActionBar.svelte';
@@ -51,8 +46,7 @@
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
     // let gps;
-    let page;
-    let lineChart;
+    // let lineChart;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
     let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
@@ -62,7 +56,11 @@
     let items;
 
     let screenHeightPixels = screenHeightDips * screenScale;
-
+    // interface Option {
+    //     icon: string;
+    //     id: string;
+    //     text: string;
+    // }
     function showOptions() {
         showBottomSheet({
             parent: page,
@@ -129,7 +127,7 @@
     }
 
     function saveLocation(result) {
-        const cityChanged = !weatherLocation || (result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat);
+        const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
         if (cityChanged) {
             weatherLocation = result;
             setString('weatherLocation', JSON.stringify(weatherLocation));
@@ -270,6 +268,7 @@
 
     async function searchCity() {
         try {
+            // throw new Error('test')
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             clog('searchCity', result);
             if (result) {
@@ -327,7 +326,7 @@
 
     let pullRefresh;
 
-    async function refresh(args) {
+    async function refresh() {
         clog('refresh', weatherLocation);
         if (!hasDSApiKey()) {
             return;
@@ -379,8 +378,8 @@
                 neutralButtonText: l('open_website'),
                 cancelButtonText: l('quit'),
                 message: l('api_key_required_description'),
-                textFieldProperties:{
-                    hint:l('api_key')
+                textFieldProperties: {
+                    hint: l('api_key')
                 }
             });
             console.log('result', result);
@@ -392,16 +391,16 @@
                     // for now we cant ignore the button click so let s tell the user we are going to close
                     const result = await confirm({
                         title: l('quit'),
-                        okButtonText: l('about_to_quit'),
-                        message
+                        okButtonText: l('ok'),
+                        message: l('about_to_quit')
                     });
                     quitApp();
                 }
             } else if (result.result === false) {
                 const result = await confirm({
                     title: l('quit'),
-                    okButtonText: l('about_to_quit'),
-                    message
+                    okButtonText: l('ok'),
+                    message: l('about_to_quit')
                 });
             } else {
                 openUrl('https://darksky.net/dev');
@@ -430,6 +429,7 @@
             items = prepareItems();
         }
     });
+    let page;
 
     onLanguageChanged(lang => {
         console.log('refresh triggered by lang change');
@@ -445,14 +445,14 @@
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-            <collectionview {items} {itemTemplateSelector} extraLayoutSpace={screenHeightPixels*2}>
+            <collectionview {items} {itemTemplateSelector} extraLayoutSpace={screenHeightPixels * 2}>
                 <Template key="topView" let:item>
                     <TopWeatherView {item} height={topHeight} />
                 </Template>
                 <Template key="info" let:item>
-                    <gridLayout columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+                    <gridLayout rows="auto" columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
                         <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
-                        <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} />
+                        <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2"/>
                     </gridLayout>
                 </Template>
                 <Template key="daily" let:item>

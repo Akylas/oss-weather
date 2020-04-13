@@ -1,6 +1,19 @@
 import { registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 
+// import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
+// import * as application from '@nativescript/core/application';
+// application.on(
+//     application.discardedErrorEvent,
+//     event => {
+//         alert({
+//             message:'nativeERror',
+//             cancelable: false
+//         });
+//     },
+//     this
+// );
+
 import { setMapPosKeys } from 'nativescript-carto/core';
 // we need to use lat lon
 setMapPosKeys('lat', 'lon');
@@ -10,7 +23,7 @@ installUIMixins();
 import { install as installBottomSheets } from 'nativescript-material-bottomsheet';
 installBottomSheets();
 
-registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField);
+registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('button', () => require('nativescript-material-button').Button);
 registerNativeViewElement('label', () => require('nativescript-htmllabel').Label);
 registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
@@ -88,7 +101,7 @@ function applyTheme(theme: Themes) {
     }
 }
 
-let theme: Themes = getString('theme', 'dark') || 'dark' as any;
+let theme: Themes = getString('theme', 'dark') || ('dark' as any);
 // on startup we need to say what we are using
 console.log('applying app theme', theme);
 onApp('launch', () => {

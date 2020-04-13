@@ -13,7 +13,7 @@
 </script>
 
 <collectionview
-    {...$$props}
+    {...$$restProps}
     bind:this={collectionView}
     orientation="horizontal"
     colWidth="80"

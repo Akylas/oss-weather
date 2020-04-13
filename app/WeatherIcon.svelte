@@ -24,11 +24,11 @@
 
     let iconSrc;
     let iconJSON;
-    let p;
-    $: {
-        let { icon, autoPlay, ...p2 } = $$props;
-        p = p2;
-    }
+    // let p;
+    // $: {
+    //     // let { icon, autoPlay, ...p2 } = $$props;
+    //     p = $$restProps;
+    // }
 
     $: {
         switch (icon) {
@@ -79,4 +79,4 @@
     });
 </script>
 
-<lottie {...p} src={iconJSON} width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5} />
+<lottie {...$$restProps} src={iconJSON} width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5} />

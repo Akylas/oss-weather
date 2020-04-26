@@ -57,5 +57,6 @@
   "quit": "quitter",
   "select_on_map": "sélectionner sur une carte",
   "api_key": "clé API",
-  "search": "chercher"
+  "search": "chercher",
+  "no_location_set": "aucun emplacement défini"
 }

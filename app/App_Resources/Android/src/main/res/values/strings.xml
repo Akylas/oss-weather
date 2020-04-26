@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="no_location_set">"no location set"</string>
   <string name="search">"search"</string>
   <string name="api_key">"api key"</string>
   <string name="about_to_quit">"the app is about to close because it does not have an API Key"</string>

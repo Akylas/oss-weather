@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="no_location_set">"aucun emplacement défini"</string>
   <string name="search">"chercher"</string>
   <string name="api_key">"clé API"</string>
   <string name="select_on_map">"sélectionner sur une carte"</string>

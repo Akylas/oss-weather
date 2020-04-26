@@ -31,6 +31,7 @@
     // }
 
     $: {
+        console.log('icon', icon);
         switch (icon) {
             case 'clear-day':
                 iconSrc = '4804-weather-sunny';
@@ -51,6 +52,7 @@
             case 'snow-day':
             case 'snow':
             case 'sleet':
+            case 'drizzle':
                 iconSrc = '4793-weather-snow';
                 break;
             case 'wind':
@@ -60,6 +62,7 @@
                 iconSrc = '4795-weather-mist';
                 break;
             case 'cloudy':
+            case 'mostly_cloudy':
                 // iconSrc = '4791-foggy';
                 iconSrc = '4806-weather-windy';
                 break;
@@ -70,8 +73,13 @@
                 iconSrc = '4796-weather-cloudynight';
                 break;
         }
+        if (iconSrc) {
+            iconJSON = loadLottieJSON(iconSrc);
+        } else {
+            iconJSON = null;
+        }
+
         // iconSrc = path.join('~/assets/lottie', iconSrc + '.json');
-        iconJSON = loadLottieJSON(iconSrc);
     }
 
     $: prefs.on('key:animations', () => {

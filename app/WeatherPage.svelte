@@ -11,7 +11,8 @@
     import { showError } from '~/utils/error';
     import { confirm, prompt } from 'nativescript-material-dialogs';
     import { clog } from '~/utils/logging';
-    import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
+    // import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
+    import { networkService, getClimaCellWeather, hasCCApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData } from '~/services/api';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
@@ -37,7 +38,6 @@
     // @ts-ignore
     import HourlyView from './HourlyView.svelte';
     // @ts-ignore
-    import SelectCity from './SelectCity.svelte';
     // @ts-ignore
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     // @ts-ignore
@@ -99,7 +99,9 @@
     }
 
     async function refreshWeather() {
+        console.log('refreshWeather',networkService.connected, weatherLocation);
         if (!weatherLocation) {
+            showSnack({ message: l('no_location_set') });
             return;
         }
         if (!networkService.connected) {
@@ -108,7 +110,8 @@
         }
         loading = true;
         try {
-            dsWeather = await getDarkSkyWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            // dsWeather = await getDarkSkyWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            dsWeather = await getClimaCellWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
             lastUpdate = Date.now();
             items = prepareItems();
             // setDay(0);
@@ -117,7 +120,8 @@
         } catch (err) {
             console.log(err);
             if (err.statusCode === 403) {
-                setDSApiKey(null);
+                // setDSApiKey(null);
+                setCCApiKey(null);
                 askForApiKey();
             } else {
                 showError(err);
@@ -271,6 +275,8 @@
 
     async function searchCity() {
         try {
+            const  SelectCity = require( './SelectCity.svelte').default;
+
             // throw new Error('test')
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             clog('searchCity', result);
@@ -331,25 +337,18 @@
 
     async function refresh() {
         clog('refresh', weatherLocation);
-        if (!hasDSApiKey()) {
-            return;
-        }
+
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = true;
         }
-        // if (weatherLocation) {
-            // try {
+
+        // if (hasDSApiKey()) {
+        if (hasCCApiKey()) {
             await refreshWeather();
-            // }catch(err) {
-            //     if (err.statusCode === 403) {
-            //         askForApiKey();
-            //     }
-            // } finally {
-            if (pullRefresh) {
-                pullRefresh.nativeView.refreshing = false;
-            }
-            // }
-        // }
+        }
+        if (pullRefresh) {
+            pullRefresh.nativeView.refreshing = false;
+        }
     }
 
     function itemTemplateSelector(item, index, items) {
@@ -388,7 +387,7 @@
             console.log('result', result);
             if (result.result === true) {
                 if (result.text) {
-                    setDSApiKey(result.text);
+                    setCCApiKey(result.text);
                     refresh();
                 } else {
                     // for now we cant ignore the button click so let s tell the user we are going to close
@@ -416,12 +415,12 @@
         }
     }
     onMount(async () => {
-        const dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
+        const ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
         // console.log('onMount', dsApiKey);
-        if (!dsApiKey) {
+        if (!ccApiKey) {
             askForApiKey();
         }
-        networkService.on('connection', event => {
+        networkService.on(NetworkConnectionStateEvent, (event) => {
             console.log('connection', event.connected, lastUpdate, Date.now());
             if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();

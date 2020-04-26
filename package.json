@@ -3,11 +3,14 @@
         "id": "com.akylas.weather",
         "tns-android": {
             "version": "6.4.1"
+        },
+        "tns-ios": {
+            "version": "6.4.2"
         }
     },
     "scripts": {
         "run.android.production": "cross-var tns run android --release --clean --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.production --env.uglify --env.adhoc  --env.snapshot --env.compileSnapshot",
-        "pandroid": "cross-var tns build android --release --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.snapshot --env.compileSnapshot --aab",
+        "pandroid": "cross-var tns build android --release --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.snapshot --env.compileSnapshot",
         "pios": "tns run ios --release --env.adhoc --env.snapshot --env.compileSnapshot --for-device --provision 'match AppStore com.akylas.weather'"
     },
     "description": "NativeScript Application",
@@ -23,9 +26,9 @@
         "nativescript-akylas-preferences": "1.1.6",
         "nativescript-akylas-pulltorefresh": "^2.3.2",
         "nativescript-akylas-sentry": "^0.0.7",
-        "nativescript-carto": "^1.2.38",
+        "nativescript-carto": "^1.2.39",
         "nativescript-chart": "0.0.14",
-        "nativescript-collectionview": "2.0.13",
+        "nativescript-collectionview": "2.0.15",
         "nativescript-extendedinfo": "~1.0.7",
         "nativescript-gps": "^2.0.15",
         "nativescript-htmllabel": "1.0.27",

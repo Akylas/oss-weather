@@ -13,13 +13,15 @@ import { clog } from '~/utils/logging';
 import { DarkSky } from './darksky';
 import { CityWeather, Coord } from './owm';
 import { Photon } from './photon';
+import { ClimaCellDaily, ClimaCellDataKeys, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
+let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
 // let dsApiKey = getString('dsApiKey');
 
 type HTTPOptions = http.HttpRequestOptions;
 
-export const NetworkConnectionStateEvent = 'NetworkConnectionStateEvent';
+export const NetworkConnectionStateEvent = 'connected';
 export interface NetworkConnectionStateEventData extends EventData {
     data: {
         connected: boolean;
@@ -42,6 +44,17 @@ export function setDSApiKey(apiKey) {
 export function hasDSApiKey() {
     return !!dsApiKey;
 }
+export function setCCApiKey(apiKey) {
+    ccApiKey = apiKey;
+    if (apiKey) {
+        setString('ccApiKey', apiKey);
+    } else {
+        remove('ccApiKey');
+    }
+}
+export function hasCCApiKey() {
+    return !!ccApiKey;
+}
 
 function isDayTime(sunrise, sunset, time) {
     // const sunrise = weatherData.sunrise;
@@ -56,7 +69,7 @@ function isDayTime(sunrise, sunset, time) {
 }
 
 function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function queryString(params, location) {
@@ -120,7 +133,7 @@ export class TimeoutError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'timeout_error'
+                    message: 'timeout_error',
                 },
                 props
             ),
@@ -134,7 +147,7 @@ export class NoNetworkError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'no_network'
+                    message: 'no_network',
                 },
                 props
             ),
@@ -154,7 +167,7 @@ export class HTTPError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'httpError'
+                    message: 'httpError',
                 },
                 props
             ),
@@ -164,6 +177,7 @@ export class HTTPError extends CustomError {
 }
 
 interface NetworkService {
+    // on(eventNames: 'connected', callback: (data: NetworkConnectionStateEventData) => void, thisArg?: any);
     // on(eventNames: 'connection', callback: (e: EventData & { connectionType: connectionType; connected: boolean }) => void, thisArg?: any);
 }
 
@@ -181,8 +195,8 @@ class NetworkService extends Observable {
                 object: this,
                 data: {
                     connected: value,
-                    connectionType: this._connectionType
-                }
+                    connectionType: this._connectionType,
+                },
             } as NetworkConnectionStateEventData);
         }
     }
@@ -193,7 +207,7 @@ class NetworkService extends Observable {
         if (this._connectionType !== value) {
             this._connectionType = value;
             this.connected = value !== connectionType.none;
-            this.notify({ eventName: 'connection', object: this, connectionType: value, connected: this.connected });
+            // this.notify({ eventName: 'connection', object: this, connectionType: value, connected: this.connected });
         }
     }
     log(...args) {
@@ -226,7 +240,7 @@ async function handleRequestRetry(requestParams: HttpRequestOptions, retry = 0) 
     throw new HTTPError({
         statusCode: 401,
         message: 'HTTP error',
-        requestParams
+        requestParams,
     });
 }
 
@@ -259,7 +273,7 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
                 new HTTPError({
                     statusCode,
                     message: match ? match[1] : content.toString(),
-                    requestParams
+                    requestParams,
                 })
             );
             // }
@@ -275,7 +289,7 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
             throw new HTTPError({
                 statusCode: error.code || statusCode,
                 message: error.error_description || error.form || error.message || error.error || error,
-                requestParams
+                requestParams,
             });
         }
     }
@@ -318,7 +332,7 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
 
     clog('request', requestParams);
     const requestStartTime = Date.now();
-    return http.request(requestParams).then(response => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
+    return http.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
 }
 
 const apiKey = getString('apiKey', OWM_KEY);
@@ -336,8 +350,8 @@ export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
         queryParams: {
             lang,
             appid: apiKey,
-            ...queryParams
-        }
+            ...queryParams,
+        },
     });
 }
 
@@ -345,7 +359,7 @@ export async function getCityName(pos: Coord) {
     clog('getCityName', pos);
     const result: CityWeather = await fetchOWM('weather', {
         lat: pos.lat,
-        lon: pos.lon
+        lon: pos.lon,
     });
     console.log('fetchOWM', 'done', result);
 
@@ -495,17 +509,14 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         queryParams: {
             lang,
             units: 'ca',
-            ...queryParams
-        }
+            ...queryParams,
+        },
     });
 
-    // console.log('getDarkSkyWeather', result.hourly.summary, result.currently.summary);
     result.currently && (result.currently.time *= 1000);
-    result.daily.data.forEach(d => {
+    result.daily.data.forEach((d) => {
         d.time = d.time * 1000;
-        // const color = colorForIcon(d.icon, d.time, d.sunriseTime, d.sunsetTime);
         if (/rain/.test(d.icon)) {
-            // d.color = Color.mix('#FFC82F', '#0D47A2', (d.precipProbability * getRainFactor(d.precipIntensity)) * 100).toRgbString();
             d.color = Color.mix('#FFC82F', getRainColor(d.precipIntensity), ((d.precipProbability + 1) / 2) * 100).toRgbString();
         } else if (/snow/.test(d.icon)) {
             d.color = Color.mix('#FFC82F', '#00E6FF', d.precipProbability * 100).toRgbString();
@@ -520,15 +531,13 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         d.sunriseTime = d.sunriseTime * 1000;
         d.sunsetTime = d.sunsetTime * 1000;
         d.windIcon = windIcon(d.windBearing);
-        d.cloudColor = Color('#929292')
-            .setAlpha(d.cloudCover)
-            .toRgbString();
+        d.cloudColor = Color('#929292').setAlpha(d.cloudCover).toRgbString();
         d.hourly = [];
     });
     console.log('minutely', result.minutly);
     if (result.alerts) {
         console.log('alerts', result.alerts);
-        result.alerts.forEach(a => {
+        result.alerts.forEach((a) => {
             const severity = a.severity;
             a.time *= 1000;
             a.expires *= 1000;
@@ -545,16 +554,13 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
             }
         });
     }
-    // if (result.minutly) {
-    //     result.daily.data[0].minutly = result.minutly;
-    // }
     let dailyIndex = 0;
     const firstDay = result.daily.data[0];
     let currentDateData = result.daily.data[dailyIndex];
     if (result.hourly) {
         currentDateData.hourlyData = {
             icon: result.hourly.icon,
-            summary: result.hourly.summary
+            summary: result.hourly.summary,
         };
     }
 
@@ -579,7 +585,6 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
                 h.icon += '-day';
             }
             h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
-            // alpha = d.precipProbability;
         } else if (/snow/.test(h.icon)) {
             if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
                 h.icon += '-night';
@@ -587,34 +592,13 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
                 h.icon += '-day';
             }
             h.color = Color.mix(color, '#ACE8FF', h.precipProbability * 100).toRgbString();
-            // alpha = d.precipProbability;
         } else if (/cloudy/.test(h.icon)) {
-            // if (h.icon === 'cloudy') {
-            //     if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
-            //         h.icon += '-night';
-            //     } else {
-            //         h.icon += '-day';
-            //     }
-            // }
             h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
-            // alpha = d.cloudCover;
         } else {
             h.color = color;
         }
-        // let alpha = 1;z
-        // if (/rain|snow/.test(h.icon)) {
-        //     alpha = h.precipProbability;
-        // } else if (/cloudy/.test(h.icon)) {
-        //     alpha = h.cloudCover;
-        // }
-        // h.color = Color(color)
-        //     .setAlpha(alpha)
-        //     .toRgbString();
 
-        h.cloudColor = Color('#929292')
-            .setAlpha(h.cloudCover)
-            .toRgbString();
-        // console.log('handling hourly', i,dailyIndex, convertTime(h.time, 'dddd  HH:mm'),convertTime(dayEnd, 'dddd'),convertTime(dateStart, 'dddd'), dateStart.isBefore(dayEnd));
+        h.cloudColor = Color('#929292').setAlpha(h.cloudCover).toRgbString();
 
         h.index = currentDateData.hourly.length;
         firstDay.hourly.push(h);
@@ -623,28 +607,182 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
     return result;
 }
 
-export const defaultDarkSky = null as DarkSky;
-
-const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
-const supportedOSMValues = ['winter_sports'];
-export async function photonSearch(q, lat?, lon?, queryParams = {}) {
-    return request({
-        url: 'http://photon.komoot.de/api',
+const CLIMA_CELL_API_UR = 'https://api.climacell.co/v3/weather';
+const CLIMA_CELL_API_URL_NOWCAST = CLIMA_CELL_API_UR + '/nowcast';
+const CLIMA_CELL_API_URL_HOURLY = CLIMA_CELL_API_UR + '/forecast/hourly';
+const CLIMA_CELL_API_URL_DAILY = CLIMA_CELL_API_UR + '/forecast/daily';
+const CLIMA_CELL_BASE_FIELDS: string[] = [
+    'temp',
+    'feels_like',
+    // 'dewpoint',
+    'humidity',
+    'wind_speed',
+    'wind_direction',
+    // 'wind_gust',
+    'baro_pressure',
+    'precipitation',
+    // 'precipitation_type',
+    'weather_code',
+];
+const CLIMA_CELL_NOWCAST_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['dewpoint', 'cloud_base', 'cloud_ceiling', 'cloud_cover', 'wind_gust', 'precipitation_type']).join(',');
+const CLIMA_CELL_DAILY_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['sunrise', 'precipitation_accumulation', 'precipitation_probability', 'sunset', 'moon_phase']).join(',');
+export async function getClimaCellWeather(lat, lon, queryParams = {}) {
+    const now = dayjs();
+    const nowcast = await request<ClimaCellNowCast>({
+        url: CLIMA_CELL_API_URL_NOWCAST,
         method: 'GET',
         queryParams: {
-            q,
             lat,
             lon,
-            lang,
-            limit: 40
-        }
-    }).then(function(results: Photon) {
-        return results.features
-            .filter(r => supportedOSMKeys.indexOf(r.properties.osm_key) !== -1 || supportedOSMValues.indexOf(r.properties.osm_value) !== -1)
-            .map(f => ({
-                name: f.properties.name,
-                sys: f.properties,
-                coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
-            }));
+            apikey: ccApiKey,
+            // start_time:now,
+            end_time: now.add(1, 'h').toISOString(),
+            unit_system: 'si',
+            fields: CLIMA_CELL_NOWCAST_FIELDS,
+            ...queryParams,
+        },
     });
+    const hourly = await request<ClimaCellHourly>({
+        url: CLIMA_CELL_API_URL_HOURLY,
+        method: 'GET',
+        queryParams: {
+            lat,
+            lon,
+            apikey: ccApiKey,
+            unit_system: 'si',
+            end_time: now.add(96, 'h').toISOString(),
+            fields: CLIMA_CELL_NOWCAST_FIELDS,
+            ...queryParams,
+        },
+    });
+    const daily = await request<ClimaCellDaily>({
+        url: CLIMA_CELL_API_URL_DAILY,
+        method: 'GET',
+        queryParams: {
+            lat,
+            lon,
+            apikey: ccApiKey,
+            unit_system: 'si',
+            end_time: now.add(10, 'd').toISOString(),
+            fields: CLIMA_CELL_DAILY_FIELDS,
+            ...queryParams,
+        },
+    });
+    const result = {
+        daily: {
+            data: daily,
+        },
+        hourly: {
+            data: hourly,
+        },
+    } as any;
+    // const result = await request<DarkSky>({
+    //     url: `https://api.darksky.net/forecast/${dsApiKey}/${lat},${lon}`,
+    //     method: 'GET',
+    //     queryParams: {
+    //         lang,
+    //         units: 'ca',
+    //         ...queryParams,
+    //     },
+    // });
+
+    // result.currently && (result.currently.time *= 1000);
+    result.daily.data.forEach((d) => {
+        d.time = dayjs(d.observation_time.value).valueOf();
+        d.icon = d.weather_code.value;
+        d.windSpeed = d.wind_speed.value;
+        d.windBearing = d.wind_direction.value;
+        d.precipIntensity = d.precipitation_accumulation.value;
+        d.precipProbability = d.precipitation_probability.value;
+        // d.precipType = d.precipitation_type.value;
+        // d.dewPoint = d.dewpoint.value;
+        d.humidity = d.humidity.value;
+        d.pressure = d.baro_pressure.value;
+        // d.windGust = d.wind_gust.value;
+        // d.cloudCover = d.cloud_cover.value;
+        // d.visibility = d.visibility.value;
+
+        if (d.precipType === 'rain') {
+            d.color = Color.mix('#FFC82F', getRainColor(d.precipIntensity), ((d.precipProbability + 1) / 2) * 100).toRgbString();
+        } else if (d.precipType in ['snow', 'ice pellets', 'freezing rain']) {
+            d.color = Color.mix('#FFC82F', '#00E6FF', d.precipProbability * 100).toRgbString();
+        } else if (/cloudy|fog/.test(d.icon)) {
+            d.color = Color.mix('#FFC82F', '#929292', d.cloudCover * 100).toRgbString();
+        } else {
+            d.color = '#FFC82F';
+        }
+
+        // d.uvIndexColor = colorForUV(d.uvIndex);
+        d.moonIcon = moonIcon(d.moon_phase.value);
+        d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
+        d.sunriseTime = dayjs(d.sunrise.value).valueOf();
+        d.sunsetTime = dayjs(d.sunset.value).valueOf();
+        d.windIcon = windIcon(d.windBearing);
+        d.cloudColor = Color('#929292').setAlpha(d.cloudCover).toRgbString();
+        d.hourly = [];
+    });
+    console.log('minutely', result.minutly);
+    let dailyIndex = 0;
+    const firstDay = result.daily.data[0];
+    let currentDateData = result.daily.data[dailyIndex];
+    if (result.hourly) {
+        currentDateData.hourlyData = {
+            icon: result.hourly.icon,
+            summary: result.hourly.summary,
+        };
+    }
+
+    let dayEnd = dayjs(currentDateData.time).endOf('d');
+    result.hourly.data.forEach((h, i) => {
+        h.time = dayjs(h.observation_time.value).valueOf();
+        h.icon = h.weather_code.value;
+        h.windSpeed = h.wind_speed.value;
+        h.windBearing = h.wind_direction.value;
+        // h.precipIntensity = h.precipitation_accumulation.value;
+        // h.precipProbability = h.precipitation_probability.value;
+        h.precipType = h.precipitation_type.value;
+        h.dewPoint = h.dewpoint.value;
+        h.humidity = h.humidity.value;
+        h.pressure = h.baro_pressure.value;
+        h.windGust = h.wind_gust.value;
+        h.cloudCover = h.cloud_cover.value;
+        h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
+        h.windIcon = windIcon(h.windBearing);
+        h.cloudColor = Color('#929292').setAlpha(h.cloudCover).toRgbString();
+        const dateStart = dayjs(h.time).startOf('d');
+        if (!dateStart.isBefore(dayEnd)) {
+            dailyIndex++;
+            currentDateData = result.daily.data[dailyIndex];
+            dayEnd = dayjs(currentDateData.time).endOf('d');
+        }
+
+        const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
+
+        if (/rain/.test(h.icon)) {
+            if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+                h.icon += '-night';
+            } else {
+                h.icon += '-day';
+            }
+            h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
+        } else if (/snow/.test(h.icon)) {
+            if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+                h.icon += '-night';
+            } else {
+                h.icon += '-day';
+            }
+            h.color = Color.mix(color, '#ACE8FF', h.precipProbability * 100).toRgbString();
+        } else if (/cloudy/.test(h.icon)) {
+            h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
+        } else {
+            h.color = color;
+        }
+
+        h.cloudColor = Color('#929292').setAlpha(h.cloudCover).toRgbString();
+
+        h.index = currentDateData.hourly.length;
+        firstDay.hourly.push(h);
+    });
+    delete result.hourly;
+    return result;
 }

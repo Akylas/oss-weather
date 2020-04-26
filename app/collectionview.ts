@@ -51,7 +51,7 @@ class SvelteKeyedTemplate {
     createView() {
         // create a proxy element to eventually contain our item (once we have one to render)
         // TODO is StackLayout the best choice here?
-        // logger.debug(`creating view for key ${this.key}`);
+        console.log(`creating view for key ${this.key}`);
         const wrapper = createElement('StackLayout') as NativeViewElementNode<View>;
 
         const nativeEl = wrapper.nativeView;
@@ -115,9 +115,7 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
 
     private getComponentForView(viewType: string) {
         const normalizedViewType = viewType.toLowerCase();
-        const templateEl = this.childNodes.find((n) => {
-            return n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType;
-        }) as any;
+        const templateEl = this.childNodes.find((n) => n.tagName === 'template' && String(n.getAttribute('type')).toLowerCase() === normalizedViewType) as any;
         if (!templateEl) return null;
         return templateEl.component;
     }

@@ -16,9 +16,9 @@
     {...$$restProps}
     bind:this={collectionView}
     orientation="horizontal"
-    colWidth="80"
+    colWidth="60"
     rowHeight="100%"
-    height="170"
+    height="100%"
     isBounceEnabled="false"
     {items}
     on:dataPopulated={onDataPopulated}

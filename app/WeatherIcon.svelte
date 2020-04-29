@@ -31,18 +31,27 @@
     // }
 
     $: {
-        console.log('icon', icon);
         switch (icon) {
+            case 'mostly_clear':
+            case 'mostly_clear-day':
+            case 'clear':
             case 'clear-day':
                 iconSrc = '4804-weather-sunny';
                 break;
+            case 'mostly_clear-night':
             case 'clear-night':
                 iconSrc = '4799-weather-night';
                 break;
             case 'rain-night':
+            case 'rain_light-night':
+            case 'drizzle-night':
                 iconSrc = '4797-weather-rainynight';
                 break;
             case 'rain-day':
+            case 'rain_light':
+            case 'rain_light-day':
+            case 'drizzle':
+            case 'drizzle-day':
             case 'rain':
                 iconSrc = '4801-weather-partly-shower';
                 break;
@@ -52,7 +61,6 @@
             case 'snow-day':
             case 'snow':
             case 'sleet':
-            case 'drizzle':
                 iconSrc = '4793-weather-snow';
                 break;
             case 'wind':
@@ -62,13 +70,18 @@
                 iconSrc = '4795-weather-mist';
                 break;
             case 'cloudy':
+            case 'cloudy-night':
             case 'mostly_cloudy':
+            case 'mostly_cloudy-night':
                 // iconSrc = '4791-foggy';
                 iconSrc = '4806-weather-windy';
                 break;
+            case 'partly_cloudy':
+            case 'partly_cloudy-day':
             case 'partly-cloudy-day':
                 iconSrc = '4800-weather-partly-cloudy';
                 break;
+            case 'partly_cloudy-night':
             case 'partly-cloudy-night':
                 iconSrc = '4796-weather-cloudynight';
                 break;

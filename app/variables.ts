@@ -12,6 +12,8 @@ export const darkColor: string = locals.darkColor;
 export const backgroundColor: string = locals.backgroundColor;
 export const latoFontFamily: string = locals.latoFontFamily;
 export const wiFontFamily: string = locals.wiFontFamily;
+console.log('wiFontFamily', wiFontFamily);
+
 export const mdiFontFamily: string = locals.mdiFontFamily;
 export const forecastFontFamily: string = locals.forecastFontFamily;
 export const actionBarHeight: number = parseFloat(locals.actionBarHeight);

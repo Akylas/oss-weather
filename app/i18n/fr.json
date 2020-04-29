@@ -50,7 +50,7 @@
   "search_city": "rechercher",
   "expires": "expire",
   "api_key_required": "Clé API requise",
-  "api_key_required_description": "pour obtenir les données météorologiques de Dark Sky, une clé API gratuite est requise.\nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API.\nVous pouvez le faire en créant un compte sur leur site Web",
+  "api_key_required_description": "pour obtenir les données météorologiques de ClimaCell, une clé API gratuite est requise.\nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API.\nVous pouvez le faire en créant un compte sur leur site Web",
   "file": "fichier",
   "open_website": "site web ouvert",
   "preferences": "préférences",

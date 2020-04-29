@@ -154,7 +154,7 @@ export interface DarkSky {
     longitude: number;
     timezone: string;
     currently: Currently;
-    minutly: any;
+    minutely: any;
     hourly: Hourly;
     daily: Daily;
     alerts: Alert[];

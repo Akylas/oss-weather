@@ -31,7 +31,7 @@ export enum UNITS {
     Speed = 'km/h',
     Pace = 'min/km',
     Cardio = 'bpm',
-    Battery = 'battery'
+    Battery = 'battery',
 }
 
 // export function getCurrentDateLanguage() {
@@ -135,21 +135,27 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
     }
 }
 
-export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; otherParam?; join?: string }) {
+export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; otherParam?; join?: string; unitScale?: number }) {
     options = options || {};
     if (unit === UNITS.Celcius) {
         options.join = options.join || '';
     } else {
         options.join = options.join || ' ';
     }
-    let result = convertValueToUnit(value, unit, options?.otherParam).join(options?.join);
+    const array = convertValueToUnit(value, unit, options?.otherParam);
+    if (options.unitScale) {
+        for (let index = 0; index < options.unitScale; index++) {
+            array[1] = `<small>${array[1]}</small>`;
+        }
+    }
+    let result = array.join(options?.join);
     if (options && options.prefix && result.length > 0) {
         result = options.prefix + result;
     }
     return result;
 }
 export function titlecase(value) {
-    return value.replace(/\w\S*/g, function(txt) {
+    return value.replace(/\w\S*/g, function (txt) {
         return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
 }
@@ -247,7 +253,7 @@ const moonIcons = [
     'wi-moon-waning-crescent-4',
     'wi-moon-waning-crescent-5',
     'wi-moon-waning-crescent-6',
-    'wi-moon-new'
+    'wi-moon-new',
 ];
 
 const windIcons = [
@@ -263,11 +269,25 @@ const windIcons = [
     'wi-wind-beaufort-9',
     'wi-wind-beaufort-10',
     'wi-wind-beaufort-11',
-    'wi-wind-beaufort-12'
+    'wi-wind-beaufort-12',
 ];
 
-export function moonIcon(moonPhase) {
+const ccMoonIcons = {
+    new_moon: 'wi-moon-new',
+    waxing_crescent: 'wi-moon-waxing-crescent-4',
+    first_quarter: 'wi-moon-first-quarter',
+    waxing_gibbous: 'wi-moon-waxing-gibbous-4',
+    full: 'wi-moon-full',
+    waning_gibbous: 'wi-moon-waxing-gibbous-4',
+    third_quarter: 'wi-moon-third-quarter',
+    waning_crescent: 'wi-moon-waning-crescent-4',
+};
+
+export function moonIcon(moonPhase: number) {
     return moonIcons[Math.floor(moonPhase * (moonIcons.length - 1))];
+}
+export function ccMoonIcon(moonPhase: string) {
+    return ccMoonIcons[moonPhase];
 }
 
 export function windBeaufortIcon(windSpeed) {

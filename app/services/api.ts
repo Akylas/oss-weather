@@ -5,14 +5,13 @@ import * as http from '@nativescript/core/http';
 import dayjs from 'dayjs';
 import Color from 'tinycolor2';
 // const { getSunrise, getSunset } = require('sunrise-sunset-js');
-import { colorForIcon, colorForUV, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
+import { ccMoonIcon, colorForIcon, colorForUV, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { IMapPos } from '~/helpers/geo';
 import { CustomError } from '~/utils/error';
 import { clog } from '~/utils/logging';
 import { DarkSky } from './darksky';
 import { CityWeather, Coord } from './owm';
-import { Photon } from './photon';
 import { ClimaCellDaily, ClimaCellDataKeys, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
@@ -257,7 +256,7 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
         content = response.content;
     }
     // const isJSON = !!jsonContent;
-    clog('handleRequestResponse response', requestParams.url, statusCode, Math.round(statusCode / 100), content);
+    // clog('handleRequestResponse response', requestParams.url, statusCode, Math.round(statusCode / 100), content);
     if (Math.round(statusCode / 100) !== 2) {
         // let jsonReturn;
         if (!jsonContent) {
@@ -268,7 +267,6 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
             // } catch (err) {
             // error result might html
             const match = /<title>(.*)\n*<\/title>/.exec(content);
-            clog('request error1', content, match);
             return Promise.reject(
                 new HTTPError({
                     statusCode,
@@ -285,7 +283,6 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
                 return this.handleRequestRetry(requestParams, retry);
             }
             const error = jsonContent.error_description || jsonContent.error || jsonContent;
-            clog('throwing http error', error.code || statusCode, error.error_description || error.form || error.message || error.error || error);
             throw new HTTPError({
                 statusCode: error.code || statusCode,
                 message: error.error_description || error.form || error.message || error.error || error,
@@ -330,7 +327,7 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     }
     requestParams.headers = getRequestHeaders(requestParams);
 
-    clog('request', requestParams);
+    // clog('request', requestParams);
     const requestStartTime = Date.now();
     return http.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
 }
@@ -534,7 +531,6 @@ export async function getDarkSkyWeather(lat, lon, queryParams = {}) {
         d.cloudColor = Color('#929292').setAlpha(d.cloudCover).toRgbString();
         d.hourly = [];
     });
-    console.log('minutely', result.minutly);
     if (result.alerts) {
         console.log('alerts', result.alerts);
         result.alerts.forEach((a) => {
@@ -613,7 +609,7 @@ const CLIMA_CELL_API_URL_HOURLY = CLIMA_CELL_API_UR + '/forecast/hourly';
 const CLIMA_CELL_API_URL_DAILY = CLIMA_CELL_API_UR + '/forecast/daily';
 const CLIMA_CELL_BASE_FIELDS: string[] = [
     'temp',
-    'feels_like',
+    // 'feels_like',
     // 'dewpoint',
     'humidity',
     'wind_speed',
@@ -625,8 +621,11 @@ const CLIMA_CELL_BASE_FIELDS: string[] = [
     'weather_code',
 ];
 const CLIMA_CELL_NOWCAST_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['dewpoint', 'cloud_base', 'cloud_ceiling', 'cloud_cover', 'wind_gust', 'precipitation_type']).join(',');
+const CLIMA_CELL_HOURLY_FIELDS = CLIMA_CELL_NOWCAST_FIELDS + ',' + ['precipitation_probability'].join(',');
 const CLIMA_CELL_DAILY_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['sunrise', 'precipitation_accumulation', 'precipitation_probability', 'sunset', 'moon_phase']).join(',');
 export async function getClimaCellWeather(lat, lon, queryParams = {}) {
+    console.log('getClimaCellWeather', lat, lon);
+
     const now = dayjs();
     const nowcast = await request<ClimaCellNowCast>({
         url: CLIMA_CELL_API_URL_NOWCAST,
@@ -651,7 +650,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             apikey: ccApiKey,
             unit_system: 'si',
             end_time: now.add(96, 'h').toISOString(),
-            fields: CLIMA_CELL_NOWCAST_FIELDS,
+            fields: CLIMA_CELL_HOURLY_FIELDS,
             ...queryParams,
         },
     });
@@ -675,6 +674,9 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         hourly: {
             data: hourly,
         },
+        minutely: {
+            data: nowcast,
+        },
     } as any;
     // const result = await request<DarkSky>({
     //     url: `https://api.darksky.net/forecast/${dsApiKey}/${lat},${lon}`,
@@ -690,62 +692,106 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
     result.daily.data.forEach((d) => {
         d.time = dayjs(d.observation_time.value).valueOf();
         d.icon = d.weather_code.value;
-        d.windSpeed = d.wind_speed.value;
-        d.windBearing = d.wind_direction.value;
-        d.precipIntensity = d.precipitation_accumulation.value;
-        d.precipProbability = d.precipitation_probability.value;
+        d.windSpeed = d.wind_speed[1].max.value * 3.6; // max value
+        d.temperatureMinTime = dayjs(d.temp[0].observation_time.value).valueOf();
+        d.temperatureMin = d.temp[0].min.value;
+        d.temperatureMaxTime = dayjs(d.temp[1].observation_time.value).valueOf();
+        d.temperatureMax = d.temp[1].max.value;
+        d.windBearing = d.wind_direction[1].max.value;
+        d.precipAccumulation = d.precipitation_accumulation.value;
+        d.precipProbability = d.precipitation_probability.value / 100;
+        d.cloudCover = 0;
         // d.precipType = d.precipitation_type.value;
         // d.dewPoint = d.dewpoint.value;
         d.humidity = d.humidity.value;
         d.pressure = d.baro_pressure.value;
+        d.moonIcon = ccMoonIcon(d.moon_phase.value);
+        d.sunriseTime = dayjs(d.sunrise.value).valueOf();
+        d.sunsetTime = dayjs(d.sunset.value).valueOf();
+
         // d.windGust = d.wind_gust.value;
         // d.cloudCover = d.cloud_cover.value;
         // d.visibility = d.visibility.value;
 
         if (d.precipType === 'rain') {
-            d.color = Color.mix('#FFC82F', getRainColor(d.precipIntensity), ((d.precipProbability + 1) / 2) * 100).toRgbString();
+            d.color = Color.mix('#FFC82F', getRainColor(d.precipAccumulation), ((d.precipProbability + 1) / 2) * 100).toRgbString();
         } else if (d.precipType in ['snow', 'ice pellets', 'freezing rain']) {
             d.color = Color.mix('#FFC82F', '#00E6FF', d.precipProbability * 100).toRgbString();
         } else if (/cloudy|fog/.test(d.icon)) {
-            d.color = Color.mix('#FFC82F', '#929292', d.cloudCover * 100).toRgbString();
+            d.color = Color.mix('#FFC82F', '#929292', 0.5).toRgbString();
         } else {
             d.color = '#FFC82F';
         }
 
         // d.uvIndexColor = colorForUV(d.uvIndex);
-        d.moonIcon = moonIcon(d.moon_phase.value);
         d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
-        d.sunriseTime = dayjs(d.sunrise.value).valueOf();
-        d.sunsetTime = dayjs(d.sunset.value).valueOf();
         d.windIcon = windIcon(d.windBearing);
-        d.cloudColor = Color('#929292').setAlpha(d.cloudCover).toRgbString();
+        // d.cloudColor = Color('#929292').setAlpha(d.cloudCover).toRgbString();
         d.hourly = [];
+
+        delete d.observation_time;
+        delete d.weather_code;
+        delete d.wind_speed;
+        delete d.baro_pressure;
+        delete d.temp;
+        delete d.wind_direction;
+        delete d.precipitation;
+        delete d.precipitation_accumulation;
+        delete d.precipitation_probability;
+        delete d.cloud_cover;
+        delete d.moon_phase;
+        delete d.sunrise;
+        delete d.sunset;
+        delete d.lat;
+        delete d.lon;
     });
-    console.log('minutely', result.minutly);
     let dailyIndex = 0;
     const firstDay = result.daily.data[0];
     let currentDateData = result.daily.data[dailyIndex];
-    if (result.hourly) {
-        currentDateData.hourlyData = {
-            icon: result.hourly.icon,
-            summary: result.hourly.summary,
-        };
-    }
+    // if (result.hourly) {
+    //     currentDateData.hourlyData = {
+    //         icon: result.hourly.icon,
+    //         summary: result.hourly.summary,
+    //     };
+    // }
 
     let dayEnd = dayjs(currentDateData.time).endOf('d');
     result.hourly.data.forEach((h, i) => {
         h.time = dayjs(h.observation_time.value).valueOf();
         h.icon = h.weather_code.value;
-        h.windSpeed = h.wind_speed.value;
+        h.temperature = h.temp.value;
+        h.windSpeed = h.wind_speed.value * 3.6;
         h.windBearing = h.wind_direction.value;
-        // h.precipIntensity = h.precipitation_accumulation.value;
-        // h.precipProbability = h.precipitation_probability.value;
+        h.precipIntensity = h.precipitation.value; // mm/h
+        h.precipProbability = h.precipitation_probability.value / 100;
         h.precipType = h.precipitation_type.value;
         h.dewPoint = h.dewpoint.value;
         h.humidity = h.humidity.value;
         h.pressure = h.baro_pressure.value;
         h.windGust = h.wind_gust.value;
-        h.cloudCover = h.cloud_cover.value;
+        h.cloudCover = h.cloud_cover.value / 100;
+
+        delete h.observation_time;
+        delete h.wind_gust;
+        delete h.cloud_ceiling;
+        delete h.baro_pressure;
+        delete h.cloud_base;
+        delete h.wind_speed;
+        delete h.weather_code;
+        delete h.temp;
+        delete h.wind_direction;
+        delete h.precipitation_accumulation;
+        delete h.precipitation_probability;
+        delete h.precipitation_type;
+        delete h.humidity;
+        delete h.cloud_cover;
+        delete h.moon_phase;
+        delete h.dewpoint;
+        delete h.sunrise;
+        delete h.sunset;
+        delete h.lat;
+        delete h.lon;
+
         h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
         h.windIcon = windIcon(h.windBearing);
         h.cloudColor = Color('#929292').setAlpha(h.cloudCover).toRgbString();
@@ -757,32 +803,112 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         }
 
         const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
-
-        if (/rain/.test(h.icon)) {
-            if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
-                h.icon += '-night';
-            } else {
-                h.icon += '-day';
-            }
-            h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
-        } else if (/snow/.test(h.icon)) {
-            if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
-                h.icon += '-night';
-            } else {
-                h.icon += '-day';
-            }
-            h.color = Color.mix(color, '#ACE8FF', h.precipProbability * 100).toRgbString();
-        } else if (/cloudy/.test(h.icon)) {
-            h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
+        // console.log(
+        //     dayjs(h.time).format('HH:mm'),
+        //     dayjs(currentDateData.sunriseTime).format('HH:mm'),
+        //     dayjs(currentDateData.sunsetTime).format('HH:mm'),
+        //     h.time > currentDateData.sunsetTime,
+        //     h.time < currentDateData.sunriseTime,
+        //     h.icon
+        // );
+        if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+            h.icon += '-night';
         } else {
-            h.color = color;
+            h.icon += '-day';
         }
-
-        h.cloudColor = Color('#929292').setAlpha(h.cloudCover).toRgbString();
+        h.precipColor = '#4681C3';
+        h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
+        if (h.precipType === 'rain') {
+            // h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
+        } else if (h.precipType in ['snow', 'ice pellets', 'freezing rain']) {
+            h.precipColor = '#ACE8FF';
+            // h.color = Color.mix(color, h.precipColor, h.precipProbability * 100).toRgbString();
+        // } else if (/cloudy|fog/.test(h.icon)) {
+        //     h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
+        // } else {
+        //     h.color = color;
+        }
 
         h.index = currentDateData.hourly.length;
         firstDay.hourly.push(h);
     });
     delete result.hourly;
+
+    // let hourEnd = dayjs(currentDateData.time).endOf('h');
+    result.minutely.data.forEach((h, i) => {
+        h.time = dayjs(h.observation_time.value).valueOf();
+        h.icon = h.weather_code.value;
+        h.temperature = h.temp.value;
+        h.windSpeed = h.wind_speed.value * 3.6;
+        h.windBearing = h.wind_direction.value;
+        h.precipIntensity = h.precipitation.value;
+        // h.precipProbability = h.precipitation_probability.value;
+        h.precipType = h.precipitation_type.value;
+        h.dewPoint = h.dewpoint.value;
+        h.humidity = h.humidity.value;
+        h.pressure = h.baro_pressure.value;
+        h.windGust = h.wind_gust.value;
+        h.cloudCover = h.cloud_cover.value / 100;
+
+        delete h.observation_time;
+        delete h.wind_gust;
+        delete h.cloud_ceiling;
+        delete h.baro_pressure;
+        delete h.cloud_base;
+        delete h.weather_code;
+        delete h.wind_speed;
+        delete h.temp;
+        delete h.wind_direction;
+        delete h.precipitation;
+        delete h.precipitation_accumulation;
+        delete h.precipitation_probability;
+        delete h.precipitation_type;
+        delete h.dewpoint;
+        delete h.humidity;
+        delete h.cloud_cover;
+        delete h.moon_phase;
+        delete h.sunrise;
+        delete h.sunset;
+        delete h.lat;
+        delete h.lon;
+
+        h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
+        // h.windIcon = windIcon(h.windBearing);
+        // h.cloudColor = Color('#929292').setAlpha(h.cloudCover).toRgbString();
+        // const hourStart = dayjs(h.time).startOf('h');
+        // if (!hourStart.isBefore(dayEnd)) {
+        //     dailyIndex++;
+        //     currentDateData = result.daily.data[dailyIndex];
+        //     dayEnd = dayjs(currentDateData.time).endOf('h');
+        // }
+
+        // const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
+
+        // if (h.precipType === 'rain') {
+        //     if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+        //         h.icon += '-night';
+        //     } else {
+        //         h.icon += '-day';
+        //     }
+        //     // h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity * 5), h.precipProbability * 100).toRgbString();
+        // } else if (h.precipType in ['snow', 'ice pellets', 'freezing rain']) {
+        //     if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
+        //         h.icon += '-night';
+        //     } else {
+        //         h.icon += '-day';
+        //     }
+        //     h.color = Color.mix(color, '#ACE8FF', h.precipProbability * 100).toRgbString();
+        // } else if (/cloudy|fog/.test(h.icon)) {
+        //     h.color = Color.mix(color, '#929292', h.cloudCover * 100).toRgbString();
+        // } else {
+        //     h.color = color;
+        // }
+
+        h.index = currentDateData.hourly.length;
+    });
+    // console.log('daily', JSON.stringify(result.daily));
+    // console.log('hourly', JSON.stringify(result.hourly));
+    // console.log('minutely', JSON.stringify(result.minutely));
+    result.currently = result.minutely.data[0];
     return result;
 }

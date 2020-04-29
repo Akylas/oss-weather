@@ -51,7 +51,6 @@ class SvelteKeyedTemplate {
     createView() {
         // create a proxy element to eventually contain our item (once we have one to render)
         // TODO is StackLayout the best choice here?
-        console.log(`creating view for key ${this.key}`);
         const wrapper = createElement('StackLayout') as NativeViewElementNode<View>;
 
         const nativeEl = wrapper.nativeView;
@@ -142,7 +141,6 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
         const _view = args.view as any;
         const props = { item: args.bindingContext };
         const componentInstance = _view.__SvelteComponent__;
-
         if (!componentInstance) {
             if (_view.__SvelteComponentBuilder__) {
                 const dummy = createElement('fragment');
@@ -152,8 +150,9 @@ export default class CollectionViewViewElement extends NativeViewElementNode<Col
                 const nativeEl = (dummy.firstElement() as NativeViewElementNode<View>).nativeView;
                 _view.addChild(nativeEl);
             }
-        } else if (_view.__CollectionViewCurrentIndex__ !== args.index) {
+        } else {
             // ensure we dont do unnecessary tasks if index did not change
+            // console.log('updateListItem', args.index,  _view.__CollectionViewCurrentIndex__);
             _view.__CollectionViewCurrentIndex__ = args.index;
             _view._recursiveBatchUpdates(() => {
                 componentInstance.$set(props);

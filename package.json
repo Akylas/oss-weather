@@ -26,6 +26,7 @@
         "nativescript-akylas-preferences": "1.1.6",
         "nativescript-akylas-pulltorefresh": "^2.3.2",
         "nativescript-akylas-sentry": "^0.0.7",
+        "nativescript-canvas": "^2.1.24",
         "nativescript-carto": "^1.2.39",
         "nativescript-chart": "0.0.14",
         "nativescript-collectionview": "2.0.15",

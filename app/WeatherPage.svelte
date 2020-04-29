@@ -46,14 +46,14 @@
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
     // let gps;
-    // let lineChart;
+
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
     let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
 
-    let topHeight = screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight;
-    let items;
+    let topHeight = Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 120, 500);
+    let items = [];
 
     let screenHeightPixels = screenHeightDips * screenScale;
     // interface Option {
@@ -99,7 +99,7 @@
     }
 
     async function refreshWeather() {
-        console.log('refreshWeather',networkService.connected, weatherLocation);
+        console.log('refreshWeather', networkService.connected, weatherLocation);
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
             return;
@@ -141,38 +141,62 @@
     }
 
     function prepareItems() {
-        const newItems = new ObservableArray([]);
-        const now = dayjs()
+        const newItems = [];
+        const endOfHour = dayjs()
             // .add(46, 'h')
             .endOf('h')
             .valueOf();
-        // console.log('prepareItems', now);
+        const endOfMinute = dayjs()
+            // .add(46, 'h')
+            .endOf('m')
+            .valueOf();
         dsWeather.daily.data.forEach((d, index) => {
             if (index === 0) {
-                let currentWeather = dsWeather.daily.data[index];
-                const firstHourIndex = currentWeather.hourly.findIndex(h => h.time >= now);
-                // console.log('firstHourIndex', firstHourIndex);
+                let currentDaily = dsWeather.daily.data[index];
+                const firstHourIndex = currentDaily.hourly.findIndex(h => h.time >= endOfHour);
+                const firstMinuteIndex = dsWeather.minutely.data.findIndex(h => h.time >= endOfMinute);
                 // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
-                // console.log('prepareItems', index, now, firstHourIndex);
-                if (firstHourIndex > 0) {
-                    currentWeather = Object.assign({}, currentWeather, currentWeather.hourly[firstHourIndex - 1]);
-                } else {
-                    currentWeather = Object.assign({}, currentWeather, dsWeather.currently);
+                // console.log('prepareItems', index, now, firstHourIndex, dsWeather.minutely);
+                if (firstHourIndex > 1) {
+                    currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
                 }
+                if (firstMinuteIndex > 1) {
+                    currentDaily = Object.assign({}, currentDaily, dsWeather.minutely.data[firstMinuteIndex - 1]);
+                } else {
+                    currentDaily = Object.assign({}, currentDaily, dsWeather.currently);
+                }
+                // console.log('firstHourIndex', firstHourIndex, firstMinuteIndex, currentDaily);
+                const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex): [];
+                let min = 10000;
+                let max = -10000;
+                hours.forEach(h=>{
+                    if (h.temperature < min) {
+                        min = h.temperature;
+                    }
+                    if (h.temperature > max) {
+                        max = h.temperature;
+                    }
+                })
                 newItems.push(
-                    Object.assign(currentWeather, {
+                    Object.assign(currentDaily, {
                         showHourly: false,
                         lastUpdate: lastUpdate,
-                        hourly: firstHourIndex > 0 ? currentWeather.hourly.slice(firstHourIndex) : [],
-                        minutely: dsWeather.minutely,
+                        hourly: hours.map((h, i)=>{
+                            h.index = i;
+                            h.min = min;
+                            h.max = max;
+                            h.odd = i % 2 === 0;
+                            return h;
+                        }) ,
+                        minutely: firstMinuteIndex >= 0 ? dsWeather.minutely.data.slice(firstMinuteIndex) : [],
                         alerts: dsWeather.alerts
                     })
                 );
 
-                newItems.push({
-                    icon: dsWeather.daily.icon,
-                    summary: dsWeather.daily.summary
-                });
+                // newItems.push({
+                //     icon: dsWeather.daily.icon,
+                //     summary: dsWeather.daily.summary
+                // });
             } else {
                 const items = d.hourly;
                 const sunriseTime = dayjs(d.sunriseTime)
@@ -232,50 +256,10 @@
     // function incrementDay() {
     //     setDay(dayIndex + 1);
     // }
-    // function updateLineChart() {
-    //     const chart = lineChart.nativeView;
-    //     if (chart) {
-    //         if (!chartInitialized) {
-    //             chartInitialized = true;
-    //             chart.setAutoScaleMinMaxEnabled(true);
-    //             chart.getLegend().setEnabled(false);
-    //             chart.getXAxis().setEnabled(false);
-    //             chart.getAxisLeft().setEnabled(false);
-    //             chart.getAxisRight().setEnabled(false);
-    //             chart.setMinOffset(0);
-    //             chart.setExtraTopOffset(10);
-    //             // chart.setLogEnabled(true);
-    //         }
-    //         if (!chartSet) {
-    //             chartSet = new LineDataSet(currentWeather.hourly, 'temperature', 'time', 'temperature');
-    //             chartSet.setColor('white');
-    //             chartSet.setLineWidth(3);
-    //             chartSet.setDrawIcons(false);
-    //             chartSet.setDrawValues(false);
-    //             chartSet.setDrawFilled(true);
-    //             // chartSet.setFillAlpha(255);
-    //             // chartSet.setFillColor('white');
-    //             chartSet.setFillShader(new LinearGradient(0, 0, 0, 150, '#44ffffff', '#00ffffff', TileMode.CLAMP));
-    //             chartSet.setValueTextColors(['white']);
-    //             chartSet.setValueFormatter({
-    //                 getFormattedValue(value, entry) {
-    //                     return formatValueToUnit(value, UNITS.Celcius);
-    //                 }
-    //             });
-    //             chartSet.setMode(Mode.CUBIC_BEZIER);
-    //             chart.setData(new LineData([chartSet]));
-    //         } else {
-    //             chartSet.setValues(currentWeather.hourly);
-    //             chart.getData().notifyDataChanged();
-    //             chart.notifyDataSetChanged();
-    //         }
-    //         // chart.getXAxis().setAxisMinimum(false);
-    //     }
-    // }
 
     async function searchCity() {
         try {
-            const  SelectCity = require( './SelectCity.svelte').default;
+            const SelectCity = require('./SelectCity.svelte').default;
 
             // throw new Error('test')
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
@@ -352,7 +336,8 @@
     }
 
     function itemTemplateSelector(item, index, items) {
-        return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
+        // return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
+        return index === 0 ? 'topView' : 'daily';
     }
 
     // function onDailyLongPress(item) {
@@ -420,9 +405,8 @@
         if (!ccApiKey) {
             askForApiKey();
         }
-        networkService.on(NetworkConnectionStateEvent, (event) => {
-            console.log('connection', event.connected, lastUpdate, Date.now());
-            if ((event.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
+        networkService.on(NetworkConnectionStateEvent, event => {
+            if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }
         });

@@ -150,7 +150,7 @@ platform :ios do
     upload_to_testflight(
         changelog:params[:changelog],
         beta_app_feedback_email: "martin.guillon@akylas.fr",
-        beta_app_description: "Application to get the Weather from Dark Sky",
+        beta_app_description: "Application to get the Weather from ClimaCell",
         demo_account_required: false,
         distribute_external: true,
         groups: [params[:flavor]],

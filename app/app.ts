@@ -1,5 +1,6 @@
 import { registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
+import { device } from '@nativescript/core/platform';
 
 // import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
 // import * as application from '@nativescript/core/application';
@@ -100,8 +101,18 @@ function applyTheme(theme: Themes) {
             break;
     }
 }
+let theme: Themes;
+if (gVars.isIOS) {
+    const sdkVersion = device.sdkVersion;
+    if (parseFloat(sdkVersion) >= 13) {
+        theme = getString('theme', 'dark') as Themes;
+    } else {
+        theme = 'light';
+    }
+} else {
+    theme = getString('theme', 'dark') as Themes;
+}
 
-let theme: Themes = getString('theme', 'dark') || ('dark' as any);
 // on startup we need to say what we are using
 console.log('applying app theme', theme);
 onApp('launch', () => {

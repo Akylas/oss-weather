@@ -8,7 +8,14 @@
     import { mdiFontFamily, wiFontFamily, textLightColor } from '~/variables';
     import { showBottomSheet } from '~/bottomsheet';
     import { l } from '~/helpers/locale';
+    import { getChart } from '~/helpers/sveltehelpers';
     import dayjs from 'dayjs';
+    import Theme from '@nativescript/theme';
+    import LineChart from 'nativescript-chart/charts/LineChart';
+    import { LineData } from 'nativescript-chart/data/LineData';
+    import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
+    import { XAxisPosition } from 'nativescript-chart/components/XAxis';
+    import { LinearGradient, TileMode } from 'nativescript-canvas';
     export let item;
     export let height;
 
@@ -31,10 +38,87 @@
         });
     }
 
+    let lineChart;
+    let chartInitialized = false;
+    let chartSet;
+    let lastChartData;
+    function updateLineChart(item) {
+        const chart = getChart(lineChart.nativeView);
+        // chart.setLogEnabled(true)
+        const darkTheme = Theme.getMode() === 'dark';
+        if (chart) {
+            let data = item.minutely;
+            if (!item.minutely.some(d => d.precipIntensity > 0)) {
+                data = null;
+            }
+            if (lastChartData === data) {
+                return;
+            }
+            if (!data) {
+                if (chartSet) {
+                    chartSet.clear();
+                }
+                return;
+            }
+            lastChartData = data;
+            const count = data.length;
+            const now = dayjs().valueOf();
+            if (!chartInitialized) {
+                chartInitialized = true;
+                console.log('init chart');
+                chart.setNoDataText(null)
+                chart.setAutoScaleMinMaxEnabled(true);
+                chart.getLegend().setEnabled(false);
+                chart.getXAxis().setEnabled(true);
+                chart.getXAxis().setDrawGridLines(false);
+                chart.getXAxis().setDrawMarkTicks(true);
+                chart.getXAxis().setValueFormatter({
+                    getAxisLabel: f => {
+                        const result = Math.floor((f - now) / 600000) * 10;
+                        return result === 0 ? '' : result + 'm';
+                    }
+                });
+                chart.getXAxis().setLabelCount(count / 2, true);
+                chart.getXAxis().setPosition(XAxisPosition.BOTTOM);
+                chart.getAxisLeft().setEnabled(true);
+                chart.getAxisLeft().setAxisMinimum(0);
+                chart.getAxisRight().setEnabled(false);
+                // chart.setMinOffset(0);
+                // chart.setExtraTopOffset(0);
+                // chart.setLogEnabled(true);
+            }
+            if (!chartSet) {
+                chartSet = new LineDataSet(data, 'precipIntensity', 'time', 'precipIntensity');
+                chartSet.setColor('#4681C3');
+                chartSet.setLineWidth(3);
+                chartSet.setDrawIcons(false);
+                chartSet.setDrawValues(false);
+                chartSet.setDrawFilled(true);
+                // chartSet.setFillAlpha(255);
+                chartSet.setFillColor('#4681C3');
+                // chartSet.setFillShader(new LinearGradient(0, 0, 0, 150, '#44ffffff', '#00ffffff', TileMode.CLAMP));
+                // chartSet.setValueTextColors([darkTheme?'white':'black']);
+                // chartSet.setValueFormatter({
+                //     getFormattedValue(value, entry) {
+                //         return formatValueToUnit(value, UNITS.Celcius);
+                //     }
+                // });
+                chartSet.setMode(Mode.STEPPED);
+                chart.setData(new LineData([chartSet]));
+            } else {
+                chartSet.setValues(data);
+                chart.getData().notifyDataChanged();
+                chart.notifyDataSetChanged();
+            }
+            // chart.getXAxis().setAxisMinimum(false);
+        }
+    }
+
     let textHtmlBottom;
     // let textHtmlTop;
 
     // $: {
+    // console.log('item changed', item.lastUpdate);
     //     if (item.temperature !== undefined) {
     //         textHtmlTop = `<big><big><big><big><font color="${colorFromTempC(item.temperature)}">${formatValueToUnit(item.temperature, UNITS.Celcius)}</font></big></big></big></big>
     //     ${item.temperature !== item.apparentTemperature ? ('<br>' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius)) : ''}
@@ -46,10 +130,16 @@
     //     }
     // }
 
+    // let alerts;
+    // $: {
+    //     const now = Date.now() + 3600;
+    //     alerts = item.alerts && item.alerts.filter(a => a.expires > now);
+    // }
     let alerts;
     $: {
-        const now = Date.now() + 3600;
-        alerts = item.alerts && item.alerts.filter(a => a.expires > now);
+        if (lineChart) {
+            updateLineChart(item);
+        }
     }
     // $: {
     //     textHtmlBottom = `<font face="${wiFontFamily}">${item.windIcon}</font>
@@ -64,7 +154,7 @@
     // }
 </script>
 
-<gridLayout rows="auto,auto,3*,auto,auto" {height} columns="*,auto">
+<gridLayout rows="auto,auto,auto,*" {height} columns="auto,*">
     <label marginRight="10" row="0" colSpan="2" fontSize="20" textAlignment="right" verticalTextAlignment="top" text={convertTime(item.time, 'dddd')} />
 
     {#if item.temperature !== undefined}
@@ -98,7 +188,7 @@
         verticalTextAlignment="center"
         textAlignment="center" /> -->
 
-    <wraplayout row="1" colSpan="2" verticalAlignment="top" horizontalAlignment="center">
+    <wraplayout row="1" verticalAlignment="top" horizontalAlignment="left">
         <label
             width="60"
             fontSize="14"
@@ -106,7 +196,7 @@
             verticalAlignment="top"
             textAlignment="center"
             paddingTop="10"
-            html={`<big><big><font face=${wiFontFamily}>${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`}>
+            html={`<big><big><font face="${wiFontFamily}">${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={item.windIcon + '\n'} />
             <span text={formatValueToUnit(item.windSpeed, UNITS.Speed)} /> -->
         </label>
@@ -114,15 +204,12 @@
             width="60"
             fontSize="14"
             color={item.cloudColor}
-            visibility={item.cloudCover > 0.1 ? 'visible' : 'collapsed'}
+            visibility={item.cloudCover > 0 ? 'visible' : 'collapsed'}
             horizontalAlignment="left"
             verticalAlignment="top"
             textAlignment="center"
             paddingTop="10"
-            html={`<big><big><font face=${wiFontFamily}>wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`}>
-            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-cloud' + '\n'} />
-            <span text={Math.round(item.cloudCover * 100) + '%'} /> -->
-        </label>
+            html={`<big><big><font face="${wiFontFamily}">wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`} />
         <label
             width="60"
             fontSize="14"
@@ -132,11 +219,11 @@
             verticalAlignment="top"
             textAlignment="center"
             paddingTop="10"
-            html={`<big><big><font face=${wiFontFamily}>wi-raindrop</font></big></big><br>${item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + '<br>' : ''}${Math.round(item.precipProbability * 100)}%`}>
+            html={`<big><big><font face="${wiFontFamily}">wi-raindrop</font></big></big><br>${item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) + '<br>' : ''}${Math.round(item.precipProbability * 100)}%`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-raindrop' + '\n'} />
             <span text={Math.round(item.precipProbability * 100) + '%'} /> -->
         </label>
-        <label
+        <!-- <label
             width="60"
             fontSize="14"
             color={item.uvIndexColor}
@@ -144,10 +231,8 @@
             verticalAlignment="top"
             textAlignment="center"
             paddingTop="10"
-            html={`<big><big><font face=${wiFontFamily}>wi-day-sunny</font></big></big><br>${item.uvIndex}`}>
-            <!-- <span fontSize="26" fontFamily={wiFontFamily} text={'wi-day-sunny' + '\n'} />
-            <span text={item.uvIndex} /> -->
-        </label>
+            html={`<big><big><font face="${wiFontFamily}">wi-day-sunny</font></big></big><br>${item.uvIndex}`}>
+        </label> -->
         <label
             width="60"
             fontSize="14"
@@ -156,7 +241,7 @@
             verticalAlignment="top"
             textAlignment="center"
             paddingTop="10"
-            html={`<big><big><font face=${wiFontFamily}>${item.moonIcon}</font></big></big><br>${l('moon')}`}>
+            html={`<big><big><font face="${wiFontFamily}">${item.moonIcon}</font></big></big><br>${l('moon')}`}>
             <!-- <span fontSize="26" fontFamily={wiFontFamily} text={item.moonIcon + '\n'} /> -->
         </label>
     </wraplayout>
@@ -175,7 +260,7 @@
         <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunset" color="#ff7200" />
         <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" /> -->
     </label>
-    <button
+    <!-- <button
         variant="text"
         row="2"
         visibility={alerts && alerts.length ? 'visible' : 'collapsed'}
@@ -189,14 +274,14 @@
         text="mdi-alert"
         on:tap={showAlerts}
         width="50"
-        height="50" />
-
-    <WeatherIcon row="2" col="1" verticalAlignment="center" fontSize="140" icon={item.icon} />
-    <label row="2" col="0" marginLeft="10" fontSize="14" fontStyle="italic" textAlignment="left" text={item.summary} verticalTextAlignment="center" />
+        height="50" /> -->
+    <linechart bind:this={lineChart} row="1" verticalAlignment="bottom" height="70" />
+    <WeatherIcon row="1" col="1" horizontalAlignment="right" verticalAlignment="center" fontSize="140" icon={item.icon} />
+    <!-- <label row="2" col="0" marginLeft="10" fontSize="14" fontStyle="italic" textAlignment="left" text={item.summary} verticalTextAlignment="center" /> -->
     <label marginRight="10" row="2" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
-    <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+    <!-- <stacklayout visibility={item.hourlyData ? 'visible' : 'collapsed'} row="3" colSpan="2" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
         <WeatherIcon verticalAlignment="middle" fontSize="50" icon={item.hourlyData.icon} />
         <label fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.hourlyData.summary} maxLines="2" ellipsis="end" />
-    </stacklayout>
-    <HourlyView row="4" colSpan="2" items={item.hourly} />
+    </stacklayout> -->
+    <HourlyView row="3" colSpan="2" items={item.hourly} />
 </gridLayout>

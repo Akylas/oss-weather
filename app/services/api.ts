@@ -13,6 +13,7 @@ import { DarkSky } from './darksky';
 import { CityWeather, Coord } from './owm';
 import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
+import { Photon } from './photon';
 
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
@@ -623,7 +624,6 @@ const CLIMA_CELL_NOWCAST_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['dewpoint', 'cl
 const CLIMA_CELL_HOURLY_FIELDS = CLIMA_CELL_NOWCAST_FIELDS + ',' + ['precipitation_probability'].join(',');
 const CLIMA_CELL_DAILY_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['sunrise', 'precipitation_accumulation', 'precipitation_probability', 'sunset', 'moon_phase']).join(',');
 export async function getClimaCellWeather(lat, lon, queryParams = {}) {
-
     const now = dayjs();
     const nowcast = await request<ClimaCellNowCast>({
         url: CLIMA_CELL_API_URL_NOWCAST,
@@ -821,10 +821,10 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         } else if (h.precipType in ['snow', 'ice pellets', 'freezing rain']) {
             h.precipColor = snowColor;
             // h.color = Color.mix(color, h.precipColor, h.precipProbability * 100).toRgbString();
-        // } else if (/cloudy|fog/.test(h.icon)) {
-        //     h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).toRgbString();
-        // } else {
-        //     h.color = color;
+            // } else if (/cloudy|fog/.test(h.icon)) {
+            //     h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).toRgbString();
+            // } else {
+            //     h.color = color;
         }
 
         h.index = currentDateData.hourly.length;
@@ -909,4 +909,27 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
     // console.log('minutely', JSON.stringify(result.minutely));
     result.currently = result.minutely.data[0];
     return result;
+}
+const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
+const supportedOSMValues = ['winter_sports'];
+export async function photonSearch(q, lat?, lon?, queryParams = {}) {
+    return request({
+        url: 'http://photon.komoot.de/api',
+        method: 'GET',
+        queryParams: {
+            q,
+            lat,
+            lon,
+            lang,
+            limit: 40,
+        },
+    }).then(function (results: Photon) {
+        return results.features
+            .filter((r) => supportedOSMKeys.indexOf(r.properties.osm_key) !== -1 || supportedOSMValues.indexOf(r.properties.osm_value) !== -1)
+            .map((f) => ({
+                name: f.properties.name,
+                sys: f.properties,
+                coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] },
+            }));
+    });
 }

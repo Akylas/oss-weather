@@ -128,7 +128,7 @@ lane :get_changelog  do |params|
   isReleasable = analyze_commits(match: "#{platform}/#{flavor}*", ignore_scopes: [ignorePlatform])
   logs = conventional_changelog(format: 'slack', title: "#{platform.capitalize} Beta", display_title:false, display_links:false, order:["feat", "fix", "refactor", "perf"])
   puts logs
-  logs
+  truncate(logs, 450)
 end
 
 platform :ios do

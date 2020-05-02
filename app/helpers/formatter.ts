@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(LocalizedFormat);
 import Color from 'tinycolor2';
+import { nightColor, sunnyColor } from '~/variables';
 
 // export function localize(s: string, ...args) {
 //     return l(s, ...args);
@@ -74,7 +75,7 @@ function celciusToFahrenheit(kelvinTemp) {
     return (9 * kelvinTemp) / 5 + 32;
 }
 
-export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [string, string] {
+export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [string | number, string] {
     if (value === undefined || value === null) {
         return ['', ''];
     }
@@ -95,7 +96,7 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
                 return [value.toFixed(1), 'mm'];
             }
         case UNITS.Celcius:
-            return [value.toFixed(1), ''];
+            return [Math.round(value * 10) / 10, ''];
         case UNITS.Farenheit:
             return [celciusToFahrenheit(value).toFixed(1), '°'];
         // case UNITS.Duration:
@@ -189,12 +190,6 @@ export function colorForUV(uvIndex) {
 }
 
 export function colorForIcon(icon, time, sunrise, sunset) {
-    const sunnyColor = '#FFC82F';
-    const nightColor = '#845987';
-    const scatteredCloudyColor = '#cccccc';
-    const cloudyColor = '#929292';
-    const rainColor = '#4681C3';
-    const snowColor = '#ACE8FF';
     // console.log('colorForIcon', icon);
     switch (icon) {
         case 'clear-night':

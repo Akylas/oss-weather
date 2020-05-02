@@ -24,15 +24,18 @@ installUIMixins();
 import { install as installBottomSheets } from 'nativescript-material-bottomsheet';
 installBottomSheets();
 
+import { Label, enableIOSDTCoreText } from 'nativescript-htmllabel';
+enableIOSDTCoreText();
+
 registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('button', () => require('nativescript-material-button').Button);
-registerNativeViewElement('label', () => require('nativescript-htmllabel').Label);
+registerNativeViewElement('label', () => Label);
 registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
 registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
 registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
 registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
 registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pulltorefresh').PullToRefresh);
-
+registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasView);
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
 // registerElement('collectionview', () => new CollectionViewElement());

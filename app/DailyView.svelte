@@ -6,7 +6,7 @@
     import { UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
     // import { createEventDispatcher } from 'svelte';
-    import { wiFontFamily, textLightColor } from '~/variables';
+    import { wiFontFamily, nightColor, rainColor, textLightColor } from '~/variables';
     // const dispatch = createEventDispatcher();
 
     // function forward(event) {
@@ -55,7 +55,7 @@
     // }
 </script>
 
-<gridLayout  height="120" rows="auto,*" columns="60,80,80,80,*,80"  borderRightWidth="5" borderRightColor={item.color}>
+<gridLayout  height="100" rows="auto,*" columns="60,70,70,70,*,80"  borderRightWidth="5" borderRightColor={item.color}>
 
     <label
         colSpan="2"
@@ -63,7 +63,7 @@
         verticalTextAlignment="top"
         marginLeft="10"
         marginTop="10"
-        html={`${convertTime(item.time, 'ddd ')}<br><small><small><font color=${textLightColor}>${convertTime(item.time, 'DD/MM')}</font></small></small>`} />
+        html={`${convertTime(item.time, 'ddd ')}<br><span style="font-size:15px; color:${textLightColor};">${convertTime(item.time, 'DD/MM')}</span>`} />
 
     <label
         visibility={item.windSpeed > 6 ? 'visible' : 'collapsed'}
@@ -74,14 +74,16 @@
         marginLeft="10"
         fontFamily={wiFontFamily}
         text={item.windBeaufortIcon} />
+
     <label col="1" colSpan="4" rowSpan="2" width="80%" color={textLightColor} fontSize="15" textAlignment="left" fontStyle="italic" verticalTextAlignment="top" marginTop="18" text={item.summary} maxLines="2" visibility={item.summary ? 'visible' : 'collapsed'}/>
     <!-- <stacklayout row="1" col="0" colSpan="3" orientation="horizontal"verticalAlignment="top" marginTop="10"> -->
     <label
-        row="1"
+        rowSpan="2"
         col="1"
-        fontSize="14"
+        fontSize="12"
+        verticalTextAlignment="center"
         textAlignment="center"
-        html={`<big><big><font face="${wiFontFamily}">${item.windIcon}</font></big></big><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`} />
+        html={`<span style="font-size:20px; font-family:${wiFontFamily};">${item.windIcon}</span><br>${formatValueToUnit(item.windSpeed, UNITS.Speed)}`} />
     <!-- <label
         row="1"
         col="1"
@@ -91,15 +93,19 @@
         textAlignment="center"
         html={`<big><big><font face="${wiFontFamily}">wi-cloud</font></big></big><br>${Math.round(item.cloudCover * 100)}%`} /> -->
     <label
-        fontSize="14"
-        color="#4681C3"
+        fontSize="12"
+        color={rainColor}
         textAlignment="center"
-        row="1"
+        verticalTextAlignment="center"
+        rowSpan="2"
         col="2"
-        html={`<big><big></label><font face="${wiFontFamily}">wi-raindrop</font></big></big><br>${item.precipAccumulation >= 1 ? formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM) + '<br>' : ''}${Math.round(item.precipProbability * 100)}%`} />
-    <label row="1" col="3" fontSize="14" color="#6B4985" textAlignment="center" html={`<big><big><font face="${wiFontFamily}">${item.moonIcon}</font></big></big><br>${l('moon')}`} />
+        html={`<span style="font-size:20px; font-family:${wiFontFamily};">wi-raindrop</span><br>${item.precipAccumulation >= 1 ? formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM) + '<br>' : ''}${Math.round(item.precipProbability * 100)}%`} />
+    <label 
+        rowSpan="2"
+        verticalTextAlignment="center"
+    col="3" fontSize="12" color={nightColor} textAlignment="center" html={`<span style=" font-size:20px; font-family:${wiFontFamily};">${item.moonIcon}</span><br>${l('moon')}`} />
     <!-- </stacklayout> -->
-    <WeatherIcon rowSpan="2" col="5" marginRight="10" marginTop="10" horizontalAlignment="right" fontSize="60" icon={item.icon} />
+    <WeatherIcon rowSpan="2" col="5" marginRight="10" marginTop="16" horizontalAlignment="right" fontSize="60" icon={item.icon} />
 
     <label
         col="1"
@@ -108,7 +114,7 @@
         verticalTextAlignment="top"
         textAlignment="right"
         marginTop="5"
-        marginRight="10"
-        html={`<small><font color=${textLightColor}>${formatValueToUnit(item.temperatureMin, UNITS.Celcius)}</font></small> ${formatValueToUnit(item.temperatureMax, UNITS.Celcius)}`} />
+        marginRight="5"
+        html={`<span style="font-size:17px; color:${textLightColor};">${formatValueToUnit(item.temperatureMin, UNITS.Celcius)}</span> ${formatValueToUnit(item.temperatureMax, UNITS.Celcius)}`} />
     <image  class="dailyViewBorder" row="1" colSpan="6" verticalAlignment="bottom"/>
 </gridLayout>

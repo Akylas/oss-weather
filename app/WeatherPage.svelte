@@ -52,7 +52,7 @@
     let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
 
-    let topHeight = Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 120, 500);
+    let topHeight = Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500);
     let items = [];
 
     let screenHeightPixels = screenHeightDips * screenScale;
@@ -99,7 +99,7 @@
     }
 
     async function refreshWeather() {
-        console.log('refreshWeather', networkService.connected, weatherLocation);
+        // console.log('refreshWeather', networkService.connected, weatherLocation);
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
             return;
@@ -320,7 +320,7 @@
     let pullRefresh;
 
     async function refresh() {
-        clog('refresh', weatherLocation);
+        // clog('refresh', weatherLocation);
 
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = true;
@@ -432,7 +432,7 @@
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-            <collectionview {items} {itemTemplateSelector} extraLayoutSpace={screenHeightPixels * 2}>
+            <collectionview {items} {itemTemplateSelector}>
                 <Template key="topView" let:item>
                     <TopWeatherView {item} height={topHeight} />
                 </Template>

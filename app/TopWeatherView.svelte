@@ -98,6 +98,7 @@
 
                 const leftAxis = chart.getAxisLeft();
                 leftAxis.setAxisMinimum(0);
+                // leftAxis.setTextColor(textColor);
                 leftAxis.setDrawGridLines(false);
                 leftAxis.setDrawLabels(false);
                 leftAxis.setDrawAxisLine(false);
@@ -144,15 +145,18 @@
             if (data.some(d => d.precipIntensity > 0)) {
                 if (!precipChartSet) {
                     needsToSetData = true;
+                    // console.log((data.map(s=>s.precipIntensity)));
                     precipChartSet = new LineDataSet(data, 'precipIntensity', 'time', 'precipIntensity');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
-                    precipChartSet.setLineWidth(0);
+                    precipChartSet.setLineWidth(1);
                     precipChartSet.setDrawIcons(false);
                     precipChartSet.setDrawValues(false);
+                    // precipChartSet.setDrawCircles(true);
                     precipChartSet.setDrawFilled(true);
+                    precipChartSet.setColor(rainColor);
                     precipChartSet.setFillColor(rainColor);
                     precipChartSet.setFillAlpha(150);
-                    precipChartSet.setMode(Mode.CUBIC_BEZIER);
+                    precipChartSet.setMode(Mode.HORIZONTAL_BEZIER);
                 } else {
                     precipChartSet.setValues(data);
                     needsUpdate = true;

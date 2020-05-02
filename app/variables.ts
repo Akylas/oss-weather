@@ -12,7 +12,6 @@ export const darkColor: string = locals.darkColor;
 export const backgroundColor: string = locals.backgroundColor;
 export const latoFontFamily: string = locals.latoFontFamily;
 export const wiFontFamily: string = locals.wiFontFamily;
-console.log('wiFontFamily', wiFontFamily);
 
 export const mdiFontFamily: string = locals.mdiFontFamily;
 export const forecastFontFamily: string = locals.forecastFontFamily;
@@ -34,12 +33,18 @@ if (gVars.isAndroid) {
     navigationBarHeight = 0;
 }
 
+export const sunnyColor = '#FFC82F';
+export const nightColor = '#845987';
+export const scatteredCloudyColor = '#cccccc';
+export const cloudyColor = '#929292';
+export const rainColor = '#4681C3';
+export const snowColor = '#ACE8FF';
 export let textColor;
 export let textLightColor;
 
 let theme;
 function updateThemeColors() {
-    theme = getString('theme', 'dark') ;
+    theme = getString('theme', 'dark');
     if (theme === 'light') {
         textColor = '#000000';
         textLightColor = '#444444';

@@ -11,7 +11,7 @@
 "moon" = "moon";
 "preferences" = "preferences";
 "select_on_map" = "select on a map";
-"api_key_required_description" = "to get weather data from Dark Sky a free API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website";
+"api_key_required_description" = "to get weather data from ClimaCell a free API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website";
 "quit" = "quit";
 "open_website" = "open website";
 "api_key_required" = "API key required";

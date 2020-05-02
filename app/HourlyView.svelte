@@ -21,8 +21,7 @@
     height="100%"
     isBounceEnabled="false"
     {items}
-    on:dataPopulated={onDataPopulated}
-    extraLayoutSpace={screenWidthDips / 2}>
+    on:dataPopulated={onDataPopulated}>
     <Template let:item>
         <WeatherCollectionItem {item} />
     </Template>

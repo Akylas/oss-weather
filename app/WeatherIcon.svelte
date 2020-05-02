@@ -31,21 +31,22 @@
     // }
 
     $: {
-        switch (icon) {
+        let realIcon;
+        switch (icon) { 
             case 'mostly_clear':
             case 'mostly_clear-day':
             case 'clear':
             case 'clear-day':
-                iconSrc = '4804-weather-sunny';
+                realIcon = '4804-weather-sunny';
                 break;
             case 'mostly_clear-night':
             case 'clear-night':
-                iconSrc = '4799-weather-night';
+                realIcon = '4799-weather-night';
                 break;
             case 'rain-night':
             case 'rain_light-night':
             case 'drizzle-night':
-                iconSrc = '4797-weather-rainynight';
+                realIcon = '4797-weather-rainynight';
                 break;
             case 'rain-day':
             case 'rain_light':
@@ -53,46 +54,53 @@
             case 'drizzle':
             case 'drizzle-day':
             case 'rain':
-                iconSrc = '4801-weather-partly-shower';
+                realIcon = '4801-weather-partly-shower';
                 break;
             case 'snow-night':
-                iconSrc = '4798-weather-snownight';
+                realIcon = '4798-weather-snownight';
                 break;
             case 'snow-day':
             case 'snow':
             case 'sleet':
-                iconSrc = '4793-weather-snow';
+                realIcon = '4793-weather-snow';
                 break;
             case 'wind':
-                iconSrc = '4806-weather-windy';
+                realIcon = '4806-weather-windy';
                 break;
             case 'fog':
-                iconSrc = '4795-weather-mist';
+                realIcon = '4795-weather-mist';
                 break;
             case 'cloudy':
+            case 'cloudy-day':
             case 'cloudy-night':
             case 'mostly_cloudy':
             case 'mostly_cloudy-night':
                 // iconSrc = '4791-foggy';
-                iconSrc = '4806-weather-windy';
+                realIcon = '4806-weather-windy';
                 break;
             case 'partly_cloudy':
             case 'partly_cloudy-day':
             case 'partly-cloudy-day':
-                iconSrc = '4800-weather-partly-cloudy';
+                realIcon = '4800-weather-partly-cloudy';
                 break;
             case 'partly_cloudy-night':
             case 'partly-cloudy-night':
-                iconSrc = '4796-weather-cloudynight';
+                realIcon = '4796-weather-cloudynight';
                 break;
         }
-        if (iconSrc) {
-            iconJSON = loadLottieJSON(iconSrc);
+        if (realIcon) {
+            if (gVars.isAndroid) {
+                iconSrc = loadLottieJSON(realIcon);
+            } else {
+                iconSrc = path.join(appPath, 'assets/lottie', realIcon + '.json');
+            }
+        //     iconJSON = loadLottieJSON(iconSrc);
+        // } else {
+        //     iconJSON = null;
         } else {
-            iconJSON = null;
+            iconSrc = realIcon
         }
 
-        // iconSrc = path.join('~/assets/lottie', iconSrc + '.json');
     }
 
     $: prefs.on('key:animations', () => {
@@ -100,4 +108,4 @@
     });
 </script>
 
-<lottie {...$$restProps} src={iconJSON} width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5} />
+<lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5} />

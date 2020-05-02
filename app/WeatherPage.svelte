@@ -378,6 +378,7 @@
                     okButtonText: l('ok'),
                     message: l('about_to_quit')
                 });
+                    quitApp();
             } else {
                 openUrl('https://darksky.net/dev');
                 quitApp();

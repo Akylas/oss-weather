@@ -263,7 +263,6 @@
 
             // throw new Error('test')
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
-            clog('searchCity', result);
             if (result) {
                 saveLocation(result);
             }

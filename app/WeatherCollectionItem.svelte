@@ -1,8 +1,5 @@
 <script context="module">
-    import {
-        Align,
-        Paint
-    } from 'nativescript-canvas';
+    import { Align, Paint } from 'nativescript-canvas';
 
     const textPaint = new Paint();
     textPaint.setAntiAlias(true);
@@ -11,8 +8,8 @@
     paint.setAntiAlias(true);
     paint.setTextAlign(Align.CENTER);
 </script>
+
 <script>
-    // @ts-ignore
     import WeatherIcon from './WeatherIcon.svelte';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
@@ -43,55 +40,26 @@
     export let item;
     let tempHeight = 0;
     let canvasView;
-    // let topHtmlString = null;
     let precipitationHeight = 0;
     const darkTheme = /dark/.test(Theme.getMode());
     const strTextColor = darkTheme ? 'white' : 'black';
     const textColor = new Color(strTextColor);
     $: {
-        // const startTime = Date.now();
-        // if (topHtmlString === undefined || item.topHtmlString !== topHtmlString) {
-        //     if (!item.topHtmlString) {
-        //         // const startTime2 = Date.now();
-        //         topHtmlString = item.topHtmlString = buildHTMLString({
-        //             text: `<big><b>${convertTime(item.time, 'HH:mm')}</b></big><br>${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, { unitScale: 2 })}`,
-        //             color: strTextColor,
-        //             fontSize: textPaint.getTextSize(),
-        //             familyName: textPaint.getFontFamily()
-        //         });
-        //         // console.log('created html in ', Date.now() - startTime2, item.index);
-        //     } else {
-        //         topHtmlString = item.topHtmlString;
-        //     }
-        const availableHeight = 
-            tempHeight = ((item.temperature - item.min) / (item.max - item.min)) * 55;
-            precipitationHeight = item.precipIntensity * 10;
-            canvasView && canvasView.nativeView.invalidate();
-        // }
-        // console.log('updated item in ', Date.now() - startTime, item.index);
+        tempHeight = ((item.temperature - item.min) / (item.max - item.min)) * 55;
+        precipitationHeight = item.precipIntensity * 10;
+        canvasView && canvasView.nativeView.invalidate();
     }
     function drawOnCanvas(event) {
         // const startTime = Date.now();
-        const canvas = getCanvas(event.canvas);
-        textPaint.setTextSize(14);
-
-        textPaint.setColor(textColor);
-        // textPaint.setStrokeWidth(3);
-
+        const canvas = getCanvas(event.canvas); // simple trick to get typings
         const w = canvas.getWidth();
         const w2 = w / 2;
         const h = canvas.getHeight();
-
-
-        // const layout = new StaticLayout(topHtmlString, textPaint, canvas.getWidth(), LayoutAlignment.ALIGN_CENTER, 1, 0, false);
-        // console.log('layout test ', layout.getHeight());
-        // layout.draw(canvas);
-
-
-        // paint.setAntiAlias(true);
-        // paint.setTextAlign(Align.CENTER);
+        textPaint.setTextSize(14);
+        textPaint.setColor(textColor);
+        
         let color;
-        if (item.precipProbability > 0 &&  precipitationHeight > 0){
+        if (item.precipProbability > 0 && precipitationHeight > 0) {
             const precipTop = (1 - precipitationHeight / 100) * h - 10;
             let color = new Color(item.precipColor);
             paint.setColor(color);
@@ -101,28 +69,22 @@
                 textPaint.setTextSize(10);
                 textPaint.setColor(textColor);
                 textPaint.setAlpha(150);
-                // textPaint.setXfermode(new PorterDuffXfermode(PorterDuffMode.CLEAR));
                 canvas.drawText(Math.round(item.precipProbability * 100) + '%', w2, h - 22, textPaint);
                 canvas.drawText(formatValueToUnit(item.precipIntensity, UNITS.MM), w2, h - 12, textPaint);
-                // textPaint.setXfermode(null);
             }
         }
-        
 
-        
         if (item.cloudCeiling > 0) {
-            const heightProb = 1 -(item.cloudCeiling/ 6000);
-            const top = 0.3*h*heightProb;
+            const heightProb = 1 - item.cloudCeiling / 6000;
+            const top = 0.3 * h * heightProb;
             let color = new Color(item.cloudColor);
             paint.setColor(color);
             paint.setAlpha(item.cloudCover * heightProb * 150);
-            canvas.drawRect(0, 0, w, top, paint); 
-            // paint.setXfermode(new PorterDuffXfermode(PorterDuffMode.LIGHTEN));
+            canvas.drawRect(0, 0, w, top, paint);
             textPaint.setColor(color);
             textPaint.setTextSize(10);
             textPaint.setAlpha(item.cloudCover * heightProb * 255);
             canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance), w2, top + 10, textPaint);
-            // paint.setXfermode(null);
         }
         color = new Color(item.color);
         paint.setColor(color);
@@ -130,15 +92,15 @@
 
         textPaint.setColor(textColor);
         textPaint.setTextSize(14);
-        canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, ((1 - tempHeight / 100) * h - 70) -0, textPaint);
+        canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, (1 - tempHeight / 100) * h - 70 - 0, textPaint);
 
         textPaint.setTextSize(14);
         textPaint.setFontWeight('bold');
-        canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint)
+        canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
         textPaint.setFontWeight('normal');
         textPaint.setTextSize(11);
         textPaint.setAlpha(180);
-        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, 30, textPaint)
+        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, 30, textPaint);
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }
 </script>
@@ -147,7 +109,7 @@
     <!-- FIRST TECHNIQUE USING FULL CANVAS-->
     <canvas bind:this={canvasView} rowSpan="3" backgroundColor="transparent" on:draw={drawOnCanvas} />
     <WeatherIcon row="1" icon={item.icon} verticalAlignment="bottom" marginBottom={tempHeight + '%'} />
-    <!-- SECOND TECHNIQUE USING HTML LABELS (rows need to be changed to rows="auto,*,10")-->
+    <!-- SECOND TECHNIQUE USING HTML LABELS-->
     <!-- <label textAlignment="center" fontSize="16" fontWeight="bold" html={`<b>${convertTime(item.time, 'HH:mm')}</b><br><span style="font-size:12px;">${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, {unitScale:1})}</span>`} />
     <label
         row="1"

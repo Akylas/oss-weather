@@ -10,14 +10,10 @@
     import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
-
     import { textLightColor } from '~/variables';
     import { layout } from '@nativescript/core/utils/utils';
-    // @ts-ignore
     import CActionBar from './CActionBar.svelte';
-    // @ts-ignore
     import MapView from './MapView.svelte';
-    // @ts-ignore
 
     let page;
     let collectionView;
@@ -68,7 +64,6 @@
         try {
             loading = true;
             searchResults = await photonSearch(query);
-            // console.log('searchResults', JSON.stringify(searchResults));
         } catch (err) {
             showError(err);
         } finally {
@@ -80,10 +75,6 @@
         clearTimeout(searchAsTypeTimer);
         closeModal(item);
     }
-
-    // onMount(() => {
-    //     focus();
-    // });
 </script>
 
 <frame backgroundColor="transparent">

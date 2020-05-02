@@ -12,11 +12,8 @@
     import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
-
     import { darkColor, primaryColor } from '~/variables';
-    // @ts-ignore
     import CActionBar from './CActionBar.svelte';
-    // @ts-ignore
     import { Point } from 'nativescript-carto/vectorelements/point';
     import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
     import { RasterTileLayer } from 'nativescript-carto/layers/raster';

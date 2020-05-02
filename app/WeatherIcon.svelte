@@ -23,13 +23,6 @@
     export let autoPlay = getBoolean('animations', false);
 
     let iconSrc;
-    let iconJSON;
-    // let p;
-    // $: {
-    //     // let { icon, autoPlay, ...p2 } = $$props;
-    //     p = $$restProps;
-    // }
-
     $: {
         let realIcon;
         switch (icon) { 
@@ -94,9 +87,6 @@
             } else {
                 iconSrc = path.join(appPath, 'assets/lottie', realIcon + '.json');
             }
-        //     iconJSON = loadLottieJSON(iconSrc);
-        // } else {
-        //     iconJSON = null;
         } else {
             iconSrc = realIcon
         }

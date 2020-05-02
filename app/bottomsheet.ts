@@ -7,11 +7,6 @@ export interface ShowBottomSheetOptions extends Omit<BottomSheetOptions, 'view'>
     view: PageSpec;
     parent: NativeViewElementNode<View>;
     props?: any;
-    // android?: { cancelable: boolean };
-    // // ios?: { presentationStyle: any };
-    // animated?: boolean;
-    // fullscreen?: boolean;
-    // stretched: boolean;
 }
 interface ComponentInstanceInfo {
     element: NativeViewElementNode<View>;
@@ -40,10 +35,7 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
             if (resolved) return;
             resolved = true;
             resolve(result);
-            // try {
             componentInstanceInfo.viewInstance.$destroy(); // don't let an exception in destroy kill the promise callback
-            // } finally {
-            // }
         };
         modalStack.push(componentInstanceInfo);
         modalLauncher.showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });

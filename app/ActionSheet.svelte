@@ -1,22 +1,16 @@
 <script>
     import { onMount } from 'svelte';
     import { accentColor } from '~/variables';
-    // import { Template } from 'svelte-native/components';
     import { closeBottomSheet } from '~/bottomsheet';
     export let options;
     export let title;
 
     function selectOption(option) {
-        // console.log('selectOption', option);
         closeBottomSheet(option);
     }
 
-    // $: {
-    // console.log('showOptions', options, title);
-    // }
 </script>
 
-<!-- <page> -->
 <stacklayout class="bottomsheet">
     {#if title}
         <label paddingLeft="16" fontSize="17" color="#757575" text={title} height="56" verticalTextAlignment="center" />
@@ -28,4 +22,3 @@
         </stacklayout>
     {/each}
 </stacklayout>
-<!-- </page> -->

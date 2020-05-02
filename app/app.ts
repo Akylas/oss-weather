@@ -2,19 +2,6 @@ import { registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 import { device } from '@nativescript/core/platform';
 
-// import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
-// import * as application from '@nativescript/core/application';
-// application.on(
-//     application.discardedErrorEvent,
-//     event => {
-//         alert({
-//             message:'nativeERror',
-//             cancelable: false
-//         });
-//     },
-//     this
-// );
-
 import { setMapPosKeys } from 'nativescript-carto/core';
 // we need to use lat lon
 setMapPosKeys('lat', 'lon');
@@ -38,25 +25,6 @@ registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pull
 registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasView);
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
-// registerElement('collectionview', () => new CollectionViewElement());
-
-// import { addCategories, enable } from 'tns-core-modules/trace';
-// addCategories(DomTraceCategory);
-// enable();
-
-// import { ScrollView } from '@nativescript/core/ui/scroll-view';
-
-// if (gVars.isAndroid) {
-//     class NestedScrollView extends ScrollView {
-//         createNativeView() {
-//             return new androidx.core.widget.NestedScrollView(this._context);
-//         }
-//     }
-//     registerNativeViewElement('nestedScrollView', () => NestedScrollView);
-// } else {
-//     registerNativeViewElement('nestedScrollView', () => ScrollView);
-// }
-
 startSentry();
 
 import { prefs } from '~/services/preferences';
@@ -145,30 +113,6 @@ if (gVars.isIOS) {
     themer.setPrimaryColor(primaryColor);
     themer.setAccentColor(primaryColor);
 }
-
-// if (gVars.isIOS) {
-//     class Path {
-//         path_;
-//         constructor() {
-//             this.path_ = CGPathCreateMutable();
-//             CGPathMoveToPoint(this.path_, null, 0, 0);
-//         }
-
-//         lineTo(x, y) {
-//             CGPathAddLineToPoint(this.path_, null, x, y);
-//         }
-//     }
-
-//     const count = 400;
-//     const point = new Path();
-//     console.time('perf');
-//     for (let x = 0; x < count; x++) {
-//         for (let y = 0; y < count; y++) {
-//             point.lineTo(x, y);
-//         }
-//     }
-//     console.timeEnd('perf');
-// }
 
 import { svelteNative } from 'svelte-native';
 import WeatherPage from './WeatherPage.svelte';

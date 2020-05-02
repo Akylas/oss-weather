@@ -4,7 +4,6 @@ import { EventData, Observable } from '@nativescript/core/data/observable';
 import * as http from '@nativescript/core/http';
 import dayjs from 'dayjs';
 import Color from 'tinycolor2';
-// const { getSunrise, getSunset } = require('sunrise-sunset-js');
 import { ccMoonIcon, colorForIcon, colorForUV, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { IMapPos } from '~/helpers/geo';
@@ -12,12 +11,11 @@ import { CustomError } from '~/utils/error';
 import { clog } from '~/utils/logging';
 import { DarkSky } from './darksky';
 import { CityWeather, Coord } from './owm';
-import { ClimaCellDaily, ClimaCellDataKeys, ClimaCellHourly, ClimaCellNowCast } from './climacell';
-import { rainColor, cloudyColor, snowColor, sunnyColor } from '~/variables';
+import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
+import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
 
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
-// let dsApiKey = getString('dsApiKey');
 
 type HTTPOptions = http.HttpRequestOptions;
 

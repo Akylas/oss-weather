@@ -320,8 +320,6 @@
     let pullRefresh;
 
     async function refresh() {
-        // clog('refresh', weatherLocation);
-
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = true;
         }
@@ -339,15 +337,6 @@
         // return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
         return index === 0 ? 'topView' : 'daily';
     }
-
-    // function onDailyLongPress(item) {
-    //     const index = item.index;
-    //     // console.log('onDailyLongPress', index, item.index, item.scrollIndex);
-    //     if (index) {
-    //         item.showHourly = !item.showHourly;
-    //         items.setItem(index, item);
-    //     }
-    // }
 
     function quitApp() {
         if (gVars.isIOS) {
@@ -425,7 +414,6 @@
 </script>
 
 <page bind:this={page} actionBarHidden="true" id="home">
-
     <gridLayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2">
             <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
@@ -447,25 +435,6 @@
                 </Template>
             </collectionview>
         </pullrefresh>
-
-        <!-- </gridLayout> -->
-        <!-- <scrollview row="1">
-            <gridlayout row="1" height={bottomHeight + (gVars.isAndroid ? 70 : 115)} rows="*,200,200">
-                <linechart row="1" bind:this={lineChart} verticalAlignment="bottom" height="200" />
-                <HourlyView items={hourlyItems} {scrollIndex} />
-            </gridlayout>
-        </scrollview> -->
-
-        <!-- {#if prevDayData}
-            <stacklayout rowSpan="2" elevation="2" width="60" height="60" horizontalAlignment="left" verticalAlignment="center" borderRadius="6" backgroundColor="#333" on:tap={decrementDay}>
-                <WeatherIcon icon={prevDayData.icon} verticalAlignment="center" />
-            </stacklayout>
-        {/if}
-        {#if nextDayData}
-            <stacklayout rowSpan="2" elevation="2" width="60" height="60" horizontalAlignment="right" verticalAlignment="center" borderRadius="6" backgroundColor="#333" on:tap={incrementDay}>
-                <WeatherIcon icon={nextDayData.icon} verticalAlignment="center" />
-            </stacklayout>
-        {/if} -->
         <activityIndicator row="0" colSpan="3" busy={loading} verticalAlignment="center" horizontalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
     </gridLayout>
 </page>

@@ -7,7 +7,6 @@
     export let scrollIndex;
 
     function onDataPopulated() {
-        // console.log('onDataPopulated', scrollIndex);
         collectionView.nativeView.scrollToIndex(scrollIndex, false);
     }
 </script>

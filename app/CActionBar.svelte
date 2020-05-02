@@ -3,7 +3,6 @@
     import { closeModal, goBack } from 'svelte-native';
     import { Frame } from '@nativescript/core/ui/frame';
     export let title;
-    // export let subtitle;
     export let showLogo = false;
     export let showMenuIcon = false;
     export let canGoBack = false;
@@ -35,10 +34,7 @@
 </script>
 
 <gridLayout {...$$restProps} class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" >
-    <!-- <stackLayout col="1" colSpan="3"> -->
     <label col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center"/>
-    <!-- <label visibility={!!subtitle ? 'visible' : 'collapse'} textAlignment="left" class="actionBarSubtitle" text={subtitle} /> -->
-    <!-- </stackLayout> -->
     {#if showLogo && !title}
         <label col="1" class="activelook" fontSize="28" color="white" text="logo" verticalAlignment="center" marginLeft="6" />
     {/if}

@@ -12,19 +12,15 @@
     import { GenericMapPos } from 'nativescript-carto/core';
 
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
-    // export let focusPos: GenericMapPos<LatLonKeys>;
     export let focusPos;
 
     let point;
-    // let cartoMap: CartoMap<LatLonKeys>;
     let cartoMap;
 
     function onMapReady(event) {
         cartoMap = event.object;
         const options = cartoMap.getOptions();
         options.setWatermarkScale(0);
-        // options.setEnvelopeThreadPoolSize(2);
-        // options.setTileThreadPoolSize(2);
 
         const dataSource = new PersistentCacheTileDataSource({
             dataSource: new HTTPTileDataSource({
@@ -51,7 +47,6 @@
         localVectorDataSource.add(point);
         const localVectorLayer = new VectorLayer({ dataSource: localVectorDataSource });
         cartoMap.addLayer(localVectorLayer);
-        // always add it at 1 to respect local order
         cartoMap.setFocusPos(focusPos, 0);
     }
 
@@ -62,9 +57,4 @@
         }
     }
 </script>
-
-<!-- <script context="module">
-    import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
-    const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
-</script> -->
 <cartomap zoom="10" on:mapReady={onMapReady} isUserInteractionEnabled="false" />

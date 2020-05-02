@@ -1,5 +1,4 @@
 <script>
-    // @ts-ignore
     import WeatherIcon from './WeatherIcon.svelte';
     import HourlyView from './HourlyView.svelte';
     import AlertView from './AlertView.svelte';
@@ -34,7 +33,6 @@
         showBottomSheet({
             parent: this,
             view: AlertView,
-            // transparent: gVars.isIOS,
             props: {
                 alerts: item.alerts
             }
@@ -92,8 +90,6 @@
                 xAxis.setPosition(XAxisPosition.BOTTOM);
 
                 const rightAxis = chart.getAxisRight();
-                // rightAxis.setEnabled(true);
-                // rightAxis.setTextColor(textColor);
                 rightAxis.setAxisMinimum(0);
                 rightAxis.setDrawGridLines(false);
                 rightAxis.setDrawAxisLine(false);
@@ -101,8 +97,6 @@
                 rightAxis.setAxisMaximum(6000);
 
                 const leftAxis = chart.getAxisLeft();
-                // leftAxis.setEnabled(true);
-                // leftAxis.setTextColor(textColor);
                 leftAxis.setAxisMinimum(0);
                 leftAxis.setDrawGridLines(false);
                 leftAxis.setDrawLabels(false);
@@ -131,10 +125,6 @@
                 limitLine.setTextColor(limitColor);
                 limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
                 leftAxis.addLimitLine(limitLine);
-
-                // chart.setMinOffset(0);
-                // chart.setExtraTopOffset(0);
-                // chart.setLogEnabled(true);
             }
             let min = 10000;
             let max = -10000;
@@ -155,29 +145,17 @@
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'precipIntensity', 'time', 'precipIntensity');
-                    // precipChartSet.setColor('#4681C3');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(0);
                     precipChartSet.setDrawIcons(false);
                     precipChartSet.setDrawValues(false);
                     precipChartSet.setDrawFilled(true);
-                    // precipChartSet.setFillAlpha(255);
                     precipChartSet.setFillColor(rainColor);
                     precipChartSet.setFillAlpha(150);
-                    // precipChartSet.setFillShader(new LinearGradient(0, 0, 0, 150, '#44ffffff', '#00ffffff', TileMode.CLAMP));
-                    // precipChartSet.setValueTextColors([darkTheme?'white':'black']);
-                    // precipChartSet.setValueFormatter({
-                    //     getFormattedValue(value, entry) {
-                    //         return formatValueToUnit(value, UNITS.Celcius);
-                    //     }
-                    // });
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
-                    // chart.setData(new LineData([precipChartSet]));
                 } else {
                     precipChartSet.setValues(data);
                     needsUpdate = true;
-                    // chart.getData().notifyDataChanged();
-                    // chart.notifyDataSetChanged();
                 }
             } else if (precipChartSet) {
                 precipChartSet.clear();
@@ -186,22 +164,13 @@
                 if (!cloudChartSet) {
                     needsToSetData = true;
                     cloudChartSet = new LineDataSet(data, 'cloudCeiling', 'time', 'cloudCeiling');
-                    // precipChartSet.setColor('#4681C3');
                     cloudChartSet.setAxisDependency(AxisDependency.RIGHT);
                     cloudChartSet.setLineWidth(0);
                     cloudChartSet.setDrawIcons(false);
                     cloudChartSet.setDrawValues(false);
                     cloudChartSet.setDrawFilled(true);
-                    // precipChartSet.setFillAlpha(255);
                     cloudChartSet.setFillColor('#4681C3');
                     cloudChartSet.setFillAlpha(150);
-                    // precipChartSet.setFillShader(new LinearGradient(0, 0, 0, 150, '#44ffffff', '#00ffffff', TileMode.CLAMP));
-                    // precipChartSet.setValueTextColors([darkTheme?'white':'black']);
-                    // precipChartSet.setValueFormatter({
-                    //     getFormattedValue(value, entry) {
-                    //         return formatValueToUnit(value, UNITS.Celcius);
-                    //     }
-                    // });
                     cloudChartSet.setMode(Mode.CUBIC_BEZIER);
                 } else {
                     cloudChartSet.setValues(data);
@@ -216,7 +185,6 @@
                 chart.getData().notifyDataChanged();
                 chart.notifyDataSetChanged();
             }
-            // chart.getXAxis().setAxisMinimum(false);
         }
     }
 

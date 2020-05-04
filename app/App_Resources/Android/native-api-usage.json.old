@@ -2,6 +2,12 @@
     "whitelist-plugins-usages": true,
     "whitelist": [
         "com.carto*:*",
+        "javax.net.ssl:SSLContext*",
+        "java.net:CookieManager*",
+        "java.net:CookiePolicy*",
+        "java.util.concurrent:TimeUnit*",
+        "com.nativescript.https*:*",
+        "okhttp3*:*",
         "com.akylas.carto.additions*:*",
         "com.nativescript.swiperefreshlayout*:*",
         "io.sentry*:*",

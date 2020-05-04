@@ -52,7 +52,7 @@
     let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
 
-    let topHeight = Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500);
+    let topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
     let items = [];
 
     let screenHeightPixels = screenHeightDips * screenScale;

@@ -1,6 +1,9 @@
 <script context="module">
     import { Align, Paint } from 'nativescript-canvas';
+    import { screen } from '@nativescript/core/platform';
 
+    const deviceHeight = Math.round(screen.mainScreen.heightDIPs);
+    console.log('deviceHeight', deviceHeight);
     const textPaint = new Paint();
     textPaint.setAntiAlias(true);
     textPaint.setTextAlign(Align.CENTER);
@@ -45,7 +48,7 @@
     const strTextColor = darkTheme ? 'white' : 'black';
     const textColor = new Color(strTextColor);
     $: {
-        tempHeight = ((item.temperature - item.min) / (item.max - item.min)) * 55;
+        tempHeight = (((item.temperature - item.min) / (item.max - item.min)) * deviceHeight) / 20;
         precipitationHeight = item.precipIntensity * 10;
         canvasView && canvasView.nativeView.invalidate();
     }
@@ -57,7 +60,7 @@
         const h = canvas.getHeight();
         textPaint.setTextSize(14);
         textPaint.setColor(textColor);
-        
+
         let color;
         if (item.precipProbability > 0 && precipitationHeight > 0) {
             const precipTop = (1 - precipitationHeight / 100) * h - 10;
@@ -76,7 +79,7 @@
 
         if (item.cloudCeiling > 0) {
             const heightProb = 1 - item.cloudCeiling / 6000;
-            const top = 0.3 * h * heightProb;
+            const top = 0.3 * (h - 30) * heightProb + 13;
             let color = new Color(item.cloudColor);
             paint.setColor(color);
             paint.setAlpha(item.cloudCover * heightProb * 150);
@@ -86,6 +89,8 @@
             textPaint.setAlpha(item.cloudCover * heightProb * 255);
             canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance), w2, top + 10, textPaint);
         }
+        paint.setAlpha(255);
+        textPaint.setAlpha(255);
         color = new Color(item.color);
         paint.setColor(color);
         canvas.drawRect(0, h - 10, w, h, paint);

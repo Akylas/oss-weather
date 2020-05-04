@@ -10,7 +10,7 @@
 
 </script>
 
-<gridLayout height="100" rows="auto,*" columns="60,70,70,70,*,80" borderRightWidth="5" borderRightColor={item.color}>
+<gridLayout height="100" rows="auto,*" columns="60,*,*,*,80" borderRightWidth="5" borderRightColor={item.color}>
 
     <label
         colSpan="2"
@@ -32,7 +32,7 @@
 
     <label
         col="1"
-        colSpan="4"
+        colSpan="3"
         rowSpan="2"
         width="80%"
         color={textLightColor}
@@ -81,7 +81,7 @@
 
     <label
         col="1"
-        colSpan="5"
+        colSpan="4"
         fontSize="20"
         verticalTextAlignment="top"
         textAlignment="right"

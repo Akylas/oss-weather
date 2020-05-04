@@ -281,13 +281,13 @@
         fontSize="14"
         row="3"
         verticalTextAlignment="bottom"
-        html={`<font face="${wiFontFamily}" color="#ffa500">wi-sunrise</font>${convertTime(item.sunriseTime, 'HH:mm')}<font face="${wiFontFamily}" color="#ff7200">wi-sunset</font>${convertTime(item.sunsetTime, 'HH:mm')}`}>
+        html={`<font face="${wiFontFamily}" color="#ffa500">wi-sunrise</font>${convertTime(item.sunriseTime, 'HH:mm')}<font face="${wiFontFamily}" color="#ff7200">wi-sunset</font>${convertTime(item.sunsetTime, 'HH:mm')}`}  marginBottom="10">
 
         <!-- <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunrise" color="#ffa500" />
         <span text=" {convertTime(item.sunriseTime, 'HH:mm')} " />
         <span fontFamily={wiFontFamily} fontSize="16" text="wi-sunset" color="#ff7200" />
         <span text=" {convertTime(item.sunsetTime, 'HH:mm')}" /> -->
     </label>
-    <label marginRight="10" row="3" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" />
-    <HourlyView row="4" colSpan="2" marginTop="10" items={item.hourly} />
+    <label marginRight="10" row="3" col="0" colSpan="2" fontSize="14" textAlignment="right" verticalTextAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}"  marginBottom="10" />
+    <HourlyView row="4" colSpan="2"items={item.hourly} />
 </gridLayout>

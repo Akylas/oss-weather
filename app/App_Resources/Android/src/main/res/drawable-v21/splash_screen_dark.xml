@@ -6,7 +6,10 @@
             <solid android:color="#000000" />
         </shape>
     </item>
-    <item>
-        <bitmap android:gravity="center|clip_vertical" android:src="@mipmap/icon" />
+    <item android:gravity="center" >
+        <shape android:shape="oval">
+            <solid android:color="#ffa500"/>
+            <size  android:width="120dp" android:height="120dp"/>
+        </shape>
     </item>
 </layer-list>

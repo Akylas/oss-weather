@@ -276,6 +276,7 @@ const ccMoonIcons = {
     waning_gibbous: 'wi-moon-waxing-gibbous-4',
     third_quarter: 'wi-moon-third-quarter',
     waning_crescent: 'wi-moon-waning-crescent-4',
+    last_quarter: 'wi-moon-first-quarter',
 };
 
 export function moonIcon(moonPhase: number) {

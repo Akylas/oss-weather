@@ -14,11 +14,12 @@ import { CityWeather, Coord } from './owm';
 import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { Photon } from './photon';
+import * as https from 'nativescript-akylas-https';
 
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
 
-type HTTPOptions = http.HttpRequestOptions;
+type HTTPSOptions = https.HttpsRequestOptions;
 
 export const NetworkConnectionStateEvent = 'connected';
 export interface NetworkConnectionStateEventData extends EventData {
@@ -28,7 +29,7 @@ export interface NetworkConnectionStateEventData extends EventData {
     };
 }
 
-export interface HttpRequestOptions extends HTTPOptions {
+export interface HttpRequestOptions extends HTTPSOptions {
     queryParams?: {};
 }
 
@@ -157,11 +158,11 @@ export class NoNetworkError extends CustomError {
 export interface HTTPErrorProps {
     statusCode: number;
     message: string;
-    requestParams: HTTPOptions;
+    requestParams: HTTPSOptions;
 }
 export class HTTPError extends CustomError {
     statusCode: number;
-    requestParams: HTTPOptions;
+    requestParams: HTTPSOptions;
     constructor(props: HTTPErrorProps | HTTPError) {
         super(
             Object.assign(
@@ -243,23 +244,22 @@ async function handleRequestRetry(requestParams: HttpRequestOptions, retry = 0) 
     });
 }
 
-async function handleRequestResponse(response: http.HttpResponse, requestParams: HttpRequestOptions, requestStartTime, retry) {
+async function handleRequestResponse(response: https.HttpsResponse, requestParams: HttpRequestOptions, requestStartTime, retry) {
     const statusCode = response.statusCode;
     // return Promise.resolve()
     // .then(() => {
-    let jsonContent;
-    let content;
-    try {
-        jsonContent = response.content.toJSON();
-    } catch (e) {
-        // console.log('failed to parse result to JSON', e);
-        content = response.content;
+    let content = await response.content.toJSONAsync();
+    if (!content) {
+        content = await response.content.toStringAsync();
     }
+    const isJSON = typeof content === 'object' || Array.isArray(content);
     // const isJSON = !!jsonContent;
     // clog('handleRequestResponse response', requestParams.url, statusCode, Math.round(statusCode / 100), content);
     if (Math.round(statusCode / 100) !== 2) {
-        // let jsonReturn;
-        if (!jsonContent) {
+        let jsonReturn;
+        if (isJSON) {
+            jsonReturn = content;
+        } else {
             // jsonReturn = jsonContent;
             // } else {
             // try {
@@ -275,14 +275,15 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
                 })
             );
             // }
-        } else {
-            if (Array.isArray(jsonContent)) {
-                jsonContent = jsonContent[0];
+        }
+        if (jsonReturn) {
+            if (Array.isArray(jsonReturn)) {
+                jsonReturn = jsonReturn[0];
             }
-            if (statusCode === 401 && jsonContent.error === 'invalid_grant') {
+            if (statusCode === 401 && jsonReturn.error === 'invalid_grant') {
                 return this.handleRequestRetry(requestParams, retry);
             }
-            const error = jsonContent.error_description || jsonContent.error || jsonContent;
+            const error = jsonReturn.error_description || jsonReturn.error || jsonReturn;
             throw new HTTPError({
                 statusCode: error.code || statusCode,
                 message: error.error_description || error.form || error.message || error.error || error,
@@ -291,7 +292,16 @@ async function handleRequestResponse(response: http.HttpResponse, requestParams:
         }
     }
     // if (isJSON) {
-    return jsonContent || content;
+    // if (isJSON) {
+    return content;
+    // }
+    // try {
+    //     // we should never go there anymore
+    //     return JSON.parse(content);
+    // } catch (e) {
+    //     // console.log('failed to parse result to JSON', e);
+    //     return content;
+    // }
     // }
     // try {
     //     return response.content.toJSON();
@@ -326,10 +336,11 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
         delete requestParams.queryParams;
     }
     requestParams.headers = getRequestHeaders(requestParams);
+    requestParams.useLegacy = true;
 
     // clog('request', requestParams);
     const requestStartTime = Date.now();
-    return http.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
+    return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
 }
 
 const apiKey = getString('apiKey', OWM_KEY);

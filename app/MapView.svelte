@@ -29,7 +29,7 @@
                 maxZoom: 10,
                 url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
             }),
-            databasePath: cacheFolder.path
+            databasePath: path.join(cacheFolder.path, 'cache.db')
         });
 
         const rasterLayer = new RasterTileLayer({ dataSource });

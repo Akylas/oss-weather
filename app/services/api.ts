@@ -53,7 +53,8 @@ export function setCCApiKey(apiKey) {
     }
 }
 export function hasCCApiKey() {
-    return !!ccApiKey;
+    // return !!ccApiKey;
+    return true;
 }
 
 function isDayTime(sunrise, sunset, time) {

@@ -69,7 +69,7 @@ module.exports = (env, params = {}) => {
         includeClimaCellKey, // --env.includeClimaCellKey
         includeDefaultLocation, // --env.includeDefaultLocation
         devlog, // --env.devlog
-        adhoc // --env.adhoc
+        adhoc, // --env.adhoc
     } = env;
 
     if (adhoc) {
@@ -77,7 +77,7 @@ module.exports = (env, params = {}) => {
             production: true,
             sentry: true,
             sourceMap: true,
-            uglify: true
+            uglify: true,
         });
     }
 
@@ -89,7 +89,7 @@ module.exports = (env, params = {}) => {
 
     const appFullPath = resolve(projectRoot, appPath);
     const hasRootLevelScopedModules = nsWebpack.hasRootLevelScopedModules({
-        projectDir: projectRoot
+        projectDir: projectRoot,
     });
     const alias = mergeOptions(
         {
@@ -111,7 +111,7 @@ module.exports = (env, params = {}) => {
     const entryModule = nsWebpack.getEntryModule(appFullPath, platform);
     const entryPath = `.${sep}${entryModule}`;
     const entries = mergeOptions({ bundle: entryPath }, params.entries || {});
-    const areCoreModulesExternal = Array.isArray(env.externals) && env.externals.some(e => e.indexOf('tns-core-modules') > -1);
+    const areCoreModulesExternal = Array.isArray(env.externals) && env.externals.some((e) => e.indexOf('tns-core-modules') > -1);
     if (platform === 'ios' && !areCoreModulesExternal) {
         entries['tns_modules/tns-core-modules/inspector_modules'] = 'inspector_modules';
     }
@@ -165,9 +165,11 @@ module.exports = (env, params = {}) => {
             OWM_KEY: `"${process.env.OWM_KEY}"`,
             DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',
             CLIMA_CELL_KEY: includeClimaCellKey ? `"${process.env.CLIMA_CELL_KEY}"` : 'undefined',
-            DEFAULT_LOCATION: includeDefaultLocation ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\'' : 'undefined',
+            DEFAULT_LOCATION: includeDefaultLocation
+                ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
+                : 'undefined',
             LOG_LEVEL: devlog ? '"full"' : '""',
-            TEST_LOGS: adhoc || !production
+            TEST_LOGS: adhoc || !production,
         },
         params.definePlugin || {}
     );
@@ -180,11 +182,11 @@ module.exports = (env, params = {}) => {
     const forecastIcons = JSON.parse(`{${forecastSymbols.variables[forecastSymbols.variables.length - 1].value.replace(/'forecastfont-(\w+)' (F|f|0)(.*?)([,\n]|$)/g, '"$1": "$2$3"$4')}}`);
 
     const weatherIconsCss = resolve(projectRoot, 'app/css/weather-icons/weather-icons-variables.scss');
-    const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function(acc, value) {
+    const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function (acc, value) {
         return acc.concat(symbolsParser.parseSymbols(readFileSync(resolve(dirname(weatherIconsCss), value.filepath)).toString()).variables);
     }, []);
     // console.log('weatherSymbols', weatherSymbols);
-    const weatherIcons = weatherSymbols.reduce(function(acc, value) {
+    const weatherIcons = weatherSymbols.reduce(function (acc, value) {
         acc[value.name.slice(1)] = '\\u' + value.value.slice(2, -1);
         return acc;
     }, {});
@@ -206,8 +208,8 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             ignored: [
                 appResourcesFullPath,
                 // Don't watch hidden files
-                '**/.*'
-            ]
+                '**/.*',
+            ],
         },
         target: nativescriptTarget,
         entry: entries,
@@ -217,7 +219,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             libraryTarget: 'commonjs2',
             filename: '[name].js',
             globalObject: 'global',
-            hashSalt
+            hashSalt,
         },
         resolve: {
             extensions: ['.mjs', '.js', '.ts', '.svelte', '.scss', '.css'],
@@ -226,11 +228,11 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             // mainFields: ['main'],
             alias,
             // resolve symlinks to symlinked modules
-            symlinks: true
+            symlinks: true,
         },
         resolveLoader: {
             // don't resolve symlinks to symlinked loaders
-            symlinks: false
+            symlinks: false,
         },
         node: {
             // Disable node shims that conflict with NativeScript
@@ -239,7 +241,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             setImmediate: false,
             fs: 'empty',
             crypto: 'empty',
-            __dirname: false
+            __dirname: false,
         },
         devtool: inlineSourceMap ? 'inline-cheap-source-map' : false,
         optimization: {
@@ -250,19 +252,19 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     vendor: {
                         name: 'vendor',
                         chunks: 'all',
-                        test: module => {
+                        test: (module) => {
                             const moduleName = module.nameForCondition ? module.nameForCondition() : '';
                             return (
                                 /[\\/]node_modules[\\/]/.test(moduleName) ||
                                 /@nativescript\/core/.test(moduleName) ||
                                 /nativescript-core/.test(moduleName) || // this one is for linked nativescript core build
-                                appComponents.some(comp => comp === moduleName) ||
+                                appComponents.some((comp) => comp === moduleName) ||
                                 (params.chunkTestCallback && params.chunkTestCallback(moduleName))
                             );
                         },
-                        enforce: true
-                    }
-                }
+                        enforce: true,
+                    },
+                },
             },
             minimize: uglify !== undefined ? uglify : production,
             minimizer: [
@@ -278,22 +280,22 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                 // toplevel: true,
                                 output: {
                                     comments: false,
-                                    semicolons: !isAnySourceMapEnabled
+                                    semicolons: !isAnySourceMapEnabled,
                                 },
                                 compress: {
                                     // The Android SBG has problems parsing the output
                                     // when these options are enabled
                                     collapse_vars: platform !== 'android',
                                     sequences: platform !== 'android',
-                                    passes: 2
+                                    passes: 2,
                                 },
-                                keep_fnames: true
-                            }
+                                keep_fnames: true,
+                            },
                         },
                         params.terserOptions || {}
                     )
-                )
-            ]
+                ),
+            ],
         },
         module: {
             rules: [
@@ -305,7 +307,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                         // Require all Android app components
                         platform === 'android' && {
                             loader: 'nativescript-dev-webpack/android-app-components-loader',
-                            options: { modules: appComponents }
+                            options: { modules: appComponents },
                         },
 
                         {
@@ -316,10 +318,10 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                 unitTesting,
                                 appFullPath,
                                 projectRoot,
-                                ignoredFiles: nsWebpack.getUserDefinedEntries(entries, platform)
-                            }
-                        }
-                    ].filter(loader => Boolean(loader))
+                                ignoredFiles: nsWebpack.getUserDefinedEntries(entries, platform),
+                            },
+                        },
+                    ].filter((loader) => Boolean(loader)),
                 },
                 {
                     // rules to replace mdi icons and not use nativescript-font-icon
@@ -336,8 +338,8 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                     }
                                     return match;
                                 },
-                                flags: 'g'
-                            }
+                                flags: 'g',
+                            },
                         },
                         {
                             loader: 'string-replace-loader',
@@ -349,29 +351,29 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                     }
                                     return match;
                                 },
-                                flags: 'g'
-                            }
+                                flags: 'g',
+                            },
                         },
                         {
                             loader: 'string-replace-loader',
                             options: {
                                 search: 'wi-([a-z0-9-]+)',
                                 replace: (match, p1, offset, string) => weatherIcons[p1] || match,
-                                flags: 'g'
-                            }
-                        }
-                    ]
+                                flags: 'g',
+                            },
+                        },
+                    ],
                 },
                 {
                     test: /\.(ts|css|scss|html|xml)$/,
-                    use: 'nativescript-dev-webpack/hmr/hot-loader'
+                    use: 'nativescript-dev-webpack/hmr/hot-loader',
                 },
 
                 { test: /\.(html|xml)$/, use: 'nativescript-dev-webpack/xml-namespace-loader' },
 
                 {
                     test: /\.css$/,
-                    use: 'nativescript-dev-webpack/css2json-loader'
+                    use: 'nativescript-dev-webpack/css2json-loader',
                 },
 
                 {
@@ -380,16 +382,16 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     use: [
                         {
                             loader: 'nativescript-dev-webpack/css2json-loader',
-                            options: { useForImports: true }
+                            options: { useForImports: true },
                         },
                         {
                             loader: 'sass-loader',
                             options: {
                                 sourceMap: false,
-                                data: scssPrepend
-                            }
-                        }
-                    ]
+                                data: scssPrepend,
+                            },
+                        },
+                    ],
                 },
                 {
                     test: /\.module\.scss$/,
@@ -399,10 +401,10 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                             loader: 'sass-loader',
                             options: {
                                 sourceMap: false,
-                                data: scssPrepend
-                            }
-                        }
-                    ]
+                                data: scssPrepend,
+                            },
+                        },
+                    ],
                 },
                 // {
                 //     test: /\.js$/,
@@ -420,7 +422,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 // },
                 {
                     test: /\.mjs$/,
-                    type: 'javascript/auto'
+                    type: 'javascript/auto',
                 },
                 {
                     test: /\.ts$/,
@@ -433,10 +435,10 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                             allowTsInNodeModules: true,
                             compilerOptions: {
                                 sourceMap: isAnySourceMapEnabled,
-                                declaration: false
-                            }
-                        }
-                    }
+                                declaration: false,
+                            },
+                        },
+                    },
                 },
                 {
                     test: /\.svelte$/,
@@ -445,27 +447,27 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                         {
                             loader: 'svelte-loader-hot',
                             options: {
-                                preprocess: require('svelte-preprocess')(
-                                    Object.assign(
-                                        {
+                                preprocess: [
+                                    require('svelte-preprocess')(
+                                        Object.assign({
                                             typescript: {
                                                 compilerOptions: {
-                                                    module: 'es6'
-                                                }
-                                            }
-                                        },
-                                        svelteNativePreprocessor()
-                                    )
-                                ),
+                                                    module: 'es6',
+                                                },
+                                            },
+                                        })
+                                    ),
+                                    svelteNativePreprocessor(),
+                                ],
                                 hotReload: hmr,
                                 hotOptions: {
-                                    native: hmr
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
+                                    native: hmr,
+                                },
+                            },
+                        },
+                    ],
+                },
+            ],
         },
         plugins: [
             // Define useful constants like TNS_WEBPACK
@@ -473,7 +475,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 mergeOptions(
                     {
                         NODE_ENV: JSON.stringify(mode), // use 'development' unless process.env.NODE_ENV is defined
-                        DEBUG: false
+                        DEBUG: false,
                     },
                     params.environmentPlugin || {}
                 )
@@ -484,7 +486,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 dangerouslyAllowCleanPatternsOutsideProject: true,
                 dry: false,
                 verbose: !!verbose,
-                cleanOnceBeforeBuildPatterns: itemsToClean
+                cleanOnceBeforeBuildPatterns: itemsToClean,
             }),
             // Copy assets to out dir. Add your own globs as needed.
             new CopyWebpackPlugin(
@@ -496,15 +498,15 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     { from: 'assets/**/*' },
                     {
                         from: '../node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
-                        to: 'fonts'
+                        to: 'fonts',
                         // },
                         // {
                         //     from: '../node_modules/weather-icons/font/weathericons-regular-webfont.ttf',
                         //     to: 'fonts'
-                    }
+                    },
                 ].concat(params.copyPlugin || []),
                 {
-                    ignore: [`${relative(appPath, appResourcesFullPath)}/**`]
+                    ignore: [`${relative(appPath, appResourcesFullPath)}/**`],
                 }
             ),
             // we use platform name to identify ios/android files in Sentry
@@ -515,11 +517,11 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             new NativeScriptWorkerPlugin(),
             new nsWebpack.PlatformFSPlugin({
                 platform,
-                platforms
+                platforms,
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
-            new nsWebpack.WatchStateLoggerPlugin()
-        ]
+            new nsWebpack.WatchStateLoggerPlugin(),
+        ],
     };
 
     if (hiddenSourceMap || sourceMap) {
@@ -531,7 +533,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     mergeOptions(
                         {
                             append: `\n//# sourceMappingURL=${process.env.SENTRY_PREFIX}[name].js.map`,
-                            filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
+                            filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map'),
                         },
                         params.sourceMapPlugin || {}
                     )
@@ -555,7 +557,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                     rewrite: true,
                     dist: `${buildNumber}.${platform}`,
                     ignore: ['tns-java-classes', 'hot-update'],
-                    include: [dist, join(dist, process.env.SOURCEMAP_REL_DIR)]
+                    include: [dist, join(dist, process.env.SOURCEMAP_REL_DIR)],
                 })
             );
         } else {
@@ -563,7 +565,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 new webpack.SourceMapDevToolPlugin(
                     mergeOptions(
                         {
-                            noSources: true
+                            noSources: true,
                             //  fileContext:params.sourceMapPublicPath
                             // publicPath: params.sourceMapPublicPath || '~/',
                             // fileContext:sourceMapsDist,
@@ -591,16 +593,16 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
         config.module.rules.push(
             {
                 test: /-page\.js$/,
-                use: 'nativescript-dev-webpack/script-hot-loader'
+                use: 'nativescript-dev-webpack/script-hot-loader',
             },
             {
                 test: /\.(ts|css|scss|html|xml)$/,
-                use: 'nativescript-dev-webpack/hmr/hot-loader'
+                use: 'nativescript-dev-webpack/hmr/hot-loader',
             },
 
             {
                 test: /\.(html|xml)$/,
-                use: 'nativescript-dev-webpack/xml-namespace-loader'
+                use: 'nativescript-dev-webpack/xml-namespace-loader',
             }
         );
     }
@@ -611,7 +613,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             new BundleAnalyzerPlugin({
                 analyzerMode: 'static',
                 openAnalyzer: false,
-                reportFilename: resolve(projectRoot, 'report', 'report.html')
+                reportFilename: resolve(projectRoot, 'report', 'report.html'),
             })
         );
     }
@@ -625,7 +627,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                 // targetArchs: params.targetArchs || ['arm'],
                 snapshotInDocker,
                 skipSnapshotTools,
-                useLibs
+                useLibs,
             },
             params.snapshotPlugin
         );

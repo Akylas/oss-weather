@@ -14,6 +14,7 @@
 <collectionview
     {...$$restProps}
     bind:this={collectionView}
+     itemIdGenerator={(_item, index) => index}
     orientation="horizontal"
     colWidth="60"
     rowHeight="100%"

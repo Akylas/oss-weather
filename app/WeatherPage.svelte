@@ -70,7 +70,7 @@
                     {
                         icon: 'mdi-refresh',
                         id: 'refresh',
-                        text: l('refresh')
+                        text: l('refresh'),
                     },
                     // {
                     //     icon: 'mdi-map',
@@ -80,11 +80,11 @@
                     {
                         icon: 'mdi-settings',
                         id: 'preferences',
-                        text: l('preferences')
-                    }
-                ]
-            }
-        }).then(result => {
+                        text: l('preferences'),
+                    },
+                ],
+            },
+        }).then((result) => {
             if (result) {
                 switch (result.id) {
                     case 'preferences':
@@ -153,8 +153,8 @@
         dsWeather.daily.data.forEach((d, index) => {
             if (index === 0) {
                 let currentDaily = dsWeather.daily.data[index];
-                const firstHourIndex = currentDaily.hourly.findIndex(h => h.time >= endOfHour);
-                const firstMinuteIndex = dsWeather.minutely.data.findIndex(h => h.time >= endOfMinute);
+                const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= endOfHour);
+                const firstMinuteIndex = dsWeather.minutely.data.findIndex((h) => h.time >= endOfMinute);
                 // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
                 // console.log('prepareItems', index, now, firstHourIndex, dsWeather.minutely);
                 if (firstHourIndex > 1) {
@@ -166,30 +166,30 @@
                     currentDaily = Object.assign({}, currentDaily, dsWeather.currently);
                 }
                 // console.log('firstHourIndex', firstHourIndex, firstMinuteIndex, currentDaily);
-                const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex): [];
+                const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
                 let min = 10000;
                 let max = -10000;
-                hours.forEach(h=>{
+                hours.forEach((h) => {
                     if (h.temperature < min) {
                         min = h.temperature;
                     }
                     if (h.temperature > max) {
                         max = h.temperature;
                     }
-                })
+                });
                 newItems.push(
                     Object.assign(currentDaily, {
                         showHourly: false,
                         lastUpdate: lastUpdate,
-                        hourly: hours.map((h, i)=>{
+                        hourly: hours.map((h, i) => {
                             h.index = i;
                             h.min = min;
                             h.max = max;
                             h.odd = i % 2 === 0;
                             return h;
-                        }) ,
+                        }),
                         minutely: firstMinuteIndex >= 0 ? dsWeather.minutely.data.slice(firstMinuteIndex) : [],
-                        alerts: dsWeather.alerts
+                        alerts: dsWeather.alerts,
                     })
                 );
 
@@ -199,13 +199,11 @@
                 // });
             } else {
                 const items = d.hourly;
-                const sunriseTime = dayjs(d.sunriseTime)
-                    .endOf('h')
-                    .valueOf();
+                const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
                 newItems.push(
                     Object.assign(d, {
                         index: newItems.length,
-                        scrollIndex: items.findIndex(h => h.time >= sunriseTime)
+                        scrollIndex: items.findIndex((h) => h.time >= sunriseTime),
                     })
                 );
             }
@@ -354,8 +352,8 @@
                 cancelButtonText: l('quit'),
                 message: l('api_key_required_description'),
                 textFieldProperties: {
-                    hint: l('api_key')
-                }
+                    hint: l('api_key'),
+                },
             });
             console.log('result', result);
             if (result.result === true) {
@@ -367,7 +365,7 @@
                     const result = await confirm({
                         title: l('quit'),
                         okButtonText: l('ok'),
-                        message: l('about_to_quit')
+                        message: l('about_to_quit'),
                     });
                     quitApp();
                 }
@@ -375,9 +373,9 @@
                 const result = await confirm({
                     title: l('quit'),
                     okButtonText: l('ok'),
-                    message: l('about_to_quit')
+                    message: l('about_to_quit'),
                 });
-                    quitApp();
+                quitApp();
             } else {
                 openUrl('https://darksky.net/dev');
                 quitApp();
@@ -394,7 +392,7 @@
         if (!ccApiKey) {
             askForApiKey();
         }
-        networkService.on(NetworkConnectionStateEvent, event => {
+        networkService.on(NetworkConnectionStateEvent, (event) => {
             if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }
@@ -407,34 +405,50 @@
     });
     let page;
 
-    onLanguageChanged(lang => {
+    onLanguageChanged((lang) => {
         console.log('refresh triggered by lang change');
         refresh();
     });
 </script>
 
 <page bind:this={page} actionBarHidden="true" id="home">
-    <gridLayout rows="auto,*">
-        <CActionBar title={weatherLocation && weatherLocation.name} row="0" colSpan="2">
+    <gridlayout rows="auto,*">
+        <CActionBar title={weatherLocation && weatherLocation.name}>
+            <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
             <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
-        <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-            <collectionview {items} {itemTemplateSelector}>
-                <Template key="topView" let:item>
-                    <TopWeatherView {item} height={topHeight} />
-                </Template>
-                <Template key="info" let:item>
-                    <gridLayout rows="auto" columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
-                        <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
-                        <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2" />
-                    </gridLayout>
-                </Template>
-                <Template key="daily" let:item>
-                    <DailyView {item} />
-                </Template>
-            </collectionview>
-        </pullrefresh>
-        <activityIndicator row="0" colSpan="3" busy={loading} verticalAlignment="center" horizontalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-    </gridLayout>
+        {#if weatherLocation}
+            <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
+                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} extraLayoutSpace={screenHeightPixels}>
+                    <Template key="topView" let:item>
+                        <TopWeatherView {item} height={topHeight} />
+                    </Template>
+                    <Template key="info" let:item>
+                        <gridLayout rows="auto" columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
+                            <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
+                            <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2" />
+                        </gridLayout>
+                    </Template>
+                    <Template key="daily" let:item>
+                        <DailyView {item} />
+                    </Template>
+                </collectionview>
+            </pullrefresh>
+        {:else}
+            <!-- <stackLayout row="1" backgroundColor="red" rows="auto" columns="*"> -->
+            <!-- <stackLayout row="1" backgroundColor="green" rows="auto" columns="*"> -->
+                <!-- <button variant="text" horizontalAlignment="center" color="white">
+                    <span class="mdi" text="mdi-crosshairs-gps" />
+                    <span text=" my location" />
+                </button> -->
+                <label rowSpan="2" fontSize="24" textAlignment="center" verticalAlignment="center" text="no location setup" color="white" />
+                <!-- <button variant="text" horizontalAlignment="center">
+                    <span class="mdi" text="mdi-magnify" />
+                    <span text=" search location" />
+                </button> -->
+            <!-- </stackLayout> -->
+            <!-- </stackLayout> -->
+        {/if}
+    </gridlayout>
 </page>

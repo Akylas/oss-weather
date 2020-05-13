@@ -269,6 +269,7 @@ const windIcons = [
 
 const ccMoonIcons = {
     new_moon: 'wi-moon-new',
+    new: 'wi-moon-new',
     waxing_crescent: 'wi-moon-waxing-crescent-4',
     first_quarter: 'wi-moon-first-quarter',
     waxing_gibbous: 'wi-moon-waxing-gibbous-4',

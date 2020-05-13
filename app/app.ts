@@ -14,6 +14,7 @@ installBottomSheets();
 import { Label, enableIOSDTCoreText } from 'nativescript-htmllabel';
 enableIOSDTCoreText();
 
+
 registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('button', () => require('nativescript-material-button').Button);
 registerNativeViewElement('label', () => Label);
@@ -26,6 +27,33 @@ registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasV
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
 startSentry();
+
+import {addCategories, enable} from '@nativescript/core/trace';
+
+const DomTraceCategory = 'SvelteNativeDom';
+// function initializeLogger() {
+//     logger.setHandler((message, level) => {
+//         let traceLevel = trace.messageType.log;
+//         switch (level) {
+//             case exports.LogLevel.Debug:
+//                 traceLevel = trace.messageType.log;
+//                 break;
+//             case exports.LogLevel.Info:
+//                 traceLevel = trace.messageType.info;
+//                 break;
+//             case exports.LogLevel.Warn:
+//                 traceLevel = trace.messageType.warn;
+//                 break;
+//             case exports.LogLevel.Error:
+//                 traceLevel = trace.messageType.error;
+//                 break;
+//         }
+//         trace.write(message, DomTraceCategory, traceLevel);
+//     });
+// }
+// initializeLogger();
+addCategories(DomTraceCategory);
+enable();
 
 import { prefs } from '~/services/preferences';
 import { getString } from '@nativescript/core/application-settings';

@@ -437,7 +437,6 @@
             </pullrefresh>
         {:else}
             <!-- <stackLayout row="1" backgroundColor="red" rows="auto" columns="*"> -->
-            <!-- <stackLayout row="1" backgroundColor="green" rows="auto" columns="*"> -->
                 <!-- <button variant="text" horizontalAlignment="center" color="white">
                     <span class="mdi" text="mdi-crosshairs-gps" />
                     <span text=" my location" />
@@ -447,7 +446,6 @@
                     <span class="mdi" text="mdi-magnify" />
                     <span text=" search location" />
                 </button> -->
-            <!-- </stackLayout> -->
             <!-- </stackLayout> -->
         {/if}
     </gridlayout>

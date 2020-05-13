@@ -95,7 +95,6 @@ module.exports = (env, params = {}) => {
         {
             '~': appFullPath,
             '@': appFullPath,
-            // 'svelte-native': 'svelte-native-akylas'
         },
         params.alias || {}
     );

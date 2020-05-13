@@ -63,7 +63,7 @@
 
         let color;
         if (item.precipProbability > 0 && precipitationHeight > 0) {
-            const precipTop = (1 - precipitationHeight / 100) * h - 10;
+            const precipTop = (1 - precipitationHeight / 120) * h - 10;
             let color = new Color(item.precipColor);
             paint.setColor(color);
             paint.setAlpha(item.precipProbability * 255);

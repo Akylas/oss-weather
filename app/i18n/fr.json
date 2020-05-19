@@ -58,5 +58,9 @@
   "select_on_map": "sélectionner sur une carte",
   "api_key": "clé API",
   "search": "chercher",
-  "no_location_set": "aucun emplacement défini"
+  "no_location_set": "aucun emplacement défini",
+  "my_location": "ma position",
+  "search_location": "rechercher",
+  "missing_location_perm": "l'autorisation de localisation est manquante",
+  "no_location_setup": "aucun emplacement configuré"
 }

@@ -46,3 +46,4 @@ android {
   } 
 
 }
+apply from: "$rootDir/../../app/App_Resources/Android/dependency-report.gradle"

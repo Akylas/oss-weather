@@ -53,8 +53,7 @@ export function setCCApiKey(apiKey) {
     }
 }
 export function hasCCApiKey() {
-    // return !!ccApiKey;
-    return true;
+    return !!ccApiKey;
 }
 
 function isDayTime(sunrise, sunset, time) {
@@ -341,7 +340,7 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
 
     // clog('request', requestParams);
     const requestStartTime = Date.now();
-    return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry)) as Promise<T>;
+    return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry));
 }
 
 const apiKey = getString('apiKey', OWM_KEY);

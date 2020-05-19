@@ -22,3 +22,4 @@ e2e/**/*.js
 /dist
 /Gemfile.lock
 /app/services/test.json
+*.html

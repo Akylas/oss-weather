@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="no_location_setup">"no location set up"</string>
+  <string name="missing_location_perm">"location permission is missing"</string>
+  <string name="search_location">"search location"</string>
+  <string name="my_location">"my location"</string>
   <string name="no_location_set">"no location set"</string>
   <string name="search">"search"</string>
   <string name="api_key">"api key"</string>

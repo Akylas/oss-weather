@@ -1,4 +1,4 @@
-import { registerNativeViewElement } from 'svelte-native/dom';
+import { DomTraceCategory, registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 import { device } from '@nativescript/core/platform';
 
@@ -24,36 +24,17 @@ registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').Car
 registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
 registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pulltorefresh').PullToRefresh);
 registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasView);
+registerNativeViewElement('canvaslabel', () => require('nativescript-canvaslabel').CanvasLabel);
+registerNativeViewElement('cspan', () => require('nativescript-canvaslabel').Span);
+registerNativeViewElement('cgroup', () => require('nativescript-canvaslabel').Group);
 import CollectionViewElement from './collectionview';
 CollectionViewElement.register();
 startSentry();
 
-import {addCategories, enable} from '@nativescript/core/trace';
 
-const DomTraceCategory = 'SvelteNativeDom';
-// function initializeLogger() {
-//     logger.setHandler((message, level) => {
-//         let traceLevel = trace.messageType.log;
-//         switch (level) {
-//             case exports.LogLevel.Debug:
-//                 traceLevel = trace.messageType.log;
-//                 break;
-//             case exports.LogLevel.Info:
-//                 traceLevel = trace.messageType.info;
-//                 break;
-//             case exports.LogLevel.Warn:
-//                 traceLevel = trace.messageType.warn;
-//                 break;
-//             case exports.LogLevel.Error:
-//                 traceLevel = trace.messageType.error;
-//                 break;
-//         }
-//         trace.write(message, DomTraceCategory, traceLevel);
-//     });
-// }
-// initializeLogger();
-addCategories(DomTraceCategory);
-enable();
+// import {addCategories, enable} from '@nativescript/core/trace';
+// addCategories(DomTraceCategory);
+// enable();
 
 import { prefs } from '~/services/preferences';
 import { getString } from '@nativescript/core/application-settings';

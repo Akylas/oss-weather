@@ -59,5 +59,9 @@
   "about_to_quit": "the app is about to close because it does not have an API Key",
   "api_key": "api key",
   "search": "search",
-  "no_location_set": "no location set"
+  "no_location_set": "no location set",
+  "my_location": "my location",
+  "search_location": "search location",
+  "missing_location_perm": "location permission is missing",
+  "no_location_setup": "no location set up"
 }

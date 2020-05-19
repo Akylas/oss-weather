@@ -1,3 +1,7 @@
+"no_location_setup" = "no location set up";
+"missing_location_perm" = "location permission is missing";
+"search_location" = "search location";
+"my_location" = "my location";
 "no_location_set" = "no location set";
 "search" = "search";
 "api_key" = "api key";

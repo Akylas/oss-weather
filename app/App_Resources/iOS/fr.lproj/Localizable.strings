@@ -1,3 +1,7 @@
+"no_location_setup" = "aucun emplacement configuré";
+"missing_location_perm" = "l'autorisation de localisation est manquante";
+"search_location" = "rechercher";
+"my_location" = "ma position";
 "no_location_set" = "aucun emplacement défini";
 "search" = "chercher";
 "api_key" = "clé API";

@@ -150,6 +150,10 @@ module.exports = (env, params = {}) => {
     //     )
     // };
 
+    const package = require('./package.json');
+    const isIOS = platform === 'ios';
+    const isAndroid = platform === 'android';
+    const APP_STORE_ID = process.env.IOS_APP_ID;
     const defines = mergeOptions(
         {
             PRODUCTION: !!production,
@@ -170,6 +174,17 @@ module.exports = (env, params = {}) => {
                 : 'undefined',
             LOG_LEVEL: devlog ? '"full"' : '""',
             TEST_LOGS: adhoc || !production,
+            GIT_URL: `"${package.repository}"`,
+            STORE_LINK: `"${
+                isAndroid
+                    ? `https://play.google.com/store/apps/details?id=${package.nativescript.id}`
+                    : `https://itunes.apple.com/app/id${APP_STORE_ID}`
+            }"`,
+            STORE_REVIEW_LINK: `"${
+                isIOS
+                    ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
+                    : `market://details?id=${package.nativescript.id}`
+            }"`,
         },
         params.definePlugin || {}
     );

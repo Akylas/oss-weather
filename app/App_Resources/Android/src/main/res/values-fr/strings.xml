@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="no_location_setup">"aucun emplacement configuré"</string>
+  <string name="missing_location_perm">"l\'autorisation de localisation est manquante"</string>
+  <string name="search_location">"rechercher"</string>
+  <string name="my_location">"ma position"</string>
   <string name="no_location_set">"aucun emplacement défini"</string>
   <string name="search">"chercher"</string>
   <string name="api_key">"clé API"</string>

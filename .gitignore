@@ -21,3 +21,4 @@ e2e/**/*.js
 /gpx
 /dist
 /Gemfile.lock
+/app/services/test.json

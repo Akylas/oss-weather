@@ -38,14 +38,11 @@
                 break;
             case 'rain-night':
             case 'rain_light-night':
-            case 'drizzle-night':
                 realIcon = '4797-weather-rainynight';
                 break;
             case 'rain-day':
             case 'rain_light':
             case 'rain_light-day':
-            case 'drizzle':
-            case 'drizzle-day':
             case 'rain':
                 realIcon = '4801-weather-partly-shower';
                 break;
@@ -74,9 +71,12 @@
             case 'partly_cloudy':
             case 'partly_cloudy-day':
             case 'partly-cloudy-day':
+            case 'drizzle':
+            case 'drizzle-day':
                 realIcon = '4800-weather-partly-cloudy';
                 break;
             case 'partly_cloudy-night':
+            case 'drizzle-night':
             case 'partly-cloudy-night':
                 realIcon = '4796-weather-cloudynight';
                 break;

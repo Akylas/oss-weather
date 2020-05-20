@@ -15,21 +15,27 @@
             <cspan text={convertTime(item.time, 'ddd ')} />
             <cspan fontSize="15" color={textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
         </cgroup>
-        <cspan color={textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} />
+        <cspan id="testSpan" color={textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} />
 
         <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-100" paddingTop="20">
             <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windIcon} />
             <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed)} />
         </cgroup>
-        <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
-            <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
-            <cspan text={item.precipAccumulation >= 1 ? '\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM) : null} />
-            <cspan text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
-        </cgroup>
+        {#if item.precipProbability > 0.1 && item.precipAccumulation >= 1}
+            <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
+                <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
+                <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
+                <cspan text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
+            </cgroup>
+        {/if}
         <cgroup color={nightColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="100" paddingTop="20">
-            <cspan fontSize="20"  fontFamily={wiFontFamily} text={item.moonIcon} />
+            <cspan fontSize="20" fontFamily={wiFontFamily} text={item.moonIcon} />
             <cspan text={'\n' + l('moon')} />
         </cgroup>
+        <!-- <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="200" paddingTop="20">
+            <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-cloud" />
+            <cspan text={'\n' + Math.round(item.cloudCover * 100) + '%'} />
+        </cgroup> -->
 
         <cgroup fontSize="20" verticalAlignment="top" textAlignment="right" paddingTop="5" paddingRight="5">
             <cspan fontSize="17" color={textLightColor} text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />

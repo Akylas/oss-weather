@@ -49,6 +49,7 @@
         // chart.setLogEnabled(true)
         if (chart) {
             let data = item.minutely;
+            // console.log('data', JSON.stringify(data));
 
             if (lastChartData === data) {
                 return;
@@ -89,14 +90,14 @@
 
                 const rightAxis = chart.getAxisRight();
                 rightAxis.setAxisMinimum(0);
+                rightAxis.setTextColor(Color(textColor).setAlpha(0.5).toRgbString());
                 rightAxis.setDrawGridLines(false);
                 rightAxis.setDrawAxisLine(false);
                 rightAxis.setDrawLabels(false);
-                rightAxis.setAxisMaximum(6000);
+                // rightAxis.setAxisMaximum(6000);
 
                 const leftAxis = chart.getAxisLeft();
                 leftAxis.setAxisMinimum(0);
-                // leftAxis.setTextColor(textColor);
                 leftAxis.setDrawGridLines(false);
                 leftAxis.setDrawLabels(false);
                 leftAxis.setDrawAxisLine(false);
@@ -125,6 +126,12 @@
                 limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
                 leftAxis.addLimitLine(limitLine);
             }
+
+            // if (!precipChartSet || !cloudChartSet) {
+            let needsToSetData = false;
+            let needsUpdate = false;
+            const hasPrecip = data.some((d) => d.precipIntensity > 0);
+            // console.log('hasPrecip', hasPrecip);
             let min = 10000;
             let max = -10000;
             data.forEach((h) => {
@@ -135,12 +142,11 @@
                     max = h.precipIntensity;
                 }
             });
+
             const leftAxis = chart.getAxisLeft();
             leftAxis.setAxisMaximum(Math.max(max, 2.4));
-            // if (!precipChartSet || !cloudChartSet) {
-            let needsToSetData = false;
-            let needsUpdate = false;
-            if (data.some((d) => d.precipIntensity > 0)) {
+            leftAxis.setDrawLimitLines(hasPrecip);
+            if (hasPrecip) {
                 if (!precipChartSet) {
                     needsToSetData = true;
                     // console.log((data.map(s=>s.precipIntensity)));
@@ -162,20 +168,22 @@
             } else if (precipChartSet) {
                 precipChartSet.clear();
             }
-            if (data.some((d) => d.cloudCeiling > 0)) {
+            const hasCloud = data.some((d) => d.cloudCeiling > 0);
+            const rightAxis = chart.getAxisRight();
+            rightAxis.setDrawLabels(hasCloud);
+            if (hasCloud) {
                 if (!cloudChartSet) {
                     needsToSetData = true;
                     cloudChartSet = new LineDataSet(data, 'cloudCeiling', 'time', 'cloudCeiling');
                     cloudChartSet.setAxisDependency(AxisDependency.RIGHT);
-                    cloudChartSet.setLineWidth(0);
+                    cloudChartSet.setLineWidth(2);
                     cloudChartSet.setDrawIcons(false);
                     cloudChartSet.setDrawValues(false);
-                    cloudChartSet.setDrawFilled(true);
-                    cloudChartSet.setFillColor('#4681C3');
-                    cloudChartSet.setFillAlpha(150);
+                    cloudChartSet.setDrawFilled(false);
+                    cloudChartSet.setColor('gray');
                     cloudChartSet.setMode(Mode.CUBIC_BEZIER);
                 } else {
-                    cloudChartSet.setValues(data);
+                    cloudCharstSet.setValues(data);
                     needsUpdate = true;
                 }
             } else if (cloudChartSet) {
@@ -200,8 +208,8 @@
 </script>
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
-<!-- htmllabel 10 more views -->
-<!-- label 25 more views !!! -->
+    <!-- htmllabel 10 more views -->
+    <!-- label 25 more views !!! -->
     <canvaslabel colSpan="2">
         <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} />
 
@@ -250,7 +258,7 @@
         <cspan paddingRight="10" fontSize="14" textAlignment="right" verticalAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom="10" />
     </canvaslabel>
 
-    <linechart bind:this={lineChart} marginTop="110" verticalAlignment="bottom" height="90"  marginBottom="20"/>
+    <linechart bind:this={lineChart} marginTop="110" verticalAlignment="bottom" height="90" marginBottom="40" />
     <WeatherIcon col="1" horizontalAlignment="right" verticalAlignment="center" fontSize="140" icon={item.icon} />
     <HourlyView row="1" colSpan="2" items={item.hourly} />
 </gridLayout>

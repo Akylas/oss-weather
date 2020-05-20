@@ -90,11 +90,11 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
         case UNITS.InchHg:
             return [(value * 0.0295299830714).toFixed(), 'in Hg'];
         case UNITS.MM:
-            if (value < 0.1) {
-                return ['', ''];
-            } else {
-                return [value.toFixed(1), 'mm'];
-            }
+            // if (value < 0.1) {
+            //     return ['', ''];
+            // } else {
+            return [value.toFixed(1), 'mm'];
+        // }
         case UNITS.Celcius:
             return [Math.round(value * 10) / 10, ''];
         case UNITS.Farenheit:

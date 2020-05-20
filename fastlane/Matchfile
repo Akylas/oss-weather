@@ -1,4 +1,4 @@
-git_url "git@github.com:farfromrefug/nsforecastie-ios-certs.git"
+git_url "git@github.com:Akylas/ios_certs.git"
 
 type "development" # The default type, can be: appstore, adhoc, enterprise or development
 
@@ -8,7 +8,7 @@ type "development" # The default type, can be: appstore, adhoc, enterprise or de
 # For all available options run `fastlane match --help`
 # Remove the # in the beginning of the line to enable the other options
 
-
+git_branch "akylas"
 app_identifier "com.akylas.weather"
 username "martin.guillon@akylas.fr"  # Your Apple Developer Portal username
 

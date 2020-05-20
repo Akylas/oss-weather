@@ -5,7 +5,7 @@ class String
 end
 
 def truncate(string, length = 20)
-  string.size > length+5 ? [string[0,length],string[-5,5]].join("...") : string
+  !string.nil? && string.size > length+5 ? [string[0,length],string[-5,5]].join("...") : string
 end
 
 fastlane_version '2.135.2'

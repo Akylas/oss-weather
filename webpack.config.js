@@ -175,11 +175,7 @@ module.exports = (env, params = {}) => {
             LOG_LEVEL: devlog ? '"full"' : '""',
             TEST_LOGS: adhoc || !production,
             GIT_URL: `"${package.repository}"`,
-            STORE_LINK: `"${
-                isAndroid
-                    ? `https://play.google.com/store/apps/details?id=${package.nativescript.id}`
-                    : `https://itunes.apple.com/app/id${APP_STORE_ID}`
-            }"`,
+            STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${package.nativescript.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
             STORE_REVIEW_LINK: `"${
                 isIOS
                     ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
@@ -193,10 +189,10 @@ module.exports = (env, params = {}) => {
     const symbolsParser = require('scss-symbols-parser');
     const mdiSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString());
     const mdiIcons = JSON.parse(`{${mdiSymbols.variables[mdiSymbols.variables.length - 1].value.replace(/" (F|0)(.*?)([,\n]|$)/g, '": "$1$2"$3')}}`);
-    const forecastSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'app/css/forecastfont.scss')).toString());
+    const forecastSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'css/forecastfont.scss')).toString());
     const forecastIcons = JSON.parse(`{${forecastSymbols.variables[forecastSymbols.variables.length - 1].value.replace(/'forecastfont-(\w+)' (F|f|0)(.*?)([,\n]|$)/g, '"$1": "$2$3"$4')}}`);
 
-    const weatherIconsCss = resolve(projectRoot, 'app/css/weather-icons/weather-icons-variables.scss');
+    const weatherIconsCss = resolve(projectRoot, 'css/weather-icons/weather-icons-variables.scss');
     const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function (acc, value) {
         return acc.concat(symbolsParser.parseSymbols(readFileSync(resolve(dirname(weatherIconsCss), value.filepath)).toString()).variables);
     }, []);
@@ -218,7 +214,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
         mode,
         context: appFullPath,
         externals: externals.concat(params.externals || []),
-        // stats: 'verbose',
+        // stats: 'detailed',
         watchOptions: {
             ignored: [
                 appResourcesFullPath,
@@ -237,7 +233,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             hashSalt,
         },
         resolve: {
-            extensions: ['.mjs', '.js', '.ts', '.svelte', '.scss', '.css'],
+            extensions: ['.ts', '.mjs', '.js', '.svelte', '.scss', '.css'],
             // Resolve {N} system modules from tns-core-modules
             modules: [resolve(projectRoot, `node_modules/${coreModulesPackageName}`), resolve(projectRoot, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'],
             // mainFields: ['main'],
@@ -536,6 +532,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             }),
             // Does IPC communication with the {N} CLI to notify events when running in watch mode.
             new nsWebpack.WatchStateLoggerPlugin(),
+            new webpack.ContextReplacementPlugin(/dayjs[/\\]locale$/, /en|fr/),
         ],
     };
 

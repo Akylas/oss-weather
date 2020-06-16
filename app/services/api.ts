@@ -254,7 +254,6 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
     // const isJSON = !!jsonContent;
-    // clog('handleRequestResponse response', requestParams.url, statusCode, Math.round(statusCode / 100), content);
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -293,6 +292,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
     }
     // if (isJSON) {
     // if (isJSON) {
+    // clog('handleRequestResponse response', JSON.stringify(content));
     return content;
     // }
     // try {

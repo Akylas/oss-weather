@@ -27,21 +27,14 @@
     import { onLanguageChanged } from '~/helpers/locale';
     import { android as androidApp } from '@nativescript/core/application';
     import { GPS } from 'nativescript-gps';
+    import { Accuracy } from '@nativescript/core/ui/enums/enums';
 
-    // @ts-ignore
     import CActionBar from './CActionBar.svelte';
-    // @ts-ignore
     import WeatherIcon from './WeatherIcon.svelte';
-    // @ts-ignore
     import DailyView from './DailyView.svelte';
-    // @ts-ignore
     import TopWeatherView from './TopWeatherView.svelte';
-    // @ts-ignore
     import HourlyView from './HourlyView.svelte';
-    // @ts-ignore
-    // @ts-ignore
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
-    // @ts-ignore
     import ActionSheet from './ActionSheet.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
@@ -79,9 +72,14 @@
                     //     text: l('select_on_map')
                     // },
                     {
-                        icon: 'mdi-settings',
+                        icon: 'mdi-cog',
                         id: 'preferences',
                         text: l('preferences'),
+                    },
+                    {
+                        icon: 'mdi-cog',
+                        id: 'gps_location',
+                        text: l('gps_location'),
                     },
                 ],
             },
@@ -93,6 +91,9 @@
                         break;
                     case 'refresh':
                         refreshWeather();
+                        break;
+                    case 'gps_location':
+                        getLocationAndWeather();
                         break;
                 }
             }
@@ -280,7 +281,11 @@
             showError(err);
         }
     }
-
+    let desiredAccuracy = gVars.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
+    let updateDistance = 1;
+    let maximumAge = 3000;
+    let timeout = 20000;
+    let minimumUpdateTime = 1000; // Should update every 1 second according ;
     async function getLocationAndWeather() {
         // const result = await confirm;
         // clog('getLocationAndWeather', networkService.connected);
@@ -296,12 +301,13 @@
             loading = true;
             if (!gps) {
                 gps = new GPS();
-                gps.debug = true;
+                // gps.debug = true;
             }
-            const location = await gps.getCurrentLocation({ timeout: 30000 });
+            const location = await gps.getCurrentLocation({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
                 clog('location', location);
                 saveLocation({
+                    name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
                     coord: location,
                 });
                 // const cityRes = await getCityName(location);
@@ -418,8 +424,6 @@
         console.log('onCanvasLabelClicked', e.object);
         e.object.redraw();
     }
-
-
 </script>
 
 <page bind:this={page} actionBarHidden="true" id="home">

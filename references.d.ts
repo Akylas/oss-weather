@@ -31,7 +31,8 @@ interface LatLonKeys {
 
 declare module '*.scss';
 // declare module '*.svelte' {
-//     export { SvelteComponentDev as default } from 'svelte/internal';
+//     type test = SvelteComponent;
+//     export default test;
 // }
 declare namespace com {
     export namespace akylas {

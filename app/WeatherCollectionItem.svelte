@@ -13,6 +13,7 @@
 </script>
 
 <script>
+    import dayjs from 'dayjs';
     import WeatherIcon from './WeatherIcon.svelte';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
@@ -36,7 +37,7 @@
         StaticLayout,
         LayoutAlignment,
         PorterDuffXfermode,
-        PorterDuffMode
+        PorterDuffMode,
     } from 'nativescript-canvas';
     import { Color } from '@nativescript/core/color/color';
 
@@ -53,7 +54,7 @@
         canvasView && canvasView.nativeView.invalidate();
     }
     function drawOnCanvas(event) {
-        // const startTime = Date.now();
+        const endDay = dayjs().endOf('d').valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
         const w = canvas.getWidth();
         const w2 = w / 2;
@@ -99,13 +100,19 @@
         textPaint.setTextSize(14);
         canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, (1 - tempHeight / 100) * h - 70 - 0, textPaint);
 
-        textPaint.setTextSize(14);
         textPaint.setFontWeight('bold');
-        canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
+        let decale = 14;
+            textPaint.setTextSize(14);
+            canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
+        if (item.time > endDay) {
+            textPaint.setTextSize(12);
+            canvas.drawText(convertTime(item.time, 'ddd'), w2, 26, textPaint);
+            decale += 10;
+        }
         textPaint.setFontWeight('normal');
         textPaint.setTextSize(11);
         textPaint.setAlpha(180);
-        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, 30, textPaint);
+        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, 16 + decale, textPaint);
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }
 </script>

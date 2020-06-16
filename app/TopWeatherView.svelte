@@ -49,6 +49,9 @@
         // chart.setLogEnabled(true)
         if (chart) {
             let data = item.minutely;
+            const now = dayjs().valueOf();
+            const index = data.findIndex(v=>v.time >= now);
+            data = data.slice(index);
             // console.log('data', JSON.stringify(data));
 
             if (lastChartData === data) {
@@ -65,7 +68,6 @@
             }
             lastChartData = data;
             const count = data.length;
-            const now = dayjs().valueOf();
             if (!chartInitialized) {
                 const darkTheme = /dark/.test(Theme.getMode());
                 const textColor = darkTheme ? 'white' : 'black';
@@ -171,7 +173,9 @@
             const hasCloud = data.some((d) => d.cloudCeiling > 0);
             const rightAxis = chart.getAxisRight();
             rightAxis.setDrawLabels(hasCloud);
+            // console.log('hasCloud', hasCloud, data);
             if (hasCloud) {
+                // rightAxis.setLabelCount(4, false);
                 if (!cloudChartSet) {
                     needsToSetData = true;
                     cloudChartSet = new LineDataSet(data, 'cloudCeiling', 'time', 'cloudCeiling');
@@ -181,9 +185,9 @@
                     cloudChartSet.setDrawValues(false);
                     cloudChartSet.setDrawFilled(false);
                     cloudChartSet.setColor('gray');
-                    cloudChartSet.setMode(Mode.CUBIC_BEZIER);
+                    cloudChartSet.setMode(Mode.HORIZONTAL_BEZIER);
                 } else {
-                    cloudCharstSet.setValues(data);
+                    cloudChartSet.setValues(data);
                     needsUpdate = true;
                 }
             } else if (cloudChartSet) {

@@ -96,6 +96,7 @@
                 rightAxis.setDrawGridLines(false);
                 rightAxis.setDrawAxisLine(false);
                 rightAxis.setDrawLabels(false);
+                rightAxis.setLabelCount(4);
                 // rightAxis.setAxisMaximum(6000);
 
                 const leftAxis = chart.getAxisLeft();
@@ -242,14 +243,14 @@
             <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={item.cloudColor}>
                 <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover * 100) + '%'} />
-                <cspan fontSize="6" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance) : null} />
+                <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance) : null} />
             </cgroup>
         {/if}
         {#if item.precipIntensity >= 0.1 && item.precipProbability > 0.1}
             <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 180 : 120} paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
-                <cspan text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
+                <cspan fontSize="9" text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
             </cgroup>
         {/if}
 

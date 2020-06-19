@@ -25,6 +25,7 @@
     let iconSrc;
     $: {
         let realIcon;
+        // console.log('icon', icon);
         switch (icon) { 
             case 'mostly_clear':
             case 'mostly_clear-day':
@@ -65,6 +66,7 @@
             case 'cloudy-night':
             case 'mostly_cloudy':
             case 'mostly_cloudy-night':
+            case 'mostly_cloudy-day':
                 // iconSrc = '4791-foggy';
                 realIcon = '4806-weather-windy';
                 break;

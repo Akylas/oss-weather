@@ -15,6 +15,13 @@ import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { Photon } from './photon';
 import * as https from 'nativescript-akylas-https';
+import {
+    ApplicationEventData,
+    off as applicationOff,
+    on as applicationOn,
+    resumeEvent,
+    suspendEvent
+} from '@nativescript/core/application';
 
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
@@ -219,6 +226,7 @@ class NetworkService extends Observable {
             return;
         }
         this.monitoring = true;
+        applicationOn(resumeEvent, this.onAppResume, this);
         startMonitoring(this.onConnectionStateChange.bind(this));
         this.connectionType = getConnectionType();
     }
@@ -226,8 +234,12 @@ class NetworkService extends Observable {
         if (!this.monitoring) {
             return;
         }
+        applicationOff(resumeEvent, this.onAppResume, this);
         this.monitoring = false;
         stopMonitoring();
+    }
+    onAppResume(args: ApplicationEventData) {
+        this.connectionType = getConnectionType();
     }
     onConnectionStateChange(newConnectionType: connectionType) {
         this.connectionType = newConnectionType;

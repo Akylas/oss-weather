@@ -30,15 +30,6 @@ module.exports = (env, params = {}) => {
     const projectRoot = params.projectRoot || __dirname;
     console.log('projectRoot', projectRoot);
 
-    let tsconfig = params.tsconfig;
-    if (!tsconfig) {
-        tsconfig = 'tsconfig.json';
-        if (existsSync(resolve(projectRoot, `tsconfig.${platform}.json`))) {
-            tsconfig = `tsconfig.${platform}.json`;
-        }
-    }
-    console.log('tsconfig', tsconfig);
-
     // Default destination inside platforms/<platform>/...
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
     // const appResourcesPlatformDir = platform === 'android' ? 'Android' : 'iOS';
@@ -70,6 +61,7 @@ module.exports = (env, params = {}) => {
         includeDefaultLocation, // --env.includeDefaultLocation
         devlog, // --env.devlog
         adhoc, // --env.adhoc
+        es5, // --env.es5
     } = env;
 
     if (adhoc) {
@@ -80,6 +72,15 @@ module.exports = (env, params = {}) => {
             uglify: true,
         });
     }
+
+    let tsconfig = params.tsconfig;
+    if (!tsconfig) {
+        tsconfig = 'tsconfig.json';
+        if (es5) {
+            tsconfig = 'tsconfig.es5.json';
+        }
+    }
+    console.log('tsconfig', tsconfig);
 
     const useLibs = compileSnapshot;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
@@ -233,7 +234,8 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
             hashSalt,
         },
         resolve: {
-            extensions: ['.ts', '.mjs', '.js', '.svelte', '.scss', '.css'],
+            mainFields: es5 ? ['main'] : ['module', 'main'],
+            extensions: es5 ? ['.vue', '.ts', '.js', '.scss', '.css'] : ['.vue', '.mjs', '.ts', '.js', '.scss', '.css'],
             // Resolve {N} system modules from tns-core-modules
             modules: [resolve(projectRoot, `node_modules/${coreModulesPackageName}`), resolve(projectRoot, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'],
             // mainFields: ['main'],

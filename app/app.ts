@@ -27,7 +27,7 @@ registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasV
 registerNativeViewElement('canvaslabel', () => require('nativescript-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('nativescript-canvaslabel').Span);
 registerNativeViewElement('cgroup', () => require('nativescript-canvaslabel').Group);
-import CollectionViewElement from './collectionview';
+import CollectionViewElement from 'nativescript-collectionview/svelte';
 CollectionViewElement.register();
 startSentry();
 

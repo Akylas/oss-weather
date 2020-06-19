@@ -25,7 +25,7 @@
             <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
-                <cspan text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
+                <cspan fontSize="9" text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
             </cgroup>
         {/if}
         <cgroup color={nightColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="100" paddingTop="20">

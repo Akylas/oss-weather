@@ -106,7 +106,7 @@
             canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
         if (item.time > endDay) {
             textPaint.setTextSize(12);
-            canvas.drawText(convertTime(item.time, 'ddd'), w2, 26, textPaint);
+            canvas.drawText(convertTime(item.time, 'ddd'), w2, 28, textPaint);
             decale += 10;
         }
         textPaint.setFontWeight('normal');

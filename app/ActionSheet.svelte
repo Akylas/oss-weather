@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte';
     import { accentColor } from '~/variables';
     import { closeBottomSheet } from '~/bottomsheet';

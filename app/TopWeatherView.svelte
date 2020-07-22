@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import WeatherIcon from './WeatherIcon.svelte';
     import HourlyView from './HourlyView.svelte';
     import AlertView from './AlertView.svelte';
@@ -50,7 +50,7 @@
         if (chart) {
             let data = item.minutely;
             const now = dayjs().valueOf();
-            const index = data.findIndex(v=>v.time >= now);
+            const index = data.findIndex((v) => v.time >= now);
             data = data.slice(index);
             // console.log('data', JSON.stringify(data));
 
@@ -69,7 +69,7 @@
             lastChartData = data;
             const count = data.length;
             if (!chartInitialized) {
-                const darkTheme = /dark/.test(Theme.getMode());
+                const darkTheme = /dark|black/.test(Theme.getMode());
                 const textColor = darkTheme ? 'white' : 'black';
                 const limitColor = Color(textColor).setAlpha(0.5).toRgbString();
                 chartInitialized = true;
@@ -223,13 +223,13 @@
                 <cspan fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} />
                 <cspan color={textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : null} />
             </cgroup>
-        {:else}
-            <cgroup paddingLeft="10" fontSize="12" verticalAlignment="top">
-                <cspan fontSize="26" text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
-                <cspan color="#777" fontSize="26" text=" | " />
-                <cspan fontSize="26" text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
-            </cgroup>
         {/if}
+        <cgroup paddingLeft="80" paddingTop="12" fontSize="14" verticalAlignment="top">
+            <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
+            <cspan color="#777" text=" | " />
+            <cspan  text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
+        </cgroup>
+        <!-- {/if} -->
 
         <cgroup paddingLeft="0" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
             <cspan fontSize="24" fontFamily={wiFontFamily} text={item.windIcon} />
@@ -246,11 +246,17 @@
                 <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance) : null} />
             </cgroup>
         {/if}
-        {#if item.precipIntensity >= 0.1 && item.precipProbability > 0.1}
+        {#if item.uvIndex > 0}
+            <cgroup paddingLeft="180" paddingTop="44" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={item.uvIndexColor}>
+                <cspan fontSize="30" fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" />
+                <cspan   paddingTop="14" text={'\n' + Math.round(item.uvIndex)} />
+            </cgroup>
+        {/if}
+        {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}
             <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 180 : 120} paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
-                <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
-                <cspan text={item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
-                <cspan fontSize="9" text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
+                <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-raindrop" />
+                <cspan text={item.precipIntensity >= 0.1 ? '\n' + formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
+                <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%': null} />
             </cgroup>
         {/if}
 

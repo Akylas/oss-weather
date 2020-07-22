@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { mdiFontFamily, screenHeightDips, screenScale } from '~/variables';
     import dayjs from 'dayjs';
@@ -12,7 +12,7 @@
     import { confirm, prompt } from 'nativescript-material-dialogs';
     import { clog } from '~/utils/logging';
     // import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
-    import { networkService, getClimaCellWeather, hasCCApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData } from '~/services/api';
+    import { networkService, getClimaCellWeather, getOWMWeather, hasCCApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData } from '~/services/api';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
@@ -44,7 +44,7 @@
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
     let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
-    let dsWeather = JSON.parse(getString('lastDsWeather', 'null'));
+    let weatherData = JSON.parse(getString('lastWeatherData', 'null'));
 
     let topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
     let items = [];
@@ -72,12 +72,12 @@
                     //     text: l('select_on_map')
                     // },
                     {
-                        icon: 'mdi-cog',
+                        icon: 'mdi-cogs',
                         id: 'preferences',
                         text: l('preferences'),
                     },
                     {
-                        icon: 'mdi-cog',
+                        icon: 'mdi-crosshairs-gps',
                         id: 'gps_location',
                         text: l('gps_location'),
                     },
@@ -106,19 +106,20 @@
             showSnack({ message: l('no_location_set') });
             return;
         }
-        if (!networkService.connected) {
+        if (!networkConnected) {
             showSnack({ message: l('no_network') });
             return;
         }
         loading = true;
         try {
-            // dsWeather = await getDarkSkyWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
-            dsWeather = await getClimaCellWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            // weatherData = await getDarkSkyWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            // weatherData = await getClimaCellWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            weatherData = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
             lastUpdate = Date.now();
             items = prepareItems();
             // setDay(0);
             setNumber('lastUpdate', lastUpdate);
-            setString('lastDsWeather', JSON.stringify(dsWeather));
+            setString('lastWeatherData', JSON.stringify(weatherData));
         } catch (err) {
             console.log(err);
             if (err.statusCode === 403) {
@@ -152,22 +153,20 @@
             // .add(46, 'h')
             .endOf('m')
             .valueOf();
-        dsWeather.daily.data.forEach((d, index) => {
+        weatherData.daily.data.forEach((d, index) => {
             if (index === 0) {
-                let currentDaily = dsWeather.daily.data[index];
+                let currentDaily = weatherData.daily.data[index];
                 const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= endOfHour);
-                const firstMinuteIndex = dsWeather.minutely.data.findIndex((h) => h.time >= endOfMinute);
+                const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
                 // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
-                // console.log('prepareItems', index, now, firstHourIndex, dsWeather.minutely);
+                Object.assign(currentDaily, weatherData.currently);
                 if (firstHourIndex > 1) {
                     currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
                 }
                 if (firstMinuteIndex > 1) {
-                    currentDaily = Object.assign({}, currentDaily, dsWeather.minutely.data[firstMinuteIndex - 1]);
-                } else {
-                    currentDaily = Object.assign({}, currentDaily, dsWeather.currently);
+                    currentDaily = Object.assign({}, currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
                 }
-                // console.log('firstHourIndex', firstHourIndex, firstMinuteIndex, currentDaily);
+                // console.log('currentDaily', weatherData.currently, currentDaily);
                 const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
                 let min = 10000;
                 let max = -10000;
@@ -190,8 +189,8 @@
                             h.odd = i % 2 === 0;
                             return h;
                         }),
-                        minutely: firstMinuteIndex >= 0 ? dsWeather.minutely.data.slice(firstMinuteIndex) : [],
-                        alerts: dsWeather.alerts,
+                        minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex) : [],
+                        alerts: weatherData.alerts,
                     })
                 );
 
@@ -303,7 +302,7 @@
                 gps = new GPS();
                 // gps.debug = true;
             }
-            const location = await gps.getCurrentLocation({ desiredAccuracy, minimumUpdateTime, timeout });
+            const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
                 clog('location', location);
                 saveLocation({
@@ -364,7 +363,7 @@
                     hint: l('api_key'),
                 },
             });
-            console.log('result', result);
+            // console.log('result', result);
             if (result.result === true) {
                 if (result.text) {
                     setCCApiKey(result.text);
@@ -395,6 +394,8 @@
             console.log('error', err);
         }
     }
+    let networkConnected = networkService.connected;
+    // console.log('networkConnected', networkConnected);
     onMount(async () => {
         const ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
         // console.log('onMount', dsApiKey);
@@ -404,13 +405,15 @@
             // askForApiKey();
         }
         networkService.on(NetworkConnectionStateEvent, (event) => {
+            networkConnected = event.data.connected;
+            console.log('networkConnected changed', networkConnected);
             if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }
         });
         networkService.start(); // should send connection event and then refresh
 
-        if (dsWeather) {
+        if (weatherData) {
             items = prepareItems();
         }
     });
@@ -430,10 +433,14 @@
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-            <button variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
-            <button variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
+            <mdbutton variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
+            <mdbutton variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
-        {#if weatherLocation}
+        {#if !networkConnected && !weatherData}
+            <label row="1" horizontalAlignment="center" verticalAlignment="center">
+                <span text={l('no_network').toUpperCase()} />
+            </label>
+        {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
                 <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index}>
                     <Template key="topView" let:item>
@@ -452,15 +459,16 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <button row="1" margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather}>
+                <mdbutton row="1" margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather}>
                     <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
                     <span text={l('my_location').toUpperCase()} />
-                </button>
-                <button row="2" margin="4 0 4 0" variant="outline" on:tap={searchCity}>
+                </mdbutton>
+                <mdbutton row="2" margin="4 0 4 0" variant="outline" on:tap={searchCity}>
                     <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
                     <span text={l('search_location').toUpperCase()} />
-                </button>
+                </mdbutton>
             </gridlayout>
+            
         {/if}
     </gridlayout>
 </page>

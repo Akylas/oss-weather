@@ -1,6 +1,8 @@
 import { PageSpec } from 'svelte-native/dom/navigation';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
-import { Frame, View, ViewBase } from '@nativescript/core/ui/frame/frame';
+import { Frame } from '@nativescript/core/ui/frame';
+import { View } from '@nativescript/core/ui/core/view';
+import { ViewBase } from '@nativescript/core/ui/core/view-base';
 import { BottomSheetOptions } from 'nativescript-material-bottomsheet';
 
 export interface ShowBottomSheetOptions extends Omit<BottomSheetOptions, 'view'> {

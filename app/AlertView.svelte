@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { mdiFontFamily, wiFontFamily } from '~/variables';
     import { convertTime, titlecase } from '~/helpers/formatter';
     import {l } from '~/helpers/locale';

@@ -17,8 +17,11 @@
 //     preprocess: [preprocess]
 // };
 
-const sveltePreprocess = require('svelte-preprocess');
+import autoPreprocess from 'svelte-preprocess';
 
 module.exports = {
-    preprocess: sveltePreprocess()
+    preprocess: autoPreprocess({
+        // ...svelte-preprocess options
+    }),
+    // ...other svelte options
 };

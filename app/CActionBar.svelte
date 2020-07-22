@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
     import { Frame } from '@nativescript/core/ui/frame';
@@ -40,7 +40,7 @@
     {/if}
     <stackLayout col="0" orientation="horizontal">
         <slot name="left" />
-        <button variant="flat" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
+        <mdbutton variant="flat" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
     </stackLayout>
     <stackLayout col="2" orientation="horizontal">
         <slot />

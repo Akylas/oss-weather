@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import WeatherCollectionItem from './WeatherCollectionItem.svelte';
     import { Template } from 'svelte-native/components';
     import { screenWidthDips } from '~/variables';

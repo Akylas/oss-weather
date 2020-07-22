@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
     import WeatherCollectionItem from './WeatherCollectionItem.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
     import { Template } from 'svelte-native/components';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { wiFontFamily, nightColor, rainColor, textLightColor } from '~/variables';
+    import { borderColor, wiFontFamily, nightColor, rainColor, textLightColor } from '~/variables';
     export let item;
 </script>
 
@@ -21,11 +21,11 @@
             <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windIcon} />
             <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed)} />
         </cgroup>
-        {#if item.precipProbability > 0.1 && item.precipAccumulation >= 1}
+        {#if (item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1}
             <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
-                <cspan fontSize="9" text={'\n' + Math.round(item.precipProbability * 100) + '%'} />
+                <cspan fontSize="9" text={item.precipProbability >0  ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
         {/if}
         <cgroup color={nightColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="100" paddingTop="20">
@@ -42,7 +42,7 @@
             <cspan text={' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
         </cgroup>
 
-        <!-- <cspan color={textLightColor} fontSize="15" fontStyle="italic" verticalAlignment="top" paddingTop="18" text={item.summary} /> -->
+        <line color={borderColor} startX="0%" startY="0" stopX="100%" stopY="0" strokeWidth="1" />
     </canvaslabel>
     <!-- <label
         colSpan="2"
@@ -120,5 +120,5 @@
         marginTop="5"
         marginRight="5"
         html={`<span style="font-size:17px; color:${textLightColor};">${formatValueToUnit(item.temperatureMin, UNITS.Celcius)}</span> ${formatValueToUnit(item.temperatureMax, UNITS.Celcius)}`} /> -->
-    <image class="dailyViewBorder" verticalAlignment="bottom" />
+    <!-- <image class="dailyViewBorder" verticalAlignment="bottom" /> -->
 </gridLayout>

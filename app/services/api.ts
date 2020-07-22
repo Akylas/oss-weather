@@ -18,6 +18,7 @@ import { ApplicationEventData, off as applicationOff, on as applicationOn, resum
 import { moon, sun } from '@modern-dev/daylight';
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
+let owmApiKey = getString('owmApiKey', OWM_KEY);
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -54,6 +55,17 @@ export function setCCApiKey(apiKey) {
 }
 export function hasCCApiKey() {
     return !!ccApiKey;
+}
+export function setOWMApiKey(apiKey) {
+    owmApiKey = apiKey;
+    if (apiKey) {
+        setString('owmApiKey', apiKey);
+    } else {
+        remove('owmApiKey');
+    }
+}
+export function hasOWMApiKey() {
+    return !!owmApiKey;
 }
 
 function isDayTime(sunrise, sunset, time) {

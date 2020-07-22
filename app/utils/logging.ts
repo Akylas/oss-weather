@@ -77,16 +77,16 @@ function timelineProfileFunctionFactory(target: any, always: boolean, key?, desc
 //     error: console.error,
 //     warn: console.warn
 // };
-import * as SentryType from 'nativescript-akylas-sentry';
+import * as SentryType from '@nativescript-community/sentry';
 
 let Sentry: typeof SentryType;
 if (gVars.sentry) {
-    Sentry = require('nativescript-akylas-sentry');
+    Sentry = require('@nativescript-community/sentry');
 }
 
 function actualLog(level: 'info' | 'log' | 'error' | 'warn', ...args) {
     if (gVars.sentry) {
-        console.log('addBreadcrumb', level, args, args.join(' '));
+        // console.log('addBreadcrumb', level, args, args.join(' '));
         Sentry.addBreadcrumb({
             category: 'console',
             message: args.join(' '),

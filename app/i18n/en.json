@@ -63,5 +63,6 @@
   "my_location": "my location",
   "search_location": "search location",
   "missing_location_perm": "location permission is missing",
-  "no_location_setup": "no location set up"
+  "no_location_setup": "no location set up",
+  "gps_location": "find GPS location"
 }

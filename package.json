@@ -11,7 +11,7 @@
         "pandroid": "cross-var tns build android --release --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.snapshot --env.compileSnapshot",
         "pios": "tns run ios --release --env.adhoc --env.snapshot --env.compileSnapshot --for-device --provision 'match AppStore com.akylas.weather'",
         "ios.generate_licences": "node generate_ios_licences.js",
-        "android.generate_licences": "platforms/android/gradlew  generateLicenseReport"
+        "android.generate_licences": "cd platforms/android && ./gradlew  generateLicenseReport"
     },
     "description": "NativeScript Application",
     "license": "SEE LICENSE IN <your-license-filename>",
@@ -20,6 +20,7 @@
         "@mdi/font": "4.9.95",
         "@modern-dev/daylight": "0.1.0",
         "@nativescript/core": "6.5.12",
+        "@nativescript-community/sentry": "2.0.0",
         "@nativescript/theme": "2.3.3",
         "date-fns": "2.14.0",
         "dayjs": "1.8.29",  

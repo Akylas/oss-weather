@@ -62,5 +62,6 @@
   "my_location": "ma position",
   "search_location": "rechercher",
   "missing_location_perm": "l'autorisation de localisation est manquante",
-  "no_location_setup": "aucun emplacement configuré"
+  "no_location_setup": "aucun emplacement configuré",
+  "gps_location": "trouver votre position GPS"
 }

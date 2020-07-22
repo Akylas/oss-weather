@@ -12,7 +12,7 @@
     import { confirm, prompt } from 'nativescript-material-dialogs';
     import { clog } from '~/utils/logging';
     // import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
-    import { networkService, getClimaCellWeather, getOWMWeather, hasCCApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData } from '~/services/api';
+    import { networkService, getClimaCellWeather, getOWMWeather, hasCCApiKey, hasOWMApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData } from '~/services/api';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
@@ -330,7 +330,7 @@
         }
 
         // if (hasDSApiKey()) {
-        if (hasCCApiKey()) {
+        if (hasOWMApiKey()) {
             await refreshWeather();
         }
         if (pullRefresh) {
@@ -395,18 +395,18 @@
         }
     }
     let networkConnected = networkService.connected;
-    // console.log('networkConnected', networkConnected);
     onMount(async () => {
         const ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
-        // console.log('onMount', dsApiKey);
-        if (!ccApiKey) {
-            // without this we will an error on ios
-            setTimeout(() => askForApiKey(), 0);
-            // askForApiKey();
+        const owmApiKey = getString('owmApiKey', OWM_KEY);
+        if (!ccApiKey || !owmApiKey) {
+
+            // wait a bit
+            // setTimeout(() => askForApiKey(), 0);
+            askForApiKey();
         }
         networkService.on(NetworkConnectionStateEvent, (event) => {
             networkConnected = event.data.connected;
-            console.log('networkConnected changed', networkConnected);
+            // console.log('networkConnected changed', networkConnected);
             if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                 refresh();
             }

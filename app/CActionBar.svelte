@@ -33,11 +33,11 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
 </script>
 
-<gridLayout {...$$restProps} class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" >
+<gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5" >
     <label col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center"/>
-    {#if showLogo && !title}
+    <!-- {#if showLogo && !title}
         <label col="1" class="activelook" fontSize="28" color="white" text="logo" verticalAlignment="center" marginLeft="6" />
-    {/if}
+    {/if} -->
     <stackLayout col="0" orientation="horizontal">
         <slot name="left" />
         <mdbutton variant="flat" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />

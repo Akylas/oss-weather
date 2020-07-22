@@ -98,7 +98,7 @@ export async function showError(err: Error | string) {
         showSnack({ message: l('no_network') });
         return;
     }
-    const message: string = typeof err === 'string' ? err : err.message;
+    const message: string = typeof err === 'string' ? err : err.toString();
     // if (err['stack']) {
     //     message += '\n' + err['stack'];
     // }

@@ -16,7 +16,7 @@ enableIOSDTCoreText();
 
 
 registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField, null, {}, { override: true });
-registerNativeViewElement('button', () => require('nativescript-material-button').Button);
+registerNativeViewElement('mdbutton', () => require('nativescript-material-button').Button);
 registerNativeViewElement('label', () => Label);
 registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
 registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
@@ -24,6 +24,7 @@ registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').Car
 registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
 registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pulltorefresh').PullToRefresh);
 registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasView);
+registerNativeViewElement('line', () => require('nativescript-canvas/shapes/line').default);
 registerNativeViewElement('canvaslabel', () => require('nativescript-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('nativescript-canvaslabel').Span);
 registerNativeViewElement('cgroup', () => require('nativescript-canvaslabel').Group);
@@ -46,6 +47,7 @@ const ThemeBlack = 'ns-black';
 function applyTheme(theme: Themes) {
     const AppCompatDelegate = gVars.isAndroid ? androidx.appcompat.app.AppCompatDelegate : undefined;
     const window = gVars.isIOS ? iosApp.window : undefined;
+    console.log('applyTheme', theme);
     switch (theme) {
         case 'auto':
             Theme.setMode(Theme.Auto);

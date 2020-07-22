@@ -1,9 +1,9 @@
-<script context="module">
-    import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
+<script context="module" lang="ts">
+    import { Folder, knownFolders, path } from '@nativescript/core/file-system';
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
 </script>
 
-<script>
+<script lang="ts">
     import { Template } from 'svelte-native/components';
     import { IMapPos } from '~/helpers/geo';
     import { showError } from '~/utils/error';

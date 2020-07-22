@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
@@ -10,7 +10,7 @@
     import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
-    import { textLightColor } from '~/variables';
+    import { textColor, textLightColor } from '~/variables';
     import { layout } from '@nativescript/core/utils/utils';
     import CActionBar from './CActionBar.svelte';
     import MapView from './MapView.svelte';
@@ -81,9 +81,9 @@
     <page actionBarHidden="true">
         <gridLayout rows="auto,auto,*">
             <CActionBar title={l('search_city')} modalWindow={true}>
-                <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
+                <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
-            <textfield bind:this={textField} row="1" hint={l('search')} placeholder={l('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
+            <textfield bind:this={textField} row="1" hint={l('search')} placeholder={l('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} color={textColor}/>
             <collectionview row="2" rowHeight="110" items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="130,*" padding="10">

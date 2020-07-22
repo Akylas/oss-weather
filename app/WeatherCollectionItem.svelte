@@ -1,10 +1,11 @@
-<script context="module">
+<script context="module" lang="ts">
     import { Align, Paint } from 'nativescript-canvas';
     import { screen } from '@nativescript/core/platform';
 
     const deviceHeight = Math.round(screen.mainScreen.heightDIPs);
     console.log('deviceHeight', deviceHeight);
     const textPaint = new Paint();
+    textPaint.setFontFamily(latoFontFamily);
     textPaint.setAntiAlias(true);
     textPaint.setTextAlign(Align.CENTER);
     const paint = new Paint();
@@ -12,12 +13,12 @@
     paint.setTextAlign(Align.CENTER);
 </script>
 
-<script>
+<script lang="ts">
     import dayjs from 'dayjs';
     import WeatherIcon from './WeatherIcon.svelte';
     import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
     import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
-    import { mdiFontFamily, wiFontFamily, textLightColor } from '~/variables';
+    import { mdiFontFamily, wiFontFamily, textLightColor, latoFontFamily } from '~/variables';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { buildHTMLString } from 'nativescript-htmllabel';
     import Theme from '@nativescript/theme';
@@ -39,13 +40,13 @@
         PorterDuffXfermode,
         PorterDuffMode,
     } from 'nativescript-canvas';
-    import { Color } from '@nativescript/core/color/color';
+    import { Color } from '@nativescript/core/color';
 
     export let item;
     let tempHeight = 0;
     let canvasView;
     let precipitationHeight = 0;
-    const darkTheme = /dark/.test(Theme.getMode());
+    const darkTheme = /dark|black/.test(Theme.getMode());
     const strTextColor = darkTheme ? 'white' : 'black';
     const textColor = new Color(strTextColor);
     $: {
@@ -63,17 +64,19 @@
         textPaint.setColor(textColor);
 
         let color;
-        if (item.precipProbability > 0 && precipitationHeight > 0) {
+        if ((item.precipProbability === -1 || item.precipProbability > 0) && precipitationHeight > 0) {
             const precipTop = (1 - precipitationHeight / 120) * h - 10;
             let color = new Color(item.precipColor);
             paint.setColor(color);
-            paint.setAlpha(item.precipProbability * 255);
+            paint.setAlpha(item.precipProbability === -1 ? 125 : item.precipProbability * 255);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
-            if (item.precipProbability > 0.1 && item.precipIntensity >= 0.1) {
+            if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipIntensity >= 0.1) {
                 textPaint.setTextSize(10);
                 textPaint.setColor(textColor);
                 textPaint.setAlpha(150);
-                canvas.drawText(Math.round(item.precipProbability * 100) + '%', w2, h - 22, textPaint);
+                if (item.precipProbability > 0) {
+                    canvas.drawText(Math.round(item.precipProbability * 100) + '%', w2, h - 22, textPaint);
+                }
                 canvas.drawText(formatValueToUnit(item.precipIntensity, UNITS.MM), w2, h - 12, textPaint);
             }
         }
@@ -102,8 +105,8 @@
 
         textPaint.setFontWeight('bold');
         let decale = 14;
-            textPaint.setTextSize(14);
-            canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
+        textPaint.setTextSize(14);
+        canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
         if (item.time > endDay) {
             textPaint.setTextSize(12);
             canvas.drawText(convertTime(item.time, 'ddd'), w2, 28, textPaint);
@@ -119,11 +122,11 @@
 
 <gridlayout height="100%" rows="40,*,30" backgroundColor={`rgba(120,120,120,${item.odd ? 0.05 : 0})`}>
     <!-- FIRST TECHNIQUE USING FULL CANVAS-->
-    <canvas bind:this={canvasView} rowSpan="3" backgroundColor="transparent" on:draw={drawOnCanvas} />
+    <canvas bind:this={canvasView} rowSpan="3" backgroundColor="transparent" on:draw={drawOnCanvas} hardwareAccelerated="false"/>
     <WeatherIcon row="1" icon={item.icon} verticalAlignment="bottom" marginBottom={tempHeight + '%'} />
     <!-- SECOND TECHNIQUE USING HTML LABELS-->
-    <!-- <label textAlignment="center" fontSize="16" fontWeight="bold" html={`<b>${convertTime(item.time, 'HH:mm')}</b><br><span style="font-size:12px;">${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, {unitScale:1})}</span>`} />
-    <label
+   <!-- <label textAlignment="center" fontSize="16" fontWeight="bold" html={`<b>${convertTime(item.time, 'HH:mm')}<br><span style="font-size:12px;">${convertTime(item.time, 'ddd')}</span></b><br><span style="font-size:12px;">${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, {unitScale:1})}</span>`} /> -->
+     <!-- <label
         row="1"
         verticalAlignment="bottom"
         opacity={item.precipProbability}

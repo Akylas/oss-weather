@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Vue from 'nativescript-vue';
     import { Component, Prop } from 'vue-property-decorator';
     import { openUrl } from '@nativescript/core/utils/utils';

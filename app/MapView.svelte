@@ -1,28 +1,9 @@
-<script>
-    import { Folder, knownFolders, path } from '@nativescript/core/file-system/file-system';
-    import { Point } from 'nativescript-carto/vectorelements/point';
-    import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
-    import { RasterTileLayer } from 'nativescript-carto/layers/raster';
-    import { Template } from 'svelte-native/components';
-    import { VectorLayer } from 'nativescript-carto/layers/vector';
-    import { CartoMap } from 'nativescript-carto/ui';
-    import { primaryColor } from '~/variables';
+<script  context="module" lang="ts">
+    import { Folder, knownFolders, path } from '@nativescript/core/file-system';
     import { PersistentCacheTileDataSource } from 'nativescript-carto/datasources/cache';
     import { HTTPTileDataSource } from 'nativescript-carto/datasources/http';
-    import { GenericMapPos } from 'nativescript-carto/core';
-
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
-    export let focusPos;
-
-    let point;
-    let cartoMap;
-
-    function onMapReady(event) {
-        cartoMap = event.object;
-        const options = cartoMap.getOptions();
-        options.setWatermarkScale(0);
-
-        const dataSource = new PersistentCacheTileDataSource({
+    const dataSource = new PersistentCacheTileDataSource({
             dataSource: new HTTPTileDataSource({
                 minZoom: 10,
                 subdomains: 'abc',
@@ -31,26 +12,58 @@
             }),
             databasePath: path.join(cacheFolder.path, 'cache.db')
         });
+</script>
+<script lang="ts">
+    import { Point } from 'nativescript-carto/vectorelements/point';
+    import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
+    import { RasterTileLayer } from 'nativescript-carto/layers/raster';
+    import { Template } from 'svelte-native/components';
+    import { VectorLayer } from 'nativescript-carto/layers/vector';
+    import { CartoMap } from 'nativescript-carto/ui';
+    import { primaryColor } from '~/variables';
+    import { GenericMapPos } from 'nativescript-carto/core';
 
+    export let focusPos;
+
+    let point;
+    let cartoMap;
+
+    function onMapReady(event) {
+        cartoMap = event.object;
+        const options = cartoMap.getOptions();
+        options.setWatermarkScale(0.5);
+
+        // const dataSource = new PersistentCacheTileDataSource({
+        //     dataSource: new HTTPTileDataSource({
+        //         minZoom: 10,
+        //         subdomains: 'abc',
+        //         maxZoom: 10,
+        //         url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
+        //     }),
+        //     databasePath: path.join(cacheFolder.path, 'cache.db')
+        // });
+
+        // const rasterLayer = new RasterTileLayer({ dataSource });
         const rasterLayer = new RasterTileLayer({ dataSource });
 
         cartoMap.addLayer(rasterLayer);
 
-        const localVectorDataSource = new LocalVectorDataSource({ projection: cartoMap.projection });
-        point = new Point({
-            position: focusPos,
-            styleBuilder: {
-                size: 10,
-                color: primaryColor
-            }
-        });
-        localVectorDataSource.add(point);
-        const localVectorLayer = new VectorLayer({ dataSource: localVectorDataSource });
-        cartoMap.addLayer(localVectorLayer);
+        // const localVectorDataSource = new LocalVectorDataSource({ projection: cartoMap.projection });
+        // point = new Point({
+        //     position: focusPos,
+        //     styleBuilder: {
+        //         size: 10,
+        //         color: primaryColor
+        //     }
+        // });
+        // localVectorDataSource.add(point);
+        // const localVectorLayer = new VectorLayer({ dataSource: localVectorDataSource });
+        // cartoMap.addLayer(localVectorLayer);
         cartoMap.setFocusPos(focusPos, 0);
     }
 
     $: {
+        //update if focusPos change (cell reuse)
         if (cartoMap) {
             point.position = focusPos;
             cartoMap.setFocusPos(focusPos, 0);

@@ -461,15 +461,15 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                             loader: 'svelte-loader-hot',
                             options: {
                                 preprocess: [
-                                    require('svelte-preprocess')(
-                                        Object.assign({
-                                            typescript: {
-                                                compilerOptions: {
-                                                    module: 'es6',
-                                                },
+                                    require('svelte-preprocess')({
+                                        typescript: {
+                                            tsconfigFile: resolve(tsconfig),
+                                            compilerOptions: {
+                                                target: 'es6',
+                                                module: 'es6',
                                             },
-                                        })
-                                    ),
+                                        },
+                                    }),
                                     svelteNativePreprocessor(),
                                 ],
                                 hotReload: hmr,

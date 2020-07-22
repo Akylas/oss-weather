@@ -40,6 +40,7 @@ export const cloudyColor = '#929292';
 export const rainColor = '#4681C3';
 export const snowColor = '#ACE8FF';
 export let textColor;
+export let borderColor;
 export let textLightColor;
 
 let theme;
@@ -48,9 +49,11 @@ function updateThemeColors() {
     if (theme === 'light') {
         textColor = '#000000';
         textLightColor = '#444444';
+        borderColor = '#444444';
     } else {
         textColor = '#ffffff';
         textLightColor = '#aaaaaa';
+        borderColor = '#55cccccc';
     }
 }
 

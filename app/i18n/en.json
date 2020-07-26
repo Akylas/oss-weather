@@ -46,7 +46,8 @@
   "api_key_required": "API key required",
   "open_website": "open website",
   "quit": "quit",
-  "api_key_required_description": "to get weather data from ClimaCell a free API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website",
+  "api_key_required_description": "to get weather data from OpenWeatherMap a free API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website",
+  "climal_cell_api_key_optional_description": "to get minutely weather data(optional) a free ClimaCell API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website",
   "select_on_map": "select on a map",
   "preferences": "preferences",
   "moon": "moon",
@@ -64,5 +65,11 @@
   "search_location": "search location",
   "missing_location_perm": "location permission is missing",
   "no_location_setup": "no location set up",
-  "gps_location": "find GPS location"
+  "gps_location": "find GPS location",
+  "version": "version",
+  "source_code": "source code",
+  "third_parties": "third party libraries",
+  "share_application": "share application",
+  "review_application": "review application",
+  "about": "about"
 }

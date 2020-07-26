@@ -3,7 +3,7 @@
     import { accentColor } from '~/variables';
     import { closeBottomSheet } from '~/bottomsheet';
     export let options;
-    export let title;
+    export let title = null;
 
     function selectOption(option) {
         closeBottomSheet(option);

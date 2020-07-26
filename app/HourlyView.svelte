@@ -4,7 +4,7 @@
     import { screenWidthDips } from '~/variables';
     export let items;
     let collectionView;
-    export let scrollIndex;
+    export let scrollIndex = 0;
 
     function onDataPopulated() {
         collectionView.nativeView.scrollToIndex(scrollIndex, false);

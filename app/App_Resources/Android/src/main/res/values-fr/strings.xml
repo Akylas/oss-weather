@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="about">"à propos"</string>
+  <string name="review_application">"examen de la demande"</string>
+  <string name="share_application">"partager l\'application"</string>
+  <string name="third_parties">"bibliothèques tierces"</string>
+  <string name="source_code">"code source"</string>
+  <string name="version">"version"</string>
+  <string name="gps_location">"trouver votre position GPS"</string>
   <string name="no_location_setup">"aucun emplacement configuré"</string>
   <string name="missing_location_perm">"l\'autorisation de localisation est manquante"</string>
   <string name="search_location">"rechercher"</string>
@@ -53,4 +60,5 @@
   <string name="app_name">"NS Météo"</string>
   <string name="title_activity_kimera">"NS Météo"</string>
   <string name="about_to_quit">"the app is about to close because it does not have an API Key"</string>
+  <string name="climal_cell_api_key_optional_description">"to get minutely weather data(optional) a free ClimaCell API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website"</string>
 </resources>

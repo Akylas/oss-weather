@@ -28,6 +28,9 @@ registerNativeViewElement('line', () => require('nativescript-canvas/shapes/line
 registerNativeViewElement('canvaslabel', () => require('nativescript-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('nativescript-canvaslabel').Span);
 registerNativeViewElement('cgroup', () => require('nativescript-canvaslabel').Group);
+// registerNativeViewElement('settingLabelIcon', () => require('./SettingLabelIcon.svelte').default);
+
+
 import CollectionViewElement from 'nativescript-collectionview/svelte';
 CollectionViewElement.register();
 startSentry();

@@ -15,6 +15,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const svelteNativePreprocessor = require('svelte-native-preprocessor');
 const { existsSync, mkdirSync, readFileSync } = require('fs');
 const SentryCliPlugin = require('@sentry/webpack-plugin');
+const preprocessConfig = require('./svelte.config.js');
 
 module.exports = (env, params = {}) => {
     // Add your custom Activities, Services and other android app components here.
@@ -58,6 +59,7 @@ module.exports = (env, params = {}) => {
         sentry, // --env.sentry
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
+        includeOWMKey, // --env.includeOWMKey
         includeDefaultLocation, // --env.includeDefaultLocation
         devlog, // --env.devlog
         adhoc, // --env.adhoc
@@ -167,7 +169,7 @@ module.exports = (env, params = {}) => {
             'gVars.sentry': !!sentry,
             SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
             SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
-            OWM_KEY: `"${process.env.OWM_KEY}"`,
+            OWM_KEY: includeOWMKey ? `"${process.env.OWM_KEY}"` : 'undefined',
             DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',
             CLIMA_CELL_KEY: includeClimaCellKey ? `"${process.env.CLIMA_CELL_KEY}"` : 'undefined',
             DEFAULT_LOCATION: includeDefaultLocation
@@ -460,17 +462,10 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                         {
                             loader: 'svelte-loader-hot',
                             options: {
+                                dev: true,
                                 preprocess: [
-                                    require('svelte-preprocess')({
-                                        typescript: {
-                                            tsconfigFile: resolve(tsconfig),
-                                            compilerOptions: {
-                                                target: 'es6',
-                                                module: 'es6',
-                                            },
-                                        },
-                                    }),
-                                    svelteNativePreprocessor(),
+                                    preprocessConfig.preprocess,
+                                    svelteNativePreprocessor,
                                 ],
                                 hotReload: hmr,
                                 hotOptions: {

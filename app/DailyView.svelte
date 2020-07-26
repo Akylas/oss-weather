@@ -41,6 +41,7 @@
             <cspan fontSize="17" color={textLightColor} text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <cspan text={' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
         </cgroup>
+        <cspan paddingLeft="10" paddingBottom="10" fontSize="13" color={textLightColor} text={item.description} verticalAlignment="bottom" textAlignment="left"/>
 
         <line color={borderColor} startX="0%" startY="0" stopX="100%" stopY="0" strokeWidth="1" />
     </canvaslabel>

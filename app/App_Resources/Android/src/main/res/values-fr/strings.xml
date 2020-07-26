@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="climal_cell_api_key_optional_description">"pour obtenir des données météorologiques a la minute (facultatif), une clé API ClimaCell gratuite est requise. \nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web"</string>
   <string name="about">"à propos"</string>
-  <string name="review_application">"examen de la demande"</string>
+  <string name="review_application">"noter l\'application"</string>
   <string name="share_application">"partager l\'application"</string>
   <string name="third_parties">"bibliothèques tierces"</string>
   <string name="source_code">"code source"</string>
@@ -19,7 +20,7 @@
   <string name="preferences">"préférences"</string>
   <string name="open_website">"site web ouvert"</string>
   <string name="file">"fichier"</string>
-  <string name="api_key_required_description">"pour obtenir les données météorologiques de ClimaCell, une clé API gratuite est requise.\nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API.\nVous pouvez le faire en créant un compte sur leur site Web"</string>
+  <string name="api_key_required_description">"pour obtenir les données météorologiques d\'OpenWeatherMap, une clé API gratuite est requise. \nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web"</string>
   <string name="api_key_required">"Clé API requise"</string>
   <string name="expires">"expire"</string>
   <string name="search_city">"rechercher"</string>
@@ -60,5 +61,6 @@
   <string name="app_name">"NS Météo"</string>
   <string name="title_activity_kimera">"NS Météo"</string>
   <string name="about_to_quit">"the app is about to close because it does not have an API Key"</string>
-  <string name="climal_cell_api_key_optional_description">"to get minutely weather data(optional) a free ClimaCell API key is required. To remain under the free plan each user should create its own API key. You can do that by creating an account on their website"</string>
+  <string name="owm_api_key">"OpenWeatherMap API Key"</string>
+  <string name="cc_api_key">"ClimaCell API Key"</string>
 </resources>

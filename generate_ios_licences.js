@@ -7,7 +7,7 @@ const licenseUrls = {
     mit: 'http://www.apache.org/licenses/LICENSE-2.0',
     BSD: 'https://opensource.org/licenses/BSD-3-Clause'
 };
-const obj = plist.parse(fs.readFileSync('./platforms/ios/Pods/Pods-cairnmobileenduser-metadata.plist', 'utf8'));
+const obj = plist.parse(fs.readFileSync('./platforms/ios/Pods/Pods-nsforecastie-metadata.plist', 'utf8'));
 const result = {
     dependencies: obj.specs.map(spec => ({
         moduleName: spec.name,

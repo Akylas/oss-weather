@@ -12,7 +12,7 @@
     import { confirm, prompt } from 'nativescript-material-dialogs';
     import { clog } from '~/utils/logging';
     // import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
-    import { networkService, getClimaCellWeather, getOWMWeather, hasCCApiKey, hasOWMApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData } from '~/services/api';
+    import { networkService, getClimaCellWeather, getOWMWeather, hasCCApiKey, hasOWMApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, setOWMApiKey } from '~/services/api';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
@@ -36,6 +36,7 @@
     import HourlyView from './HourlyView.svelte';
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     import ActionSheet from './ActionSheet.svelte';
+    import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -81,6 +82,11 @@
                         id: 'gps_location',
                         text: l('gps_location'),
                     },
+                    {
+                        icon: 'mdi-information-outline',
+                        id: 'about',
+                        text: l('about'),
+                    },
                 ],
             },
         }).then((result) => {
@@ -94,6 +100,11 @@
                         break;
                     case 'gps_location':
                         getLocationAndWeather();
+                        break;
+                    case 'about':
+                        console.log('showing about');
+                        const About = require('./About.svelte').default;
+                        showModal({ page: About, animated: true, fullscreen: true });
                         break;
                 }
             }
@@ -124,6 +135,7 @@
             console.log(err);
             if (err.statusCode === 403) {
                 // setDSApiKey(null);
+                setOWMApiKey(null);
                 setCCApiKey(null);
                 askForApiKey();
             } else {
@@ -272,7 +284,7 @@
     async function searchOnMap() {
         try {
             const result = await showModal({ page: SelectLocationOnMap, animated: true, fullscreen: true, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
-            clog('searchOnMap', result);
+            // clog('searchOnMap', result);
             if (result) {
                 saveLocation(result);
             }
@@ -325,14 +337,20 @@
     let pullRefresh;
 
     async function refresh() {
+        if (!hasOWMApiKey()) {
+            alert(l('missing_api_key'));
+            return;
+        }
+        if (!weatherLocation) {
+            showSnack({ message: l('no_location_set') });
+            return;
+        }
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = true;
         }
 
         // if (hasDSApiKey()) {
-        if (hasOWMApiKey()) {
-            await refreshWeather();
-        }
+        await refreshWeather();
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = false;
         }
@@ -351,58 +369,72 @@
         }
     }
     async function askForApiKey() {
-        try {
-            const result = await prompt({
-                title: l('api_key_required'),
-                okButtonText: l('ok'),
-                cancelable: false,
-                neutralButtonText: l('open_website'),
-                cancelButtonText: l('quit'),
-                message: l('api_key_required_description'),
-                textFieldProperties: {
-                    hint: l('api_key'),
-                },
-            });
-            // console.log('result', result);
-            if (result.result === true) {
-                if (result.text) {
-                    setCCApiKey(result.text);
-                    refresh();
-                } else {
-                    // for now we cant ignore the button click so let s tell the user we are going to close
-                    const result = await confirm({
-                        title: l('quit'),
-                        okButtonText: l('ok'),
-                        message: l('about_to_quit'),
-                    });
-                    quitApp();
-                }
-            } else if (result.result === false) {
-                const result = await confirm({
-                    title: l('quit'),
-                    okButtonText: l('ok'),
-                    message: l('about_to_quit'),
-                });
-                quitApp();
-            } else {
-                openUrl('https://darksky.net/dev');
-                quitApp();
-            }
-
-            return result;
-        } catch (err) {
-            console.log('error', err);
+        console.log('askForApiKey');
+        const result = await showBottomSheet({
+            parent: page,
+            view: ApiKeysBottomSheet,
+            dismissOnBackgroundTap: false,
+            dismissOnDraggingDownSheet: false,
+        });
+        if (result) {
+            refresh();
         }
+        // try {
+        //     const result = await prompt({
+        //         title: l('api_key_required'),
+        //         okButtonText: l('ok'),
+        //         cancelable: false,
+        //         neutralButtonText: l('open_website'),
+        //         cancelButtonText: l('quit'),
+        //         message: l('api_key_required_description'),
+        //         textFieldProperties: {
+        //             hint: l('api_key'),
+        //         },
+        //     });
+        //     // console.log('result', result);
+        //     if (result.result === true) {
+        //         if (result.text) {
+        //             setCCApiKey(result.text);
+        //             refresh();
+        //         } else {
+        //             // for now we cant ignore the button click so let s tell the user we are going to close
+        //             const result = await confirm({
+        //                 title: l('quit'),
+        //                 okButtonText: l('ok'),
+        //                 message: l('about_to_quit'),
+        //             });
+        //             quitApp();
+        //         }
+        //     } else if (result.result === false) {
+        //         const result = await confirm({
+        //             title: l('quit'),
+        //             okButtonText: l('ok'),
+        //             message: l('about_to_quit'),
+        //         });
+        //         quitApp();
+        //     } else {
+        //         openUrl('https://darksky.net/dev');
+        //         quitApp();
+        //     }
+
+        //     return result;
+        // } catch (err) {
+        //     console.log('error', err);
+        // }
     }
     let networkConnected = networkService.connected;
     onMount(async () => {
         const ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
         const owmApiKey = getString('owmApiKey', OWM_KEY);
-        if (!ccApiKey || !owmApiKey) {
-
+        if (!owmApiKey) {
             // wait a bit
-            // setTimeout(() => askForApiKey(), 0);
-            askForApiKey();
+            setTimeout(() => askForApiKey(), 1000);
+            // askForApiKey();
+        }
+        if (!ccApiKey) {
+            // wait a bit
+            showSnack({ message: l('missing_cc_key') });
+            // askForApiKey();
         }
         networkService.on(NetworkConnectionStateEvent, (event) => {
             networkConnected = event.data.connected;
@@ -459,16 +491,15 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <mdbutton row="1" margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather}>
+                <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
                     <span text={l('my_location').toUpperCase()} />
                 </mdbutton>
-                <mdbutton row="2" margin="4 0 4 0" variant="outline" on:tap={searchCity}>
+                <mdbutton row="2" margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>
                     <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
                     <span text={l('search_location').toUpperCase()} />
                 </mdbutton>
             </gridlayout>
-            
         {/if}
     </gridlayout>
 </page>

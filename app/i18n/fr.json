@@ -63,5 +63,11 @@
   "search_location": "rechercher",
   "missing_location_perm": "l'autorisation de localisation est manquante",
   "no_location_setup": "aucun emplacement configuré",
-  "gps_location": "trouver votre position GPS"
+  "gps_location": "trouver votre position GPS",
+  "version": "version",
+  "source_code": "code source",
+  "third_parties": "bibliothèques tierces",
+  "share_application": "partager l'application",
+  "review_application": "noter l'application",
+  "about": "à propos"
 }

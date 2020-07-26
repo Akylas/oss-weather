@@ -28,6 +28,9 @@ mdbutton {
     }
     // white-space: normal;
 }
+mdbutton[variant="text"] {
+    color: $accent-color;
+}
 
 .dailyViewBorder {
     height: 1;
@@ -68,9 +71,7 @@ mdtextfield {
 // but on android it should be possible to do it through style, though not working yet
 label,
 htmllabel,
-canvaslabel,
-// button,
-mdbutton {
+canvaslabel {
     @extend .lato;
 }
 // }

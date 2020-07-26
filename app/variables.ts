@@ -43,6 +43,9 @@ export let textColor;
 export let borderColor;
 export let textLightColor;
 
+export let subtitleColor;
+export let iconColor;
+
 let theme;
 function updateThemeColors() {
     theme = getString('theme', 'dark');
@@ -50,10 +53,14 @@ function updateThemeColors() {
         textColor = '#000000';
         textLightColor = '#444444';
         borderColor = '#444444';
+        subtitleColor = '#444444';
+        iconColor = '#444444';
     } else {
         textColor = '#ffffff';
         textLightColor = '#aaaaaa';
         borderColor = '#55cccccc';
+        subtitleColor = '#aaaaaa';
+        iconColor = '#aaaaaa';
     }
 }
 

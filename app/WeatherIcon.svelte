@@ -19,7 +19,7 @@
     import { getBoolean } from '@nativescript/core/application-settings';
 
     export let icon;
-    export let fontSize = 40;
+    export let fontSize: string|number = 40;
     export let autoPlay = getBoolean('animations', false);
     let iconSrc;
     $: {

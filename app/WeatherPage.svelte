@@ -12,7 +12,17 @@
     import { confirm, prompt } from 'nativescript-material-dialogs';
     import { clog } from '~/utils/logging';
     // import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
-    import { networkService, getClimaCellWeather, getOWMWeather, hasCCApiKey, hasOWMApiKey, setCCApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, setOWMApiKey } from '~/services/api';
+    import {
+        networkService,
+        getClimaCellWeather,
+        getOWMWeather,
+        hasCCApiKey,
+        hasOWMApiKey,
+        setCCApiKey,
+        NetworkConnectionStateEvent,
+        NetworkConnectionStateEventData,
+        setOWMApiKey,
+    } from '~/services/api';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { ObservableArray } from '@nativescript/core/data/observable-array';
@@ -89,26 +99,34 @@
                     },
                 ],
             },
-        }).then((result) => {
-            if (result) {
-                switch (result.id) {
-                    case 'preferences':
-                        prefs.openSettings();
-                        break;
-                    case 'refresh':
-                        refreshWeather();
-                        break;
-                    case 'gps_location':
-                        getLocationAndWeather();
-                        break;
-                    case 'about':
-                        console.log('showing about');
-                        const About = require('./About.svelte').default;
-                        showModal({ page: About, animated: true, fullscreen: true });
-                        break;
+        }).then(
+            (
+                result: {
+                    icon: string;
+                    id: string;
+                    text: string;
+                }
+            ) => {
+                if (result) {
+                    switch (result.id) {
+                        case 'preferences':
+                            prefs.openSettings();
+                            break;
+                        case 'refresh':
+                            refreshWeather();
+                            break;
+                        case 'gps_location':
+                            getLocationAndWeather();
+                            break;
+                        case 'about':
+                            console.log('showing about');
+                            const About = require('./About.svelte').default;
+                            showModal({ page: About, animated: true, fullscreen: true });
+                            break;
+                    }
                 }
             }
-        });
+        );
     }
 
     async function refreshWeather() {
@@ -314,7 +332,7 @@
                 gps = new GPS();
                 // gps.debug = true;
             }
-            const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
+            const location = await gps.getCurrentLocation({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
                 clog('location', location);
                 saveLocation({
@@ -436,7 +454,7 @@
             showSnack({ message: l('missing_cc_key') });
             // askForApiKey();
         }
-        networkService.on(NetworkConnectionStateEvent, (event) => {
+        networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             networkConnected = event.data.connected;
             // console.log('networkConnected changed', networkConnected);
             if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {

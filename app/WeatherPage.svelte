@@ -1,57 +1,32 @@
 <script lang="ts">
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import { mdiFontFamily, screenHeightDips, screenScale } from '~/variables';
-    import dayjs from 'dayjs';
-    import { onMount } from 'svelte';
-    import { Template } from 'svelte-native/components';
-    import { showModal } from 'svelte-native';
-    import { showSnack } from 'nativescript-material-snackbar';
-    import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
-    import { IMapPos } from '~/helpers/geo';
-    import { showError } from '~/utils/error';
-    import { confirm, prompt } from 'nativescript-material-dialogs';
-    import { clog } from '~/utils/logging';
-    // import { networkService, getDarkSkyWeather, hasDSApiKey, setDSApiKey } from '~/services/api';
-    import {
-        networkService,
-        getClimaCellWeather,
-        getOWMWeather,
-        hasCCApiKey,
-        hasOWMApiKey,
-        setCCApiKey,
-        NetworkConnectionStateEvent,
-        NetworkConnectionStateEventData,
-        setOWMApiKey,
-    } from '~/services/api';
-    import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
-    import { openUrl } from '@nativescript/core/utils/utils';
-    import { ObservableArray } from '@nativescript/core/data/observable-array';
-    import { Page } from '@nativescript/core/ui/page';
-    import { l } from '~/helpers/locale';
-    import { setGeoLocationKeys } from 'nativescript-gps';
-    import { request as requestPerm, Status as PermStatus, setDebug as setPermsDebug } from 'nativescript-perms';
-    import { actionBarHeight, navigationBarHeight, statusBarHeight } from '~/variables';
-    import { colorFromTempC, UNITS } from '~/helpers/formatter';
-    import { showBottomSheet } from '~/bottomsheet';
-    import { prefs } from '~/services/preferences';
-    import { onLanguageChanged } from '~/helpers/locale';
     import { android as androidApp } from '@nativescript/core/application';
-    import { GPS } from 'nativescript-gps';
+    import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { Accuracy } from '@nativescript/core/ui/enums/enums';
-
-    import CActionBar from './CActionBar.svelte';
-    import WeatherIcon from './WeatherIcon.svelte';
-    import DailyView from './DailyView.svelte';
-    import TopWeatherView from './TopWeatherView.svelte';
-    import HourlyView from './HourlyView.svelte';
-    import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+    import dayjs from 'dayjs';
+    import { GPS, setGeoLocationKeys } from 'nativescript-gps';
+    import { showSnack } from 'nativescript-material-snackbar';
+    import { request as requestPerm } from 'nativescript-perms';
+    import { onMount } from 'svelte';
+    import { showModal } from 'svelte-native';
+    import { Template } from 'svelte-native/components';
+    import { showBottomSheet } from '~/bottomsheet';
+    import { l, onLanguageChanged } from '~/helpers/locale';
+    import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, setCCApiKey, setOWMApiKey } from '~/services/api';
+    import { prefs } from '~/services/preferences';
+    import { showError } from '~/utils/error';
+    import { clog } from '~/utils/logging';
+    import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, screenScale, statusBarHeight } from '~/variables';
     import ActionSheet from './ActionSheet.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
+    import CActionBar from './CActionBar.svelte';
+    import DailyView from './DailyView.svelte';
+    import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+    import TopWeatherView from './TopWeatherView.svelte';
+    import WeatherIcon from './WeatherIcon.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
-    let gps;
-
+    let gps: GPS;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
     let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
@@ -61,11 +36,14 @@
     let items = [];
 
     let screenHeightPixels = screenHeightDips * screenScale;
-    // interface Option {
-    //     icon: string;
-    //     id: string;
-    //     text: string;
-    // }
+    let desiredAccuracy = gVars.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
+    let updateDistance = 1;
+    let maximumAge = 3000;
+    let timeout = 20000;
+    let minimumUpdateTime = 1000; // Should update every 1 second according ;
+    let pullRefresh;
+    let networkConnected = networkService.connected;
+    let page;
     function showOptions() {
         showBottomSheet({
             parent: page,
@@ -99,34 +77,25 @@
                     },
                 ],
             },
-        }).then(
-            (
-                result: {
-                    icon: string;
-                    id: string;
-                    text: string;
-                }
-            ) => {
-                if (result) {
-                    switch (result.id) {
-                        case 'preferences':
-                            prefs.openSettings();
-                            break;
-                        case 'refresh':
-                            refreshWeather();
-                            break;
-                        case 'gps_location':
-                            getLocationAndWeather();
-                            break;
-                        case 'about':
-                            console.log('showing about');
-                            const About = require('./About.svelte').default;
-                            showModal({ page: About, animated: true, fullscreen: true });
-                            break;
-                    }
+        }).then((result: { icon: string; id: string; text: string }) => {
+            if (result) {
+                switch (result.id) {
+                    case 'preferences':
+                        prefs.openSettings();
+                        break;
+                    case 'refresh':
+                        refreshWeather();
+                        break;
+                    case 'gps_location':
+                        getLocationAndWeather();
+                        break;
+                    case 'about':
+                        const About = require('./About.svelte').default;
+                        showModal({ page: About, animated: true, fullscreen: true });
+                        break;
                 }
             }
-        );
+        });
     }
 
     async function refreshWeather() {
@@ -144,8 +113,10 @@
             // weatherData = await getDarkSkyWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
             // weatherData = await getClimaCellWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
             weatherData = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            // console.log('weatherData', weatherData);
             lastUpdate = Date.now();
             items = prepareItems();
+            // console.log('items', items);
             // setDay(0);
             setNumber('lastUpdate', lastUpdate);
             setString('lastWeatherData', JSON.stringify(weatherData));
@@ -166,6 +137,7 @@
 
     function saveLocation(result) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
+        console.log('saveLocation', cityChanged, result);
         if (cityChanged) {
             weatherLocation = result;
             setString('weatherLocation', JSON.stringify(weatherLocation));
@@ -179,6 +151,10 @@
             // .add(46, 'h')
             .endOf('h')
             .valueOf();
+        const startOfHour = dayjs()
+            // .add(46, 'h')
+            .startOf('h')
+            .valueOf();
         const endOfMinute = dayjs()
             // .add(46, 'h')
             .endOf('m')
@@ -186,7 +162,7 @@
         weatherData.daily.data.forEach((d, index) => {
             if (index === 0) {
                 let currentDaily = weatherData.daily.data[index];
-                const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= endOfHour);
+                const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
                 const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
                 // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
                 Object.assign(currentDaily, weatherData.currently);
@@ -242,55 +218,11 @@
 
         return newItems;
     }
-    // function setDay(index) {
-    //     const changed = index !== dayIndex;
-    //     dayIndex = index;
-    //     const nbDays = dsWeather.daily.data.length;
-    //     currentWeather = dsWeather.daily.data[index];
-    //     console.log('currentWeather', JSON.stringify(currentWeather));
-    //     console.log('hourly', JSON.stringify(currentWeather.hourly));
-    //     if (index === 0) {
-    //         const now = dayjs()
-    //             .endOf('h')
-    //             .valueOf();
-    //         const firstHourIndex = currentWeather.hourly.findIndex(h => h.time >= now);
-    //         hourlyItems = currentWeather.hourly.slice(firstHourIndex);
-    //         // console.log('setDay', index, now, firstHourIndex, hourlyItems.length);
-    //         if (firstHourIndex > 0) {
-    //             currentWeather = Object.assign({}, currentWeather, currentWeather.hourly[firstHourIndex - 1]);
-    //         } else {
-    //             currentWeather = Object.assign({}, currentWeather, dsWeather.currently);
-    //         }
-    //         scrollIndex = 0;
-    //         // changed && setTimeout(() => collectionView.nativeView.scrollToIndex(0, false), 100);
-    //     } else {
-    //         const items = currentWeather.hourly;
-    //         hourlyItems = items;
-    //         const sunriseTime = dayjs(currentWeather.sunriseTime)
-    //             .endOf('h')
-    //             .valueOf();
-    //         scrollIndex = items.findIndex(h => h.time >= sunriseTime);
-    //         // console.log('setDay', index, sunriseTime, firstHourIndex, hourlyItems.length);
-
-    //         // changed && setTimeout(() => collectionView.nativeView.scrollToIndex(firstHourIndex + 1, false), 100);
-    //     }
-    //     // nextDayData = index < nbDays - 1 ? dsWeather.daily.data[index + 1] : undefined;
-    //     // prevDayData = index > 0 ? dsWeather.daily.data[index - 1] : undefined;
-    //     console.log('hourlyItems', JSON.stringify(hourlyItems));
-    //     updateLineChart();
-    // }
-    // function decrementDay() {
-    //     setDay(dayIndex - 1);
-    // }
-    // function incrementDay() {
-    //     setDay(dayIndex + 1);
-    // }
-
+    
     async function searchCity() {
         try {
             const SelectCity = require('./SelectCity.svelte').default;
 
-            // throw new Error('test')
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {
                 saveLocation(result);
@@ -302,7 +234,6 @@
     async function searchOnMap() {
         try {
             const result = await showModal({ page: SelectLocationOnMap, animated: true, fullscreen: true, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
-            // clog('searchOnMap', result);
             if (result) {
                 saveLocation(result);
             }
@@ -310,39 +241,25 @@
             showError(err);
         }
     }
-    let desiredAccuracy = gVars.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
-    let updateDistance = 1;
-    let maximumAge = 3000;
-    let timeout = 20000;
-    let minimumUpdateTime = 1000; // Should update every 1 second according ;
     async function getLocationAndWeather() {
-        // const result = await confirm;
-        // clog('getLocationAndWeather', networkService.connected);
-        // if (!networkService.connected) {
-        //     showSnack({ view: page.nativeView, message: l('no_network') });
-        // }
+        
         try {
             const permRes = await requestPerm('location');
             if (permRes[0] !== 'authorized') {
                 return alert(l('missing_location_perm'));
             }
-            // clog('requesting location');
             loading = true;
             if (!gps) {
                 gps = new GPS();
                 // gps.debug = true;
             }
-            const location = await gps.getCurrentLocation({ desiredAccuracy, minimumUpdateTime, timeout });
+            const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
                 clog('location', location);
                 saveLocation({
                     name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
                     coord: location,
                 });
-                // const cityRes = await getCityName(location);
-                // if (cityRes) {
-                //     saveLocation(cityRes);
-                // }
             }
         } catch (err) {
             showError(err);
@@ -351,8 +268,6 @@
             loading = false;
         }
     }
-
-    let pullRefresh;
 
     async function refresh() {
         if (!hasOWMApiKey()) {
@@ -397,62 +312,17 @@
         if (result) {
             refresh();
         }
-        // try {
-        //     const result = await prompt({
-        //         title: l('api_key_required'),
-        //         okButtonText: l('ok'),
-        //         cancelable: false,
-        //         neutralButtonText: l('open_website'),
-        //         cancelButtonText: l('quit'),
-        //         message: l('api_key_required_description'),
-        //         textFieldProperties: {
-        //             hint: l('api_key'),
-        //         },
-        //     });
-        //     // console.log('result', result);
-        //     if (result.result === true) {
-        //         if (result.text) {
-        //             setCCApiKey(result.text);
-        //             refresh();
-        //         } else {
-        //             // for now we cant ignore the button click so let s tell the user we are going to close
-        //             const result = await confirm({
-        //                 title: l('quit'),
-        //                 okButtonText: l('ok'),
-        //                 message: l('about_to_quit'),
-        //             });
-        //             quitApp();
-        //         }
-        //     } else if (result.result === false) {
-        //         const result = await confirm({
-        //             title: l('quit'),
-        //             okButtonText: l('ok'),
-        //             message: l('about_to_quit'),
-        //         });
-        //         quitApp();
-        //     } else {
-        //         openUrl('https://darksky.net/dev');
-        //         quitApp();
-        //     }
-
-        //     return result;
-        // } catch (err) {
-        //     console.log('error', err);
-        // }
     }
-    let networkConnected = networkService.connected;
     onMount(async () => {
         const ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
         const owmApiKey = getString('owmApiKey', OWM_KEY);
         if (!owmApiKey) {
             // wait a bit
             setTimeout(() => askForApiKey(), 1000);
-            // askForApiKey();
         }
         if (!ccApiKey) {
             // wait a bit
             showSnack({ message: l('missing_cc_key') });
-            // askForApiKey();
         }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             networkConnected = event.data.connected;
@@ -467,7 +337,6 @@
             items = prepareItems();
         }
     });
-    let page;
 
     onLanguageChanged((lang) => {
         console.log('refresh triggered by lang change');

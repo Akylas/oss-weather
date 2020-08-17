@@ -48,7 +48,7 @@
             <scrollView row="1">
                 <stackLayout>
                 <SettingLabelIcon title={l('version')} subtitle={appVersion} />
-                <SettingLabelIcon title={l('source_code')} subtitle="obtenir le code source de l'application sur Github" rightIcon="mdi-chevron-right" on:tap={()=>onTap('github')} />
+                <SettingLabelIcon title={l('source_code')} subtitle="obtenir le code source de l'application sur Github" icon="mdi-chevron-right" on:tap={()=>onTap('github')} />
                 <SettingLabelIcon title={l('third_parties')} subtitle="les logiciels que nous aimons et utilisons" icon="mdi-chevron-right" on:tap={()=>onTap('third_party')} />
                 <SettingLabelIcon title={l('share_application')} icon="mdi-chevron-right" on:tap={()=>onTap('share')} />
                 <SettingLabelIcon title={l('review_application')} icon="mdi-chevron-right" on:tap={()=>onTap('review')} />

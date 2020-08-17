@@ -501,60 +501,86 @@ export async function getOWMWeather(lat: number, lon: number) {
         }[];
     };
     // console.log('onecall', JSON.stringify(result));
-    let nowcast;
-    if (ccApiKey) {
-        const now = dayjs();
-        nowcast = await request<ClimaCellNowCast>({
-            url: CLIMA_CELL_API_URL_NOWCAST,
-            method: 'GET',
-            queryParams: {
-                lat,
-                lon,
-                apikey: ccApiKey,
-                // start_time:now,
-                end_time: now.add(1, 'h').toISOString(),
-                unit_system: 'si',
-                fields: CLIMA_CELL_NOWCAST_FIELDS,
-            },
-        });
-        nowcast.forEach((h, i) => {
-            h.time = dayjs(h.observation_time.value).valueOf();
-            h.icon = h.weather_code.value;
-            h.temperature = h.temp.value;
-            h.windSpeed = h.wind_speed.value * 3.6;
-            h.windBearing = h.wind_direction.value;
-            h.precipIntensity = h.precipitation.value;
-            h.precipType = h.precipitation_type.value;
-            h.dewPoint = h.dewpoint.value;
-            h.humidity = h.humidity.value;
-            h.pressure = h.baro_pressure.value;
-            h.windGust = h.wind_gust.value;
-            h.cloudCover = h.cloud_cover.value / 100;
-            h.cloudCeiling = h.cloud_ceiling.value > 100 ? h.cloud_ceiling.value : 0;
-            delete h.observation_time;
-            delete h.wind_gust;
-            delete h.cloud_ceiling;
-            delete h.baro_pressure;
-            delete h.cloud_base;
-            delete h.weather_code;
-            delete h.wind_speed;
-            delete h.temp;
-            delete h.wind_direction;
-            delete h.precipitation;
-            delete h.precipitation_accumulation;
-            delete h.precipitation_probability;
-            delete h.precipitation_type;
-            delete h.dewpoint;
-            delete h.humidity;
-            delete h.cloud_cover;
-            delete h.moon_phase;
-            delete h.sunrise;
-            delete h.sunset;
-            delete h.lat;
-            delete h.lon;
+    // console.log('minutely', JSON.stringify(result.minutely));
+    // console.log('hourly', JSON.stringify(result.hourly));
+    if (!result.minutely) {
+        if (ccApiKey) {
+            const now = dayjs();
+            const hourly = await request<ClimaCellHourly>({
+                url: CLIMA_CELL_API_URL_HOURLY,
+                method: 'GET',
+                queryParams: {
+                    lat,
+                    lon,
+                    apikey: ccApiKey,
+                    unit_system: 'si',
+                    end_time: now.add(96, 'h').toISOString(),
+                    fields: CLIMA_CELL_HOURLY_FIELDS,
+                },
+            });
+            console.log('test hourly', JSON.stringify(hourly));
+            const nowcast = await request<ClimaCellNowCast>({
+                url: CLIMA_CELL_API_URL_NOWCAST,
+                method: 'GET',
+                queryParams: {
+                    lat,
+                    lon,
+                    apikey: ccApiKey,
+                    // start_time:now,
+                    end_time: now.add(1, 'h').toISOString(),
+                    unit_system: 'si',
+                    fields: CLIMA_CELL_NOWCAST_FIELDS,
+                },
+            });
 
-            h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
+            nowcast.forEach((h, i) => {
+                h.time = dayjs(h.observation_time.value).valueOf();
+                h.icon = h.weather_code.value;
+                h.temperature = h.temp.value;
+                h.windSpeed = h.wind_speed.value * 3.6;
+                h.windBearing = h.wind_direction.value;
+                h.precipIntensity = h.precipitation.value;
+                h.precipType = h.precipitation_type.value;
+                h.dewPoint = h.dewpoint.value;
+                h.humidity = h.humidity.value;
+                h.pressure = h.baro_pressure.value;
+                h.windGust = h.wind_gust.value;
+                h.cloudCover = h.cloud_cover.value / 100;
+                h.cloudCeiling = h.cloud_ceiling.value > 100 ? h.cloud_ceiling.value : 0;
+                delete h.observation_time;
+                delete h.wind_gust;
+                delete h.cloud_ceiling;
+                delete h.baro_pressure;
+                delete h.cloud_base;
+                delete h.weather_code;
+                delete h.wind_speed;
+                delete h.temp;
+                delete h.wind_direction;
+                delete h.precipitation;
+                delete h.precipitation_accumulation;
+                delete h.precipitation_probability;
+                delete h.precipitation_type;
+                delete h.dewpoint;
+                delete h.humidity;
+                delete h.cloud_cover;
+                delete h.moon_phase;
+                delete h.sunrise;
+                delete h.sunset;
+                delete h.lat;
+                delete h.lon;
+
+                h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
+            });
+            result.minutely = nowcast;
+        }
+    } else {
+        result.minutely.forEach((h) => {
+            h['precipIntensity'] = h.precipitation;
+            h['time'] = h.dt * 1000;
+            delete h.dt;
+            delete h.precipitation;
         });
+        // console.log('minutely2', JSON.stringify(result.minutely));
     }
 
     const r = {
@@ -619,11 +645,9 @@ export async function getOWMWeather(lat: number, lon: number) {
                 return d;
             }),
         },
-        minutely: nowcast
-            ? {
-                  data: nowcast,
-              }
-            : undefined,
+        minutely: {
+            data: result.minutely,
+        },
         // minutely: result.minutely
         //     ? {
         //         data: result.minutely.map((data) => {

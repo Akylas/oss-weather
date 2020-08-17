@@ -41,8 +41,8 @@
 
     let lineChart;
     let chartInitialized = false;
-    let precipChartSet;
-    let cloudChartSet;
+    let precipChartSet: LineDataSet;
+    let cloudChartSet: LineDataSet;
     let lastChartData;
     function updateLineChart(item) {
         const chart = getChart(lineChart.nativeView);
@@ -81,22 +81,28 @@
                 xAxis.setTextColor(textColor);
                 xAxis.setDrawGridLines(false);
                 xAxis.setDrawMarkTicks(true);
+                let lastValue = 0;
                 xAxis.setValueFormatter({
                     getAxisLabel: (f) => {
                         const result = Math.floor((f - now) / 600000) * 10;
-                        return result === 0 ? '' : result + 'm';
+                        if (result !== lastValue) {
+                            lastValue = result;
+                            return result === 0 ? '' : result + 'm';
+                        }
+                        return '';
                     },
                 });
                 xAxis.setLabelCount(count / 2, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
 
                 const rightAxis = chart.getAxisRight();
-                rightAxis.setAxisMinimum(0);
-                rightAxis.setTextColor(Color(textColor).setAlpha(0.5).toRgbString());
-                rightAxis.setDrawGridLines(false);
-                rightAxis.setDrawAxisLine(false);
-                rightAxis.setDrawLabels(false);
-                rightAxis.setLabelCount(4);
+                rightAxis.setEnabled(false);
+                // rightAxis.setAxisMinimum(0);
+                // rightAxis.setTextColor(Color(textColor).setAlpha(0.5).toRgbString());
+                // rightAxis.setDrawGridLines(false);
+                // rightAxis.setDrawAxisLine(false);
+                // rightAxis.setDrawLabels(false);
+                // rightAxis.setLabelCount(4);
                 // rightAxis.setAxisMaximum(6000);
 
                 const leftAxis = chart.getAxisLeft();
@@ -134,7 +140,7 @@
             let needsToSetData = false;
             let needsUpdate = false;
             const hasPrecip = data.some((d) => d.precipIntensity > 0);
-            // console.log('hasPrecip', hasPrecip);
+            console.log('hasPrecip', hasPrecip, needsToSetData, needsUpdate);
             let min = 10000;
             let max = -10000;
             data.forEach((h) => {
@@ -163,39 +169,41 @@
                     precipChartSet.setColor(rainColor);
                     precipChartSet.setFillColor(rainColor);
                     precipChartSet.setFillAlpha(150);
-                    precipChartSet.setMode(Mode.HORIZONTAL_BEZIER);
+                    precipChartSet.setMode(Mode.CUBIC_BEZIER);
                 } else {
                     precipChartSet.setValues(data);
                     needsUpdate = true;
                 }
-            } else if (precipChartSet) {
+            } else if (precipChartSet && precipChartSet.getEntryCount() > 0) {
                 precipChartSet.clear();
+                needsToSetData = true;
             }
-            const hasCloud = data.some((d) => d.cloudCeiling > 0);
-            const rightAxis = chart.getAxisRight();
-            rightAxis.setDrawLabels(hasCloud);
-            // console.log('hasCloud', hasCloud, data);
-            if (hasCloud) {
-                // rightAxis.setLabelCount(4, false);
-                if (!cloudChartSet) {
-                    needsToSetData = true;
-                    cloudChartSet = new LineDataSet(data, 'cloudCeiling', 'time', 'cloudCeiling');
-                    cloudChartSet.setAxisDependency(AxisDependency.RIGHT);
-                    cloudChartSet.setLineWidth(2);
-                    cloudChartSet.setDrawIcons(false);
-                    cloudChartSet.setDrawValues(false);
-                    cloudChartSet.setDrawFilled(false);
-                    cloudChartSet.setColor('gray');
-                    cloudChartSet.setMode(Mode.HORIZONTAL_BEZIER);
-                } else {
-                    cloudChartSet.setValues(data);
-                    needsUpdate = true;
-                }
-            } else if (cloudChartSet) {
-                cloudChartSet.clear();
-            }
+            // const hasCloud = data.some((d) => d.cloudCeiling > 0);
+            // const rightAxis = chart.getAxisRight();
+            // rightAxis.setDrawLabels(hasCloud);
+            // // console.log('hasCloud', hasCloud, data);
+            // if (hasCloud) {
+            //     // rightAxis.setLabelCount(4, false);
+            //     if (!cloudChartSet) {
+            //         needsToSetData = true;
+            //         cloudChartSet = new LineDataSet(data, 'cloudCeiling', 'time', 'cloudCeiling');
+            //         cloudChartSet.setAxisDependency(AxisDependency.RIGHT);
+            //         cloudChartSet.setLineWidth(2);
+            //         cloudChartSet.setDrawIcons(false);
+            //         cloudChartSet.setDrawValues(false);
+            //         cloudChartSet.setDrawFilled(false);
+            //         cloudChartSet.setColor('gray');
+            //         cloudChartSet.setMode(Mode.HORIZONTAL_BEZIER);
+            //     } else {
+            //         cloudChartSet.setValues(data);
+            //         needsUpdate = true;
+            //     }
+            // } else if (cloudChartSet) {
+            //     cloudChartSet.clear();
+            // }
             if (needsToSetData) {
-                chart.setData(new LineData([precipChartSet, cloudChartSet].filter((s) => !!s)));
+                // chart.setData(new LineData([precipChartSet, cloudChartSet].filter((s) => !!s)));
+                chart.setData(new LineData([precipChartSet].filter((s) => !!s)));
             } else if (needsUpdate) {
                 chart.getData().notifyDataChanged();
                 chart.notifyDataSetChanged();
@@ -224,7 +232,7 @@
                 <cspan color={textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : null} />
             </cgroup>
         {/if}
-        <cgroup paddingLeft="80" paddingTop="12" fontSize="14" verticalAlignment="top">
+        <cgroup paddingLeft="80" paddingTop="11" fontSize="14" verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <cspan color="#777" text=" | " />
             <cspan  text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
@@ -248,8 +256,8 @@
         {/if}
         {#if item.uvIndex > 0}
             <cgroup paddingLeft="180" paddingTop="44" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={item.uvIndexColor}>
-                <cspan fontSize="30" fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" />
-                <cspan   paddingTop="14" text={'\n' + Math.round(item.uvIndex)} />
+                <cspan fontSize="30" fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert"  color={item.uvIndexColor}/>
+                <cspan paddingTop="14" text={'\n' + Math.round(item.uvIndex)}/>
             </cgroup>
         {/if}
         {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}

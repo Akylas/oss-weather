@@ -15,7 +15,6 @@
 
     onMount(() => (canGoBack = Frame.topmost() && Frame.topmost().canGoBack()));
     function onMenuIcon() {
-        console.log('onMenuIcon', modalWindow, onClose);
         if (modalWindow) {
             onClose ? onClose() : closeModal(undefined);
         } else {

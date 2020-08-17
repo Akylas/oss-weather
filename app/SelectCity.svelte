@@ -21,19 +21,17 @@
     let loading = false;
     let searchResults = [];
     let searchAsTypeTimer;
+    let hasFocus = false;
+    let currentSearchText;
 
     function focus() {
         textField && textField.nativeView.requestFocus();
         // alert('test')
     }
     function unfocus() {
-        if (searchAsTypeTimer) {
-            clearTimeout(searchAsTypeTimer);
-            searchAsTypeTimer = null;
-        }
+        clearSearchTimeout();
+
     }
-    let hasFocus = false;
-    let currentSearchText;
     function onFocus(e) {
         hasFocus = true;
         if (currentSearchText) {
@@ -45,10 +43,8 @@
     }
     function onTextChange(e) {
         const query = e.value;
-        if (searchAsTypeTimer) {
-            clearTimeout(searchAsTypeTimer);
-            searchAsTypeTimer = null;
-        }
+        clearSearchTimeout();
+
         if (query && query.length > 2) {
             searchAsTypeTimer = setTimeout(() => {
                 searchAsTypeTimer = null;
@@ -71,10 +67,20 @@
         }
     }
 
+    function clearSearchTimeout() {
+        if (searchAsTypeTimer) {
+            clearTimeout(searchAsTypeTimer);
+            searchAsTypeTimer = null;
+        }
+    }
+
     function close(item) {
-        clearTimeout(searchAsTypeTimer);
+        clearSearchTimeout();
         closeModal(item);
     }
+    // onMount(() => {
+    //     focus();
+    // });
 </script>
 
 <frame backgroundColor="transparent">
@@ -83,11 +89,20 @@
             <CActionBar title={l('search_city')} modalWindow={true}>
                 <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
-            <textfield bind:this={textField} row="1" hint={l('search')} placeholder={l('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} color={textColor}/>
-            <collectionview row="2" rowHeight="110" items={searchResults}>
+            <textfield
+                bind:this={textField}
+                row="1"
+                hint={l('search')}
+                placeholder={l('search')}
+                floating="false"
+                returnKeyType="search"
+                on:textChange={onTextChange}
+                on:loaded={focus}
+                color={textColor} />
+            <collectionview row="2" rowHeight="70" items={searchResults}>
                 <Template let:item>
-                    <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="130,*" padding="10">
-                        <MapView focusPos={item.coord} />
+                    <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">
+                        <!-- <MapView focusPos={item.coord} /> -->
                         <gridLayout col="1" paddingLeft="10" verticalAlignment="center" rows="auto,auto,auto">
                             <label fontSize="18" text={item.name} />
                             <label row="1" color={textLightColor} fontSize="14" text={item.sys.state || item.sys.country} />

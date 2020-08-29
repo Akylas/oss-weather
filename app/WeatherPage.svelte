@@ -255,7 +255,7 @@
             }
             const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
-                clog('location', location);
+                console.log('location', location);
                 saveLocation({
                     name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
                     coord: location,

@@ -19,7 +19,7 @@
     }
     function onTextChange() {}
     function openWeatherMap() {
-        openLink('https://developer.climacell.co/sign-up');
+        openLink('https://openweathermap.org/api');
 
     }
     function openClimaCell() {

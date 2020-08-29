@@ -56,7 +56,7 @@ function timelineProfileFunctionFactory(target: any, always: boolean, key?, desc
     // editing the descriptor/value parameter
     descriptor.value = function() {
         // const start = time();
-        clog(name);
+        console.log(name);
         try {
             return originalMethod.apply(this, arguments);
         } finally {
@@ -69,7 +69,7 @@ function timelineProfileFunctionFactory(target: any, always: boolean, key?, desc
     return descriptor;
 }
 
-// export function clog(...args) {
+// export function console.log(...args) {
 //     return console.log.apply(this, [appId].concat(args));
 // }
 // const origConsole: { [k: string]: Function } = {
@@ -86,7 +86,6 @@ if (gVars.sentry) {
 
 function actualLog(level: 'info' | 'log' | 'error' | 'warn', ...args) {
     if (gVars.sentry) {
-        // console.log('addBreadcrumb', level, args, args.join(' '));
         Sentry.addBreadcrumb({
             category: 'console',
             message: args.join(' '),

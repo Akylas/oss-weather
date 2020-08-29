@@ -61,7 +61,7 @@ export function convertTime(date: number | string | dayjs.Dayjs, formatStr: stri
 //     const test = new Date(date);
 //     test.setTime(test.getTime() + test.getTimezoneOffset() * 60 * 1000);
 //     const result = dayjs(test).format(formatStr);
-//     // clog('convertDuration', date, formatStr, test, result);
+//     // console.log('convertDuration', date, formatStr, test, result);
 //     return result;
 // }
 export function kelvinToCelsius(kelvinTemp) {
@@ -79,7 +79,7 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
     if (value === undefined || value === null) {
         return ['', ''];
     }
-    // clog('convertValueToUnit', value, unit, otherParam);
+    // console.log('convertValueToUnit', value, unit, otherParam);
     switch (unit) {
         case UNITS.kPa:
             return [(value / 10).toFixed(), 'kPa'];

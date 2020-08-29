@@ -19,7 +19,7 @@ const preprocessConfig = require('./svelte.config.js');
 
 module.exports = (env, params = {}) => {
     // Add your custom Activities, Services and other android app components here.
-    const appComponents = ['tns-core-modules/ui/frame', 'tns-core-modules/ui/frame/activity'].concat(params.appComponents || []);
+    const appComponents = ['@nativescript/core/ui/frame', '@nativescript/core/ui/frame/activity'].concat(params.appComponents || []);
     console.log('appComponents', appComponents);
 
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
@@ -61,6 +61,7 @@ module.exports = (env, params = {}) => {
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
         includeDefaultLocation, // --env.includeDefaultLocation
+        noconsole, // --env.noconsole
         devlog, // --env.devlog
         adhoc, // --env.adhoc
         es5, // --env.es5
@@ -91,9 +92,9 @@ module.exports = (env, params = {}) => {
     const mode = production ? 'production' : 'development';
 
     const appFullPath = resolve(projectRoot, appPath);
-    const hasRootLevelScopedModules = nsWebpack.hasRootLevelScopedModules({
-        projectDir: projectRoot,
-    });
+    // const hasRootLevelScopedModules = nsWebpack.hasRootLevelScopedModules({
+    // projectDir: projectRoot,
+    // });
     const alias = mergeOptions(
         {
             '~': appFullPath,
@@ -102,12 +103,13 @@ module.exports = (env, params = {}) => {
         params.alias || {}
     );
     console.log('Aliases', alias);
-    let coreModulesPackageName = 'tns-core-modules';
+    let coreModulesPackageName = '@akylas/nativescript';
+    alias['@nativescript/core'] = '@akylas/nativescript';
 
-    if (hasRootLevelScopedModules) {
-        coreModulesPackageName = '@nativescript/core';
-        alias['tns-core-modules'] = coreModulesPackageName;
-    }
+    // if (hasRootLevelScopedModules) {
+    coreModulesPackageName = '@nativescript/core';
+    alias['tns-core-modules'] = coreModulesPackageName;
+    // }
 
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
@@ -116,7 +118,7 @@ module.exports = (env, params = {}) => {
     const entries = mergeOptions({ bundle: entryPath }, params.entries || {});
     const areCoreModulesExternal = Array.isArray(env.externals) && env.externals.some((e) => e.indexOf('tns-core-modules') > -1);
     if (platform === 'ios' && !areCoreModulesExternal) {
-        entries['tns_modules/tns-core-modules/inspector_modules'] = 'inspector_modules';
+        entries['@nativescript/core/inspector_modules'] = 'inspector_modules';
     }
     // if (platform === 'android') {
     //     entries['application'] = './application.android';
@@ -303,6 +305,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                     collapse_vars: platform !== 'android',
                                     sequences: platform !== 'android',
                                     passes: 2,
+                                    drop_console: noconsole || (production && adhoc !== true)
                                 },
                                 keep_fnames: true,
                             },

@@ -223,7 +223,7 @@ class NetworkService extends Observable {
         }
     }
     log(...args) {
-        clog(`[${this.constructor.name}]`, ...args);
+        console.log(`[${this.constructor.name}]`, ...args);
     }
     monitoring = false;
     start() {
@@ -309,7 +309,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
     }
     // if (isJSON) {
     // if (isJSON) {
-    // clog('handleRequestResponse response', JSON.stringify(content));
+    // console.log('handleRequestResponse response', JSON.stringify(content));
     return content;
     // }
     // try {
@@ -355,7 +355,7 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     requestParams.headers = getRequestHeaders(requestParams);
     requestParams.useLegacy = true;
 
-    clog('request', requestParams);
+    console.log('request', requestParams);
     const requestStartTime = Date.now();
     return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry));
 }
@@ -366,7 +366,7 @@ export interface OWMParams extends Partial<IMapPos> {
     q?: string; // search query
 }
 export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
-    // clog('fetchOWM', apiName, queryParams);
+    // console.log('fetchOWM', apiName, queryParams);
     return request({
         url: `https://api.openweathermap.org/data/2.5/${apiName}`,
         method: 'GET',
@@ -380,7 +380,7 @@ export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
 }
 
 export async function getCityName(pos: Coord) {
-    clog('getCityName', pos);
+    console.log('getCityName', pos);
     const result: CityWeather = await fetchOWM('weather', {
         lat: pos.lat,
         lon: pos.lon,
@@ -390,7 +390,7 @@ export async function getCityName(pos: Coord) {
     return result;
 }
 // export async function findCitiesByName(q: string) {
-//     clog('findCitiesByName', q);
+//     console.log('findCitiesByName', q);
 //     const result: {
 //         list: CityWeather[];
 //     } = await fetchOWM('find', {
@@ -694,7 +694,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         d.windIcon = windIcon(d.windBearing);
         return d;
     });
-    // clog('getOWMWeather', lat, lon, JSON.stringify(result));
+    // console.log('getOWMWeather', lat, lon, JSON.stringify(result));
     return r;
 }
 const cardinals = ['↓', '↙︎', '←', '↖︎', '↑', '↗︎', '→', '↘︎', '↓'];

@@ -24,9 +24,10 @@
         "types": ["node"],  
         "paths": {
             "~/*": ["app/*"],
-            "tns-core-modules": ["./node_modules/@nativescript/core"],
-            "tns-core-modules/*": ["./node_modules/@nativescript/core/*"],
-            "*": ["./node_modules/*"]
+            "@nativescript/core": ["@akylas/nativescript"],
+            "@nativescript/core/*": ["@akylas/nativescript/*"],
+            "tns-core-modules/*": ["./node_modules/@akylas/nativescript/*"],
+            "tns-core-modules": ["./node_modules/@akylas/nativescript"],
         }
     },
     "include": ["app/**/*", "references.d.ts"],

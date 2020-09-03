@@ -140,7 +140,6 @@
             let needsToSetData = false;
             let needsUpdate = false;
             const hasPrecip = data.some((d) => d.precipIntensity > 0);
-            console.log('hasPrecip', hasPrecip, needsToSetData, needsUpdate);
             let min = 10000;
             let max = -10000;
             data.forEach((h) => {

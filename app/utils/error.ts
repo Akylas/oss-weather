@@ -3,13 +3,15 @@ import { l } from '~/helpers/locale';
 import { confirm, alert as mdAlert } from 'nativescript-material-dialogs';
 import { Sentry, isSentryEnabled } from '~/utils/sentry';
 import { showSnack } from 'nativescript-material-snackbar';
+import { lc } from 'nativescript-l';
+import { NoNetworkError } from '~/services/api';
 
 function evalTemplateString(resource: string, obj: {}) {
     if (!obj) {
         return resource;
     }
     const names = Object.keys(obj);
-    const vals = Object.keys(obj).map(key => obj[key]);
+    const vals = Object.keys(obj).map((key) => obj[key]);
     return new Function(...names, `return \`${resource}\`;`)(...vals);
 }
 
@@ -65,9 +67,9 @@ export class CustomError extends BaseError {
 
     toJSON() {
         const error = {
-            message: this.message
+            message: this.message,
         };
-        Object.getOwnPropertyNames(this).forEach(key => {
+        Object.getOwnPropertyNames(this).forEach((key) => {
             if (typeof this[key] !== 'function') {
                 error[key] = this[key];
             }
@@ -98,16 +100,24 @@ export async function showError(err: Error | string) {
         showSnack({ message: l('no_network') });
         return;
     }
-    const message: string = typeof err === 'string' ? err : err.toString();
+    const realError = typeof err === 'string' ? null : err;
+    const isString = realError === null;
+    const message = isString ? (err as string) : realError.message || realError.toString();
+    const title = lc('error');
+    const reporterEnabled = isSentryEnabled;
+    let showSendBugReport = reporterEnabled && !isString && !!realError.stack;
+    if (realError instanceof NoNetworkError) {
+        showSendBugReport = false;
+    }
     // if (err['stack']) {
     //     message += '\n' + err['stack'];
     // }
     console.log('showError', message, err, err['stack']);
     const result = await confirm({
-        title: l('error'),
-        okButtonText: l('send_bug_report'),
-        cancelButtonText: l('cancel'),
-        message
+        title,
+        okButtonText: showSendBugReport ? lc('send_bug_report') : undefined,
+        cancelButtonText: showSendBugReport ? lc('cancel') : lc('ok'),
+        message,
     });
     console.log('showError', 'confirmed', result, isSentryEnabled);
     if (result && isSentryEnabled) {
@@ -125,6 +135,6 @@ export async function showError(err: Error | string) {
 export function alert(message: string) {
     return mdAlert({
         okButtonText: l('ok'),
-        message
+        message,
     });
 }

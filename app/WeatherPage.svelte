@@ -4,17 +4,17 @@
     import { Accuracy } from '@nativescript/core/ui/enums/enums';
     import dayjs from 'dayjs';
     import { GPS, setGeoLocationKeys } from 'nativescript-gps';
+    import { login } from 'nativescript-material-dialogs';
     import { showSnack } from 'nativescript-material-snackbar';
     import { request as requestPerm } from 'nativescript-perms';
     import { onMount } from 'svelte';
     import { showModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { showBottomSheet } from '~/bottomsheet';
-    import { l, onLanguageChanged } from '~/helpers/locale';
+    import { l, lc, onLanguageChanged } from '~/helpers/locale';
     import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, setCCApiKey, setOWMApiKey } from '~/services/api';
     import { prefs } from '~/services/preferences';
-    import { showError } from '~/utils/error';
-    import { clog } from '~/utils/logging';
+    import { alert, showError } from '~/utils/error';
     import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, screenScale, statusBarHeight } from '~/variables';
     import ActionSheet from './ActionSheet.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
@@ -23,8 +23,12 @@
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     import TopWeatherView from './TopWeatherView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
+    import { TextField } from 'nativescript-material-textfield';
+    import { Sentry } from './utils/sentry';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
+
+    const mailRegexp = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
     let gps: GPS;
     let loading = false;
@@ -75,6 +79,11 @@
                         id: 'about',
                         text: l('about'),
                     },
+                    {
+                        icon: 'mdi-bug',
+                        id: 'send_bug_report',
+                        text: l('send_bug_report'),
+                    },
                 ],
             },
         }).then((result: { icon: string; id: string; text: string }) => {
@@ -88,6 +97,9 @@
                         break;
                     case 'gps_location':
                         getLocationAndWeather();
+                        break;
+                    case 'send_bug_report':
+                        sendBugReport();
                         break;
                     case 'about':
                         const About = require('./About.svelte').default;
@@ -218,7 +230,7 @@
 
         return newItems;
     }
-    
+
     async function searchCity() {
         try {
             const SelectCity = require('./SelectCity.svelte').default;
@@ -242,7 +254,6 @@
         }
     }
     async function getLocationAndWeather() {
-        
         try {
             const permRes = await requestPerm('location');
             if (permRes[0] !== 'authorized') {
@@ -346,6 +357,67 @@
         console.log('onCanvasLabelClicked', e.object);
         e.object.redraw();
     }
+
+    async function sendBugReport() {
+        const result = await login({
+            title: lc('send_bug_report'),
+            message: lc('send_bug_report_desc'),
+            okButtonText: l('send'),
+            cancelButtonText: l('cancel'),
+            autoFocus: true,
+            usernameTextFieldProperties: {
+                marginLeft: 10,
+                marginRight: 10,
+                autocapitalizationType: 'none',
+                keyboardType: 'email',
+                autocorrect: false,
+                error: lc('email_required'),
+                hint: lc('email'),
+            },
+            passwordTextFieldProperties: {
+                marginLeft: 10,
+                marginRight: 10,
+                error: lc('please_describe_error'),
+                secure: false,
+                hint: lc('description'),
+            },
+            beforeShow: (options, usernameTextField: TextField, passwordTextField: TextField) => {
+                usernameTextField.on('textChange', (e: any) => {
+                    const text = e.value;
+                    if (!text) {
+                        usernameTextField.error = lc('email_required');
+                    } else if (!mailRegexp.test(text)) {
+                        usernameTextField.error = lc('non_valid_email');
+                    } else {
+                        usernameTextField.error = null;
+                    }
+                });
+                passwordTextField.on('textChange', (e: any) => {
+                    const text = e.value;
+                    if (!text) {
+                        passwordTextField.error = lc('description_required');
+                    } else {
+                        passwordTextField.error = null;
+                    }
+                });
+            },
+        });
+        if (result.result) {
+            if (!result.userName || !mailRegexp.test(result.userName)) {
+                showError(new Error(lc('email_required')));
+                return;
+            }
+            if (!result.password || result.password.length === 0) {
+                showError(new Error(lc('description_required')));
+                return;
+            }
+            Sentry.withScope((scope) => {
+                scope.setUser({ email: result.userName });
+                Sentry.captureMessage(result.password);
+                alert(l('bug_report_sent'));
+            });
+        }
+    }
 </script>
 
 <page bind:this={page} actionBarHidden="true" id="home">
@@ -356,9 +428,7 @@
             <mdbutton variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         {#if !networkConnected && !weatherData}
-            <label row="1" horizontalAlignment="center" verticalAlignment="center">
-                <span text={l('no_network').toUpperCase()} />
-            </label>
+            <label row="1" horizontalAlignment="center" verticalAlignment="center"> <span text={l('no_network').toUpperCase()} /> </label>
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
                 <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index}>

@@ -3,7 +3,7 @@ import { getAppId } from 'nativescript-extendedinfo';
 export const DEV_LOG = LOG_LEVEL === 'full';
 
 let appId: string;
-getAppId().then(r => (appId = r));
+getAppId().then((r) => (appId = r));
 // let chalk: Chalk;
 
 // function getChalk() {
@@ -22,7 +22,7 @@ export function log(alwaysOrTarget: boolean | any, k?, desc?: PropertyDescriptor
         return timelineProfileFunctionFactory(alwaysOrTarget, true, k, desc);
     } else {
         // factory
-        return function(target: any, key?: string, descriptor?: PropertyDescriptor) {
+        return function (target: any, key?: string, descriptor?: PropertyDescriptor) {
             // const name = nameOrTarget || target.name;
             return timelineProfileFunctionFactory(target, alwaysOrTarget, key, descriptor);
             // console.log(name, ' is now decorated');
@@ -54,7 +54,7 @@ function timelineProfileFunctionFactory(target: any, always: boolean, key?, desc
     const name = className + key;
 
     // editing the descriptor/value parameter
-    descriptor.value = function() {
+    descriptor.value = function () {
         // const start = time();
         console.log(name);
         try {
@@ -83,20 +83,51 @@ let Sentry: typeof SentryType;
 if (gVars.sentry) {
     Sentry = require('@nativescript-community/sentry');
 }
+const originalConsole = {
+    log: console.log,
+    error: console.error,
+    warn: console.warn,
+};
 
-function actualLog(level: 'info' | 'log' | 'error' | 'warn', ...args) {
+function convertArg(arg) {
+    const type = typeof arg;
+    if (type === 'function' || typeof arg.getClass === 'function' || typeof arg.class === 'function') {
+        return (arg as Function).toString();
+    } else if (Array.isArray(arg)) {
+        return arg.map(convertArg);
+    } else if (type === 'object') {
+        const str = arg.toString();
+        if (str === '[object Object]') {
+            return JSON.stringify(arg);
+        } else {
+            return str;
+        }
+    } else {
+        return arg.toString();
+    }
+}
+function actualLog(level: 'info' | 'log' | 'error' | 'warn' | 'debug', ...args) {
     if (gVars.sentry) {
         Sentry.addBreadcrumb({
             category: 'console',
-            message: args.join(' '),
-            level: level as any
+            message: args.map(convertArg).join(' '),
+            level: level as any,
         });
     }
-    if (TEST_LOGS) {
-        console[level].apply(this, args);
+    // we do it this way allow terser to "drop" it
+    if (NO_CONSOLE !== true) {
+        originalConsole[level](...args);
     }
 }
-
-export const clog = (...args) => actualLog('log', ...args);
-export const cerror = (...args) => actualLog('error', ...args);
-export const cwarn = (...args) => actualLog('warn', ...args);
+let installed = false;
+export function install() {
+    if (installed) {
+        return;
+    }
+    installed = true;
+    console.log = (...args) => actualLog('log', ...args);
+    console.info = (...args) => actualLog('info', ...args);
+    console.error = (...args) => actualLog('error', ...args);
+    console.warn = (...args) => actualLog('warn', ...args);
+    console.debug = (...args) => actualLog('debug', ...args);
+}

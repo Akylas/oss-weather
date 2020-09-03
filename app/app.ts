@@ -1,5 +1,9 @@
 import { DomTraceCategory, registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
+startSentry();
+
+import { install } from '~/utils/logging';
+install();
 import { device } from '@nativescript/core/platform';
 
 import { setMapPosKeys } from 'nativescript-carto/core';
@@ -19,7 +23,7 @@ registerNativeViewElement('textfield', () => require('nativescript-material-text
 registerNativeViewElement('mdbutton', () => require('nativescript-material-button').Button);
 registerNativeViewElement('label', () => Label);
 registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
-registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').LineChart);
+registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
 registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
 registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
 registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pulltorefresh').PullToRefresh);
@@ -33,7 +37,6 @@ registerNativeViewElement('cgroup', () => require('nativescript-canvaslabel').Gr
 
 import CollectionViewElement from 'nativescript-collectionview/svelte';
 CollectionViewElement.register();
-startSentry();
 
 
 // import {addCategories, enable} from '@nativescript/core/trace';

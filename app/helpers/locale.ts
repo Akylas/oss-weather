@@ -1,7 +1,7 @@
 import { device } from '@nativescript/core/platform';
 import { loadLocaleJSON } from 'nativescript-l';
 import { prefs } from '~/services/preferences';
-export { l, lu } from 'nativescript-l';
+export { l, lc, lt, lu } from 'nativescript-l';
 import dayjs from 'dayjs';
 const supportedLanguages = ['en', 'fr'];
 import { getString, setString } from '@nativescript/core/application-settings';

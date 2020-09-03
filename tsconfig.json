@@ -21,11 +21,11 @@
         "allowSyntheticDefaultImports": true,
         "lib": ["es6", "dom", "es2015.iterable", "es2017.string", "es2018.promise"],
         "baseUrl": ".",
-        "types": ["node"],  
+        "types": ["node", "svelte"],  
         "paths": {
             "~/*": ["app/*"],
-            "@nativescript/core": ["@akylas/nativescript"],
-            "@nativescript/core/*": ["@akylas/nativescript/*"],
+            "@nativescript/core": ["@./node_modules/akylas/nativescript"],
+            "@nativescript/core/*": ["./node_modules/@akylas/nativescript/*"],
             "tns-core-modules/*": ["./node_modules/@akylas/nativescript/*"],
             "tns-core-modules": ["./node_modules/@akylas/nativescript"],
         }

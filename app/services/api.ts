@@ -466,6 +466,7 @@ export async function getOWMWeather(lat: number, lon: number) {
             wind_deg: number;
             wind_gust?: number;
             weather: Weather[];
+            pop: number;
             snow?: Snow;
             rain?: Rain;
         }[];
@@ -495,6 +496,7 @@ export async function getOWMWeather(lat: number, lon: number) {
             wind_gust?: number;
             wind_deg: number;
             weather: Weather[];
+            pop: number;
             rain?: number;
             snow?: number;
             uvi: number;
@@ -617,7 +619,7 @@ export async function getOWMWeather(lat: number, lon: number) {
 
                 d.windBearing = data.wind_deg;
                 d.precipAccumulation = data.rain || 0;
-                d.precipProbability = -1;
+                d.precipProbability = data.pop;
                 d.cloudCover = data.clouds / 100;
                 d.windSpeed = data.wind_speed;
                 d.humidity = data.humidity;
@@ -669,7 +671,7 @@ export async function getOWMWeather(lat: number, lon: number) {
 
         d.windBearing = data.wind_deg;
         d.precipIntensity = d.precipAccumulation = data.rain ? data.rain['1h'] : 0;
-        d.precipProbability = -1;
+        d.precipProbability = d.pop;
         d.cloudCover = data.clouds / 100;
         d.humidity = data.humidity;
         d.windGust = data.wind_gust * 3.6;

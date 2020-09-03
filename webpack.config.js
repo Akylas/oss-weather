@@ -57,6 +57,7 @@ module.exports = (env, params = {}) => {
         skipSnapshotTools, // --env.skipSnapshotTools
         compileSnapshot, // --env.compileSnapshots
         sentry, // --env.sentry
+        uploadSentry = true,
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
@@ -66,6 +67,7 @@ module.exports = (env, params = {}) => {
         adhoc, // --env.adhoc
         es5, // --env.es5
     } = env;
+    console.log('env', env);
 
     if (adhoc) {
         env = Object.assign({}, env, {
@@ -169,6 +171,7 @@ module.exports = (env, params = {}) => {
             'gVars.isAndroid': platform === 'android',
             TNS_ENV: JSON.stringify(mode),
             'gVars.sentry': !!sentry,
+            NO_CONSOLE: noconsole,
             SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
             SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
             OWM_KEY: includeOWMKey ? `"${process.env.OWM_KEY}"` : 'undefined',
@@ -305,7 +308,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
                                     collapse_vars: platform !== 'android',
                                     sequences: platform !== 'android',
                                     passes: 2,
-                                    drop_console: noconsole || (production && adhoc !== true)
+                                    drop_console: (production && adhoc !== true)
                                 },
                                 keep_fnames: true,
                             },
@@ -537,7 +540,7 @@ $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Mat
     };
 
     if (hiddenSourceMap || sourceMap) {
-        if (!!sentry) {
+        if (!!sentry && !!uploadSentry) {
             // const sourceMapFilename = nsWebpack.getSourceMapFilename(hiddenSourceMap, __dirname, dist);
 
             config.plugins.push(

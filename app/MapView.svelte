@@ -1,7 +1,7 @@
 <script  context="module" lang="ts">
     import { Folder, knownFolders, path } from '@nativescript/core/file-system';
-    import { PersistentCacheTileDataSource } from 'nativescript-carto/datasources/cache';
-    import { HTTPTileDataSource } from 'nativescript-carto/datasources/http';
+    import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
+    import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
     const dataSource = new PersistentCacheTileDataSource({
             dataSource: new HTTPTileDataSource({
@@ -14,14 +14,14 @@
         });
 </script>
 <script lang="ts">
-    import { Point } from 'nativescript-carto/vectorelements/point';
-    import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
-    import { RasterTileLayer } from 'nativescript-carto/layers/raster';
+    import { Point } from '@nativescript-community/ui-carto/vectorelements/point';
+    import { LocalVectorDataSource } from '@nativescript-community/ui-carto/datasources/vector';
+    import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
     import { Template } from 'svelte-native/components';
-    import { VectorLayer } from 'nativescript-carto/layers/vector';
-    import { CartoMap } from 'nativescript-carto/ui';
+    import { VectorLayer } from '@nativescript-community/ui-carto/layers/vector';
+    import { CartoMap } from '@nativescript-community/ui-carto/ui';
     import { primaryColor } from '~/variables';
-    import { GenericMapPos } from 'nativescript-carto/core';
+    import { GenericMapPos } from '@nativescript-community/ui-carto/core';
 
     export let focusPos;
 

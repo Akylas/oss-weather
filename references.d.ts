@@ -1,6 +1,6 @@
-/* eslint-disable spaced-comment */
-/// <reference path="./node_modules/tns-platform-declarations/ios.d.ts" />
-/// <reference path="./node_modules/tns-platform-declarations/android-28.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-ios/lib/ios.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-android/lib/android-26.d.ts" />
+
 
 declare const TNS_ENV: string;
 declare const LOG_LEVEL: string;
@@ -40,7 +40,7 @@ declare module '*.scss';
 declare namespace com {
     export namespace akylas {
         export namespace weather {
-            export class NightModeApplication extends android.app.Application {}
+            export class NightModeApplication extends globalAndroid.app.Application {}
         }
     }
 }

@@ -11,7 +11,7 @@
 
     function quitApp() {
         console.log('quitApp');
-        if (gVars.isIOS) {
+        if (global.isIOS) {
             exit(0);
         } else {
             androidApp.startActivity.finish();
@@ -39,6 +39,7 @@
     }
 </script>
 
+<!-- <scrollview> -->
 <stacklayout class="bottomsheet" padding="10">
     <label text={l('api_key_required_description')} />
     <gridlayout rows="auto" columns="auto,*, auto">
@@ -59,3 +60,4 @@
         <mdbutton variant="text" text={l('quit')} on:tap={quitApp} />
     </stacklayout>
 </stacklayout>
+<!-- </scrollview> -->

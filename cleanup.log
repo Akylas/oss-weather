@@ -1,0 +1,341 @@
+[2020-09-08 16:35:59.443] [Info] Initializing Cleanup process.
+[2020-09-08 16:35:59.444] [Info] cleanup-process will send ProcessReadyToReceive message
+[2020-09-08 16:35:59.446] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:35:59.446] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 for deletion
+[2020-09-08 16:35:59.447] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:35:59.447] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock for deletion
+[2020-09-08 16:35:59.449] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:35:59.449] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 from the list of files for deletion.
+[2020-09-08 16:35:59.449] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:35:59.450] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock from the list of files for deletion.
+[2020-09-08 16:35:59.453] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:35:59.453] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:35:59.453] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:35:59.453] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:35:59.454] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:35:59.454] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as it has been added already
+[2020-09-08 16:35:59.454] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:35:59.454] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as it has been added already
+[2020-09-08 16:35:59.454] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:35:59.455] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:35:59.455] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:35:59.455] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:35:59.455] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:35:59.455] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion
+[2020-09-08 16:35:59.455] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:35:59.455] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion
+[2020-09-08 16:35:59.456] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:35:59.456] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:35:59.456] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:35:59.456] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:35:59.459] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:35:59.459] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as it has been added already
+[2020-09-08 16:35:59.459] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:35:59.460] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as it has been added already
+[2020-09-08 16:35:59.460] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:35:59.460] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e from the list of files for deletion.
+[2020-09-08 16:35:59.460] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:35:59.460] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock from the list of files for deletion.
+[2020-09-08 16:35:59.466] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:35:59.466] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:35:59.466] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:35:59.466] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:35:59.466] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:35:59.466] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:35:59.466] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:35:59.467] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:35:59.474] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:35:59.474] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:35:59.474] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:35:59.474] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:36:05.824] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:36:05.824] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:36:05.824] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:36:05.825] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:36:05.830] [Info] cleanup-process received message of type: {"messageType":"AddCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["50172"]}}
+[2020-09-08 16:36:05.830] [Info] cleanup-process added command for execution: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["50172"]}
+[2020-09-08 16:36:05.831] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:36:05.831] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:36:05.831] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:36:05.831] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:36:14.865] [Info] cleanup-process received process.disconnect event
+[2020-09-08 16:36:15.070] [Info] Start executing command: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["50172"]}
+[2020-09-08 16:36:15.078] [Info] Successfully executed command: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["50172"]}
+[2020-09-08 16:36:15.078] [Info] cleanup-process finished
+[2020-09-08 16:56:15.503] [Info] Initializing Cleanup process.
+[2020-09-08 16:56:15.505] [Info] cleanup-process will send ProcessReadyToReceive message
+[2020-09-08 16:56:15.507] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:56:15.507] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 for deletion
+[2020-09-08 16:56:15.507] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:56:15.508] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock for deletion
+[2020-09-08 16:56:15.512] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:56:15.513] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 from the list of files for deletion.
+[2020-09-08 16:56:15.513] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:56:15.513] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock from the list of files for deletion.
+[2020-09-08 16:56:15.518] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:56:15.519] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 for deletion
+[2020-09-08 16:56:15.519] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:56:15.519] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock for deletion
+[2020-09-08 16:56:15.523] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:15.523] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:56:15.523] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:15.523] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:56:15.524] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:56:15.524] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 from the list of files for deletion.
+[2020-09-08 16:56:15.524] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:56:15.524] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock from the list of files for deletion.
+[2020-09-08 16:56:15.524] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:15.524] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as it has been added already
+[2020-09-08 16:56:15.524] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:15.524] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as it has been added already
+[2020-09-08 16:56:15.525] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:15.525] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:56:15.525] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:15.525] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:56:15.525] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:15.525] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion
+[2020-09-08 16:56:15.526] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:15.526] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion
+[2020-09-08 16:56:15.526] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:15.526] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:15.526] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:15.526] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:15.529] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:15.530] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as it has been added already
+[2020-09-08 16:56:15.530] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:15.530] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as it has been added already
+[2020-09-08 16:56:15.530] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:15.530] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e from the list of files for deletion.
+[2020-09-08 16:56:15.530] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:15.530] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock from the list of files for deletion.
+[2020-09-08 16:56:15.536] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:15.536] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:56:15.536] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:15.536] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:56:15.537] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:15.537] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:15.537] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:15.537] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:15.546] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:15.546] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:56:15.547] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:15.547] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:56:25.300] [Info] cleanup-process received process.disconnect event
+[2020-09-08 16:56:25.394] [Info] cleanup-process finished
+[2020-09-08 16:56:39.070] [Info] Initializing Cleanup process.
+[2020-09-08 16:56:39.072] [Info] cleanup-process will send ProcessReadyToReceive message
+[2020-09-08 16:56:39.074] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:56:39.074] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 for deletion
+[2020-09-08 16:56:39.074] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:56:39.074] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock for deletion
+[2020-09-08 16:56:39.077] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 16:56:39.077] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 from the list of files for deletion.
+[2020-09-08 16:56:39.077] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 16:56:39.078] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock from the list of files for deletion.
+[2020-09-08 16:56:39.081] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:39.081] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:56:39.081] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:39.081] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:56:39.082] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:39.082] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as it has been added already
+[2020-09-08 16:56:39.082] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:39.082] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as it has been added already
+[2020-09-08 16:56:39.082] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:39.083] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:56:39.083] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:39.083] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:56:39.083] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:39.083] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion
+[2020-09-08 16:56:39.083] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:39.083] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion
+[2020-09-08 16:56:39.084] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:39.084] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:39.084] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:39.084] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:39.087] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:39.087] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as it has been added already
+[2020-09-08 16:56:39.088] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:39.088] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as it has been added already
+[2020-09-08 16:56:39.088] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:39.088] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e from the list of files for deletion.
+[2020-09-08 16:56:39.088] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:39.088] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock from the list of files for deletion.
+[2020-09-08 16:56:39.094] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:39.094] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:56:39.094] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:39.094] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:56:39.094] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 16:56:39.094] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:39.094] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 16:56:39.094] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 16:56:39.102] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:39.102] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:56:39.102] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:39.102] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:56:44.699] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:44.699] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 16:56:44.699] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:44.699] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 16:56:44.704] [Info] cleanup-process received message of type: {"messageType":"AddCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["53934"]}}
+[2020-09-08 16:56:44.704] [Info] cleanup-process added command for execution: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["53934"]}
+[2020-09-08 16:56:44.705] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 16:56:44.705] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 16:56:44.705] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 16:56:44.706] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 16:56:56.181] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-53856-1pfosif.wev4"}
+[2020-09-08 16:56:56.181] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-53856-1pfosif.wev4 for deletion
+[2020-09-08 16:56:56.315] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-53856-auewe8.da0cc"}
+[2020-09-08 16:56:56.315] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-53856-auewe8.da0cc for deletion
+[2020-09-08 16:57:58.179] [Info] cleanup-process received message of type: {"messageType":"RemoveCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["53934"]}}
+[2020-09-08 16:57:58.181] [Info] cleanup-process removed command for execution: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["53934"]}
+[2020-09-08 16:57:58.220] [Info] cleanup-process received message of type: {"messageType":"RemoveCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["53934"]}}
+[2020-09-08 16:57:58.220] [Info] cleanup-process cannot remove command for execution as it has not been added before: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["53934"]}
+[2020-09-08 17:00:06.948] [Info] cleanup-process received process.disconnect event
+[2020-09-08 17:00:07.104] [Info] Deleting files /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-53856-1pfosif.wev4 /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-53856-auewe8.da0cc
+[2020-09-08 17:00:07.107] [Info] cleanup-process finished
+[2020-09-08 21:20:01.707] [Info] Initializing Cleanup process.
+[2020-09-08 21:20:01.708] [Info] cleanup-process will send ProcessReadyToReceive message
+[2020-09-08 21:20:01.710] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 21:20:01.711] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 for deletion
+[2020-09-08 21:20:01.711] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 21:20:01.711] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock for deletion
+[2020-09-08 21:20:01.715] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 21:20:01.715] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 from the list of files for deletion.
+[2020-09-08 21:20:01.715] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 21:20:01.715] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock from the list of files for deletion.
+[2020-09-08 21:20:01.719] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:01.719] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 21:20:01.719] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:01.719] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 21:20:01.720] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:01.720] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as it has been added already
+[2020-09-08 21:20:01.720] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:01.720] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as it has been added already
+[2020-09-08 21:20:01.721] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:01.721] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 21:20:01.721] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:01.721] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 21:20:01.721] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:20:01.721] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion
+[2020-09-08 21:20:01.722] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:20:01.722] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion
+[2020-09-08 21:20:01.722] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:01.722] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:20:01.722] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:01.722] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:20:01.726] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:20:01.726] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as it has been added already
+[2020-09-08 21:20:01.726] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:20:01.727] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as it has been added already
+[2020-09-08 21:20:01.727] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:20:01.727] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e from the list of files for deletion.
+[2020-09-08 21:20:01.727] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:20:01.727] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock from the list of files for deletion.
+[2020-09-08 21:20:01.734] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:01.734] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 21:20:01.734] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:01.734] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 21:20:01.734] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:20:01.734] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:20:01.734] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:20:01.734] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:20:01.742] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:01.743] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 21:20:01.743] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:01.743] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 21:20:05.350] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:05.350] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 21:20:05.350] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:05.350] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 21:20:05.354] [Info] cleanup-process received message of type: {"messageType":"AddCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["62596"]}}
+[2020-09-08 21:20:05.354] [Info] cleanup-process added command for execution: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["62596"]}
+[2020-09-08 21:20:05.355] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:20:05.355] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 21:20:05.355] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:20:05.356] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 21:20:16.526] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-62523-1k8krq5.zuhh"}
+[2020-09-08 21:20:16.526] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-62523-1k8krq5.zuhh for deletion
+[2020-09-08 21:20:16.664] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-62523-pjn3x9.wyvxb"}
+[2020-09-08 21:20:16.664] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-62523-pjn3x9.wyvxb for deletion
+[2020-09-08 21:21:02.288] [Info] cleanup-process received message of type: {"messageType":"RemoveCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["62596"]}}
+[2020-09-08 21:21:02.290] [Info] cleanup-process removed command for execution: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["62596"]}
+[2020-09-08 21:21:02.335] [Info] cleanup-process received message of type: {"messageType":"RemoveCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["62596"]}}
+[2020-09-08 21:21:02.335] [Info] cleanup-process cannot remove command for execution as it has not been added before: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["62596"]}
+[2020-09-08 21:22:27.557] [Info] cleanup-process received process.disconnect event
+[2020-09-08 21:22:27.702] [Info] Deleting files /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-62523-1k8krq5.zuhh /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-62523-pjn3x9.wyvxb
+[2020-09-08 21:22:27.705] [Info] cleanup-process finished
+[2020-09-08 21:23:09.251] [Info] Initializing Cleanup process.
+[2020-09-08 21:23:09.252] [Info] cleanup-process will send ProcessReadyToReceive message
+[2020-09-08 21:23:09.253] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 21:23:09.254] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 for deletion
+[2020-09-08 21:23:09.254] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 21:23:09.255] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock for deletion
+[2020-09-08 21:23:09.257] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142"}
+[2020-09-08 21:23:09.257] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142 from the list of files for deletion.
+[2020-09-08 21:23:09.258] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock"}
+[2020-09-08 21:23:09.258] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/840f504b12bd60858c3f87f43734e142.lock from the list of files for deletion.
+[2020-09-08 21:23:09.261] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:09.261] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 21:23:09.261] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:09.261] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 21:23:09.262] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:09.262] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as it has been added already
+[2020-09-08 21:23:09.262] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:09.262] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as it has been added already
+[2020-09-08 21:23:09.262] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:09.262] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 21:23:09.262] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:09.263] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 21:23:09.263] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:23:09.263] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion
+[2020-09-08 21:23:09.263] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:23:09.263] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion
+[2020-09-08 21:23:09.264] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:09.264] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:23:09.264] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:09.264] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:23:09.267] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:23:09.267] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as it has been added already
+[2020-09-08 21:23:09.267] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:23:09.268] [Info] cleanup-process will not add /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as it has been added already
+[2020-09-08 21:23:09.268] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:23:09.268] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e from the list of files for deletion.
+[2020-09-08 21:23:09.268] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:23:09.268] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock from the list of files for deletion.
+[2020-09-08 21:23:09.274] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:09.274] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 21:23:09.274] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:09.274] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 21:23:09.275] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e"}
+[2020-09-08 21:23:09.275] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:23:09.275] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock"}
+[2020-09-08 21:23:09.275] [Info] cleanup-process cannot remove /Volumes/data/mguillon/.local/share/.nativescript-cli/1cabe3510a74f6d9b62311fffb079e8e.lock for deletion as no such entry is found in the files marked for deletion
+[2020-09-08 21:23:09.284] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:09.284] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 21:23:09.284] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:09.284] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 21:23:12.836] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:12.836] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e for deletion
+[2020-09-08 21:23:12.837] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:12.837] [Info] cleanup-process added /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock for deletion
+[2020-09-08 21:23:12.842] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e"}
+[2020-09-08 21:23:12.842] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e from the list of files for deletion.
+[2020-09-08 21:23:12.842] [Info] cleanup-process received message of type: {"messageType":"RemoveDeleteFileAction","filePath":"/Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock"}
+[2020-09-08 21:23:12.842] [Info] cleanup-process removed /Volumes/data/mguillon/.local/share/.nativescript-cli/a05e966313d1a8e32b13c35910ae824e.lock from the list of files for deletion.
+[2020-09-08 21:23:21.514] [Info] cleanup-process received message of type: {"messageType":"AddCleanCommand","commandInfo":{"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["68076"]}}
+[2020-09-08 21:23:21.515] [Info] cleanup-process added command for execution: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["68076"]}
+[2020-09-08 21:23:32.985] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-67925-1m89suc.hbst"}
+[2020-09-08 21:23:32.985] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-67925-1m89suc.hbst for deletion
+[2020-09-08 21:23:33.161] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-67925-1jgwttk.20mn"}
+[2020-09-08 21:23:33.161] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-67925-1jgwttk.20mn for deletion
+[2020-09-08 21:25:28.323] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/export-202088-67925-10bwqi2.k6kp.plist"}
+[2020-09-08 21:25:28.324] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/export-202088-67925-10bwqi2.k6kp.plist for deletion
+[2020-09-08 21:25:40.102] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/202088-67925-v6sktn.z7yn.tmp"}
+[2020-09-08 21:25:40.102] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/202088-67925-v6sktn.z7yn.tmp for deletion
+[2020-09-08 21:25:51.953] [Info] cleanup-process received message of type: {"messageType":"AddDeleteFileAction","filePath":"/var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/sync202088-67925-6rzro6.yggl8.zip"}
+[2020-09-08 21:25:51.953] [Info] cleanup-process added /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/sync202088-67925-6rzro6.yggl8.zip for deletion
+[2020-09-08 22:09:09.390] [Info] cleanup-process received process.disconnect event
+[2020-09-08 22:09:09.522] [Info] Start executing command: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["68076"]}
+[2020-09-08 22:09:09.531] [Info] Successfully executed command: {"command":"/usr/local/pnpm-global/4/node_modules/.pnpm/nativescript@7.0.6/node_modules/nativescript/lib/bash-scripts/terminateProcess.sh","args":["68076"]}
+[2020-09-08 22:09:09.531] [Info] Deleting files /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-67925-1m89suc.hbst /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/entitlements202088-67925-1jgwttk.20mn /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/export-202088-67925-10bwqi2.k6kp.plist /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/202088-67925-v6sktn.z7yn.tmp /var/folders/ks/c630hyfn47n_slr5tpz3c9zm0000gn/T/sync202088-67925-6rzro6.yggl8.zip
+[2020-09-08 22:09:09.541] [Info] cleanup-process finished

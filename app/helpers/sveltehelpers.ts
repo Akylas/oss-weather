@@ -1,5 +1,5 @@
-import LineChart from 'nativescript-chart/charts/LineChart';
-import { Canvas } from 'nativescript-canvas';
+import {LineChart} from '@nativescript-community/ui-chart/charts/LineChart';
+import { Canvas } from '@nativescript-community/ui-canvas';
 export function getChart(chart) {
     return chart as LineChart;
 }

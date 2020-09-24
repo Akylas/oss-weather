@@ -1,9 +1,9 @@
 import { BaseError } from 'make-error';
 import { l } from '~/helpers/locale';
-import { confirm, alert as mdAlert } from 'nativescript-material-dialogs';
+import { confirm, alert as mdAlert } from '@nativescript-community/ui-material-dialogs';
 import { Sentry, isSentryEnabled } from '~/utils/sentry';
-import { showSnack } from 'nativescript-material-snackbar';
-import { lc } from 'nativescript-l';
+import { showSnack } from '@nativescript-community/ui-material-snackbar';
+import { lc } from '@nativescript-community/l';
 import { NoNetworkError } from '~/services/api';
 
 function evalTemplateString(resource: string, obj: {}) {

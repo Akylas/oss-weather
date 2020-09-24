@@ -7,19 +7,19 @@
     import { Template } from 'svelte-native/components';
     import { IMapPos } from '~/helpers/geo';
     import { showError } from '~/utils/error';
-    import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
+    import { action, alert, confirm, prompt } from '@nativescript-community/ui-material-dialogs';
     import { photonSearch } from '~/services/api';
     import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
     import { closeModal, goBack } from 'svelte-native';
     import { darkColor, primaryColor } from '~/variables';
     import CActionBar from './CActionBar.svelte';
-    import { Point } from 'nativescript-carto/vectorelements/point';
-    import { LocalVectorDataSource } from 'nativescript-carto/datasources/vector';
-    import { RasterTileLayer } from 'nativescript-carto/layers/raster';
-    import { VectorLayer } from 'nativescript-carto/layers/vector';
-    import { PersistentCacheTileDataSource } from 'nativescript-carto/datasources/cache';
-    import { HTTPTileDataSource } from 'nativescript-carto/datasources/http';
+    import { Point } from '@nativescript-community/ui-carto/vectorelements/point';
+    import { LocalVectorDataSource } from '@nativescript-community/ui-carto/datasources/vector';
+    import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
+    import { VectorLayer } from '@nativescript-community/ui-carto/layers/vector';
+    import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
+    import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
 
     export let focusPos;
     let loading = false;

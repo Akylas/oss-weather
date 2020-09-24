@@ -1,4 +1,4 @@
-import { GenericMapPos, MapBounds } from 'nativescript-carto/core';
+import { GenericMapPos, MapBounds } from '@nativescript-community/ui-carto/core';
 
 export interface IMapBounds {
     northeast: GenericMapPos<LatLonKeys>;

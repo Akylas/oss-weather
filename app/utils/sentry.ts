@@ -1,6 +1,6 @@
-import { getBuildNumber, getVersionName } from 'nativescript-extendedinfo';
+import { getBuildNumber, getVersionName } from '@nativescript-community/extendedinfo';
 import * as SentryType from '@nativescript-community/sentry';
-import { device } from '@nativescript/core/platform';
+import { Device } from '@nativescript/core/platform';
 
 export let Sentry: typeof SentryType;
 export let isSentryEnabled = false;
@@ -18,7 +18,7 @@ export async function startSentry() {
                 release: `${version}`,
                 dist: `${versionCode}.${gVars.platform}`,
             });
-            Sentry.setTag('locale', device.language);
+            Sentry.setTag('locale', Device.language);
             isSentryEnabled = true;
         }
     } catch (err) {

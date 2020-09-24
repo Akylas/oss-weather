@@ -3,7 +3,7 @@
     import ThirdPartySoftwareBottomSheet from './ThirdPartySoftwareBottomSheet.svelte';
     import { share } from '~/utils/share';
     import { mdiFontFamily, primaryColor } from '~/variables';
-    import * as EInfo from 'nativescript-extendedinfo';
+    import * as EInfo from '@nativescript-community/extendedinfo';
     import { l } from '~/helpers/locale';
     import { openLink } from '~/utils/ui';
     import CActionBar from './CActionBar.svelte';

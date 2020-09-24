@@ -1,9 +1,8 @@
-import { PageSpec } from 'svelte-native/dom/navigation';
-import { NativeViewElementNode, createElement } from 'svelte-native/dom';
+import { BottomSheetOptions } from '@nativescript-community/ui-material-bottomsheet';
+import { View, ViewBase } from '@nativescript/core';
 import { Frame } from '@nativescript/core/ui/frame';
-import { View } from '@nativescript/core/ui/core/view';
-import { ViewBase } from '@nativescript/core/ui/core/view-base';
-import { BottomSheetOptions } from 'nativescript-material-bottomsheet';
+import { NativeViewElementNode, createElement } from 'svelte-native/dom';
+import { PageSpec } from 'svelte-native/dom/navigation';
 
 export interface ShowBottomSheetOptions extends Omit<BottomSheetOptions, 'view'> {
     view: PageSpec;
@@ -40,7 +39,7 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
             componentInstanceInfo.viewInstance.$destroy(); // don't let an exception in destroy kill the promise callback
         };
         modalStack.push(componentInstanceInfo);
-        modalLauncher.showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });
+        (modalLauncher as any).showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });
     });
 }
 

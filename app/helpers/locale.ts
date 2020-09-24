@@ -1,7 +1,7 @@
-import { device } from '@nativescript/core/platform';
-import { loadLocaleJSON } from 'nativescript-l';
+import { Device } from '@nativescript/core/platform';
+import { loadLocaleJSON } from '@nativescript-community/l';
 import { prefs } from '~/services/preferences';
-export { l, lc, lt, lu } from 'nativescript-l';
+export { l, lc, lt, lu } from '@nativescript-community/l';
 import dayjs from 'dayjs';
 const supportedLanguages = ['en', 'fr'];
 import { getString, setString } from '@nativescript/core/application-settings';
@@ -12,7 +12,7 @@ function setLang(newLang) {
         newLang = 'en';
     }
     lang = newLang;
-    console.log('changed lang', lang, device.region);
+    console.log('changed lang', lang, Device.region);
     try {
         require(`dayjs/locale/${newLang}`);
     } catch (err) {
@@ -34,7 +34,7 @@ export function onLanguageChanged(callback) {
 
 let deviceLanguage = getString('language');
 if (!deviceLanguage) {
-    deviceLanguage = device.language.split('-')[0].toLowerCase();
+    deviceLanguage = Device.language.split('-')[0].toLowerCase();
     setString('language', deviceLanguage);
     // console.log('prefs language not set', deviceLanguage, getString('language'));
 }

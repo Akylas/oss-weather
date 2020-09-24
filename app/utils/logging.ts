@@ -1,4 +1,4 @@
-import { getAppId } from 'nativescript-extendedinfo';
+import { getAppId } from '@nativescript-community/extendedinfo';
 // import { crashlytics } from 'nativescript-plugin-firebase'; // and do: firebaseCrashlytics.sendCrashLogexport const DEV_LOG = TNS_ENV === 'development';
 export const DEV_LOG = LOG_LEVEL === 'full';
 

@@ -25,7 +25,7 @@
         if (modalWindow) {
             menuIcon = 'mdi-close';
         } else {
-            menuIcon = canGoBack ? (gVars.isIOS ? 'mdi-chevron-left' : 'mdi-arrow-left') : 'mdi-menu';
+            menuIcon = canGoBack ? (global.isIOS ? 'mdi-chevron-left' : 'mdi-arrow-left') : 'mdi-menu';
         }
     }
     $: menuIconVisible = ((canGoBack || modalWindow) && !disableBackButton) || showMenuIcon;

@@ -15,8 +15,14 @@
             <cspan text={convertTime(item.time, 'ddd ')} />
             <cspan fontSize="15" color={textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
         </cgroup>
-        <cspan id="testSpan" color={textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} />
-
+        <!-- <cspan id="testSpan" color={textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" paddingBottom="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} /> -->
+        
+        {#if (item.windSpeed > 6)}
+            <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-200" paddingTop="20">
+                <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
+                <cspan text={'\n ' } />
+            </cgroup>
+        {/if}
         <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-100" paddingTop="20">
             <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windIcon} />
             <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed)} />

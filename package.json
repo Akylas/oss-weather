@@ -53,7 +53,7 @@
         "@commitlint/config-conventional": "^11.0.0",
         "@nativescript/android": "7.0.0",
         "@nativescript/core": "7.0.5",
-        "@nativescript/ios": "7.0.0",
+        "tns-ios": "6.5.2",
         "@nativescript/types-android": "~7.0.4",
         "@nativescript/types-ios": "~7.0.4",
         "@nativescript/webpack": "3.0.4",

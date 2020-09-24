@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "run.android.production": "cross-var tns run android --release --clean --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.production --env.uglify --env.adhoc  --env.snapshot --env.compileSnapshot",
+        "run.android.production": "cross-var tns run android --release --clean --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc  --env.snapshot --env.compileSnapshot",
         "run.ios.production": "tns run ios --release --env.adhoc --env.snapshot --env.compileSnapshot --for-device --provision 'match AppStore com.akylas.weather'",
         "pandroid": "cross-var tns build android --release --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.snapshot --env.compileSnapshot --env.noconsole",
         "pios": "tns run ios --release --env.adhoc --env.snapshot --env.compileSnapshot --for-device --provision 'match AppStore com.akylas.weather'",

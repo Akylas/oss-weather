@@ -4,7 +4,7 @@
     import { Template } from 'svelte-native/components';
     import { IMapPos } from '~/helpers/geo';
     import { showError } from '~/utils/error';
-    import { action, alert, confirm, prompt } from 'nativescript-material-dialogs';
+    import { action, alert, confirm, prompt } from '@nativescript-community/ui-material-dialogs';
     import { clog, DEV_LOG } from '~/utils/logging';
     import { photonSearch } from '~/services/api';
     import { Page } from '@nativescript/core/ui/page';

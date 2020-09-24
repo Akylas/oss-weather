@@ -3,10 +3,10 @@
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { Accuracy } from '@nativescript/core/ui/enums/enums';
     import dayjs from 'dayjs';
-    import { GPS, setGeoLocationKeys } from 'nativescript-gps';
-    import { login } from 'nativescript-material-dialogs';
-    import { showSnack } from 'nativescript-material-snackbar';
-    import { request as requestPerm } from 'nativescript-perms';
+    import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
+    import { login } from '@nativescript-community/ui-material-dialogs';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { request as requestPerm } from '@nativescript-community/perms';
     import { onMount } from 'svelte';
     import { showModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
@@ -23,7 +23,7 @@
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     import TopWeatherView from './TopWeatherView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
-    import { TextField } from 'nativescript-material-textfield';
+    import { TextField } from '@nativescript-community/ui-material-textfield';
     import { Sentry } from './utils/sentry';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
@@ -40,7 +40,7 @@
     let items = [];
 
     let screenHeightPixels = screenHeightDips * screenScale;
-    let desiredAccuracy = gVars.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
+    let desiredAccuracy = global.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
     let updateDistance = 1;
     let maximumAge = 3000;
     let timeout = 20000;
@@ -127,11 +127,7 @@
             weatherData = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
             // console.log('weatherData', weatherData);
             lastUpdate = Date.now();
-            items = prepareItems();
-            // console.log('items', items);
-            // setDay(0);
-            setNumber('lastUpdate', lastUpdate);
-            setString('lastWeatherData', JSON.stringify(weatherData));
+            await updateView();
         } catch (err) {
             console.log(err);
             if (err.statusCode === 403) {
@@ -145,6 +141,14 @@
         } finally {
             loading = false;
         }
+    }
+
+    async function updateView() {
+        items = prepareItems();
+        // console.log('items', items);
+        // setDay(0);
+        setNumber('lastUpdate', lastUpdate);
+        setString('lastWeatherData', JSON.stringify(weatherData));
     }
 
     function saveLocation(result) {
@@ -282,7 +286,7 @@
 
     async function refresh() {
         if (!hasOWMApiKey()) {
-            alert(l('missing_api_key'));
+            // alert(l('missing_api_key'));
             return;
         }
         if (!weatherLocation) {
@@ -306,7 +310,7 @@
     }
 
     function quitApp() {
-        if (gVars.isIOS) {
+        if (global.isIOS) {
             exit(0);
         } else {
             androidApp.startActivity.finish();
@@ -336,10 +340,14 @@
             showSnack({ message: l('missing_cc_key') });
         }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
-            networkConnected = event.data.connected;
-            // console.log('networkConnected changed', networkConnected);
-            if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
-                refresh();
+            if (networkConnected !== event.data.connected) {
+                networkConnected = event.data.connected;
+                // console.log('networkConnected changed', networkConnected);
+                if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
+                    refresh();
+                }
+            } else {
+                updateView();
             }
         });
         networkService.start(); // should send connection event and then refresh
@@ -449,12 +457,16 @@
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
-                    <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
-                    <span text={l('my_location').toUpperCase()} />
+                    <!-- <formattedString> -->
+                        <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
+                        <span text={l('my_location').toUpperCase()} />
+                    <!-- </formattedString> -->
                 </mdbutton>
                 <mdbutton row="2" margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>
-                    <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
-                    <span text={l('search_location').toUpperCase()} />
+                    <!-- <formattedString> -->
+                        <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
+                        <span text={l('search_location').toUpperCase()} />
+                    <!-- </formattedString> -->
                 </mdbutton>
             </gridlayout>
         {/if}

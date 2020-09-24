@@ -9,14 +9,14 @@
     import { l, lu } from '~/helpers/locale';
     import { getChart } from '~/helpers/sveltehelpers';
     import dayjs from 'dayjs';
-    import Theme from '@nativescript/theme';
-    import LineChart from 'nativescript-chart/charts/LineChart';
-    import { LineData } from 'nativescript-chart/data/LineData';
-    import { LimitLine, LimitLabelPosition } from 'nativescript-chart/components/LimitLine';
-    import { LineDataSet, Mode } from 'nativescript-chart/data/LineDataSet';
-    import { XAxisPosition } from 'nativescript-chart/components/XAxis';
-    import { AxisDependency } from 'nativescript-chart/components/YAxis';
-    import { LinearGradient, TileMode } from 'nativescript-canvas';
+    import Theme from '@nativescript-community/css-theme';
+    import LineChart from '@nativescript-community/ui-chart/charts/LineChart';
+    import { LineData } from '@nativescript-community/ui-chart/data/LineData';
+    import { LimitLine, LimitLabelPosition } from '@nativescript-community/ui-chart/components/LimitLine';
+    import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
+    import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
+    import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
+    import { LinearGradient, TileMode } from '@nativescript-community/ui-canvas';
     import Color from 'tinycolor2';
     export let item;
     export let height;
@@ -222,7 +222,7 @@
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan="2">
+    <canvaslabel colSpan="2" >
         <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} />
 
         {#if item.temperature !== undefined}

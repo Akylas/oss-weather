@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-    import { Align, Paint } from 'nativescript-canvas';
-    import { screen } from '@nativescript/core/platform';
+    import { Align, Paint } from '@nativescript-community/ui-canvas';
+    import { Screen } from '@nativescript/core/platform';
 
-    const deviceHeight = Math.round(screen.mainScreen.heightDIPs);
+    const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
     console.log('deviceHeight', deviceHeight);
     const textPaint = new Paint();
     textPaint.setFontFamily(latoFontFamily);
@@ -20,8 +20,8 @@
     import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
     import { mdiFontFamily, wiFontFamily, textLightColor, latoFontFamily } from '~/variables';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { buildHTMLString } from 'nativescript-htmllabel';
-    import Theme from '@nativescript/theme';
+    import { buildHTMLString } from '@nativescript-community/ui-label';
+    import Theme from '@nativescript-community/css-theme';
     import {
         Canvas,
         Cap,
@@ -39,7 +39,7 @@
         LayoutAlignment,
         PorterDuffXfermode,
         PorterDuffMode,
-    } from 'nativescript-canvas';
+    } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core/color';
 
     export let item;

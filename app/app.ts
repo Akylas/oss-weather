@@ -4,127 +4,55 @@ startSentry();
 
 import { install } from '~/utils/logging';
 install();
-import { device } from '@nativescript/core/platform';
 
-import { setMapPosKeys } from 'nativescript-carto/core';
+import { setMapPosKeys } from '@nativescript-community/ui-carto/core';
 // we need to use lat lon
 setMapPosKeys('lat', 'lon');
-import { installMixins as installUIMixins } from 'nativescript-systemui';
+import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 installUIMixins();
 
-import { install as installBottomSheets } from 'nativescript-material-bottomsheet';
+import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 installBottomSheets();
 
-import { Label, enableIOSDTCoreText } from 'nativescript-htmllabel';
+import { Label, enableIOSDTCoreText } from '@nativescript-community/ui-label';
 enableIOSDTCoreText();
 
 
-registerNativeViewElement('textfield', () => require('nativescript-material-textfield').TextField, null, {}, { override: true });
-registerNativeViewElement('mdbutton', () => require('nativescript-material-button').Button);
-registerNativeViewElement('label', () => Label);
-registerNativeViewElement('activityIndicator', () => require('nativescript-material-activityindicator').ActivityIndicator);
-registerNativeViewElement('lineChart', () => require('nativescript-chart/charts/LineChart').default);
-registerNativeViewElement('cartomap', () => require('nativescript-carto/ui').CartoMap);
-registerNativeViewElement('lottie', () => require('nativescript-akylas-lottie').LottieView);
-registerNativeViewElement('pullrefresh', () => require('nativescript-akylas-pulltorefresh').PullToRefresh);
-registerNativeViewElement('canvas', () => require('nativescript-canvas').CanvasView);
-registerNativeViewElement('line', () => require('nativescript-canvas/shapes/line').default);
-registerNativeViewElement('canvaslabel', () => require('nativescript-canvaslabel').CanvasLabel);
-registerNativeViewElement('cspan', () => require('nativescript-canvaslabel').Span);
-registerNativeViewElement('cgroup', () => require('nativescript-canvaslabel').Group);
+registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
+registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
+registerNativeViewElement('label', () => Label as any);
+registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-material-activityindicator').ActivityIndicator);
+registerNativeViewElement('lineChart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
+registerNativeViewElement('cartomap', () => require('@nativescript-community/ui-carto/ui').CartoMap);
+registerNativeViewElement('lottie', () => require('@akylas/nativescript-lottie').LottieView);
+registerNativeViewElement('pullrefresh', () => require('@akylas/nativescript-pulltorefresh').PullToRefresh);
+registerNativeViewElement('canvas', () => require('@nativescript-community/ui-canvas').CanvasView);
+registerNativeViewElement('line', () => require('@nativescript-community/ui-canvas/shapes/line').default);
+registerNativeViewElement('canvaslabel', () => require('@nativescript-community/ui-canvaslabel').CanvasLabel);
+registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);
+registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
 // registerNativeViewElement('settingLabelIcon', () => require('./SettingLabelIcon.svelte').default);
 
 
-import CollectionViewElement from 'nativescript-collectionview/svelte';
+import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 CollectionViewElement.register();
 
 
 // import {addCategories, enable} from '@nativescript/core/trace';
 // addCategories(DomTraceCategory);
 // enable();
-
-import { prefs } from '~/services/preferences';
-import { getString } from '@nativescript/core/application-settings';
-import Theme from '@nativescript/theme';
-import { android as androidApp, ios as iosApp, on as onApp, systemAppearance } from '@nativescript/core/application';
-
-type Themes = 'auto' | 'light' | 'dark' | 'black';
-const ThemeBlack = 'ns-black';
-function applyTheme(theme: Themes) {
-    const AppCompatDelegate = gVars.isAndroid ? androidx.appcompat.app.AppCompatDelegate : undefined;
-    const window = gVars.isIOS ? iosApp.window : undefined;
-    console.log('applyTheme', theme);
-    switch (theme) {
-        case 'auto':
-            Theme.setMode(Theme.Auto);
-            if (gVars.isAndroid) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
-            }
-            break;
-        case 'light':
-            Theme.setMode(Theme.Light);
-            if (gVars.isAndroid) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
-            }
-            break;
-        case 'dark':
-            Theme.setMode(Theme.Dark);
-            if (gVars.isAndroid) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
-            }
-            break;
-        case 'black':
-            Theme.setMode(ThemeBlack);
-            if (gVars.isAndroid) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
-            }
-            break;
-    }
-}
-let theme: Themes;
-if (gVars.isIOS) {
-    const sdkVersion = device.sdkVersion;
-    if (parseFloat(sdkVersion) >= 13) {
-        theme = getString('theme', 'dark') as Themes;
-    } else {
-        theme = 'light';
-    }
-} else {
-    theme = getString('theme', 'dark') as Themes;
-}
+import { Application } from '@nativescript/core';
 
 // on startup we need to say what we are using
 console.log('applying app theme', theme);
-onApp('launch', () => {
+Application.on('launch', () => {
     applyTheme(theme);
 });
-prefs.on('key:theme', () => {
-    const newTheme = getString('theme') as Themes;
-    // on pref change we are updating
-    if (newTheme === theme) {
-        return;
-    }
-    console.log('theme change', theme, newTheme);
-    theme = newTheme;
-    applyTheme(newTheme);
-    if (gVars.isAndroid) {
-        // we recreate the activity to get the change
-        const activity = androidApp.startActivity as androidx.appcompat.app.AppCompatActivity;
-        activity.recreate();
-    }
-});
 
-import { installMixins, themer } from 'nativescript-material-core';
+
+import { installMixins, themer } from '@nativescript-community/ui-material-core';
 installMixins();
-if (gVars.isIOS) {
+if (global.isIOS) {
     const variables = require('~/variables');
     const primaryColor = variables.primaryColor;
     themer.setPrimaryColor(primaryColor);
@@ -133,4 +61,6 @@ if (gVars.isIOS) {
 
 import { svelteNative } from 'svelte-native';
 import WeatherPage from './WeatherPage.svelte';
+import { applyTheme, theme } from './helpers/theme';
+import { getString } from '@nativescript/core/application-settings';
 svelteNative(WeatherPage, {});

@@ -1,13 +1,12 @@
 import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
-import { EventData, Observable } from '@nativescript/core/data/observable';
+import Observable, { EventData} from '@nativescript-community/observable';
 import dayjs from 'dayjs';
 import Color from 'tinycolor2';
 import { ccMoonIcon, colorForIcon, colorForUV, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { IMapPos } from '~/helpers/geo';
 import { CustomError } from '~/utils/error';
-import { clog } from '~/utils/logging';
 import { DarkSky } from './darksky';
 import { CityWeather, Coord, ListWeather, Rain, Snow, Weather } from './owm';
 import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
@@ -385,7 +384,7 @@ export async function getCityName(pos: Coord) {
         lat: pos.lat,
         lon: pos.lon,
     });
-    console.log('fetchOWM', 'done', result);
+    // console.log('fetchOWM', 'done', result);
 
     return result;
 }
@@ -520,7 +519,7 @@ export async function getOWMWeather(lat: number, lon: number) {
                     fields: CLIMA_CELL_HOURLY_FIELDS,
                 },
             });
-            console.log('test hourly', JSON.stringify(hourly));
+            // console.log('test hourly', JSON.stringify(hourly));
             const nowcast = await request<ClimaCellNowCast>({
                 url: CLIMA_CELL_API_URL_NOWCAST,
                 method: 'GET',
@@ -671,7 +670,7 @@ export async function getOWMWeather(lat: number, lon: number) {
 
         d.windBearing = data.wind_deg;
         d.precipIntensity = d.precipAccumulation = data.rain ? data.rain['1h'] : 0;
-        d.precipProbability = d.pop;
+        d.precipProbability = data.pop;
         d.cloudCover = data.clouds / 100;
         d.humidity = data.humidity;
         d.windGust = data.wind_gust * 3.6;
@@ -690,6 +689,10 @@ export async function getOWMWeather(lat: number, lon: number) {
             d.precipAccumulation = data.snow['1h'] || 0;
             d.precipColor = snowColor;
         }
+        // if (data.rain && data.rain['1h']) {
+        //     d.precipAccumulation = data.rain['1h'] || 0;
+        //     d.precipColor = snowColor;
+        // }
 
         d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
         d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).toRgbString();
@@ -697,6 +700,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         return d;
     });
     // console.log('getOWMWeather', lat, lon, JSON.stringify(result));
+    // console.log('test', lat, lon, JSON.stringify(r.daily.data[0].hourly));
     return r;
 }
 const cardinals = ['↓', '↙︎', '←', '↖︎', '↑', '↗︎', '→', '↘︎', '↓'];

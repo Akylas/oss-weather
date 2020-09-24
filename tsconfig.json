@@ -4,7 +4,7 @@
         "module": "esnext",
         "moduleResolution": "node",
         "declaration": false,
-        "removeComments": true,
+        "removeComments": false,
         "noLib": false,
         "emitDecoratorMetadata": false,
         "experimentalDecorators": true,
@@ -24,7 +24,7 @@
         "types": ["node", "svelte"],  
         "paths": {
             "~/*": ["app/*"],
-            "@nativescript/core": ["@./node_modules/akylas/nativescript"],
+            "@nativescript/core": ["./node_modules/@akylas/nativescript"],
             "@nativescript/core/*": ["./node_modules/@akylas/nativescript/*"],
             "tns-core-modules/*": ["./node_modules/@akylas/nativescript/*"],
             "tns-core-modules": ["./node_modules/@akylas/nativescript"],

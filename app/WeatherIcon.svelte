@@ -105,7 +105,7 @@
         }
         if (realIcon) {
             if (autoPlay) {
-                if (gVars.isAndroid) {
+                if (global.isAndroid) {
                     iconSrc = loadLottieJSON(realIcon);
                 } else {
                     iconSrc = path.join(appPath, 'assets/lottie', realIcon + '.json');

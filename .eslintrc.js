@@ -188,7 +188,7 @@ module.exports = {
         'quote-props': 'off',
         radix: 'error',
         'space-before-function-paren': 'off',
-        'spaced-comment': 'error',
+        'spaced-comment': 'off',
         'use-isnan': 'error',
         'valid-typeof': 'off'
     }

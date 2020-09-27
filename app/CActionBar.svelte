@@ -14,10 +14,8 @@
     let menuIconVisibility: string;
 
     onMount(() => {
-        console.log('ActionBar', 'onMount');
         setTimeout(() => {
             canGoBack = Frame.topmost() && Frame.topmost().canGoBack();
-            console.log('ActionBar', 'canGoBack', canGoBack);
         }, 0);
     });
     function onMenuIcon() {

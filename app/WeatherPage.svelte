@@ -320,7 +320,6 @@
         }
     }
     async function askForApiKey() {
-        console.log('askForApiKey');
         const result = await showBottomSheet({
             parent: page,
             view: ApiKeysBottomSheet,

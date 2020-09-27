@@ -434,7 +434,9 @@
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-            <mdbutton variant="text" class="icon-btn" text="mdi-map" on:tap={openWeatherMap} />
+            {#if !weatherLocation}
+                <mdbutton variant="text" class="icon-btn" text="mdi-map" on:tap={openWeatherMap} />
+            {/if}
             <mdbutton variant="text" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
             <mdbutton variant="text" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>

@@ -8,7 +8,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { request as requestPerm } from '@nativescript-community/perms';
     import { onMount } from 'svelte';
-    import { showModal } from 'svelte-native';
+    import { navigate, showModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { showBottomSheet } from '~/bottomsheet';
     import { l, lc, onLanguageChanged } from '~/helpers/locale';
@@ -25,6 +25,7 @@
     import WeatherIcon from './WeatherIcon.svelte';
     import { TextField } from '@nativescript-community/ui-material-textfield';
     import { Sentry } from './utils/sentry';
+    import WeatherMapPage from './WeatherMapPage.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -184,11 +185,10 @@
                 Object.assign(currentDaily, weatherData.currently);
                 if (firstHourIndex > 1) {
                     currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
-                }
-                if (firstMinuteIndex > 1) {
+                } else if (firstMinuteIndex > 10) {
                     currentDaily = Object.assign({}, currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
                 }
-                // console.log('currentDaily', weatherData.currently, currentDaily);
+                // console.log('currentDaily', firstHourIndex > 1, firstMinuteIndex > 10, weatherData.currently, currentDaily);
                 const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
                 let min = 10000;
                 let max = -10000;
@@ -246,6 +246,9 @@
         } catch (err) {
             showError(err);
         }
+    }
+    async function openWeatherMap() {
+        navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
     }
     async function searchOnMap() {
         try {
@@ -321,24 +324,24 @@
         const result = await showBottomSheet({
             parent: page,
             view: ApiKeysBottomSheet,
-            dismissOnBackgroundTap: false,
-            dismissOnDraggingDownSheet: false,
+            // dismissOnBackgroundTap: false,
+            // dismissOnDraggingDownSheet: false,
         });
         if (result) {
             refresh();
         }
     }
     onMount(async () => {
-        const ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
-        const owmApiKey = getString('owmApiKey', OWM_KEY);
-        if (!owmApiKey) {
+        const ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
+        const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+        if (!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) {
             // wait a bit
             setTimeout(() => askForApiKey(), 1000);
         }
-        if (!ccApiKey) {
-            // wait a bit
-            showSnack({ message: l('missing_cc_key') });
-        }
+        // if (!ccApiKey) {
+        //     // wait a bit
+        //     showSnack({ message: l('missing_cc_key') });
+        // }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {
                 networkConnected = event.data.connected;
@@ -432,11 +435,12 @@
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-            <mdbutton variant="flat" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
-            <mdbutton variant="flat" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
+            <mdbutton variant="text" class="icon-btn" text="mdi-map" on:tap={openWeatherMap} />
+            <mdbutton variant="text" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
+            <mdbutton variant="text" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         {#if !networkConnected && !weatherData}
-            <label row="1" horizontalAlignment="center" verticalAlignment="center"> <span text={l('no_network').toUpperCase()} /> </label>
+            <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
                 <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index}>
@@ -457,16 +461,16 @@
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
-                    <!-- <formattedString> -->
+                    <formattedString>
                         <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
                         <span text={l('my_location').toUpperCase()} />
-                    <!-- </formattedString> -->
+                    </formattedString>
                 </mdbutton>
                 <mdbutton row="2" margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>
-                    <!-- <formattedString> -->
+                    <formattedString>
                         <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
                         <span text={l('search_location').toUpperCase()} />
-                    <!-- </formattedString> -->
+                    </formattedString>
                 </mdbutton>
             </gridlayout>
         {/if}

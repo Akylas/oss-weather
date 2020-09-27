@@ -16,8 +16,8 @@ import * as https from 'nativescript-akylas-https';
 import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent, suspendEvent } from '@nativescript/core/application';
 import { moon, sun } from '@modern-dev/daylight';
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
-let ccApiKey = getString('ccApiKey', CLIMA_CELL_KEY);
-let owmApiKey = getString('owmApiKey', OWM_KEY);
+let ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
+let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -503,22 +503,23 @@ export async function getOWMWeather(lat: number, lon: number) {
     };
     // console.log('onecall', JSON.stringify(result));
     // console.log('minutely', JSON.stringify(result.minutely));
+    // console.log('currently', JSON.stringify(result.current));
     // console.log('hourly', JSON.stringify(result.hourly));
     if (!result.minutely) {
         if (ccApiKey) {
             const now = dayjs();
-            const hourly = await request<ClimaCellHourly>({
-                url: CLIMA_CELL_API_URL_HOURLY,
-                method: 'GET',
-                queryParams: {
-                    lat,
-                    lon,
-                    apikey: ccApiKey,
-                    unit_system: 'si',
-                    end_time: now.add(96, 'h').toISOString(),
-                    fields: CLIMA_CELL_HOURLY_FIELDS,
-                },
-            });
+            // const hourly = await request<ClimaCellHourly>({
+            //     url: CLIMA_CELL_API_URL_HOURLY,
+            //     method: 'GET',
+            //     queryParams: {
+            //         lat,
+            //         lon,
+            //         apikey: ccApiKey,
+            //         unit_system: 'si',
+            //         end_time: now.add(96, 'h').toISOString(),
+            //         fields: CLIMA_CELL_HOURLY_FIELDS,
+            //     },
+            // });
             // console.log('test hourly', JSON.stringify(hourly));
             const nowcast = await request<ClimaCellNowCast>({
                 url: CLIMA_CELL_API_URL_NOWCAST,

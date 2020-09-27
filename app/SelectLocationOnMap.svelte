@@ -1,26 +1,14 @@
 <script context="module" lang="ts">
+    import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
+    import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
+    import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
     import { Folder, knownFolders, path } from '@nativescript/core/file-system';
+    import { l } from '~/helpers/locale';
+    import CActionBar from './CActionBar.svelte';
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
 </script>
 
 <script lang="ts">
-    import { Template } from 'svelte-native/components';
-    import { IMapPos } from '~/helpers/geo';
-    import { showError } from '~/utils/error';
-    import { action, alert, confirm, prompt } from '@nativescript-community/ui-material-dialogs';
-    import { photonSearch } from '~/services/api';
-    import { Page } from '@nativescript/core/ui/page';
-    import { l } from '~/helpers/locale';
-    import { closeModal, goBack } from 'svelte-native';
-    import { darkColor, primaryColor } from '~/variables';
-    import CActionBar from './CActionBar.svelte';
-    import { Point } from '@nativescript-community/ui-carto/vectorelements/point';
-    import { LocalVectorDataSource } from '@nativescript-community/ui-carto/datasources/vector';
-    import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
-    import { VectorLayer } from '@nativescript-community/ui-carto/layers/vector';
-    import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
-    import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
-
     export let focusPos;
     let loading = false;
 
@@ -36,9 +24,9 @@
                 minZoom: 2,
                 subdomains: 'abc',
                 maxZoom: 18,
-                url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
+                url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
             }),
-            databasePath: cacheFolder.path
+            databasePath: cacheFolder.path,
         });
 
         const rasterLayer = new RasterTileLayer({ dataSource });
@@ -53,7 +41,7 @@
 <frame>
     <page actionBarHidden="true">
         <gridLayout rows="auto,auto,*">
-            <CActionBar title={l('select_location')} modalWindow={true}>
+            <CActionBar title={l('select_location')} modalWindow>
                 <activityIndicator color="white" busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
             <label row="1" text={l('click_on_map_to_select_location')} />

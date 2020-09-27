@@ -42,7 +42,6 @@ module.exports = (env, params = {}) => {
         adhoc, // --env.adhoc
     } = env;
 
-    console.log('env', env, uploadSentry, process.env.SOURCEMAP_REL_DIR);
     const config = webpackConfig(env, params);
     // config.stats = 'verbose';
     const mode = production ? 'production' : 'development';
@@ -98,9 +97,11 @@ module.exports = (env, params = {}) => {
         NO_CONSOLE: noconsole,
         SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
         SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
-        OWM_KEY: includeOWMKey ? `"${process.env.OWM_KEY}"` : 'undefined',
+        OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
+        OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',
         DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',
-        CLIMA_CELL_KEY: includeClimaCellKey ? `"${process.env.CLIMA_CELL_KEY}"` : 'undefined',
+        CLIMA_CELL_DEFAULT_KEY: `"${process.env.CLIMA_CELL_DEFAULT_KEY}"`,
+        CLIMA_CELL_MY_KEY: includeClimaCellKey ? `"${process.env.CLIMA_CELL_MY_KEY}"` : 'undefined',
         DEFAULT_LOCATION: includeDefaultLocation
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
             : 'undefined',

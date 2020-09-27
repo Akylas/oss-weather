@@ -9,9 +9,11 @@ declare const NO_CONSOLE: boolean;
 declare const PRODUCTION: boolean;
 declare const SENTRY_DSN: string;
 declare const SENTRY_PREFIX: string;
-declare const OWM_KEY: string;
+declare const OWM_DEFAULT_KEY: string;
+declare const OWM_MY_KEY: string;
 declare const DARK_SKY_KEY: string;
-declare const CLIMA_CELL_KEY: string;
+declare const CLIMA_CELL_DEFAULT_KEY: string;
+declare const CLIMA_CELL_MY_KEY: string;
 declare const DEFAULT_LOCATION: string;
 declare const GIT_URL: string;
 declare const STORE_LINK: string;
@@ -32,7 +34,9 @@ interface LatLonKeys {
     lon: number;
     altitude?: number;
 }
-
+// declare module '*.svelte' {
+//     export default SvelteComponent;
+// }
 declare module '*.scss';
 // declare module '*.svelte' {
 //     export default SvelteComponent;

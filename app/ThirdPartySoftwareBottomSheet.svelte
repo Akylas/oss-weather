@@ -5,9 +5,9 @@
     import { openLink } from '~/utils/ui';
     let licences = require(`~/${gVars.platform}/licenses.json`);
     let items = licences.dependencies;
-    console.log('licences', items);
+    // console.log('licences', items);
     function onShownInBottomSheet() {
-        console.log('onShownInBottomSheet');
+        // console.log('onShownInBottomSheet');
     }
     function onTap(item) {
         if (item.moduleUrl) {

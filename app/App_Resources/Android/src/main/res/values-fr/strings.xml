@@ -20,7 +20,7 @@
   <string name="preferences">"préférences"</string>
   <string name="open_website">"site web ouvert"</string>
   <string name="file">"fichier"</string>
-  <string name="api_key_required_description">"pour obtenir les données météorologiques d\'OpenWeatherMap, une clé API gratuite est requise. \nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web"</string>
+  <string name="api_key_required_description">"pour obtenir les données météorologiques d\'OpenWeatherMap, une clé API gratuite est requise. L\'application en distribue une par défault, cependant pour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web."</string>
   <string name="api_key_required">"Clé API requise"</string>
   <string name="expires">"expire"</string>
   <string name="search_city">"rechercher"</string>

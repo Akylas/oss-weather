@@ -38,9 +38,11 @@ import CollectionViewElement from '@nativescript-community/ui-collectionview/sve
 CollectionViewElement.register();
 
 
-// import {addCategories, enable} from '@nativescript/core/trace';
-// addCategories(DomTraceCategory);
-// enable();
+import {Trace} from '@nativescript/core';
+// Trace.addCategories(DomTraceCategory);
+Trace.addCategories(Trace.categories.Navigation);
+Trace.addCategories(Trace.categories.Transition);
+// Trace.enable();
 import { Application } from '@nativescript/core';
 
 // on startup we need to say what we are using

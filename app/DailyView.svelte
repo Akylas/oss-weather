@@ -1,11 +1,9 @@
 <script lang="ts">
-    import WeatherCollectionItem from './WeatherCollectionItem.svelte';
-    import WeatherIcon from './WeatherIcon.svelte';
-    import { Template } from 'svelte-native/components';
-    import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
-    import { UNITS } from '~/helpers/formatter';
+    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { borderColor, wiFontFamily, nightColor, rainColor, textLightColor } from '~/variables';
+    import { borderColor, nightColor, rainColor, textLightColor, wiFontFamily } from '~/variables';
+    import WeatherIcon from './WeatherIcon.svelte';
+
     export let item;
 </script>
 
@@ -16,11 +14,11 @@
             <cspan fontSize="15" color={textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
         </cgroup>
         <!-- <cspan id="testSpan" color={textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" paddingBottom="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} /> -->
-        
-        {#if (item.windSpeed > 6)}
+
+        {#if item.windSpeed > 6}
             <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-200" paddingTop="20">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
-                <cspan text={'\n ' } />
+                <cspan text={'\n '} />
             </cgroup>
         {/if}
         <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-100" paddingTop="20">
@@ -31,7 +29,7 @@
             <cgroup color={rainColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
-                <cspan fontSize="9" text={item.precipProbability >0  ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
+                <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
         {/if}
         <cgroup color={nightColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="100" paddingTop="20">
@@ -47,7 +45,7 @@
             <cspan fontSize="17" color={textLightColor} text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <cspan text={' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
         </cgroup>
-        <cspan paddingLeft="10" paddingBottom="10" fontSize="13" color={textLightColor} text={item.description} verticalAlignment="bottom" textAlignment="left"/>
+        <cspan paddingLeft="10" paddingBottom="10" fontSize="13" color={textLightColor} text={item.description} verticalAlignment="bottom" textAlignment="left" />
 
         <line color={borderColor} startX="0%" startY="0" stopX="100%" stopY="0" strokeWidth="1" />
     </canvaslabel>

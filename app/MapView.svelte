@@ -1,28 +1,21 @@
-<script  context="module" lang="ts">
-    import { Folder, knownFolders, path } from '@nativescript/core/file-system';
+<script context="module" lang="ts">
     import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
     import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
+    import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
+    import { Folder, knownFolders, path } from '@nativescript/core/file-system';
     const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
     const dataSource = new PersistentCacheTileDataSource({
-            dataSource: new HTTPTileDataSource({
-                minZoom: 10,
-                subdomains: 'abc',
-                maxZoom: 10,
-                url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
-            }),
-            databasePath: path.join(cacheFolder.path, 'cache.db')
-        });
+        dataSource: new HTTPTileDataSource({
+            minZoom: 10,
+            subdomains: 'abc',
+            maxZoom: 10,
+            url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+        }),
+        databasePath: path.join(cacheFolder.path, 'cache.db'),
+    });
 </script>
-<script lang="ts">
-    import { Point } from '@nativescript-community/ui-carto/vectorelements/point';
-    import { LocalVectorDataSource } from '@nativescript-community/ui-carto/datasources/vector';
-    import { RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
-    import { Template } from 'svelte-native/components';
-    import { VectorLayer } from '@nativescript-community/ui-carto/layers/vector';
-    import { CartoMap } from '@nativescript-community/ui-carto/ui';
-    import { primaryColor } from '~/variables';
-    import { GenericMapPos } from '@nativescript-community/ui-carto/core';
 
+<script lang="ts">
     export let focusPos;
 
     let point;
@@ -70,4 +63,5 @@
         }
     }
 </script>
+
 <cartomap zoom="10" on:mapReady={onMapReady} isUserInteractionEnabled="false" />

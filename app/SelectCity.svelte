@@ -1,19 +1,11 @@
 <script lang="ts">
-    import dayjs from 'dayjs';
-    import { onMount } from 'svelte';
+    import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
-    import { IMapPos } from '~/helpers/geo';
-    import { showError } from '~/utils/error';
-    import { action, alert, confirm, prompt } from '@nativescript-community/ui-material-dialogs';
-    import { clog, DEV_LOG } from '~/utils/logging';
-    import { photonSearch } from '~/services/api';
-    import { Page } from '@nativescript/core/ui/page';
     import { l } from '~/helpers/locale';
-    import { closeModal, goBack } from 'svelte-native';
+    import { photonSearch } from '~/services/api';
+    import { showError } from '~/utils/error';
     import { textColor, textLightColor } from '~/variables';
-    import { layout } from '@nativescript/core/utils/utils';
     import CActionBar from './CActionBar.svelte';
-    import MapView from './MapView.svelte';
 
     let page;
     let collectionView;
@@ -30,7 +22,6 @@
     }
     function unfocus() {
         clearSearchTimeout();
-
     }
     function onFocus(e) {
         hasFocus = true;
@@ -81,12 +72,15 @@
     // onMount(() => {
     //     focus();
     // });
+    function onNavigatingTo(e) {
+        console.log('onNavigatingTo', page && page.nativeView, e.object);
+    }
 </script>
 
 <frame backgroundColor="transparent">
-    <page actionBarHidden="true">
+    <page bind:this={page} actionBarHidden="true" on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
-            <CActionBar title={l('search_city')} modalWindow={true}>
+            <CActionBar title={l('search_city')} modalWindow>
                 <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
             <textfield

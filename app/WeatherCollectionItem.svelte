@@ -3,7 +3,6 @@
     import { Screen } from '@nativescript/core/platform';
 
     const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
-    console.log('deviceHeight', deviceHeight);
     const textPaint = new Paint();
     textPaint.setFontFamily(latoFontFamily);
     textPaint.setAntiAlias(true);

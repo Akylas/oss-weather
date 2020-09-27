@@ -4,16 +4,22 @@
     import { Frame } from '@nativescript/core/ui/frame';
     export let title: string;
     // export let showLogo = false;
-    export let showMenuIcon:boolean = false;
-    export let canGoBack:boolean = false;
-    export let modalWindow:boolean = false;
-    export let disableBackButton :boolean = false;
+    export let showMenuIcon: boolean = false;
+    export let canGoBack: boolean = false;
+    export let modalWindow: boolean = false;
+    export let disableBackButton: boolean = false;
     export let onClose: Function = null;
     let menuIcon: string;
     let menuIconVisible: boolean;
     let menuIconVisibility: string;
 
-    onMount(() => (canGoBack = Frame.topmost() && Frame.topmost().canGoBack()));
+    onMount(() => {
+        console.log('ActionBar', 'onMount');
+        setTimeout(() => {
+            canGoBack = Frame.topmost() && Frame.topmost().canGoBack();
+            console.log('ActionBar', 'canGoBack', canGoBack);
+        }, 0);
+    });
     function onMenuIcon() {
         if (modalWindow) {
             onClose ? onClose() : closeModal(undefined);
@@ -39,7 +45,7 @@
     {/if} -->
     <stackLayout col="0" orientation="horizontal">
         <slot name="left" />
-        <mdbutton variant="flat" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
+        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
     </stackLayout>
     <stackLayout col="2" orientation="horizontal">
         <slot />

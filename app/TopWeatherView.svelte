@@ -16,9 +16,34 @@
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
-    import { LinearGradient, TileMode } from '@nativescript-community/ui-canvas';
+    import { Align, LinearGradient, TileMode } from '@nativescript-community/ui-canvas';
     import Color from 'tinycolor2';
-    export let item;
+
+    interface Item {
+        alerts?: any;
+        minutely?: { time: number; precipIntensity: number }[];
+        time: number;
+        lastUpdate: number;
+        sunsetTime: number;
+        sunriseTime: number;
+        icon: string;
+        windIcon: string;
+        moonIcon: string;
+        windSpeed?: string;
+        cloudCover?: number;
+        cloudCeiling?: number;
+        uvIndex?: number;
+        precipProbability?: number;
+        precipIntensity?: number;
+        cloudColor?: string;
+        uvIndexColor?: string;
+        temperatureMin?: number;
+        temperatureMax?: number;
+        temperature?: number;
+        apparentTemperature?: number;
+        hourly?;
+    }
+    export let item: Item;
     export let height;
 
     function formatLastUpdate(date) {
@@ -43,8 +68,11 @@
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
-    let lastChartData;
-    function updateLineChart(item) {
+    let lastChartData: {
+        time: number;
+        precipIntensity: number;
+    }[];
+    function updateLineChart(item: Item) {
         const chart = getChart(lineChart.nativeView);
         // chart.setLogEnabled(true)
         if (chart) {
@@ -67,7 +95,7 @@
                 return;
             }
             lastChartData = data;
-            const count = data.length;
+            // const count = data.length;
             if (!chartInitialized) {
                 const darkTheme = /dark|black/.test(Theme.getMode());
                 const textColor = darkTheme ? 'white' : 'black';
@@ -78,21 +106,24 @@
                 chart.getLegend().setEnabled(false);
                 const xAxis = chart.getXAxis();
                 xAxis.setEnabled(true);
+                
                 xAxis.setTextColor(textColor);
+                xAxis.setLabelTextAlign(Align.CENTER);
                 xAxis.setDrawGridLines(false);
                 xAxis.setDrawMarkTicks(true);
-                let lastValue = 0;
                 xAxis.setValueFormatter({
                     getAxisLabel: (f) => {
-                        const result = Math.floor((f - now) / 600000) * 10;
-                        if (result !== lastValue) {
-                            lastValue = result;
+                        // console.log('getAxisLabel', f);
+                        const val = lastChartData[Math.round(f)]; 
+                        if (val) {
+                            const result = Math.floor((val.time - now) / 600000) * 10;
                             return result === 0 ? '' : result + 'm';
                         }
+
                         return '';
                     },
                 });
-                xAxis.setLabelCount(count / 2, true);
+                xAxis.setLabelCount(7, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
 
                 const rightAxis = chart.getAxisRight();
@@ -110,6 +141,7 @@
                 leftAxis.setDrawGridLines(false);
                 leftAxis.setDrawLabels(false);
                 leftAxis.setDrawAxisLine(false);
+                leftAxis.removeAllLimitLines();
 
                 let limitLine = new LimitLine(0, l('light').toUpperCase());
                 limitLine.setLineWidth(0);
@@ -154,11 +186,11 @@
             const leftAxis = chart.getAxisLeft();
             leftAxis.setAxisMaximum(Math.max(max, 2.4));
             leftAxis.setDrawLimitLines(hasPrecip);
+            // console.log(JSON.stringify(data.map((v) => ({ t: v.time, v: v.precipIntensity }))));
             if (hasPrecip) {
                 if (!precipChartSet) {
                     needsToSetData = true;
-                    // console.log((data.map(s=>s.precipIntensity)));
-                    precipChartSet = new LineDataSet(data, 'precipIntensity', 'time', 'precipIntensity');
+                    precipChartSet = new LineDataSet(data, 'precipIntensity', undefined, 'precipIntensity');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
                     precipChartSet.setDrawIcons(false);
@@ -168,6 +200,7 @@
                     precipChartSet.setColor(rainColor);
                     precipChartSet.setFillColor(rainColor);
                     precipChartSet.setFillAlpha(150);
+                    // precipChartSet.setCubicIntensity(0.2);
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
                 } else {
                     precipChartSet.setValues(data);
@@ -204,6 +237,8 @@
                 // chart.setData(new LineData([precipChartSet, cloudChartSet].filter((s) => !!s)));
                 chart.setData(new LineData([precipChartSet].filter((s) => !!s)));
             } else if (needsUpdate) {
+                // chart.setData(chart.getData());
+                precipChartSet.notifyDataSetChanged();
                 chart.getData().notifyDataChanged();
                 chart.notifyDataSetChanged();
             }
@@ -222,7 +257,7 @@
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan="2" >
+    <canvaslabel colSpan="2">
         <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} />
 
         {#if item.temperature !== undefined}
@@ -234,7 +269,7 @@
         <cgroup paddingLeft="80" paddingTop="11" fontSize="14" verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <cspan color="#777" text=" | " />
-            <cspan  text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
+            <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
         </cgroup>
         <!-- {/if} -->
 
@@ -255,15 +290,15 @@
         {/if}
         {#if item.uvIndex > 0}
             <cgroup paddingLeft="180" paddingTop="44" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={item.uvIndexColor}>
-                <cspan fontSize="30" fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert"  color={item.uvIndexColor}/>
-                <cspan paddingTop="14" text={'\n' + Math.round(item.uvIndex)}/>
+                <cspan fontSize="30" fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
+                <cspan paddingTop="14" text={'\n' + Math.round(item.uvIndex)} />
             </cgroup>
         {/if}
         {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}
             <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 180 : 120} paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
                 <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={item.precipIntensity >= 0.1 ? '\n' + formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
-                <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%': null} />
+                <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
         {/if}
 

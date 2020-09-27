@@ -152,7 +152,6 @@ page {
 
 .icon-btn {
     @extend .mdi;
-    background-color: transparent;
     ripple-color: gray;
     color: black;
     .ns-dark &,

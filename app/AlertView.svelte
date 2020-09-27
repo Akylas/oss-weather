@@ -2,7 +2,7 @@
     import { mdiFontFamily, wiFontFamily } from '~/variables';
     import { convertTime, titlecase } from '~/helpers/formatter';
     import {l } from '~/helpers/locale';
-    export let alerts;
+    export let alerts:any[];
     $: {
         console.log('alerts', alerts);
     }

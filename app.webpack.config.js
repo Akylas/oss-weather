@@ -219,7 +219,7 @@ module.exports = (env, params = {}) => {
                 loader: 'svelte-loader-hot',
                 options: {
                     dev: env.production ? false : true,
-                    preprocess: [preprocessConfig.preprocess, svelteNativePreprocessor],
+                    preprocess: preprocessConfig.preprocess,
                     hotReload: hmr,
                     hotOptions: {
                         injectCss: false,

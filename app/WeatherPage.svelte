@@ -333,18 +333,13 @@
     onMount(async () => {
         const ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
         const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
-        if (!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) {
+        if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
             // wait a bit
             setTimeout(() => askForApiKey(), 1000);
         }
-        // if (!ccApiKey) {
-        //     // wait a bit
-        //     showSnack({ message: l('missing_cc_key') });
-        // }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {
                 networkConnected = event.data.connected;
-                // console.log('networkConnected changed', networkConnected);
                 if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
                     refresh();
                 }
@@ -433,12 +428,12 @@
 <page bind:this={page} actionBarHidden="true" id="home">
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
-            <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
-            {#if !weatherLocation}
-                <mdbutton variant="text" class="icon-btn" text="mdi-map" on:tap={openWeatherMap} />
+            <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
+            {#if weatherLocation}
+                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
             {/if}
-            <mdbutton variant="text" class="icon-btn" text="mdi-magnify" on:tap={searchCity} />
-            <mdbutton variant="text" class="icon-btn" text="mdi-dots-vertical" on:tap={showOptions} />
+            <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
+            <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         {#if !networkConnected && !weatherData}
             <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
@@ -461,10 +456,11 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
+                <label :text={l('no_location_desc')} />
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <formattedString>
-                        <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
-                        <span text={l('my_location').toUpperCase()} />
+                    <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
+                    <span text={l('my_location').toUpperCase()} />
                     </formattedString>
                 </mdbutton>
                 <mdbutton row="2" margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>

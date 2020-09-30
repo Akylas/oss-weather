@@ -1,23 +1,21 @@
 <script lang="ts">
-    import WeatherIcon from './WeatherIcon.svelte';
-    import HourlyView from './HourlyView.svelte';
-    import AlertView from './AlertView.svelte';
-    import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
-    import { colorFromTempC, UNITS } from '~/helpers/formatter';
-    import { mdiFontFamily, nightColor, rainColor, wiFontFamily, textLightColor } from '~/variables';
-    import { showBottomSheet } from '~/bottomsheet';
-    import { l, lu } from '~/helpers/locale';
-    import { getChart } from '~/helpers/sveltehelpers';
-    import dayjs from 'dayjs';
     import Theme from '@nativescript-community/css-theme';
-    import LineChart from '@nativescript-community/ui-chart/charts/LineChart';
-    import { LineData } from '@nativescript-community/ui-chart/data/LineData';
-    import { LimitLine, LimitLabelPosition } from '@nativescript-community/ui-chart/components/LimitLine';
-    import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
-    import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
-    import { Align, LinearGradient, TileMode } from '@nativescript-community/ui-canvas';
-    import Color from 'tinycolor2';
+import { Align } from '@nativescript-community/ui-canvas';
+import { LimitLabelPosition,LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
+import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
+import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
+import { LineData } from '@nativescript-community/ui-chart/data/LineData';
+import { LineDataSet,Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
+import dayjs from 'dayjs';
+import Color from 'tinycolor2';
+import { showBottomSheet } from '~/bottomsheet';
+import { convertTime,formatValueToUnit,UNITS } from '~/helpers/formatter';
+import { l } from '~/helpers/locale';
+import { getChart } from '~/helpers/sveltehelpers';
+import { mdiFontFamily,nightColor,rainColor,textLightColor,wiFontFamily } from '~/variables';
+import AlertView from './AlertView.svelte';
+import HourlyView from './HourlyView.svelte';
+import WeatherIcon from './WeatherIcon.svelte';
 
     interface Item {
         alerts?: any;
@@ -244,9 +242,6 @@
             }
         }
     }
-
-    let textHtmlBottom;
-    let alerts;
     $: {
         if (lineChart) {
             updateLineChart(item);

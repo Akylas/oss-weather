@@ -66,12 +66,13 @@
   "my_location": "my location",
   "search_location": "search location",
   "missing_location_perm": "location permission is missing",
-  "no_location_setup": "no location set up",
   "gps_location": "find GPS location",
   "version": "version",
   "source_code": "source code",
   "third_parties": "third party libraries",
   "share_application": "share application",
   "review_application": "review application",
-  "about": "about"
+  "about": "about",
+  "no_location_desc": "You haven't chosen a location yet. \nYou can search to use your GPS location"
+
 }

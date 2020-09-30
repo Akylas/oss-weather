@@ -1,11 +1,11 @@
-import { getString } from '@nativescript/core/application-settings';
-export type Themes = 'auto' | 'light' | 'dark' | 'black';
-import { Device } from '@nativescript/core/platform';
+import { getString } from '@akylas/nativescript/application-settings';
 import Theme from '@nativescript-community/css-theme';
-
+import { android as androidApp, ios as iosApp } from '@nativescript/core/application';
+import { Device } from '@nativescript/core/platform';
 import { prefs } from '~/services/preferences';
-import { android as androidApp, ios as iosApp, on as onApp, systemAppearance } from '@nativescript/core/application';
 import { updateThemeColors } from '~/variables';
+
+export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
 const ThemeBlack = 'ns-black';
 export function applyTheme(theme: Themes) {

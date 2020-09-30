@@ -38,10 +38,11 @@ import CollectionViewElement from '@nativescript-community/ui-collectionview/sve
 CollectionViewElement.register();
 
 
-import {Trace} from '@nativescript/core';
+// import {Trace} from '@nativescript/core';
 // Trace.addCategories(DomTraceCategory);
-Trace.addCategories(Trace.categories.Navigation);
-Trace.addCategories(Trace.categories.Transition);
+// Trace.addCategories(Trace.categories.Navigation);
+// Trace.addCategories(Trace.categories.Transition);
+// Trace.addCategories(Trace.categories.concat(Trace.categories.All));
 // Trace.enable();
 import { Application } from '@nativescript/core';
 

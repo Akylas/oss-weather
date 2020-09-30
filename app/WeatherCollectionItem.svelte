@@ -1,6 +1,13 @@
 <script context="module" lang="ts">
-    import { Align, Paint } from '@nativescript-community/ui-canvas';
-    import { Screen } from '@nativescript/core/platform';
+    import Theme from '@nativescript-community/css-theme';
+import { Align,Paint } from '@nativescript-community/ui-canvas';
+import { Color } from '@nativescript/core/color';
+import { Screen } from '@nativescript/core/platform';
+import dayjs from 'dayjs';
+import { convertTime,formatValueToUnit,UNITS } from '~/helpers/formatter';
+import { getCanvas } from '~/helpers/sveltehelpers';
+import { latoFontFamily } from '~/variables';
+import WeatherIcon from './WeatherIcon.svelte';
 
     const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
     const textPaint = new Paint();
@@ -13,33 +20,7 @@
 </script>
 
 <script lang="ts">
-    import dayjs from 'dayjs';
-    import WeatherIcon from './WeatherIcon.svelte';
-    import { formatValueToUnit, convertTime, titlecase } from '~/helpers/formatter';
-    import { colorFromTempC, colorForIcon, UNITS } from '~/helpers/formatter';
-    import { mdiFontFamily, wiFontFamily, textLightColor, latoFontFamily } from '~/variables';
-    import { getCanvas } from '~/helpers/sveltehelpers';
-    import { buildHTMLString } from '@nativescript-community/ui-label';
-    import Theme from '@nativescript-community/css-theme';
-    import {
-        Canvas,
-        Cap,
-        Path,
-        LinearGradient,
-        RadialGradient,
-        Rect,
-        RectF,
-        Style,
-        TileMode,
-        createRect,
-        createRectF,
-        DashPathEffect,
-        StaticLayout,
-        LayoutAlignment,
-        PorterDuffXfermode,
-        PorterDuffMode,
-    } from '@nativescript-community/ui-canvas';
-    import { Color } from '@nativescript/core/color';
+    
 
     export let item;
     let tempHeight = 0;

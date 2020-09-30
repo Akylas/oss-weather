@@ -28,9 +28,9 @@ mdbutton {
     }
     // white-space: normal;
 }
-mdbutton[variant="text"] {
-    color: $accent-color;
-}
+// mdbutton[variant="text"] {
+//     color: $accent-color;
+// }
 
 .dailyViewBorder {
     height: 1;
@@ -159,9 +159,9 @@ page {
         color: white;
         ripple-color: white;
     }
-    width: 44;
-    height: 44;
-    border-radius: 22;
+    width: $actionbar-button-height;
+    height: $actionbar-button-height;
+    border-radius: $actionbar-button-height /2;
     font-size: 24;
     margin: 0;
     padding: 0;

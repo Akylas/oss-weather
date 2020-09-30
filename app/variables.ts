@@ -1,8 +1,6 @@
-import CSSLoader from '~/variables.module.scss';
 import { Screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
-import { prefs } from '~/services/preferences';
-import { getString } from '@nativescript/core/application-settings';
+import CSSLoader from '~/variables.module.scss';
 import { theme } from './helpers/theme';
 
 const locals = CSSLoader.locals;

@@ -1,3 +1,5 @@
+import { Application } from '@akylas/nativescript';
+import Theme from '@nativescript-community/css-theme';
 import { Screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
 import CSSLoader from '~/variables.module.scss';
@@ -47,18 +49,26 @@ export let subtitleColor;
 export let iconColor;
 
 export function updateThemeColors(theme: string) {
-    if (theme === 'light') {
-        textColor = '#000000';
-        textLightColor = '#444444';
-        borderColor = '#55cccccc';
-        subtitleColor = '#444444';
-        iconColor = '#444444';
-    } else {
+    try {
+        theme = Application.systemAppearance();
+
+    } catch(err) {
+        console.error('updateThemeColors', err);
+
+    }
+    console.log('updateThemeColors', theme);
+    if (theme === 'dark') {
         textColor = '#ffffff';
         textLightColor = '#aaaaaa';
         borderColor = '#55cccccc';
         subtitleColor = '#aaaaaa';
         iconColor = '#aaaaaa';
+    } else {
+        textColor = '#000000';
+        textLightColor = '#444444';
+        borderColor = '#55cccccc';
+        subtitleColor = '#444444';
+        iconColor = '#444444';
     }
 }
 

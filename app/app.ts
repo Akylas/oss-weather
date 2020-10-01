@@ -50,6 +50,7 @@ import { Application } from '@nativescript/core';
 console.log('applying app theme', theme);
 Application.on('launch', () => {
     applyTheme(theme);
+    updateThemeColors(theme);
 });
 
 
@@ -66,4 +67,5 @@ import { svelteNative } from 'svelte-native';
 import WeatherPage from './WeatherPage.svelte';
 import { applyTheme, theme } from './helpers/theme';
 import { getString } from '@nativescript/core/application-settings';
+import { updateThemeColors } from './variables';
 svelteNative(WeatherPage, {});

@@ -52,7 +52,7 @@ export let theme: Themes;
 if (global.isIOS) {
     const sdkVersion = Device.sdkVersion;
     if (parseFloat(sdkVersion) >= 13) {
-        theme = getString('theme', 'dark') as Themes;
+        theme = getString('theme', 'auto') as Themes;
     } else {
         theme = 'light';
     }

@@ -1,5 +1,6 @@
+import { NativeScriptConfig } from '@nativescript/core';
 
-module.exports = {
+export default {
     id: 'com.akylas.weather',
     appResourcesPath: 'app/App_Resources',
     android: {
@@ -9,6 +10,5 @@ module.exports = {
         codeCache: true,
     },
     appPath: 'app',
-    profiling: 'none',
-    webpackConfigPath:'./app.webpack.config.js'
-};
+    webpackConfigPath: './app.webpack.config.js',
+} as NativeScriptConfig;

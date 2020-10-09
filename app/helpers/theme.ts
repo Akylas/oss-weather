@@ -68,8 +68,8 @@ prefs.on('key:theme', () => {
     }
     console.log('theme change', theme, newTheme);
     theme = newTheme;
-    applyTheme(newTheme);
-    updateThemeColors(newTheme);
+    applyTheme(newTheme );
+    updateThemeColors(newTheme, true);
     if (global.isAndroid) {
         // we recreate the activity to get the change
         const activity = androidApp.startActivity as androidx.appcompat.app.AppCompatActivity;

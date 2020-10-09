@@ -277,7 +277,7 @@ import WeatherIcon from './WeatherIcon.svelte';
             <cspan text={'\n' + l('moon')} />
         </cgroup>
         {#if item.cloudCover > 0}
-            <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={item.cloudColor}>
+            <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" horizontalAlignment="center" color={item.cloudColor}>
                 <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover * 100) + '%'} />
                 <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance) : null} />

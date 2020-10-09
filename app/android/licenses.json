@@ -3,7 +3,7 @@
         {
             "moduleName": "com.airbnb.android:lottie",
             "moduleUrl": "https://github.com/airbnb/lottie-android",
-            "moduleVersion": "3.4.2",
+            "moduleVersion": "3.4.4",
             "moduleLicense": "Apache License, Version 2.0",
             "moduleLicenseUrl": "https://www.apache.org/licenses/LICENSE-2.0"
         },

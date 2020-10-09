@@ -48,9 +48,11 @@ export let textLightColor;
 export let subtitleColor;
 export let iconColor;
 
-export function updateThemeColors(theme: string) {
+export function updateThemeColors(theme: string, force = false) {
     try {
-        theme = Application.systemAppearance();
+        if (!force) {
+            theme = Application.systemAppearance();
+        }
 
     } catch(err) {
         console.error('updateThemeColors', err);
@@ -72,4 +74,4 @@ export function updateThemeColors(theme: string) {
     }
 }
 
-updateThemeColors(theme);
+// updateThemeColors(theme);

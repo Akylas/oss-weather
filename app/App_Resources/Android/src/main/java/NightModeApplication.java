@@ -58,6 +58,7 @@ public class NightModeApplication extends android.app.Application {
 
     public Context setupTheme(Context context) {
 
+        Log.d("JS", "NightModeApplication setupTheme " + context);
         Resources res = context.getResources();
         int mode = res.getConfiguration().uiMode;
         final String themeMode = context.getSharedPreferences("prefs.db", 0).getString("theme", "dark");
@@ -88,6 +89,7 @@ public class NightModeApplication extends android.app.Application {
 
     @Override
     protected void attachBaseContext(Context base) {
+        Log.d("JS", "NightModeApplication attachBaseContext " + base);
         Context context = setupTheme(base);
         super.attachBaseContext(context);
         if (Build.VERSION.SDK_INT < 21) {

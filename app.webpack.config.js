@@ -7,7 +7,7 @@ const { dirname, join, relative, resolve, sep } = require('path');
 const nsWebpack = require('@nativescript/webpack');
 const nativeClassTransformer = require('@nativescript/webpack/transformers/ns-transform-native-classes').default;
 const preprocessConfig = require('./svelte.config.js');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -51,8 +51,11 @@ module.exports = (env, params = {}) => {
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
+    const coreModulesPackageName = '@akylas/nativescript';
+    config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
-        '@nativescript/core': '@akylas/nativescript',
+        '@nativescript/core': `${coreModulesPackageName}`,
+        'tns-core-modules': `${coreModulesPackageName}`,
         '../driver/oracle/OracleDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
         './oracle/OracleDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
         '../driver/cockroachdb/CockroachDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
@@ -80,7 +83,8 @@ module.exports = (env, params = {}) => {
         '../driver/cordova/CordovaDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
     });
 
-    const nconfig = require('./nativescript.config');
+    const nativescriptLib = require(env.nativescriptLibPath);
+    const nsConfig = nativescriptLib.projectDataService.getProjectData().nsConfig;
     const package = require('./package.json');
     const isIOS = platform === 'ios';
     const isAndroid = platform === 'android';
@@ -108,15 +112,15 @@ module.exports = (env, params = {}) => {
         LOG_LEVEL: devlog ? '"full"' : '""',
         TEST_LOGS: adhoc || !production,
         GIT_URL: `"${package.repository}"`,
-        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nconfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
+        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nsConfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
         STORE_REVIEW_LINK: `"${
             isIOS
                 ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
-                : `market://details?id=${nconfig.id}`
+                : `market://details?id=${nsConfig.id}`
         }"`,
     };
 
-    const itemsToClean = [`${dist}/**/*`];
+    const itemsToClean = [`${dist}/**/`];
     if (platform === 'android') {
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'src', 'main', 'assets', 'snapshots/**/*')}`);
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'build', 'configurations', 'nativescript-android-snapshot')}`);
@@ -272,27 +276,24 @@ module.exports = (env, params = {}) => {
         ],
     });
 
-    // // we remove default rules
-    config.plugins = config.plugins.filter((p) => ['DefinePlugin', 'CleanWebpackPlugin', 'CopyWebpackPlugin'].indexOf(p.constructor.name) === -1);
+    // we remove default rules
+    config.plugins = config.plugins.filter((p) => ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin'].indexOf(p.constructor.name) === -1);
     // we add our rules
+    const copyIgnore = { ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
     config.plugins.unshift(
-        new CopyWebpackPlugin({
+        new CopyPlugin({
             patterns: [
-                { from: 'fonts/!(ios|android)/**/*', to: 'fonts', flatten: true, noErrorOnMissing: true },
-                { from: 'fonts/*', to: 'fonts', flatten: true, noErrorOnMissing: true },
-                { from: `fonts/${platform}/**/*`, to: 'fonts', flatten: true, noErrorOnMissing: true },
-                {
-                    from: '**/*.+(jpg|png)',
-                    globOptions: {
-                        ignore: [`${relative(appPath, appResourcesFullPath)}/**`],
-                    },
-                    noErrorOnMissing: true,
-                },
-                { from: 'assets/**/*', noErrorOnMissing: true },
+                { from: 'fonts/!(ios|android)/**/*', to: 'fonts', flatten: true, noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
+                { from: 'fonts/*', to: 'fonts', flatten: true, noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
+                { from: `fonts/${platform}/**/*`, to: 'fonts', flatten: true, noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
+                { from: '**/*.jpg', noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
+                { from: '**/*.png', noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
+                { from: 'assets/**/*', noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
                 {
                     from: '../node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
                     to: 'fonts',
                     noErrorOnMissing: true,
+                    globOptions: { dot: false, ...copyIgnore },
                 },
             ],
         })
@@ -393,6 +394,6 @@ module.exports = (env, params = {}) => {
             },
         }),
     ];
-    console.log('config', config);
+    console.log(config.plugins);
     return config;
 };

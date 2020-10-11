@@ -39,7 +39,7 @@ desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
   sh("rm", "-fr", "platforms/" + platform)
-  sh("tns", "prepare", platform, "--release", "--clean", "--env.adhoc",")
+  sh("tns", "prepare", platform, "--release", "--clean", "--env.adhoc")
 
 end
 

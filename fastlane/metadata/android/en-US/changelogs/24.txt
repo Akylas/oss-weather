@@ -1,0 +1,4 @@
+*Bug fixes*
+- correctly set theme in auto
+- big bump for dark mode
+- android icons

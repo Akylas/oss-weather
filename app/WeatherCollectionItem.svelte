@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
     import Theme from '@nativescript-community/css-theme';
-import { Align,Paint } from '@nativescript-community/ui-canvas';
-import { Color } from '@nativescript/core/color';
-import { Screen } from '@nativescript/core/platform';
-import dayjs from 'dayjs';
-import { convertTime,formatValueToUnit,UNITS } from '~/helpers/formatter';
-import { getCanvas } from '~/helpers/sveltehelpers';
-import { latoFontFamily } from '~/variables';
-import WeatherIcon from './WeatherIcon.svelte';
+    import { Align, Paint } from '@nativescript-community/ui-canvas';
+    import { Color } from '@nativescript/core/color';
+    import { Screen } from '@nativescript/core/platform';
+    import dayjs from 'dayjs';
+    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { getCanvas } from '~/helpers/sveltehelpers';
+    import { latoFontFamily, textColor } from '~/variables';
+    import WeatherIcon from './WeatherIcon.svelte';
 
     const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
     const textPaint = new Paint();
@@ -20,20 +20,21 @@ import WeatherIcon from './WeatherIcon.svelte';
 </script>
 
 <script lang="ts">
-    
-
     export let item;
     let tempHeight = 0;
     let canvasView;
     let precipitationHeight = 0;
-    const darkTheme = /dark|black/.test(Theme.getMode());
-    const strTextColor = darkTheme ? 'white' : 'black';
-    const textColor = new Color(strTextColor);
+
+    function redraw() {
+        canvasView && canvasView.nativeView.invalidate();
+
+    }
     $: {
         tempHeight = (((item.temperature - item.min) / (item.max - item.min)) * deviceHeight) / 20;
         precipitationHeight = item.precipIntensity * 10;
-        canvasView && canvasView.nativeView.invalidate();
+        redraw();
     }
+    textColor.subscribe(redraw);
     function drawOnCanvas(event) {
         const endDay = dayjs().endOf('d').valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
@@ -41,7 +42,7 @@ import WeatherIcon from './WeatherIcon.svelte';
         const w2 = w / 2;
         const h = canvas.getHeight();
         textPaint.setTextSize(14);
-        textPaint.setColor(textColor);
+        textPaint.setColor($textColor);
 
         let color;
         if ((item.precipProbability === -1 || item.precipProbability > 0) && precipitationHeight > 0) {
@@ -52,7 +53,7 @@ import WeatherIcon from './WeatherIcon.svelte';
             canvas.drawRect(0, precipTop, w, h - 10, paint);
             if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipIntensity >= 0.1) {
                 textPaint.setTextSize(10);
-                textPaint.setColor(textColor);
+                textPaint.setColor($textColor);
                 textPaint.setAlpha(150);
                 if (item.precipProbability > 0) {
                     canvas.drawText(Math.round(item.precipProbability * 100) + '%', w2, h - 22, textPaint);
@@ -79,7 +80,7 @@ import WeatherIcon from './WeatherIcon.svelte';
         paint.setColor(color);
         canvas.drawRect(0, h - 10, w, h, paint);
 
-        textPaint.setColor(textColor);
+        textPaint.setColor($textColor);
         textPaint.setTextSize(14);
         canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, (1 - tempHeight / 100) * h - 70 - 0, textPaint);
 
@@ -101,26 +102,6 @@ import WeatherIcon from './WeatherIcon.svelte';
 </script>
 
 <gridlayout height="100%" rows="40,*,30" backgroundColor={`rgba(120,120,120,${item.odd ? 0.05 : 0})`}>
-    <!-- FIRST TECHNIQUE USING FULL CANVAS-->
-    <canvas bind:this={canvasView} rowSpan="3" backgroundColor="transparent" on:draw={drawOnCanvas} hardwareAccelerated="false"/>
+    <canvas color={$textColor} bind:this={canvasView} rowSpan="3" backgroundColor="transparent" on:draw={drawOnCanvas} hardwareAccelerated="false" />
     <WeatherIcon row="1" icon={item.icon} verticalAlignment="bottom" marginBottom={tempHeight + '%'} />
-    <!-- SECOND TECHNIQUE USING HTML LABELS-->
-   <!-- <label textAlignment="center" fontSize="16" fontWeight="bold" html={`<b>${convertTime(item.time, 'HH:mm')}<br><span style="font-size:12px;">${convertTime(item.time, 'ddd')}</span></b><br><span style="font-size:12px;">${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, {unitScale:1})}</span>`} /> -->
-     <!-- <label
-        row="1"
-        verticalAlignment="bottom"
-        opacity={item.precipProbability}
-        backgroundColor={item.precipColor}
-        height={precipitationHeight + '%'}
-        color="white"
-        text={item.precipProbability > 0.1 && item.precipIntensity >= 0.1 ? formatValueToUnit(item.precipIntensity, UNITS.MM) : ''}
-        textAlignment="center"
-        verticalTextAlignment="bottom"
-        fontSize="10" />
-    <stacklayout row="1" verticalAlignment="bottom" marginBottom={tempHeight + '%'}>
-        <label fontSize="14" marginTop="10" textAlignment="center" text={`${formatValueToUnit(item.temperature, UNITS.Celcius)}°`} />
-        <WeatherIcon icon={item.icon} marginBottom="10" />
-    </stacklayout>
-    <absolutelayout row="2" backgroundColor={item.color} />  -->
-
 </gridlayout>

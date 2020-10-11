@@ -279,7 +279,7 @@ module.exports = (env, params = {}) => {
     // we remove default rules
     config.plugins = config.plugins.filter((p) => ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin'].indexOf(p.constructor.name) === -1);
     // we add our rules
-    const copyIgnore = { ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
+    const copyIgnore = { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] };
     config.plugins.unshift(
         new CopyPlugin({
             patterns: [
@@ -298,14 +298,14 @@ module.exports = (env, params = {}) => {
             ],
         })
     );
-    config.plugins.unshift(
-        new CleanWebpackPlugin({
-            dangerouslyAllowCleanPatternsOutsideProject: true,
-            dry: false,
-            verbose: false,
-            cleanOnceBeforeBuildPatterns: itemsToClean,
-        })
-    );
+    // config.plugins.unshift(
+    //     new CleanWebpackPlugin({
+    //         dangerouslyAllowCleanPatternsOutsideProject: true,
+    //         dry: false,
+    //         verbose: false,
+    //         cleanOnceBeforeBuildPatterns: itemsToClean,
+    //     })
+    // );
     config.plugins.unshift(new webpack.DefinePlugin(defines));
     config.plugins.push(
         new webpack.EnvironmentPlugin({

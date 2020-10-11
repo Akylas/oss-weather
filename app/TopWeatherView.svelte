@@ -1,21 +1,21 @@
 <script lang="ts">
     import Theme from '@nativescript-community/css-theme';
-import { Align } from '@nativescript-community/ui-canvas';
-import { LimitLabelPosition,LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
-import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
-import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
-import { LineData } from '@nativescript-community/ui-chart/data/LineData';
-import { LineDataSet,Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-import dayjs from 'dayjs';
-import Color from 'tinycolor2';
-import { showBottomSheet } from '~/bottomsheet';
-import { convertTime,formatValueToUnit,UNITS } from '~/helpers/formatter';
-import { l } from '~/helpers/locale';
-import { getChart } from '~/helpers/sveltehelpers';
-import { mdiFontFamily,nightColor,rainColor,textLightColor,wiFontFamily } from '~/variables';
-import AlertView from './AlertView.svelte';
-import HourlyView from './HourlyView.svelte';
-import WeatherIcon from './WeatherIcon.svelte';
+    import { Align } from '@nativescript-community/ui-canvas';
+    import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
+    import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
+    import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
+    import { LineData } from '@nativescript-community/ui-chart/data/LineData';
+    import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
+    import dayjs from 'dayjs';
+    import Color from 'tinycolor2';
+    import { showBottomSheet } from '~/bottomsheet';
+    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { l } from '~/helpers/locale';
+    import { getChart } from '~/helpers/sveltehelpers';
+    import { mdiFontFamily, nightColor, rainColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import AlertView from './AlertView.svelte';
+    import HourlyView from './HourlyView.svelte';
+    import WeatherIcon from './WeatherIcon.svelte';
 
     interface Item {
         alerts?: any;
@@ -104,7 +104,7 @@ import WeatherIcon from './WeatherIcon.svelte';
                 chart.getLegend().setEnabled(false);
                 const xAxis = chart.getXAxis();
                 xAxis.setEnabled(true);
-                
+
                 xAxis.setTextColor(textColor);
                 xAxis.setLabelTextAlign(Align.CENTER);
                 xAxis.setDrawGridLines(false);
@@ -112,7 +112,7 @@ import WeatherIcon from './WeatherIcon.svelte';
                 xAxis.setValueFormatter({
                     getAxisLabel: (f) => {
                         // console.log('getAxisLabel', f);
-                        const val = lastChartData[Math.round(f)]; 
+                        const val = lastChartData[Math.round(f)];
                         if (val) {
                             const result = Math.floor((val.time - now) / 600000) * 10;
                             return result === 0 ? '' : result + 'm';
@@ -252,13 +252,13 @@ import WeatherIcon from './WeatherIcon.svelte';
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan="2">
+    <canvaslabel colSpan="2" color={$textColor}>
         <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} />
 
         {#if item.temperature !== undefined}
             <cgroup id="test" paddingLeft="10" fontSize="12" verticalAlignment="top">
                 <cspan fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} />
-                <cspan color={textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : null} />
+                <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : null} />
             </cgroup>
         {/if}
         <cgroup paddingLeft="80" paddingTop="11" fontSize="14" verticalAlignment="top">
@@ -277,7 +277,7 @@ import WeatherIcon from './WeatherIcon.svelte';
             <cspan text={'\n' + l('moon')} />
         </cgroup>
         {#if item.cloudCover > 0}
-            <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" horizontalAlignment="center" color={item.cloudColor}>
+            <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" textAlignment="center" width="60" color={item.cloudColor}>
                 <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover * 100) + '%'} />
                 <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance) : null} />

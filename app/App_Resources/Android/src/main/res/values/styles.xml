@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources
-    xmlns:android="http://schemas.android.com/apk/res/android"  xmlns:tools="http://schemas.android.com/tools">
-
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <style name="SettingsTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="android:statusBarColor">@color/background</item>
         <item name="colorPrimary">@color/ns_primary</item>
@@ -13,16 +13,17 @@
         <!-- Window decor -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>
-     </style>
+    </style>
     <!-- theme to use FOR launch screen-->
     <style name="LaunchScreenThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="android:windowBackground">@mipmap/splash_screen</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
     <style name="LaunchScreenTheme" parent="LaunchScreenThemeBase"></style>
     <!-- theme to use AFTER launch screen is loaded-->
     <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:forceDarkAllowed">true</item>
         <item name="android:fontFamily">@font/lato</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="colorPrimary">@color/ns_primary</item>
@@ -36,4 +37,6 @@
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>
     <style name="AppTheme" parent="AppThemeBase"></style>
+    <style name="NativeScriptToolbarStyleBase" parent="Widget.AppCompat.Toolbar"></style>
+    <style name="NativeScriptToolbarStyle" parent="NativeScriptToolbarStyleBase"></style>
 </resources> 

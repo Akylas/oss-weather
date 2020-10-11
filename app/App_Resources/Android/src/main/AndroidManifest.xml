@@ -19,7 +19,7 @@
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.location.gps" />
 	<application
-		android:name="com.akylas.weather.NightModeApplication"
+		android:name="com.tns.NativeScriptApplication"
 		android:allowBackup="true"
 		android:hardwareAccelerated="true"
 		android:networkSecurityConfig="@xml/network_security_config"
@@ -30,7 +30,7 @@
 		<activity
 			android:name="com.tns.NativeScriptActivity"
 			android:label="@string/title_activity_kimera"
-			android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode"
+			android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale"
 			android:theme="@style/LaunchScreenTheme"
 			android:launchMode="singleTask">
 

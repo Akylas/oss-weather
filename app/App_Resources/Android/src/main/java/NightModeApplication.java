@@ -40,28 +40,29 @@ public class NightModeApplication extends android.app.Application {
         } finally {
             frame.close();
         }
-        // final String mode = getSharedPreferences("prefs.db", 0).getString("theme", "dark");
-        // switch (mode) {
-        //     case "auto":
-        //         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        //         break;
-        //     case "light":
-        //         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        //         break;
-        //     case "black":
-        //     case "dark":
-        //         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        //         break;
-        // }
+        final String mode = getSharedPreferences("prefs.db", 0).getString("theme", "dark");
+        Log.d("JS", "NightModeApplication onCreate " + "themeMode " + mode);
+        switch (mode) {
+            case "auto":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "black":
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+        }
 
     }
 
     public Context setupTheme(Context context) {
 
-        Log.d("JS", "NightModeApplication setupTheme " + context);
         Resources res = context.getResources();
         int mode = res.getConfiguration().uiMode;
         final String themeMode = context.getSharedPreferences("prefs.db", 0).getString("theme", "dark");
+        Log.d("JS", "NightModeApplication setupTheme " + context + "mode " + mode + "themeMode " + themeMode);
         switch (themeMode) {
             case "black":
             case "dark":

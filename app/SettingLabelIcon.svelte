@@ -6,7 +6,7 @@
     export let title: string = null;
     export let subtitle: string = null;
     export let icon: string = null;
-    export let subtitleColor = defaultSubtitleColor;
+    export let subtitleColor = $defaultSubtitleColor;
     export let subtitleMaxLines = 2;
 </script>
 
@@ -15,7 +15,7 @@
         <label fontSize="17" text={title} textWrap="true" verticalTextAlignment="top" maxLines="2" lineBreak="end" />
         <label visibilty={!!subtitle ? 'visible' : 'collapsed'} fontSize="14" text={subtitle} verticalTextAlignment="top" color={subtitleColor} maxLines={subtitleMaxLines} lineBreak="end" />
     </stackLayout>
-    <label row="1" col="2" visibilty={!!icon ? 'visible' : 'collapsed'} fontFamily={mdiFontFamily} fontSize="24" textAlignment="right" color={iconColor} text={icon} verticalAlignment="center" />
+    <label row="1" col="2" visibilty={!!icon ? 'visible' : 'collapsed'} fontFamily={mdiFontFamily} fontSize="24" textAlignment="right" color={$iconColor} text={icon} verticalAlignment="center" />
 
-    <absoluteLayout row="2" col="1" colSpan="3" backgroundColor={borderColor} height="1" verticalAlignment="bottom" />
+    <absoluteLayout row="2" col="1" colSpan="3" backgroundColor={$borderColor} height="1" verticalAlignment="bottom" />
 </gridLayout>

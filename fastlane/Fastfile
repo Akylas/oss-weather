@@ -245,8 +245,7 @@ end
   desc 'Build the Android application.'
     lane :build do
       sh("rm", "-fr", "platforms/android")
-      sh("tns", "build", "android", "--release", "--clean", "--env.production",
-          "--env.uglify", "--env.adhoc", "--env.snapshot", "--env.compileSnapshot", "--aab",
+      sh("tns", "build", "android", "--release", "--clean", "--env.adhoc", "--aab",
           "--key-store-path", "../" + ENV["KEYSTORE_PATH"],
           "--key-store-password", ENV["KEYSTORE_PASSWORD"],
           "--key-store-alias", ENV["KEYSTORE_ALIAS"],

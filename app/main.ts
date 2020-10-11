@@ -40,18 +40,15 @@ CollectionViewElement.register();
 
 // import {Trace} from '@nativescript/core';
 // Trace.addCategories(DomTraceCategory);
-// Trace.addCategories(Trace.categories.Navigation);
+// Trace.addCategories(Trace.categories.NativeLifecycle);
 // Trace.addCategories(Trace.categories.Transition);
 // Trace.addCategories(Trace.categories.concat(Trace.categories.All));
 // Trace.enable();
-import { Application } from '@nativescript/core';
-
+// import { Application } from '@nativescript/core';
+import { start } from '~/helpers/theme';
+// on startup we need to ensure theme is loaded because of a mixin
 // on startup we need to say what we are using
-console.log('applying app theme', theme);
-Application.on('launch', () => {
-    applyTheme(theme);
-    updateThemeColors(theme);
-});
+start();
 
 
 import { installMixins, themer } from '@nativescript-community/ui-material-core';

@@ -1,9 +1,8 @@
 import { Application } from '@akylas/nativescript';
-import Theme from '@nativescript-community/css-theme';
 import { Screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
+import { writable } from 'svelte/store';
 import CSSLoader from '~/variables.module.scss';
-import { theme } from './helpers/theme';
 
 const locals = CSSLoader.locals;
 // console.log('loading variables', locals);
@@ -41,12 +40,12 @@ export const scatteredCloudyColor = '#cccccc';
 export const cloudyColor = '#929292';
 export const rainColor = '#4681C3';
 export const snowColor = '#ACE8FF';
-export let textColor;
-export let borderColor;
-export let textLightColor;
+export const textColor = writable('');
+export const borderColor = writable('');
+export const textLightColor = writable('');
 
-export let subtitleColor;
-export let iconColor;
+export const subtitleColor = writable('');
+export const iconColor = writable('');
 
 export function updateThemeColors(theme: string, force = false) {
     try {
@@ -60,18 +59,18 @@ export function updateThemeColors(theme: string, force = false) {
     }
     console.log('updateThemeColors', theme);
     if (theme === 'dark') {
-        textColor = '#ffffff';
-        textLightColor = '#aaaaaa';
-        borderColor = '#55cccccc';
-        subtitleColor = '#aaaaaa';
-        iconColor = '#aaaaaa';
+        textColor.set('#ffffff');
+        textLightColor.set('#aaaaaa');
+        borderColor.set('#55cccccc');
+        subtitleColor.set('#aaaaaa');
+        iconColor.set('#aaaaaa');
     } else {
-        textColor = '#000000';
-        textLightColor = '#444444';
-        borderColor = '#55cccccc';
-        subtitleColor = '#444444';
-        iconColor = '#444444';
+        textColor.set('#000000');
+        textLightColor.set('#444444');
+        borderColor.set('#55cccccc');
+        subtitleColor.set('#444444');
+        iconColor.set('#444444');
     }
 }
 
-// updateThemeColors(theme);
+// updateThemeColors(theme, true);

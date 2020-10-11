@@ -2,6 +2,7 @@
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
     import { Frame } from '@nativescript/core/ui/frame';
+import { textColor } from './variables';
     export let title: string;
     // export let showLogo = false;
     export let showMenuIcon: boolean = false;
@@ -37,13 +38,13 @@
 </script>
 
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5">
-    <label col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center" />
+    <label color={$textColor} col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center" />
     <!-- {#if showLogo && !title}
         <label col="1" class="activelook" fontSize="28" color="white" text="logo" verticalAlignment="center" marginLeft="6" />
     {/if} -->
     <stackLayout col="0" orientation="horizontal">
         <slot name="left" />
-        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
+        <mdbutton color={$textColor} variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
     </stackLayout>
     <stackLayout col="2" orientation="horizontal">
         <slot />

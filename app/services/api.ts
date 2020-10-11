@@ -282,6 +282,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
             // } catch (err) {
             // error result might html
             const match = /<title>(.*)\n*<\/title>/.exec(content);
+            console.log('http error',statusCode, match, content.toString(), requestParams);
             return Promise.reject(
                 new HTTPError({
                     statusCode,

@@ -26,6 +26,7 @@
     import { TextField } from '@nativescript-community/ui-material-textfield';
     import { Sentry } from './utils/sentry';
     import WeatherMapPage from './WeatherMapPage.svelte';
+import { toggleTheme } from './helpers/theme';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -92,6 +93,7 @@
                 switch (result.id) {
                     case 'preferences':
                         prefs.openSettings();
+                        // toggleTheme();
                         break;
                     case 'refresh':
                         refreshWeather();
@@ -323,8 +325,8 @@
         const result = await showBottomSheet({
             parent: page,
             view: ApiKeysBottomSheet,
-            // dismissOnBackgroundTap: false,
-            // dismissOnDraggingDownSheet: false,
+            dismissOnBackgroundTap: true,
+            dismissOnDraggingDownSheet: true,
         });
         if (result) {
             refresh();

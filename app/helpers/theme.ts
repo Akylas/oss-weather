@@ -1,24 +1,26 @@
-import { getString } from '@akylas/nativescript/application-settings';
+import { getString, setString } from '@akylas/nativescript/application-settings';
+import { iOSNativeHelper } from '@akylas/nativescript/utils';
 import Theme from '@nativescript-community/css-theme';
-import { android as androidApp, ios as iosApp } from '@nativescript/core/application';
-import { Device } from '@nativescript/core/platform';
+import { Application } from '@nativescript/core';
 import { prefs } from '~/services/preferences';
 import { updateThemeColors } from '~/variables';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
+Application.on(Application.systemAppearanceChangedEvent, (event) => {
+    updateThemeColors(theme);
+});
+
 const ThemeBlack = 'ns-black';
 export function applyTheme(theme: Themes) {
     const AppCompatDelegate = global.isAndroid ? androidx.appcompat.app.AppCompatDelegate : undefined;
-    const window = global.isIOS ? iosApp.window : undefined;
-    console.log('applyTheme', theme);
     switch (theme) {
         case 'auto':
             Theme.setMode(Theme.Auto);
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
+                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
             }
             break;
         case 'light':
@@ -26,7 +28,7 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
+                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
             }
             break;
         case 'dark':
@@ -34,7 +36,7 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
             }
             break;
         case 'black':
@@ -42,37 +44,48 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
-                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
             }
             break;
     }
 }
 
 export let theme: Themes;
-if (global.isIOS) {
-    const sdkVersion = Device.sdkVersion;
-    if (parseFloat(sdkVersion) >= 13) {
-        theme = getString('theme', 'auto') as Themes;
-    } else {
-        theme = 'light';
-    }
-} else {
-    theme = getString('theme', 'dark') as Themes;
+
+export function toggleTheme() {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setString('theme', newTheme);
 }
 
-prefs.on('key:theme', () => {
-    const newTheme = getString('theme') as Themes;
-    // on pref change we are updating
-    if (newTheme === theme) {
-        return;
+export function start() {
+    if (global.isIOS) {
+        if (iOSNativeHelper.MajorVersion >= 13) {
+            theme = getString('theme', 'auto') as Themes;
+        } else {
+            theme = 'light';
+        }
+    } else {
+        theme = getString('theme', 'dark') as Themes;
     }
-    console.log('theme change', theme, newTheme);
-    theme = newTheme;
-    applyTheme(newTheme );
-    updateThemeColors(newTheme, true);
-    if (global.isAndroid) {
-        // we recreate the activity to get the change
-        const activity = androidApp.startActivity as androidx.appcompat.app.AppCompatActivity;
-        activity.recreate();
-    }
-});
+
+    prefs.on('key:theme', () => {
+        let newTheme = getString('theme') as Themes;
+        if (global.isIOS && iOSNativeHelper.MajorVersion < 13) {
+            newTheme = 'light';
+        }
+        // on pref change we are updating
+        if (newTheme === theme) {
+            return;
+        }
+
+        theme = newTheme;
+
+        applyTheme(newTheme);
+        updateThemeColors(newTheme, newTheme !== 'auto');
+
+        // android activity will be restarted
+    });
+
+    applyTheme(theme);
+    updateThemeColors(theme, theme !== 'auto');
+}

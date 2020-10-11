@@ -92,15 +92,15 @@
                 returnKeyType="search"
                 on:textChange={onTextChange}
                 on:loaded={focus}
-                color={textColor} />
+                color={$textColor} />
             <collectionview row="2" rowHeight="70" items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">
                         <!-- <MapView focusPos={item.coord} /> -->
                         <gridLayout col="1" paddingLeft="10" verticalAlignment="center" rows="auto,auto,auto">
                             <label fontSize="18" text={item.name} />
-                            <label row="1" color={textLightColor} fontSize="14" text={item.sys.state || item.sys.country} />
-                            <label row="2" color={textLightColor} fontSize="14" text={item.sys.state ? item.sys.country : ''} />
+                            <label row="1" color={$textLightColor} fontSize="14" text={item.sys.state || item.sys.country} />
+                            <label row="2" color={$textLightColor} fontSize="14" text={item.sys.state ? item.sys.country : ''} />
                         </gridLayout>
                         <!-- <label fontSize="10" verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
                     </gridLayout>

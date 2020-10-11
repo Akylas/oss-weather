@@ -111,6 +111,7 @@ module.exports = env => {
         watchOptions: {
             ignored: [
                 appResourcesFullPath,
+                dist,
                 // Don't watch hidden files
                 '**/.*',
             ]

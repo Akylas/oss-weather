@@ -280,8 +280,16 @@ const ccMoonIcons = {
     last_quarter: 'wi-moon-first-quarter',
 };
 
+const new_moon = new Date(1970, 0, 7, 20, 35, 0).valueOf();
+
+export function getMoonPhase(date: Date){ // Gets the current Julian date
+    const lp = 2551443;
+    const now = new Date(date.getFullYear(),date.getMonth()-1,date.getDate(),20,35,0);
+    const phase = ((now.getTime() - new_moon)/1000) % lp;
+    return (Math.floor(phase /(24*3600)) + 1);
+}
 export function moonIcon(moonPhase: number) {
-    return moonIcons[Math.floor(moonPhase * (moonIcons.length - 1))];
+    return moonIcons[moonPhase];
 }
 export function ccMoonIcon(moonPhase: string) {
     return ccMoonIcons[moonPhase];

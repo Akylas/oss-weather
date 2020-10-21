@@ -3,7 +3,7 @@ import { connectionType, getConnectionType, startMonitoring, stopMonitoring } fr
 import Observable, { EventData} from '@nativescript-community/observable';
 import dayjs from 'dayjs';
 import Color from 'tinycolor2';
-import { ccMoonIcon, colorForIcon, colorForUV, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
+import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { IMapPos } from '~/helpers/geo';
 import { CustomError } from '~/utils/error';
@@ -598,7 +598,7 @@ export async function getOWMWeather(lat: number, lon: number) {
             windBearing: result.current.wind_deg,
             uvIndexColor: colorForUV(result.current.uvi),
             uvIndex: result.current.uvi,
-            moonIcon: moonIcon(moon.getPhase(new Date(result.current.dt * 1000)).phase),
+            moonIcon: moonIcon(getMoonPhase(new Date(result.current.dt * 1000))),
             sunriseTime: result.current.sunrise * 1000,
             sunsetTime: result.current.sunset * 1000,
             icon: result.current.weather[0]?.icon,
@@ -625,7 +625,7 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.windSpeed = data.wind_speed;
                 d.humidity = data.humidity;
                 d.pressure = data.pressure;
-                d.moonIcon = moonIcon(moon.getPhase(new Date(d.time)).phase);
+                d.moonIcon = moonIcon(getMoonPhase(new Date(d.time)));
                 d.sunriseTime = data.sunrise * 1000;
                 d.sunsetTime = data.sunset * 1000;
 

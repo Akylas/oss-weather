@@ -14,12 +14,13 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, params = {}) => {
     if (env.adhoc) {
-        Object.assign(env, {
+        env = Object.assign({}, {
             production: true,
             sentry: true,
+            uploadSentry: true,
             sourceMap: true,
-            uglify: true,
-        });
+            uglify: true
+        }, env);
     }
     const {
         appPath = 'app',
@@ -30,7 +31,7 @@ module.exports = (env, params = {}) => {
         hiddenSourceMap, // --env.hiddenSourceMap
         inlineSourceMap, // --env.inlineSourceMap
         sentry, // --env.sentry
-        uploadSentry = true,
+        uploadSentry,
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
@@ -113,10 +114,9 @@ module.exports = (env, params = {}) => {
         TEST_LOGS: adhoc || !production,
         GIT_URL: `"${package.repository}"`,
         STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nsConfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
-        STORE_REVIEW_LINK: `"${
-            isIOS
-                ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
-                : `market://details?id=${nsConfig.id}`
+        STORE_REVIEW_LINK: `"${isIOS
+            ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
+            : `market://details?id=${nsConfig.id}`
         }"`,
     };
 
@@ -276,6 +276,10 @@ module.exports = (env, params = {}) => {
         ],
     });
 
+    if (nsConfig.cssParser !== 'css-tree') {
+        config.plugins.push(new webpack.IgnorePlugin(/css-tree$/));
+    }
+
     // we remove default rules
     config.plugins = config.plugins.filter((p) => ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin'].indexOf(p.constructor.name) === -1);
     // we add our rules
@@ -298,14 +302,6 @@ module.exports = (env, params = {}) => {
             ],
         })
     );
-    // config.plugins.unshift(
-    //     new CleanWebpackPlugin({
-    //         dangerouslyAllowCleanPatternsOutsideProject: true,
-    //         dry: false,
-    //         verbose: false,
-    //         cleanOnceBeforeBuildPatterns: itemsToClean,
-    //     })
-    // );
     config.plugins.unshift(new webpack.DefinePlugin(defines));
     config.plugins.push(
         new webpack.EnvironmentPlugin({
@@ -315,7 +311,7 @@ module.exports = (env, params = {}) => {
     );
 
     config.devtool = inlineSourceMap ? 'inline-cheap-source-map' : false;
-    if (hiddenSourceMap || sourceMap) {
+    if (!inlineSourceMap && (hiddenSourceMap || sourceMap)) {
         if (sentry && uploadSentry) {
             config.plugins.push(
                 new webpack.SourceMapDevToolPlugin({
@@ -347,7 +343,7 @@ module.exports = (env, params = {}) => {
         } else {
             config.plugins.push(
                 new webpack.SourceMapDevToolPlugin({
-                    noSources: true,
+                    filename: '[name].js.map'
                 })
             );
         }
@@ -387,13 +383,12 @@ module.exports = (env, params = {}) => {
                     // when these options are enabled
                     collapse_vars: platform !== 'android',
                     sequences: platform !== 'android',
-                    // passes: 2,
+                    passes: 2,
                     drop_console: production && adhoc !== true,
                 },
                 keep_fnames: true,
             },
         }),
     ];
-    console.log(config.plugins);
     return config;
 };

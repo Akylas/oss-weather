@@ -12,7 +12,7 @@ import { CityWeather, Coord, ListWeather, Rain, Snow, Weather } from './owm';
 import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { Photon } from './photon';
-import * as https from 'nativescript-akylas-https';
+import * as https from '@nativescript-community/https';
 import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent, suspendEvent } from '@nativescript/core/application';
 import { moon, sun } from '@modern-dev/daylight';
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);

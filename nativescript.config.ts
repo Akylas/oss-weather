@@ -8,7 +8,9 @@ export default {
         markingMode: 'none',
         v8Flags: '--expose_gc',
         codeCache: true,
+        forceLog: true,
     },
+    cssParser: 'rework',
     appPath: 'app',
     webpackConfigPath: './app.webpack.config.js',
 } as NativeScriptConfig;

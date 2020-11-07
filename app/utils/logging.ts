@@ -91,6 +91,9 @@ const originalConsole = {
 
 function convertArg(arg) {
     const type = typeof arg;
+    if (!arg) {
+        return;
+    }
     if (type === 'function' || typeof arg.getClass === 'function' || typeof arg.class === 'function') {
         return (arg as Function).toString();
     } else if (Array.isArray(arg)) {

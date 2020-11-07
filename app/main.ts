@@ -15,8 +15,6 @@ import { install as installBottomSheets } from '@nativescript-community/ui-mater
 installBottomSheets();
 
 import { Label, enableIOSDTCoreText } from '@nativescript-community/ui-label';
-enableIOSDTCoreText();
-
 
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);

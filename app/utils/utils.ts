@@ -1,6 +1,5 @@
-import { knownFolders, path } from '@nativescript/core/file-system';
 import * as app from '@nativescript/core/application';
-
+import { knownFolders } from '@nativescript/core/file-system';
 
 export function getDataFolder() {
     let dataFolder;
@@ -32,8 +31,5 @@ export function getDataFolder() {
     } else {
         dataFolder = knownFolders.documents().path;
     }
-    // if (!PRODUCTION) {
-    //     dataFolder = path.join(dataFolder, 'dev');
-    // }
     return dataFolder;
 }

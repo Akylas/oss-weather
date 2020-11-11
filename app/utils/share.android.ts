@@ -1,4 +1,4 @@
-import { android as androidApp } from '@nativescript/core/application';
+import { Application } from '@nativescript/core';
 
 export async function share(
     content: {
@@ -33,11 +33,11 @@ export async function share(
     const chooser = Intent.createChooser(intent, options.dialogTitle);
     chooser.addCategory(Intent.CATEGORY_DEFAULT);
 
-    const currentActivity = androidApp.foregroundActivity || androidApp.startActivity;
+    const currentActivity = Application.android.foregroundActivity || Application.android.startActivity;
     if (currentActivity !== null) {
         currentActivity.startActivity(chooser);
     } else {
-        androidApp.context.startActivity(chooser);
+        Application.android.context.startActivity(chooser);
     }
     return true;
 }

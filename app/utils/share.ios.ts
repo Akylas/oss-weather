@@ -1,6 +1,5 @@
+import { Color, View } from '@nativescript/core';
 import { ios as iosApp } from '@nativescript/core/application';
-import { View } from '@nativescript/core/ui/core/view';
-import { Color } from '@nativescript/core/color';
 
 export async function share(
     content: {

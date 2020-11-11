@@ -18,38 +18,11 @@ export enum UNITS {
     Distance = 'm',
     DistanceKm = 'km',
     Speed = 'km/h',
-    Pace = 'min/km',
-    Cardio = 'bpm',
-    Battery = 'battery',
 }
-
-// export function getCurrentDateLanguage() {
-//     const deviceLang = Platform.device.language;
-//     if (supportedLanguages.indexOf(deviceLang) !== -1) {
-//         return deviceLang;
-//     }
-//     return 'en-US';
-// }
-
-
-// function createDateAsUTC(date) {
-//     return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
-// }
-
-// export function convertDuration(date, formatStr: string) {
-//     const test = new Date(date);
-//     test.setTime(test.getTime() + test.getTimezoneOffset() * 60 * 1000);
-//     const result = dayjs(test).format(formatStr);
-//     // console.log('convertDuration', date, formatStr, test, result);
-//     return result;
-// }
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
 }
 
-// function kelvinToFahrenheit(kelvinTemp) {
-//     return (9 * kelvinToCelsius(kelvinTemp)) / 5 + 32;
-// }
 function celciusToFahrenheit(kelvinTemp) {
     return (9 * kelvinTemp) / 5 + 32;
 }
@@ -58,7 +31,6 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
     if (value === undefined || value === null) {
         return ['', ''];
     }
-    // console.log('convertValueToUnit', value, unit, otherParam);
     switch (unit) {
         case UNITS.kPa:
             return [(value / 10).toFixed(), 'kPa'];
@@ -69,20 +41,13 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
         case UNITS.InchHg:
             return [(value * 0.0295299830714).toFixed(), 'in Hg'];
         case UNITS.MM:
-            // if (value < 0.1) {
-            //     return ['', ''];
-            // } else {
             return [value.toFixed(1), 'mm'];
-        // }
         case UNITS.Celcius:
             return [Math.round(value * 10) / 10, ''];
         case UNITS.Farenheit:
             return [celciusToFahrenheit(value).toFixed(1), '°'];
-        // case UNITS.Duration:
-        // return [convertDuration(value, 'HH:mm:ss'), ''];
         case UNITS.Date:
             return [convertTime(value, 'M/d/yy h:mm a'), ''];
-
         case UNITS.Distance:
             return [value.toFixed(), unit];
         case UNITS.DistanceKm:
@@ -94,22 +59,7 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
                 return [(value / 1000).toFixed(1), unit];
             }
         case UNITS.Speed:
-            // if (value < 100) {
-            //     return [value.toFixed(1), unit];
-            // } else {
-            // if > 100 we still need to send a . at the end...
             return [value.toFixed(0), unit];
-        // }
-        case UNITS.Pace:
-            let result = value < 0.001 ? 0 : 60.0 / value;
-
-            // no point in showing Pace > 60 min/km
-            if (result > 60.0) {
-                result = 0;
-            }
-            const minutes = Math.floor(result) % 60;
-            const seconds = Math.floor((result - minutes) * 60);
-            return [`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`, unit];
         default:
             return [value.toFixed(), unit];
     }

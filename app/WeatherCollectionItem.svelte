@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-    import Theme from '@nativescript-community/css-theme';
     import { Align, Paint } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core/color';
     import { Screen } from '@nativescript/core/platform';
@@ -27,7 +26,6 @@
 
     function redraw() {
         canvasView && canvasView.nativeView.invalidate();
-
     }
     $: {
         tempHeight = (((item.temperature - item.min) / (item.max - item.min)) * deviceHeight) / 20;

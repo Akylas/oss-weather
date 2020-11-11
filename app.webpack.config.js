@@ -2,7 +2,7 @@ const webpackConfig = require('./webpack.config.js');
 const svelteNativePreprocessor = require('svelte-native-preprocessor');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
-const { existsSync, mkdirSync, readFileSync } = require('fs');
+const { existsSync, mkdirSync, readFileSync,  readdirSync } = require('fs');
 const { dirname, join, relative, resolve, sep } = require('path');
 const nsWebpack = require('@nativescript/webpack');
 const nativeClassTransformer = require('@nativescript/webpack/transformers/ns-transform-native-classes').default;
@@ -90,10 +90,14 @@ module.exports = (env, params = {}) => {
     const isIOS = platform === 'ios';
     const isAndroid = platform === 'android';
     const APP_STORE_ID = process.env.IOS_APP_ID;
+    const locales = readdirSync(join(projectRoot, appPath, 'i18n'))
+        .filter((s) => s.endsWith('.json'))
+        .map((s) => s.replace('.json', ''));
     const defines = {
         PRODUCTION: !!production,
         process: 'global.process',
         'global.TNS_WEBPACK': 'true',
+        'SUPPORTED_LOCALES': JSON.stringify(locales),
         'gVars.platform': `"${platform}"`,
         'global.isIOS': platform === 'ios',
         'global.isAndroid': platform === 'android',
@@ -119,6 +123,9 @@ module.exports = (env, params = {}) => {
             : `market://details?id=${nsConfig.id}`
         }"`,
     };
+    if (!!production) {
+        defines['Trace.isEnabled()'] = 'false';
+    }
 
     const itemsToClean = [`${dist}/**/`];
     if (platform === 'android') {
@@ -275,6 +282,22 @@ module.exports = (env, params = {}) => {
             },
         ],
     });
+    if (!!production) {
+        config.module.rules.push({
+            // rules to replace mdi icons and not use nativescript-font-icon
+            test: /\.(js)$/,
+            use: [
+                {
+                    loader: 'string-replace-loader',
+                    options: {
+                        search: '__decorate\(\[((.|\n)*?)profile,((.|\n)*?)\],.*?,.*,.*\);?',
+                        replace: (match, p1, offset, string) => '',
+                        flags: 'g',
+                    },
+                }
+            ]
+        });
+    }
 
     if (nsConfig.cssParser !== 'css-tree') {
         config.plugins.push(new webpack.IgnorePlugin(/css-tree$/));
@@ -301,6 +324,9 @@ module.exports = (env, params = {}) => {
                 },
             ],
         })
+    );
+    config.plugins.push(
+        new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${locales.join('|')})$`))
     );
     config.plugins.unshift(new webpack.DefinePlugin(defines));
     config.plugins.push(

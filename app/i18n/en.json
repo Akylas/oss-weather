@@ -73,6 +73,6 @@
   "share_application": "share application",
   "review_application": "review application",
   "about": "about",
-  "no_location_desc": "You haven't chosen a location yet. \nYou can search to use your GPS location"
-
+  "no_location_desc": "You haven't chosen a location yet. \nYou can search to use your GPS location",
+  "select_location": "select a location"
 }

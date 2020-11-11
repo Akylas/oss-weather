@@ -2,9 +2,8 @@
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
     import { Frame } from '@nativescript/core/ui/frame';
-import { textColor } from './variables';
+    import { textColor } from './variables';
     export let title: string;
-    // export let showLogo = false;
     export let showMenuIcon: boolean = false;
     export let canGoBack: boolean = false;
     export let modalWindow: boolean = false;

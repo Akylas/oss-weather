@@ -14,7 +14,9 @@ installUIMixins();
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 installBottomSheets();
 
-import { Label, enableIOSDTCoreText } from '@nativescript-community/ui-label';
+import { Label } from '@nativescript-community/ui-label';
+import { overrideSpanAndFormattedString } from '@nativescript-community/text';
+overrideSpanAndFormattedString();
 
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
@@ -26,11 +28,10 @@ registerNativeViewElement('lottie', () => require('@akylas/nativescript-lottie')
 registerNativeViewElement('pullrefresh', () => require('@akylas/nativescript-pulltorefresh').PullToRefresh);
 registerNativeViewElement('canvas', () => require('@nativescript-community/ui-canvas').CanvasView);
 registerNativeViewElement('line', () => require('@nativescript-community/ui-canvas/shapes/line').default);
+registerNativeViewElement('image', () => require('@nativescript-community/ui-image').Img);
 registerNativeViewElement('canvaslabel', () => require('@nativescript-community/ui-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);
 registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
-// registerNativeViewElement('settingLabelIcon', () => require('./SettingLabelIcon.svelte').default);
-
 
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 CollectionViewElement.register();

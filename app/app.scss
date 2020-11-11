@@ -18,6 +18,7 @@ htmllabel,
 canvaslabel,
 label,
 mdbutton {
+    @extend .lato;
     // background-color: rgba(255, 0,0,0.2);
     // .ns-light & {
     color: black;
@@ -65,16 +66,6 @@ mdtextfield {
         placeholder-color: white;
     }
 }
-
-// .ns-ios {
-// for now we set the font on both platform.
-// but on android it should be possible to do it through style, though not working yet
-label,
-htmllabel,
-canvaslabel {
-    @extend .lato;
-}
-// }
 
 page {
     // .ns-light & {

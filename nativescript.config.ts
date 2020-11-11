@@ -10,6 +10,7 @@ export default {
         codeCache: true,
         forceLog: true,
     },
+    // profiling: 'timeline',
     cssParser: 'rework',
     appPath: 'app',
     webpackConfigPath: './app.webpack.config.js',

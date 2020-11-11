@@ -1,10 +1,12 @@
-import { Device } from '@nativescript/core/platform';
 import { loadLocaleJSON } from '@nativescript-community/l';
+import { getString, setString } from '@nativescript/core/application-settings';
+import { Device } from '@nativescript/core/platform';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { prefs } from '~/services/preferences';
 export { l, lc, lt, lu } from '@nativescript-community/l';
-import dayjs from 'dayjs';
-const supportedLanguages = ['en', 'fr'];
-import { getString, setString } from '@nativescript/core/application-settings';
+const supportedLanguages = SUPPORTED_LOCALES;
+dayjs.extend(LocalizedFormat);
 
 function setLang(newLang) {
     newLang = getOwmLanguage(newLang);
@@ -56,6 +58,16 @@ function getOwmLanguage(language) {
 export let lang;
 
 // const rtf = new Intl.RelativeTimeFormat('es');
+
+export function convertTime(date: number | string | dayjs.Dayjs, formatStr: string) {
+    if (date) {
+        if (!date['format']) {
+            date = dayjs(date);
+        }
+        return (date as dayjs.Dayjs).format(formatStr);
+    }
+    return '';
+}
 
 prefs.on('key:language', () => {
     const newLanguage = getString('language');

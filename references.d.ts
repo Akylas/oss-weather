@@ -3,6 +3,7 @@
 /// <reference path="./node_modules/@nativescript/core/global-types.d.ts" />
 
 
+declare const SUPPORTED_LOCALES: string[];
 declare const TNS_ENV: string;
 declare const LOG_LEVEL: string;
 declare const TEST_LOGS: boolean;

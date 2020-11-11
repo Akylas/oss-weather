@@ -1,20 +1,8 @@
-import dayjs from 'dayjs';
-
-// import required dayjs locales
-// import utc from 'dayjs/plugin/utc';
-import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-dayjs.extend(LocalizedFormat);
 import Color from 'tinycolor2';
 import { nightColor, sunnyColor } from '~/variables';
+import { convertTime } from './locale';
 
-// export function localize(s: string, ...args) {
-//     return l(s, ...args);
-// }
-// dayjs.extend(utc);
-// const dayjs: (...args) => Dayjs = require('dayjs');
-// const Duration = require('duration');
-
-// const supportedLanguages = ['en', 'fr'];
+export { convertTime };
 
 export enum UNITS {
     InchHg = 'InchHg',
@@ -43,15 +31,6 @@ export enum UNITS {
 //     return 'en-US';
 // }
 
-export function convertTime(date: number | string | dayjs.Dayjs, formatStr: string) {
-    if (date) {
-        if (!date['format']) {
-            date = dayjs(date);
-        }
-        return (date as dayjs.Dayjs).format(formatStr);
-    }
-    return '';
-}
 
 // function createDateAsUTC(date) {
 //     return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());

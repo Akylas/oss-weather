@@ -8,12 +8,10 @@
     import CActionBar from './CActionBar.svelte';
 
     let page;
-    let collectionView;
     let textField;
     let loading = false;
     let searchResults = [];
     let searchAsTypeTimer;
-    let hasFocus = false;
     let currentSearchText;
 
     function focus() {
@@ -22,15 +20,6 @@
     }
     function unfocus() {
         clearSearchTimeout();
-    }
-    function onFocus(e) {
-        hasFocus = true;
-        if (currentSearchText) {
-            searchCity(this.currentSearchText);
-        }
-    }
-    function onBlur(e) {
-        hasFocus = false;
     }
     function onTextChange(e) {
         const query = e.value;
@@ -73,7 +62,7 @@
     //     focus();
     // });
     function onNavigatingTo(e) {
-        console.log('onNavigatingTo', page && page.nativeView, e.object);
+        // console.log('onNavigatingTo', page && page.nativeView, e.object);
     }
 </script>
 

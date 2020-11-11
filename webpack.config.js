@@ -163,7 +163,7 @@ module.exports = env => {
                         chunks: 'all',
                         test: (module, chunks) => {
                             const moduleName = module.nameForCondition ? module.nameForCondition() : '';
-                            return /[\\/]node_modules[\\/]/.test(moduleName) ||
+                            return /[\\/]node_modules[\\/]/.test(moduleName) || /packages[\\/]core[\\/]/.test(moduleName) ||
                                 appComponents.some(comp => comp === moduleName);
 
                         },
@@ -221,7 +221,7 @@ module.exports = env => {
                     use: '@nativescript/webpack/hmr/hot-loader'
                 },
 
-                { test: /\.(html|xml)$/, use: '@nativescript/webpack/helpers/xml-namespace-loader' },
+                // { test: /\.(html|xml)$/, use: '@nativescript/webpack/helpers/xml-namespace-loader' },
 
                 {
                     test: /\.css$/,

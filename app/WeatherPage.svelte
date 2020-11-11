@@ -1,15 +1,18 @@
 <script lang="ts">
-    import { android as androidApp } from '@nativescript/core/application';
+    import { PullToRefresh } from '@akylas/nativescript-pulltorefresh';
+    import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
+    import { request as requestPerm } from '@nativescript-community/perms';
+    import { login } from '@nativescript-community/ui-material-dialogs';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { Application, Page } from '@nativescript/core';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { Accuracy } from '@nativescript/core/ui/enums/enums';
     import dayjs from 'dayjs';
-    import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
-    import { login } from '@nativescript-community/ui-material-dialogs';
-    import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { request as requestPerm } from '@nativescript-community/perms';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
+    import { NativeViewElementNode } from 'svelte-native/dom';
     import { showBottomSheet } from '~/bottomsheet';
     import { l, lc, onLanguageChanged } from '~/helpers/locale';
     import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, setCCApiKey, setOWMApiKey } from '~/services/api';
@@ -22,11 +25,9 @@
     import DailyView from './DailyView.svelte';
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     import TopWeatherView from './TopWeatherView.svelte';
-    import WeatherIcon from './WeatherIcon.svelte';
-    import { TextField } from '@nativescript-community/ui-material-textfield';
     import { Sentry } from './utils/sentry';
+    import WeatherIcon from './WeatherIcon.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
-import { toggleTheme } from './helpers/theme';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -47,9 +48,9 @@ import { toggleTheme } from './helpers/theme';
     let maximumAge = 3000;
     let timeout = 20000;
     let minimumUpdateTime = 1000; // Should update every 1 second according ;
-    let pullRefresh;
+    let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
-    let page;
+    let page: NativeViewElementNode<Page>;
     function showOptions() {
         showBottomSheet({
             parent: page,
@@ -318,7 +319,7 @@ import { toggleTheme } from './helpers/theme';
         if (global.isIOS) {
             exit(0);
         } else {
-            androidApp.startActivity.finish();
+            Application.android.startActivity.finish();
         }
     }
     async function askForApiKey() {
@@ -441,7 +442,7 @@ import { toggleTheme } from './helpers/theme';
             <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index}>
+                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} disableCss={true}>
                     <Template key="topView" let:item>
                         <TopWeatherView {item} height={topHeight} />
                     </Template>
@@ -461,8 +462,8 @@ import { toggleTheme } from './helpers/theme';
                 <label :text={l('no_location_desc')} />
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <formattedString>
-                    <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
-                    <span text={l('my_location').toUpperCase()} />
+                        <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
+                        <span text={l('my_location').toUpperCase()} />
                     </formattedString>
                 </mdbutton>
                 <mdbutton row="2" margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>

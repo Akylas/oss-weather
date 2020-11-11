@@ -1,7 +1,7 @@
 <script lang="ts">
-    import WeatherCollectionItem from './WeatherCollectionItem.svelte';
     import { Template } from 'svelte-native/components';
-    import { screenWidthDips } from '~/variables';
+    import WeatherCollectionItem from './WeatherCollectionItem.svelte';
+
     export let items;
     let collectionView;
     export let scrollIndex = 0;
@@ -13,8 +13,9 @@
 
 <collectionview
     {...$$restProps}
+    disableCss={true}
     bind:this={collectionView}
-     itemIdGenerator={(_item, index) => index}
+    itemIdGenerator={(_item, index) => index}
     orientation="horizontal"
     colWidth="60"
     rowHeight="100%"

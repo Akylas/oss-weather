@@ -1,24 +1,20 @@
-import { ITestReporter, LogImageType, nsCapabilities, startServer, stopServer } from 'nativescript-dev-appium';
-const addContext = require('mochawesome/addContext');
+import { cleanup, init } from "detox";
+const adapter = require('detox/runners/jest/adapter')
 
-const testReporterContext = <ITestReporter>{};
-testReporterContext.name = 'mochawesome';
-/**
- * This folder should be the one provided in mocha.opts.
- * If omitted the default one is "mochawesome-report".
- * This is necessary because we need the logged images to be relatively
- * positioned according to mochawesome.html in the same folder
- */
-testReporterContext.reportDir = 'mochawesome-report';
-testReporterContext.log = addContext;
-testReporterContext.logImageTypes = [LogImageType.screenshots];
-nsCapabilities.testReporter = testReporterContext;
+const config = require("../package.json").detox;
 
-before('start server', async function () {
-    nsCapabilities.testReporter.context = this;
-    await startServer();
+jest.setTimeout(120000);
+(jasmine as any).getEnv().addReporter(adapter);
+
+beforeAll(async () => {
+  await init(config, { initGlobals: false });
 });
 
-after('stop server', async function () {
-    await stopServer();
+beforeEach(async () => {
+  await adapter.beforeEach();
+});
+
+afterAll(async () => {
+  await adapter.afterAll();
+  await cleanup();
 });

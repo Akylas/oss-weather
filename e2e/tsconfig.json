@@ -1,20 +1,8 @@
 {
+    "extends": "../tsconfig.json",
+    "include": ["./**/*.ts"],
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es6",
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-        "importHelpers": false,
-        "sourceMap": true,
-        "types": [
-            "node",
-            "mocha",
-            "chai"
-        ],
-        "lib": [
-            "es2015",
-            "dom"
-        ],
-        "baseUrl": "."
-    }
+        "types": ["detox", "jest", "node"]
+    },
+    "exclude": ["../node_modules"]
 }

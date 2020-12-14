@@ -12,12 +12,13 @@ import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
 import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
-import { CityWeather, Coord, Rain, Snow, Weather } from './owm';
+import { Alert, CityWeather, Coord, Rain, Snow, Weather } from './owm';
 import { Photon } from './photon';
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
 let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
 
+export {Alert, CityWeather, Coord, Rain, Snow, Weather};
 type HTTPSOptions = https.HttpsRequestOptions;
 
 export const NetworkConnectionStateEvent = 'connected';
@@ -220,9 +221,6 @@ class NetworkService extends Observable {
             // this.notify({ eventName: 'connection', object: this, connectionType: value, connected: this.connected });
         }
     }
-    log(...args) {
-        console.log(`[${this.constructor.name}]`, ...args);
-    }
     monitoring = false;
     start() {
         if (this.monitoring) {
@@ -281,7 +279,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
             // } catch (err) {
             // error result might html
             const match = /<title>(.*)\n*<\/title>/.exec(content);
-            console.log('http error',statusCode, match, content.toString(), requestParams);
+            // console.log('http error',statusCode, match, content.toString(), requestParams);
             return Promise.reject(
                 new HTTPError({
                     statusCode,
@@ -379,7 +377,7 @@ export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
 }
 
 export async function getCityName(pos: Coord) {
-    console.log('getCityName', pos);
+    // console.log('getCityName', pos);
     const result: CityWeather = await fetchOWM('weather', {
         lat: pos.lat,
         lon: pos.lon,
@@ -430,6 +428,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         lat,
         lon,
     })) as {
+        alerts?: Alert[];
         current: {
             dt: number;
             temp: number;
@@ -502,25 +501,14 @@ export async function getOWMWeather(lat: number, lon: number) {
         }[];
     };
     // console.log('onecall', JSON.stringify(result));
-    // console.log('minutely', JSON.stringify(result.minutely));
-    // console.log('currently', JSON.stringify(result.current));
-    // console.log('hourly', JSON.stringify(result.hourly));
+    console.log('minutely', JSON.stringify(result.minutely));
+    console.log('currently', JSON.stringify(result.current));
+    console.log('hourly', JSON.stringify(result.hourly));
+    console.log('daily', JSON.stringify(result.daily));
+    console.log('alerts', JSON.stringify(result.alerts));
     if (!result.minutely) {
         if (ccApiKey) {
             const now = dayjs();
-            // const hourly = await request<ClimaCellHourly>({
-            //     url: CLIMA_CELL_API_URL_HOURLY,
-            //     method: 'GET',
-            //     queryParams: {
-            //         lat,
-            //         lon,
-            //         apikey: ccApiKey,
-            //         unit_system: 'si',
-            //         end_time: now.add(96, 'h').toISOString(),
-            //         fields: CLIMA_CELL_HOURLY_FIELDS,
-            //     },
-            // });
-            // console.log('test hourly', JSON.stringify(hourly));
             const nowcast = await request<ClimaCellNowCast>({
                 url: CLIMA_CELL_API_URL_NOWCAST,
                 method: 'GET',
@@ -650,6 +638,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         minutely: {
             data: result.minutely,
         },
+        alerts:result.alerts
         // minutely: result.minutely
         //     ? {
         //         data: result.minutely.map((data) => {
@@ -670,7 +659,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         d.temperature = data.temp;
 
         d.windBearing = data.wind_deg;
-        d.precipIntensity = d.precipAccumulation = data.rain ? data.rain['1h'] : 0;
+        d.precipIntensity = d.precipAccumulation = data.snow ? data.snow['1h'] : (data.rain ? data.rain['1h'] : 0);
         d.precipProbability = data.pop;
         d.cloudCover = data.clouds / 100;
         d.humidity = data.humidity;

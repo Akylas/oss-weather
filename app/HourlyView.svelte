@@ -21,6 +21,7 @@
     rowHeight="100%"
     height="100%"
     isBounceEnabled="false"
+    iosOverflowSafeAreaEnabled="false"
     {items}
     on:dataPopulated={onDataPopulated}>
     <Template let:item>

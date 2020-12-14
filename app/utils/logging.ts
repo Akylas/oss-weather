@@ -1,6 +1,5 @@
 import { getAppId } from '@nativescript-community/extendedinfo';
 import * as SentryType from '@nativescript-community/sentry';
-export const DEV_LOG = LOG_LEVEL === 'full';
 
 let Sentry: typeof SentryType;
 if (gVars.sentry) {

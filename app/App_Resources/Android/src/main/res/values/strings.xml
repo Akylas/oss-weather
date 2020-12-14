@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="select_location">"select a location"</string>
   <string name="no_location_desc">"You haven\'t chosen a location yet. \nYou can search to use your GPS location"</string>
   <string name="about">"about"</string>
   <string name="review_application">"review application"</string>

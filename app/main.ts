@@ -16,7 +16,7 @@ installBottomSheets();
 
 import { Label } from '@nativescript-community/ui-label';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
-overrideSpanAndFormattedString();
+// overrideSpanAndFormattedString();
 
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
@@ -58,6 +58,14 @@ if (global.isIOS) {
     themer.setPrimaryColor(primaryColor);
     themer.setAccentColor(primaryColor);
 }
+
+themer.createShape('round', {
+    cornerFamily: 'rounded' as any,
+    cornerSize: {
+        value: 0.5,
+        unit: '%'
+    }
+});
 
 import { svelteNative } from 'svelte-native';
 import WeatherPage from './WeatherPage.svelte';

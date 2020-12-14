@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
     import { Align, Paint } from '@nativescript-community/ui-canvas';
-    import { Color } from '@nativescript/core/color';
     import { Screen } from '@nativescript/core/platform';
     import dayjs from 'dayjs';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
@@ -19,6 +18,8 @@
 </script>
 
 <script lang="ts">
+import { Color } from '@akylas/nativescript';
+
     export let item;
     let tempHeight = 0;
     let canvasView;
@@ -43,18 +44,18 @@
         textPaint.setColor($textColor);
 
         let color;
-        if ((item.precipProbability === -1 || item.precipProbability > 0) && precipitationHeight > 0) {
+        const precipProbability = item.precipProbability;
+        if ((precipProbability === -1 || precipProbability > 0) && precipitationHeight > 0) {
             const precipTop = (1 - precipitationHeight / 120) * h - 10;
-            let color = new Color(item.precipColor);
-            paint.setColor(color);
-            paint.setAlpha(item.precipProbability === -1 ? 125 : item.precipProbability * 255);
+            paint.setColor(item.precipColor);
+            paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 255);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
-            if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipIntensity >= 0.1) {
+            if ((precipProbability === -1 || precipProbability > 0.1) && item.precipIntensity >= 0.1) {
                 textPaint.setTextSize(10);
                 textPaint.setColor($textColor);
                 textPaint.setAlpha(150);
-                if (item.precipProbability > 0) {
-                    canvas.drawText(Math.round(item.precipProbability * 100) + '%', w2, h - 22, textPaint);
+                if (precipProbability > 0) {
+                    canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22, textPaint);
                 }
                 canvas.drawText(formatValueToUnit(item.precipIntensity, UNITS.MM), w2, h - 12, textPaint);
             }
@@ -63,8 +64,7 @@
         if (item.cloudCeiling > 0) {
             const heightProb = 1 - item.cloudCeiling / 6000;
             const top = 0.3 * (h - 30) * heightProb + 13;
-            let color = new Color(item.cloudColor);
-            paint.setColor(color);
+            paint.setColor(item.cloudColor);
             paint.setAlpha(item.cloudCover * heightProb * 150);
             canvas.drawRect(0, 0, w, top, paint);
             textPaint.setColor(color);
@@ -74,13 +74,12 @@
         }
         paint.setAlpha(255);
         textPaint.setAlpha(255);
-        color = new Color(item.color);
-        paint.setColor(color);
+        paint.setColor((item.color));
         canvas.drawRect(0, h - 10, w, h, paint);
 
         textPaint.setColor($textColor);
         textPaint.setTextSize(14);
-        canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, (1 - tempHeight / 100) * h - 70 - 0, textPaint);
+        canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, (1 - tempHeight / 100) * h - 70, textPaint);
 
         textPaint.setFontWeight('bold');
         let decale = 14;

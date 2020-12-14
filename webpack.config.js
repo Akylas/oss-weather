@@ -217,11 +217,10 @@ module.exports = env => {
                 },
 
                 {
-                    test: /\.(ts|css|scss|html|xml)$/,
+                    test: /\.(ts|css|scss)$/,
                     use: '@nativescript/webpack/hmr/hot-loader'
                 },
 
-                // { test: /\.(html|xml)$/, use: '@nativescript/webpack/helpers/xml-namespace-loader' },
 
                 {
                     test: /\.css$/,

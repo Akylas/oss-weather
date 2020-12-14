@@ -12,7 +12,7 @@
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
     import { getChart } from '~/helpers/sveltehelpers';
-    import { mdiFontFamily, nightColor, rainColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import { mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import AlertView from './AlertView.svelte';
     import HourlyView from './HourlyView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
@@ -186,6 +186,7 @@
             leftAxis.setDrawLimitLines(hasPrecip);
             // console.log(JSON.stringify(data.map((v) => ({ t: v.time, v: v.precipIntensity }))));
             if (hasPrecip) {
+                const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'precipIntensity', undefined, 'precipIntensity');
@@ -195,8 +196,6 @@
                     precipChartSet.setDrawValues(false);
                     // precipChartSet.setDrawCircles(true);
                     precipChartSet.setDrawFilled(true);
-                    precipChartSet.setColor(rainColor);
-                    precipChartSet.setFillColor(rainColor);
                     precipChartSet.setFillAlpha(150);
                     // precipChartSet.setCubicIntensity(0.2);
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
@@ -204,6 +203,9 @@
                     precipChartSet.setValues(data);
                     needsUpdate = true;
                 }
+
+                precipChartSet.setColor(color);
+                precipChartSet.setFillColor(color);
             } else if (precipChartSet && precipChartSet.getEntryCount() > 0) {
                 precipChartSet.clear();
                 needsToSetData = true;
@@ -247,6 +249,9 @@
             updateLineChart(item);
         }
     }
+    $: {
+       console.log('alerts', item.alerts)
+    }
 </script>
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
@@ -266,7 +271,6 @@
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
         </cgroup>
-        <!-- {/if} -->
 
         <cgroup paddingLeft="0" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
             <cspan fontSize="24" fontFamily={wiFontFamily} text={item.windIcon} />
@@ -305,7 +309,12 @@
         </cgroup>
         <cspan paddingRight="10" fontSize="14" textAlignment="right" verticalAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom="10" />
     </canvaslabel>
-
+    <mdbutton variant="outline" color="red" height="50" rippleColor="red" borderColor="red" horizontalAlignment='left' on:tap={()=>showAlerts()}>
+        <formattedString>
+            <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-alert-outline"/>
+            <!-- <span text={item.alerts && item.alerts[0] && item.alerts[0].event}  verticalTextAlignment="center"/> -->
+        </formattedString>
+    </mdbutton>
     <linechart bind:this={lineChart} marginTop="110" verticalAlignment="bottom" height="90" marginBottom="40" />
     <WeatherIcon col="1" horizontalAlignment="right" verticalAlignment="center" fontSize="140" icon={item.icon} />
     <HourlyView row="1" colSpan="2" items={item.hourly} />

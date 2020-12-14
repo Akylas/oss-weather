@@ -442,7 +442,7 @@
             <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} disableCss={true}>
+                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} iosOverflowSafeAreaEnabled="false">
                     <Template key="topView" let:item>
                         <TopWeatherView {item} height={topHeight} />
                     </Template>

@@ -1,3 +1,4 @@
+"select_location" = "sélectionnez un emplacement";
 "no_location_desc" = "You haven't chosen a location yet. \nYou can search to use your GPS location";
 "climal_cell_api_key_optional_description" = "pour obtenir des données météorologiques a la minute (facultatif), une clé API ClimaCell gratuite est requise. \nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web";
 "about" = "à propos";

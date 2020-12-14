@@ -1,3 +1,4 @@
+"select_location" = "select a location";
 "no_location_desc" = "You haven't chosen a location yet. \nYou can search to use your GPS location";
 "about" = "about";
 "review_application" = "review application";

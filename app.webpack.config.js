@@ -1,8 +1,6 @@
 const webpackConfig = require('./webpack.config.js');
-const svelteNativePreprocessor = require('svelte-native-preprocessor');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const webpack = require('webpack');
-const { existsSync, mkdirSync, readFileSync,  readdirSync } = require('fs');
+const { readFileSync,  readdirSync } = require('fs');
 const { dirname, join, relative, resolve, sep } = require('path');
 const nsWebpack = require('@nativescript/webpack');
 const nativeClassTransformer = require('@nativescript/webpack/transformers/ns-transform-native-classes').default;
@@ -44,7 +42,6 @@ module.exports = (env, params = {}) => {
     } = env;
 
     const config = webpackConfig(env, params);
-    // config.stats = 'verbose';
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
     const tsconfig = 'tsconfig.json';
@@ -56,32 +53,7 @@ module.exports = (env, params = {}) => {
     config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
-        'tns-core-modules': `${coreModulesPackageName}`,
-        '../driver/oracle/OracleDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './oracle/OracleDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/cockroachdb/CockroachDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './cockroachdb/CockroachDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './cordova/CordovaDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './react-native/ReactNativeDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/react-native/ReactNativeDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './nativescript/NativescriptDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/nativescript/NativescriptDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './mysql/MysqlDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/mysql/MysqlDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './postgres/PostgresDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/postgres/PostgresDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './expo/ExpoDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './aurora-data-api/AuroraDataApiDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/aurora-data-api/AuroraDataApiDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './sqlite/SqliteDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/sqljs/SqljsDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './sqljs/SqljsDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/sqlserver/SqlServerDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './sqlserver/SqlServerDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './mongodb/MongoDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/mongodb/MongoDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        './cordova/CordovaDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
-        '../driver/cordova/CordovaDriver': '@akylas/nativescript-sqlite/typeorm/NativescriptDriver',
+        'tns-core-modules': `${coreModulesPackageName}`
     });
 
     const nativescriptLib = require(env.nativescriptLibPath);
@@ -97,11 +69,11 @@ module.exports = (env, params = {}) => {
         PRODUCTION: !!production,
         process: 'global.process',
         'global.TNS_WEBPACK': 'true',
-        'SUPPORTED_LOCALES': JSON.stringify(locales),
         'gVars.platform': `"${platform}"`,
         'global.isIOS': platform === 'ios',
         'global.isAndroid': platform === 'android',
         TNS_ENV: JSON.stringify(mode),
+        SUPPORTED_LOCALES: JSON.stringify(locales),
         'gVars.sentry': !!sentry,
         NO_CONSOLE: noconsole,
         SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
@@ -131,7 +103,6 @@ module.exports = (env, params = {}) => {
     if (platform === 'android') {
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'src', 'main', 'assets', 'snapshots/**/*')}`);
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'build', 'configurations', 'nativescript-android-snapshot')}`);
-        console.log('itemsToClean', itemsToClean);
     }
 
     const symbolsParser = require('scss-symbols-parser');
@@ -297,6 +268,53 @@ module.exports = (env, params = {}) => {
                 }
             ]
         });
+        // rules to clean up all Trace in production
+        // we must run it for all files even node_modules
+        config.module.rules.push({
+            test: /\.(ts|js)$/,
+            use: [
+                {
+                    loader: 'string-replace-loader',
+                    options: {
+                        search: 'if\\s*\\(\\s*Trace.isEnabled\\(\\)\\s*\\)',
+                        replace: 'if (false)',
+                        flags: 'g'
+                    }
+                }
+            ]
+        });
+    }
+
+    if (!!production) {
+        config.module.rules.push({
+            // rules to replace mdi icons and not use nativescript-font-icon
+            test: /\.(js)$/,
+            use: [
+                {
+                    loader: 'string-replace-loader',
+                    options: {
+                        search: '__decorate\\(\\[((.|\n)*?)profile,((.|\n)*?)\\],.*?,.*?,.*?\\);?',
+                        replace: (match, p1, offset, string) => '',
+                        flags: 'g'
+                    }
+                }
+            ]
+        });
+        // rules to clean up all Trace in production
+        // we must run it for all files even node_modules
+        config.module.rules.push({
+            test: /\.(ts|js)$/,
+            use: [
+                {
+                    loader: 'string-replace-loader',
+                    options: {
+                        search: 'if\\s*\\(\\s*Trace.isEnabled\\(\\)\\s*\\)',
+                        replace: 'if (false)',
+                        flags: 'g'
+                    }
+                }
+            ]
+        });
     }
 
     if (nsConfig.cssParser !== 'css-tree') {
@@ -304,7 +322,12 @@ module.exports = (env, params = {}) => {
     }
 
     // we remove default rules
-    config.plugins = config.plugins.filter((p) => ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin'].indexOf(p.constructor.name) === -1);
+    config.plugins = config.plugins.filter(
+        (p) =>
+            ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin', 'Object', 'ForkTsCheckerWebpackPlugin'].indexOf(
+                p.constructor.name
+            ) === -1
+    );
     // we add our rules
     const copyIgnore = { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] };
     config.plugins.unshift(
@@ -380,11 +403,7 @@ module.exports = (env, params = {}) => {
                 async: false,
                 typescript: {
                     configFile: resolve(tsconfig),
-                },
-                // eslint: {
-                //     memoryLimit: 4096,
-
-                // },
+                }
             })
         );
     }
@@ -396,7 +415,7 @@ module.exports = (env, params = {}) => {
             cache: true,
             sourceMap: isAnySourceMapEnabled,
             terserOptions: {
-                ecma: 2016,
+                ecma: 2017,
                 module: true,
                 // warnings: true,
                 // toplevel: true,

@@ -20,7 +20,9 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             } else {
-                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
+                if (Application.ios.window) {
+                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
+                }
             }
             break;
         case 'light':
@@ -28,7 +30,9 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             } else {
-                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
+                if (Application.ios.window) {
+                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
+                }
             }
             break;
         case 'dark':
@@ -36,7 +40,9 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
-                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                if (Application.ios.window) {
+                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                }
             }
             break;
         case 'black':
@@ -44,7 +50,9 @@ export function applyTheme(theme: Themes) {
             if (global.isAndroid) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
-                (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                if (Application.ios.window) {
+                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                }
             }
             break;
     }

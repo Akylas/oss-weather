@@ -8,7 +8,7 @@
     </item>
     <item android:gravity="center" >
         <shape android:shape="oval">
-            <solid android:color="#ffa500"/>
+            <solid android:color="@color/ns_primary"/>
             <size  android:width="120dp" android:height="120dp"/>
         </shape>
     </item>

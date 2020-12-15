@@ -15,6 +15,7 @@
                 <label col="1" fontSize="14" marginLeft="4" verticalAlignment="top" textWrap={true}>
                     <formattedString>
                         <span fontSize="17" text="{alert.event}{'\n'}" />
+                        <span fontSize="17" text="{alert.sender_name}{'\n'}" />
                         <span text="{titlecase(l('expires'))}: {convertTime(alert.end, 'HH:mm dddd')}{'\n'}" />
                         <span color="#aaa" text={alert.description} />
                     </formattedString>

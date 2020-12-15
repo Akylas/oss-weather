@@ -501,11 +501,11 @@ export async function getOWMWeather(lat: number, lon: number) {
         }[];
     };
     // console.log('onecall', JSON.stringify(result));
-    console.log('minutely', JSON.stringify(result.minutely));
-    console.log('currently', JSON.stringify(result.current));
-    console.log('hourly', JSON.stringify(result.hourly));
-    console.log('daily', JSON.stringify(result.daily));
-    console.log('alerts', JSON.stringify(result.alerts));
+    // console.log('minutely', JSON.stringify(result.minutely));
+    // console.log('currently', JSON.stringify(result.current));
+    // console.log('hourly', JSON.stringify(result.hourly));
+    // console.log('daily', JSON.stringify(result.daily));
+    // console.log('alerts', JSON.stringify(result.alerts));
     if (!result.minutely) {
         if (ccApiKey) {
             const now = dayjs();

@@ -20,6 +20,7 @@
     import { alert, showError } from '~/utils/error';
     import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, screenScale, statusBarHeight } from '~/variables';
     import ActionSheet from './ActionSheet.svelte';
+    import AlertView from './AlertView.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
     import CActionBar from './CActionBar.svelte';
     import DailyView from './DailyView.svelte';
@@ -366,6 +367,16 @@
         e.object.redraw();
     }
 
+    function showAlerts() {
+        showBottomSheet({
+            parent: this,
+            view: AlertView,
+            props: {
+                alerts: weatherData.alerts,
+            },
+        });
+    }
+
     async function sendBugReport() {
         const result = await login({
             title: lc('send_bug_report'),
@@ -432,6 +443,9 @@
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
+            {#if weatherData && weatherData.alerts}
+                <mdbutton variant="text" class="icon-btn" color="red" rippleColor="red" borderColor="red" horizontalAlignment="left" on:tap={() => showAlerts()} text="mdi-alert" />
+            {/if}
             {#if weatherLocation}
                 <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
             {/if}

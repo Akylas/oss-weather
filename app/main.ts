@@ -15,9 +15,10 @@ import { install as installBottomSheets } from '@nativescript-community/ui-mater
 installBottomSheets();
 
 import { Label } from '@nativescript-community/ui-label';
-import { overrideSpanAndFormattedString } from '@nativescript-community/text';
+// import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 // overrideSpanAndFormattedString();
 
+// registerNativeViewElement('formattedstring', () => require('@nativescript-community/text').LightFormattedString, null, {}, { override: true });
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
 registerNativeViewElement('label', () => Label as any);

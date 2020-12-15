@@ -101,7 +101,6 @@ page {
 //     }
 // }
 .actionBar {
-    z-index: 0;
     background-color: scale-color(white, $alpha: -30%);
     .ns-black & {
         background-color: scale-color(black, $alpha: -30%);

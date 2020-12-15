@@ -52,15 +52,7 @@
         }
     }
 
-    function showAlerts() {
-        showBottomSheet({
-            parent: this,
-            view: AlertView,
-            props: {
-                alerts: item.alerts,
-            },
-        });
-    }
+    
 
     let lineChart;
     let chartInitialized = false;
@@ -249,9 +241,6 @@
             updateLineChart(item);
         }
     }
-    $: {
-       console.log('alerts', item.alerts)
-    }
 </script>
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
@@ -309,12 +298,6 @@
         </cgroup>
         <cspan paddingRight="10" fontSize="14" textAlignment="right" verticalAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom="10" />
     </canvaslabel>
-    <mdbutton variant="outline" color="red" height="50" rippleColor="red" borderColor="red" horizontalAlignment='left' on:tap={()=>showAlerts()}>
-        <formattedString>
-            <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-alert-outline"/>
-            <!-- <span text={item.alerts && item.alerts[0] && item.alerts[0].event}  verticalTextAlignment="center"/> -->
-        </formattedString>
-    </mdbutton>
     <linechart bind:this={lineChart} marginTop="110" verticalAlignment="bottom" height="90" marginBottom="40" />
     <WeatherIcon col="1" horizontalAlignment="right" verticalAlignment="center" fontSize="140" icon={item.icon} />
     <HourlyView row="1" colSpan="2" items={item.hourly} />

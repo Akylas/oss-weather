@@ -18,8 +18,6 @@
 </script>
 
 <script lang="ts">
-import { Color } from '@akylas/nativescript';
-
     export let item;
     let tempHeight = 0;
     let canvasView;

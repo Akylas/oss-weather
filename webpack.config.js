@@ -163,7 +163,9 @@ module.exports = env => {
                         chunks: 'all',
                         test: (module, chunks) => {
                             const moduleName = module.nameForCondition ? module.nameForCondition() : '';
-                            return /[\\/]node_modules[\\/]/.test(moduleName) || /packages[\\/]core[\\/]/.test(moduleName) ||
+                            return /[\\/]node_modules[\\/]/.test(moduleName)  ||
+                            /[\\/]nativescript-carto[\\/]/.test(moduleName) ||
+                            /[\\/]NativeScript[\\/]dist[\\/]packages[\\/]core[\\/]/.test(moduleName) ||
                                 appComponents.some(comp => comp === moduleName);
 
                         },

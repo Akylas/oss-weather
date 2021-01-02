@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { getString } from '@akylas/nativescript/application-settings';
+    import { getString } from '@nativescript/core/application-settings';
     import { android as androidApp } from '@nativescript/core/application';
     import { closeBottomSheet } from '~/bottomsheet';
     import { l } from '~/helpers/locale';

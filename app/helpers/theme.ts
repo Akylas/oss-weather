@@ -1,5 +1,5 @@
-import { getString, setString } from '@akylas/nativescript/application-settings';
-import { iOSNativeHelper } from '@akylas/nativescript/utils';
+import { getString, setString } from '@nativescript/core/application-settings';
+import { iOSNativeHelper } from '@nativescript/core/utils';
 import Theme from '@nativescript-community/css-theme';
 import { Application } from '@nativescript/core';
 import { prefs } from '~/services/preferences';

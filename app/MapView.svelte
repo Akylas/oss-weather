@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { Color } from '@akylas/nativescript';
+    import { Color } from '@nativescript/core';
     import { request } from '@nativescript-community/perms';
     import { MergedMBVTTileDataSource } from '@nativescript-community/ui-carto/datasources';
     import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';

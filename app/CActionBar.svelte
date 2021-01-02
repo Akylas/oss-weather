@@ -37,7 +37,7 @@
 </script>
 
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft="5" paddingRight="5">
-    <label color={$textColor} col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalAlignment="center" />
+    <label id="title" color={$textColor} col="1" colSpan="3" class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalTextAlignment="center" />
     <!-- {#if showLogo && !title}
         <label col="1" class="activelook" fontSize="28" color="white" text="logo" verticalAlignment="center" marginLeft="6" />
     {/if} -->

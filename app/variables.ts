@@ -1,4 +1,4 @@
-import { Application } from '@akylas/nativescript';
+import { Application } from '@nativescript/core';
 import { Screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
 import { writable } from 'svelte/store';

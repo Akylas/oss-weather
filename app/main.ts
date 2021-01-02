@@ -21,7 +21,7 @@ import { Label } from '@nativescript-community/ui-label';
 // registerNativeViewElement('formattedstring', () => require('@nativescript-community/text').LightFormattedString, null, {}, { override: true });
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
-registerNativeViewElement('label', () => Label as any);
+registerNativeViewElement('label', () => Label as any, null, {}, { override: true });
 registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-material-activityindicator').ActivityIndicator);
 registerNativeViewElement('lineChart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
 registerNativeViewElement('cartomap', () => require('@nativescript-community/ui-carto/ui').CartoMap);
@@ -51,6 +51,7 @@ import { start } from '~/helpers/theme';
 start();
 
 
+
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
 installMixins();
 if (global.isIOS) {
@@ -70,7 +71,4 @@ themer.createShape('round', {
 
 import { svelteNative } from 'svelte-native';
 import WeatherPage from './WeatherPage.svelte';
-import { applyTheme, theme } from './helpers/theme';
-import { getString } from '@nativescript/core/application-settings';
-import { updateThemeColors } from './variables';
 svelteNative(WeatherPage, {});

@@ -26,6 +26,7 @@
     import DailyView from './DailyView.svelte';
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     import TopWeatherView from './TopWeatherView.svelte';
+    // import { CustomTransition } from './transitions/custom-transition';
     import { Sentry } from './utils/sentry';
     import WeatherIcon from './WeatherIcon.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
@@ -252,7 +253,7 @@
         }
     }
     async function openWeatherMap() {
-        navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+        navigate({ page: WeatherMapPage, transition:{name:'slide', duration:1000}, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
     }
     async function searchOnMap() {
         try {
@@ -314,6 +315,16 @@
     function itemTemplateSelector(item, index, items) {
         // return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
         return index === 0 ? 'topView' : 'daily';
+    }
+    let isLayedout = false;
+    function onCollectionViewLayoutCompleted() {
+        if (!isLayedout) {
+            isLayedout = true;
+            if (global.isAndroid) {
+                // this is to test app runtime
+                Application.android.startActivity.reportFullyDrawn();
+            }
+        }
     }
 
     function quitApp() {
@@ -456,7 +467,7 @@
             <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} iosOverflowSafeAreaEnabled="false">
+                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} iosOverflowSafeAreaEnabled="false" on:layoutCompleted={onCollectionViewLayoutCompleted}>
                     <Template key="topView" let:item>
                         <TopWeatherView {item} height={topHeight} />
                     </Template>

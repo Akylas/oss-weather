@@ -36,6 +36,7 @@ module.exports = (env, params = {}) => {
         includeDefaultLocation, // --env.includeDefaultLocation
         verbose, // --env.verbose
         uglify, // --env.uglify
+        fork = true,
         noconsole, // --env.noconsole
         devlog, // --env.devlog
         adhoc, // --env.adhoc
@@ -49,12 +50,13 @@ module.exports = (env, params = {}) => {
     const dist = resolve(projectRoot, nsWebpack.getAppPath(platform, projectRoot));
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
-    const coreModulesPackageName = '@akylas/nativescript';
+    const coreModulesPackageName = fork ? '@akylas/nativescript' : '@nativescript/core';
     config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
         'tns-core-modules': `${coreModulesPackageName}`
     });
+    console.log('coreModulesPackageName',coreModulesPackageName );
 
     const nativescriptLib = require(env.nativescriptLibPath);
     const nsConfig = nativescriptLib.projectDataService.getProjectData().nsConfig;
@@ -285,39 +287,39 @@ module.exports = (env, params = {}) => {
         });
     }
 
-    if (!!production) {
-        config.module.rules.push({
-            // rules to replace mdi icons and not use nativescript-font-icon
-            test: /\.(js)$/,
-            use: [
-                {
-                    loader: 'string-replace-loader',
-                    options: {
-                        search: '__decorate\\(\\[((.|\n)*?)profile,((.|\n)*?)\\],.*?,.*?,.*?\\);?',
-                        replace: (match, p1, offset, string) => '',
-                        flags: 'g'
-                    }
-                }
-            ]
-        });
-        // rules to clean up all Trace in production
-        // we must run it for all files even node_modules
-        config.module.rules.push({
-            test: /\.(ts|js)$/,
-            use: [
-                {
-                    loader: 'string-replace-loader',
-                    options: {
-                        search: 'if\\s*\\(\\s*Trace.isEnabled\\(\\)\\s*\\)',
-                        replace: 'if (false)',
-                        flags: 'g'
-                    }
-                }
-            ]
-        });
-    }
+    // if (!!production) {
+    //     config.module.rules.push({
+    //         // rules to replace mdi icons and not use nativescript-font-icon
+    //         test: /\.(js)$/,
+    //         use: [
+    //             {
+    //                 loader: 'string-replace-loader',
+    //                 options: {
+    //                     search: '__decorate\\(\\[((.|\n)*?)profile,((.|\n)*?)\\],.*?,.*?,.*?\\);?',
+    //                     replace: (match, p1, offset, string) => '',
+    //                     flags: 'g'
+    //                 }
+    //             }
+    //         ]
+    //     });
+    //     // rules to clean up all Trace in production
+    //     // we must run it for all files even node_modules
+    //     config.module.rules.push({
+    //         test: /\.(ts|js)$/,
+    //         use: [
+    //             {
+    //                 loader: 'string-replace-loader',
+    //                 options: {
+    //                     search: 'if\\s*\\(\\s*Trace.isEnabled\\(\\)\\s*\\)',
+    //                     replace: 'if (false)',
+    //                     flags: 'g'
+    //                 }
+    //             }
+    //         ]
+    //     });
+    // }
 
-    if (nsConfig.cssParser !== 'css-tree') {
+    if (fork && nsConfig.cssParser !== 'css-tree') {
         config.plugins.push(new webpack.IgnorePlugin(/css-tree$/));
     }
 

@@ -1,17 +1,18 @@
 <script lang="ts">
     import Theme from '@nativescript-community/css-theme';
     import { Align } from '@nativescript-community/ui-canvas';
+import { LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import dayjs from 'dayjs';
+import { NativeViewElementNode } from 'svelte-native/dom';
     import Color from 'tinycolor2';
     import { showBottomSheet } from '~/bottomsheet';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { getChart } from '~/helpers/sveltehelpers';
     import { mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import AlertView from './AlertView.svelte';
     import HourlyView from './HourlyView.svelte';
@@ -52,9 +53,7 @@
         }
     }
 
-    
-
-    let lineChart;
+    let lineChart: NativeViewElementNode<LineChart>;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -63,7 +62,7 @@
         precipIntensity: number;
     }[];
     function updateLineChart(item: Item) {
-        const chart = getChart(lineChart.nativeView);
+        const chart = lineChart.nativeView;
         // chart.setLogEnabled(true)
         if (chart) {
             let data = item.minutely;

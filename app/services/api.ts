@@ -352,7 +352,6 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     requestParams.headers = getRequestHeaders(requestParams);
     requestParams.useLegacy = true;
 
-    console.log('request', requestParams);
     const requestStartTime = Date.now();
     return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry));
 }
@@ -422,7 +421,78 @@ export async function getCityName(pos: Coord) {
 //     tempColor: string;
 //     // nightTime
 // }
+export function prepareItems(weatherData, lastUpdate) {
+    const newItems = [];
+    const endOfHour = dayjs()
+        // .add(46, 'h')
+        .endOf('h')
+        .valueOf();
+    const startOfHour = dayjs()
+        // .add(46, 'h')
+        .startOf('h')
+        .valueOf();
+    const endOfMinute = dayjs()
+        // .add(46, 'h')
+        .endOf('m')
+        .valueOf();
+    weatherData.daily.data.forEach((d, index) => {
+        if (index === 0) {
+            let currentDaily = weatherData.daily.data[index];
+            const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
+            const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
+            // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
+            Object.assign(currentDaily, weatherData.currently);
+            if (firstHourIndex > 1) {
+                currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
+            } else if (firstMinuteIndex > 10) {
+                currentDaily = Object.assign({}, currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
+            }
+            // console.log('currentDaily', firstHourIndex > 1, firstMinuteIndex > 10, weatherData.currently, currentDaily);
+            const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
+            let min = 10000;
+            let max = -10000;
+            hours.forEach((h) => {
+                if (h.temperature < min) {
+                    min = h.temperature;
+                }
+                if (h.temperature > max) {
+                    max = h.temperature;
+                }
+            });
+            newItems.push(
+                Object.assign(currentDaily, {
+                    showHourly: false,
+                    lastUpdate,
+                    hourly: hours.map((h, i) => {
+                        h.index = i;
+                        h.min = min;
+                        h.max = max;
+                        h.odd = i % 2 === 0;
+                        return h;
+                    }),
+                    minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex) : [],
+                    alerts: weatherData.alerts,
+                })
+            );
 
+            // newItems.push({
+            //     icon: dsWeather.daily.icon,
+            //     summary: dsWeather.daily.summary
+            // });
+        } else {
+            const items = d.hourly;
+            const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
+            newItems.push(
+                Object.assign(d, {
+                    index: newItems.length,
+                    scrollIndex: items.findIndex((h) => h.time >= sunriseTime),
+                })
+            );
+        }
+    });
+
+    return newItems;
+}
 export async function getOWMWeather(lat: number, lon: number) {
     const result = (await fetchOWM('onecall', {
         lat,

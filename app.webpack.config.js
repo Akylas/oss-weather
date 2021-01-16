@@ -326,15 +326,14 @@ module.exports = (env, params = {}) => {
     // we remove default rules
     config.plugins = config.plugins.filter(
         (p) =>
-            ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin', 'Object', 'ForkTsCheckerWebpackPlugin'].indexOf(
+            ['DefinePlugin', 'CleanWebpackPlugin', 'CopyPlugin', 'CopyWebpackPlugin', 'Object', 'ForkTsCheckerWebpackPlugin'].indexOf(
                 p.constructor.name
             ) === -1
     );
     // we add our rules
     const copyIgnore = { ignore: [`${relative(appPath, appResourcesFullPath)}/**`] };
     config.plugins.unshift(
-        new CopyPlugin({
-            patterns: [
+        new CopyPlugin([
                 { from: 'fonts/!(ios|android)/**/*', to: 'fonts', flatten: true, noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
                 { from: 'fonts/*', to: 'fonts', flatten: true, noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
                 { from: `fonts/${platform}/**/*`, to: 'fonts', flatten: true, noErrorOnMissing: true, globOptions: { dot: false, ...copyIgnore } },
@@ -347,8 +346,7 @@ module.exports = (env, params = {}) => {
                     noErrorOnMissing: true,
                     globOptions: { dot: false, ...copyIgnore },
                 },
-            ],
-        })
+            ])
     );
     config.plugins.push(
         new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${locales.join('|')})$`))

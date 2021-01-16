@@ -15,7 +15,7 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { showBottomSheet } from '~/bottomsheet';
     import { l, lc, onLanguageChanged } from '~/helpers/locale';
-    import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, setCCApiKey, setOWMApiKey } from '~/services/api';
+    import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, setCCApiKey, setOWMApiKey } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
     import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, screenScale, statusBarHeight } from '~/variables';
@@ -150,7 +150,7 @@
     }
 
     async function updateView() {
-        items = prepareItems();
+        items = prepareItems(weatherData, lastUpdate);
         // console.log('items', items);
         // setDay(0);
         setNumber('lastUpdate', lastUpdate);
@@ -167,78 +167,6 @@
         }
     }
 
-    function prepareItems() {
-        const newItems = [];
-        const endOfHour = dayjs()
-            // .add(46, 'h')
-            .endOf('h')
-            .valueOf();
-        const startOfHour = dayjs()
-            // .add(46, 'h')
-            .startOf('h')
-            .valueOf();
-        const endOfMinute = dayjs()
-            // .add(46, 'h')
-            .endOf('m')
-            .valueOf();
-        weatherData.daily.data.forEach((d, index) => {
-            if (index === 0) {
-                let currentDaily = weatherData.daily.data[index];
-                const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
-                const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-                // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
-                Object.assign(currentDaily, weatherData.currently);
-                if (firstHourIndex > 1) {
-                    currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
-                } else if (firstMinuteIndex > 10) {
-                    currentDaily = Object.assign({}, currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
-                }
-                // console.log('currentDaily', firstHourIndex > 1, firstMinuteIndex > 10, weatherData.currently, currentDaily);
-                const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
-                let min = 10000;
-                let max = -10000;
-                hours.forEach((h) => {
-                    if (h.temperature < min) {
-                        min = h.temperature;
-                    }
-                    if (h.temperature > max) {
-                        max = h.temperature;
-                    }
-                });
-                newItems.push(
-                    Object.assign(currentDaily, {
-                        showHourly: false,
-                        lastUpdate: lastUpdate,
-                        hourly: hours.map((h, i) => {
-                            h.index = i;
-                            h.min = min;
-                            h.max = max;
-                            h.odd = i % 2 === 0;
-                            return h;
-                        }),
-                        minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex) : [],
-                        alerts: weatherData.alerts,
-                    })
-                );
-
-                // newItems.push({
-                //     icon: dsWeather.daily.icon,
-                //     summary: dsWeather.daily.summary
-                // });
-            } else {
-                const items = d.hourly;
-                const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
-                newItems.push(
-                    Object.assign(d, {
-                        index: newItems.length,
-                        scrollIndex: items.findIndex((h) => h.time >= sunriseTime),
-                    })
-                );
-            }
-        });
-
-        return newItems;
-    }
 
     async function searchCity() {
         try {
@@ -365,7 +293,7 @@
         networkService.start(); // should send connection event and then refresh
 
         if (weatherData) {
-            items = prepareItems();
+            items = prepareItems(weatherData, lastUpdate);
         }
     });
 

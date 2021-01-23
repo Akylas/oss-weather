@@ -200,14 +200,24 @@ module.exports = (env, params = {}) => {
         exclude: /node_modules/,
         use: [
             {
-                loader: 'svelte-loader-hot',
+                loader: 'svelte-loader',
                 options: {
-                    dev: env.production ? false : true,
+                    compilerOptions: {
+                        // NOTE Svelte's dev mode MUST be enabled for HMR to work
+                        dev: env.production ? false : true,
+                    },
+                    // NOTE emitCss: true is currently not supported with HMR
+                    // Enable it for production to output separate css file
+                    emitCss: env.production, // Default: false
                     preprocess: preprocessConfig.preprocess,
                     hotReload: hmr,
                     hotOptions: {
                         injectCss: false,
                         native: hmr,
+                        // Prevent doing a full reload on next HMR update after fatal error
+                        noReload: false,
+                        // Try to recover after runtime errors in component init
+                        optimistic: false,
                     },
                 },
             },

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
 	package="__PACKAGE__">
     <supports-screens
 		android:smallScreens="true"
@@ -11,8 +13,8 @@
 		android:name="com.akylas.weather.broadcast"
 		android:protectionLevel="signatureOrSystem">
 	</permission>
-	<uses-permission android:name="akylas.alpi.maps.broadcast" />
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="akylas.alpi.maps.broadcast" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> -->
@@ -38,18 +40,20 @@
 			android:launchMode="singleTask">
             <meta-data android:name="SET_THEME_ON_LAUNCH" android:resource="@style/AppTheme" />
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="weather" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name="com.tns.ErrorReportActivity"/>
         <activity android:name="com.nativescript.preferences.NativescriptSettingsActivity" android:theme="@style/SettingsTheme"/>
+        <activity android:name=".FloatingActivity" android:theme="@style/FloatingActivityTheme" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode" android:windowSoftInputMode="stateHidden|adjustResize" android:launchMode="singleInstance" android:noHistory="true" android:taskAffinity="" android:excludeFromRecents="true" tools:ignore="ExportedActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="weather" />
+            </intent-filter>
+        </activity>
         <meta-data android:name="io.sentry.anr.enable" android:value="false" />
         <receiver android:name=".CommandReceiver"  android:enabled="true" android:exported="true" android:permission="com.akylas.weather.broadcast">
             <intent-filter>

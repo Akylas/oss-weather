@@ -8,10 +8,8 @@
     import { Application, Page } from '@nativescript/core';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { Accuracy } from '@nativescript/core/ui/enums/enums';
-    import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
-    import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { showBottomSheet } from '~/bottomsheet';
     import { l, lc, onLanguageChanged } from '~/helpers/locale';
@@ -23,12 +21,9 @@
     import AlertView from './AlertView.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
     import CActionBar from './CActionBar.svelte';
-    import DailyView from './DailyView.svelte';
     import SelectLocationOnMap from './SelectLocationOnMap.svelte';
-    import TopWeatherView from './TopWeatherView.svelte';
-    // import { CustomTransition } from './transitions/custom-transition';
     import { Sentry } from './utils/sentry';
-    import WeatherIcon from './WeatherIcon.svelte';
+    import WeatherComponent from './WeatherComponent.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
@@ -44,10 +39,7 @@
     let topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
     let items = [];
 
-    let screenHeightPixels = screenHeightDips * screenScale;
     let desiredAccuracy = global.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
-    let updateDistance = 1;
-    let maximumAge = 3000;
     let timeout = 20000;
     let minimumUpdateTime = 1000; // Should update every 1 second according ;
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
@@ -167,7 +159,6 @@
         }
     }
 
-
     async function searchCity() {
         try {
             const SelectCity = require('./SelectCity.svelte').default;
@@ -181,7 +172,7 @@
         }
     }
     async function openWeatherMap() {
-        navigate({ page: WeatherMapPage, transition:{name:'slide', duration:1000}, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+        navigate({ page: WeatherMapPage, transition: { name: 'slide', duration: 1000 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
     }
     async function searchOnMap() {
         try {
@@ -240,20 +231,6 @@
         }
     }
 
-    function itemTemplateSelector(item, index, items) {
-        // return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
-        return index === 0 ? 'topView' : 'daily';
-    }
-    let isLayedout = false;
-    function onCollectionViewLayoutCompleted() {
-        if (!isLayedout) {
-            isLayedout = true;
-            if (global.isAndroid) {
-                // this is to test app runtime
-                Application.android.startActivity.reportFullyDrawn();
-            }
-        }
-    }
 
     function quitApp() {
         if (global.isIOS) {
@@ -301,10 +278,10 @@
         console.log('refresh triggered by lang change');
         refresh();
     });
-    function onCanvasLabelClicked(e) {
-        console.log('onCanvasLabelClicked', e.object);
-        e.object.redraw();
-    }
+    // function onCanvasLabelClicked(e) {
+    //     console.log('onCanvasLabelClicked', e.object);
+    //     e.object.redraw();
+    // }
 
     function showAlerts() {
         showBottomSheet({
@@ -395,20 +372,7 @@
             <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
-                <collectionview {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} iosOverflowSafeAreaEnabled="false" on:layoutCompleted={onCollectionViewLayoutCompleted}>
-                    <Template key="topView" let:item>
-                        <TopWeatherView {item} height={topHeight} />
-                    </Template>
-                    <Template key="info" let:item>
-                        <gridLayout rows="auto" columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
-                            <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
-                            <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2" />
-                        </gridLayout>
-                    </Template>
-                    <Template key="daily" let:item>
-                        <DailyView {item} />
-                    </Template>
-                </collectionview>
+                <WeatherComponent {items} />
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">

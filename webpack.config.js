@@ -20,6 +20,7 @@ module.exports = env => {
         '@nativescript/core/ui/frame',
         '@nativescript/core/ui/frame/activity',
         '~/receivers/CommandReceiver',
+        '~/android/floatingactivity',
     ]);
 
     const platform = env && (env.android && 'android' || env.ios && 'ios' || env.platform);

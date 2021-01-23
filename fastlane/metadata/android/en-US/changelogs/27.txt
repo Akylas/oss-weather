@@ -1,0 +1,6 @@
+*Features*
+- bring back alerts
+- allow external app weather request (only Akylas apps for now)
+
+*Bug fixes*
+- bump versions

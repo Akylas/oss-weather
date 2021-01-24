@@ -1,4 +1,4 @@
-import { DomTraceCategory, registerNativeViewElement } from 'svelte-native/dom';
+import { DomTraceCategory, NativeElementPropType, registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 startSentry();
 
@@ -17,8 +17,29 @@ installBottomSheets();
 import { Label } from '@nativescript-community/ui-label';
 // import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 // overrideSpanAndFormattedString();
+registerNativeViewElement('AbsoluteLayout', () => require('@nativescript/core').AbsoluteLayout);
+// registerNativeViewElement('DockLayout', () => require('@nativescript/core').DockLayout);
+registerNativeViewElement('GridLayout', () => require('@nativescript/core').GridLayout);
+// registerNativeViewElement('Image', () => require('@nativescript/core').Image);
+registerNativeViewElement('ScrollView', () => require('@nativescript/core').ScrollView);
+// registerNativeViewElement('SearchBar', () => require('@nativescript/core').SearchBar);
+// registerNativeViewElement('Slider', () => require('@nativescript/core').Slider);
+registerNativeViewElement('StackLayout', () => require('@nativescript/core').StackLayout);
+// registerNativeViewElement('FlexboxLayout', () => require('@nativescript/core').FlexboxLayout);
+registerNativeViewElement('Switch', () => require('@nativescript/core').Switch);
+registerNativeViewElement('TextField', () => require('@nativescript/core').TextField);
+// registerNativeViewElement('TextView', () => require('@nativescript/core').TextView);
+// registerNativeViewElement('WebView', () => require('@nativescript/core').WebView);
+// registerNativeViewElement('WrapLayout', () => require('@nativescript/core').WrapLayout);
 
+// registerNativeViewElement('mdtextfield', () => TextField, null, {}, { override: true });
+// registerNativeViewElement('mdspeeddial', () => SpeedDial);
+// registerNativeViewElement('mdspeeddialitem', () => SpeedDialItem);
 // registerNativeViewElement('formattedstring', () => require('@nativescript-community/text').LightFormattedString, null, {}, { override: true });
+registerNativeViewElement('FormattedString', () => require('@nativescript/core').FormattedString, 'formattedText', {
+    'spans': NativeElementPropType.ObservableArray
+});
+registerNativeViewElement('Span', () => require('@nativescript/core').Span, 'spans');
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
 registerNativeViewElement('label', () => Label as any, null, {}, { override: true });

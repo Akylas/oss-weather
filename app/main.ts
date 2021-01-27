@@ -1,6 +1,7 @@
-import { DomTraceCategory, NativeElementPropType, registerNativeViewElement } from 'svelte-native/dom';
+import { DomTraceCategory, FrameElement, NativeElementPropType, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 startSentry();
+import './app.scss';
 
 import { install } from '~/utils/logging';
 install();
@@ -17,6 +18,8 @@ installBottomSheets();
 import { Label } from '@nativescript-community/ui-label';
 // import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 // overrideSpanAndFormattedString();
+registerElement('Frame', () => new FrameElement());
+registerElement('Page', () => new PageElement());
 registerNativeViewElement('AbsoluteLayout', () => require('@nativescript/core').AbsoluteLayout);
 // registerNativeViewElement('DockLayout', () => require('@nativescript/core').DockLayout);
 registerNativeViewElement('GridLayout', () => require('@nativescript/core').GridLayout);
@@ -50,7 +53,7 @@ registerNativeViewElement('lottie', () => require('@akylas/nativescript-lottie')
 registerNativeViewElement('pullrefresh', () => require('@akylas/nativescript-pulltorefresh').PullToRefresh);
 registerNativeViewElement('canvas', () => require('@nativescript-community/ui-canvas').CanvasView);
 registerNativeViewElement('line', () => require('@nativescript-community/ui-canvas/shapes/line').default);
-registerNativeViewElement('image', () => require('@nativescript-community/ui-image').Img);
+registerNativeViewElement('image', () => require('@nativescript-community/ui-image').Img, null, {}, { override: true });
 registerNativeViewElement('canvaslabel', () => require('@nativescript-community/ui-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);
 registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);

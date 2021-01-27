@@ -1,5 +1,5 @@
 module.exports = {
-    id: 'akylas.alpi.maps',
+    id: 'com.akylas.weather',
     appResourcesPath: 'app/App_Resources',
     webpackConfigPath: './app.webpack.config.js',
     appPath: 'app',

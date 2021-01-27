@@ -39,7 +39,7 @@ desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
   sh("rm", "-fr", "platforms/" + platform)
-  sh("tns", "prepare", platform, "--release", "--clean", "--env.adhoc")
+  sh("devns", "prepare", platform, "--release", "--clean", "--env.adhoc")
 
 end
 
@@ -245,7 +245,7 @@ end
   desc 'Build the Android application.'
     lane :build do
       sh("rm", "-fr", "platforms/android")
-      sh("tns", "build", "android", "--release", "--clean", "--env.adhoc", "--aab",
+      sh("devns", "build", "android", "--release", "--clean", "--env.adhoc", "--aab",
           "--key-store-path", "../" + ENV["KEYSTORE_PATH"],
           "--key-store-password", ENV["KEYSTORE_PASSWORD"],
           "--key-store-alias", ENV["KEYSTORE_ALIAS"],

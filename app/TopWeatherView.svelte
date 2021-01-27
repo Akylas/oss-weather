@@ -52,7 +52,7 @@ import { NativeViewElementNode } from 'svelte-native/dom';
             return convertTime(date, 'HH:mm');
         }
     }
-
+    //@ts-ignore
     let lineChart: NativeViewElementNode<LineChart>;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;

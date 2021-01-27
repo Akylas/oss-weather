@@ -82,7 +82,7 @@
                 on:textChange={onTextChange}
                 on:loaded={focus}
                 color={$textColor} />
-            <collectionview row="2" rowHeight="70" items={searchResults}>
+            <collectionview row="2" rowHeight="80" items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">
                         <!-- <MapView focusPos={item.coord} /> -->

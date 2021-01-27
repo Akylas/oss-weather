@@ -38,7 +38,6 @@ export function applyTheme(theme: Themes) {
         case 'dark':
             Theme.setMode(Theme.Dark);
             if (global.isAndroid) {
-                console.log('test1')
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
             } else {
                 if (Application.ios.window) {

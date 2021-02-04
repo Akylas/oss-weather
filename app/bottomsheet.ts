@@ -39,7 +39,7 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
             componentInstanceInfo.viewInstance.$destroy(); // don't let an exception in destroy kill the promise callback
         };
         modalStack.push(componentInstanceInfo);
-        (modalLauncher ).showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });
+        (modalLauncher as any).showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });
     });
 }
 

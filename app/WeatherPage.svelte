@@ -253,7 +253,7 @@
         const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
         if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
             // wait a bit
-            // setTimeout(() => askForApiKey(), 1000);
+            setTimeout(() => askForApiKey(), 1000);
         }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {

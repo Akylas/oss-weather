@@ -57,7 +57,7 @@ export function updateThemeColors(theme: string, force = false) {
         console.error('updateThemeColors', err);
 
     }
-    console.log('updateThemeColors', theme);
+    // console.log('updateThemeColors', theme);
     if (theme === 'dark') {
         textColor.set('#ffffff');
         textLightColor.set('#aaaaaa');

@@ -7,11 +7,11 @@
     export let alerts: Alert[];
 </script>
 
-<scrollview class="bottomsheet">
+<scrollview id="scrollView" class="bottomsheet" iosIgnoreSafeArea={true}>
     <stackLayout>
         {#each alerts as alert}
-            <gridLayout class="alertView" orientation="horizontal" columns="auto,*" rows="auto">
-                <label col="0" verticalAlignment="top" marginLeft="10" color="#ff4f3c" fontSize="36" fontFamily={mdiFontFamily} text="mdi-alert" />
+            <gridLayout class="alertView" columns="auto,*" rows="auto">
+                <label verticalAlignment="top" marginLeft="10" color="#ff4f3c" fontSize="36" class="icon-btn" text="mdi-alert" />
                 <label col="1" fontSize="14" marginLeft="4" verticalAlignment="top" textWrap={true}>
                     <formattedString>
                         <span fontSize="17" text="{alert.event}{'\n'}" />

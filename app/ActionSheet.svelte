@@ -10,7 +10,7 @@
     }
 </script>
 
-<stacklayout id="actionSheet" class="bottomsheet">
+<stacklayout id="actionSheet" class="bottomsheet" iosIgnoreSafeArea={true}>
     {#if title}<label paddingLeft="16" fontSize="17" color="#757575" text={title} height="56" verticalTextAlignment="center" />{/if}
     {#each options as item}
         <stacklayout rippleColor={accentColor} paddingTop="5" paddingBottom="5" orientation="horizontal" on:tap={() => selectOption(item)} height="56">

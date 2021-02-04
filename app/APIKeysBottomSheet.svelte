@@ -39,7 +39,7 @@
 </script>
 
 <!-- <scrollview> -->
-<stacklayout class="bottomsheet" padding="10">
+<stacklayout class="bottomsheet" padding="10" iosIgnoreSafeArea={true}>
     <label text={l('api_key_required_description')} />
     <gridlayout rows="auto" columns="auto,*, auto" marginTop="5">
         <image width="100" src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10" />

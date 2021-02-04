@@ -151,7 +151,6 @@
 
     function saveLocation(result) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
-        console.log('saveLocation', cityChanged, result);
         if (cityChanged) {
             weatherLocation = result;
             setString('weatherLocation', JSON.stringify(weatherLocation));
@@ -197,7 +196,7 @@
             }
             const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
-                console.log('location', location);
+                // console.log('location', location);
                 saveLocation({
                     name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
                     coord: location,
@@ -231,7 +230,6 @@
         }
     }
 
-
     function quitApp() {
         if (global.isIOS) {
             exit(0);
@@ -255,7 +253,7 @@
         const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
         if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
             // wait a bit
-            setTimeout(() => askForApiKey(), 1000);
+            // setTimeout(() => askForApiKey(), 1000);
         }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {
@@ -287,6 +285,7 @@
         showBottomSheet({
             parent: this,
             view: AlertView,
+            trackingScrollView: 'scrollView',
             props: {
                 alerts: weatherData.alerts,
             },
@@ -359,7 +358,7 @@
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
-            {#if weatherData && weatherData.alerts}
+            {#if weatherData && weatherData.alerts && weatherData.alerts.length > 0}
                 <mdbutton variant="text" class="icon-btn" color="red" rippleColor="red" borderColor="red" horizontalAlignment="left" on:tap={() => showAlerts()} text="mdi-alert" />
             {/if}
             {#if weatherLocation}

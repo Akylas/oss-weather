@@ -14,7 +14,7 @@ function setLang(newLang) {
         newLang = 'en';
     }
     lang = newLang;
-    console.log('changed lang', lang, Device.region);
+    // console.log('changed lang', lang, Device.region);
     try {
         require(`dayjs/locale/${newLang}`);
     } catch (err) {

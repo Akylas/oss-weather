@@ -31,6 +31,7 @@ mdbutton {
 }
 mdbutton {
     shape: round;
+    padding:0;
 }
 // mdbutton[variant="text"] {
 //     color: $accent-color;
@@ -77,7 +78,7 @@ page,
     // navigation-bar-color: #ddd;
     navigation-bar-color: black;
     status-bar-color: #ddd;
-    background-color: green;
+    background-color: white;
     // }
 
     .ns-android & {

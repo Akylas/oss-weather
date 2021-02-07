@@ -56,6 +56,8 @@ module.exports = (env, params = {}) => {
         includeDefaultLocation, // --env.includeDefaultLocation
     } = env;
     console.log('env', env);
+    env.modules = env.modules || [];
+    env.modules.push('~/android/floatingactivity');
     env.appPath = nconfig.appPath;
     env.appResourcesPath = nconfig.appResourcesPath;
     // env.modules = ['~/receivers/WeatherReceiver'];

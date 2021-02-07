@@ -73,18 +73,10 @@ mdtextfield {
 
 page,
 .weatherpage {
-    // .ns-light & {
     status-bar-style: light;
-    // navigation-bar-color: #ddd;
     navigation-bar-color: black;
     status-bar-color: #ddd;
     background-color: white;
-    // }
-
-    .ns-android & {
-        background-color: red;
-
-    }
 
     .ns-dark & {
         status-bar-style: dark;

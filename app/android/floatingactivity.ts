@@ -1,9 +1,7 @@
 import { AndroidActivityBackPressedEventData, AndroidActivityCallbacks, AndroidActivityNewIntentEventData, AndroidActivityRequestPermissionsEventData, AndroidActivityResultEventData, AndroidApplication, Application, ApplicationEventData, Device, Frame, GridLayout, Trace, View, profile } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { showBottomSheet } from '~/bottomsheet';
-import { getOWMWeather, hasOWMApiKey, networkService, prepareItems } from '~/services/api';
-import { start } from '~/helpers/theme';
-import Theme from '@nativescript-community/css-theme';
+import {getFromLocation} from '@nativescript-community/geocoding';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -311,7 +309,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
             activityRootViewsMap.set(rootView._domId, new WeakRef(rootView));
 
-            const deviceType = Device.deviceType.toLowerCase();
+            // const deviceType = Device.deviceType.toLowerCase();
 
             // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${gVars.platform}`);
             // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
@@ -326,24 +324,37 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         rootView._setupAsRootView(activity);
 
         activity.setContentView(rootView.nativeViewProtected, new org.nativescript.widgets.CommonLayoutParams());
-        if (!hasOWMApiKey()) {
-            throw new Error('missing_api_key');
-        }
+
         try {
             const uri = intent.getData();
             const lat = parseFloat(uri.getQueryParameter('lat'));
             const lon = parseFloat(uri.getQueryParameter('lon'));
-            networkService.start(); // ensure it is started
-            const items = await getOWMWeather(lat, lon);
-            const WeatherComponent = (await import( '~/WeatherComponent.svelte')).default;
+            if (isNaN(lat) || isNaN(lon)) {
+                android.widget.Toast.makeText(Application.android.context, 'wrong_parameters', android.widget.Toast.LENGTH_LONG);
+                activity.finish();
+                return ;
+            }
+            let name = (lat.toFixed(2) + ',' + lon.toFixed(2));
+            try {
+                const results = await getFromLocation(lat, lon, 10);
+                if (results?.length> 0) {
+                    name = results[0].name;
+                }
+            } catch(err) {
+                console.log('geocoding error', err);
+
+            }
+            const BottomSheetWeatherPage = (await import( '~/BottomSheetWeatherPage.svelte')).default;
             await showBottomSheet({
                 parent: rootView,
-                view: WeatherComponent,
+                view: BottomSheetWeatherPage,
                 dismissOnBackgroundTap: true,
                 dismissOnDraggingDownSheet: true,
                 props:{
-                    customComp:true,
-                    items:prepareItems(items, Date.now())
+                    weatherLocation:{
+                        coord:{lat, lon},
+                        name
+                    }
                 }
             });
         } catch(err)  {

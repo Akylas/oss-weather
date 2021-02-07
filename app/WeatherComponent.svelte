@@ -7,7 +7,6 @@
     import WeatherIcon from './WeatherIcon.svelte';
 
     export let items;
-    export let customComp = false;
     const topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
 
     function itemTemplateSelector(item, index, items) {
@@ -24,16 +23,9 @@
             }
         }
     }
-
 </script>
 
-<collectionview
-    {items}
-    {itemTemplateSelector}
-    itemIdGenerator={(_item, index) => index}
-    iosOverflowSafeAreaEnabled="false"
-    on:layoutCompleted={onCollectionViewLayoutCompleted}
-    class={customComp ? 'weatherpage' : null}>
+<collectionview {...$$restProps} {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} iosOverflowSafeAreaEnabled="false" on:layoutCompleted={onCollectionViewLayoutCompleted}>
     <Template key="topView" let:item>
         <TopWeatherView {item} height={topHeight} />
     </Template>

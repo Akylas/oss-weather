@@ -120,10 +120,7 @@
         }
         loading = true;
         try {
-            // weatherData = await getDarkSkyWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
-            // weatherData = await getClimaCellWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
             weatherData = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
-            // console.log('weatherData', weatherData);
             lastUpdate = Date.now();
             await updateView();
         } catch (err) {

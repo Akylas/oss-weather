@@ -1,2 +1,4 @@
 *Bug fixes*
-- broken build
+- page background fix
+- missing ask for api key
+- weather for external apps fix

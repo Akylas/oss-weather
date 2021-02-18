@@ -278,15 +278,19 @@
     //     e.object.redraw();
     // }
 
-    function showAlerts() {
-        showBottomSheet({
-            parent: this,
-            view: AlertView,
-            trackingScrollView: 'scrollView',
-            props: {
-                alerts: weatherData.alerts,
-            },
-        });
+    async function showAlerts() {
+        try {
+            showBottomSheet({
+                parent: page,
+                view: AlertView,
+                trackingScrollView: 'scrollView',
+                props: {
+                    alerts: weatherData.alerts,
+                },
+            });
+        } catch (err) {
+            showError(err);
+        }
     }
 
     async function sendBugReport() {
@@ -355,9 +359,17 @@
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
-            {#if weatherData && weatherData.alerts && weatherData.alerts.length > 0}
-                <mdbutton variant="text" class="icon-btn" color="red" rippleColor="red" borderColor="red" horizontalAlignment="left" on:tap={() => showAlerts()} text="mdi-alert" />
-            {/if}
+            <mdbutton
+                visibily={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
+                variant="text"
+                class="icon-btn"
+                color="red"
+                rippleColor="red"
+                borderColor="red"
+                horizontalAlignment="left"
+                on:tap={() => showAlerts()}
+                text="mdi-alert"
+            />
             {#if weatherLocation}
                 <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
             {/if}

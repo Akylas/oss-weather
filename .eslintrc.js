@@ -1,4 +1,5 @@
 module.exports = {
+    extends: ['plugin:prettier/recommended'],
     env: {
         es6: true,
         node: true
@@ -11,7 +12,7 @@ module.exports = {
         sourceType: 'module'
     },
     globals: { gVars: true, SENTRY_DSN: true, SENTRY_PREFIX: true, PRODUCTION: true, OWM_KEY: true },
-    plugins: ['svelte3', '@typescript-eslint'],
+    plugins: ['prettier', 'svelte3', '@typescript-eslint'],
     overrides: [
         { files: '*.svelte', processor: 'svelte3/svelte3' },
         {
@@ -23,6 +24,7 @@ module.exports = {
         }
     ],
     rules: {
+        'prettier/prettier': 'warn',
         'eslint-plugin-svelte3/invalid-binding': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'off',
         '@typescript-eslint/array-type': 'error',
@@ -37,19 +39,7 @@ module.exports = {
                 accessibility: 'explicit'
             }
         ],
-        '@typescript-eslint/indent': [
-            'error',
-            4,
-            {
-                FunctionDeclaration: {
-                    parameters: 'first'
-                },
-                FunctionExpression: {
-                    parameters: 'first'
-                },
-                SwitchCase: 1
-            }
-        ],
+        '@typescript-eslint/indent': 'off',
         '@typescript-eslint/interface-name-prefix': 'off',
         '@typescript-eslint/member-delimiter-style': 'error',
         '@typescript-eslint/member-ordering': 'off',

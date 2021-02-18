@@ -58,10 +58,7 @@ export function applyTheme(theme: Themes) {
     }
     try {
         console.log('applyTheme', theme, Theme.getMode(), Application.systemAppearance());
-
-    } catch(err) {
-
-    }
+    } catch (err) {}
 }
 
 export let theme: Themes;
@@ -96,10 +93,14 @@ export function start() {
 
         applyTheme(newTheme);
         updateThemeColors(newTheme, newTheme !== 'auto');
-
-        // android activity will be restarted
     });
 
     applyTheme(theme);
-    updateThemeColors(theme, theme !== 'auto');
+    if ((global.isAndroid && Application.android && Application.android.context) || (global.isIOS && Application.ios)) {
+        updateThemeColors(theme, theme !== 'auto');
+    } else {
+        Application.on(Application.launchEvent, () => {
+            updateThemeColors(theme, theme !== 'auto');
+        });
+    }
 }

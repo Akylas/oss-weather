@@ -1,6 +1,5 @@
 import { BottomSheetOptions } from '@nativescript-community/ui-material-bottomsheet';
-import { View, ViewBase } from '@nativescript/core';
-import { Frame } from '@nativescript/core/ui/frame';
+import { Frame, View, ViewBase } from '@nativescript/core';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import { PageSpec } from 'svelte-native/dom/navigation';
 
@@ -25,7 +24,7 @@ function resolveComponentElement(viewSpec: PageSpec, props?: any): ComponentInst
 export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promise<T> {
     const { view, parent, props = {}, ...options } = modalOptions;
     // Get this before any potential new frames are created by component below
-    const modalLauncher = parent ?(parent instanceof View ? parent : parent.nativeView) : Frame.topmost().currentPage;
+    const modalLauncher = (parent && (parent instanceof View ? parent : parent.nativeView)) || Frame.topmost().currentPage;
 
     const componentInstanceInfo = resolveComponentElement(view, props);
     const modalView: ViewBase = componentInstanceInfo.element.nativeView;
@@ -38,8 +37,12 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
             resolve(result);
             componentInstanceInfo.viewInstance.$destroy(); // don't let an exception in destroy kill the promise callback
         };
-        modalStack.push(componentInstanceInfo);
-        (modalLauncher as any).showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });
+        try {
+            modalLauncher.showBottomSheet({ view: modalView, ...options, context: {}, closeCallback });
+            modalStack.push(componentInstanceInfo);
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 

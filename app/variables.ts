@@ -52,12 +52,9 @@ export function updateThemeColors(theme: string, force = false) {
         if (!force) {
             theme = Application.systemAppearance();
         }
-
     } catch(err) {
         console.error('updateThemeColors', err);
-
     }
-    // console.log('updateThemeColors', theme);
     if (theme === 'dark') {
         textColor.set('#ffffff');
         textLightColor.set('#aaaaaa');

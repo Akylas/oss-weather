@@ -1,7 +1,23 @@
-import { AndroidActivityBackPressedEventData, AndroidActivityCallbacks, AndroidActivityNewIntentEventData, AndroidActivityRequestPermissionsEventData, AndroidActivityResultEventData, AndroidApplication, Application, ApplicationEventData, Device, Frame, GridLayout, Trace, View, profile } from '@nativescript/core';
+import {
+    AndroidActivityBackPressedEventData,
+    AndroidActivityCallbacks,
+    AndroidActivityNewIntentEventData,
+    AndroidActivityRequestPermissionsEventData,
+    AndroidActivityResultEventData,
+    AndroidApplication,
+    Application,
+    ApplicationEventData,
+    Device,
+    Frame,
+    GridLayout,
+    Trace,
+    View,
+    profile,
+} from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { showBottomSheet } from '~/bottomsheet';
-import {getFromLocation} from '@nativescript-community/geocoding';
+import { getFromLocation } from '@nativescript-community/geocoding';
+import Theme from '@nativescript-community/css-theme';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -34,17 +50,11 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     }
 
     @profile
-    public onCreate(
-        activity: androidx.appcompat.app.AppCompatActivity,
-        savedInstanceState: android.os.Bundle,
-        intentOrSuperFunc: android.content.Intent | Function,
-        superFunc?: Function
-    ): void {
+    public onCreate(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, intentOrSuperFunc: android.content.Intent | Function, superFunc?: Function): void {
         const intent: android.content.Intent = superFunc ? (intentOrSuperFunc as android.content.Intent) : undefined;
         if (!superFunc) {
             superFunc = intentOrSuperFunc as Function;
         }
-
 
         // If there is savedInstanceState this call will recreate all fragments that were previously in the navigation.
         // We take care of associating them with a Page from our backstack in the onAttachFragment callback.
@@ -68,7 +78,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 eventName: AndroidApplication.activityNewIntentEvent,
                 object: Application.android,
                 activity,
-                intent
+                intent,
             } as AndroidActivityNewIntentEventData);
         }
 
@@ -77,11 +87,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     }
 
     @profile
-    public onSaveInstanceState(
-        activity: androidx.appcompat.app.AppCompatActivity,
-        outState: android.os.Bundle,
-        superFunc: Function
-    ): void {
+    public onSaveInstanceState(activity: androidx.appcompat.app.AppCompatActivity, outState: android.os.Bundle, superFunc: Function): void {
         superFunc.call(activity, outState);
         const rootView = this._rootView;
         if (rootView instanceof Frame) {
@@ -93,12 +99,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     }
 
     @profile
-    public onNewIntent(
-        activity: androidx.appcompat.app.AppCompatActivity,
-        intent: android.content.Intent,
-        superSetIntentFunc: Function,
-        superFunc: Function
-    ): void {
+    public onNewIntent(activity: androidx.appcompat.app.AppCompatActivity, intent: android.content.Intent, superSetIntentFunc: Function, superFunc: Function): void {
         superFunc.call(activity, intent);
         superSetIntentFunc.call(activity, intent);
 
@@ -106,7 +107,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             eventName: AndroidApplication.activityNewIntentEvent,
             object: Application.android,
             activity,
-            intent
+            intent,
         } as AndroidActivityNewIntentEventData);
 
         // const data = JSON.parse(intent.getStringExtra('data'));
@@ -161,7 +162,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const args = {
                 eventName: Application.resumeEvent,
                 object: Application.android,
-                android: activity
+                android: activity,
             } as ApplicationEventData;
             Application.notify(args);
             Application.android.paused = false;
@@ -185,7 +186,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         } finally {
             superFunc.call(activity);
         }
-
     }
 
     @profile
@@ -198,7 +198,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             eventName: 'activityBackPressed',
             object: Application.android,
             activity,
-            cancel: false
+            cancel: false,
         } as AndroidActivityBackPressedEventData;
         Application.android.notify(args);
         if (args.cancel) {
@@ -214,7 +214,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 eventName: 'activityBackPressed',
                 object: view,
                 activity,
-                cancel: false
+                cancel: false,
             } as AndroidActivityBackPressedEventData;
             view.notify(viewArgs);
 
@@ -229,13 +229,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     }
 
     @profile
-    public onRequestPermissionsResult(
-        activity: any,
-        requestCode: number,
-        permissions: String[],
-        grantResults: number[],
-        superFunc: Function
-    ): void {
+    public onRequestPermissionsResult(activity: any, requestCode: number, permissions: String[], grantResults: number[], superFunc: Function): void {
         if (Trace.isEnabled()) {
             Trace.write('NativeScriptActivity.onRequestPermissionsResult;', Trace.categories.NativeLifecycle);
         }
@@ -246,24 +240,15 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             activity,
             requestCode,
             permissions,
-            grantResults
+            grantResults,
         } as AndroidActivityRequestPermissionsEventData);
     }
 
     @profile
-    public onActivityResult(
-        activity: any,
-        requestCode: number,
-        resultCode: number,
-        data: android.content.Intent,
-        superFunc: Function
-    ): void {
+    public onActivityResult(activity: any, requestCode: number, resultCode: number, data: android.content.Intent, superFunc: Function): void {
         superFunc.call(activity, requestCode, resultCode, data);
         if (Trace.isEnabled()) {
-            Trace.write(
-                `NativeScriptActivity.onActivityResult(${requestCode}, ${resultCode}, ${data})`,
-                Trace.categories.NativeLifecycle
-            );
+            Trace.write(`NativeScriptActivity.onActivityResult(${requestCode}, ${resultCode}, ${data})`, Trace.categories.NativeLifecycle);
         }
 
         Application.android.notify({
@@ -272,7 +257,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             activity,
             requestCode,
             resultCode,
-            intent: data
+            intent: data,
         } as AndroidActivityResultEventData);
     }
 
@@ -294,30 +279,23 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     // 2. Application revived after Activity is destroyed. this._rootView should have been restored by id in onCreate.
     // 3. Livesync if rootView has no custom _onLivesync. this._rootView should have been cleared upfront. Launch event should not fired
     // 4. _resetRootView method. this._rootView should have been cleared upfront. Launch event should not fired
-    private async setActivityContent(
-        activity: androidx.appcompat.app.AppCompatActivity,
-        savedInstanceState: android.os.Bundle,
-        fireLaunchEvent: boolean,
-        intent: android.content.Intent
-    ) {
+    private async setActivityContent(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, fireLaunchEvent: boolean, intent: android.content.Intent) {
         let rootView = this._rootView;
         if (!rootView) {
-
             rootView = new GridLayout();
             this._rootView = rootView;
 
-
             activityRootViewsMap.set(rootView._domId, new WeakRef(rootView));
 
-            // const deviceType = Device.deviceType.toLowerCase();
+            const deviceType = Device.deviceType.toLowerCase();
 
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${gVars.platform}`);
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.orientation}`);
-            // CSSUtils.pushToSystemCssClasses(Theme.getMode());
+            CSSUtils.pushToSystemCssClasses(Theme.getMode());
+            CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${gVars.platform}`);
+            CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
+            CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.orientation}`);
             this._rootView.cssClasses.add(CSSUtils.ROOT_VIEW_CSS_CLASS);
             const rootViewCssClasses = CSSUtils.getSystemCssClasses();
-            rootViewCssClasses.forEach(c => this._rootView.cssClasses.add(c));
+            rootViewCssClasses.forEach((c) => this._rootView.cssClasses.add(c));
         }
 
         // setup view as styleScopeHost
@@ -332,40 +310,36 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             if (isNaN(lat) || isNaN(lon)) {
                 android.widget.Toast.makeText(Application.android.context, 'wrong_parameters', android.widget.Toast.LENGTH_LONG);
                 activity.finish();
-                return ;
+                return;
             }
-            let name = (lat.toFixed(2) + ',' + lon.toFixed(2));
+            let name = lat.toFixed(2) + ',' + lon.toFixed(2);
             try {
                 const results = await getFromLocation(lat, lon, 10);
-                if (results?.length> 0) {
+                if (results?.length > 0) {
                     name = results[0].name;
                 }
-            } catch(err) {
+            } catch (err) {
                 console.log('geocoding error', err);
-
             }
-            const BottomSheetWeatherPage = (await import( '~/BottomSheetWeatherPage.svelte')).default;
+            const BottomSheetWeatherPage = (await import('~/BottomSheetWeatherPage.svelte')).default;
             await showBottomSheet({
                 parent: rootView,
                 view: BottomSheetWeatherPage,
                 dismissOnBackgroundTap: true,
                 dismissOnDraggingDownSheet: true,
-                props:{
-                    weatherLocation:{
-                        coord:{lat, lon},
-                        name
-                    }
-                }
+                props: {
+                    weatherLocation: {
+                        coord: { lat, lon },
+                        name,
+                    },
+                },
             });
-        } catch(err)  {
+        } catch (err) {
             console.error('error retreiving data', err);
         } finally {
             activity.finish();
-
         }
     }
-
-
 }
 
 @JavaProxy('com.akylas.weather.FloatingActivity')
@@ -427,13 +401,7 @@ class Activity extends androidx.appcompat.app.AppCompatActivity {
     }
 
     public onRequestPermissionsResult(requestCode: number, permissions: string[], grantResults: number[]): void {
-        this._callbacks.onRequestPermissionsResult(
-            this,
-            requestCode,
-            permissions,
-            grantResults,
-            undefined /*TODO: Enable if needed*/
-        );
+        this._callbacks.onRequestPermissionsResult(this, requestCode, permissions, grantResults, undefined /*TODO: Enable if needed*/);
     }
 
     public onActivityResult(requestCode: number, resultCode: number, data: android.content.Intent): void {

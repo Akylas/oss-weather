@@ -425,10 +425,10 @@ export async function getCityName(pos: Coord) {
 // }
 export function prepareItems(weatherData, lastUpdate) {
     const newItems = [];
-    const endOfHour = dayjs()
-        // .add(46, 'h')
-        .endOf('h')
-        .valueOf();
+    // const endOfHour = dayjs()
+    //     // .add(46, 'h')
+    //     .endOf('h')
+    //     .valueOf();
     const startOfHour = dayjs()
         // .add(46, 'h')
         .startOf('h')

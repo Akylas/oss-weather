@@ -430,8 +430,6 @@ module.exports = (env, params = {}) => {
     config.optimization.minimizer = [
         new TerserPlugin({
             parallel: true,
-            // cache: true,
-            // sourceMap: isAnySourceMapEnabled,
             terserOptions: {
                 ecma: 2017,
                 module: true,

@@ -17,8 +17,9 @@
     } 
 </script>
 
-<gridLayout height="100" borderRightWidth="5" borderRightColor={item.color}>
-    <canvaslabel color={$textColor}>
+<gridLayout height="100">
+    <canvaslabel color={$textColor} paddingRight="5">
+        <rectangle horizontalAlignment="right" fillColor={item.color} width="5" height="100%" translateX="5"/>
         <cgroup fontSize="22" verticalAlignment="top" paddingLeft="10" paddingTop="5">
             <cspan text={convertTime(item.time, 'ddd ')} />
             <cspan fontSize="15" color={$textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />

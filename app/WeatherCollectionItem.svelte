@@ -72,7 +72,7 @@
         }
         paint.setAlpha(255);
         textPaint.setAlpha(255);
-        paint.setColor((item.color));
+        paint.setColor(item.color);
         canvas.drawRect(0, h - 10, w, h, paint);
 
         textPaint.setColor($textColor);
@@ -96,7 +96,7 @@
     }
 </script>
 
-<gridlayout height="100%" rows="40,*,30" backgroundColor={`rgba(120,120,120,${item.odd ? 0.05 : 0})`}>
-    <canvas color={$textColor} bind:this={canvasView} rowSpan="3" backgroundColor="transparent" on:draw={drawOnCanvas} hardwareAccelerated="false" />
+<gridlayout height="100%" rows="40,*,30" backgroundColor={item.odd ? `rgba(120,120,120,0.05)` : undefined}>
+    <canvas bind:this={canvasView} rowSpan="3" on:draw={drawOnCanvas} />
     <WeatherIcon row="1" icon={item.icon} verticalAlignment="bottom" marginBottom={tempHeight + '%'} />
 </gridlayout>

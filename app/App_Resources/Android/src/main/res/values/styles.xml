@@ -23,6 +23,7 @@
     <style name="LaunchScreenTheme" parent="LaunchScreenThemeBase"></style>
     <!-- theme to use AFTER launch screen is loaded-->
     <style name="AppThemeBase" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
         <item name="android:forceDarkAllowed">true</item>
         <item name="android:fontFamily">@font/lato</item>
         <item name="android:statusBarColor">@color/background</item>

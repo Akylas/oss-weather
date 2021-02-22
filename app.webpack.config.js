@@ -53,7 +53,7 @@ module.exports = (env, params = {}) => {
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
-        includeDefaultLocation, // --env.includeDefaultLocation
+        includeDefaultLocation // --env.includeDefaultLocation
     } = env;
     console.log('env', env);
     env.modules = env.modules || [];
@@ -87,12 +87,7 @@ module.exports = (env, params = {}) => {
     // console.log('config.externals', config.externals);
 
     const coreModulesPackageName = fork ? '@akylas/nativescript' : '@nativescript/core';
-    config.resolve.modules = [
-        resolve(__dirname, `node_modules/${coreModulesPackageName}`),
-        resolve(__dirname, 'node_modules'),
-        `node_modules/${coreModulesPackageName}`,
-        'node_modules'
-    ];
+    config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
         'svelte-native': '@akylas/svelte-native',
@@ -100,7 +95,6 @@ module.exports = (env, params = {}) => {
     });
 
     console.log('coreModulesPackageName', coreModulesPackageName);
-
 
     const package = require('./package.json');
     const nsconfig = require('./nativescript.config.js');
@@ -134,11 +128,7 @@ module.exports = (env, params = {}) => {
         GIT_URL: `"${package.repository}"`,
         SUPPORT_URL: `"${package.bugs.url}"`,
         CUSTOM_URL_SCHEME: `"${CUSTOM_URL_SCHEME}"`,
-        STORE_LINK: `"${
-            isAndroid
-                ? `https://play.google.com/store/apps/details?id=${nsconfig.id}`
-                : `https://itunes.apple.com/app/id${APP_STORE_ID}`
-        }"`,
+        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nsconfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
         STORE_REVIEW_LINK: `"${
             isIOS
                 ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
@@ -153,24 +143,18 @@ module.exports = (env, params = {}) => {
         CLIMA_CELL_MY_KEY: includeClimaCellKey ? `"${process.env.CLIMA_CELL_MY_KEY}"` : 'undefined',
         DEFAULT_LOCATION: includeDefaultLocation
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
-            : 'undefined',
+            : 'undefined'
     };
 
     const itemsToClean = [`${dist}/**/*`];
     if (platform === 'android') {
         itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'src', 'main', 'assets', 'snapshots/**/*')}`);
-        itemsToClean.push(
-            `${join(projectRoot, 'platforms', 'android', 'app', 'build', 'configurations', 'nativescript-android-snapshot')}`
-        );
+        itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'build', 'configurations', 'nativescript-android-snapshot')}`);
     }
 
     const symbolsParser = require('scss-symbols-parser');
-    const mdiSymbols = symbolsParser.parseSymbols(
-        readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString()
-    );
-    const mdiIcons = JSON.parse(
-        `{${mdiSymbols.variables[mdiSymbols.variables.length - 1].value.replace(/" (F|0)(.*?)([,\n]|$)/g, '": "$1$2"$3')}}`
-    );
+    const mdiSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString());
+    const mdiIcons = JSON.parse(`{${mdiSymbols.variables[mdiSymbols.variables.length - 1].value.replace(/" (F|0)(.*?)([,\n]|$)/g, '": "$1$2"$3')}}`);
     const forecastSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'css/forecastfont.scss')).toString());
     const forecastIcons = JSON.parse(`{${forecastSymbols.variables[forecastSymbols.variables.length - 1].value.replace(/'forecastfont-(\w+)' (F|f|0)(.*?)([,\n]|$)/g, '"$1": "$2$3"$4')}}`);
 
@@ -269,8 +253,8 @@ module.exports = (env, params = {}) => {
                         }
                         return match;
                     },
-                    flags: 'g',
-                },
+                    flags: 'g'
+                }
             },
             {
                 loader: 'string-replace-loader',
@@ -282,8 +266,8 @@ module.exports = (env, params = {}) => {
                         }
                         return match;
                     },
-                    flags: 'g',
-                },
+                    flags: 'g'
+                }
             }
         ]
     });
@@ -319,9 +303,7 @@ module.exports = (env, params = {}) => {
         });
     }
     // we remove default rules
-    config.plugins = config.plugins.filter(
-        (p) => ['CleanWebpackPlugin', 'CopyPlugin', 'Object', 'ForkTsCheckerWebpackPlugin'].indexOf(p.constructor.name) === -1
-    );
+    config.plugins = config.plugins.filter((p) => ['CleanWebpackPlugin', 'CopyPlugin', 'Object', 'ForkTsCheckerWebpackPlugin'].indexOf(p.constructor.name) === -1);
     console.log('plugins after clean', config.plugins);
     // we add our rules
     const globOptions = { dot: false, ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
@@ -381,17 +363,11 @@ module.exports = (env, params = {}) => {
             let appVersion;
             let buildNumber;
             if (platform === 'android') {
-                appVersion = readFileSync('app/App_Resources/Android/app.gradle', 'utf8').match(
-                    /versionName "((?:[0-9]+\.?)+)"/
-                )[1];
+                appVersion = readFileSync('app/App_Resources/Android/app.gradle', 'utf8').match(/versionName "((?:[0-9]+\.?)+)"/)[1];
                 buildNumber = readFileSync('app/App_Resources/Android/app.gradle', 'utf8').match(/versionCode ([0-9]+)/)[1];
             } else if (platform === 'ios') {
-                appVersion = readFileSync('app/App_Resources/iOS/Info.plist', 'utf8').match(
-                    /<key>CFBundleShortVersionString<\/key>[\s\n]*<string>(.*?)<\/string>/
-                )[1];
-                buildNumber = readFileSync('app/App_Resources/iOS/Info.plist', 'utf8').match(
-                    /<key>CFBundleVersion<\/key>[\s\n]*<string>([0-9]*)<\/string>/
-                )[1];
+                appVersion = readFileSync('app/App_Resources/iOS/Info.plist', 'utf8').match(/<key>CFBundleShortVersionString<\/key>[\s\n]*<string>(.*?)<\/string>/)[1];
+                buildNumber = readFileSync('app/App_Resources/iOS/Info.plist', 'utf8').match(/<key>CFBundleVersion<\/key>[\s\n]*<string>([0-9]*)<\/string>/)[1];
             }
             console.log('appVersion', appVersion, buildNumber);
 

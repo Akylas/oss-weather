@@ -168,7 +168,7 @@
         }
     }
     async function openWeatherMap() {
-        navigate({ page: WeatherMapPage, transition: { name: 'slide', duration: 1000 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+        navigate({ page: WeatherMapPage, transition: { name: 'fade', duration: 200 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
     }
     async function searchOnMap() {
         try {
@@ -279,6 +279,9 @@
     // }
 
     async function showAlerts() {
+        if(!weatherData.alerts) {
+            return;
+        }
         try {
             console.log('showAlerts', weatherData.alerts);
             showBottomSheet({
@@ -361,7 +364,7 @@
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
             <mdbutton
-                visibily={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
+                visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
                 variant="text"
                 class="icon-btn"
                 color="red"

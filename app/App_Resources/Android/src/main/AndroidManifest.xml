@@ -54,6 +54,7 @@
                 <data android:scheme="weather" />
             </intent-filter>
         </activity>
+        <meta-data android:name="android.webkit.WebView.MetricsOptOut" android:value="true" />
         <meta-data android:name="io.sentry.anr.enable" android:value="false" />
         <receiver android:name=".CommandReceiver"  android:enabled="true" android:exported="true" android:permission="com.akylas.weather.broadcast">
             <intent-filter>

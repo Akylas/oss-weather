@@ -280,6 +280,7 @@
 
     async function showAlerts() {
         try {
+            console.log('showAlerts', weatherData.alerts);
             showBottomSheet({
                 parent: page,
                 view: AlertView,

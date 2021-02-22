@@ -41,7 +41,7 @@ registerNativeViewElement('TextField', () => require('@nativescript/core').TextF
 // registerNativeViewElement('mdspeeddialitem', () => SpeedDialItem);
 // registerNativeViewElement('formattedstring', () => require('@nativescript-community/text').LightFormattedString, null, {}, { override: true });
 registerNativeViewElement('FormattedString', () => require('@nativescript/core').FormattedString, 'formattedText', {
-    'spans': NativeElementPropType.ObservableArray
+    spans: NativeElementPropType.ObservableArray
 });
 registerNativeViewElement('Span', () => require('@nativescript/core').Span, 'spans');
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
@@ -63,11 +63,11 @@ registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-ca
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 CollectionViewElement.register();
 
-
-// import {Trace} from '@nativescript/core';
+// import { Trace } from '@nativescript/core';
 // Trace.addCategories(DomTraceCategory);
 // Trace.addCategories(Trace.categories.NativeLifecycle);
 // Trace.addCategories(Trace.categories.Transition);
+// Trace.addCategories(Trace.categories.Animation);
 // Trace.addCategories(Trace.categories.concat(Trace.categories.All));
 // Trace.enable();
 // import { Application } from '@nativescript/core';
@@ -75,8 +75,6 @@ import { start } from '~/helpers/theme';
 // on startup we need to ensure theme is loaded because of a mixin
 // on startup we need to say what we are using
 start();
-
-
 
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
 installMixins();

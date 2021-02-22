@@ -10,7 +10,7 @@ module.exports = {
         v8Flags: '--expose_gc',
         codeCache: true,
         enableMultithreadedJavascript: false,
-        forceLog: true,
+        forceLog: true
     },
-    cssParser: 'rework',
+    cssParser: 'rework'
 };

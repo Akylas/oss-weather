@@ -24,11 +24,10 @@ export function getDataFolder() {
         };
         if (checkExternalMedia()) {
             const dirs = (app.android.startActivity as android.app.Activity).getExternalFilesDirs(null);
-            dataFolder = dirs[dirs.length - 1].getAbsolutePath();
-        } else {
-            dataFolder = knownFolders.documents().path;
+            dataFolder = dirs[dirs.length - 1]?.getAbsolutePath();
         }
-    } else {
+    }
+    if (!dataFolder) {
         dataFolder = knownFolders.documents().path;
     }
     return dataFolder;

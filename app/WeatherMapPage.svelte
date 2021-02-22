@@ -1,32 +1,32 @@
 <script context="module" lang="ts">
     import { getString } from '@nativescript/core/application-settings';
-import { request } from '@nativescript-community/perms';
-import { MergedMBVTTileDataSource } from '@nativescript-community/ui-carto/datasources';
-import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
-import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
-import { MBTilesTileDataSource } from '@nativescript-community/ui-carto/datasources/mbtiles';
-import { HillshadeRasterTileLayer,RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
-import { VectorTileLayer,VectorTileRenderOrder } from '@nativescript-community/ui-carto/layers/vector';
-import { CartoMap } from '@nativescript-community/ui-carto/ui';
-import { setShowDebug } from '@nativescript-community/ui-carto/utils';
-import { MBVectorTileDecoder } from '@nativescript-community/ui-carto/vectortiles';
-import { Application,Page } from '@nativescript/core';
-import { Folder,knownFolders,path } from '@nativescript/core/file-system';
-import { NativeViewElementNode } from 'svelte-native/dom';
-import { l } from '~/helpers/locale';
-import { getDataFolder } from '~/utils/utils';
-import CActionBar from './CActionBar.svelte';
-import { showError } from './utils/error';
+    import { request } from '@nativescript-community/perms';
+    import { MergedMBVTTileDataSource } from '@nativescript-community/ui-carto/datasources';
+    import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
+    import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
+    import { MBTilesTileDataSource } from '@nativescript-community/ui-carto/datasources/mbtiles';
+    import { HillshadeRasterTileLayer, RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
+    import { VectorTileLayer, VectorTileRenderOrder } from '@nativescript-community/ui-carto/layers/vector';
+    import { CartoMap } from '@nativescript-community/ui-carto/ui';
+    import { setShowDebug } from '@nativescript-community/ui-carto/utils';
+    import { MBVectorTileDecoder } from '@nativescript-community/ui-carto/vectortiles';
+    import { Application, Page } from '@nativescript/core';
+    import { Folder, knownFolders, path } from '@nativescript/core/file-system';
+    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { l } from '~/helpers/locale';
+    import { getDataFolder } from '~/utils/utils';
+    import CActionBar from './CActionBar.svelte';
+    import { showError } from './utils/error';
 
-    const cacheFolder = Folder.fromPath(path.join(knownFolders.documents().path, 'carto_cache'));
+    const cacheFolder = Folder.fromPath(path.join(knownFolders.temp().path, 'carto_cache'));
     const dataSource = new PersistentCacheTileDataSource({
         dataSource: new HTTPTileDataSource({
             minZoom: 2,
             subdomains: 'abc',
             maxZoom: 18,
-            url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+            url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
         }),
-        databasePath: path.join(cacheFolder.path, 'cache.db'),
+        databasePath: path.join(cacheFolder.path, 'cache.db')
     });
     const dataSourceRadar = new HTTPTileDataSource({
         minZoom: 4,
@@ -35,7 +35,7 @@ import { showError } from './utils/error';
         url: `https://{s}.sat.owm.io/vane/2.0/weather/PA0/{z}/{x}/{y}?appid=${getString(
             'owmApiKey',
             OWM_MY_KEY || OWM_DEFAULT_KEY
-        )}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`,
+        )}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`
     });
     let hillshadeLayer: HillshadeRasterTileLayer;
     let vectorLayer: VectorTileLayer;
@@ -46,8 +46,10 @@ import { showError } from './utils/error';
             let defaultPath = path.join(getDataFolder(), 'alpimaps_mbtiles');
             if (global.isAndroid) {
                 const dirs = (Application.android.startActivity as android.app.Activity).getExternalFilesDirs(null);
-                const sdcardFolder = dirs[dirs.length - 1].getAbsolutePath();
-                defaultPath = path.join(sdcardFolder, '../../../..', 'alpimaps_mbtiles');
+                const sdcardFolder = dirs[dirs.length - 1]?.getAbsolutePath();
+                if (sdcardFolder) {
+                    defaultPath = path.join(sdcardFolder, '../../../..', 'alpimaps_mbtiles');
+                }
             }
             localMbtilesSource = getString('local_mbtiles_directory', defaultPath);
         }
@@ -57,26 +59,26 @@ import { showError } from './utils/error';
         let dataSource;
         if (sources.length === 1) {
             dataSource = new MBTilesTileDataSource({
-                databasePath: sources[0],
+                databasePath: sources[0]
             });
         } else {
             dataSource = new MergedMBVTTileDataSource({
                 dataSources: sources.map(
                     (s) =>
                         new MBTilesTileDataSource({
-                            databasePath: s,
+                            databasePath: s
                         })
-                ),
+                )
             });
         }
         const vectorTileDecoder = new MBVectorTileDecoder({
             style: 'voyager',
             liveReload: !PRODUCTION,
-            dirPath: `~/assets/styles/osmxml`,
+            dirPath: `~/assets/styles/osmxml`
         });
         const layer = new VectorTileLayer({
             dataSource,
-            decoder: vectorTileDecoder,
+            decoder: vectorTileDecoder
         });
         layer.setLabelRenderOrder(VectorTileRenderOrder.LAST);
         // layer.setBuildingRenderOrder(VectorTileRenderOrder.LAYER);
@@ -98,7 +100,7 @@ import { showError } from './utils/error';
                 vectorLayer = createMergeMBtiles({
                     legend: 'https://www.openstreetmap.org/key.html',
                     name: f.name,
-                    sources: subentities.map((e2) => e2.path).filter((s) => s.endsWith('.mbtiles')),
+                    sources: subentities.map((e2) => e2.path).filter((s) => s.endsWith('.mbtiles'))
                 });
             }
             // const etiles = entities.filter((e) => e.name.endsWith('.etiles')).slice(-1);
@@ -139,16 +141,19 @@ import { showError } from './utils/error';
     let page: NativeViewElementNode<Page>;
 
     async function onMapReady(event) {
-        setShowDebug(true);
         cartoMap = event.object as CartoMap;
         const options = cartoMap.getOptions();
         options.setZoomGestures(true);
         options.setWatermarkScale(0.5);
         options.setRotatable(false);
 
-        const folderPath = getDefaultMBTilesDir();
-        if (folderPath) {
-            await loadLocalMbtiles(folderPath);
+        try {
+            const folderPath = getDefaultMBTilesDir();
+            if (folderPath) {
+                await loadLocalMbtiles(folderPath);
+            }
+        } catch (err) {
+            console.error(err);
         }
         if (vectorLayer) {
             cartoMap.addLayer(vectorLayer);
@@ -158,7 +163,7 @@ import { showError } from './utils/error';
         } else {
             const rasterLayer = new RasterTileLayer({
                 zoomLevelBias: 1,
-                dataSource,
+                dataSource
             });
             cartoMap.addLayer(rasterLayer);
         }
@@ -180,11 +185,10 @@ import { showError } from './utils/error';
     }
 </script>
 
-<!-- <frame backgroundColor="transparent"> -->
 <page bind:this={page} actionBarHidden="true" on:navigatingTo={onNavigatingTo}>
     <gridLayout rows="auto,*">
         <CActionBar title={l('weather_map')} />
-        <cartomap row="1" zoom="8" on:mapReady={onMapReady} />
+        <cartomap row="1" zoom="8" on:mapReady={onMapReady} useTextureView={true} />
     </gridLayout>
 </page>
-<!-- </frame> -->
+    

@@ -1,0 +1,7 @@
+*Bug fixes*
+- activity background color with dark mode
+- *android:* androidx update
+- locales
+- prevent crash on map
+- prevent alert icon when no alert
+- *android:* opt out of google metrics

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="owm_api_key">"Clé d\'API OpenWeatherMap"</string>
+  <string name="cc_api_key">"Clé API ClimaCell"</string>
+  <string name="about_to_quit">"l\'application est sur le point de se fermer car elle ne possède pas de clé API"</string>
+  <string name="weather_map">"carte météo"</string>
   <string name="select_location">"sélectionnez un emplacement"</string>
   <string name="no_location_desc">"You haven\'t chosen a location yet. \nYou can search to use your GPS location"</string>
   <string name="climal_cell_api_key_optional_description">"pour obtenir des données météorologiques a la minute (facultatif), une clé API ClimaCell gratuite est requise. \nPour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web"</string>
@@ -61,7 +65,4 @@
   <string name="theme.title">"theme"</string>
   <string name="app_name">"NS Météo"</string>
   <string name="title_activity_kimera">"NS Météo"</string>
-  <string name="about_to_quit">"the app is about to close because it does not have an API Key"</string>
-  <string name="owm_api_key">"OpenWeatherMap API Key"</string>
-  <string name="cc_api_key">"ClimaCell API Key"</string>
 </resources>

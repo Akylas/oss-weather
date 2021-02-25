@@ -56,9 +56,6 @@ export function applyTheme(theme: Themes) {
             }
             break;
     }
-    try {
-        console.log('applyTheme', theme, Theme.getMode(), Application.systemAppearance());
-    } catch (err) {}
 }
 
 export let theme: Themes;
@@ -69,15 +66,12 @@ export function toggleTheme() {
 }
 
 export function start() {
-    if (global.isIOS) {
-        if (iOSNativeHelper.MajorVersion >= 13) {
-            theme = getString('theme', 'auto') as Themes;
-        } else {
-            theme = 'light';
-        }
+    if (global.isIOS && iOSNativeHelper.MajorVersion < 13) {
+        theme = 'light';
     } else {
-        theme = getString('theme', 'dark') as Themes;
+        theme = (getString('theme', 'auto') || 'auto') as Themes;
     }
+    // console.log('theme', theme);
 
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;
@@ -94,13 +88,24 @@ export function start() {
         applyTheme(newTheme);
         updateThemeColors(newTheme, newTheme !== 'auto');
     });
-
-    applyTheme(theme);
-    if ((global.isAndroid && Application.android && Application.android.context) || (global.isIOS && Application.ios)) {
-        updateThemeColors(theme, theme !== 'auto');
-    } else {
-        Application.on(Application.launchEvent, () => {
+    if (global.isAndroid) {
+        applyTheme(theme);
+        if (Application.android && Application.android.context) {
             updateThemeColors(theme, theme !== 'auto');
-        });
+        } else {
+            Application.on(Application.launchEvent, () => {
+                updateThemeColors(theme, theme !== 'auto');
+            });
+        }
+    } else {
+        if (Application.ios && Application.ios.window) {
+            applyTheme(theme);
+            updateThemeColors(theme, theme !== 'auto');
+        } else {
+            Application.on(Application.displayedEvent, () => {
+                applyTheme(theme);
+                updateThemeColors(theme, theme !== 'auto');
+            });
+        }
     }
 }

@@ -245,7 +245,7 @@ import { NativeViewElementNode } from 'svelte-native/dom';
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan="2" color={$textColor}>
+    <canvaslabel colSpan="2">
         <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} />
 
         {#if item.temperature !== undefined}
@@ -254,7 +254,7 @@ import { NativeViewElementNode } from 'svelte-native/dom';
                 <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : null} />
             </cgroup>
         {/if}
-        <cgroup paddingLeft="80" paddingTop="11" fontSize="14" verticalAlignment="top">
+        <cgroup id="test" paddingLeft="80" paddingTop="11" fontSize="14" verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />

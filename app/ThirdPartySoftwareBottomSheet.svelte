@@ -12,7 +12,7 @@
     }
 </script>
 
-<collectionView id="trackingScrollView" {items} rowHeight="60" itemIdGenerator={(item, i) => i} class="bottomsheet" height="300">
+<collectionView id="trackingScrollView" {items} rowHeight="70" itemIdGenerator={(item, i) => i} class="bottomsheet" height="300">
     <Template let:item>
         <SettingLabelIcon title={item.moduleName} subtitle={item.moduleUrl} on:tap={() => onTap(item)} />
     </Template>

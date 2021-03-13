@@ -1,3 +1,4 @@
+// (com as any).tns.Runtime.getCurrentRuntime().enableVerboseLogging();
 import { DomTraceCategory, FrameElement, NativeElementPropType, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import { startSentry } from '~/utils/sentry';
 startSentry();

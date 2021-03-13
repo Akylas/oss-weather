@@ -1,19 +1,24 @@
-import { loadLocaleJSON } from '@nativescript-community/l';
+import { l, lc, loadLocaleJSON, lt, lu } from '@nativescript-community/l';
 import { getString, setString } from '@nativescript/core/application-settings';
 import { Device } from '@nativescript/core/platform';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
-export { l, lc, lt, lu } from '@nativescript-community/l';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 
-function setLang(newLang) {
-    newLang = getOwmLanguage(newLang);
-    if (supportedLanguages.indexOf(newLang) === -1) {
-        newLang = 'en';
-    }
+export let lang;
+export const $lang = writable(null);
+const onLanguageChangedCallbacks = [];
+export function onLanguageChanged(callback) {
+    onLanguageChangedCallbacks.push(callback);
+}
+$lang.subscribe((newLang: string) => {
     lang = newLang;
+    if (!lang) {
+        return;
+    }
     // console.log('changed lang', lang, Device.region);
     try {
         require(`dayjs/locale/${newLang}`);
@@ -27,11 +32,14 @@ function setLang(newLang) {
     } catch (err) {
         console.log('failed to load lang json', lang, `~/i18n/${lang}.json`, err);
     }
-    onLanguageChangedCallbacks.forEach(c => c(lang));
-}
-const onLanguageChangedCallbacks = [];
-export function onLanguageChanged(callback) {
-    onLanguageChangedCallbacks.push(callback);
+    onLanguageChangedCallbacks.forEach((c) => c(lang));
+});
+function setLang(newLang) {
+    newLang = getOwmLanguage(newLang);
+    if (supportedLanguages.indexOf(newLang) === -1) {
+        newLang = 'en';
+    }
+    $lang.set(newLang);
 }
 
 let deviceLanguage = getString('language');
@@ -55,7 +63,6 @@ function getOwmLanguage(language) {
         return language;
     }
 }
-export let lang;
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
@@ -80,3 +87,9 @@ prefs.on('key:language', () => {
 });
 
 setLang(deviceLanguage);
+
+export { l, lc, lt, lu };
+export const $l = derived([$lang], () => l);
+export const $lc = derived([$lang], () => lc);
+export const $lt = derived([$lang], () => lt);
+export const $lu = derived([$lang], () => lu);

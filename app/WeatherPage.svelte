@@ -182,8 +182,8 @@
     }
     async function getLocationAndWeather() {
         try {
-            const permRes = await requestPerm('location');
-            if (permRes[0] !== 'authorized') {
+            const result = await requestPerm('location');
+            if(Array.isArray(result) && result[0] !== 'authorized' || Object.keys(result).some(s=>result[s] !== 'authorized')) {
                 return alert(l('missing_location_perm'));
             }
             loading = true;

@@ -1,5 +1,4 @@
 import {
-    AndroidTransitionType,
     Transition
 } from '@nativescript/core/ui/transition';
 export class CustomTransition extends Transition {
@@ -9,25 +8,25 @@ export class CustomTransition extends Transition {
         const scaleValues = (Array).create('float', 2);
         const opacityValues = (Array).create('float', 2);
         switch (transitionType) {
-            case AndroidTransitionType.enter:
+            case Transition.AndroidTransitionType.enter:
                 scaleValues[0] = 0.5;
                 scaleValues[1] = 1;
                 opacityValues[0] = 0;
                 opacityValues[1] = 1;
                 break;
-            case AndroidTransitionType.popEnter:
+            case Transition.AndroidTransitionType.popEnter:
                 scaleValues[0] = 1.2;
                 scaleValues[1] = 1;
                 opacityValues[0] = 0;
                 opacityValues[1] = 1;
                 break;
-            case AndroidTransitionType.exit:
+            case Transition.AndroidTransitionType.exit:
                 scaleValues[0] = 1;
                 scaleValues[1] = 1.2;
                 opacityValues[0] = 1;
                 opacityValues[1] = 0;
                 break;
-            case AndroidTransitionType.popExit:
+            case Transition.AndroidTransitionType.popExit:
                 scaleValues[0] = 1;
                 scaleValues[1] = 0.8;
                 opacityValues[0] = 1;

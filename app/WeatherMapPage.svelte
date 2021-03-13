@@ -40,21 +40,28 @@
     let hillshadeLayer: HillshadeRasterTileLayer;
     let vectorLayer: VectorTileLayer;
 
-    function getDefaultMBTilesDir() {
-        let localMbtilesSource = getString('local_mbtiles_directory');
-        if (!localMbtilesSource) {
-            let defaultPath = path.join(getDataFolder(), 'alpimaps_mbtiles');
-            if (global.isAndroid) {
-                const dirs = (Application.android.startActivity as android.app.Activity).getExternalFilesDirs(null);
-                const sdcardFolder = dirs[dirs.length - 1]?.getAbsolutePath();
-                if (sdcardFolder) {
-                    defaultPath = path.join(sdcardFolder, '../../../..', 'alpimaps_mbtiles');
+     function getDefaultMBTilesDir() {
+    let localMbtilesSource = getString('local_mbtiles_directory');
+    if (!localMbtilesSource) {
+        let defaultPath = path.join(getDataFolder(), 'alpimaps_mbtiles');
+        if (global.isAndroid) {
+            const nArray = (Application.android.startActivity as android.app.Activity).getExternalFilesDirs(null);
+            const result = [];
+            for (let index = 0; index < nArray.length; index++) {
+                const element = nArray[index];
+                if (element) {
+                    result.push(element);
                 }
             }
-            localMbtilesSource = getString('local_mbtiles_directory', defaultPath);
+            if (result.length > 1) {
+                const sdcardFolder = result[result.length - 1].getAbsolutePath();
+                defaultPath = path.join(sdcardFolder, '../../../..', 'alpimaps_mbtiles');
+            }
         }
-        return localMbtilesSource;
+        localMbtilesSource = getString('local_mbtiles_directory', defaultPath);
     }
+    return localMbtilesSource;
+}
     function createMergeMBtiles({ name, sources, legend }: { name: string; sources: string[]; legend?: string }) {
         let dataSource;
         if (sources.length === 1) {
@@ -73,16 +80,13 @@
         }
         const vectorTileDecoder = new MBVectorTileDecoder({
             style: 'voyager',
-            liveReload: !PRODUCTION,
-            dirPath: `~/assets/styles/osmxml`
+            zipPath: '~/assets/styles/osm.zip'
         });
         const layer = new VectorTileLayer({
             dataSource,
             decoder: vectorTileDecoder
         });
         layer.setLabelRenderOrder(VectorTileRenderOrder.LAST);
-        // layer.setBuildingRenderOrder(VectorTileRenderOrder.LAYER);
-        // layer.setVectorTileEventListener(this, mapComp.mapProjection);
         return layer;
     }
     async function loadLocalMbtiles(directory: string) {
@@ -103,32 +107,6 @@
                     sources: subentities.map((e2) => e2.path).filter((s) => s.endsWith('.mbtiles'))
                 });
             }
-            // const etiles = entities.filter((e) => e.name.endsWith('.etiles')).slice(-1);
-            // etiles.forEach((e) => {
-            //     // this.log('loading etiles', e.name);
-            //     const dataSource = new MBTilesTileDataSource({
-            //         // minZoom: 5,
-            //         // maxZoom: 12,
-            //         databasePath: e.path,
-            //     });
-            //     const name = e.name;
-            //     const contrast = 0.39;
-            //     const heightScale = 0.29;
-            //     const illuminationDirection = 207;
-            //     const opacity = 1;
-            //     const decoder = new MapBoxElevationDataDecoder();
-            //     hillshadeLayer = new HillshadeRasterTileLayer({
-            //         decoder,
-            //         tileFilterMode: RasterTileFilterMode.RASTER_TILE_FILTER_MODE_NEAREST,
-            //         visibleZoomRange: [5, 16],
-            //         contrast,
-            //         illuminationDirection,
-            //         highlightColor: new Color(255, 141, 141, 141),
-            //         heightScale,
-            //         dataSource,
-            //         opacity,
-            //     });
-            // });
         } catch (err) {
             showError(err);
         }

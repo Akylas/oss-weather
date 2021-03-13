@@ -9,6 +9,7 @@ const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const Fontmin = require('fontmin');
 
 module.exports = (env, params = {}) => {
     Object.keys(env).forEach((k) => {
@@ -225,6 +226,7 @@ module.exports = (env, params = {}) => {
         }
     );
 
+    const usedMDIICons = [];
     config.module.rules.push({
         // rules to replace mdi icons and not use nativescript-font-icon
         test: /\.(ts|js|scss|css|svelte)$/,
@@ -236,7 +238,9 @@ module.exports = (env, params = {}) => {
                     search: 'mdi-([a-z-]+)',
                     replace: (match, p1, offset, str) => {
                         if (mdiIcons[p1]) {
-                            return String.fromCharCode(parseInt(mdiIcons[p1], 16));
+                            const res = String.fromCharCode(parseInt(mdiIcons[p1], 16));
+                            usedMDIICons.push(res);
+                            return res;
                         }
                         return match;
                     },
@@ -320,6 +324,23 @@ module.exports = (env, params = {}) => {
         {
             from: 'node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
             to: 'fonts',
+            transform: {
+                cache: { keys: { key: usedMDIICons.join('') } },
+                transformer(content, path) {
+                    return new Promise((resolve, reject) => {
+                        new Fontmin()
+                            .src(content)
+                            .use(Fontmin.glyph({ text: usedMDIICons.join('') }))
+                            .run(function (err, files) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve(files[0].contents);
+                                }
+                            });
+                    });
+                }
+            },
             globOptions
         }
     ];

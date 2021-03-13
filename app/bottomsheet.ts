@@ -1,6 +1,6 @@
 import { BottomSheetOptions } from '@nativescript-community/ui-material-bottomsheet';
 import { View, ViewBase } from '@nativescript/core';
-import { Frame } from '@nativescript/core/ui/frame';
+import { Frame } from '@nativescript/core';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import { PageSpec } from 'svelte-native/dom/navigation';
 

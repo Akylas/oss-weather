@@ -57,11 +57,10 @@ module.exports = (env, params = {}) => {
         includeDefaultLocation // --env.includeDefaultLocation
     } = env;
     console.log('env', env);
-    env.modules = env.modules || [];
-    env.modules.push('~/android/floatingactivity');
+    env.appComponents = env.appComponents || [];
+    env.appComponents.push('~/android/floatingactivity');
     env.appPath = nconfig.appPath;
     env.appResourcesPath = nconfig.appResourcesPath;
-    // env.modules = ['~/receivers/WeatherReceiver'];
     const config = webpackConfig(env, params);
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
@@ -314,9 +313,9 @@ module.exports = (env, params = {}) => {
 
     const context = nsWebpack.Utils.platform.getEntryDirPath();
     const copyPatterns = [
-        { context, from: 'fonts/!(ios|android)/**/*', to: 'fonts/[name].[ext]', noErrorOnMissing: true, globOptions },
-        { context, from: 'fonts/*', to: 'fonts/[name].[ext]', noErrorOnMissing: true, globOptions },
-        { context, from: `fonts/${platform}/**/*`, to: 'fonts/[name].[ext]', noErrorOnMissing: true, globOptions },
+        { context, from: 'fonts/!(ios|android)/**/*', to: 'fonts/[name][ext]', noErrorOnMissing: true, globOptions },
+        { context, from: 'fonts/*', to: 'fonts/[name][ext]', noErrorOnMissing: true, globOptions },
+        { context, from: `fonts/${platform}/**/*`, to: 'fonts/[name][ext]', noErrorOnMissing: true, globOptions },
         { context, from: '**/*.jpg', noErrorOnMissing: true, globOptions },
         { context, from: '**/*.png', noErrorOnMissing: true, globOptions },
         { context, from: 'assets/**/*', noErrorOnMissing: true, globOptions },

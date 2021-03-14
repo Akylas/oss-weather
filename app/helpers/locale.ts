@@ -35,32 +35,28 @@ $lang.subscribe((newLang: string) => {
     onLanguageChangedCallbacks.forEach((c) => c(lang));
 });
 function setLang(newLang) {
-    newLang = getOwmLanguage(newLang);
+    newLang = getActualLanguage(newLang);
     if (supportedLanguages.indexOf(newLang) === -1) {
         newLang = 'en';
     }
     $lang.set(newLang);
 }
 
-let deviceLanguage = getString('language');
-if (!deviceLanguage) {
-    deviceLanguage = Device.language.split('-')[0].toLowerCase();
-    setString('language', deviceLanguage);
-    // console.log('prefs language not set', deviceLanguage, getString('language'));
-}
-// console.log('deviceLanguage', deviceLanguage);
-function getOwmLanguage(language) {
-    if (language === 'cs') {
-        // Czech
-        return 'cz';
-    } else if (language === 'ko') {
-        // Korean
-        return 'kr';
-    } else if (language === 'lv') {
-        // Latvian
-        return 'la';
-    } else {
-        return language;
+const deviceLanguage = getString('language', 'auto');
+function getActualLanguage(language) {
+    switch (language) {
+        case 'cs':
+            return 'cz';
+        case 'jp':
+            return 'ja';
+        case 'kr':
+            return 'kr';
+        case 'lv':
+            return 'la';
+        case 'auto':
+            return Device.language.split('-')[0].toLowerCase();
+        default:
+            return language;
     }
 }
 

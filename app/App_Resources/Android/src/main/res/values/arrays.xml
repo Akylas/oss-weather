@@ -13,11 +13,13 @@
         <item name="black">black</item>
     </string-array>
     <string-array name="langs">
-        <item name="fr">@string/french</item>
-        <item name="en">@string/english</item>
+        <item name="auto">@string/auto</item>
+        <item name="fr">@string/english</item>
+        <item name="en">@string/french</item>
     </string-array>
     <string-array name="langsValues">
-        <item name="french">fr</item>
-        <item name="en">en</item>
+        <item name="auto">auto</item>
+        <item name="french">en</item>
+        <item name="en">fr</item>
     </string-array>
 </resources>

@@ -13,7 +13,7 @@
         <item name="black">black</item>
     </string-array>
     <string-array name="langs">
-        <item name="auto">@string/auto</item>
+        <item name="auto">@string/theme.auto</item>
         <item name="fr">@string/english</item>
         <item name="en">@string/french</item>
     </string-array>

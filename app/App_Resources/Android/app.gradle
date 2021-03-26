@@ -10,19 +10,19 @@ android {
     versionName "1.0.5"
     ndk {
       abiFilters.clear()
-      abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a'
+      // abiFilters 'x86', 'armeabi-v7a', 'arm64-v8a'
     }
   }
-  // splits {
-  //       abi {
-  //           enable true
-  //           reset()
-  //           // include 'armeabi-v7a'
-  //           // include 'x86'
-  //           include 'armeabi-v7a,x86'
-  //           universalApk true
-  //       }
-  //   }
+  splits {
+      abi {
+          enable true
+          reset()
+          // include 'armeabi-v7a'
+          // include 'x86'
+          include 'armeabi-v7a,x86'
+          universalApk true
+      }
+  }
   aaptOptions {
     additionalParameters "--no-version-vectors"  
   }

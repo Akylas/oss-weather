@@ -8,7 +8,9 @@ import { updateThemeColors } from '~/variables';
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
 Application.on(Application.systemAppearanceChangedEvent, (event) => {
-    updateThemeColors(theme);
+    if (theme === 'auto') {
+        updateThemeColors(event.newValue);
+    }
 });
 
 const ThemeBlack = 'ns-black';

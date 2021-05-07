@@ -289,10 +289,10 @@ end
     build_github
     sentry_upload
     changelog = get_changelog(platform:platform, flavor:flavor)
-    tag  = "#{platform}/#{version}/#{versionCode}";
+    tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
     add_git_tag(tag: tag)
 
-    push_git_tags
+    push_git_tags(force:true)
     set_github_release(
       repository_name: "farfromrefug/ns-forecastie",
       api_token: ENV["GH_TOKEN"],

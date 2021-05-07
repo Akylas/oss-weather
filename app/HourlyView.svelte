@@ -23,7 +23,8 @@
     isBounceEnabled="false"
     iosOverflowSafeAreaEnabled="false"
     {items}
-    on:dataPopulated={onDataPopulated}>
+    on:dataPopulated={onDataPopulated}
+>
     <Template let:item>
         <WeatherCollectionItem {item} />
     </Template>

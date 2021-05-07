@@ -7,7 +7,6 @@ import { connectionType, getConnectionType, startMonitoring, stopMonitoring } fr
 import dayjs from 'dayjs';
 import Color from 'tinycolor2';
 import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
-import { IMapPos } from '~/helpers/geo';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
 import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
@@ -358,7 +357,7 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry));
 }
 
-export interface OWMParams extends Partial<IMapPos> {
+export interface OWMParams extends Partial<Coord> {
     // pos?: IMapPos;
     id?: number; // cityId
     q?: string; // search query

@@ -8,7 +8,7 @@ if (gVars.sentry) {
 const originalConsole = {
     log: console.log,
     error: console.error,
-    warn: console.warn,
+    warn: console.warn
 };
 
 function convertArg(arg) {
@@ -36,7 +36,7 @@ function actualLog(level: 'info' | 'log' | 'error' | 'warn' | 'debug', ...args) 
         Sentry.addBreadcrumb({
             category: 'console',
             message: args.map(convertArg).join(' '),
-            level: level as any,
+            level: level as any
         });
     }
     // we do it this way allow terser to "drop" it
@@ -50,9 +50,11 @@ export function install() {
         return;
     }
     installed = true;
-    console.log = (...args) => actualLog('log', ...args);
-    console.info = (...args) => actualLog('info', ...args);
-    console.error = (...args) => actualLog('error', ...args);
-    console.warn = (...args) => actualLog('warn', ...args);
-    console.debug = (...args) => actualLog('debug', ...args);
+    if (NO_CONSOLE === true || gVars.sentry) {
+        console.log = (...args) => actualLog('log', ...args);
+        console.info = (...args) => actualLog('info', ...args);
+        console.error = (...args) => actualLog('error', ...args);
+        console.warn = (...args) => actualLog('warn', ...args);
+        console.debug = (...args) => actualLog('debug', ...args);
+    }
 }

@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Alert } from '~/services/api';
-    import { convertTime, titlecase } from '~/helpers/formatter';
+    import { convertTime,titlecase } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { mdiFontFamily } from '~/variables';
+    import { Alert } from '~/services/api';
+
 
     export let alerts: Alert[];
 </script>

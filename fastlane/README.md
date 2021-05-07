@@ -113,6 +113,16 @@ fastlane android upload_store
 fastlane android build
 ```
 Build the Android application.
+### android build_github
+```
+fastlane android build_github
+```
+Build the Android application For Github.
+### android github
+```
+fastlane android github
+```
+Ship to Github.
 ### android beta
 ```
 fastlane android beta

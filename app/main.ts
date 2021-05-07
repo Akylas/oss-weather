@@ -7,9 +7,7 @@ import './app.scss';
 import { install } from '~/utils/logging';
 install();
 
-import { setMapPosKeys } from '@nativescript-community/ui-carto/core';
 // we need to use lat lon
-setMapPosKeys('lat', 'lon');
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 installUIMixins();
 
@@ -34,7 +32,7 @@ registerNativeViewElement('StackLayout', () => require('@nativescript/core').Sta
 registerNativeViewElement('Switch', () => require('@nativescript/core').Switch);
 registerNativeViewElement('TextField', () => require('@nativescript/core').TextField);
 // registerNativeViewElement('TextView', () => require('@nativescript/core').TextView);
-// registerNativeViewElement('WebView', () => require('@nativescript/core').WebView);
+registerNativeViewElement('WebView', () => require('@nativescript/core').WebView);
 // registerNativeViewElement('WrapLayout', () => require('@nativescript/core').WrapLayout);
 
 // registerNativeViewElement('mdtextfield', () => TextField, null, {}, { override: true });
@@ -50,7 +48,6 @@ registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-
 registerNativeViewElement('label', () => Label as any, null, {}, { override: true });
 registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-material-activityindicator').ActivityIndicator);
 registerNativeViewElement('lineChart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
-registerNativeViewElement('cartomap', () => require('@nativescript-community/ui-carto/ui').CartoMap);
 registerNativeViewElement('lottie', () => require('@akylas/nativescript-lottie').LottieView);
 registerNativeViewElement('pullrefresh', () => require('@akylas/nativescript-pulltorefresh').PullToRefresh);
 registerNativeViewElement('canvas', () => require('@nativescript-community/ui-canvas').CanvasView);

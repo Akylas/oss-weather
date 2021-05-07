@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { getString } from '@nativescript/core/application-settings';
     import { android as androidApp } from '@nativescript/core/application';
+    import { getString } from '@nativescript/core/application-settings';
     import { closeBottomSheet } from '~/bottomsheet';
     import { l } from '~/helpers/locale';
     import { setCCApiKey, setOWMApiKey } from '~/services/api';

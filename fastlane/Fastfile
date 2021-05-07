@@ -252,7 +252,56 @@ end
           "--key-store-alias-password", ENV["KEYSTORE_ALIAS_PASSWORD"]
         )
   end
+  desc 'Build the Android application For Github.'
+    lane :build_github do
+      sh("rm", "-fr", "platforms/android")
+      sh("devns", "build", "android", "--release", "--clean", "--env.adhoc",
+          "--key-store-path", "../" + ENV["KEYSTORE_PATH"],
+          "--key-store-password", ENV["KEYSTORE_PASSWORD"],
+          "--key-store-alias", ENV["KEYSTORE_ALIAS"],
+          "--key-store-alias-password", ENV["KEYSTORE_ALIAS_PASSWORD"]
+        )
+  end
 
+  desc 'Ship to Github.'
+  lane :github do
+    checkGitStatus
+    platform = "android"
+    tns_install(platform:platform)
+    version = ""
+    versionCode = ""
+
+    
+    Dir.chdir("..") do
+      version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
+      versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
+    end
+    
+    puts "platform:"  + platform
+    puts "flavor:"  + flavor
+    puts "version:"  + version
+    puts "versionCode:"  + versionCode
+
+    sentry_create_release(
+      version: version, # release version to create
+    )
+    build_github
+    sentry_upload
+    changelog = get_changelog(platform:platform, flavor:flavor)
+    tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
+    add_git_tag(tag: tag)
+
+    push_git_tags
+    set_github_release(
+      repository_name: "farfromrefug/ns-forecastie",
+      api_token: ENV["GITHUB_TOKEN"],
+      name: version,
+      tag_name: tag,
+      description: changelog,
+      commitish: "master",
+      upload_assets: ["platforms/android/app/build/outputs/apk/release/app-release.apk"]
+    )
+  end
 
   desc 'Ship to Android Playstore Beta.'
   lane :beta do

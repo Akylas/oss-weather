@@ -1,20 +1,18 @@
 <script lang="ts">
     import Theme from '@nativescript-community/css-theme';
     import { Align } from '@nativescript-community/ui-canvas';
-import { LineChart } from '@nativescript-community/ui-chart';
+    import { LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import dayjs from 'dayjs';
-import { NativeViewElementNode } from 'svelte-native/dom';
+    import { NativeViewElementNode } from 'svelte-native/dom';
     import Color from 'tinycolor2';
-    import { showBottomSheet } from '~/bottomsheet';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
-    import AlertView from './AlertView.svelte';
+    import { mdiFontFamily, nightColor, rainColor, snowColor, textLightColor, wiFontFamily } from '~/variables';
     import HourlyView from './HourlyView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
 
@@ -63,13 +61,11 @@ import { NativeViewElementNode } from 'svelte-native/dom';
     }[];
     function updateLineChart(item: Item) {
         const chart = lineChart.nativeView;
-        // chart.setLogEnabled(true)
         if (chart) {
             let data = item.minutely;
             const now = dayjs().valueOf();
             const index = data.findIndex((v) => v.time >= now);
             data = data.slice(index);
-            // console.log('data', JSON.stringify(data));
 
             if (lastChartData === data) {
                 return;
@@ -84,7 +80,6 @@ import { NativeViewElementNode } from 'svelte-native/dom';
                 return;
             }
             lastChartData = data;
-            // const count = data.length;
             if (!chartInitialized) {
                 const darkTheme = /dark|black/.test(Theme.getMode());
                 const textColor = darkTheme ? 'white' : 'black';
@@ -110,20 +105,13 @@ import { NativeViewElementNode } from 'svelte-native/dom';
                         }
 
                         return '';
-                    },
+                    }
                 });
                 xAxis.setLabelCount(7, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
 
                 const rightAxis = chart.getAxisRight();
                 rightAxis.setEnabled(false);
-                // rightAxis.setAxisMinimum(0);
-                // rightAxis.setTextColor(Color(textColor).setAlpha(0.5).toRgbString());
-                // rightAxis.setDrawGridLines(false);
-                // rightAxis.setDrawAxisLine(false);
-                // rightAxis.setDrawLabels(false);
-                // rightAxis.setLabelCount(4);
-                // rightAxis.setAxisMaximum(6000);
 
                 const leftAxis = chart.getAxisLeft();
                 leftAxis.setAxisMinimum(0);
@@ -157,7 +145,6 @@ import { NativeViewElementNode } from 'svelte-native/dom';
                 leftAxis.addLimitLine(limitLine);
             }
 
-            // if (!precipChartSet || !cloudChartSet) {
             let needsToSetData = false;
             let needsUpdate = false;
             const hasPrecip = data.some((d) => d.precipIntensity > 0);
@@ -175,7 +162,6 @@ import { NativeViewElementNode } from 'svelte-native/dom';
             const leftAxis = chart.getAxisLeft();
             leftAxis.setAxisMaximum(Math.max(max, 2.4));
             leftAxis.setDrawLimitLines(hasPrecip);
-            // console.log(JSON.stringify(data.map((v) => ({ t: v.time, v: v.precipIntensity }))));
             if (hasPrecip) {
                 const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
@@ -185,10 +171,8 @@ import { NativeViewElementNode } from 'svelte-native/dom';
                     precipChartSet.setLineWidth(1);
                     precipChartSet.setDrawIcons(false);
                     precipChartSet.setDrawValues(false);
-                    // precipChartSet.setDrawCircles(true);
                     precipChartSet.setDrawFilled(true);
                     precipChartSet.setFillAlpha(150);
-                    // precipChartSet.setCubicIntensity(0.2);
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
                 } else {
                     precipChartSet.setValues(data);
@@ -225,10 +209,8 @@ import { NativeViewElementNode } from 'svelte-native/dom';
             //     cloudChartSet.clear();
             // }
             if (needsToSetData) {
-                // chart.setData(new LineData([precipChartSet, cloudChartSet].filter((s) => !!s)));
                 chart.setData(new LineData([precipChartSet].filter((s) => !!s)));
             } else if (needsUpdate) {
-                // chart.setData(chart.getData());
                 precipChartSet.notifyDataSetChanged();
                 chart.getData().notifyDataChanged();
                 chart.notifyDataSetChanged();

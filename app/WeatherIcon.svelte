@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
-    import { File, Folder, knownFolders, path } from '@nativescript/core/file-system';
+    import { getBoolean } from '@nativescript/core/application-settings';
+    import { File, knownFolders, path } from '@nativescript/core/file-system';
+    import { prefs } from '~/services/preferences';
     const appPath = knownFolders.currentApp().path;
     const cache = new Map();
     function loadLottieJSON(iconSrc) {
@@ -14,12 +16,8 @@
 </script>
 
 <script lang="ts">
-    import { prefs } from '~/services/preferences';
-    import { wiFontFamily } from '~/variables';
-    import { getBoolean } from '@nativescript/core/application-settings';
-
     export let icon;
-    export let fontSize: string|number = 40;
+    export let fontSize: string | number = 40;
     export let autoPlay = getBoolean('animations', false);
     let iconSrc;
     $: {
@@ -126,5 +124,5 @@
 {#if autoPlay}
     <lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5} />
 {:else}
-    <image {...$$restProps} src={iconSrc} width={fontSize} height={fontSize}/>
+    <image {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} />
 {/if}

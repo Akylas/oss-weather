@@ -1,4 +1,4 @@
-import Color from 'tinycolor2';
+// import Color from 'tinycolor2';
 import { nightColor, sunnyColor } from '~/variables';
 import { convertTime } from './locale';
 
@@ -90,20 +90,20 @@ export function titlecase(value) {
     });
 }
 
-export function colorFromTempC(tempC) {
-    let a = (tempC + 0) / 60;
-    a = a < 0 ? 0 : a > 1 ? 1 : a;
+// export function colorFromTempC(tempC) {
+//     let a = (tempC + 0) / 60;
+//     a = a < 0 ? 0 : a > 1 ? 1 : a;
 
-    // Scrunch the green/cyan range in the middle
-    // const sign = a < 0.5 ? -1 : 1;
-    // a = sign * Math.pow(2 * Math.abs(a - .5), .35)/2 + .5;
+//     // Scrunch the green/cyan range in the middle
+//     // const sign = a < 0.5 ? -1 : 1;
+//     // a = sign * Math.pow(2 * Math.abs(a - .5), .35)/2 + .5;
 
-    // Linear interpolation between the cold and hot
-    const h0 = 179;
-    const h1 = -190;
-    const h = h0 * (1 - a) + h1 * a;
-    return Color('hsl(' + [h, '75%', '40%'] + ')').toHexString();
-}
+//     // Linear interpolation between the cold and hot
+//     const h0 = 179;
+//     const h1 = -190;
+//     const h = h0 * (1 - a) + h1 * a;
+//     return Color('hsl(' + [h, '75%', '40%'] + ')').toHexString();
+// }
 export function colorForUV(uvIndex) {
     if (uvIndex >= 11) {
         return '#B567A4';
@@ -211,14 +211,43 @@ const ccMoonIcons = {
 
 const new_moon = new Date(1970, 0, 7, 20, 35, 0).valueOf();
 
+
+const MINUTES_IN_DAY = 24 * 60;
+const SECONDS_IN_DAY = MINUTES_IN_DAY * 60;
+const SYNODIC_MONTH = 29.530588853;
+function gregorianToJulian(year, month, day, hour, minute, second, utcOffset) {
+    if (month <= 2) {
+        year -= 1;
+        month += 12;
+    }
+
+    let A = Math.floor(year / 100);
+    let B = 2 - A + Math.floor(A / 4);
+    let jDay = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5;
+    let jTime = ((hour * (60 * 60)) + (minute * 60) + second) / SECONDS_IN_DAY;
+
+    return jDay + jTime - utcOffset / 24;
+}
+function calculateMoon(year, month, day, hours, minutes, seconds, utcOffset = 0) {
+    let julianNewMoonReference = gregorianToJulian(2000, 1, 6, 18, 14, 0, 0); //Lunation Number 18:14 UTC, January 6, 2000
+    let julianCalculate = gregorianToJulian(year, month, day, hours, minutes, seconds, utcOffset);
+
+    let age = (julianCalculate - julianNewMoonReference) % SYNODIC_MONTH;
+    return Math.floor(age);
+}
+
 export function getMoonPhase(date: Date){ // Gets the current Julian date
-    const lp = 2551443;
-    const now = new Date(date.getFullYear(),date.getMonth()-1,date.getDate(),20,35,0);
-    const phase = ((now.getTime() - new_moon)/1000) % lp;
-    return (Math.floor(phase /(24*3600)) + 1);
+    // const lp = 2551443;
+    // const now = new Date(date.getFullYear(),date.getMonth()-1,date.getDate(),20,35,0);
+    // const phase = ((now.getTime() - new_moon)/1000) % lp;
+    const phase = calculateMoon(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+    // const result = Math.floor(phase /(24*3600))
+    // console.log('getMoonPhase', date, result);
+    return phase;
 }
 export function moonIcon(moonPhase: number) {
-    return moonIcons[moonPhase];
+    // console.log('moonIcon', moonPhase, moonPhase % 30, moonIcons[moonPhase % 30]);
+    return moonIcons[moonPhase % 29];
 }
 export function ccMoonIcon(moonPhase: string) {
     return ccMoonIcons[moonPhase];

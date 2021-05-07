@@ -18,7 +18,7 @@
                 break;
             case 'share':
                 share({
-                    message: STORE_LINK,
+                    message: STORE_LINK
                 });
                 break;
             case 'review':
@@ -29,7 +29,7 @@
                     parent: this,
                     view: ThirdPartySoftwareBottomSheet,
                     ignoreTopSafeArea: true,
-                    trackingScrollView: 'trackingScrollView',
+                    trackingScrollView: 'trackingScrollView'
                 });
                 break;
         }

@@ -1,25 +1,26 @@
 <script lang="ts">
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { borderColor, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import { borderColor, nightColor, rainColor, snowColor, textLightColor, wiFontFamily } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
+
     export let item;
     let color;
     let precipIcon;
     $: {
         if (item && item.icon.startsWith('13')) {
             color = snowColor;
-            precipIcon= 'wi-snowflake-cold'
+            precipIcon = 'wi-snowflake-cold';
         } else {
             color = rainColor;
-            precipIcon= 'wi-raindrop'
+            precipIcon = 'wi-raindrop';
         }
-    } 
+    }
 </script>
 
 <gridLayout height="100">
     <canvaslabel paddingRight="5">
-        <rectangle horizontalAlignment="right" fillColor={item.color} width="5" height="100%" translateX="5"/>
+        <rectangle horizontalAlignment="right" fillColor={item.color} width="5" height="100%" translateX="5" />
         <cgroup fontSize="22" verticalAlignment="top" paddingLeft="10" paddingTop="5">
             <cspan text={convertTime(item.time, 'ddd ')} />
             <cspan fontSize="15" color={$textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
@@ -37,7 +38,7 @@
             <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed)} />
         </cgroup>
         {#if (item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1}
-            <cgroup color={color} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
+            <cgroup {color} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text={precipIcon} />
                 <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
                 <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />

@@ -1,172 +1,25 @@
 <script context="module" lang="ts">
-    import { getString } from '@nativescript/core/application-settings';
-    import { request } from '@nativescript-community/perms';
-    import { MergedMBVTTileDataSource } from '@nativescript-community/ui-carto/datasources';
-    import { PersistentCacheTileDataSource } from '@nativescript-community/ui-carto/datasources/cache';
-    import { HTTPTileDataSource } from '@nativescript-community/ui-carto/datasources/http';
-    import { MBTilesTileDataSource } from '@nativescript-community/ui-carto/datasources/mbtiles';
-    import { HillshadeRasterTileLayer, RasterTileLayer } from '@nativescript-community/ui-carto/layers/raster';
-    import { VectorTileLayer, VectorTileRenderOrder } from '@nativescript-community/ui-carto/layers/vector';
-    import { CartoMap } from '@nativescript-community/ui-carto/ui';
-    import { setShowDebug } from '@nativescript-community/ui-carto/utils';
-    import { MBVectorTileDecoder } from '@nativescript-community/ui-carto/vectortiles';
-    import { Application, Page } from '@nativescript/core';
-    import { Folder, knownFolders, path } from '@nativescript/core/file-system';
+    import { Page } from '@nativescript/core';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { l } from '~/helpers/locale';
-    import { getDataFolder } from '~/utils/utils';
     import CActionBar from './CActionBar.svelte';
-    import { showError } from './utils/error';
-
-    const cacheFolder = Folder.fromPath(path.join(knownFolders.temp().path, 'carto_cache'));
-    const dataSource = new PersistentCacheTileDataSource({
-        dataSource: new HTTPTileDataSource({
-            minZoom: 2,
-            subdomains: 'abc',
-            maxZoom: 18,
-            url: 'http://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'
-        }),
-        databasePath: path.join(cacheFolder.path, 'cache.db')
-    });
-    const dataSourceRadar = new HTTPTileDataSource({
-        minZoom: 4,
-        subdomains: 'abc',
-        maxZoom: 10,
-        url: `https://{s}.sat.owm.io/vane/2.0/weather/PA0/{z}/{x}/{y}?appid=${getString(
-            'owmApiKey',
-            OWM_MY_KEY || OWM_DEFAULT_KEY
-        )}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`
-    });
-    let hillshadeLayer: HillshadeRasterTileLayer;
-    let vectorLayer: VectorTileLayer;
-
-     function getDefaultMBTilesDir() {
-    let localMbtilesSource = getString('local_mbtiles_directory');
-    if (!localMbtilesSource) {
-        let defaultPath = path.join(getDataFolder(), 'alpimaps_mbtiles');
-        if (global.isAndroid) {
-            const nArray = (Application.android.startActivity as android.app.Activity).getExternalFilesDirs(null);
-            const result = [];
-            for (let index = 0; index < nArray.length; index++) {
-                const element = nArray[index];
-                if (element) {
-                    result.push(element);
-                }
-            }
-            if (result.length > 1) {
-                const sdcardFolder = result[result.length - 1].getAbsolutePath();
-                defaultPath = path.join(sdcardFolder, '../../../..', 'alpimaps_mbtiles');
-            }
-        }
-        localMbtilesSource = getString('local_mbtiles_directory', defaultPath);
-    }
-    return localMbtilesSource;
-}
-    function createMergeMBtiles({ name, sources, legend }: { name: string; sources: string[]; legend?: string }) {
-        let dataSource;
-        if (sources.length === 1) {
-            dataSource = new MBTilesTileDataSource({
-                databasePath: sources[0]
-            });
-        } else {
-            dataSource = new MergedMBVTTileDataSource({
-                dataSources: sources.map(
-                    (s) =>
-                        new MBTilesTileDataSource({
-                            databasePath: s
-                        })
-                )
-            });
-        }
-        const vectorTileDecoder = new MBVectorTileDecoder({
-            style: 'voyager',
-            zipPath: '~/assets/styles/osm.zip'
-        });
-        const layer = new VectorTileLayer({
-            dataSource,
-            decoder: vectorTileDecoder
-        });
-        layer.setLabelRenderOrder(VectorTileRenderOrder.LAST);
-        return layer;
-    }
-    async function loadLocalMbtiles(directory: string) {
-        await request('storage');
-        if (!Folder.exists(directory)) {
-            return;
-        }
-        try {
-            const folder = Folder.fromPath(directory);
-            const entities = await folder.getEntities();
-            const folders = entities.filter((e) => Folder.exists(e.path));
-            for (let i = 0; i < folders.length; i++) {
-                const f = folders[i];
-                const subentities = await Folder.fromPath(f.path).getEntities();
-                vectorLayer = createMergeMBtiles({
-                    legend: 'https://www.openstreetmap.org/key.html',
-                    name: f.name,
-                    sources: subentities.map((e2) => e2.path).filter((s) => s.endsWith('.mbtiles'))
-                });
-            }
-        } catch (err) {
-            showError(err);
-        }
-    }
 </script>
 
 <script lang="ts">
+    import { getString } from '@nativescript/core/application-settings';
+
     export let focusPos;
-    let cartoMap: CartoMap;
     let page: NativeViewElementNode<Page>;
-
-    async function onMapReady(event) {
-        cartoMap = event.object as CartoMap;
-        const options = cartoMap.getOptions();
-        options.setZoomGestures(true);
-        options.setWatermarkScale(0.5);
-        options.setRotatable(false);
-
-        try {
-            const folderPath = getDefaultMBTilesDir();
-            if (folderPath) {
-                await loadLocalMbtiles(folderPath);
-            }
-        } catch (err) {
-            console.error(err);
-        }
-        if (vectorLayer) {
-            cartoMap.addLayer(vectorLayer);
-            if (hillshadeLayer) {
-                cartoMap.addLayer(hillshadeLayer);
-            }
-        } else {
-            const rasterLayer = new RasterTileLayer({
-                zoomLevelBias: 1,
-                dataSource
-            });
-            cartoMap.addLayer(rasterLayer);
-        }
-        const rasterLayerRadar = new RasterTileLayer({ dataSource: dataSourceRadar });
-        cartoMap.addLayer(rasterLayerRadar);
-        cartoMap.setFocusPos(focusPos, 0);
-    }
-    // }
-    // console.log('creating map instance');
-    function onNavigatingTo(e) {
-        // console.log('onNavigatingTo', page && page.nativeView, e.object);
-    }
-
+    let url = '~/assets/leaflet/index.html';
+    function onNavigatingTo(e) {}
     $: {
-        //update if focusPos change (cell reuse)
-        if (cartoMap) {
-            cartoMap.setFocusPos(focusPos, 0);
-        }
+        url = `~/assets/leaflet/index.html?zoom=8&position=${focusPos.lat},${focusPos.lon}&owm_key=${getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY)}`;
     }
 </script>
 
 <page bind:this={page} actionBarHidden="true" on:navigatingTo={onNavigatingTo}>
     <gridLayout rows="auto,*">
         <CActionBar title={l('weather_map')} />
-        <cartomap row="1" zoom="8" on:mapReady={onMapReady} useTextureView={true} />
+        <webview row="1" ref="webview" src={url} />
     </gridLayout>
 </page>
-    

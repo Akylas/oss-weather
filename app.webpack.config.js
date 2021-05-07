@@ -3,12 +3,11 @@ const webpack = require('webpack');
 const { readFileSync, readdirSync } = require('fs');
 const { dirname, join, relative, resolve } = require('path');
 const nsWebpack = require('@nativescript/webpack');
-const CopyPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const Fontmin = require('fontmin');
 
 module.exports = (env, params = {}) => {
@@ -46,7 +45,6 @@ module.exports = (env, params = {}) => {
         verbose, // --env.verbose
         uglify, // --env.uglify
         noconsole, // --env.noconsole
-        cartoLicense = false, // --env.cartoLicense
         devlog, // --env.devlog
         fakeall, // --env.fakeall
         fork = true, // --env.fakeall
@@ -90,7 +88,6 @@ module.exports = (env, params = {}) => {
     config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
-        'svelte-native': '@akylas/svelte-native',
         'tns-core-modules': `${coreModulesPackageName}`
     });
 
@@ -118,7 +115,6 @@ module.exports = (env, params = {}) => {
         'global.autoRegisterUIModules': false,
         'global.isAndroid': isAndroid,
         'gVars.internalApp': false,
-        __CARTO_PACKAGESERVICE__: cartoLicense,
         TNS_ENV: JSON.stringify(mode),
         SUPPORTED_LOCALES: JSON.stringify(locales),
         'gVars.sentry': !!sentry,
@@ -145,12 +141,6 @@ module.exports = (env, params = {}) => {
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
             : 'undefined'
     };
-
-    const itemsToClean = [`${dist}/**/*`];
-    if (platform === 'android') {
-        itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'src', 'main', 'assets', 'snapshots/**/*')}`);
-        itemsToClean.push(`${join(projectRoot, 'platforms', 'android', 'app', 'build', 'configurations', 'nativescript-android-snapshot')}`);
-    }
 
     const symbolsParser = require('scss-symbols-parser');
     const mdiSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString());
@@ -306,8 +296,7 @@ module.exports = (env, params = {}) => {
         });
     }
     // we remove default rules
-    config.plugins = config.plugins.filter((p) => ['CleanWebpackPlugin', 'CopyPlugin', 'Object', 'ForkTsCheckerWebpackPlugin'].indexOf(p.constructor.name) === -1);
-    console.log('plugins after clean', config.plugins);
+    config.plugins = config.plugins.filter((p) => ['CopyPlugin', 'ForkTsCheckerWebpackPlugin'].indexOf(p.constructor.name) === -1);
     // we add our rules
     const globOptions = { dot: false, ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
 
@@ -343,37 +332,22 @@ module.exports = (env, params = {}) => {
             globOptions
         }
     ];
-    config.plugins.unshift(new CopyPlugin({ patterns: copyPatterns }));
-    config.plugins.push(new IgnoreNotFoundExportPlugin());
 
-    // save as long as we dont use calc in css
-    // config.plugins.push(new webpack.IgnorePlugin(/reduce-css-calc/));
-    config.plugins.unshift(
-        new CleanWebpackPlugin({
-            dangerouslyAllowCleanPatternsOutsideProject: true,
-            dry: false,
-            verbose: false,
-            cleanOnceBeforeBuildPatterns: itemsToClean
-        })
-    );
-
-    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
     // config.plugins.unshift(new webpack.DefinePlugin(defines));
-    config.plugins.push(
-        new webpack.EnvironmentPlugin({
-            NODE_ENV: JSON.stringify(mode), // use 'development' unless process.env.NODE_ENV is defined
-            DEBUG: false
-        })
-    );
-
+ 
+    config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
+    config.plugins.push(new IgnoreNotFoundExportPlugin());
+    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${locales.join('|')})$`)));
-    if (fork && nsconfig.cssParser !== 'css-tree') {
+
+    if (nconfig.cssParser !== 'css-tree') {
         config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /css-tree$/ }));
     }
+    // config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /sha.js$/ }));
 
-    config.devtool = inlineSourceMap ? 'inline-cheap-source-map' : false;
-    if (!inlineSourceMap && (hiddenSourceMap || sourceMap)) {
+    if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
+            config.devtool = false;
             config.plugins.push(
                 new webpack.SourceMapDevToolPlugin({
                     append: `\n//# sourceMappingURL=${process.env.SENTRY_PREFIX}[name].js.map`,
@@ -402,13 +376,12 @@ module.exports = (env, params = {}) => {
                 })
             );
         } else {
-            config.plugins.push(
-                new webpack.SourceMapDevToolPlugin({
-                    filename: '[name].js.map'
-                })
-            );
+            config.devtool = 'inline-nosources-cheap-module-source-map';
         }
+    } else {
+        config.devtool = false;
     }
+
     if (!!production) {
         config.plugins.push(
             new ForkTsCheckerWebpackPlugin({
@@ -419,13 +392,14 @@ module.exports = (env, params = {}) => {
             })
         );
     }
-    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|nativescript-carto|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
-    config.optimization.usedExports = true;
-    config.optimization.minimize = uglify !== undefined ? !!uglify : production;
+    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
+    config.optimization.minimize = uglify !== undefined ? uglify : production;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
     config.optimization.minimizer = [
         new TerserPlugin({
             parallel: true,
+            // cache: true,
+            // sourceMap: isAnySourceMapEnabled,
             terserOptions: {
                 ecma: 2017,
                 module: true,
@@ -445,5 +419,6 @@ module.exports = (env, params = {}) => {
             }
         })
     ];
+    
     return config;
 };

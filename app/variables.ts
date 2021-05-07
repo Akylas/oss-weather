@@ -60,13 +60,13 @@ export function updateThemeColors(theme: string, force = false) {
     if (theme === 'dark') {
         textColor.set('#ffffff');
         textLightColor.set('#aaaaaa');
-        borderColor.set('#55cccccc');
+        borderColor.set('#cccccc55');
         subtitleColor.set('#aaaaaa');
         iconColor.set('#aaaaaa');
     } else {
         textColor.set('#000000');
         textLightColor.set('#444444');
-        borderColor.set('#55cccccc');
+        borderColor.set('#cccccc55');
         subtitleColor.set('#444444');
         iconColor.set('#444444');
     }

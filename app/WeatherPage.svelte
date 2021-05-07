@@ -5,9 +5,8 @@
     import { login } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { TextField } from '@nativescript-community/ui-material-textfield';
-    import { Application, Page } from '@nativescript/core';
+    import { Application, CoreTypes, Page } from '@nativescript/core';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
-    import { Accuracy } from '@nativescript/core/ui/enums/enums';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
     import { NativeViewElementNode } from 'svelte-native/dom';
@@ -16,12 +15,12 @@
     import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, setCCApiKey, setOWMApiKey } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
-    import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, screenScale, statusBarHeight } from '~/variables';
+    import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
     import ActionSheet from './ActionSheet.svelte';
     import AlertView from './AlertView.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
     import CActionBar from './CActionBar.svelte';
-    import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+    // import SelectLocationOnMap from './SelectLocationOnMap.svelte';
     import { Sentry } from './utils/sentry';
     import WeatherComponent from './WeatherComponent.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
@@ -39,7 +38,7 @@
     let topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
     let items = [];
 
-    let desiredAccuracy = global.isAndroid ? Accuracy.high : kCLLocationAccuracyBestForNavigation;
+    let desiredAccuracy = global.isAndroid ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
     let timeout = 20000;
     let minimumUpdateTime = 1000; // Should update every 1 second according ;
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
@@ -54,7 +53,7 @@
                     {
                         icon: 'mdi-refresh',
                         id: 'refresh',
-                        text: l('refresh'),
+                        text: l('refresh')
                     },
                     // {
                     //     icon: 'mdi-map',
@@ -64,25 +63,25 @@
                     {
                         icon: 'mdi-cogs',
                         id: 'preferences',
-                        text: l('preferences'),
+                        text: l('preferences')
                     },
                     {
                         icon: 'mdi-crosshairs-gps',
                         id: 'gps_location',
-                        text: l('gps_location'),
+                        text: l('gps_location')
                     },
                     {
                         icon: 'mdi-information-outline',
                         id: 'about',
-                        text: l('about'),
+                        text: l('about')
                     },
                     {
                         icon: 'mdi-bug',
                         id: 'send_bug_report',
-                        text: l('send_bug_report'),
-                    },
-                ],
-            },
+                        text: l('send_bug_report')
+                    }
+                ]
+            }
         }).then((result: { icon: string; id: string; text: string }) => {
             if (result) {
                 switch (result.id) {
@@ -170,20 +169,20 @@
     async function openWeatherMap() {
         navigate({ page: WeatherMapPage, transition: { name: 'fade', duration: 200 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
     }
-    async function searchOnMap() {
-        try {
-            const result = await showModal({ page: SelectLocationOnMap, animated: true, fullscreen: true, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
-            if (result) {
-                saveLocation(result);
-            }
-        } catch (err) {
-            showError(err);
-        }
-    }
+    // async function searchOnMap() {
+    //     try {
+    //         const result = await showModal({ page: SelectLocationOnMap, animated: true, fullscreen: true, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+    //         if (result) {
+    //             saveLocation(result);
+    //         }
+    //     } catch (err) {
+    //         showError(err);
+    //     }
+    // }
     async function getLocationAndWeather() {
         try {
             const result = await requestPerm('location');
-            if(Array.isArray(result) && result[0] !== 'authorized' || Object.keys(result).some(s=>result[s] !== 'authorized')) {
+            if ((Array.isArray(result) && result[0] !== 'authorized') || Object.keys(result).some((s) => result[s] !== 'authorized')) {
                 return alert(l('missing_location_perm'));
             }
             loading = true;
@@ -196,7 +195,7 @@
                 // console.log('location', location);
                 saveLocation({
                     name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
-                    coord: location,
+                    coord: location
                 });
             }
         } catch (err) {
@@ -239,7 +238,7 @@
             parent: page,
             view: ApiKeysBottomSheet,
             dismissOnBackgroundTap: true,
-            dismissOnDraggingDownSheet: true,
+            dismissOnDraggingDownSheet: true
         });
         if (result) {
             refresh();
@@ -279,7 +278,7 @@
     // }
 
     async function showAlerts() {
-        if(!weatherData.alerts) {
+        if (!weatherData.alerts) {
             return;
         }
         try {
@@ -289,8 +288,8 @@
                 view: AlertView,
                 trackingScrollView: 'scrollView',
                 props: {
-                    alerts: weatherData.alerts,
-                },
+                    alerts: weatherData.alerts
+                }
             });
         } catch (err) {
             showError(err);
@@ -311,14 +310,14 @@
                 keyboardType: 'email',
                 autocorrect: false,
                 error: lc('email_required'),
-                hint: lc('email'),
+                hint: lc('email')
             },
             passwordTextFieldProperties: {
                 marginLeft: 10,
                 marginRight: 10,
                 error: lc('please_describe_error'),
                 secure: false,
-                hint: lc('description'),
+                hint: lc('description')
             },
             beforeShow: (options, usernameTextField: TextField, passwordTextField: TextField) => {
                 usernameTextField.on('textChange', (e: any) => {
@@ -339,7 +338,7 @@
                         passwordTextField.error = null;
                     }
                 });
-            },
+            }
         });
         if (result.result) {
             if (!result.userName || !mailRegexp.test(result.userName)) {

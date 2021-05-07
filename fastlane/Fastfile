@@ -295,7 +295,7 @@ end
     push_git_tags
     set_github_release(
       repository_name: "farfromrefug/ns-forecastie",
-      api_token: ENV["GITHUB_TOKEN"],
+      api_token: ENV["GH_TOKEN"],
       name: version,
       tag_name: tag,
       description: changelog,

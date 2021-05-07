@@ -270,7 +270,7 @@ end
     tns_install(platform:platform)
     version = ""
     versionCode = ""
-    flavor = "production"
+    flavor = "github"
 
     
     Dir.chdir("..") do

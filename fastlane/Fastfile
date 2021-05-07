@@ -124,13 +124,20 @@ end
 lane :get_changelog  do |params| 
   platform = params[:platform]
   flavor = params[:flavor]
+  format = 'slack'
+  display_links = false
   puts "get_changelog "+  platform
   ignorePlatform = 'ios'
   if(platform == "ios") 
+    format = 'plain'
     ignorePlatform = "android"
   end
+  if(flavor == "github") 
+    display_links = true
+    format = 'markdown'
+  end
   isReleasable = analyze_commits(match: "#{platform}/#{flavor}*", ignore_scopes: [ignorePlatform])
-  logs = conventional_changelog(format: 'slack', title: "#{platform.capitalize} Beta", display_title:false, display_links:false, order:["feat", "fix", "refactor", "perf"])
+  logs = conventional_changelog(format: format, title: "#{platform.capitalize} #{flavor}", display_title:false, display_links:display_links, order:["feat", "fix", "refactor", "perf"], commit_url:'https://github.com/farfromrefug/ns-forecastie/commit')
   puts logs
   truncate(logs, 450)
 end

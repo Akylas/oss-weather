@@ -270,6 +270,7 @@ end
     tns_install(platform:platform)
     version = ""
     versionCode = ""
+    flavor = "production"
 
     
     Dir.chdir("..") do
@@ -288,7 +289,7 @@ end
     build_github
     sentry_upload
     changelog = get_changelog(platform:platform, flavor:flavor)
-    tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
+    tag  = "#{platform}/#{version}/#{versionCode}";
     add_git_tag(tag: tag)
 
     push_git_tags

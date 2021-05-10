@@ -10,7 +10,7 @@
     export let subtitleMaxLines = 2;
 </script>
 
-<gridLayout columns="16,*,auto,16" rippleColor={primaryColor} on:tap={(event) => dispatch('tap', event)} rows="12,auto,12">
+<gridLayout columns="16,*,auto,16" rippleColor={primaryColor} on:tap={(event) => dispatch('tap', event)} rows="12,*,12">
     <stackLayout row="1" col="1" verticalAlignment="center">
         <label fontSize="17" text={title} textWrap="true" verticalTextAlignment="top" maxLines="2" lineBreak="end" />
         <label visibilty={!!subtitle ? 'visible' : 'collapsed'} fontSize="14" text={subtitle} verticalTextAlignment="top" color={subtitleColor} maxLines={subtitleMaxLines} lineBreak="end" />

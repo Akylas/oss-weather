@@ -12,7 +12,7 @@
     import Color from 'tinycolor2';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { mdiFontFamily, nightColor, rainColor, snowColor, textLightColor, wiFontFamily } from '~/variables';
+    import { mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import HourlyView from './HourlyView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
 
@@ -82,16 +82,14 @@
             lastChartData = data;
             if (!chartInitialized) {
                 const darkTheme = /dark|black/.test(Theme.getMode());
-                const textColor = darkTheme ? 'white' : 'black';
-                const limitColor = Color(textColor).setAlpha(0.5).toRgbString();
+                const limitColor = Color($textColor).setAlpha(0.5).toRgbString();
                 chartInitialized = true;
                 chart.setNoDataText(null);
                 chart.setAutoScaleMinMaxEnabled(true);
                 chart.getLegend().setEnabled(false);
                 const xAxis = chart.getXAxis();
                 xAxis.setEnabled(true);
-
-                xAxis.setTextColor(textColor);
+                xAxis.setTextColor($textColor);
                 xAxis.setLabelTextAlign(Align.CENTER);
                 xAxis.setDrawGridLines(false);
                 xAxis.setDrawMarkTicks(true);

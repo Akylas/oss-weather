@@ -282,7 +282,6 @@
             return;
         }
         try {
-            console.log('showAlerts', weatherData.alerts);
             showBottomSheet({
                 parent: page,
                 view: AlertView,

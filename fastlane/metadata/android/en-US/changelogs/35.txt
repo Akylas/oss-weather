@@ -1,0 +1,9 @@
+*Bug fixes*
+- assets cleanup
+- auto reduce material font
+- bunch of fixes
+- auto language support
+- auto theme fix
+- drop carto to get smaller apk
+- chart color fix
+- third parties layout fix

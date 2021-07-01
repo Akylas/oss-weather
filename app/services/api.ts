@@ -17,7 +17,7 @@ let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
 let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
 
-export {Alert, CityWeather, Coord, Rain, Snow, Weather};
+export { Alert, CityWeather, Coord, Rain, Snow, Weather };
 type HTTPSOptions = https.HttpsRequestOptions;
 
 export const NetworkConnectionStateEvent = 'connected';
@@ -143,7 +143,7 @@ export class TimeoutError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'timeout_error',
+                    message: 'timeout_error'
                 },
                 props
             ),
@@ -157,7 +157,7 @@ export class NoNetworkError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'no_network',
+                    message: 'no_network'
                 },
                 props
             ),
@@ -177,7 +177,7 @@ export class HTTPError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'httpError',
+                    message: 'httpError'
                 },
                 props
             ),
@@ -205,8 +205,8 @@ class NetworkService extends Observable {
                 object: this,
                 data: {
                     connected: value,
-                    connectionType: this._connectionType,
-                },
+                    connectionType: this._connectionType
+                }
             } as NetworkConnectionStateEventData);
         }
     }
@@ -252,7 +252,7 @@ async function handleRequestRetry(requestParams: HttpRequestOptions, retry = 0) 
     throw new HTTPError({
         statusCode: 401,
         message: 'HTTP error',
-        requestParams,
+        requestParams
     });
 }
 
@@ -260,7 +260,10 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
     const statusCode = response.statusCode;
     // return Promise.resolve()
     // .then(() => {
-    let content = await response.content.toJSONAsync();
+    let content;
+    try {
+        content = await response.content.toJSONAsync();
+    } catch (err) {}
     if (!content) {
         content = await response.content.toStringAsync();
     }
@@ -284,7 +287,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
                 new HTTPError({
                     statusCode,
                     message: match ? match[1] : content.toString(),
-                    requestParams,
+                    requestParams
                 })
             );
             // }
@@ -300,7 +303,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
             throw new HTTPError({
                 statusCode: error.code || statusCode,
                 message: error.error_description || error.form || error.message || error.error || error,
-                requestParams,
+                requestParams
             });
         }
     }
@@ -371,8 +374,8 @@ export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
             lang,
             units: 'metric',
             appid: owmApiKey,
-            ...queryParams,
-        },
+            ...queryParams
+        }
     });
 }
 
@@ -380,7 +383,7 @@ export async function getCityName(pos: Coord) {
     // console.log('getCityName', pos);
     const result: CityWeather = await fetchOWM('weather', {
         lat: pos.lat,
-        lon: pos.lon,
+        lon: pos.lon
     });
     // console.log('fetchOWM', 'done', result);
 
@@ -472,7 +475,7 @@ export function prepareItems(weatherData, lastUpdate) {
                         return h;
                     }),
                     minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex) : [],
-                    alerts: weatherData.alerts,
+                    alerts: weatherData.alerts
                 })
             );
 
@@ -486,7 +489,7 @@ export function prepareItems(weatherData, lastUpdate) {
             newItems.push(
                 Object.assign(d, {
                     index: newItems.length,
-                    scrollIndex: items.findIndex((h) => h.time >= sunriseTime),
+                    scrollIndex: items.findIndex((h) => h.time >= sunriseTime)
                 })
             );
         }
@@ -497,7 +500,7 @@ export function prepareItems(weatherData, lastUpdate) {
 export async function getOWMWeather(lat: number, lon: number) {
     const result = (await fetchOWM('onecall', {
         lat,
-        lon,
+        lon
     })) as {
         alerts?: Alert[];
         current: {
@@ -578,7 +581,7 @@ export async function getOWMWeather(lat: number, lon: number) {
     // console.log('daily', JSON.stringify(result.daily));
     // console.log('alerts', JSON.stringify(result.alerts));
     if (!result.minutely) {
-        result.minutely= [];
+        result.minutely = [];
         // if (ccApiKey) {
         //     const now = dayjs();
         //     const nowcast = await request<ClimaCellNowCast>({
@@ -663,7 +666,7 @@ export async function getOWMWeather(lat: number, lon: number) {
             icon: result.current.weather[0]?.icon,
             description: result.current.weather[0]?.description,
             windBeaufortIcon: windBeaufortIcon(result.current.wind_speed * 3.6),
-            windIcon: windIcon(result.current.wind_deg),
+            windIcon: windIcon(result.current.wind_deg)
         },
         daily: {
             data: result.daily.map((data) => {
@@ -705,12 +708,12 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.windIcon = windIcon(d.windBearing);
                 d.hourly = [];
                 return d;
-            }),
+            })
         },
         minutely: {
-            data: result.minutely,
+            data: result.minutely
         },
-        alerts:result.alerts
+        alerts: result.alerts
         // minutely: result.minutely
         //     ? {
         //         data: result.minutely.map((data) => {
@@ -731,7 +734,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         d.temperature = data.temp;
 
         d.windBearing = data.wind_deg;
-        d.precipIntensity = d.precipAccumulation = data.snow ? data.snow['1h'] : (data.rain ? data.rain['1h'] : 0);
+        d.precipIntensity = d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
         d.precipProbability = data.pop;
         d.cloudCover = data.clouds / 100;
         d.humidity = data.humidity;
@@ -911,7 +914,7 @@ const CLIMA_CELL_BASE_FIELDS: string[] = [
     'baro_pressure',
     'precipitation',
     // 'precipitation_type',
-    'weather_code',
+    'weather_code'
 ];
 const CLIMA_CELL_NOWCAST_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['dewpoint', 'cloud_base', 'cloud_ceiling', 'cloud_cover', 'wind_gust', 'precipitation_type']).join(',');
 const CLIMA_CELL_HOURLY_FIELDS = CLIMA_CELL_NOWCAST_FIELDS + ',' + ['precipitation_probability'].join(',');
@@ -929,8 +932,8 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             end_time: now.add(1, 'h').toISOString(),
             unit_system: 'si',
             fields: CLIMA_CELL_NOWCAST_FIELDS,
-            ...queryParams,
-        },
+            ...queryParams
+        }
     });
     const hourly = await request<ClimaCellHourly>({
         url: CLIMA_CELL_API_URL_HOURLY,
@@ -942,8 +945,8 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             unit_system: 'si',
             end_time: now.add(96, 'h').toISOString(),
             fields: CLIMA_CELL_HOURLY_FIELDS,
-            ...queryParams,
-        },
+            ...queryParams
+        }
     });
     const daily = await request<ClimaCellDaily>({
         url: CLIMA_CELL_API_URL_DAILY,
@@ -955,19 +958,19 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             unit_system: 'si',
             end_time: now.add(10, 'd').toISOString(),
             fields: CLIMA_CELL_DAILY_FIELDS,
-            ...queryParams,
-        },
+            ...queryParams
+        }
     });
     const result = {
         daily: {
-            data: daily,
+            data: daily
         },
         hourly: {
-            data: hourly,
+            data: hourly
         },
         minutely: {
-            data: nowcast,
-        },
+            data: nowcast
+        }
     } as any;
     // const result = await request<DarkSky>({
     //     url: `https://api.darksky.net/forecast/${dsApiKey}/${lat},${lon}`,
@@ -1207,21 +1210,22 @@ const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
 const supportedOSMValues = ['winter_sports'];
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
     const results = await request<Photon>({
-        url: 'http://photon.komoot.de/api',
+        url: 'https://photon.komoot.io/api',
+
         method: 'GET',
         queryParams: {
             q,
             lat,
             lon,
             lang,
-            limit: 40,
-        },
+            limit: 40
+        }
     });
     return results.features
         .filter((r) => supportedOSMKeys.indexOf(r.properties.osm_key) !== -1 || supportedOSMValues.indexOf(r.properties.osm_value) !== -1)
         .map((f) => ({
             name: f.properties.name,
             sys: f.properties,
-            coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] },
+            coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
         }));
 }

@@ -357,10 +357,10 @@
     }
 </script>
 
-<page bind:this={page} actionBarHidden="true" id="home">
+<page bind:this={page} actionBarHidden={true} id="home">
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
-            <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
+            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
             <mdbutton
                 visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
                 variant="text"
@@ -386,7 +386,7 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <label :text={l('no_location_desc')} />
+                <label text={l('no_location_desc')} />
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <formattedString>
                         <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />

@@ -17,7 +17,7 @@
     }
 </script>
 
-<page bind:this={page} actionBarHidden="true" on:navigatingTo={onNavigatingTo}>
+<page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
     <gridLayout rows="auto,*">
         <CActionBar title={l('weather_map')} />
         <webview row="1" ref="webview" src={url} />

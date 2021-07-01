@@ -37,7 +37,7 @@
 </script>
 
 <frame backgroundColor="transparent">
-    <page actionBarHidden="true">
+    <page actionBarHidden={true}>
         <gridlayout rows="auto,*">
             <CActionBar canGoBack modalWindow title={l('about')} />
             <scrollView row="1">

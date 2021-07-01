@@ -67,7 +67,7 @@
 </script>
 
 <frame backgroundColor="transparent">
-    <page bind:this={page} actionBarHidden="true" on:navigatingTo={onNavigatingTo}>
+    <page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
             <CActionBar title={l('search_city')} modalWindow>
                 <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />

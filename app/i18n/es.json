@@ -1,0 +1,79 @@
+{
+  "ios": {
+    "info": {
+      "plist": {
+        "NSLocationWhenInUseUsageDescription": "'NS Weather' usa su ubicación GPS para mostrar su clima"
+      }
+    }
+  },
+  "app": {
+    "name": "Tiempo en NS"
+  },
+  "theme": {
+    "title": "tema",
+    "auto": "auto",
+    "light": "luz",
+    "dark": "oscuro",
+    "black": "negro"
+  },
+  "cancel": "cancelar",
+  "close": "cerca",
+  "settings": {
+    "title": "ajustes"
+  },
+  "gps_not_enabled": "habilite el GPS para permitir que NS Forecastie determine su ubicación",
+  "gps_not_authorized": "habilite el GPS y autorice a NS Forecastie a usarlo para determinar su ubicación",
+  "send_bug_report": "enviar informe de error",
+  "please_describe_error": "por favor describa el error",
+  "bug_report_sent": "informe de error enviado",
+  "name": "nombre",
+  "send_bug_report_desc": "ingrese un correo y una descripción del error encontrado",
+  "send": "enviar",
+  "email_required": "Se requiere un e-mail válido",
+  "email": "Email",
+  "description": "descripción",
+  "non_valid_email": "correo electrónico no válido",
+  "description_required": "se requiere una descripción",
+  "ok": "OK",
+  "error": "error",
+  "loading": "cargando",
+  "authorize": "autorizar",
+  "no_network": "sin red",
+  "select": "Seleccione",
+  "refresh": "actualizar",
+  "animations": "animaciones",
+  "english": "inglés",
+  "french": "francés",
+  "language": "idioma",
+  "moon": "Luna",
+  "last_updated": "última actualización",
+  "search_city": "buscar",
+  "expires": "expira",
+  "api_key_required": "Se requiere clave de API",
+  "api_key_required_description": "para obtener datos meteorológicos de OpenWeatherMap, se requiere una clave API gratuita.\n\nLa aplicación distribuye uno por defecto, sin embargo, para permanecer bajo el plan gratuito, cada usuario debe crear su propia clave API.\n\n\nPuede hacerlo creando una cuenta en su sitio web.",
+  "file": "expediente",
+  "open_website": "sitio web abierto",
+  "preferences": "preferencias",
+  "quit": "dejar",
+  "select_on_map": "seleccionar en un mapa",
+  "api_key": "Clave API",
+  "search": "buscar",
+  "no_location_set": "sin ubicación establecida",
+  "my_location": "mi ubicacion",
+  "search_location": "ubicación de búsqueda",
+  "missing_location_perm": "falta el permiso de ubicación",
+  "gps_location": "buscar ubicación GPS",
+  "version": "versión",
+  "source_code": "código fuente",
+  "third_parties": "bibliotecas de terceros",
+  "share_application": "compartir aplicación",
+  "review_application": "revisar la solicitud",
+  "about": "acerca de",
+  "climal_cell_api_key_optional_description": "para obtener datos meteorológicos minuciosos (opcional) se requiere una clave API gratuita de ClimaCell. \nPara permanecer bajo el plan gratuito, cada usuario debe crear su propia clave API. \nPuede hacerlo creando una cuenta en su sitio web.",
+  "no_location_desc": "Aún no has elegido una ubicación.\n\nPuede buscar para usar su ubicación GPS",
+  "select_location": "Selecciona una ubicación",
+  "weather_map": "mapa climático",
+  "about_to_quit": "la aplicación está a punto de cerrarse porque no tiene una clave API",
+  "cc_api_key": "Clave API de ClimaCell",
+  "owm_api_key": "Clave de API de OpenWeatherMap"
+}

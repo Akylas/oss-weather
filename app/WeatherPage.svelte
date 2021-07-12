@@ -385,7 +385,7 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <label text={l('no_location_desc')} />
+                <label text={l('no_location_desc')} textAlignment="center"/>
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <formattedString>
                         <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />

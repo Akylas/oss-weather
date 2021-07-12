@@ -11,7 +11,7 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import Color from 'tinycolor2';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
-    import { l } from '~/helpers/locale';
+    import { l, lc } from '~/helpers/locale';
     import { mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import HourlyView from './HourlyView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
@@ -226,7 +226,7 @@
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
     <canvaslabel colSpan="2">
-        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} />
+        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')}  textTransform="capitalize"/>
 
         {#if item.temperature !== undefined}
             <cgroup id="test" paddingLeft="10" fontSize="12" verticalAlignment="top">
@@ -275,7 +275,7 @@
             <cspan color="#ff7200" fontFamily={wiFontFamily} text="wi-sunset" />
             <cspan text={convertTime(item.sunsetTime, 'HH:mm')} />
         </cgroup>
-        <cspan paddingRight="10" fontSize="14" textAlignment="right" verticalAlignment="bottom" text="{l('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom="10" />
+        <cspan paddingRight="10" fontSize="14" textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom="10" />
     </canvaslabel>
     <linechart bind:this={lineChart} marginTop="110" verticalAlignment="bottom" height="90" marginBottom="40" />
     <WeatherIcon col="1" horizontalAlignment="right" verticalAlignment="center" fontSize="140" icon={item.icon} />

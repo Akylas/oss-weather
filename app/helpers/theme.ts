@@ -7,15 +7,22 @@ import { updateThemeColors } from '~/variables';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
+const onThemeChangedCallbacks = [];
+export function onThemeChanged(callback) {
+    onThemeChangedCallbacks.push(callback);
+}
+
 Application.on(Application.systemAppearanceChangedEvent, (event) => {
     if (theme === 'auto') {
         updateThemeColors(event.newValue);
+        onThemeChangedCallbacks.forEach((c) => c(event.newValue));
     }
 });
 
 const ThemeBlack = 'ns-black';
 export function applyTheme(theme: Themes) {
     const AppCompatDelegate = global.isAndroid ? androidx.appcompat.app.AppCompatDelegate : undefined;
+    // console.log('applyTheme', theme);
     switch (theme) {
         case 'auto':
             Theme.setMode(Theme.Auto);
@@ -89,6 +96,7 @@ export function start() {
 
         applyTheme(newTheme);
         updateThemeColors(newTheme, newTheme !== 'auto');
+        onThemeChangedCallbacks.forEach((c) => c(theme));
     });
     if (global.isAndroid) {
         applyTheme(theme);

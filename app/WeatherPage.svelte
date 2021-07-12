@@ -365,9 +365,8 @@
                 visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
                 variant="text"
                 class="icon-btn"
-                color="red"
-                rippleColor="red"
-                borderColor="red"
+                color="#EFB644"
+                rippleColor="#EFB644"
                 horizontalAlignment="left"
                 on:tap={() => showAlerts()}
                 text="mdi-alert"

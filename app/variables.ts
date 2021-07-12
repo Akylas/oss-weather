@@ -10,7 +10,7 @@ const locals = CSSLoader.locals;
 export const primaryColor: string = locals.primaryColor;
 export const accentColor: string = locals.accentColor;
 export const darkColor: string = locals.darkColor;
-export const backgroundColor: string = locals.backgroundColor;
+// export const backgroundColor: string = locals.backgroundColor;
 export const latoFontFamily: string = locals.latoFontFamily;
 export const wiFontFamily: string = locals.wiFontFamily;
 
@@ -43,27 +43,34 @@ export const snowColor = '#43b4e0';
 export const textColor = writable('');
 export const borderColor = writable('');
 export const textLightColor = writable('');
+export const backgroundColor = writable('');
 
 export const subtitleColor = writable('');
 export const iconColor = writable('');
 
 export function updateThemeColors(theme: string, force = false) {
-    // console.log('updateThemeColors', theme, force);
+    console.log('updateThemeColors', theme, force);
     try {
         if (!force) {
             theme = Application.systemAppearance();
             // console.log('systemAppearance', theme);
         }
-    } catch(err) {
+    } catch (err) {
         console.error('updateThemeColors', err);
     }
-    if (theme === 'dark') {
+    if (theme === 'dark' || theme === 'black') {
         textColor.set('#ffffff');
         textLightColor.set('#aaaaaa');
         borderColor.set('#cccccc55');
         subtitleColor.set('#aaaaaa');
         iconColor.set('#aaaaaa');
+        if (theme === 'black') {
+            backgroundColor.set('#000000');
+        } else {
+            backgroundColor.set('#1c1c1e');
+        }
     } else {
+        backgroundColor.set('#ffffff');
         textColor.set('#000000');
         textLightColor.set('#444444');
         borderColor.set('#cccccc55');

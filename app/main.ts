@@ -7,6 +7,9 @@ import './app.scss';
 import { install } from '~/utils/logging';
 install();
 
+import { overrideSpanAndFormattedString } from '@nativescript-community/text';
+overrideSpanAndFormattedString();
+
 // we need to use lat lon
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 installUIMixins();

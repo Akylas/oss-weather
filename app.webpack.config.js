@@ -8,8 +8,15 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
-const Fontmin = require('fontmin');
-
+const Fontmin = require('@akylas/fontmin');
+function fixedFromCharCode(codePt) {
+    if (codePt > 0xffff) {
+        codePt -= 0x10000;
+        return String.fromCharCode(0xd800 + (codePt >> 10), 0xdc00 + (codePt & 0x3ff));
+    } else {
+        return String.fromCharCode(codePt);
+    }
+}
 module.exports = (env, params = {}) => {
     Object.keys(env).forEach((k) => {
         if (env[k] === 'false' || env[k] === '0') {
@@ -105,6 +112,7 @@ module.exports = (env, params = {}) => {
     // console.log('sentry', !!sentry);
     const defines = {
         PRODUCTION: !!production,
+        window: 'undefined',
         process: 'global.process',
         'global.TNS_WEBPACK': 'true',
         'gVars.platform': `"${platform}"`,
@@ -227,9 +235,11 @@ module.exports = (env, params = {}) => {
                     search: 'mdi-([a-z-]+)',
                     replace: (match, p1, offset, str) => {
                         if (mdiIcons[p1]) {
-                            const res = String.fromCharCode(parseInt(mdiIcons[p1], 16));
-                            usedMDIICons.push(res);
-                            return res;
+                            const unicodeHex = mdiIcons[p1];
+                            const numericValue = parseInt(unicodeHex, 16);
+                            const character = fixedFromCharCode(numericValue);
+                            usedMDIICons.push(numericValue);
+                            return character;
                         }
                         return match;
                     },
@@ -312,13 +322,13 @@ module.exports = (env, params = {}) => {
         {
             from: 'node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
             to: 'fonts',
+            globOptions,
             transform: {
-                cache: { keys: { key: usedMDIICons.join('') } },
                 transformer(content, path) {
                     return new Promise((resolve, reject) => {
                         new Fontmin()
                             .src(content)
-                            .use(Fontmin.glyph({ text: usedMDIICons.join('') }))
+                            .use(Fontmin.glyph({ subset: usedMDIICons }))
                             .run(function (err, files) {
                                 if (err) {
                                     reject(err);
@@ -328,8 +338,7 @@ module.exports = (env, params = {}) => {
                             });
                     });
                 }
-            },
-            globOptions
+            }
         }
     ];
 

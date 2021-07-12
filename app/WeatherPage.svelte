@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { PullToRefresh } from '@akylas/nativescript-pulltorefresh';
+    import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
     import { request as requestPerm } from '@nativescript-community/perms';
     import { login } from '@nativescript-community/ui-material-dialogs';

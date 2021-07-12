@@ -12,7 +12,7 @@ import {
     GridLayout,
     Trace,
     View,
-    profile,
+    profile
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { showBottomSheet } from '~/bottomsheet';
@@ -78,7 +78,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 eventName: AndroidApplication.activityNewIntentEvent,
                 object: Application.android,
                 activity,
-                intent,
+                intent
             } as AndroidActivityNewIntentEventData);
         }
 
@@ -107,7 +107,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             eventName: AndroidApplication.activityNewIntentEvent,
             object: Application.android,
             activity,
-            intent,
+            intent
         } as AndroidActivityNewIntentEventData);
 
         // const data = JSON.parse(intent.getStringExtra('data'));
@@ -162,7 +162,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const args = {
                 eventName: Application.resumeEvent,
                 object: Application.android,
-                android: activity,
+                android: activity
             } as ApplicationEventData;
             Application.notify(args);
             Application.android.paused = false;
@@ -198,7 +198,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             eventName: 'activityBackPressed',
             object: Application.android,
             activity,
-            cancel: false,
+            cancel: false
         } as AndroidActivityBackPressedEventData;
         Application.android.notify(args);
         if (args.cancel) {
@@ -214,7 +214,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 eventName: 'activityBackPressed',
                 object: view,
                 activity,
-                cancel: false,
+                cancel: false
             } as AndroidActivityBackPressedEventData;
             view.notify(viewArgs);
 
@@ -240,7 +240,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             activity,
             requestCode,
             permissions,
-            grantResults,
+            grantResults
         } as AndroidActivityRequestPermissionsEventData);
     }
 
@@ -257,7 +257,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             activity,
             requestCode,
             resultCode,
-            intent: data,
+            intent: data
         } as AndroidActivityResultEventData);
     }
 
@@ -330,9 +330,9 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 props: {
                     weatherLocation: {
                         coord: { lat, lon },
-                        name,
-                    },
-                },
+                        name
+                    }
+                }
             });
         } catch (err) {
             console.error('error retreiving data', err);

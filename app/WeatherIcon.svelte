@@ -18,6 +18,7 @@
 <script lang="ts">
     export let icon;
     export let fontSize: string | number = 40;
+    // export let autoPlay = true;
     export let autoPlay = getBoolean('animations', false);
     let iconSrc;
     $: {
@@ -122,7 +123,7 @@
 </script>
 
 {#if autoPlay}
-    <lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop="true" {autoPlay} progress={0.5} />
+    <lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop={true} {autoPlay} progress={0.5} />
 {:else}
     <image {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} />
 {/if}

@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     import { Page } from '@nativescript/core';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { l } from '~/helpers/locale';
+    import { l, lc } from '~/helpers/locale';
     import CActionBar from './CActionBar.svelte';
 </script>
 
@@ -19,7 +19,7 @@
 
 <page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
     <gridLayout rows="auto,*">
-        <CActionBar title={l('weather_map')} />
+        <CActionBar title={lc('weather_map')} />
         <webview row="1" ref="webview" src={url} />
     </gridLayout>
 </page>

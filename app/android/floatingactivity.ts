@@ -307,12 +307,15 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const uri = intent.getData();
             const lat = parseFloat(uri.getQueryParameter('lat'));
             const lon = parseFloat(uri.getQueryParameter('lon'));
+            let name = uri.getQueryParameter('name');
             if (isNaN(lat) || isNaN(lon)) {
                 android.widget.Toast.makeText(Application.android.context, 'wrong_parameters', android.widget.Toast.LENGTH_LONG);
                 activity.finish();
                 return;
             }
-            let name = lat.toFixed(2) + ',' + lon.toFixed(2);
+            if (!name || name.length === 0) {
+                name = lat.toFixed(2) + ',' + lon.toFixed(2);
+            }
             try {
                 const results = await getFromLocation(lat, lon, 10);
                 if (results?.length > 0) {

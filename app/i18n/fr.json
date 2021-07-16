@@ -23,7 +23,7 @@
   },
   "gps_not_enabled": "activez le GPS pour permettre à NS Forecastie de vous localiser",
   "gps_not_authorized": "activez le GPS et autorisez NS Forecastie à l'utiliser pour vous localiser",
-  "send_bug_report": "envoyer le rapport de bug",
+  "send_bug_report": "envoyer un rapport de bug",
   "please_describe_error": "veuillez décrire l'erreur",
   "bug_report_sent": "rapport de bug envoyé",
   "name": "nom",

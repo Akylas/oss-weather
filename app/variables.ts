@@ -49,7 +49,7 @@ export const subtitleColor = writable('');
 export const iconColor = writable('');
 
 export function updateThemeColors(theme: string, force = false) {
-    console.log('updateThemeColors', theme, force);
+    // console.log('updateThemeColors', theme, force);
     try {
         if (!force) {
             theme = Application.systemAppearance();

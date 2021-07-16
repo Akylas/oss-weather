@@ -287,15 +287,15 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
             activityRootViewsMap.set(rootView._domId, new WeakRef(rootView));
 
-            const deviceType = Device.deviceType.toLowerCase();
-
-            CSSUtils.pushToSystemCssClasses(Theme.getMode());
-            CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${gVars.platform}`);
-            CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
-            CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.orientation}`);
-            this._rootView.cssClasses.add(CSSUtils.ROOT_VIEW_CSS_CLASS);
+            // const deviceType = Device.deviceType.toLowerCase();
+            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${gVars.platform}`);
+            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
+            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.orientation}`);
+            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.systemAppearance}`);
+            // this._rootView.cssClasses.add(CSSUtils.ROOT_VIEW_CSS_CLASS);
             const rootViewCssClasses = CSSUtils.getSystemCssClasses();
             rootViewCssClasses.forEach((c) => this._rootView.cssClasses.add(c));
+            // console.log('theme', Theme.getMode(), Application.android.systemAppearance, rootViewCssClasses, Array.from(this._rootView.cssClasses), this._rootView);
         }
 
         // setup view as styleScopeHost

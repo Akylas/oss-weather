@@ -2,7 +2,7 @@
     import * as EInfo from '@nativescript-community/extendedinfo';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { showBottomSheet } from '~/bottomsheet';
-    import { l } from '~/helpers/locale';
+    import { l, lc } from '~/helpers/locale';
     import { share } from '~/utils/share';
     import { openLink } from '~/utils/ui';
     import CActionBar from './CActionBar.svelte';
@@ -39,14 +39,14 @@
 <frame backgroundColor="transparent">
     <page actionBarHidden={true}>
         <gridlayout rows="auto,*">
-            <CActionBar canGoBack modalWindow title={l('about')} />
+            <CActionBar canGoBack modalWindow title={lc('about')} />
             <scrollView row="1">
                 <stackLayout>
-                    <SettingLabelIcon title={l('version')} subtitle={appVersion} />
-                    <SettingLabelIcon title={l('source_code')} subtitle="obtenir le code source de l'application sur Github" icon="mdi-chevron-right" on:tap={() => onTap('github')} />
-                    <SettingLabelIcon title={l('third_parties')} subtitle="les logiciels que nous aimons et utilisons" icon="mdi-chevron-right" on:tap={() => onTap('third_party')} />
-                    <SettingLabelIcon title={l('share_application')} icon="mdi-chevron-right" on:tap={() => onTap('share')} />
-                    <SettingLabelIcon title={l('review_application')} icon="mdi-chevron-right" on:tap={() => onTap('review')} />
+                    <SettingLabelIcon title={lc('version')} subtitle={appVersion} />
+                    <SettingLabelIcon title={lc('source_code')} subtitle="obtenir le code source de l'application sur Github" icon="mdi-chevron-right" on:tap={() => onTap('github')} />
+                    <SettingLabelIcon title={lc('third_parties')} subtitle="les logiciels que nous aimons et utilisons" icon="mdi-chevron-right" on:tap={() => onTap('third_party')} />
+                    <SettingLabelIcon title={lc('share_application')} icon="mdi-chevron-right" on:tap={() => onTap('share')} />
+                    <SettingLabelIcon title={lc('review_application')} icon="mdi-chevron-right" on:tap={() => onTap('review')} />
                 </stackLayout>
             </scrollView>
         </gridlayout>

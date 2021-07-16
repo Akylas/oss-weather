@@ -52,7 +52,7 @@
   <string name="name">"nom"</string>
   <string name="bug_report_sent">"rapport de bug envoyé"</string>
   <string name="please_describe_error">"veuillez décrire l\'erreur"</string>
-  <string name="send_bug_report">"envoyer le rapport de bug"</string>
+  <string name="send_bug_report">"envoyer un rapport de bug"</string>
   <string name="gps_not_authorized">"activez le GPS et autorisez NS Forecastie à l\'utiliser pour vous localiser"</string>
   <string name="gps_not_enabled">"activez le GPS pour permettre à NS Forecastie de vous localiser"</string>
   <string name="settings.title">"réglages"</string>

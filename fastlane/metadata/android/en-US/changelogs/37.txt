@@ -1,0 +1,14 @@
+*Features*
+- Spanish translation
+
+*Bug fixes*
+- text transform fix
+- show shadows to advertise scroll
+- faster spasn
+- weather warning color change
+- text alignment fix
+- themer fixes
+- black mode fixes
+- capitalize text fix
+- french local fix
+- list items layout fix

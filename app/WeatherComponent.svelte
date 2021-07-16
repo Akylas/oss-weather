@@ -1,12 +1,18 @@
 <script lang="ts">
+    import { CollectionView } from '@nativescript-community/ui-collectionview';
+
     import { Application } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
+    import { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from './DailyView.svelte';
+    import { onThemeChanged } from './helpers/theme';
     import TopWeatherView from './TopWeatherView.svelte';
     import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from './variables';
     import WeatherIcon from './WeatherIcon.svelte';
 
     export let items;
+
+    let collectionView: NativeViewElementNode<CollectionView>;
     const topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
 
     function itemTemplateSelector(item, index, items) {
@@ -23,9 +29,22 @@
             }
         }
     }
+
+    // onThemeChanged(() => {
+        // console.log('onThemeChanged');
+        // collectionView.nativeView.refresh();
+    // });
 </script>
 
-<collectionview {...$$restProps} {items} {itemTemplateSelector} itemIdGenerator={(_item, index) => index} iosOverflowSafeAreaEnabled="false" on:layoutCompleted={onCollectionViewLayoutCompleted}>
+<collectionview
+    bind:this={collectionView}
+    {...$$restProps}
+    {items}
+    {itemTemplateSelector}
+    itemIdGenerator={(_item, index) => index}
+    iosOverflowSafeAreaEnabled="false"
+    on:layoutCompleted={onCollectionViewLayoutCompleted}
+>
     <Template key="topView" let:item>
         <TopWeatherView {item} height={topHeight} />
     </Template>

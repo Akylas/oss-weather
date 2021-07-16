@@ -1,7 +1,7 @@
 <script lang="ts">
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
-    import { l } from '~/helpers/locale';
+    import { l, lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';
     import { textColor, textLightColor } from '~/variables';
@@ -69,14 +69,13 @@
 <frame backgroundColor="transparent">
     <page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
-            <CActionBar title={l('search_city')} modalWindow>
+            <CActionBar title={lc('search_city')} modalWindow>
                 <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
             <textfield
                 bind:this={textField}
                 row="1"
-                hint={l('search')}
-                placeholder={l('search')}
+                hint={lc('search')}
                 floating="false"
                 returnKeyType="search"
                 on:textChange={onTextChange}

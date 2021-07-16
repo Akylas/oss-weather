@@ -24,6 +24,7 @@
     import { Sentry } from './utils/sentry';
     import WeatherComponent from './WeatherComponent.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
+    import { onThemeChanged, toggleTheme } from './helpers/theme';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -54,6 +55,10 @@
                         icon: 'mdi-refresh',
                         id: 'refresh',
                         text: l('refresh')
+                    // }, {
+                    //     icon: 'mdi-brightness-6',
+                    //     id: 'dark_mode',
+                    //     text: l('dark_mode')
                     },
                     // {
                     //     icon: 'mdi-map',
@@ -97,6 +102,9 @@
                         break;
                     case 'send_bug_report':
                         sendBugReport();
+                        break;
+                    case 'dark_mode':
+                    toggleTheme();
                         break;
                     case 'about':
                         const About = require('./About.svelte').default;

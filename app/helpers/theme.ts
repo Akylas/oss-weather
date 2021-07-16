@@ -74,7 +74,12 @@ export function toggleTheme() {
     setString('theme', newTheme);
 }
 
+let started = false;
 export function start() {
+    if (started) {
+        return;
+    }
+    started = true;
     if (global.isIOS && iOSNativeHelper.MajorVersion < 13) {
         theme = 'light';
     } else {

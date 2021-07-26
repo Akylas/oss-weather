@@ -14,7 +14,7 @@
     },
     "repository": "https://github.com/farfromrefug/ns-forecastie",
     "dependencies": {
-        "@akylas/nativescript": "8.0.8",
+        "@akylas/nativescript": "^8.0.8",
         "@mdi/font": "5.9.55",
         "@modern-dev/daylight": "0.1.0",
         "@nativescript-community/appurl": "1.4.2",

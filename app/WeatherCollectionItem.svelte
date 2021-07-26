@@ -9,7 +9,7 @@
 
     const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
     const textPaint = new Paint();
-    textPaint.setFontFamily(latoFontFamily);
+    // textPaint.setFontFamily(latoFontFamily);
     textPaint.setAntiAlias(true);
     textPaint.setTextAlign(Align.CENTER);
     const paint = new Paint();

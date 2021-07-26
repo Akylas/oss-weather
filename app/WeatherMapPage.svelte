@@ -1,14 +1,13 @@
 <script context="module" lang="ts">
     import { Page } from '@nativescript/core';
+    import { getString } from '@nativescript/core/application-settings';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { l, lc } from '~/helpers/locale';
+    import { lc } from '~/helpers/locale';
     import CActionBar from './CActionBar.svelte';
 </script>
 
 <script lang="ts">
-    import { getString } from '@nativescript/core/application-settings';
-
-    export let focusPos;
+    export let focusPos: { lat: number; lon: number };
     let page: NativeViewElementNode<Page>;
     let url = '~/assets/leaflet/index.html';
     function onNavigatingTo(e) {}

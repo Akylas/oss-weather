@@ -1,16 +1,14 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
-
     import { Application } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from './DailyView.svelte';
-    import { onThemeChanged } from './helpers/theme';
     import TopWeatherView from './TopWeatherView.svelte';
     import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from './variables';
     import WeatherIcon from './WeatherIcon.svelte';
 
-    export let items;
+    export let items: any[];
 
     let collectionView: NativeViewElementNode<CollectionView>;
     const topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
@@ -31,8 +29,8 @@
     }
 
     // onThemeChanged(() => {
-        // console.log('onThemeChanged');
-        // collectionView.nativeView.refresh();
+    // console.log('onThemeChanged');
+    // collectionView.nativeView.refresh();
     // });
 </script>
 

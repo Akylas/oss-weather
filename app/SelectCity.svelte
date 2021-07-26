@@ -1,18 +1,21 @@
 <script lang="ts">
+    import { Page, TextField } from '@nativescript/core';
+
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
+    import { NativeViewElementNode } from 'svelte-native/dom';
     import { l, lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';
     import { textColor, textLightColor } from '~/variables';
     import CActionBar from './CActionBar.svelte';
 
-    let page;
-    let textField;
+    let page: NativeViewElementNode<Page>;
+    let textField: NativeViewElementNode<TextField>;
     let loading = false;
     let searchResults = [];
-    let searchAsTypeTimer;
-    let currentSearchText;
+    let searchAsTypeTimer: NodeJS.Timeout;
+    let currentSearchText: string;
 
     function focus() {
         textField && textField.nativeView.requestFocus();
@@ -72,16 +75,7 @@
             <CActionBar title={lc('search_city')} modalWindow>
                 <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
-            <textfield
-                bind:this={textField}
-                row="1"
-                hint={lc('search')}
-                floating="false"
-                returnKeyType="search"
-                on:textChange={onTextChange}
-                on:loaded={focus}
-                color={$textColor}
-            />
+            <textfield bind:this={textField} row="1" hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} color={$textColor} />
             <collectionview row="2" rowHeight="80" items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">

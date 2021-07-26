@@ -21,7 +21,6 @@
     }
 
     onImperialChanged(() => {
-        console.log('onImperialChanged');
         collectionView.nativeView.refreshVisibleItems();
     });
 </script>

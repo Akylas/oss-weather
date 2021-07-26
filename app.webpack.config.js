@@ -94,7 +94,8 @@ module.exports = (env, params = {}) => {
     config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
-        'tns-core-modules': `${coreModulesPackageName}`
+        'tns-core-modules': `${coreModulesPackageName}`,
+        'svelte-native': '@akylas/svelte-native'
     });
 
     console.log('coreModulesPackageName', coreModulesPackageName);
@@ -347,11 +348,6 @@ module.exports = (env, params = {}) => {
     config.plugins.push(new IgnoreNotFoundExportPlugin());
     Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')})$`)));
-    config.plugins.push(new webpack.ContextReplacementPlugin(/date\-fns[\/\\]/, new RegExp(`[/\\\\\](${supportedLocales.join('|')})[/\\\\\]index\.js$`)));
-
-    if (nconfig.cssParser !== 'css-tree') {
-        config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /css-tree$/ }));
-    }
 
     // save as long as we dont use calc in css
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp:/reduce-css-calc$/}));

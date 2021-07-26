@@ -11,7 +11,7 @@ function GetURLParameter(sParam) {
 
 const position = (GetURLParameter('position') || '45.18453,5.75').split(',').map(parseFloat);
 const zoom = parseFloat(GetURLParameter('zoom') || '8');
-const OWM_KEY = (GetURLParameter('owm_key') || 'a07c8816483e2c786aed298ef68bf3f3');
+const OWM_KEY = (GetURLParameter('owm_key'));
 
 const map = L.map('example2', { zoomControl: false }).setView(position, zoom);
 
@@ -260,12 +260,13 @@ L.TileLayer.include({
 	},
 });
 
-L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-    maxZoom: 18,
+L.TileLayer.wmsHeader('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
     pmIgnore: false,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-    subdomains: ['a', 'b', 'c']
-}).addTo(map);
+}, [{
+	header:'User-Agent', value: 'AlpiMaps'
+}]).addTo(map);
 L.tileLayer(`https://{s}.sat.owm.io/vane/2.0/weather/PA0/{z}/{x}/{y}?appid=${OWM_KEY}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`, {
     maxZoom: 18,
     pmIgnore: false,

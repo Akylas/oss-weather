@@ -7,9 +7,7 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-import { Color } from '@nativescript/core';
-    // import dayjs from 'dayjs';
-    import { isBefore, startOfDay } from 'date-fns';
+    import dayjs from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
@@ -45,8 +43,7 @@ import { Color } from '@nativescript/core';
     export let height;
 
     function formatLastUpdate(date) {
-        if (isBefore(new Date(date), startOfDay(new Date()))) {
-            // if (isBefore(new Date(date))dayjs(date).isBefore(dayjs().startOf('d'))) {
+        if (dayjs(date).isBefore(dayjs().startOf('d'))) {
             return convertTime(date, 'dddd HH:mm');
         } else {
             return convertTime(date, 'HH:mm');
@@ -228,7 +225,7 @@ import { Color } from '@nativescript/core';
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
     <canvaslabel colSpan="2">
-        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'ccc')} textTransform="capitalize" />
+        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')}  textTransform="capitalize"/>
 
         {#if item.temperature !== undefined}
             <cgroup id="test" paddingLeft="10" fontSize="12" verticalAlignment="top">

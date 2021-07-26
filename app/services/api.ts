@@ -5,8 +5,7 @@ import { Color } from '@nativescript/core/color';
 import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent } from '@nativescript/core/application';
 import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
-// import dayjs from 'dayjs';
-import {add as addDate, endOfDay, endOfHour, endOfMinute, isBefore, startOfDay, startOfHour} from 'date-fns';
+import dayjs from 'dayjs';
 import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
@@ -432,20 +431,19 @@ export function prepareItems(weatherData, lastUpdate) {
     //     // .add(46, 'h')
     //     .endOf('h')
     //     .valueOf();
-    const now = new Date();
-    const startOfH = startOfHour(now).valueOf();
-    // const startOfH = dayjs()
-    //     .startOf('h')
-    //     .valueOf();
-    const endOfM = endOfMinute(now).valueOf();
-    // const endOfM = dayjs()
-    //     .endOf('m')
-    //     .valueOf();
+    const startOfHour = dayjs()
+        // .add(46, 'h')
+        .startOf('h')
+        .valueOf();
+    const endOfMinute = dayjs()
+        // .add(46, 'h')
+        .endOf('m')
+        .valueOf();
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
             let currentDaily = weatherData.daily.data[index];
-            const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfH);
-            const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfM) : -1;
+            const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
+            const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
             // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
             Object.assign(currentDaily, weatherData.currently);
             if (firstHourIndex > 1) {
@@ -487,8 +485,7 @@ export function prepareItems(weatherData, lastUpdate) {
             // });
         } else {
             const items = d.hourly;
-            const sunriseTime = endOfHour(d.sunriseTime).valueOf();
-            // const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
+            const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
             newItems.push(
                 Object.assign(d, {
                     index: newItems.length,
@@ -923,7 +920,7 @@ const CLIMA_CELL_NOWCAST_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['dewpoint', 'cl
 const CLIMA_CELL_HOURLY_FIELDS = CLIMA_CELL_NOWCAST_FIELDS + ',' + ['precipitation_probability'].join(',');
 const CLIMA_CELL_DAILY_FIELDS = CLIMA_CELL_BASE_FIELDS.concat(['sunrise', 'precipitation_accumulation', 'precipitation_probability', 'sunset', 'moon_phase']).join(',');
 export async function getClimaCellWeather(lat, lon, queryParams = {}) {
-    const now = new Date();
+    const now = dayjs();
     const nowcast = await request<ClimaCellNowCast>({
         url: CLIMA_CELL_API_URL_NOWCAST,
         method: 'GET',
@@ -932,7 +929,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             lon,
             apikey: ccApiKey,
             // start_time:now,
-            end_time: addDate(now, {hours:1}).toISOString(),
+            end_time: now.add(1, 'h').toISOString(),
             unit_system: 'si',
             fields: CLIMA_CELL_NOWCAST_FIELDS,
             ...queryParams
@@ -946,7 +943,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             lon,
             apikey: ccApiKey,
             unit_system: 'si',
-            end_time: addDate(now, {hours:96}).toISOString(),
+            end_time: now.add(96, 'h').toISOString(),
             fields: CLIMA_CELL_HOURLY_FIELDS,
             ...queryParams
         }
@@ -959,7 +956,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             lon,
             apikey: ccApiKey,
             unit_system: 'si',
-            end_time: addDate(now, {days:10}).toISOString(),
+            end_time: now.add(10, 'd').toISOString(),
             fields: CLIMA_CELL_DAILY_FIELDS,
             ...queryParams
         }
@@ -987,12 +984,12 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
 
     // result.currently && (result.currently.time *= 1000);
     result.daily.data.forEach((d) => {
-        d.time = new Date(d.observation_time.value).valueOf();
+        d.time = dayjs(d.observation_time.value).valueOf();
         d.icon = d.weather_code.value;
         d.windSpeed = d.wind_speed[1].max.value * 3.6; // max value
-        d.temperatureMinTime = new Date(d.temp[0].observation_time.value).valueOf();
+        d.temperatureMinTime = dayjs(d.temp[0].observation_time.value).valueOf();
         d.temperatureMin = d.temp[0].min.value;
-        d.temperatureMaxTime = new Date(d.temp[1].observation_time.value).valueOf();
+        d.temperatureMaxTime = dayjs(d.temp[1].observation_time.value).valueOf();
         d.temperatureMax = d.temp[1].max.value;
         d.windBearing = d.wind_direction[1].max.value;
         d.precipAccumulation = d.precipitation_accumulation.value;
@@ -1003,8 +1000,9 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         d.humidity = d.humidity.value;
         d.pressure = d.baro_pressure.value;
         d.moonIcon = ccMoonIcon(d.moon_phase.value);
-        d.sunriseTime = new Date(d.sunrise.value).valueOf();
-        d.sunsetTime = new Date(d.sunset.value).valueOf();
+        d.sunriseTime = dayjs(d.sunrise.value).valueOf();
+        d.sunsetTime = dayjs(d.sunset.value).valueOf();
+
         // d.windGust = d.wind_gust.value;
         // d.cloudCover = d.cloud_cover.value;
         // d.visibility = d.visibility.value;
@@ -1051,9 +1049,9 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
     //     };
     // }
 
-    let dayEnd = endOfDay(currentDateData.time);
+    let dayEnd = dayjs(currentDateData.time).endOf('d');
     result.hourly.data.forEach((h, i) => {
-        h.time = new Date(h.observation_time.value).valueOf();
+        h.time = dayjs(h.observation_time.value).valueOf();
         h.icon = h.weather_code.value;
         h.temperature = h.temp.value;
         h.windSpeed = h.wind_speed.value * 3.6;
@@ -1090,12 +1088,12 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
 
         h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
         h.windIcon = windIcon(h.windBearing);
-        h.cloudColor = (cloudyColor).setAlpha(h.cloudCover).hex;
-        const dateStart = startOfDay(h.time);
-        if (!isBefore(dateStart,dayEnd)) {
+        h.cloudColor =(cloudyColor).setAlpha(h.cloudCover).toRgbString();
+        const dateStart = dayjs(h.time).startOf('d');
+        if (!dateStart.isBefore(dayEnd)) {
             dailyIndex++;
             currentDateData = result.daily.data[dailyIndex];
-            dayEnd = endOfDay(currentDateData.time);
+            dayEnd = dayjs(currentDateData.time).endOf('d');
         }
 
         const color = colorForIcon(h.icon, h.time, currentDateData.sunriseTime, currentDateData.sunsetTime);
@@ -1132,7 +1130,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
 
     // let hourEnd = dayjs(currentDateData.time).endOf('h');
     result.minutely.data.forEach((h, i) => {
-        h.time = new Date(h.observation_time.value).valueOf();
+        h.time = dayjs(h.observation_time.value).valueOf();
         h.icon = h.weather_code.value;
         h.temperature = h.temp.value;
         h.windSpeed = h.wind_speed.value * 3.6;

@@ -313,7 +313,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 activity.finish();
                 return;
             }
-            if (!name || name.length === 0) {
+            if (!name || name.length === 0 || name === 'undefined') {
                 name = lat.toFixed(2) + ',' + lon.toFixed(2);
             }
             try {
@@ -385,6 +385,7 @@ class Activity extends androidx.appcompat.app.AppCompatActivity {
 
     public onStart(): void {
         this._callbacks.onStart(this, super.onStart);
+        this.overridePendingTransition(0, 0);
     }
 
     public onStop(): void {

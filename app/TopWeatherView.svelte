@@ -7,12 +7,13 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import dayjs from 'dayjs';
+    // import dayjs from 'dayjs';
+    import { isBefore, startOfDay } from 'date-fns';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import Color from 'tinycolor2';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
-    import { mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import HourlyView from './HourlyView.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
 
@@ -44,7 +45,8 @@
     export let height;
 
     function formatLastUpdate(date) {
-        if (dayjs(date).isBefore(dayjs().startOf('d'))) {
+        if (isBefore(new Date(date), startOfDay(new Date()))) {
+            // if (isBefore(new Date(date))dayjs(date).isBefore(dayjs().startOf('d'))) {
             return convertTime(date, 'dddd HH:mm');
         } else {
             return convertTime(date, 'HH:mm');
@@ -63,7 +65,7 @@
         const chart = lineChart.nativeView;
         if (chart) {
             let data = item.minutely;
-            const now = dayjs().valueOf();
+            const now = Date.now();
             const index = data.findIndex((v) => v.time >= now);
             data = data.slice(index);
 
@@ -226,23 +228,23 @@
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
     <canvaslabel colSpan="2">
-        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')}  textTransform="capitalize"/>
+        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'ccc')} textTransform="capitalize" />
 
         {#if item.temperature !== undefined}
             <cgroup id="test" paddingLeft="10" fontSize="12" verticalAlignment="top">
-                <cspan fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius)} />
-                <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius) : null} />
+                <cspan fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
+                <!-- <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius, $imperial) : null} /> -->
             </cgroup>
         {/if}
-        <cgroup id="test" paddingLeft="80" paddingTop="11" fontSize="14" verticalAlignment="top">
-            <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
+        <cgroup id="test" paddingLeft="80" paddingTop="13" fontSize="14" verticalAlignment="top">
+            <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
             <cspan color="#777" text=" | " />
-            <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
+            <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
         </cgroup>
 
         <cgroup paddingLeft="0" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
             <cspan fontSize="24" fontFamily={wiFontFamily} text={item.windIcon} />
-            <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed)} />
+            <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)} />
         </cgroup>
         <cgroup paddingLeft="60" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={nightColor}>
             <cspan fontSize="24" fontFamily={wiFontFamily} text={item.moonIcon} />
@@ -252,7 +254,7 @@
             <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" textAlignment="center" width="60" color={item.cloudColor}>
                 <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover * 100) + '%'} />
-                <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance) : null} />
+                <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
         {/if}
         {#if item.uvIndex > 0}

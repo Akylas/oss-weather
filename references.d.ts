@@ -51,3 +51,8 @@ declare namespace com {
         }
     }
 }
+declare module "@nativescript/core/color" {
+    namespace Color {
+	    function mix(color1: Color, color2: Color, amount: number): Color;
+    }
+}

@@ -348,6 +348,7 @@ module.exports = (env, params = {}) => {
     config.plugins.push(new IgnoreNotFoundExportPlugin());
     Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${locales.join('|')})$`)));
+    config.plugins.push(new webpack.ContextReplacementPlugin(/date\-fns[\/\\]/, new RegExp(`[/\\\\\](${locales.join('|')})[/\\\\\]index\.js$`)));
 
     if (nconfig.cssParser !== 'css-tree') {
         config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /css-tree$/ }));

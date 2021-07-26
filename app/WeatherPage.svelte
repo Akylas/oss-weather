@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
     import { request as requestPerm } from '@nativescript-community/perms';
     import { login } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { Application, CoreTypes, Page } from '@nativescript/core';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { onMount } from 'svelte';
@@ -20,15 +20,15 @@
     import AlertView from './AlertView.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
     import CActionBar from './CActionBar.svelte';
-    // import SelectLocationOnMap from './SelectLocationOnMap.svelte';
+    import { toggleTheme } from './helpers/theme';
     import { Sentry } from './utils/sentry';
     import WeatherComponent from './WeatherComponent.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
-    import { onThemeChanged, toggleTheme } from './helpers/theme';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
-    const mailRegexp = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
+    const mailRegexp =
+        /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
     let gps: GPS;
     let loading = false;
@@ -55,10 +55,10 @@
                         icon: 'mdi-refresh',
                         id: 'refresh',
                         text: l('refresh')
-                    // }, {
-                    //     icon: 'mdi-brightness-6',
-                    //     id: 'dark_mode',
-                    //     text: l('dark_mode')
+                        // }, {
+                        //     icon: 'mdi-brightness-6',
+                        //     id: 'dark_mode',
+                        //     text: l('dark_mode')
                     },
                     // {
                     //     icon: 'mdi-map',
@@ -104,7 +104,7 @@
                         sendBugReport();
                         break;
                     case 'dark_mode':
-                    toggleTheme();
+                        toggleTheme();
                         break;
                     case 'about':
                         const About = require('./About.svelte').default;
@@ -393,7 +393,7 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <label text={l('no_location_desc')} textAlignment="center"/>
+                <label text={l('no_location_desc')} textAlignment="center" />
                 <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <formattedString>
                         <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />

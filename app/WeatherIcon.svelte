@@ -16,11 +16,11 @@
 </script>
 
 <script lang="ts">
-    export let icon;
+    export let icon: string;
     export let fontSize: string | number = 40;
     // export let autoPlay = true;
     export let autoPlay = getBoolean('animations', false);
-    let iconSrc;
+    let iconSrc: string;
     $: {
         let realIcon;
         // console.log('icon', icon);

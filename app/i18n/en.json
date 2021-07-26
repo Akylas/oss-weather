@@ -75,5 +75,6 @@
   "about": "about",
   "no_location_desc": "You haven't chosen a location yet. \nYou can search to use your GPS location",
   "select_location": "select a location",
-  "weather_map": "weather map"
+  "weather_map": "weather map",
+  "imperial_units":"imperial units(°F, mPh,...)"
 }

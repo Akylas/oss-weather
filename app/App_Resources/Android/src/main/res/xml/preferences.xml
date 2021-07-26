@@ -25,6 +25,10 @@
         app:defaultValue="false"
         app:key="animations"
         app:title="@string/animations" />
+        <SwitchPreference
+        app:defaultValue="false"
+        app:key="imperial"
+        app:title="@string/imperial_units" />
 
     </PreferenceCategory>
 </PreferenceScreen>

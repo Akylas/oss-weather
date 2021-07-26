@@ -91,7 +91,7 @@
         textPaint.setFontWeight('normal');
         textPaint.setTextSize(11);
         textPaint.setAlpha(180);
-        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, 16 + decale, textPaint);
+        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, 16 + decale, textPaint);
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }
 </script>

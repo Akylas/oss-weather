@@ -81,7 +81,6 @@ module.exports = (env, params = {}) => {
     // }
 
     // safe as long as we dont use calc in css
-    // config.externals.push('reduce-css-calc');
     config.externals.push('~/licenses.json');
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
@@ -106,10 +105,10 @@ module.exports = (env, params = {}) => {
     const isAndroid = platform === 'android';
     const APP_STORE_ID = process.env.IOS_APP_ID;
     const CUSTOM_URL_SCHEME = 'alpimaps';
-    const locales = readdirSync(join(projectRoot, appPath, 'i18n'))
+    const supportedLocales = readdirSync(join(projectRoot, appPath, 'i18n'))
         .filter((s) => s.endsWith('.json'))
         .map((s) => s.replace('.json', ''));
-    // console.log('sentry', !!sentry);
+    console.log('locales', supportedLocales);
     const defines = {
         PRODUCTION: !!production,
         window: 'undefined',
@@ -124,7 +123,7 @@ module.exports = (env, params = {}) => {
         'global.isAndroid': isAndroid,
         'gVars.internalApp': false,
         TNS_ENV: JSON.stringify(mode),
-        SUPPORTED_LOCALES: JSON.stringify(locales),
+        SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
         'gVars.sentry': !!sentry,
         NO_CONSOLE: noconsole,
         SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
@@ -347,8 +346,8 @@ module.exports = (env, params = {}) => {
     config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
     config.plugins.push(new IgnoreNotFoundExportPlugin());
     Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
-    config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${locales.join('|')})$`)));
-    config.plugins.push(new webpack.ContextReplacementPlugin(/date\-fns[\/\\]/, new RegExp(`[/\\\\\](${locales.join('|')})[/\\\\\]index\.js$`)));
+    config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')})$`)));
+    config.plugins.push(new webpack.ContextReplacementPlugin(/date\-fns[\/\\]/, new RegExp(`[/\\\\\](${supportedLocales.join('|')})[/\\\\\]index\.js$`)));
 
     if (nconfig.cssParser !== 'css-tree') {
         config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /css-tree$/ }));

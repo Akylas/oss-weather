@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="imperial_units">"imperial units(°F, mPh,...)"</string>
   <string name="weather_map">"weather map"</string>
   <string name="select_location">"select a location"</string>
   <string name="no_location_desc">"You haven\'t chosen a location yet. \nYou can search to use your GPS location"</string>
@@ -52,8 +53,8 @@
   <string name="bug_report_sent">"bug report sent"</string>
   <string name="please_describe_error">"please describe error"</string>
   <string name="send_bug_report">"send bug report"</string>
-  <string name="gps_not_authorized">"please enable GPS and authorize NS Forecastie to use it to determine your location"</string>
-  <string name="gps_not_enabled">"please enable GPS to allow NS Forecastie to determine your location"</string>
+  <string name="gps_not_authorized">"please enable GPS and authorize OSS Weather to use it to determine your location"</string>
+  <string name="gps_not_enabled">"please enable GPS to allow OSS Weather to determine your location"</string>
   <string name="theme.black">"black"</string>
   <string name="theme.dark">"dark"</string>
   <string name="theme.light">"light"</string>

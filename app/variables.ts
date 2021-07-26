@@ -1,10 +1,17 @@
-import { Application } from '@nativescript/core';
+import { Application, Observable } from '@nativescript/core';
+import { getBoolean } from '@nativescript/core/application-settings';
 import { Screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
 import { writable } from 'svelte/store';
+import { prefs } from '~/services/preferences';
 import CSSLoader from '~/variables.module.scss';
+import { get_current_component } from 'svelte/internal';
+
 
 const locals = CSSLoader.locals;
+
+export const globalObservable = new Observable();
+
 // console.log('loading variables', locals);
 
 export const primaryColor: string = locals.primaryColor;
@@ -40,13 +47,35 @@ export const scatteredCloudyColor = '#cccccc';
 export const cloudyColor = '#929292';
 export const rainColor = '#4681C3';
 export const snowColor = '#43b4e0';
+
 export const textColor = writable('');
 export const borderColor = writable('');
 export const textLightColor = writable('');
 export const backgroundColor = writable('');
-
 export const subtitleColor = writable('');
 export const iconColor = writable('');
+
+export const imperial = writable(getBoolean('imperial', false));
+
+
+export function onImperialChanged(callback: (imperial)=>void) {
+    const eventCallack = (event)=>callback(event.data);
+    globalObservable.on('imperial', eventCallack);
+    const component  = get_current_component();
+    if (component) {
+        component.$$.on_destroy.push(()=>{
+            globalObservable.off('imperial', eventCallack);
+        });
+    }
+}
+
+
+prefs.on('key:imperial', () => {
+    const newImperial = getBoolean('imperial');
+    imperial.set(newImperial);
+    globalObservable.notify({eventName:'imperial', data:newImperial});
+});
+
 
 export function updateThemeColors(theme: string, force = false) {
     // console.log('updateThemeColors', theme, force);

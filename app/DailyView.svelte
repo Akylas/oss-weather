@@ -24,8 +24,8 @@
     <canvaslabel paddingRight="5">
         <rectangle horizontalAlignment="right" fillColor={item.color} width="5" height="100%" translateX="5" />
         <cgroup fontSize="22" verticalAlignment="top" paddingLeft="10" paddingTop="5">
-            <cspan text={convertTime(item.time, 'ccc ')} textTransform="capitalize" />
-            <cspan fontSize="15" color={$textLightColor} text={'\n' + convertTime(item.time, 'dd/MM')} />
+            <cspan text={convertTime(item.time, 'ddd ')}  textTransform="capitalize"/>
+            <cspan fontSize="15" color={$textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
         </cgroup>
         <!-- <cspan id="testSpan" color={$textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" paddingBottom="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} /> -->
 

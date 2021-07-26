@@ -1,13 +1,12 @@
 import { l, lc, loadLocaleJSON, lt, lu } from '@nativescript-community/l';
 import { getString, setString } from '@nativescript/core/application-settings';
 import { Device } from '@nativescript/core/platform';
-import { format as formatDate } from 'date-fns'
-// import dayjs from 'dayjs';
-// import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import dayjs from 'dayjs';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 const supportedLanguages = SUPPORTED_LOCALES;
-// dayjs.extend(LocalizedFormat);
+dayjs.extend(LocalizedFormat);
 
 export let lang;
 export const $lang = writable(null);
@@ -15,7 +14,6 @@ const onLanguageChangedCallbacks = [];
 export function onLanguageChanged(callback) {
     onLanguageChangedCallbacks.push(callback);
 }
-let dateFnsLocale;
 $lang.subscribe((newLang: string) => {
     lang = newLang;
     if (!lang) {
@@ -23,14 +21,11 @@ $lang.subscribe((newLang: string) => {
     }
     // console.log('changed lang', lang, Device.region);
     try {
-        // require(`dayjs/locale/${newLang}`);
-        require(`date-fns/locale/${newLang}`);
+        require(`dayjs/locale/${newLang}`);
     } catch (err) {
-        // console.log('failed to load dayjs locale', lang, `dayjs/locale/${newLang}`, err);
-        console.log('failed to load date-fns locale', lang, err);
+        console.log('failed to load dayjs locale', lang, `dayjs/locale/${newLang}`, err);
     }
-    // dateFnsLocale = require('date-fns/locale')[lang]
-    // dayjs.locale(lang); // switch back to default English locale globally
+    dayjs.locale(lang); // switch back to default English locale globally
     try {
         const localeData = require(`~/i18n/${lang}.json`);
         loadLocaleJSON(localeData);
@@ -69,28 +64,15 @@ function getActualLanguage(language) {
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
-const getLocale = (locale) => require(`date-fns/locale/${locale}/index.js`);
-export function convertTime(date: number | string | Date, formatStr: string) {
+export function convertTime(date: number | string | dayjs.Dayjs, formatStr: string) {
     if (date) {
-        if (typeof date === 'string') {
-            date = new Date(date);
+        if (!date['format']) {
+            date = dayjs(date);
         }
-        // if (!date['format']) {
-        //     date = dayjs(date);
-        // }
-        // return (date as dayjs.Dayjs).format(formatStr);
-        return formatDate(date, formatStr, {
-            locale:getLocale(lang)
-        });
+        return (date as dayjs.Dayjs).format(formatStr);
     }
     return '';
 }
-// export function convertDuration(date, formatStr: string) {
-//     const test = new Date(date);
-//     test.setTime(test.getTime() + test.getTimezoneOffset() * 60 * 1000);
-//     const result = dayjs(test).format(formatStr);
-//     return result;
-// }
 
 prefs.on('key:language', () => {
     const newLanguage = getString('language');

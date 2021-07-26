@@ -1,13 +1,10 @@
 <script lang="ts">
-import { CollectionView } from '@nativescript-community/ui-collectionview';
-
     import { Template } from 'svelte-native/components';
-import { NativeViewElementNode } from 'svelte-native/dom';
-    import { backgroundColor, onImperialChanged } from './variables';
+    import { backgroundColor } from './variables';
     import WeatherCollectionItem from './WeatherCollectionItem.svelte';
 
-    export let items: any[];
-    let collectionView: NativeViewElementNode<CollectionView>;
+    export let items;
+    let collectionView;
     export let scrollIndex = 0;
 
     function onDataPopulated() {
@@ -20,11 +17,6 @@ import { NativeViewElementNode } from 'svelte-native/dom';
         showLeftShadow = event.scrollOffsetPercentage > 0;
         showRightShadow = event.scrollOffsetPercentage < 1;
     }
-
-    onImperialChanged(()=>{
-        console.log('onImperialChanged');
-        collectionView.nativeView.refreshVisibleItems();
-    })
 </script>
 
 <gridlayout {...$$restProps}>

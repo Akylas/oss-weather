@@ -7,6 +7,7 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
+import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';

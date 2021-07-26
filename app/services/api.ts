@@ -1,12 +1,12 @@
 import { sun } from '@modern-dev/daylight';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
+import { Color } from '@nativescript/core/color';
 import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent } from '@nativescript/core/application';
 import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 // import dayjs from 'dayjs';
 import {add as addDate, endOfDay, endOfHour, endOfMinute, isBefore, startOfDay, startOfHour} from 'date-fns';
-import Color from 'tinycolor2';
 import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
@@ -695,16 +695,16 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.sunsetTime = data.sunset * 1000;
 
                 if (data.rain) {
-                    d.color = Color.mix(sunnyColor, getRainColor(data.rain), 1).toRgbString();
+                    d.color = Color.mix(sunnyColor, getRainColor(data.rain), 1).hex;
                 } else if (data.snow) {
-                    d.color = Color.mix(sunnyColor, snowColor, 1).toRgbString();
+                    d.color = Color.mix(sunnyColor, snowColor, 1).hex;
                 } else {
-                    d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover * 100).toRgbString();
+                    d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover * 100).hex;
                     // } else {
                     //     d.color = sunnyColor;
                 }
 
-                d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).toRgbString();
+                d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
                 d.uvIndexColor = colorForUV(data.uvi);
                 d.uvIndex = data.uvi;
                 d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
@@ -752,7 +752,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         //     d.icon += '-day';
         // }
         d.precipColor = rainColor;
-        d.color = Color.mix(color, cloudyColor, d.cloudCover * 100).toRgbString();
+        d.color = Color.mix(color, cloudyColor, d.cloudCover * 100).hex;
         if (data.snow && data.snow['1h']) {
             d.precipAccumulation = data.snow['1h'] || 0;
             d.precipColor = snowColor;
@@ -763,7 +763,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         // }
 
         d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
-        d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).toRgbString();
+        d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
         d.windIcon = windIcon(d.windBearing);
         return d;
     });
@@ -813,11 +813,11 @@ function getRainFactor(precipIntensity: number) {
 //     result.daily.data.forEach((d) => {
 //         d.time = d.time * 1000;
 //         if (/rain/.test(d.icon)) {
-//             d.color = Color.mix(sunnyColor, getRainColor(d.precipIntensity), ((d.precipProbability + 1) / 2) * 100).toRgbString();
+//             d.color = Color.mix(sunnyColor, getRainColor(d.precipIntensity), ((d.precipProbability + 1) / 2) * 100).hex;
 //         } else if (/snow/.test(d.icon)) {
-//             d.color = Color.mix(sunnyColor, snowColor, d.precipProbability * 100).toRgbString();
+//             d.color = Color.mix(sunnyColor, snowColor, d.precipProbability * 100).hex;
 //         } else if (/cloudy|fog/.test(d.icon)) {
-//             d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover * 100).toRgbString();
+//             d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover * 100).hex;
 //         } else {
 //             d.color = sunnyColor;
 //         }
@@ -827,7 +827,7 @@ function getRainFactor(precipIntensity: number) {
 //         d.sunriseTime = d.sunriseTime * 1000;
 //         d.sunsetTime = d.sunsetTime * 1000;
 //         d.windIcon = windIcon(d.windBearing);
-//         d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).toRgbString();
+//         d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).hex;
 //         d.hourly = [];
 //     });
 //     if (result.alerts) {
@@ -879,21 +879,21 @@ function getRainFactor(precipIntensity: number) {
 //             } else {
 //                 h.icon += '-day';
 //             }
-//             h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
+//             h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).hex;
 //         } else if (/snow/.test(h.icon)) {
 //             if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
 //                 h.icon += '-night';
 //             } else {
 //                 h.icon += '-day';
 //             }
-//             h.color = Color.mix(color, snowColor, h.precipProbability * 100).toRgbString();
+//             h.color = Color.mix(color, snowColor, h.precipProbability * 100).hex;
 //         } else if (/cloudy/.test(h.icon)) {
-//             h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).toRgbString();
+//             h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).hex;
 //         } else {
 //             h.color = color;
 //         }
 
-//         h.cloudColor = Color(cloudyColor).setAlpha(h.cloudCover).toRgbString();
+//         h.cloudColor = Color(cloudyColor).setAlpha(h.cloudCover).hex;
 
 //         h.index = currentDateData.hourly.length;
 //         firstDay.hourly.push(h);
@@ -1010,11 +1010,11 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         // d.visibility = d.visibility.value;
 
         if (d.precipType === 'rain') {
-            d.color = Color.mix(sunnyColor, getRainColor(d.precipAccumulation), ((d.precipProbability + 1) / 2) * 100).toRgbString();
+            d.color = Color.mix(sunnyColor, getRainColor(d.precipAccumulation), ((d.precipProbability + 1) / 2) * 100).hex;
         } else if (d.precipType in ['snow', 'ice pellets', 'freezing rain']) {
-            d.color = Color.mix(sunnyColor, snowColor, d.precipProbability * 100).toRgbString();
+            d.color = Color.mix(sunnyColor, snowColor, d.precipProbability * 100).hex;
         } else if (/cloudy|fog/.test(d.icon)) {
-            d.color = Color.mix(sunnyColor, cloudyColor, 0.5).toRgbString();
+            d.color = Color.mix(sunnyColor, cloudyColor, 0.5).hex;
         } else {
             d.color = sunnyColor;
         }
@@ -1022,7 +1022,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         // d.uvIndexColor = colorForUV(d.uvIndex);
         d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
         d.windIcon = windIcon(d.windBearing);
-        // d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).toRgbString();
+        // d.cloudColor = Color(cloudyColor).setAlpha(d.cloudCover).hex;
         d.hourly = [];
 
         delete d.observation_time;
@@ -1090,7 +1090,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
 
         h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
         h.windIcon = windIcon(h.windBearing);
-        h.cloudColor = Color(cloudyColor).setAlpha(h.cloudCover).toRgbString();
+        h.cloudColor = (cloudyColor).setAlpha(h.cloudCover).hex;
         const dateStart = startOfDay(h.time);
         if (!isBefore(dateStart,dayEnd)) {
             dailyIndex++;
@@ -1113,14 +1113,14 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
             h.icon += '-day';
         }
         h.precipColor = rainColor;
-        h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).toRgbString();
+        h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).hex;
         if (h.precipType === 'rain') {
-            // h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).toRgbString();
+            // h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity), h.precipProbability * 100).hex;
         } else if (h.precipType in ['snow', 'ice pellets', 'freezing rain']) {
             h.precipColor = snowColor;
-            // h.color = Color.mix(color, h.precipColor, h.precipProbability * 100).toRgbString();
+            // h.color = Color.mix(color, h.precipColor, h.precipProbability * 100).hex;
             // } else if (/cloudy|fog/.test(h.icon)) {
-            //     h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).toRgbString();
+            //     h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).hex;
             // } else {
             //     h.color = color;
         }
@@ -1170,7 +1170,7 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
 
         h.windBeaufortIcon = windBeaufortIcon(h.windSpeed);
         // h.windIcon = windIcon(h.windBearing);
-        // h.cloudColor = Color(cloudyColor).setAlpha(h.cloudCover).toRgbString();
+        // h.cloudColor = Color(cloudyColor).setAlpha(h.cloudCover).hex;
         // const hourStart = dayjs(h.time).startOf('h');
         // if (!hourStart.isBefore(dayEnd)) {
         //     dailyIndex++;
@@ -1186,16 +1186,16 @@ export async function getClimaCellWeather(lat, lon, queryParams = {}) {
         //     } else {
         //         h.icon += '-day';
         //     }
-        //     // h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity * 5), h.precipProbability * 100).toRgbString();
+        //     // h.color = Color.mix(Color(color).desaturate(50), getRainColor(h.precipIntensity * 5), h.precipProbability * 100).hex;
         // } else if (h.precipType in ['snow', 'ice pellets', 'freezing rain']) {
         //     if (h.time > currentDateData.sunsetTime || h.time < currentDateData.sunriseTime) {
         //         h.icon += '-night';
         //     } else {
         //         h.icon += '-day';
         //     }
-        //     h.color = Color.mix(color, snowColor, h.precipProbability * 100).toRgbString();
+        //     h.color = Color.mix(color, snowColor, h.precipProbability * 100).hex;
         // } else if (/cloudy|fog/.test(h.icon)) {
-        //     h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).toRgbString();
+        //     h.color = Color.mix(color, cloudyColor, h.cloudCover * 100).hex;
         // } else {
         //     h.color = color;
         // }

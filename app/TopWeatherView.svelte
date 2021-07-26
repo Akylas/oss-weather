@@ -7,10 +7,10 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
+import { Color } from '@nativescript/core';
     // import dayjs from 'dayjs';
     import { isBefore, startOfDay } from 'date-fns';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import Color from 'tinycolor2';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
     import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
@@ -84,7 +84,7 @@
             lastChartData = data;
             if (!chartInitialized) {
                 const darkTheme = /dark|black/.test(Theme.getMode());
-                const limitColor = Color($textColor).setAlpha(0.5).toRgbString();
+                const limitColor = new Color($textColor).setAlpha(0.5).hex;
                 chartInitialized = true;
                 chart.setNoDataText(null);
                 chart.setAutoScaleMinMaxEnabled(true);

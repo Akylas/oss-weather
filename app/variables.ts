@@ -6,6 +6,7 @@ import { writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import CSSLoader from '~/variables.module.scss';
 import { get_current_component } from 'svelte/internal';
+import { Color } from '@nativescript/core';
 
 
 const locals = CSSLoader.locals;
@@ -14,9 +15,9 @@ export const globalObservable = new Observable();
 
 // console.log('loading variables', locals);
 
-export const primaryColor: string = locals.primaryColor;
-export const accentColor: string = locals.accentColor;
-export const darkColor: string = locals.darkColor;
+export const primaryColor = new Color(locals.primaryColor);
+export const accentColor = new Color(locals.accentColor);
+export const darkColor = new Color(locals.darkColor);
 // export const backgroundColor: string = locals.backgroundColor;
 export const latoFontFamily: string = locals.latoFontFamily;
 export const wiFontFamily: string = locals.wiFontFamily;
@@ -41,12 +42,12 @@ if (global.isAndroid) {
     navigationBarHeight = 0;
 }
 
-export const sunnyColor = '#FFC82F';
-export const nightColor = '#845987';
-export const scatteredCloudyColor = '#cccccc';
-export const cloudyColor = '#929292';
-export const rainColor = '#4681C3';
-export const snowColor = '#43b4e0';
+export const sunnyColor = new Color('#FFC82F');
+export const nightColor = new Color('#845987');
+export const scatteredCloudyColor = new Color('#cccccc');
+export const cloudyColor = new Color('#929292');
+export const rainColor = new Color('#4681C3');
+export const snowColor = new Color('#43b4e0');
 
 export const textColor = writable('');
 export const borderColor = writable('');

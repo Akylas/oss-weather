@@ -1,4 +1,3 @@
-// import Color from 'tinycolor2';
 import { nightColor, sunnyColor } from '~/variables';
 import { convertTime } from './locale';
 

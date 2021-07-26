@@ -21,7 +21,7 @@
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
     import CActionBar from './CActionBar.svelte';
     import { toggleTheme } from './helpers/theme';
-    import { Sentry } from './utils/sentry';
+    // import { Sentry } from './utils/sentry';
     import WeatherComponent from './WeatherComponent.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
 
@@ -79,11 +79,11 @@
                         icon: 'mdi-information-outline',
                         id: 'about',
                         text: l('about')
-                    },
-                    {
-                        icon: 'mdi-bug',
-                        id: 'send_bug_report',
-                        text: l('send_bug_report')
+                    // },
+                    // {
+                    //     icon: 'mdi-bug',
+                    //     id: 'send_bug_report',
+                    //     text: l('send_bug_report')
                     }
                 ]
             }
@@ -347,21 +347,21 @@
                 });
             }
         });
-        if (result.result) {
-            if (!result.userName || !mailRegexp.test(result.userName)) {
-                showError(new Error(lc('email_required')));
-                return;
-            }
-            if (!result.password || result.password.length === 0) {
-                showError(new Error(lc('description_required')));
-                return;
-            }
-            Sentry.withScope((scope) => {
-                scope.setUser({ email: result.userName });
-                Sentry.captureMessage(result.password);
-                alert(l('bug_report_sent'));
-            });
-        }
+        // if (result.result) {
+        //     if (!result.userName || !mailRegexp.test(result.userName)) {
+        //         showError(new Error(lc('email_required')));
+        //         return;
+        //     }
+        //     if (!result.password || result.password.length === 0) {
+        //         showError(new Error(lc('description_required')));
+        //         return;
+        //     }
+        //     Sentry.withScope((scope) => {
+        //         scope.setUser({ email: result.userName });
+        //         Sentry.captureMessage(result.password);
+        //         alert(l('bug_report_sent'));
+        //     });
+        // }
     }
 </script>
 

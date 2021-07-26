@@ -4,7 +4,7 @@ import { showSnack } from '@nativescript-community/ui-material-snackbar';
 import { BaseError } from 'make-error';
 import { l } from '~/helpers/locale';
 import { NoNetworkError } from '~/services/api';
-import { Sentry, isSentryEnabled } from '~/utils/sentry';
+// import { Sentry, isSentryEnabled } from '~/utils/sentry';
 
 function evalTemplateString(resource: string, obj: {}) {
     if (!obj) {
@@ -91,7 +91,8 @@ export async function showError(err: Error | string) {
     const isString = realError === null;
     const message = isString ? (err as string) : realError.message || realError.toString();
     const title = lc('error');
-    const reporterEnabled = isSentryEnabled;
+    // const reporterEnabled = isSentryEnabled;
+    const reporterEnabled = false;
     let showSendBugReport = reporterEnabled && !isString && !!realError.stack;
     if (realError instanceof NoNetworkError) {
         showSendBugReport = false;
@@ -103,10 +104,10 @@ export async function showError(err: Error | string) {
         cancelButtonText: showSendBugReport ? lc('cancel') : lc('ok'),
         message,
     });
-    if (result && isSentryEnabled) {
-        Sentry.captureException(err);
-        this.$alert(l('bug_report_sent'));
-    }
+    // if (result && isSentryEnabled) {
+    //     Sentry.captureException(err);
+    //     this.$alert(l('bug_report_sent'));
+    // }
 }
 
 export function alert(message: string) {

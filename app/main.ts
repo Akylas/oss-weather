@@ -1,11 +1,11 @@
 // (com as any).tns.Runtime.getCurrentRuntime().enableVerboseLogging();
 import { DomTraceCategory, FrameElement, NativeElementPropType, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
-import { startSentry } from '~/utils/sentry';
-startSentry();
+// import { startSentry } from '~/utils/sentry';
+// import { install } from '~/utils/logging';
+// startSentry();
+// install();
 import './app.scss';
 
-import { install } from '~/utils/logging';
-install();
 
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 overrideSpanAndFormattedString();

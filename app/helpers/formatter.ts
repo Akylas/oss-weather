@@ -12,12 +12,12 @@ export enum UNITS {
     Inch = 'inch',
     MM = 'mm',
     Celcius = 'celcius',
-    Farenheit = 'farenheit',
     Duration = 'duration',
     Date = 'date',
     Distance = 'm',
     DistanceKm = 'km',
     Speed = 'km/h',
+    SpeedM = 'm/h',
 }
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
@@ -27,9 +27,26 @@ function celciusToFahrenheit(kelvinTemp) {
     return (9 * kelvinTemp) / 5 + 32;
 }
 
-export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [string | number, string] {
-    if (value === undefined || value === null) {
-        return ['', ''];
+export function toImperialUnit(unit: UNITS, imperial = false) {
+    if (imperial === false) {
+        return unit;
+    }
+    switch (unit) {
+        case UNITS.Distance:
+            return 'ft';
+        case UNITS.DistanceKm:
+            return 'm';
+        case UNITS.Speed:
+            return 'mph';
+        case UNITS.SpeedM:
+            return 'ft/h';
+        default:
+            return unit;
+    }
+}
+export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, options: { roundedTo05?: boolean } = {}): [string | number, string] {
+    if (value === -1) {
+        return ['-', toImperialUnit(unit, imperial)];
     }
     switch (unit) {
         case UNITS.kPa:
@@ -43,36 +60,65 @@ export function convertValueToUnit(value: any, unit: UNITS, otherParam?): [strin
         case UNITS.MM:
             return [value.toFixed(1), 'mm'];
         case UNITS.Celcius:
-            return [Math.round(value * 10) / 10, ''];
-        case UNITS.Farenheit:
-            return [celciusToFahrenheit(value).toFixed(1), '°'];
+            if (imperial) {
+                return [celciusToFahrenheit(value).toFixed(1), '°'];
+            }
+            return [Math.round(value * 10) / 10, '°'];
         case UNITS.Date:
             return [convertTime(value, 'M/d/yy h:mm a'), ''];
+
+        case UNITS.SpeedM:
         case UNITS.Distance:
-            return [value.toFixed(), unit];
-        case UNITS.DistanceKm:
-            if (value < 1000) {
-                return [value.toFixed(), 'm'];
-            } else if (value > 100000) {
-                return [(value / 1000).toFixed(0), unit];
-            } else {
-                return [(value / 1000).toFixed(1), unit];
+            if (imperial) {
+                value *= 3.28084; // to feet
             }
+            return [value.toFixed(), toImperialUnit(unit, imperial)];
+        case UNITS.DistanceKm:
+            if (imperial) {
+                value *= 3.28084; // to feet
+                if (value < 5280) {
+                    return [value.toFixed(), toImperialUnit(UNITS.Distance, imperial)];
+                } else if (value > 528000) {
+                    return [(value / 5280).toFixed(0), toImperialUnit(unit, imperial)];
+                } else {
+                    return [(value / 5280).toFixed(1), toImperialUnit(unit, imperial)];
+                }
+            } else {
+                if (value < 1000) {
+                    return [value.toFixed(), UNITS.Distance];
+                } else if (value > 100000) {
+                    return [(value / 1000).toFixed(0), unit];
+                } else {
+                    return [(value / 1000).toFixed(1), unit];
+                }
+            }
+
         case UNITS.Speed:
-            return [value.toFixed(0), unit];
+            if (imperial) {
+                value *= 0.6213712; // to mph
+            }
+            // if (value < 100) {
+            //     return [value.toFixed(1), unit];
+            // } else {
+            // if > 100 we still need to send a . at the end...
+            if (options.roundedTo05 === true) {
+                return [(Math.round(value * 2) / 2).toFixed(1), toImperialUnit(unit, imperial)];
+            }
+            return [value.toFixed(1), toImperialUnit(unit, imperial)];
+        // }
         default:
-            return [value.toFixed(), unit];
+            return [value.toFixed(), toImperialUnit(unit, imperial)];
     }
 }
 
-export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; otherParam?; join?: string; unitScale?: number }) {
+export function formatValueToUnit(value: any, unit: UNITS, imperial?: boolean, options?: { prefix?: string; join?: string; unitScale?: number ; roundedTo05?: boolean}) {
     options = options || {};
     if (unit === UNITS.Celcius) {
         options.join = options.join || '';
     } else {
         options.join = options.join || ' ';
     }
-    const array = convertValueToUnit(value, unit, options?.otherParam);
+    const array = convertValueToUnit(value, unit, imperial, options);
     if (options.unitScale) {
         for (let index = 0; index < options.unitScale; index++) {
             array[1] = `<small>${array[1]}</small>`;

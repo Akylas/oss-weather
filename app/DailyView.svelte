@@ -1,12 +1,14 @@
 <script lang="ts">
+    import { Color } from '@nativescript/core';
+
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { borderColor, nightColor, rainColor, snowColor, textLightColor, wiFontFamily } from '~/variables';
+    import { borderColor, imperial, nightColor, rainColor, snowColor, textLightColor, wiFontFamily } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
 
-    export let item;
-    let color;
-    let precipIcon;
+    export let item: any;
+    let color: string | Color;
+    let precipIcon: string;
     $: {
         if (item && item.icon.startsWith('13')) {
             color = snowColor;
@@ -35,7 +37,7 @@
         {/if}
         <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-100" paddingTop="20">
             <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windIcon} />
-            <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed)} />
+            <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)} />
         </cgroup>
         {#if (item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1}
             <cgroup {color} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
@@ -49,8 +51,8 @@
             <cspan text={'\n' + l('moon')} />
         </cgroup>
         <cgroup fontSize="20" verticalAlignment="top" textAlignment="right" paddingTop="5" paddingRight="5">
-            <cspan fontSize="17" color={$textLightColor} text={formatValueToUnit(item.temperatureMin, UNITS.Celcius)} />
-            <cspan text={' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)} />
+            <cspan fontSize="17" color={$textLightColor} text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
+            <cspan text={' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
         </cgroup>
         <cspan paddingLeft="10" paddingBottom="10" fontSize="13" color={$textLightColor} text={item.description} textTransform="capitalize" verticalAlignment="bottom" textAlignment="left" />
 

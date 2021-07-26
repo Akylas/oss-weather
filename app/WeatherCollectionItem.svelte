@@ -4,7 +4,7 @@
     import dayjs from 'dayjs';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { latoFontFamily, textColor } from '~/variables';
+    import { imperial, textColor } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
 
     const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
@@ -68,7 +68,7 @@
             textPaint.setColor(color);
             textPaint.setTextSize(10);
             textPaint.setAlpha(item.cloudCover * heightProb * 255);
-            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance), w2, top + 10, textPaint);
+            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial), w2, top + 10, textPaint);
         }
         paint.setAlpha(255);
         textPaint.setAlpha(255);
@@ -77,7 +77,7 @@
 
         textPaint.setColor($textColor);
         textPaint.setTextSize(14);
-        canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius)}°`, w2, (1 - tempHeight / 100) * h - 70, textPaint);
+        canvas.drawText(` ${formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)}`, w2, (1 - tempHeight / 100) * h - 70, textPaint);
 
         textPaint.setFontWeight('bold');
         let decale = 14;

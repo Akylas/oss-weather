@@ -353,6 +353,10 @@ module.exports = (env, params = {}) => {
     if (nconfig.cssParser !== 'css-tree') {
         config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /css-tree$/ }));
     }
+
+    // save as long as we dont use calc in css
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp:/reduce-css-calc$/}));
+    config.plugins.push(new webpack.IgnorePlugin(/punnycode/));
     // config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /sha.js$/ }));
 
     if (hiddenSourceMap || sourceMap) {

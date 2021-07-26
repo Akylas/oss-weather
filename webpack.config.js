@@ -1,4 +1,6 @@
 const webpack = require('@nativescript/webpack');
+const sveltePreprocess = require('svelte-preprocess');
+const svelteNativePreprocessor = require('svelte-native-preprocessor');
 module.exports = (env) => {
     webpack.init(env);
     webpack.useConfig('svelte');
@@ -19,8 +21,8 @@ module.exports = (env) => {
 
         config.module.rule('svelte').clear();
         config.module.rule('svelte').uses.clear();
-
-        const production = env.production === 'production';
+        const production = !!env.production;
+        const isAnySourceMapEnabled = !!env.sourceMap || !!env.hiddenSourceMap || !!env.inlineSourceMap;
         config.module
             .rule('svelte')
             .test(/\.svelte$/)
@@ -33,7 +35,22 @@ module.exports = (env) => {
                     dev: !production,
                     namespace: 'foreign'
                 },
-                preprocess: opts.preprocess,
+                preprocess: [
+                    sveltePreprocess({
+                        defaults: {
+                            script: 'typescript',
+                            style: 'scss'
+                        },
+                        typescript: {
+                            compilerOptions: {
+                                target: 'es2017'
+                            }
+                        },
+
+                        sourceMap: isAnySourceMapEnabled
+                    }),
+                    svelteNativePreprocessor()
+                ],
                 hotReload: !production,
                 hotOptions: {
                     injectCss: false,

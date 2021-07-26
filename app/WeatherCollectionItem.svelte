@@ -1,8 +1,10 @@
 <script context="module" lang="ts">
-    import { Align, Paint } from '@nativescript-community/ui-canvas';
+    import { Align,CanvasView,Paint } from '@nativescript-community/ui-canvas';
     import { Screen } from '@nativescript/core/platform';
-    import dayjs from 'dayjs';
-    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { endOfDay } from 'date-fns';
+import { NativeViewElementNode } from 'svelte-native/dom';
+    // import dayjs from 'dayjs';
+    import { convertTime,formatValueToUnit,UNITS } from '~/helpers/formatter';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { imperial, textColor } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
@@ -20,7 +22,7 @@
 <script lang="ts">
     export let item;
     let tempHeight = 0;
-    let canvasView;
+    let canvasView: NativeViewElementNode<CanvasView>;
     let precipitationHeight = 0;
 
     function redraw() {
@@ -33,7 +35,8 @@
     }
     textColor.subscribe(redraw);
     function drawOnCanvas(event) {
-        const endDay = dayjs().endOf('d').valueOf();
+        // const endDay = dayjs().endOf('d').valueOf();
+        const endDay = endOfDay(new Date()).valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
         const w = canvas.getWidth();
         const w2 = w / 2;
@@ -82,16 +85,16 @@
         textPaint.setFontWeight('bold');
         let decale = 14;
         textPaint.setTextSize(14);
-        canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
+        canvas.drawText(convertTime(item.time, 'p'), w2, 16, textPaint);
         if (item.time > endDay) {
             textPaint.setTextSize(12);
-            canvas.drawText(convertTime(item.time, 'ddd'), w2, 28, textPaint);
+            canvas.drawText(convertTime(item.time, 'ccc'), w2, 28, textPaint);
             decale += 10;
         }
         textPaint.setFontWeight('normal');
         textPaint.setTextSize(11);
         textPaint.setAlpha(180);
-        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, 16 + decale, textPaint);
+        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, 16 + decale, textPaint);
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }
 </script>

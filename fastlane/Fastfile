@@ -60,16 +60,14 @@ lane :build_flavor do |params|
   puts "version:"  + version
   puts "versionCode:"  + versionCode
 
-  sentry_create_release(
-    version: version, # release version to create
-  )
+  # sentry_create_release(
+  #   version: version, # release version to create
+  # )
 
   # build will use adhoc env option which also activate sentry which will upload sourcemaps.
   build
 
-  # sentry_upload_sourcemaps(platform:platform, version: version, versionCode: versionCode);
-  
-  sentry_upload
+  # sentry_upload
 
   changelog = get_changelog(platform:platform, flavor:flavor)
 
@@ -290,11 +288,11 @@ end
     puts "version:"  + version
     puts "versionCode:"  + versionCode
 
-    sentry_create_release(
-      version: version, # release version to create
-    )
+    # sentry_create_release(
+    #   version: version, # release version to create
+    # )
     build_github
-    sentry_upload
+    # sentry_upload
     changelog = get_changelog(platform:platform, flavor:flavor)
     tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
     add_git_tag(tag: tag)

@@ -24,6 +24,7 @@ $lang.subscribe((newLang: string) => {
     // console.log('changed lang', lang, Device.region);
     try {
         // require(`dayjs/locale/${newLang}`);
+        require(`date-fns/locale/${newLang}`);
     } catch (err) {
         // console.log('failed to load dayjs locale', lang, `dayjs/locale/${newLang}`, err);
         console.log('failed to load date-fns locale', lang, err);
@@ -41,7 +42,7 @@ $lang.subscribe((newLang: string) => {
 function setLang(newLang) {
     newLang = getActualLanguage(newLang);
     if (supportedLanguages.indexOf(newLang) === -1) {
-        newLang = 'en';
+        newLang = 'en-US';
     }
     $lang.set(newLang);
 }
@@ -49,6 +50,8 @@ function setLang(newLang) {
 const deviceLanguage = getString('language', 'auto');
 function getActualLanguage(language) {
     switch (language) {
+        case 'en':
+            return 'en-US';
         case 'cs':
             return 'cz';
         case 'jp':

@@ -28,9 +28,17 @@ module.exports = (env) => {
             .test(/\.svelte$/)
             .exclude.add(/node_modules/)
             .end()
+            .use('string-replace-loader')
+            .loader('string-replace-loader')
+            .options({
+                search: 'createElementNS\\("https:\\/\\/svelte\\.dev\\/docs#svelte_options"',
+                replace: 'createElementNS(svN',
+                flags: 'gm'
+            })
+            .end()
             .use('svelte-loader')
             .loader('svelte-loader')
-            .tap((opt) => ({
+            .options({
                 compilerOptions: {
                     dev: !production,
                     namespace: 'foreign'
@@ -56,7 +64,8 @@ module.exports = (env) => {
                     injectCss: false,
                     native: true
                 }
-            }));
+            })
+            .end();
         return config;
     });
     return webpack.resolveConfig();

@@ -1,29 +1,20 @@
-import { getString, setString } from '@nativescript/core/application-settings';
-import { Observable } from '@nativescript/core';
-import { iOSNativeHelper } from '@nativescript/core/utils';
 import Theme from '@nativescript-community/css-theme';
 import { Application } from '@nativescript/core';
-import { prefs } from '~/services/preferences';
-import { globalObservable, updateThemeColors } from '~/variables';
+import { getString, setString } from '@nativescript/core/application-settings';
+import { iOSNativeHelper } from '@nativescript/core/utils';
 import { get_current_component } from 'svelte/internal';
+import { prefs } from '~/services/preferences';
+import { createGlobalEventListener, globalObservable, updateThemeColors } from '~/variables';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
-export function onThemeChanged(callback: (theme)=>void) {
-    const eventCallack = (event)=>callback(event.data);
-    globalObservable.on('theme', eventCallack);
-    const component  = get_current_component();
-    if (component) {
-        component.$$.on_destroy.push(()=>{
-            globalObservable.off('theme', eventCallack);
-        });
-    }
-}
+export const onThemeChanged = createGlobalEventListener('theme');
 
 Application.on(Application.systemAppearanceChangedEvent, (event) => {
+    // console.log('systemAppearanceChangedEvent', theme, event.newValue);
     if (theme === 'auto') {
         updateThemeColors(event.newValue);
-        globalObservable.notify({eventName:'theme', data:event.newValue});
+        globalObservable.notify({ eventName: 'theme', data: event.newValue });
     }
 });
 
@@ -97,6 +88,7 @@ export function start() {
 
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;
+        // console.log('key:theme', newTheme);
         if (global.isIOS && iOSNativeHelper.MajorVersion < 13) {
             newTheme = 'light';
         }
@@ -109,7 +101,7 @@ export function start() {
 
         applyTheme(newTheme);
         updateThemeColors(newTheme, newTheme !== 'auto');
-        globalObservable.notify({eventName:'theme', data:theme});
+        globalObservable.notify({ eventName: 'theme', data: theme });
     });
     if (global.isAndroid) {
         applyTheme(theme);

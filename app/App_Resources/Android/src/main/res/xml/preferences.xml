@@ -16,7 +16,7 @@
         app:summary="@string/climal_cell_api_key_optional_description"
         app:title="@string/cc_api_key"/>
         <ListPreference
-        app:defaultValue="dark"
+        app:defaultValue="auto"
         app:entries="@array/themes"
         app:entryValues="@array/themesValues"
         app:key="theme"

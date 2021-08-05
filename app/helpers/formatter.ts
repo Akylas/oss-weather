@@ -16,7 +16,7 @@ export enum UNITS {
     Distance = 'm',
     DistanceKm = 'km',
     Speed = 'km/h',
-    SpeedM = 'm/h',
+    SpeedM = 'm/h'
 }
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
@@ -110,7 +110,7 @@ export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, 
     }
 }
 
-export function formatValueToUnit(value: any, unit: UNITS, imperial?: boolean, options?: { prefix?: string; join?: string; unitScale?: number ; roundedTo05?: boolean}) {
+export function formatValueToUnit(value: any, unit: UNITS, imperial?: boolean, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
     options = options || {};
     if (unit === UNITS.Celcius) {
         options.join = options.join || '';
@@ -222,7 +222,7 @@ const moonIcons = [
     'wi-moon-waning-crescent-4',
     'wi-moon-waning-crescent-5',
     'wi-moon-waning-crescent-6',
-    'wi-moon-new',
+    'wi-moon-new'
 ];
 
 const windIcons = [
@@ -238,7 +238,7 @@ const windIcons = [
     'wi-wind-beaufort-9',
     'wi-wind-beaufort-10',
     'wi-wind-beaufort-11',
-    'wi-wind-beaufort-12',
+    'wi-wind-beaufort-12'
 ];
 
 const ccMoonIcons = {
@@ -251,11 +251,10 @@ const ccMoonIcons = {
     waning_gibbous: 'wi-moon-waxing-gibbous-4',
     third_quarter: 'wi-moon-third-quarter',
     waning_crescent: 'wi-moon-waning-crescent-4',
-    last_quarter: 'wi-moon-first-quarter',
+    last_quarter: 'wi-moon-first-quarter'
 };
 
 const new_moon = new Date(1970, 0, 7, 20, 35, 0).valueOf();
-
 
 const MINUTES_IN_DAY = 24 * 60;
 const SECONDS_IN_DAY = MINUTES_IN_DAY * 60;
@@ -266,22 +265,23 @@ function gregorianToJulian(year, month, day, hour, minute, second, utcOffset) {
         month += 12;
     }
 
-    let A = Math.floor(year / 100);
-    let B = 2 - A + Math.floor(A / 4);
-    let jDay = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5;
-    let jTime = ((hour * (60 * 60)) + (minute * 60) + second) / SECONDS_IN_DAY;
+    const A = Math.floor(year / 100);
+    const B = 2 - A + Math.floor(A / 4);
+    const jDay = Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day + B - 1524.5;
+    const jTime = (hour * (60 * 60) + minute * 60 + second) / SECONDS_IN_DAY;
 
     return jDay + jTime - utcOffset / 24;
 }
 function calculateMoon(year, month, day, hours, minutes, seconds, utcOffset = 0) {
-    let julianNewMoonReference = gregorianToJulian(2000, 1, 6, 18, 14, 0, 0); //Lunation Number 18:14 UTC, January 6, 2000
-    let julianCalculate = gregorianToJulian(year, month, day, hours, minutes, seconds, utcOffset);
+    const julianNewMoonReference = gregorianToJulian(2000, 1, 6, 18, 14, 0, 0); //Lunation Number 18:14 UTC, January 6, 2000
+    const julianCalculate = gregorianToJulian(year, month, day, hours, minutes, seconds, utcOffset);
 
-    let age = (julianCalculate - julianNewMoonReference) % SYNODIC_MONTH;
+    const age = (julianCalculate - julianNewMoonReference) % SYNODIC_MONTH;
     return Math.floor(age);
 }
 
-export function getMoonPhase(date: Date){ // Gets the current Julian date
+export function getMoonPhase(date: Date) {
+    // Gets the current Julian date
     // const lp = 2551443;
     // const now = new Date(date.getFullYear(),date.getMonth()-1,date.getDate(),20,35,0);
     // const phase = ((now.getTime() - new_moon)/1000) % lp;
@@ -316,14 +316,16 @@ export function windBeaufortIcon(windSpeed) {
         beaufortLevel = 6;
     } else if (windSpeed >= 29) {
         beaufortLevel = 5;
-    } else if (windSpeed >= 20) {
-        beaufortLevel = 4;
-    } else if (windSpeed >= 12) {
-        beaufortLevel = 3;
-    } else if (windSpeed >= 6) {
-        beaufortLevel = 2;
-    } else if (windSpeed >= 2) {
-        beaufortLevel = 1;
+        // } else if (windSpeed >= 20) {
+        // beaufortLevel = 4;
+        // } else if (windSpeed >= 12) {
+        //     beaufortLevel = 3;
+        // } else if (windSpeed >= 6) {
+        //     beaufortLevel = 2;
+        // } else if (windSpeed >= 2) {
+        //     beaufortLevel = 1;
+    } else {
+        return null;
     }
     return windIcons[beaufortLevel];
 }

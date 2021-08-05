@@ -40,11 +40,6 @@ Prepare the application.
 fastlane build_flavor
 ```
 
-### sentry_upload_sourcemaps
-```
-fastlane sentry_upload_sourcemaps
-```
-
 ### get_changelog
 ```
 fastlane get_changelog
@@ -54,11 +49,6 @@ fastlane get_changelog
 ----
 
 ## iOS
-### ios registerDevice
-```
-fastlane ios registerDevice
-```
-Register device
 ### ios sentry_upload
 ```
 fastlane ios sentry_upload
@@ -136,6 +126,6 @@ Ship to Android Playstore Alpha.
 
 ----
 
-This README.md is auto-generated and will be re-generated every time [fastlane](https://fastlane.tools) is run.
+This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
 More information about fastlane can be found on [fastlane.tools](https://fastlane.tools).
 The documentation of fastlane can be found on [docs.fastlane.tools](https://docs.fastlane.tools).

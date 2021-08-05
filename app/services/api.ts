@@ -357,18 +357,17 @@ export function prepareItems(weatherData, lastUpdate) {
             let currentDaily = weatherData.daily.data[index];
             const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
             const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-            // hourlyItems = currentWeather.hourly.slice(firstHourIndex);
             Object.assign(currentDaily, weatherData.currently);
             if (firstHourIndex > 1) {
                 currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
             } else if (firstMinuteIndex > 10) {
                 currentDaily = Object.assign({}, currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
             }
-            // console.log('currentDaily', firstHourIndex > 1, firstMinuteIndex > 10, weatherData.currently, currentDaily);
             const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
             let min = 10000;
             let max = -10000;
-            hours.forEach((h) => {
+            hours.forEach((h, i) => {
+                // h.temperature = (h.temperature -24) * 4 + 24;
                 if (h.temperature < min) {
                     min = h.temperature;
                 }
@@ -376,6 +375,7 @@ export function prepareItems(weatherData, lastUpdate) {
                     max = h.temperature;
                 }
             });
+            const delta = max - min;
             newItems.push(
                 Object.assign(currentDaily, {
                     showHourly: false,
@@ -384,6 +384,18 @@ export function prepareItems(weatherData, lastUpdate) {
                         h.index = i;
                         h.min = min;
                         h.max = max;
+                        h.tempDelta = (h.temperature - min) / delta;
+                        h.curveTempPoints = [
+                            hours[i - 3]?.temperature,
+                            hours[i - 2]?.temperature,
+                            hours[i - 1]?.temperature,
+                            h.temperature,
+                            hours[i + 1]?.temperature,
+                            hours[i + 2]?.temperature,
+                            hours[i + 3]?.temperature
+                        ]
+                            .filter((s) => s !== undefined)
+                            .map((s) => (s - min) / delta);
                         h.odd = i % 2 === 0;
                         return h;
                     }),
@@ -391,11 +403,6 @@ export function prepareItems(weatherData, lastUpdate) {
                     alerts: weatherData.alerts
                 })
             );
-
-            // newItems.push({
-            //     icon: dsWeather.daily.icon,
-            //     summary: dsWeather.daily.summary
-            // });
         } else {
             const items = d.hourly;
             const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();

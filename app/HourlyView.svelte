@@ -30,7 +30,7 @@
         bind:this={collectionView}
         itemIdGenerator={(_item, index) => index}
         orientation="horizontal"
-        colWidth="61"
+        colWidth="62"
         rowHeight="100%"
         height="100%"
         isBounceEnabled="false"

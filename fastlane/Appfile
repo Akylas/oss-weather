@@ -1,3 +1,6 @@
 app_identifier "com.akylas.weather"
 apple_id "martin.guillon@akylas.fr"
 team_id "3UUB5NM43K"
+ENV["FASTLANE_TEAM_ID"] = "1469488"
+ENV["FASTLANE_USER"] = "martin.guillon@akylas.fr"
+ENV["DELIVER_USER"] = "martin.guillon@akylas.fr"

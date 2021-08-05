@@ -9,6 +9,21 @@ const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
 const Fontmin = require('@akylas/fontmin');
+
+function getCLILib(env) {
+    if (!env.nativescriptLibPath) {
+        warnOnce(
+            'getCLILib',
+            `
+			Cannot find NativeScript CLI path. Make sure --env.nativescriptLibPath is passed
+		`
+        );
+        return false;
+    }
+
+    return require(env.nativescriptLibPath);
+}
+
 function fixedFromCharCode(codePt) {
     if (codePt > 0xffff) {
         codePt -= 0x10000;
@@ -38,6 +53,8 @@ module.exports = (env, params = {}) => {
             env
         );
     }
+    // getCLILib(env).projectDataService.getProjectData().setValue('ignoredDependencies',  JSON.stringify(['@nativescript-community/sentry']));
+    // console.log(Object.keys(getCLILib(env).projectDataService.getProjectData()))
     const nconfig = require('./nativescript.config');
     const {
         appPath = nconfig.appPath,
@@ -67,6 +84,7 @@ module.exports = (env, params = {}) => {
     env.appPath = nconfig.appPath;
     env.appResourcesPath = nconfig.appResourcesPath;
     const config = webpackConfig(env, params);
+    console.log('config', JSON.stringify(config.module.rules));
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
     const tsconfig = 'tsconfig.json';
@@ -343,14 +361,19 @@ module.exports = (env, params = {}) => {
     ];
 
     // config.plugins.unshift(new webpack.DefinePlugin(defines));
- 
+
+    config.plugins.unshift(
+        new webpack.ProvidePlugin({
+            svN: '~/svelteNamespace'
+        })
+    );
     config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
     config.plugins.push(new IgnoreNotFoundExportPlugin());
     Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')})$`)));
 
     // save as long as we dont use calc in css
-    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp:/reduce-css-calc$/}));
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));
     config.plugins.push(new webpack.IgnorePlugin(/punnycode/));
     // config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /sha.js$/ }));
 
@@ -379,9 +402,10 @@ module.exports = (env, params = {}) => {
                     release: appVersion,
                     urlPrefix: 'app:///',
                     rewrite: true,
+                    release: `${nconfig.id}@${appVersion}+${buildNumber}`,
                     dist: `${buildNumber}.${platform}`,
-                    ignore: ['tns-java-classes', 'hot-update'],
-                    include: [dist, join(dist, process.env.SOURCEMAP_REL_DIR)]
+                    ignoreFile: '.sentrycliignore',
+                    include: [join(dist, process.env.SOURCEMAP_REL_DIR)]
                 })
             );
         } else {
@@ -412,7 +436,7 @@ module.exports = (env, params = {}) => {
             terserOptions: {
                 ecma: 2017,
                 module: true,
-                output: {
+                format: {
                     comments: false,
                     semicolons: !isAnySourceMapEnabled
                 },
@@ -423,11 +447,11 @@ module.exports = (env, params = {}) => {
                     sequences: platform !== 'android',
                     passes: 2,
                     drop_console: production && adhoc !== true
-                },
-                keep_fnames: true
+                }
+                // keep_fnames: true
             }
         })
     ];
-    
+
     return config;
 };

@@ -6,7 +6,7 @@
   "api_key_required": "Clé API requise",
   "api_key_required_description": "pour obtenir les données météorologiques d'OpenWeatherMap, une clé API gratuite est requise. L'application en distribue une par défault, cependant pour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web.",
   "app": {
-    "name": "NS Météo"
+    "name": "OSS Météo"
   },
   "authorize": "autoriser",
   "bug_report_sent": "rapport de bug envoyé",

@@ -6,7 +6,7 @@
   "api_key_required": "Se requiere clave de API",
   "api_key_required_description": "para obtener datos meteorológicos de OpenWeatherMap, se requiere una clave API gratuita.\n\nLa aplicación distribuye uno por defecto, sin embargo, para permanecer bajo el plan gratuito, cada usuario debe crear su propia clave API.\n\n\nPuede hacerlo creando una cuenta en su sitio web.",
   "app": {
-    "name": "Tiempo en NS"
+    "name": "OSS Tiempo"
   },
   "authorize": "autorizar",
   "bug_report_sent": "informe de error enviado",

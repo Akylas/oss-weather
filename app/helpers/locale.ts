@@ -5,15 +5,15 @@ import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
+import { createGlobalEventListener, globalObservable } from '~/variables';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 
 export let lang;
 export const $lang = writable(null);
-const onLanguageChangedCallbacks = [];
-export function onLanguageChanged(callback) {
-    onLanguageChangedCallbacks.push(callback);
-}
+
+export const onLanguageChanged = createGlobalEventListener('language');
+
 $lang.subscribe((newLang: string) => {
     lang = newLang;
     if (!lang) {
@@ -32,7 +32,7 @@ $lang.subscribe((newLang: string) => {
     } catch (err) {
         console.log('failed to load lang json', lang, `~/i18n/${lang}.json`, err);
     }
-    onLanguageChangedCallbacks.forEach((c) => c(lang));
+    globalObservable.notify({ eventName: 'language', data: lang });
 });
 function setLang(newLang) {
     newLang = getActualLanguage(newLang);

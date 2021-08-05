@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
-import { cloudyColor, rainColor, snowColor, sunnyColor } from '~/variables';
+import { cloudyColor, createGlobalEventListener, globalObservable, rainColor, snowColor, sunnyColor } from '~/variables';
 import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 import { Alert, CityWeather, Coord, Rain, Snow, Weather } from './owm';
 import { Photon } from './photon';
@@ -19,6 +19,8 @@ let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
 
 export { Alert, CityWeather, Coord, Rain, Snow, Weather };
 type HTTPSOptions = https.HttpsRequestOptions;
+
+export const onNetworkChanged = createGlobalEventListener('network');
 
 export const NetworkConnectionStateEvent = 'connected';
 export interface NetworkConnectionStateEventData extends EventData {
@@ -186,9 +188,9 @@ export class HTTPError extends CustomError {
     }
 }
 
-interface NetworkService {
-    // on(eventNames: 'connected', callback: (data: NetworkConnectionStateEventData) => void, thisArg?: any);
-    // on(eventNames: 'connection', callback: (e: EventData & { connectionType: connectionType; connected: boolean }) => void, thisArg?: any);
+interface NetworkService extends Observable {
+    on(eventNames: 'connected', callback: (data: NetworkConnectionStateEventData) => void, thisArg?: any);
+    on(eventNames: 'connection', callback: (e: EventData & { connectionType: connectionType; connected: boolean }) => void, thisArg?: any);
 }
 
 class NetworkService extends Observable {
@@ -200,14 +202,15 @@ class NetworkService extends Observable {
     set connected(value: boolean) {
         if (this._connected !== value) {
             this._connected = value;
-            this.notify({
+            globalObservable.notify({ eventName: 'network', data: value });
+            this.notify<NetworkConnectionStateEventData>({
                 eventName: NetworkConnectionStateEvent,
-                object: this,
+                object: this as any,
                 data: {
                     connected: value,
                     connectionType: this._connectionType
                 }
-            } as NetworkConnectionStateEventData);
+            });
         }
     }
     get connectionType() {
@@ -217,7 +220,6 @@ class NetworkService extends Observable {
         if (this._connectionType !== value) {
             this._connectionType = value;
             this.connected = value !== connectionType.none;
-            // this.notify({ eventName: 'connection', object: this, connectionType: value, connected: this.connected });
         }
     }
     monitoring = false;
@@ -248,18 +250,8 @@ class NetworkService extends Observable {
 
 export const networkService = new NetworkService();
 
-async function handleRequestRetry(requestParams: HttpRequestOptions, retry = 0) {
-    throw new HTTPError({
-        statusCode: 401,
-        message: 'HTTP error',
-        requestParams
-    });
-}
-
 async function handleRequestResponse(response: https.HttpsResponse, requestParams: HttpRequestOptions, requestStartTime, retry) {
     const statusCode = response.statusCode;
-    // return Promise.resolve()
-    // .then(() => {
     let content;
     try {
         content = await response.content.toJSONAsync();
@@ -267,22 +259,13 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
     if (!content) {
         content = await response.content.toStringAsync();
     }
-    // console.log('handleRequestResponse', statusCode, content);
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    // const isJSON = !!jsonContent;
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
             jsonReturn = content;
         } else {
-            // jsonReturn = jsonContent;
-            // } else {
-            // try {
-            // jsonReturn = JSON.parse(content);
-            // } catch (err) {
-            // error result might html
             const match = /<title>(.*)\n*<\/title>/.exec(content);
-            // console.log('http error',statusCode, match, content.toString(), requestParams);
             return Promise.reject(
                 new HTTPError({
                     statusCode,
@@ -290,7 +273,6 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
                     requestParams
                 })
             );
-            // }
         }
         if (jsonReturn) {
             if (Array.isArray(jsonReturn)) {
@@ -307,34 +289,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
             });
         }
     }
-    // if (isJSON) {
-    // if (isJSON) {
-    // console.log('handleRequestResponse response', JSON.stringify(content));
     return content;
-    // }
-    // try {
-    //     // we should never go there anymore
-    //     return JSON.parse(content);
-    // } catch (e) {
-    //     // console.log('failed to parse result to JSON', e);
-    //     return content;
-    // }
-    // }
-    // try {
-    //     return response.content.toJSON();
-    // } catch (e) {
-    //     // console.log('failed to parse result to JSON', e);
-    //     return response.content;
-    // }
-    // })
-    // .catch(err => {
-    //     const delta = Date.now() - requestStartTime;
-    //     if (delta >= 0 && delta < 500) {
-    //         return timeout(delta).then(() => Promise.reject(err));
-    //     } else {
-    //         return Promise.reject(err);
-    //     }
-    // });
 }
 function getRequestHeaders(requestParams?: HttpRequestOptions) {
     const headers = requestParams?.headers ?? {};
@@ -356,17 +311,14 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     requestParams.useLegacy = true;
 
     const requestStartTime = Date.now();
-    // console.log('request', requestParams);
     return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry));
 }
 
 export interface OWMParams extends Partial<Coord> {
-    // pos?: IMapPos;
     id?: number; // cityId
     q?: string; // search query
 }
 export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
-    // console.log('fetchOWM', apiName, queryParams);
     return request({
         url: `https://api.openweathermap.org/data/2.5/${apiName}`,
         method: 'GET',
@@ -380,51 +332,12 @@ export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
 }
 
 export async function getCityName(pos: Coord) {
-    // console.log('getCityName', pos);
     const result: CityWeather = await fetchOWM('weather', {
         lat: pos.lat,
         lon: pos.lon
     });
-    // console.log('fetchOWM', 'done', result);
-
     return result;
 }
-// export async function findCitiesByName(q: string) {
-//     console.log('findCitiesByName', q);
-//     const result: {
-//         list: CityWeather[];
-//     } = await fetchOWM('find', {
-//         q
-//     });
-//     console.log('findCitiesByName', 'done', result);
-
-//     return result.list;
-// }
-
-// export interface WeatherData {
-//     date: dayjs.Dayjs;
-//     sunrise: dayjs.Dayjs;
-//     sunset: dayjs.Dayjs;
-//     temp: string;
-//     tempC: number;
-//     feels_like: string;
-//     feels_likeC: number;
-//     pressure: string;
-//     pressureHpa: number;
-//     humidity: string;
-//     humidityPerc: number;
-//     desc: string;
-//     id: number;
-//     icon: string;
-//     windSpeed: string;
-//     windSpeedKMH: number;
-//     windDeg: number;
-//     fallPHour: number;
-//     fallDesc: string;
-//     frontAlpha: number;
-//     tempColor: string;
-//     // nightTime
-// }
 export function prepareItems(weatherData, lastUpdate) {
     const newItems = [];
     // const endOfHour = dayjs()

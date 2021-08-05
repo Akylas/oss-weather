@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Color } from '@nativescript/core';
 
-    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
     import { borderColor, imperial, nightColor, rainColor, snowColor, textLightColor, wiFontFamily } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
@@ -24,29 +24,37 @@
     <canvaslabel paddingRight="5">
         <rectangle horizontalAlignment="right" fillColor={item.color} width="5" height="100%" translateX="5" />
         <cgroup fontSize="22" verticalAlignment="top" paddingLeft="10" paddingTop="5">
-            <cspan text={convertTime(item.time, 'ddd ')}  textTransform="capitalize"/>
+            <cspan text={convertTime(item.time, 'ddd ')} textTransform="capitalize" />
             <cspan fontSize="15" color={$textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
         </cgroup>
         <!-- <cspan id="testSpan" color={$textLightColor} fontSize="22" verticalAlignment="bottom" paddingLeft="10" paddingBottom="10" fontFamily={wiFontFamily} text={item.windSpeed > 6 ? item.windBeaufortIcon : null} /> -->
 
         {#if item.windSpeed > 6}
-            <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-200" paddingTop="20">
+            <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-200" paddingTop="10">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windBeaufortIcon} />
                 <cspan text={'\n '} />
             </cgroup>
         {/if}
-        <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-100" paddingTop="20">
-            <cspan fontSize="20" fontFamily={wiFontFamily} text={item.windIcon} />
-            <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)} />
+        <cgroup fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="-100" paddingTop="10">
+            <cspan fontSize="26" lineHeight="28" fontFamily={wiFontFamily} text={item.windIcon} />
+            <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
+            <cspan fontSize="9" text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
         </cgroup>
+
         {#if (item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1}
-            <cgroup {color} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="20">
+            <cgroup {color} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop="10">
                 <cspan fontSize="20" fontFamily={wiFontFamily} text={precipIcon} />
                 <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
                 <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
+        {:else if item.cloudCover > 0}
+            <cgroup paddingTop="10" fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" color={item.cloudColor}>
+                <cspan fontSize="20" fontFamily={wiFontFamily} text="wi-cloud" />
+                <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
+                <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
+            </cgroup>
         {/if}
-        <cgroup color={nightColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="100" paddingTop="20">
+        <cgroup color={nightColor} fontSize="12" verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft="100" paddingTop="10">
             <cspan fontSize="20" fontFamily={wiFontFamily} text={item.moonIcon} />
             <cspan text={'\n' + l('moon')} />
         </cgroup>

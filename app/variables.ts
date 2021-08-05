@@ -1,17 +1,28 @@
-import { Application, Observable } from '@nativescript/core';
+import { Application, Color, Observable } from '@nativescript/core';
 import { getBoolean } from '@nativescript/core/application-settings';
 import { Screen } from '@nativescript/core/platform';
 import { ad } from '@nativescript/core/utils/utils';
+import { get_current_component } from 'svelte/internal';
 import { writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import CSSLoader from '~/variables.module.scss';
-import { get_current_component } from 'svelte/internal';
-import { Color } from '@nativescript/core';
-
 
 const locals = CSSLoader.locals;
 
 export const globalObservable = new Observable();
+
+export function createGlobalEventListener(eventName: string) {
+    return function (callback) {
+        const eventCallack = (event) => callback(event.data);
+        globalObservable.on(eventName, eventCallack);
+        const component = get_current_component();
+        if (component) {
+            component.$$.on_destroy.push(() => {
+                globalObservable.off(eventName, eventCallack);
+            });
+        }
+    };
+}
 
 // console.log('loading variables', locals);
 
@@ -42,7 +53,7 @@ if (global.isAndroid) {
     navigationBarHeight = 0;
 }
 
-export const sunnyColor = new Color('#FFC82F');
+export const sunnyColor = new Color('#FFC930');
 export const nightColor = new Color('#845987');
 export const scatteredCloudyColor = new Color('#cccccc');
 export const cloudyColor = new Color('#929292');
@@ -58,25 +69,22 @@ export const iconColor = writable('');
 
 export const imperial = writable(getBoolean('imperial', false));
 
-
-export function onImperialChanged(callback: (imperial)=>void) {
-    const eventCallack = (event)=>callback(event.data);
+export function onImperialChanged(callback: (imperial) => void) {
+    const eventCallack = (event) => callback(event.data);
     globalObservable.on('imperial', eventCallack);
-    const component  = get_current_component();
+    const component = get_current_component();
     if (component) {
-        component.$$.on_destroy.push(()=>{
+        component.$$.on_destroy.push(() => {
             globalObservable.off('imperial', eventCallack);
         });
     }
 }
 
-
 prefs.on('key:imperial', () => {
     const newImperial = getBoolean('imperial');
     imperial.set(newImperial);
-    globalObservable.notify({eventName:'imperial', data:newImperial});
+    globalObservable.notify({ eventName: 'imperial', data: newImperial });
 });
-
 
 export function updateThemeColors(theme: string, force = false) {
     // console.log('updateThemeColors', theme, force);

@@ -10,7 +10,7 @@
 import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
     import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import HourlyView from './HourlyView.svelte';
@@ -172,6 +172,7 @@ import { Color } from '@nativescript/core';
                     precipChartSet.setDrawFilled(true);
                     precipChartSet.setFillAlpha(150);
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
+                    // precipChartSet.setCubicIntensity(0.4);
                 } else {
                     precipChartSet.setValues(data);
                     needsUpdate = true;
@@ -241,8 +242,9 @@ import { Color } from '@nativescript/core';
         </cgroup>
 
         <cgroup paddingLeft="0" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
-            <cspan fontSize="24" fontFamily={wiFontFamily} text={item.windIcon} />
-            <cspan text={'\n' + formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)} />
+            <cspan fontSize="28" lineHeight="35" fontFamily={wiFontFamily} text={item.windIcon} />
+            <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
+            <cspan fontSize="9" text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
         </cgroup>
         <cgroup paddingLeft="60" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={nightColor}>
             <cspan fontSize="24" fontFamily={wiFontFamily} text={item.moonIcon} />
@@ -251,7 +253,7 @@ import { Color } from '@nativescript/core';
         {#if item.cloudCover > 0}
             <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" textAlignment="center" width="60" color={item.cloudColor}>
                 <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-cloud" />
-                <cspan text={'\n' + Math.round(item.cloudCover * 100) + '%'} />
+                <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
                 <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
         {/if}

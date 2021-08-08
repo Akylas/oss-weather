@@ -33,7 +33,13 @@
     let gps: GPS;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
-    let weatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
+    let weatherLocation: {
+        coord: {
+            lat: number;
+            lon: number;
+        };
+        name?: string;
+    } = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData = JSON.parse(getString('lastWeatherData', 'null'));
 
     let topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
@@ -79,11 +85,11 @@
                         icon: 'mdi-information-outline',
                         id: 'about',
                         text: l('about')
-                    // },
-                    // {
-                    //     icon: 'mdi-bug',
-                    //     id: 'send_bug_report',
-                    //     text: l('send_bug_report')
+                        // },
+                        // {
+                        //     icon: 'mdi-bug',
+                        //     id: 'send_bug_report',
+                        //     text: l('send_bug_report')
                     }
                 ]
             }

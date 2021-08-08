@@ -510,7 +510,7 @@ export async function getOWMWeather(lat: number, lon: number) {
     const r = {
         currently: {
             dt: result.current.dt * 1000,
-            temperature: result.current.temp,
+            temperature: Math.round(result.current.temp),
             pressure: result.current.pressure,
             humidity: result.current.humidity,
             cloudCover: result.current.clouds,
@@ -535,9 +535,9 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.description = data.weather[0]?.description;
                 d.windSpeed = data.wind_speed * 3.6;
                 d.windGust = data.wind_gust * 3.6;
-                d.temperatureMin = data.temp.min;
-                d.temperatureMax = data.temp.max;
-                d.temperatureNight = data.temp.night;
+                d.temperatureMin = Math.round(data.temp.min);
+                d.temperatureMax = Math.round(data.temp.max);
+                d.temperatureNight = Math.round(data.temp.night);
 
                 d.precipAccumulation = data.rain || 0;
                 d.precipProbability = data.pop;
@@ -579,7 +579,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         d.icon = data.weather[0]?.icon;
         d.description = data.weather[0]?.description;
         d.windSpeed = data.wind_speed * 3.6; // max value
-        d.temperature = data.temp;
+        d.temperature = Math.round(data.temp);
 
         d.windBearing = data.wind_deg;
         d.precipIntensity = d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;

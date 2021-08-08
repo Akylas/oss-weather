@@ -113,13 +113,12 @@ export function start() {
             });
         }
     } else {
+        updateThemeColors(theme, theme !== 'auto');
         if (Application.ios && Application.ios.window) {
             applyTheme(theme);
-            updateThemeColors(theme, theme !== 'auto');
         } else {
             Application.on(Application.displayedEvent, () => {
                 applyTheme(theme);
-                updateThemeColors(theme, theme !== 'auto');
             });
         }
     }

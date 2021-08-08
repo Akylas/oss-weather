@@ -3,10 +3,9 @@
 /// <reference path="./node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="./node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
 
-
 declare const SUPPORTED_LOCALES: string[];
 declare const TNS_ENV: string;
-declare const LOG_LEVEL: string;
+declare const DEV_LOG: boolean;
 declare const TEST_LOGS: boolean;
 declare const NO_CONSOLE: boolean;
 declare const PRODUCTION: boolean;
@@ -51,8 +50,8 @@ declare namespace com {
         }
     }
 }
-declare module "@nativescript/core/color" {
+declare module '@nativescript/core/color' {
     namespace Color {
-	    function mix(color1: Color, color2: Color, amount: number): Color;
+        function mix(color1: Color, color2: Color, amount: number): Color;
     }
 }

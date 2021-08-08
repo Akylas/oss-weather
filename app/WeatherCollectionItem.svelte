@@ -45,7 +45,7 @@
         var h0 = 259;
         var h1 = 12;
         var h = h0 * (1 - a) + h1 * a;
-        return new Color(255, h, 75, 90, 'hsv').argb;
+        return new Color(255, h, 75, 90, 'hsv');
     }
 
     let lastGradient: { min; max; gradient: LinearGradient };
@@ -173,11 +173,11 @@
             const heightProb = 1 - item.cloudCeiling / 6000;
             const top = 0.3 * (h - 30) * heightProb + 13;
             paint.setColor(item.cloudColor);
-            paint.setAlpha(item.cloudCover/100 * heightProb * 150);
+            paint.setAlpha((item.cloudCover / 100) * heightProb * 150);
             canvas.drawRect(0, 0, w, top, paint);
             textPaint.setColor(color);
             textPaint.setTextSize(10);
-            textPaint.setAlpha(item.cloudCover/100 * heightProb * 255);
+            textPaint.setAlpha((item.cloudCover / 100) * heightProb * 255);
             canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial), w2, top + 20, textPaint);
         }
         // paint.setAlpha(255);

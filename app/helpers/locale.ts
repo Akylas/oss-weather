@@ -37,7 +37,7 @@ $lang.subscribe((newLang: string) => {
 function setLang(newLang) {
     newLang = getActualLanguage(newLang);
     if (supportedLanguages.indexOf(newLang) === -1) {
-        newLang = 'en-US';
+        newLang = 'en';
     }
     $lang.set(newLang);
 }
@@ -46,7 +46,7 @@ const deviceLanguage = getString('language', 'auto');
 function getActualLanguage(language) {
     switch (language) {
         case 'en':
-            return 'en-US';
+            return 'en';
         case 'cs':
             return 'cz';
         case 'jp':

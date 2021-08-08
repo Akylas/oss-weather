@@ -16,7 +16,6 @@ import {
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { showBottomSheet } from '~/bottomsheet';
-import { getFromLocation } from '@nativescript-community/geocoding';
 import Theme from '@nativescript-community/css-theme';
 
 const CALLBACKS = '_callbacks';
@@ -307,24 +306,14 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const uri = intent.getData();
             const lat = parseFloat(uri.getQueryParameter('lat'));
             const lon = parseFloat(uri.getQueryParameter('lon'));
-            let name = uri.getQueryParameter('name');
             if (isNaN(lat) || isNaN(lon)) {
                 android.widget.Toast.makeText(Application.android.context, 'wrong_parameters', android.widget.Toast.LENGTH_LONG);
                 activity.finish();
                 return;
             }
-            if (!name || name.length === 0 || name === 'undefined') {
-                name = lat.toFixed(2) + ',' + lon.toFixed(2);
-            }
-            try {
-                const results = await getFromLocation(lat, lon, 10);
-                if (results?.length > 0) {
-                    name = results[0].name;
-                }
-            } catch (err) {
-                console.log('geocoding error', err);
-            }
+            const name = uri.getQueryParameter('name');
             const BottomSheetWeatherPage = (await import('~/BottomSheetWeatherPage.svelte')).default;
+            console.log('showBottomSheet', name, typeof name);
             await showBottomSheet({
                 parent: rootView,
                 view: BottomSheetWeatherPage,
@@ -332,9 +321,9 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 dismissOnDraggingDownSheet: true,
                 props: {
                     weatherLocation: {
-                        coord: { lat, lon },
-                        name
-                    }
+                        coord: { lat, lon }
+                    },
+                    name: name && name !== 'undefined' ? name : undefined
                 }
             });
         } catch (err) {

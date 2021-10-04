@@ -51,49 +51,50 @@
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
     let page: NativeViewElementNode<Page>;
-    function showOptions() {
-        showBottomSheet({
-            parent: page,
-            view: ActionSheet,
-            props: {
-                options: [
-                    {
-                        icon: 'mdi-refresh',
-                        id: 'refresh',
-                        text: l('refresh')
-                        // }, {
-                        //     icon: 'mdi-brightness-6',
-                        //     id: 'dark_mode',
-                        //     text: l('dark_mode')
-                    },
-                    // {
-                    //     icon: 'mdi-map',
-                    //     id: 'select_on_map',
-                    //     text: l('select_on_map')
-                    // },
-                    {
-                        icon: 'mdi-cogs',
-                        id: 'preferences',
-                        text: l('preferences')
-                    },
-                    {
-                        icon: 'mdi-crosshairs-gps',
-                        id: 'gps_location',
-                        text: l('gps_location')
-                    },
-                    {
-                        icon: 'mdi-information-outline',
-                        id: 'about',
-                        text: l('about')
-                        // },
+    async function showOptions() {
+        try {
+            const result: { icon: string; id: string; text: string } = await showBottomSheet({
+                parent: page,
+                view: ActionSheet,
+                props: {
+                    options: [
+                        {
+                            icon: 'mdi-refresh',
+                            id: 'refresh',
+                            text: l('refresh')
+                            // }, {
+                            //     icon: 'mdi-brightness-6',
+                            //     id: 'dark_mode',
+                            //     text: l('dark_mode')
+                        },
                         // {
-                        //     icon: 'mdi-bug',
-                        //     id: 'send_bug_report',
-                        //     text: l('send_bug_report')
-                    }
-                ]
-            }
-        }).then((result: { icon: string; id: string; text: string }) => {
+                        //     icon: 'mdi-map',
+                        //     id: 'select_on_map',
+                        //     text: l('select_on_map')
+                        // },
+                        {
+                            icon: 'mdi-cogs',
+                            id: 'preferences',
+                            text: l('preferences')
+                        },
+                        {
+                            icon: 'mdi-crosshairs-gps',
+                            id: 'gps_location',
+                            text: l('gps_location')
+                        },
+                        {
+                            icon: 'mdi-information-outline',
+                            id: 'about',
+                            text: l('about')
+                            // },
+                            // {
+                            //     icon: 'mdi-bug',
+                            //     id: 'send_bug_report',
+                            //     text: l('send_bug_report')
+                        }
+                    ]
+                }
+            });
             if (result) {
                 switch (result.id) {
                     case 'preferences':
@@ -118,7 +119,9 @@
                         break;
                 }
             }
-        });
+        } catch (error) {
+            showError(error);
+        }
     }
 
     async function refreshWeather() {
@@ -181,7 +184,11 @@
         }
     }
     async function openWeatherMap() {
-        navigate({ page: WeatherMapPage, transition: { name: 'fade', duration: 200 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+        try {
+            await navigate({ page: WeatherMapPage, transition: { name: 'fade', duration: 200 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+        } catch (error) {
+            showError(error);
+        }
     }
     // async function searchOnMap() {
     //     try {

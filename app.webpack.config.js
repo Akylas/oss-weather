@@ -174,7 +174,7 @@ module.exports = (env, params = {}) => {
     const forecastSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'css/forecastfont.scss')).toString());
     const forecastIcons = JSON.parse(`{${forecastSymbols.variables[forecastSymbols.variables.length - 1].value.replace(/'forecastfont-(\w+)' (F|f|0)(.*?)([,\n]|$)/g, '"$1": "$2$3"$4')}}`);
 
-    const weatherIconsCss = resolve(projectRoot, 'css/weather-icons/weather-icons-variables.scss');
+    const weatherIconsCss = resolve(projectRoot, 'fonts/weather-icons/weather-icons-variables.scss');
     const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function (acc, value) {
         return acc.concat(symbolsParser.parseSymbols(readFileSync(resolve(dirname(weatherIconsCss), value.filepath)).toString()).variables);
     }, []);
@@ -242,6 +242,7 @@ module.exports = (env, params = {}) => {
     );
 
     const usedMDIICons = [];
+    const usedWIICons = [];
     config.module.rules.push({
         // rules to replace mdi icons and not use nativescript-font-icon
         test: /\.(ts|js|scss|css|svelte)$/,
@@ -283,7 +284,11 @@ module.exports = (env, params = {}) => {
                     search: 'wi-([a-z0-9-]+)',
                     replace: (match, p1, offset, string) => {
                         if (weatherIcons[p1]) {
-                            return String.fromCharCode(parseInt(weatherIcons[p1], 16));
+                            const unicodeHex = weatherIcons[p1];
+                            const numericValue = parseInt(unicodeHex, 16);
+                            const character = fixedFromCharCode(numericValue);
+                            usedWIICons.push(numericValue);
+                            return character;
                         }
                         return match;
                     },
@@ -347,6 +352,27 @@ module.exports = (env, params = {}) => {
                         new Fontmin()
                             .src(content)
                             .use(Fontmin.glyph({ subset: usedMDIICons }))
+                            .run(function (err, files) {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve(files[0].contents);
+                                }
+                            });
+                    });
+                }
+            }
+        },
+        {
+            from: 'fonts/weather-icons/weathericons-regular-webfont.ttf',
+            to: 'fonts',
+            globOptions,
+            transform: {
+                transformer(content, path) {
+                    return new Promise((resolve, reject) => {
+                        new Fontmin()
+                            .src(content)
+                            .use(Fontmin.glyph({ subset: usedWIICons }))
                             .run(function (err, files) {
                                 if (err) {
                                     reject(err);

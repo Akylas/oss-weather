@@ -1,4 +1,4 @@
-import { getBuildNumber, getVersionName } from '@nativescript-community/extendedinfo';
+import { getAppId, getBuildNumber, getVersionName } from '@nativescript-community/extendedinfo';
 import * as SentryType from '@nativescript-community/sentry';
 import { Device } from '@nativescript/core/platform';
 
@@ -8,14 +8,15 @@ export let isSentryEnabled = false;
 export async function startSentry() {
     try {
         if (PRODUCTION || gVars.sentry) {
-            const version = await getVersionName();
-            const versionCode = await getBuildNumber();
             Sentry = require('@nativescript-community/sentry');
+            const versionName = await getVersionName();
+            const buildNumber = await getBuildNumber();
+            const appId = await getAppId();
             Sentry.init({
                 dsn: SENTRY_DSN,
                 appPrefix: SENTRY_PREFIX,
-                release: `${version}`,
-                dist: `${versionCode}.${gVars.platform}`,
+                release: `${appId}@${versionName}+${buildNumber}`,
+                dist: `${buildNumber}.${global.isAndroid ? 'android' : 'ios'}`
             });
             Sentry.setTag('locale', Device.language);
             isSentryEnabled = true;

@@ -8,8 +8,8 @@
         "emitDecoratorMetadata": false,
         "experimentalDecorators": true,
         "sourceMap": true,
-        "pretty": true,
         "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "noEmitHelpers": true,
@@ -19,7 +19,7 @@
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
         "allowSyntheticDefaultImports": true,
-        "lib": ["es6", "dom", "es2015.iterable", "es2017.string", "es2018.promise"],
+        "lib": ["esnext", "es2017", "dom"],
         "baseUrl": ".",
         "types": ["node", "svelte"],  
         "paths": {

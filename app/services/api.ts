@@ -551,14 +551,20 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.sunriseTime = data.sunrise * 1000;
                 d.sunsetTime = data.sunset * 1000;
 
+                // if (data.rain) {
+                //     d.color = Color.mix(sunnyColor, getRainColor(data.rain), 1).hex;
+                // } else if (data.snow) {
+                //     d.color = Color.mix(sunnyColor, snowColor, 1).hex;
+                // } else {
+                //     d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
+                // }
                 if (data.rain) {
-                    d.color = Color.mix(sunnyColor, getRainColor(data.rain), 1).hex;
+                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), rainColor, d.precipIntensity * 10).hex;
                 } else if (data.snow) {
-                    d.color = Color.mix(sunnyColor, snowColor, 1).hex;
+                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), snowColor, d.precipIntensity * 10).hex;
                 } else {
                     d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
                 }
-
                 d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
                 d.uvIndexColor = colorForUV(data.uvi);
                 d.uvIndex = data.uvi;
@@ -593,6 +599,13 @@ export async function getOWMWeather(lat: number, lon: number) {
         const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
         d.precipColor = rainColor;
         d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
+        if (data.rain) {
+            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), rainColor, d.precipIntensity * 10).hex;
+        } else if (data.snow) {
+            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), snowColor, d.precipIntensity * 10).hex;
+        } else {
+            d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
+        }
         if (data.snow && data.snow['1h']) {
             d.precipAccumulation = data.snow['1h'] || 0;
             d.precipColor = snowColor;
@@ -609,17 +622,6 @@ function windIcon(degrees) {
     return cardinals[Math.round((degrees % 360) / 45)];
 }
 
-function getRainColor(precipIntensity: number) {
-    if (precipIntensity > 50) {
-        return '#0D47A2';
-    } else if (precipIntensity > 7.6) {
-        return '#1976D3';
-    } else if (precipIntensity > 2.5) {
-        return '#1E89E6';
-    } else {
-        return '#2197F4';
-    }
-}
 const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
 const supportedOSMValues = ['winter_sports'];
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {

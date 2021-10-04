@@ -41,10 +41,18 @@ registerNativeViewElement('WebView', () => require('@nativescript/core').WebView
 // registerNativeViewElement('mdtextfield', () => TextField, null, {}, { override: true });
 // registerNativeViewElement('mdspeeddial', () => SpeedDial);
 // registerNativeViewElement('mdspeeddialitem', () => SpeedDialItem);
-// registerNativeViewElement('formattedstring', () => require('@nativescript-community/text').LightFormattedString, null, {}, { override: true });
-registerNativeViewElement('FormattedString', () => require('@nativescript/core').FormattedString, 'formattedText', {
-    spans: NativeElementPropType.ObservableArray
-});
+registerNativeViewElement(
+    'formattedstring',
+    () => require('@nativescript-community/text').LightFormattedString,
+    'formattedText',
+    {
+        spans: NativeElementPropType.ObservableArray
+    },
+    { override: true }
+);
+// registerNativeViewElement('FormattedString', () => require('@nativescript/core').FormattedString, 'formattedText', {
+//     spans: NativeElementPropType.ObservableArray
+// });
 registerNativeViewElement('Span', () => require('@nativescript/core').Span, 'spans');
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);

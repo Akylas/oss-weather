@@ -43,15 +43,25 @@ declare module '*.scss';
 // declare module '*.svelte' {
 //     export default SvelteComponent;
 // }
-declare namespace com {
-    export namespace akylas {
-        export namespace weather {
-            export class NightModeApplication extends globalAndroid.app.Application {}
-        }
+namespace svelteNative.JSX {
+    interface ViewAttributes {
+        rippleColor?: Color | string;
+        verticalAlignment?: string;
     }
-}
-declare module '@nativescript/core/color' {
-    namespace Color {
-        function mix(color1: Color, color2: Color, amount: number): Color;
+    export interface ButtonAttributes {
+        variant?: string;
+        shape?: string;
+    }
+    export interface SliderAttributes {
+        stepSize?: number;
+    }
+    export interface LabelAttributes {
+        autoFontSize?: boolean;
+        verticalTextAlignment?: string;
+        maxLines?: number;
+        minFontSize?: number;
+        maxFontSize?: number;
+        lineBreak?: string;
+        _html?: string;
     }
 }

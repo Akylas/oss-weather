@@ -10,19 +10,19 @@ const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
 const Fontmin = require('@akylas/fontmin');
 
-function getCLILib(env) {
-    if (!env.nativescriptLibPath) {
-        warnOnce(
-            'getCLILib',
-            `
-			Cannot find NativeScript CLI path. Make sure --env.nativescriptLibPath is passed
-		`
-        );
-        return false;
-    }
+// function getCLILib(env) {
+//     if (!env.nativescriptLibPath) {
+//         warnOnce(
+//             'getCLILib',
+//             `
+// 			Cannot find NativeScript CLI path. Make sure --env.nativescriptLibPath is passed
+// 		`
+//         );
+//         return false;
+//     }
 
-    return require(env.nativescriptLibPath);
-}
+//     return require(env.nativescriptLibPath);
+// }
 
 function fixedFromCharCode(codePt) {
     if (codePt > 0xffff) {
@@ -84,7 +84,6 @@ module.exports = (env, params = {}) => {
     env.appPath = nconfig.appPath;
     env.appResourcesPath = nconfig.appResourcesPath;
     const config = webpackConfig(env, params);
-    console.log('config', JSON.stringify(config.module.rules));
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
     const tsconfig = 'tsconfig.json';
@@ -134,7 +133,6 @@ module.exports = (env, params = {}) => {
     console.log('locales', supportedLocales);
     const defines = {
         PRODUCTION: !!production,
-        window: 'undefined',
         process: 'global.process',
         'global.TNS_WEBPACK': 'true',
         'gVars.platform': `"${platform}"`,
@@ -144,6 +142,7 @@ module.exports = (env, params = {}) => {
         'global.isIOS': isIOS,
         'global.autoRegisterUIModules': false,
         'global.isAndroid': isAndroid,
+        'global.autoLoadPolyfills': false,
         'gVars.internalApp': false,
         TNS_ENV: JSON.stringify(mode),
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
@@ -390,11 +389,19 @@ module.exports = (env, params = {}) => {
         }
     ];
 
-    // config.plugins.unshift(new webpack.DefinePlugin(defines));
-
     config.plugins.unshift(
         new webpack.ProvidePlugin({
             svN: '~/svelteNamespace'
+        })
+    );
+    config.plugins.unshift(
+        new webpack.ProvidePlugin({
+            setTimeout: [require.resolve(coreModulesPackageName + '/timer/index.' + platform), 'setTimeout'],
+            clearTimeout: [require.resolve(coreModulesPackageName + '/timer/index.' + platform), 'clearTimeout'],
+            setInterval: [require.resolve(coreModulesPackageName + '/timer/index.' + platform), 'setInterval'],
+            clearInterval: [require.resolve(coreModulesPackageName + '/timer/index.' + platform), 'clearInterval'],
+            requestAnimationFrame: [require.resolve(coreModulesPackageName + '/animation-frame'), 'requestAnimationFrame'],
+            cancelAnimationFrame: [require.resolve(coreModulesPackageName + '/animation-frame'), 'cancelAnimationFrame']
         })
     );
     config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
@@ -404,8 +411,9 @@ module.exports = (env, params = {}) => {
 
     // save as long as we dont use calc in css
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));
-    config.plugins.push(new webpack.IgnorePlugin(/punnycode/));
-    // config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /sha.js$/ }));
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /punnycode$/ }));
+    // config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /accessibility$/ }));
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^url$/ }));
 
     if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
@@ -419,11 +427,11 @@ module.exports = (env, params = {}) => {
             let appVersion;
             let buildNumber;
             if (platform === 'android') {
-                appVersion = readFileSync('app/App_Resources/Android/app.gradle', 'utf8').match(/versionName "((?:[0-9]+\.?)+)"/)[1];
-                buildNumber = readFileSync('app/App_Resources/Android/app.gradle', 'utf8').match(/versionCode ([0-9]+)/)[1];
+                appVersion = readFileSync('App_Resources/Android/app.gradle', 'utf8').match(/versionName "((?:[0-9]+\.?)+)"/)[1];
+                buildNumber = readFileSync('App_Resources/Android/app.gradle', 'utf8').match(/versionCode ([0-9]+)/)[1];
             } else if (platform === 'ios') {
-                appVersion = readFileSync('app/App_Resources/iOS/Info.plist', 'utf8').match(/<key>CFBundleShortVersionString<\/key>[\s\n]*<string>(.*?)<\/string>/)[1];
-                buildNumber = readFileSync('app/App_Resources/iOS/Info.plist', 'utf8').match(/<key>CFBundleVersion<\/key>[\s\n]*<string>([0-9]*)<\/string>/)[1];
+                appVersion = readFileSync('App_Resources/iOS/Info.plist', 'utf8').match(/<key>CFBundleShortVersionString<\/key>[\s\n]*<string>(.*?)<\/string>/)[1];
+                buildNumber = readFileSync('App_Resources/iOS/Info.plist', 'utf8').match(/<key>CFBundleVersion<\/key>[\s\n]*<string>([0-9]*)<\/string>/)[1];
             }
             console.log('appVersion', appVersion, buildNumber);
 
@@ -435,7 +443,7 @@ module.exports = (env, params = {}) => {
                     release: `${nconfig.id}@${appVersion}+${buildNumber}`,
                     dist: `${buildNumber}.${platform}`,
                     ignoreFile: '.sentrycliignore',
-                    include: [join(dist, process.env.SOURCEMAP_REL_DIR)]
+                    include: [dist, join(dist, process.env.SOURCEMAP_REL_DIR)]
                 })
             );
         } else {
@@ -445,28 +453,26 @@ module.exports = (env, params = {}) => {
         config.devtool = false;
     }
 
-    if (!!production) {
-        config.plugins.push(
-            new ForkTsCheckerWebpackPlugin({
-                async: false,
-                typescript: {
-                    configFile: resolve(tsconfig)
-                }
-            })
-        );
-    }
+    // if (!!production) {
+    //     config.plugins.push(
+    //         new ForkTsCheckerWebpackPlugin({
+    //             async: false,
+    //             typescript: {
+    //                 configFile: resolve(tsconfig)
+    //             }
+    //         })
+    //     );
+    // }
     config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
     config.optimization.minimize = uglify !== undefined ? uglify : production;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
     config.optimization.minimizer = [
         new TerserPlugin({
             parallel: true,
-            // cache: true,
-            // sourceMap: isAnySourceMapEnabled,
             terserOptions: {
                 ecma: 2017,
                 module: true,
-                format: {
+                output: {
                     comments: false,
                     semicolons: !isAnySourceMapEnabled
                 },
@@ -475,10 +481,11 @@ module.exports = (env, params = {}) => {
                     // when these options are enabled
                     collapse_vars: platform !== 'android',
                     sequences: platform !== 'android',
-                    passes: 2,
-                    drop_console: production && adhoc !== true
-                }
-                // keep_fnames: true
+                    passes: 5,
+                    drop_console: production && noconsole
+                },
+                keep_classnames: false,
+                keep_fnames: false
             }
         })
     ];

@@ -37,7 +37,8 @@
 			android:label="@string/title_activity_kimera"
 			android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale"
 			android:theme="@style/LaunchScreenTheme"
-			android:launchMode="singleTask">
+			android:launchMode="singleTask"
+            android:exported="true">
             <meta-data android:name="SET_THEME_ON_LAUNCH" android:resource="@style/AppTheme" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,8 +46,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.tns.ErrorReportActivity"/>
-        <activity android:name="com.nativescript.preferences.NativescriptSettingsActivity" android:theme="@style/SettingsTheme"/>
-        <activity android:name=".FloatingActivity" android:theme="@style/FloatingActivityTheme" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode" android:windowSoftInputMode="stateHidden|adjustResize" android:launchMode="singleInstance" android:noHistory="true" android:taskAffinity="" android:excludeFromRecents="true" tools:ignore="ExportedActivity" >
+        <activity android:name="com.nativescript.preferences.NativescriptSettingsActivity" android:theme="@style/SettingsTheme" android:exported="false"/>
+        <activity android:name=".FloatingActivity" android:theme="@style/FloatingActivityTheme" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode" android:windowSoftInputMode="stateHidden|adjustResize" android:launchMode="singleInstance" android:noHistory="true" android:taskAffinity="" android:excludeFromRecents="true" tools:ignore="ExportedActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

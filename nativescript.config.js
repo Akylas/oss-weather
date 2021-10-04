@@ -1,6 +1,6 @@
 module.exports = {
     id: 'com.akylas.weather',
-    appResourcesPath: 'app/App_Resources',
+    appResourcesPath: 'App_Resources',
     webpackConfigPath: './app.webpack.config.js',
     appPath: 'app',
     // profiling: 'timeline',

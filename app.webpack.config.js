@@ -113,6 +113,10 @@ module.exports = (env, params = {}) => {
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
         'tns-core-modules': `${coreModulesPackageName}`,
+        '@nativescript/core/accessibility$': '~/acessibilityShim',
+        '../../../accessibility$': '~/acessibilityShim',
+        '../../accessibility$': '~/acessibilityShim',
+        [`${coreModulesPackageName}/accessibility$`]: '~/acessibilityShim',
         'svelte-native': '@akylas/svelte-native'
     });
 

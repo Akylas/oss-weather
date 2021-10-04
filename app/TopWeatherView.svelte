@@ -7,7 +7,7 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-import { Color } from '@nativescript/core';
+    import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
@@ -86,6 +86,7 @@ import { Color } from '@nativescript/core';
                 chartInitialized = true;
                 chart.setNoDataText(null);
                 chart.setAutoScaleMinMaxEnabled(true);
+                chart.setDoubleTapToZoomEnabled(true);
                 chart.getLegend().setEnabled(false);
                 const xAxis = chart.getXAxis();
                 xAxis.setEnabled(true);
@@ -94,16 +95,7 @@ import { Color } from '@nativescript/core';
                 xAxis.setDrawGridLines(false);
                 xAxis.setDrawMarkTicks(true);
                 xAxis.setValueFormatter({
-                    getAxisLabel: (f) => {
-                        // console.log('getAxisLabel', f);
-                        const val = lastChartData[Math.round(f)];
-                        if (val) {
-                            const result = Math.floor((val.time - now) / 600000) * 10;
-                            return result === 0 ? '' : result + 'm';
-                        }
-
-                        return '';
-                    }
+                    getAxisLabel: (value, axis) => Math.round(value / 10) * 10 + 'm'
                 });
                 xAxis.setLabelCount(7, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
@@ -149,6 +141,7 @@ import { Color } from '@nativescript/core';
             let min = 10000;
             let max = -10000;
             data.forEach((h) => {
+                h['index'] = Math.round((h.time - now) / 60000);
                 if (h.precipIntensity < min) {
                     min = h.precipIntensity;
                 }
@@ -164,17 +157,21 @@ import { Color } from '@nativescript/core';
                 const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
                     needsToSetData = true;
-                    precipChartSet = new LineDataSet(data, 'precipIntensity', undefined, 'precipIntensity');
+                    precipChartSet = new LineDataSet(
+                        data.filter((d, i) => i % 5 === 0),
+                        'precipIntensity',
+                        'index',
+                        'precipIntensity'
+                    );
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
-                    precipChartSet.setDrawIcons(false);
-                    precipChartSet.setDrawValues(false);
+                    // precipChartSet.setDrawCircles(true);
                     precipChartSet.setDrawFilled(true);
                     precipChartSet.setFillAlpha(150);
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
-                    // precipChartSet.setCubicIntensity(0.4);
+                    precipChartSet.setCubicIntensity(0.4);
                 } else {
-                    precipChartSet.setValues(data);
+                    precipChartSet.setValues( data.filter((d, i) => i % 5 === 0));
                     needsUpdate = true;
                 }
 
@@ -227,7 +224,7 @@ import { Color } from '@nativescript/core';
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
     <canvaslabel colSpan="2">
-        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')}  textTransform="capitalize"/>
+        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} textTransform="capitalize" />
 
         {#if item.temperature !== undefined}
             <cgroup id="test" paddingLeft="10" fontSize="12" verticalAlignment="top">

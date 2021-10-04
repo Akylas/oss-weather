@@ -3,12 +3,15 @@ const svelteNativePreprocessor = require('svelte-native-preprocessor');
 
 module.exports = {
     compilerOptions: {
-        namespace: 'foreign'
+        namespace: 'foreign',
     },
     preprocess: [
         sveltePreprocess({
-            defaults: { script: 'typescript', style: 'scss' },
-            sourceMap: false
+            typescript: {
+                compilerOptions: {
+                    target: 'es2017'
+                }
+            }
         }),
         svelteNativePreprocessor()
     ]

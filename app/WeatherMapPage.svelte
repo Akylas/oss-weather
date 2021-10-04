@@ -8,15 +8,13 @@
 
 <script lang="ts">
     export let focusPos: { lat: number; lon: number };
-    let page: NativeViewElementNode<Page>;
     let url = '~/assets/leaflet/index.html';
-    function onNavigatingTo(e) {}
     $: {
         url = `~/assets/leaflet/index.html?zoom=8&position=${focusPos.lat},${focusPos.lon}&owm_key=${getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY)}`;
     }
 </script>
 
-<page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
+<page actionBarHidden={true}>
     <gridLayout rows="auto,*">
         <CActionBar title={lc('weather_map')} />
         <webview row="1" ref="webview" src={url} />

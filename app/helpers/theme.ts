@@ -104,12 +104,13 @@ export function start() {
         globalObservable.notify({ eventName: 'theme', data: theme });
     });
     if (global.isAndroid) {
-        applyTheme(theme);
+        updateThemeColors(theme, theme !== 'auto');
         if (Application.android && Application.android.context) {
-            updateThemeColors(theme, theme !== 'auto');
+            applyTheme(theme);
         } else {
             Application.on(Application.launchEvent, () => {
                 updateThemeColors(theme, theme !== 'auto');
+                applyTheme(theme);
             });
         }
     } else {
@@ -118,6 +119,7 @@ export function start() {
             applyTheme(theme);
         } else {
             Application.on(Application.displayedEvent, () => {
+                updateThemeColors(theme, theme !== 'auto');
                 applyTheme(theme);
             });
         }

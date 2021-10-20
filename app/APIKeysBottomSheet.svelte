@@ -41,18 +41,18 @@
 <!-- <scrollview> -->
 <stacklayout class="bottomsheet" padding="10" iosIgnoreSafeArea={true}>
     <label text={l('api_key_required_description')} />
-    <gridlayout rows="auto" columns="auto,*, auto" marginTop="5">
-        <image width="100" src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10" />
-        <textfield text={owmApiKey} on:textChange={(e) => (owmApiKey = e.value)} col="1" hint={l('api_key')} placeholder={l('api_key')} placeholderColor="lightgray" />
-        <mdbutton variant="text" class="icon-btn" text="mdi-open-in-app" col="2" on:tap={openWeatherMap} />
+    <gridlayout rows="auto" columns="auto,*, auto" marginTop={5}>
+        <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10" />
+        <textfield text={owmApiKey} on:textChange={(e) => (owmApiKey = e.value)} col={1} hint={l('api_key')} placeholder={l('api_key')} placeholderColor="lightgray" />
+        <mdbutton variant="text" class="icon-btn" text="mdi-open-in-app" col={2} on:tap={openWeatherMap} />
     </gridlayout>
-    <label text={l('climal_cell_api_key_optional_description')} marginTop="10" />
-    <gridlayout rows="auto" columns="auto,*, auto" marginTop="5" marginBottom="10">
-        <image width="100" src="https://startupexchange.mit.edu/sites/default/files/2019-01/climacell_color.png" marginRight="10" />
-        <textfield text={ccApiKey} on:textChange={(e) => (ccApiKey = e.value)} col="1" hint={l('api_key')} placeholder={l('api_key')} placeholderColor="lightgray" />
-        <mdbutton variant="text" class="icon-btn" text="mdi-open-in-app" col="2" on:tap={openClimaCell} />
+    <label text={l('climal_cell_api_key_optional_description')} marginTop={10} />
+    <gridlayout rows="auto" columns="auto,*, auto" marginTop={5} marginBottom={10}>
+        <image width={100} src="https://startupexchange.mit.edu/sites/default/files/2019-01/climacell_color.png" marginRight="10" />
+        <textfield text={ccApiKey} on:textChange={(e) => (ccApiKey = e.value)} col={1} hint={l('api_key')} placeholder={l('api_key')} placeholderColor="lightgray" />
+        <mdbutton variant="text" class="icon-btn" text="mdi-open-in-app" col={2} on:tap={openClimaCell} />
     </gridlayout>
-    <stacklayout orientation="horizontal" horizontalAlignment="right" marginTop="15">
+    <stacklayout orientation="horizontal" horizontalAlignment="right" marginTop={15}>
         <mdbutton visibility={canClose ? 'visible' : 'collapsed'} variant="text" text={l('save')} on:tap={start} />
         <!-- <mdbutton variant="text" text={l('quit')} on:tap={quitApp} /> -->
     </stacklayout>

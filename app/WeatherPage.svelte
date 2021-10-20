@@ -399,23 +399,23 @@
             <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
         </CActionBar>
         {#if !networkConnected && !weatherData}
-            <label row="1" horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
+            <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
-            <pullrefresh bind:this={pullRefresh} row="1" on:refresh={refresh}>
+            <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
                 <WeatherComponent {items} />
             </pullrefresh>
         {:else}
-            <gridlayout id="teststack" row="1" rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
+            <gridlayout id="teststack" row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <label text={l('no_location_desc')} textAlignment="center" />
-                <mdbutton row="1" margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
+                <mdbutton row={1} margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
                     <formattedString>
-                        <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
+                        <span fontSize={20} verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
                         <span text={l('my_location').toUpperCase()} />
                     </formattedString>
                 </mdbutton>
-                <mdbutton row="2" margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>
+                <mdbutton row={2} margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>
                     <formattedString>
-                        <span fontSize="20" verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
+                        <span fontSize={20} verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
                         <span text={l('search_location').toUpperCase()} />
                     </formattedString>
                 </mdbutton>

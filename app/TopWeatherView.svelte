@@ -223,60 +223,60 @@
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan="2">
-        <cspan id="first" paddingRight="10" fontSize="20" textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} textTransform="capitalize" />
+    <canvaslabel colSpan={2}>
+        <cspan id="first" paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} textTransform="capitalize" />
 
         {#if item.temperature !== undefined}
-            <cgroup id="test" paddingLeft="10" fontSize="12" verticalAlignment="top">
-                <cspan fontSize="26" text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
+            <cgroup id="test" paddingLeft={10} fontSize={12} verticalAlignment="top">
+                <cspan fontSize={26} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
                 <!-- <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius, $imperial) : null} /> -->
             </cgroup>
         {/if}
-        <cgroup id="test" paddingLeft="80" paddingTop="13" fontSize="14" verticalAlignment="top">
+        <cgroup id="test" paddingLeft={80} paddingTop={13} fontSize={14} verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
         </cgroup>
 
-        <cgroup paddingLeft="0" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
-            <cspan fontSize="28" lineHeight="35" fontFamily={wiFontFamily} text={item.windIcon} />
+        <cgroup paddingLeft={0} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
+            <cspan fontSize={28} lineheight={32} fontFamily={wiFontFamily} text={item.windIcon} />
             <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
-            <cspan fontSize="9" text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
+            <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
         </cgroup>
-        <cgroup paddingLeft="60" paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={nightColor}>
-            <cspan fontSize="24" fontFamily={wiFontFamily} text={item.moonIcon} />
+        <cgroup paddingLeft={60} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
+            <cspan fontSize={24} fontFamily={wiFontFamily} text={item.moonIcon} />
             <cspan text={'\n' + l('moon')} />
         </cgroup>
         {#if item.cloudCover > 0}
-            <cgroup paddingLeft="120" paddingTop="40" fontSize="14" verticalAlignment="top" textAlignment="center" width="60" color={item.cloudColor}>
-                <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-cloud" />
+            <cgroup paddingLeft={120} paddingTop={40} fontSize={14} verticalAlignment="top" textAlignment="center" width={60} color={item.cloudColor}>
+                <cspan fontSize={24} fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
-                <cspan fontSize="9" text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
+                <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
         {/if}
         {#if item.uvIndex > 0}
-            <cgroup paddingLeft="180" paddingTop="44" fontSize="14" verticalAlignment="top" width="60" textAlignment="center" color={item.uvIndexColor}>
-                <cspan fontSize="30" fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
-                <cspan paddingTop="14" text={'\n' + Math.round(item.uvIndex)} />
+            <cgroup paddingLeft={180} paddingTop={44} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
+                <cspan fontSize={30} lineheight={28} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
+                <cspan paddingTop={14} text={'\n' + Math.round(item.uvIndex)} />
             </cgroup>
         {/if}
         {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}
-            <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 180 : 120} paddingTop="40" fontSize="14" verticalAlignment="top" width="60" textAlignment="center">
-                <cspan fontSize="24" fontFamily={wiFontFamily} text="wi-raindrop" />
+            <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 180 : 120} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
+                <cspan fontSize={24} fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={item.precipIntensity >= 0.1 ? '\n' + formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
-                <cspan fontSize="9" text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
+                <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
         {/if}
 
-        <cgroup paddingLeft="10" paddingBottom="10" fontSize="14" verticalAlignment="bottom">
+        <cgroup paddingLeft={10} paddingBottom={10} fontSize={14} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise" />
             <cspan text={convertTime(item.sunriseTime, 'HH:mm')} />
             <cspan color="#ff7200" fontFamily={wiFontFamily} text="wi-sunset" />
             <cspan text={convertTime(item.sunsetTime, 'HH:mm')} />
         </cgroup>
-        <cspan paddingRight="10" fontSize="14" textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom="10" />
+        <cspan paddingRight={10} fontSize={14} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
     </canvaslabel>
-    <linechart bind:this={lineChart} marginTop="110" verticalAlignment="bottom" height="90" marginBottom="40" />
-    <WeatherIcon col="1" horizontalAlignment="right" verticalAlignment="center" fontSize="140" icon={item.icon} />
-    <HourlyView row="1" colSpan="2" items={item.hourly} />
+    <linechart bind:this={lineChart} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} />
+    <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

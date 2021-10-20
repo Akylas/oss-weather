@@ -57,5 +57,5 @@
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibily={loading ? 'visible' : 'collapsed'} />
     </CActionBar>
-    <WeatherComponent row="1" {items} customComp />
+    <WeatherComponent row={1} {items} customComp />
 </gridlayout>

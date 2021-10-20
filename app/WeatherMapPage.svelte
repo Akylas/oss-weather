@@ -17,6 +17,6 @@
 <page actionBarHidden={true}>
     <gridLayout rows="auto,*">
         <CActionBar title={lc('weather_map')} />
-        <webview row="1" ref="webview" src={url} />
+        <webview row={1} ref="webview" src={url} />
     </gridLayout>
 </page>

@@ -40,7 +40,7 @@
     <page actionBarHidden={true}>
         <gridlayout rows="auto,*">
             <CActionBar canGoBack modalWindow title={lc('about')} />
-            <scrollView row="1">
+            <scrollView row={1}>
                 <stackLayout>
                     <SettingLabelIcon title={lc('version')} subtitle={appVersion} />
                     <SettingLabelIcon title={lc('source_code')} subtitle="obtenir le code source de l'application sur Github" icon="mdi-chevron-right" on:tap={() => onTap('github')} />

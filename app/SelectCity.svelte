@@ -73,18 +73,18 @@
     <page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
             <CActionBar title={lc('search_city')} modalWindow>
-                <activityIndicator busy={loading} verticalAlignment="center" visibily={loading ? 'visible' : 'collapsed'} />
+                <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
-            <textfield bind:this={textField} row="1" hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} color={$textColor} />
-            <collectionview row="2" rowHeight="80" items={searchResults}>
+            <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} color={$textColor} />
+            <collectionview row={2} rowHeight={80} items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">
-                        <gridLayout col="1" paddingLeft="10" verticalAlignment="center" rows="auto,auto,auto">
-                            <label fontSize="18" text={item.name} />
-                            <label row="1" color={$textLightColor} fontSize="14" text={item.sys.state || item.sys.country} />
-                            <label row="2" color={$textLightColor} fontSize="14" text={item.sys.state ? item.sys.country : ''} />
+                        <gridLayout col={1} paddingLeft={10} verticalAlignment="center" rows="auto,auto,auto">
+                            <label fontSize={18} text={item.name} />
+                            <label row={1} color={$textLightColor} fontSize={14} text={item.sys.state || item.sys.country} />
+                            <label row={2} color={$textLightColor} fontSize={14} text={item.sys.state ? item.sys.country : ''} />
                         </gridLayout>
-                        <!-- <label fontSize="10" verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
+                        <!-- <label fontSize={10} verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
                     </gridLayout>
                 </Template>
             </collectionview>

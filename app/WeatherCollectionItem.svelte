@@ -29,6 +29,7 @@
     pathPaint.setColor('blue');
     pathPaint.setStrokeWidth(5);
     pathPaint.setStyle(Style.STROKE);
+    const curvePath = new Path();
 
     const oddColor = new Color(0.05 * 255, 120, 120, 120);
 
@@ -85,7 +86,6 @@
     }
     textColor.subscribe(redraw);
 
-    const curvePath = new Path();
 
     function drawOnCanvas(event) {
         const endDay = dayjs().endOf('d').valueOf();

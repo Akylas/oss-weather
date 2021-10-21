@@ -6,12 +6,14 @@ module.exports = (env) => {
             .rule('svelte')
             .use('string-replace-loader')
             .loader('string-replace-loader')
+            .before('svelte-loader')
             .options({
                 search: 'createElementNS\\("https:\\/\\/svelte\\.dev\\/docs#svelte_options"',
                 replace: 'createElementNS(svN',
                 flags: 'gm'
             })
             .end();
+
         return config;
     });
     return webpack.resolveConfig();

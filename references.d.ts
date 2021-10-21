@@ -52,6 +52,9 @@ namespace svelteNative.JSX {
         variant?: string;
         shape?: string;
     }
+    export interface SpanAttributes {
+        verticalTextAlignment?: string;
+    }
     export interface SliderAttributes {
         stepSize?: number;
     }

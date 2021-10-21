@@ -47,9 +47,9 @@
         <TopWeatherView {item} height={topHeight} />
     </Template>
     <Template key="info" let:item>
-        <gridLayout rows="auto" columns="auto,*" class="alertView" orientation="horizontal" verticalAlignment="center" paddingLeft="20">
-            <WeatherIcon col="0" verticalAlignment="middle" fontSize="50" icon={item.icon} />
-            <label col="1" fontSize="16" paddingLeft="4" verticalAlignment="middle" text={item.summary} maxLines="2" />
+        <gridLayout rows="auto" columns="auto,*" class="alertView" verticalAlignment="center" paddingLeft={20}>
+            <WeatherIcon col={0} verticalAlignment="middle" fontSize={50} icon={item.icon} />
+            <label col={1} fontSize={16} paddingLeft={4} verticalAlignment="middle" text={item.summary} maxLines={2} />
         </gridLayout>
     </Template>
     <Template key="daily" let:item>

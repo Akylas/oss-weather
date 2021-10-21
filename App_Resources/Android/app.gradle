@@ -1,6 +1,5 @@
 
 android { 
-
   defaultConfig {  
     compileSdkVersion 31
     multiDexEnabled true
@@ -19,7 +18,7 @@ android {
           reset()
           // include 'armeabi-v7a'
           // include 'x86'
-          include 'armeabi-v7a, x86_64,arm64-v8a'
+          include 'armeabi-v7a', 'x86_64', 'arm64-v8a'
           universalApk true
       }
   }
@@ -30,19 +29,36 @@ android {
     release {
       // Enables code shrinking, obfuscation, and optimization for only
       // your project's release build type.
-      minifyEnabled false
+      minifyEnabled true
 
       // Enables resource shrinking, which is performed by the
       // Android Gradle plugin.
-      shrinkResources false
+      shrinkResources true
+
+      // resConfigs "en", "fr", "es"
 
       // Includes the default ProGuard rules files that are packaged with
       // the Android Gradle plugin. To learn more, go to the section about
       // R8 configuration files.
-      // proguardFiles getDefaultProguardFile(
-      //   'proguard-android-optimize.txt'),
-      //   'proguard-rules.pro'
+      def absolutePathToAppResources = getAppResourcesPath()
+      proguardFiles getDefaultProguardFile(
+        'proguard-android-optimize.txt'),
+        "$absolutePathToAppResources/Android/proguard-rules.pro"
+
+      debuggable false
+      jniDebuggable false
+      renderscriptDebuggable false
     }
   } 
 
+}
+
+task createProguard {
+    dependsOn 'buildMetadata'
+    doLast {
+        exec {
+            workingDir "$USER_PROJECT_ROOT"
+            commandLine 'node', 'createProguard.js'
+        }
+    }
 }

@@ -232,7 +232,7 @@
                 <!-- <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius, $imperial) : null} /> -->
             </cgroup>
         {/if}
-        <cgroup id="test" paddingLeft={80} paddingTop={13} fontSize={14} verticalAlignment="top">
+        <cgroup id="test" paddingLeft={70} paddingTop={13} fontSize={14} verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
@@ -243,28 +243,28 @@
             <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
             <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
         </cgroup>
-        <cgroup paddingLeft={60} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
+        <cgroup paddingLeft={55} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
             <cspan fontSize={24} fontFamily={wiFontFamily} text={item.moonIcon} />
             <cspan text={'\n' + l('moon')} />
         </cgroup>
         {#if item.cloudCover > 0}
-            <cgroup paddingLeft={120} paddingTop={40} fontSize={14} verticalAlignment="top" textAlignment="center" width={60} color={item.cloudColor}>
+            <cgroup paddingLeft={110} paddingTop={40} fontSize={14} verticalAlignment="top" textAlignment="center" width={60} color={item.cloudColor}>
                 <cspan fontSize={24} fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
                 <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
         {/if}
-        {#if item.uvIndex > 0}
-            <cgroup paddingLeft={180} paddingTop={44} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
-                <cspan fontSize={30} lineheight={28} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
-                <cspan paddingTop={14} text={'\n' + Math.round(item.uvIndex)} />
-            </cgroup>
-        {/if}
         {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}
-            <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 180 : 120} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
+            <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 165 : 110} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
                 <cspan fontSize={24} fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={item.precipIntensity >= 0.1 ? '\n' + formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
                 <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
+            </cgroup>
+        {/if}
+        {#if item.uvIndex > 0}
+            <cgroup paddingLeft={item.cloudCover > 0 ? 220 : 165} paddingTop={44} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
+                <cspan fontSize={30} lineheight={28} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
+                <cspan paddingTop={14} text={'\n' + Math.round(item.uvIndex)} />
             </cgroup>
         {/if}
 

@@ -539,7 +539,6 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.temperatureMax = Math.round(data.temp.max);
                 d.temperatureNight = Math.round(data.temp.night);
 
-                d.precipAccumulation = data.rain || 0;
                 d.precipProbability = data.pop;
                 d.cloudCover = data.clouds;
                 d.windSpeed = data.wind_speed * 3.6;
@@ -550,6 +549,7 @@ export async function getOWMWeather(lat: number, lon: number) {
                 d.moonIcon = moonIcon(getMoonPhase(new Date(d.time)));
                 d.sunriseTime = data.sunrise * 1000;
                 d.sunsetTime = data.sunset * 1000;
+                d.precipIntensity = d.precipAccumulation = data.snow ? data.snow : data.rain ? data.rain : 0;
 
                 // if (data.rain) {
                 //     d.color = Color.mix(sunnyColor, getRainColor(data.rain), 1).hex;
@@ -559,9 +559,9 @@ export async function getOWMWeather(lat: number, lon: number) {
                 //     d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
                 // }
                 if (data.rain) {
-                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), rainColor, d.precipIntensity * 10).hex;
+                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), rainColor, Math.min(d.precipIntensity * 10, 100)).hex;
                 } else if (data.snow) {
-                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), snowColor, d.precipIntensity * 10).hex;
+                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), snowColor, Math.min(d.precipIntensity * 10, 100)).hex;
                 } else {
                     d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
                 }

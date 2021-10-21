@@ -46,8 +46,8 @@ module.exports = (env, params = {}) => {
             {
                 production: true,
                 sentry: true,
-                uploadSentry: true,
                 sourceMap: true,
+                uploadSentry: true,
                 uglify: true
             },
             env
@@ -300,37 +300,53 @@ module.exports = (env, params = {}) => {
             }
         ]
     });
-    if (!!production) {
-        config.module.rules.push({
-            // rules to replace mdi icons and not use nativescript-font-icon
-            test: /\.(js)$/,
-            use: [
-                {
-                    loader: 'string-replace-loader',
-                    options: {
-                        search: '__decorate\\(\\[((.|\n)*?)profile,((.|\n)*?)\\],.*?,.*?,.*?\\);?',
-                        replace: (match, p1, offset, string) => '',
-                        flags: 'g'
-                    }
+    // if (!!production) {
+    config.module.rules.push({
+        // rules to replace mdi icons and not use nativescript-font-icon
+        test: /\.(js)$/,
+        use: [
+            {
+                loader: 'string-replace-loader',
+                options: {
+                    search: '__decorate\\(\\[[\\s\\n]*profile([^;]*)\\.prototype,\\s*"(.*?)",\\s*null\\);',
+                    replace: (match, p1, offset, string) => '',
+                    flags: 'gm'
                 }
-            ]
-        });
-        // rules to clean up all Trace in production
-        // we must run it for all files even node_modules
-        config.module.rules.push({
-            test: /\.(ts|js)$/,
-            use: [
-                {
-                    loader: 'string-replace-loader',
-                    options: {
-                        search: 'if\\s*\\(\\s*Trace.isEnabled\\(\\)\\s*\\)',
-                        replace: 'if (false)',
-                        flags: 'g'
-                    }
+            },
+            {
+                loader: 'string-replace-loader',
+                options: {
+                    search: "profile\\(\\s*'(.*?)',",
+                    replace: (match, p1, offset, string) => '(',
+                    flags: 'g'
                 }
-            ]
-        });
-    }
+            }
+        ]
+    });
+    // rules to clean up all Trace in production
+    // we must run it for all files even node_modules
+    config.module.rules.push({
+        test: /\.(js)$/,
+        use: [
+            {
+                loader: 'string-replace-loader',
+                options: {
+                    search: '(log|logger)\\.(debug|info)\\(\\(\\)(.*)\\)',
+                    replace: (match, p1, offset, string) => '',
+                    flags: 'g'
+                }
+            },
+            {
+                loader: 'string-replace-loader',
+                options: {
+                    search: 'Trace\\.isEnabled\\(\\)',
+                    replace: 'false',
+                    flags: 'g'
+                }
+            }
+        ]
+    });
+    // }
     // we remove default rules
     config.plugins = config.plugins.filter((p) => ['CopyPlugin', 'ForkTsCheckerWebpackPlugin'].indexOf(p.constructor.name) === -1);
     // we add our rules
@@ -463,29 +479,38 @@ module.exports = (env, params = {}) => {
     //         })
     //     );
     // }
-    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
+    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|nativescript-carto|nativescript-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
     config.optimization.minimize = uglify !== undefined ? uglify : production;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
+    console.log('isAnySourceMapEnabled', isAnySourceMapEnabled);
     config.optimization.minimizer = [
         new TerserPlugin({
             parallel: true,
             terserOptions: {
-                ecma: 2017,
+                ecma: 2020,
                 module: true,
+                toplevel: false,
+                keep_classnames: false,
+                keep_fnames: false,
                 output: {
                     comments: false,
                     semicolons: !isAnySourceMapEnabled
                 },
+                mangle: {
+                    properties: {
+                        reserved: ['__metadata'],
+                        regex: /^(m[A-Z]|nativeViewProtected$|nativeTextViewProtected$)/
+                    }
+                },
                 compress: {
+                    booleans_as_integers: false,
                     // The Android SBG has problems parsing the output
                     // when these options are enabled
                     collapse_vars: platform !== 'android',
                     sequences: platform !== 'android',
-                    passes: 5,
+                    passes: 3,
                     drop_console: production && noconsole
-                },
-                keep_classnames: false,
-                keep_fnames: false
+                }
             }
         })
     ];

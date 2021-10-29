@@ -293,6 +293,7 @@
         console.log('refresh triggered by lang change');
         refresh();
     });
+
     // function onCanvasLabelClicked(e) {
     //     console.log('onCanvasLabelClicked', e.object);
     //     e.object.redraw();

@@ -40,6 +40,20 @@
             </dict>
             <dict>
                 <key>Type</key>
+                <string>PSToggleSwitchSpecifier</string>
+                <key>Title</key>
+                <string>animations</string>
+                <key>DefaultValue</key>
+                <false/>
+                <key>Key</key>
+                <string>animations</string>
+                <key>TrueValue</key>
+                <true/>
+                <key>FalseValue</key>
+                <false/>
+            </dict>
+            <dict>
+                <key>Type</key>
                 <string>PSMultiValueSpecifier</string>
                 <key>Title</key>
                 <string>language</string>

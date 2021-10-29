@@ -116,7 +116,7 @@ module.exports = (env, params = {}) => {
         '../../../accessibility$': '~/acessibilityShim',
         '../../accessibility$': '~/acessibilityShim',
         [`${coreModulesPackageName}/accessibility$`]: '~/acessibilityShim',
-        'svelte-native': '@akylas/svelte-native'
+        // 'svelte-native': '@akylas/svelte-native'
     });
 
     console.log('coreModulesPackageName', coreModulesPackageName);

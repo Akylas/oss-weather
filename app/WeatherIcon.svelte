@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { getBoolean } from '@nativescript/core/application-settings';
+    import { getBoolean, getString } from '@nativescript/core/application-settings';
     import { File, knownFolders, path } from '@nativescript/core/file-system';
     import { prefs } from '~/services/preferences';
     const appPath = knownFolders.currentApp().path;
@@ -104,20 +104,16 @@
         }
         if (realIcon) {
             if (autoPlay) {
-                if (global.isAndroid) {
-                    iconSrc = loadLottieJSON(realIcon);
-                } else {
-                    iconSrc = path.join(appPath, 'assets/lottie', realIcon + '.json');
-                }
+                iconSrc =  `~/assets/lottie/${realIcon}.lottie`;
             } else {
-                iconSrc = path.join(appPath, 'assets/images', realIcon + '.png');
+                iconSrc = `~/assets/images/${realIcon}.png`
             }
         } else {
             iconSrc = realIcon;
         }
     }
 
-    $: prefs.on('key:animations', () => {
+    prefs.on('key:animations', () => {
         autoPlay = getBoolean('animations');
     });
 </script>

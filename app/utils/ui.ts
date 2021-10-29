@@ -1,4 +1,4 @@
-import {InAppBrowser} from 'nativescript-inappbrowser';
+import {InAppBrowser} from '@akylas/nativescript-inappbrowser';
 import { primaryColor } from '~/variables';
 import { openUrl } from '@nativescript/core/utils/utils';
 

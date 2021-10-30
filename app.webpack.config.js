@@ -10,20 +10,6 @@ const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
 const Fontmin = require('@akylas/fontmin');
 
-// function getCLILib(env) {
-//     if (!env.nativescriptLibPath) {
-//         warnOnce(
-//             'getCLILib',
-//             `
-// 			Cannot find NativeScript CLI path. Make sure --env.nativescriptLibPath is passed
-// 		`
-//         );
-//         return false;
-//     }
-
-//     return require(env.nativescriptLibPath);
-// }
-
 function fixedFromCharCode(codePt) {
     if (codePt > 0xffff) {
         codePt -= 0x10000;
@@ -53,8 +39,6 @@ module.exports = (env, params = {}) => {
             env
         );
     }
-    // getCLILib(env).projectDataService.getProjectData().setValue('ignoredDependencies',  JSON.stringify(['@nativescript-community/sentry']));
-    // console.log(Object.keys(getCLILib(env).projectDataService.getProjectData()))
     const nconfig = require('./nativescript.config');
     const {
         appPath = nconfig.appPath,
@@ -73,6 +57,7 @@ module.exports = (env, params = {}) => {
         fakeall, // --env.fakeall
         fork = true, // --env.fakeall
         adhoc, // --env.adhoc
+        buildweathermap, // --env.buildweathermap
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
@@ -115,7 +100,7 @@ module.exports = (env, params = {}) => {
         '@nativescript/core/accessibility$': '~/acessibilityShim',
         '../../../accessibility$': '~/acessibilityShim',
         '../../accessibility$': '~/acessibilityShim',
-        [`${coreModulesPackageName}/accessibility$`]: '~/acessibilityShim',
+        [`${coreModulesPackageName}/accessibility$`]: '~/acessibilityShim'
         // 'svelte-native': '@akylas/svelte-native'
     });
 
@@ -514,6 +499,9 @@ module.exports = (env, params = {}) => {
             }
         })
     ];
-
-    return config;
+    if (buildweathermap) {
+        return [config, require('./weathermap.webpack.config.js')(env, params)];
+    } else {
+        return config;
+    }
 };

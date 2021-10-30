@@ -1,4 +1,4 @@
-import {InAppBrowser} from '@akylas/nativescript-inappbrowser';
+import { InAppBrowser } from '@akylas/nativescript-inappbrowser';
 import { primaryColor } from '~/variables';
 import { openUrl } from '@nativescript/core/utils/utils';
 
@@ -13,14 +13,14 @@ export async function openLink(url) {
                 preferredControlTintColor: 'white',
                 readerMode: false,
                 animated: true,
-                enableBarCollapsing: false,
+                enableBarCollapsing: true,
                 // Android Properties
                 showTitle: true,
                 toolbarColor: primaryColor,
                 secondaryToolbarColor: 'white',
                 enableUrlBarHiding: true,
                 enableDefaultShare: true,
-                forceCloseOnRedirection: false,
+                forceCloseOnRedirection: false
             });
         } else {
             openUrl(url);
@@ -29,7 +29,7 @@ export async function openLink(url) {
         alert({
             title: 'Error',
             message: error.message,
-            okButtonText: 'Ok',
+            okButtonText: 'Ok'
         });
     }
 }

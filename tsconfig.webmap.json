@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+      "target": "es2017",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "lib": ["dom"],
+      "sourceMap": false,
+      "noEmitHelpers": false,
+      "importHelpers": false,
+      "allowJs": true,
+      "baseUrl": ".",
+      "paths": {
+        "~/*": ["map/*"],
+        "@/*": ["map/*"]
+      },
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": false,
+      "skipLibCheck": true,
+      "strict": true,
+    },
+    "include": ["map"],
+    "exclude": ["node_modules", "platforms"]
+  }
+  

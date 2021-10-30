@@ -10,11 +10,9 @@ import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeauf
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
 import { cloudyColor, createGlobalEventListener, globalObservable, rainColor, snowColor, sunnyColor } from '~/variables';
-import { ClimaCellDaily, ClimaCellHourly, ClimaCellNowCast } from './climacell';
 import { Alert, CityWeather, Coord, Rain, Snow, Weather } from './owm';
 import { Photon } from './photon';
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
-let ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
 let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
 
 export { Alert, CityWeather, Coord, Rain, Snow, Weather };
@@ -44,17 +42,6 @@ export function setDSApiKey(apiKey) {
 }
 export function hasDSApiKey() {
     return !!dsApiKey;
-}
-export function setCCApiKey(apiKey) {
-    ccApiKey = apiKey;
-    if (apiKey) {
-        setString('ccApiKey', apiKey);
-    } else {
-        remove('ccApiKey');
-    }
-}
-export function hasCCApiKey() {
-    return !!ccApiKey;
 }
 export function setOWMApiKey(apiKey) {
     owmApiKey = apiKey;

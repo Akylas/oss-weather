@@ -1,9 +1,7 @@
 <script lang="ts">
     import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
     import { request as requestPerm } from '@nativescript-community/perms';
-    import { login } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { TextField } from '@nativescript-community/ui-material-textfield';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { Application, CoreTypes, Page } from '@nativescript/core';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
@@ -11,24 +9,20 @@
     import { navigate, showModal } from 'svelte-native';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { showBottomSheet } from '~/bottomsheet';
-    import { l, lc, onLanguageChanged } from '~/helpers/locale';
-    import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, setCCApiKey, setOWMApiKey } from '~/services/api';
+    import { l, onLanguageChanged } from '~/helpers/locale';
+    import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, setOWMApiKey } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
-    import { actionBarHeight, mdiFontFamily, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
+    import { mdiFontFamily } from '~/variables';
     import ActionSheet from './ActionSheet.svelte';
     import AlertView from './AlertView.svelte';
     import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
     import CActionBar from './CActionBar.svelte';
     import { toggleTheme } from './helpers/theme';
-    // import { Sentry } from './utils/sentry';
     import WeatherComponent from './WeatherComponent.svelte';
     import WeatherMapPage from './WeatherMapPage.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
-
-    const mailRegexp =
-        /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
     let gps: GPS;
     let loading = false;
@@ -42,7 +36,6 @@
     } = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData = JSON.parse(getString('lastWeatherData', 'null'));
 
-    let topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
     let items = [];
 
     let desiredAccuracy = global.isAndroid ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
@@ -62,16 +55,7 @@
                             icon: 'mdi-refresh',
                             id: 'refresh',
                             text: l('refresh')
-                            // }, {
-                            //     icon: 'mdi-brightness-6',
-                            //     id: 'dark_mode',
-                            //     text: l('dark_mode')
                         },
-                        // {
-                        //     icon: 'mdi-map',
-                        //     id: 'select_on_map',
-                        //     text: l('select_on_map')
-                        // },
                         {
                             icon: 'mdi-cogs',
                             id: 'preferences',
@@ -86,11 +70,6 @@
                             icon: 'mdi-information-outline',
                             id: 'about',
                             text: l('about')
-                            // },
-                            // {
-                            //     icon: 'mdi-bug',
-                            //     id: 'send_bug_report',
-                            //     text: l('send_bug_report')
                         }
                     ]
                 }
@@ -107,15 +86,12 @@
                     case 'gps_location':
                         getLocationAndWeather();
                         break;
-                    case 'send_bug_report':
-                        sendBugReport();
-                        break;
                     case 'dark_mode':
                         toggleTheme();
                         break;
                     case 'about':
                         const About = require('./About.svelte').default;
-                        showModal({ page: About, animated: true, fullscreen: true });
+                        navigate({ page: About });
                         break;
                 }
             }
@@ -125,7 +101,6 @@
     }
 
     async function refreshWeather() {
-        // console.log('refreshWeather', networkService.connected, weatherLocation);
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
             return;
@@ -142,9 +117,7 @@
         } catch (err) {
             console.log(err);
             if (err.statusCode === 403) {
-                // setDSApiKey(null);
                 setOWMApiKey(null);
-                setCCApiKey(null);
                 askForApiKey();
             } else {
                 showError(err);
@@ -156,8 +129,6 @@
 
     async function updateView() {
         items = prepareItems(weatherData, lastUpdate);
-        // console.log('items', items);
-        // setDay(0);
         setNumber('lastUpdate', lastUpdate);
         setString('lastWeatherData', JSON.stringify(weatherData));
     }
@@ -185,21 +156,11 @@
     }
     async function openWeatherMap() {
         try {
-            await navigate({ page: WeatherMapPage, transition: { name: 'fade', duration: 200 }, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+            await navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
         } catch (error) {
             showError(error);
         }
     }
-    // async function searchOnMap() {
-    //     try {
-    //         const result = await showModal({ page: SelectLocationOnMap, animated: true, fullscreen: true, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
-    //         if (result) {
-    //             saveLocation(result);
-    //         }
-    //     } catch (err) {
-    //         showError(err);
-    //     }
-    // }
     async function getLocationAndWeather() {
         try {
             const result = await requestPerm('location');
@@ -209,11 +170,9 @@
             loading = true;
             if (!gps) {
                 gps = new GPS();
-                // gps.debug = true;
             }
             const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
             if (location) {
-                // console.log('location', location);
                 saveLocation({
                     name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
                     coord: location
@@ -221,7 +180,6 @@
             }
         } catch (err) {
             showError(err);
-            // refresh using last location?
         } finally {
             loading = false;
         }
@@ -229,7 +187,6 @@
 
     async function refresh() {
         if (!hasOWMApiKey()) {
-            // alert(l('missing_api_key'));
             return;
         }
         if (!weatherLocation) {
@@ -240,20 +197,12 @@
             pullRefresh.nativeView.refreshing = true;
         }
 
-        // if (hasDSApiKey()) {
         await refreshWeather();
         if (pullRefresh) {
             pullRefresh.nativeView.refreshing = false;
         }
     }
 
-    function quitApp() {
-        if (global.isIOS) {
-            exit(0);
-        } else {
-            Application.android.startActivity.finish();
-        }
-    }
     async function askForApiKey() {
         const result = await showBottomSheet({
             parent: page,
@@ -266,7 +215,6 @@
         }
     }
     onMount(async () => {
-        const ccApiKey = getString('ccApiKey', CLIMA_CELL_MY_KEY || CLIMA_CELL_DEFAULT_KEY);
         const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
         if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
             // wait a bit
@@ -294,11 +242,6 @@
         refresh();
     });
 
-    // function onCanvasLabelClicked(e) {
-    //     console.log('onCanvasLabelClicked', e.object);
-    //     e.object.redraw();
-    // }
-
     async function showAlerts() {
         if (!weatherData.alerts) {
             return;
@@ -315,67 +258,6 @@
         } catch (err) {
             showError(err);
         }
-    }
-
-    async function sendBugReport() {
-        const result = await login({
-            title: lc('send_bug_report'),
-            message: lc('send_bug_report_desc'),
-            okButtonText: l('send'),
-            cancelButtonText: l('cancel'),
-            autoFocus: true,
-            usernameTextFieldProperties: {
-                marginLeft: 10,
-                marginRight: 10,
-                autocapitalizationType: 'none',
-                keyboardType: 'email',
-                autocorrect: false,
-                error: lc('email_required'),
-                hint: lc('email')
-            },
-            passwordTextFieldProperties: {
-                marginLeft: 10,
-                marginRight: 10,
-                error: lc('please_describe_error'),
-                secure: false,
-                hint: lc('description')
-            },
-            beforeShow: (options, usernameTextField: TextField, passwordTextField: TextField) => {
-                usernameTextField.on('textChange', (e: any) => {
-                    const text = e.value;
-                    if (!text) {
-                        usernameTextField.error = lc('email_required');
-                    } else if (!mailRegexp.test(text)) {
-                        usernameTextField.error = lc('non_valid_email');
-                    } else {
-                        usernameTextField.error = null;
-                    }
-                });
-                passwordTextField.on('textChange', (e: any) => {
-                    const text = e.value;
-                    if (!text) {
-                        passwordTextField.error = lc('description_required');
-                    } else {
-                        passwordTextField.error = null;
-                    }
-                });
-            }
-        });
-        // if (result.result) {
-        //     if (!result.userName || !mailRegexp.test(result.userName)) {
-        //         showError(new Error(lc('email_required')));
-        //         return;
-        //     }
-        //     if (!result.password || result.password.length === 0) {
-        //         showError(new Error(lc('description_required')));
-        //         return;
-        //     }
-        //     Sentry.withScope((scope) => {
-        //         scope.setUser({ email: result.userName });
-        //         Sentry.captureMessage(result.password);
-        //         alert(l('bug_report_sent'));
-        //     });
-        // }
     }
 </script>
 

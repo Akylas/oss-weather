@@ -36,19 +36,17 @@
     }
 </script>
 
-<frame backgroundColor="transparent">
-    <page actionBarHidden={true}>
-        <gridlayout rows="auto,*">
-            <CActionBar canGoBack modalWindow title={lc('about')} />
-            <scrollView row={1}>
-                <stackLayout>
-                    <SettingLabelIcon title={lc('version')} subtitle={appVersion} />
-                    <SettingLabelIcon title={lc('source_code')} subtitle="obtenir le code source de l'application sur Github" icon="mdi-chevron-right" on:tap={() => onTap('github')} />
-                    <SettingLabelIcon title={lc('third_parties')} subtitle="les logiciels que nous aimons et utilisons" icon="mdi-chevron-right" on:tap={() => onTap('third_party')} />
-                    <SettingLabelIcon title={lc('share_application')} icon="mdi-chevron-right" on:tap={() => onTap('share')} />
-                    <SettingLabelIcon title={lc('review_application')} icon="mdi-chevron-right" on:tap={() => onTap('review')} />
-                </stackLayout>
-            </scrollView>
-        </gridlayout>
-    </page>
-</frame>
+<page actionBarHidden={true}>
+    <gridlayout rows="auto,*">
+        <CActionBar title={lc('about')} />
+        <scrollView row={1}>
+            <stackLayout>
+                <SettingLabelIcon title={lc('version')} subtitle={appVersion} />
+                <SettingLabelIcon title={lc('source_code')} subtitle="obtenir le code source de l'application sur Github" icon="mdi-chevron-right" on:tap={() => onTap('github')} />
+                <SettingLabelIcon title={lc('third_parties')} subtitle="les logiciels que nous aimons et utilisons" icon="mdi-chevron-right" on:tap={() => onTap('third_party')} />
+                <SettingLabelIcon title={lc('share_application')} icon="mdi-chevron-right" on:tap={() => onTap('share')} />
+                <SettingLabelIcon title={lc('review_application')} icon="mdi-chevron-right" on:tap={() => onTap('review')} />
+            </stackLayout>
+        </scrollView>
+    </gridlayout>
+</page>

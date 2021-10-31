@@ -1,6 +1,10 @@
 app_identifier "com.akylas.weather"
+package_name "com.akylas.weather"
 apple_id "martin.guillon@akylas.fr"
+itunes_connect_id("martin.guillon@akylas.fr")
+team_name('Akylas')
 team_id "3UUB5NM43K"
-ENV["FASTLANE_TEAM_ID"] = "1469488"
-ENV["FASTLANE_USER"] = "martin.guillon@akylas.fr"
-ENV["DELIVER_USER"] = "martin.guillon@akylas.fr"
+itc_team_id("1469488")
+json_key_data_raw(ENV["PLAYSTORE_JSON_KEY_DATA"])
+data()[:certs_git_url] = 'https://github.com/farfromrefug/dabba.ios.certs'
+data()[:main_lang_android] = 'fr-FR'

@@ -56,3 +56,4 @@ pnpm-lock.yaml
 /fastlane/report.xml
 *.zip
 dist
+.vscode

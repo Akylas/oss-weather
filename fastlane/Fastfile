@@ -89,7 +89,7 @@ lane :build_flavor do |params|
   upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
   add_git_tag(tag: "#{platform}/#{flavor}/#{version}/#{versionCode}")
 
-  push_git_tags
+  push_git_tags(force:true)
 end
 
 

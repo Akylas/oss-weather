@@ -1,0 +1,10 @@
+*Bug fixes*
+- smaller packaged fonts
+- fix weather color with rain/snow
+- chart improvements
+- daily view fix
+- top view fix
+- licences fix
+- *ios:* animation setting
+- reload on animations setting change
+- lottie improvements

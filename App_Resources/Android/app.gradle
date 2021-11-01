@@ -5,7 +5,7 @@ android {
     multiDexEnabled true
     minSdkVersion 19
     targetSdkVersion 31
-    versionCode 40
+    versionCode 41
     versionName "1.2.0"
     ndk {
       abiFilters.clear()

@@ -42,8 +42,12 @@ function setLang(newLang) {
     $lang.set(newLang);
 }
 
-const deviceLanguage = getString('language', 'auto');
+const deviceLanguage = getString('language', DEFAULT_LOCALE);
 function getActualLanguage(language) {
+    if (language === 'auto') {
+        language = Device.language;
+    }
+    language = language.split('-')[0].toLowerCase();
     switch (language) {
         case 'en':
             return 'en';
@@ -55,8 +59,6 @@ function getActualLanguage(language) {
             return 'kr';
         case 'lv':
             return 'la';
-        case 'auto':
-            return Device.language.split('-')[0].toLowerCase();
         default:
             return language;
     }

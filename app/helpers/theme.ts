@@ -82,9 +82,8 @@ export function start() {
     if (global.isIOS && iOSNativeHelper.MajorVersion < 13) {
         theme = 'light';
     } else {
-        theme = (getString('theme', 'auto') || 'auto') as Themes;
+        theme = (getString('theme', DEFAULT_THEME) || 'auto') as Themes;
     }
-    // console.log('theme', theme);
 
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;

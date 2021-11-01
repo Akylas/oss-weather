@@ -57,6 +57,8 @@ module.exports = (env, params = {}) => {
         fakeall, // --env.fakeall
         fork = true, // --env.fakeall
         adhoc, // --env.adhoc
+        locale = 'auto', // --env.locale
+        theme = 'auto', // --env.theme
         buildweathermap, // --env.buildweathermap
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
@@ -131,6 +133,8 @@ module.exports = (env, params = {}) => {
         'gVars.internalApp': false,
         TNS_ENV: JSON.stringify(mode),
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
+        DEFAULT_LOCALE: `"${locale}"`,
+        DEFAULT_THEME: `"${theme}"`,
         'gVars.sentry': !!sentry,
         NO_CONSOLE: noconsole,
         SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,

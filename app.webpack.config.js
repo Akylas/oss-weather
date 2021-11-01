@@ -472,11 +472,11 @@ module.exports = (env, params = {}) => {
         new TerserPlugin({
             parallel: true,
             terserOptions: {
-                ecma: 2020,
+                ecma: platform === 'android' ? 2020 : 2017,
                 module: true,
                 toplevel: false,
-                keep_classnames: false,
-                keep_fnames: false,
+                keep_classnames: platform !== 'android',
+                keep_fnames: platform !== 'android',
                 output: {
                     comments: false,
                     semicolons: !isAnySourceMapEnabled
@@ -500,7 +500,7 @@ module.exports = (env, params = {}) => {
         })
     ];
     if (buildweathermap) {
-        return [config, require('./weathermap.webpack.config.js')(env, params)];
+        return [require('./weathermap.webpack.config.js')(env, params), config];
     } else {
         return config;
     }

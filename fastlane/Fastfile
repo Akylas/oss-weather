@@ -177,9 +177,9 @@ lane :write_changelog do |params|
 end
   lane :upload_store   do |params| 
     track = params[:flavor]
-    if (track == 'beta') 
-      track = 'internal'
-    end
+    # if (track == 'beta') 
+    #   track = 'internal'
+    # end
     write_changelog(version:params[:versionCode], changelog:params[:changelog]);
     upload_to_play_store(
       track: track,

@@ -289,18 +289,14 @@
             </pullrefresh>
         {:else}
             <gridlayout id="teststack" row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <label text={l('no_location_desc')} textAlignment="center" />
-                <mdbutton row={1} margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather}>
-                    <formattedString>
-                        <span fontSize={20} verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
-                        <span text={l('my_location').toUpperCase()} />
-                    </formattedString>
+                <label text={l('no_location_desc')} textAlignment="center" marginBottom={20} />
+                <mdbutton row={1} margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather} verticalTextAlignment="center">
+                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
+                    <cspan text={l('my_location').toUpperCase()} />
                 </mdbutton>
-                <mdbutton row={2} margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity}>
-                    <formattedString>
-                        <span fontSize={20} verticalTextAlignment="center" fontFamily={mdiFontFamily} text="mdi-magnify" />
-                        <span text={l('search_location').toUpperCase()} />
-                    </formattedString>
+                <mdbutton row={2} margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity} verticalTextAlignment="center">
+                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" />
+                    <cspan text={l('search_location').toUpperCase()} />
                 </mdbutton>
             </gridlayout>
         {/if}

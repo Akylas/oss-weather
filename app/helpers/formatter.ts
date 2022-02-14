@@ -44,9 +44,6 @@ export function toImperialUnit(unit: UNITS, imperial = false) {
     }
 }
 export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, options: { roundedTo05?: boolean } = {}): [string | number, string] {
-    if (value === -1) {
-        return ['-', toImperialUnit(unit, imperial)];
-    }
     switch (unit) {
         case UNITS.kPa:
             return [(value / 10).toFixed(), 'kPa'];

@@ -252,6 +252,13 @@
 -keep,allowoptimization public class androidx.lifecycle.Lifecycle.State** { public  *; }
 -keep,allowoptimization public class android.inputmethodservice.Keyboard** { public  *; }
 -keep,allowoptimization public class android.inputmethodservice.Keyboard.Key** { public  *; }
+-keep,allowoptimization public class com.proyecto26.inappbrowser.ChromeTabsManagerActivity** { public  *; }
+-keep,allowoptimization public class android.content.pm.ResolveInfo** { public  *; }
+-keep,allowoptimization public class androidx.browser.customtabs.CustomTabsIntent.Builder** { public  *; }
+-keep,allowoptimization public class androidx.browser.customtabs.CustomTabsIntent** { public  *; }
+-keep,allowoptimization public class androidx.browser.customtabs.CustomTabsClient** { public  *; }
+-keep,allowoptimization public class androidx.core.graphics.ColorUtils** { public  *; }
+-keep,allowoptimization public class android.provider.Browser** { public  *; }
 -keep,allowoptimization public class android.content.pm.PackageInfo** { public  *; }
 -keep,allowoptimization public class android.location.Address** { public  *; }
 -keep,allowoptimization public class android.location.Geocoder** { public  *; }
@@ -267,6 +274,7 @@
 -keep,allowoptimization public class android.os.StrictMode** { public  *; }
 -keep,allowoptimization public class android.os.StrictMode.ThreadPolicy** { public  *; }
 -keep,allowoptimization public class okhttp3.Call** { public  *; }
+-keep,allowoptimization public class okhttp3.Dispatcher** { public  *; }
 -keep,allowoptimization public class okhttp3.RequestBody** { public  *; }
 -keep,allowoptimization public class okhttp3.MediaType** { public  *; }
 -keep,allowoptimization public class okhttp3.MultipartBody** { public  *; }
@@ -278,6 +286,7 @@
 -keep,allowoptimization public class okhttp3.CacheControl.Builder** { public  *; }
 -keep,allowoptimization public class okhttp3.Request** { public  *; }
 -keep,allowoptimization public class okhttp3.Request.Builder** { public  *; }
+-keep,allowoptimization public class okhttp3.Interceptor** { public  *; }
 -keep,allowoptimization public class okhttp3.OkHttpClient** { public  *; }
 -keep,allowoptimization public class okhttp3.OkHttpClient.Builder** { public  *; }
 -keep,allowoptimization public class okhttp3.CertificatePinner** { public  *; }
@@ -373,6 +382,8 @@
 -keep,allowoptimization public class com.nativescript.image.ScalingBlurPostprocessor** { public  *; }
 -keep,allowoptimization public class android.graphics.drawable.Animatabl** { public  *; }
 -keep,allowoptimization public class com.facebook.imagepipeline.image.ImageInfo** { public  *; }
+-keep,allowoptimization public class com.facebook.common.util.UriUtil** { public  *; }
+-keep,allowoptimization public class android.net.Uri.Builder** { public  *; }
 -keep,allowoptimization public class android.text.style.URLSpan** { public  *; }
 -keep,allowoptimization public class androidx.core.widget.TextViewCompat** { public  *; }
 -keep,allowoptimization public class com.airbnb.lottie.LottieAnimationView** { public  *; }
@@ -388,6 +399,7 @@
 -keep,allowoptimization public class com.google.android.material.dialog.MaterialAlertDialogBuilder** { public  *; }
 -keep,allowoptimization public class androidx.appcompat.app.AlertDialog** { public  *; }
 -keep,allowoptimization public class androidx.appcompat.app.AlertDialog.Builder** { public  *; }
+-keep,allowoptimization public class com.google.android.material.snackbar.BaseTransientBottomBar** { public  *; }
 -keep,allowoptimization public class com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback** { public  *; }
 -keep,allowoptimization public class androidx.coordinatorlayout.widget.CoordinatorLayout** { public  *; }
 -keep,allowoptimization public class android.widget.FrameLayout.LayoutParams** { public  *; }

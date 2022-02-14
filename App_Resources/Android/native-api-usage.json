@@ -4,7 +4,17 @@
         "androidx.appcompat.app:AppCompatDelegate*", "android.widget:Toast*"
     ],
     "blacklist": [
+        "org.nativescript.widgets:TabLayout*", 
+        "org.nativescript.widgets:BottomNavigationBar*", 
+        "org.ow2.asmdex*:*", 
+        "com.google.android.material.chip*:*", 
+        "com.google.android.material.appbar*:*", 
+        "com.google.android.material.floatingactionbutton*:*", 
+        "com.google.android.material.bottomappbar*:*", 
+        "com.google.android.material.internal*:*", 
+        "com.google.android.material.transformation*:*", 
+        "com.google.android.material.theme*:*", 
         "*:*BuildConfig", 
-        "*:R.*", "*:R"
+        "*:R.*", "*:R", "*:R$*"
     ]
   }

@@ -4,7 +4,7 @@ module.exports = {
     appResourcesPath: 'App_Resources',
     webpackConfigPath: './app.webpack.config.js',
     appPath: 'app',
-    forceLog: true,
+    forceLog: false,
     // profiling: 'timeline',
     android: {
         maxLogcatObjectSize: 4096,
@@ -12,7 +12,7 @@ module.exports = {
         // v8Flags: '--expose_gc',
         codeCache: true,
         enableMultithreadedJavascript: false,
-        forceLog: true
+        forceLog: false
     },
     cssParser: 'rework'
 };

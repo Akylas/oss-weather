@@ -20,13 +20,13 @@ ${whitelistfilteredLines
         if (l.endsWith('*:*')) {
             // const toBlacklist = blacklistfilteredLines.filter((l2) => l2.startsWith(l));
             // if (toBlacklist.length) {
-            //     console.log('found backlist', l, toBlacklist);
             //     return `${KEEP_PARAMS} ${toBlacklist.map((l) => '!' + l.replace('*:*', '.**')).join(',')},${l.slice(0, -3).replace(':', '.')}.** { public protected *; }`;
             // }
             return `${KEEP_PARAMS} ${l.slice(0, -3).replace(':', '.')}.** { public protected *; }`;
         }
         return `${KEEP_PARAMS} ${l.slice(0, -1).replace(':', '.')}** { public  *; }`;
     })
-    .join('\n')}`;
+    .join('\n')}
+`;
 
 fs.writeFileSync(path.join('App_Resources', 'Android', 'proguard-rules.pro'), data);

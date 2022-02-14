@@ -17,8 +17,6 @@ import { install as installBottomSheets } from '@nativescript-community/ui-mater
 installBottomSheets();
 
 import { Label } from '@nativescript-community/ui-label';
-// import { overrideSpanAndFormattedString } from '@nativescript-community/text';
-// overrideSpanAndFormattedString();
 registerElement('Frame', () => new FrameElement());
 registerElement('Page', () => new PageElement());
 registerNativeViewElement('AbsoluteLayout', () => require('@nativescript/core').AbsoluteLayout);

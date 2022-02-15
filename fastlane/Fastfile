@@ -200,13 +200,13 @@ end
     # prepare(platform:'android')
     sh("npm", "run", "build.android.production.fdroid",
         "--env.noconsole",
-        "--gradle=-PsplitEnabled"
+        "--gradle=\"-PsplitEnabled\""
       )
   end
 
   desc 'Ship to Github.'
   lane :github do
-    checkGitStatus
+    # checkGitStatus
     platform = "android"
     tns_install(platform:platform)
     version = ""
@@ -241,7 +241,7 @@ end
       tag_name: tag,
       description: changelog,
       commitish: "master",
-      upload_assets: Dir.glob("platforms/android/app/build/outputs/apk/release/*.apk")
+      upload_assets: Dir.glob("../platforms/android/app/build/outputs/apk/release/*.apk")
     )
   end
 
@@ -253,7 +253,7 @@ end
   end
   desc 'Ship to Android Playstore Alpha.'
   lane :alpha do
-    # checkGitStatus
+    checkGitStatus
     tns_install(platform:'android')
     build_flavor(platform:'android', flavor:'alpha')
   end

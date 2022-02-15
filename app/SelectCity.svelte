@@ -1,14 +1,13 @@
 <script lang="ts">
-    import { Page, TextField } from '@nativescript/core';
-
+    import { Page,TextField } from '@nativescript/core';
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { l, lc } from '~/helpers/locale';
+    import CActionBar from '~/CActionBar.svelte';
+    import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';
-    import { textColor, textLightColor } from '~/variables';
-    import CActionBar from './CActionBar.svelte';
+    import { textColor,textLightColor } from '~/variables';
 
     let page: NativeViewElementNode<Page>;
     let textField: NativeViewElementNode<TextField>;

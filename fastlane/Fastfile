@@ -193,59 +193,57 @@ end
   desc 'Build the Android application.'
     lane :build do
       # prepare(platform:'android')
-      sh("npm", "run", "build.android.production",
-        "--gradle="-PsplitEnabled""
-      )
+      sh("npm", "run", "build.android.production")
   end
   desc 'Build the Android application For Github.'
   lane :build_github do
     # prepare(platform:'android')
     sh("npm", "run", "build.android.production.fdroid",
         "--env.noconsole",
-        "--gradle="-PsplitEnabled""
+        "--gradle=-PsplitEnabled"
       )
-end
-
-desc 'Ship to Github.'
-lane :github do
-  checkGitStatus
-  platform = "android"
-  tns_install(platform:platform)
-  version = ""
-  versionCode = ""
-  flavor = "github"
-
-  
-  Dir.chdir("..") do
-    version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
-    versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
   end
-  
-  puts "platform:"  + platform
-  puts "flavor:"  + flavor
-  puts "version:"  + version
-  puts "versionCode:"  + versionCode
 
-  # sentry_create_release(
-  #   version: version, # release version to create
-  # )
-  build_github
-  # sentry_upload
-  changelog = get_changelog(platform:platform, flavor:flavor)
-  tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
-  add_git_tag(tag: tag)
+  desc 'Ship to Github.'
+  lane :github do
+    checkGitStatus
+    platform = "android"
+    tns_install(platform:platform)
+    version = ""
+    versionCode = ""
+    flavor = "github"
 
-  push_git_tags(force:true)
-  set_github_release(
-    repository_name: $repository_name,
-    api_token: ENV["GH_TOKEN"],
-    name: version,
-    tag_name: tag,
-    description: changelog,
-    commitish: "master",
-    upload_assets: Dir.glob("platforms/android/app/build/outputs/apk/release/*.apk")
-  )
-end
+    
+    Dir.chdir("..") do
+      version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
+      versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
+    end
+    
+    puts "platform:"  + platform
+    puts "flavor:"  + flavor
+    puts "version:"  + version
+    puts "versionCode:"  + versionCode
+
+    # sentry_create_release(
+    #   version: version, # release version to create
+    # )
+    build_github
+    # sentry_upload
+    changelog = get_changelog(platform:platform, flavor:flavor)
+    tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
+    add_git_tag(tag: tag)
+
+    push_git_tags(force:true)
+    set_github_release(
+      repository_name: $repository_name,
+      api_token: ENV["GH_TOKEN"],
+      name: version,
+      tag_name: tag,
+      description: changelog,
+      commitish: "master",
+      upload_assets: Dir.glob("platforms/android/app/build/outputs/apk/release/*.apk")
+    )
+  end
 
   desc 'Ship to Android Playstore Beta.'
   lane :beta do

@@ -92,5 +92,5 @@ themer.createShape('round', {
 });
 
 import { svelteNative } from 'svelte-native';
-import WeatherPage from './WeatherPage.svelte';
+import WeatherPage from './components/WeatherPage.svelte';
 svelteNative(WeatherPage, {});

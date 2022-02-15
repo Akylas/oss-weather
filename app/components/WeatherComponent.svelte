@@ -3,11 +3,11 @@
     import { Application } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import DailyView from '~/DailyView.svelte';
+    import DailyView from '~/components/DailyView.svelte';
     import { prefs } from '~/services/preferences';
-    import TopWeatherView from '~/TopWeatherView.svelte';
+    import TopWeatherView from '~/components/TopWeatherView.svelte';
     import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
-    import WeatherIcon from '~/WeatherIcon.svelte';
+    import WeatherIcon from '~/components/WeatherIcon.svelte';
 
     export let items: any[];
 

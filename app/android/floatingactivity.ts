@@ -312,7 +312,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 return;
             }
             const name = uri.getQueryParameter('name');
-            const BottomSheetWeatherPage = (await import('~/BottomSheetWeatherPage.svelte')).default;
+            const BottomSheetWeatherPage = (await import('~/components/BottomSheetWeatherPage.svelte')).default;
             console.log('showBottomSheet', name, typeof name);
             await showBottomSheet({
                 parent: rootView,

@@ -12,9 +12,9 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
-    import HourlyView from '~/HourlyView.svelte';
+    import HourlyView from '~/components/HourlyView.svelte';
     import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
-    import WeatherIcon from '~/WeatherIcon.svelte';
+    import WeatherIcon from '~/components/WeatherIcon.svelte';
 
     interface Item {
         alerts?: any;

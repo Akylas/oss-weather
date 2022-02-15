@@ -1,4 +1,4 @@
-/// <reference path="./node_modules/@nativescript/types-ios/lib/ios.d.ts" />
+//// <reference path="./node_modules/@nativescript/types-ios/lib/ios.d.ts" />
 /// <reference path="./node_modules/@nativescript/types-android/lib/android-26.d.ts" />
 /// <reference path="./node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="./node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
@@ -22,6 +22,9 @@ declare const DEFAULT_LOCATION: string;
 declare const GIT_URL: string;
 declare const STORE_LINK: string;
 declare const STORE_REVIEW_LINK: string;
+declare const __APP_ID__: string;
+declare const __APP_VERSION__: string;
+declare const __APP_BUILD_NUMBER__: string;
 // declare const process: { env: any };
 
 // Augment the NodeJS global type with our own extensions

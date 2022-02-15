@@ -319,6 +319,7 @@
 -keep,allowoptimization public class android.content.SharedPreferences.OnSharedPreferenceChangeListener** { public  *; }
 -keep,allowoptimization public class java.nio.ByteOrder** { public  *; }
 -keep,allowoptimization public class com.akylas.canvas.** { public protected *; }
+-keep,allowoptimization public class android.text.StaticLayout** { public  *; }
 -keep,allowoptimization public class android.graphics.DashPathEffect** { public  *; }
 -keep,allowoptimization public class android.graphics.LinearGradient** { public  *; }
 -keep,allowoptimization public class android.graphics.RadialGradient** { public  *; }
@@ -423,3 +424,6 @@
 -keep,allowoptimization public class android.content.res.TypedArray** { public  *; }
 -keep,allowoptimization public class androidx.appcompat.app.AppCompatDelegate** { public  *; }
 -keep,allowoptimization public class android.widget.Toast** { public  *; }
+-keep,allowoptimization public class com.nativescript.text.** { public protected *; }
+-keep,allowoptimization public class android.text.style.LineHeightSpan** { public  *; }
+-keep,allowoptimization public class android.text.style.LineHeightSpan.Standard** { public  *; }

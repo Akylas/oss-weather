@@ -1,24 +1,25 @@
+const ignoreWarnings = new Set(['a11y-no-onchange', 'a11y-label-has-associated-control']);
 module.exports = {
     extends: ['plugin:prettier/recommended'],
     env: {
         es6: true,
         node: true
     },
-    ignorePatterns: ['**/node_modules/**/*'],
+    ignorePatterns: ['**/node_modules/**/*', 'app/assets/**', 'platforms/**'],
     parser: '@typescript-eslint/parser',
+
     parserOptions: {
         ecmaVersion: 2019,
         sourceType: 'module',
-        parser: '@typescript-eslint/parser',
-        project: 'tsconfig.eslint.json',
-        extraFileExtensions: ['.svelte'],
+        project: ['tsconfig.eslint.json'],
+        // extraFileExtensions: ['.svelte'],
         warnOnUnsupportedTypeScriptVersion: false,
         tsconfigRootDir: __dirname
     },
     globals: { gVars: true, SENTRY_DSN: true, SENTRY_PREFIX: true, PRODUCTION: true, OWM_KEY: true },
     plugins: ['prettier', 'svelte3', '@typescript-eslint'],
     overrides: [
-        { files: '*.svelte', processor: 'svelte3/svelte3' },
+        { files: ['*.svelte'], processor: 'svelte3/svelte3' },
         {
             files: '*.ts',
             rules: {
@@ -27,6 +28,10 @@ module.exports = {
             }
         }
     ],
+    settings: {
+        'svelte3/ignore-warnings': (w) => ignoreWarnings.has(w && w.code),
+        'svelte3/typescript': true // load TypeScript as peer dependency
+    },
     rules: {
         'prettier/prettier': 'warn',
         'eslint-plugin-svelte3/invalid-binding': 'off',

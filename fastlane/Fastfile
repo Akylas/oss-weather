@@ -192,22 +192,17 @@ end
 
   desc 'Build the Android application.'
     lane :build do
-      prepare(platform:'android')
-      sh("tns", "build", "android", "--release", "--env.adhoc", "--aab",
-          "--key-store-path", "../" + ENV["KEYSTORE_PATH"],
-          "--key-store-password", ENV["KEYSTORE_PASSWORD"],
-          "--key-store-alias", ENV["KEYSTORE_ALIAS"],
-          "--key-store-alias-password", ENV["KEYSTORE_ALIAS_PASSWORD"]
-        )
+      # prepare(platform:'android')
+      sh("npm", "run", "build.android.production",
+        "--gradle="-PsplitEnabled""
+      )
   end
   desc 'Build the Android application For Github.'
   lane :build_github do
-    prepare(platform:'android')
-    sh("devns", "build", "android", "--release", "--env.adhoc",
-        "--key-store-path", "../" + ENV["KEYSTORE_PATH"],
-        "--key-store-password", ENV["KEYSTORE_PASSWORD"],
-        "--key-store-alias", ENV["KEYSTORE_ALIAS"],
-        "--key-store-alias-password", ENV["KEYSTORE_ALIAS_PASSWORD"]
+    # prepare(platform:'android')
+    sh("npm", "run", "build.android.production.fdroid",
+        "--env.noconsole",
+        "--gradle="-PsplitEnabled""
       )
 end
 
@@ -248,7 +243,7 @@ lane :github do
     tag_name: tag,
     description: changelog,
     commitish: "master",
-    upload_assets: ["platforms/android/app/build/outputs/apk/release/app-release.apk"]
+    upload_assets: Dir.glob("platforms/android/app/build/outputs/apk/release/*.apk")
   )
 end
 

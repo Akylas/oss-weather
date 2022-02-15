@@ -1,4 +1,6 @@
 ext {
+    compileSdk = 31
+    targetSdk = 31
     androidxVersion = "1.7.0"
     androidXAppCompat = "1.4.0"
     androidXAppCompatVersion = "1.4.0"

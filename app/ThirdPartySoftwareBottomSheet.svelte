@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Template } from 'svelte-native/components';
     import { openLink } from '~/utils/ui';
-    import { primaryColor } from './variables';
+    import { primaryColor } from '~/variables';
 
     const licences = require('~/licenses.json');
     const items = licences.dependencies;

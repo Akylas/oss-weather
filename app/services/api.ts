@@ -6,12 +6,13 @@ import { ApplicationEventData, off as applicationOff, on as applicationOn, resum
 import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import dayjs from 'dayjs';
-import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, windBeaufortIcon } from '~/helpers/formatter';
+import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, titlecase, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
 import { cloudyColor, createGlobalEventListener, globalObservable, rainColor, snowColor, sunnyColor } from '~/variables';
 import { Alert, CityWeather, Coord, Rain, Snow, Weather } from './owm';
 import { Photon } from './photon';
+import { capitalize } from '@nativescript-community/l';
 let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
 let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
 
@@ -237,14 +238,14 @@ class NetworkService extends Observable {
 
 export const networkService = new NetworkService();
 
-async function handleRequestResponse(response: https.HttpsResponse, requestParams: HttpRequestOptions, requestStartTime, retry) {
+async function handleRequestResponse<T>(response: https.HttpsResponse<https.HttpsResponseLegacy<T>>, requestParams: HttpRequestOptions, requestStartTime, retry) {
     const statusCode = response.statusCode;
-    let content;
+    let content: T;
     try {
         content = await response.content.toJSONAsync();
     } catch (err) {}
     if (!content) {
-        content = await response.content.toStringAsync();
+        content = (await response.content.toStringAsync()) as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
     if (Math.round(statusCode / 100) !== 2) {
@@ -252,7 +253,7 @@ async function handleRequestResponse(response: https.HttpsResponse, requestParam
         if (isJSON) {
             jsonReturn = content;
         } else {
-            const match = /<title>(.*)\n*<\/title>/.exec(content);
+            const match = /<title>(.*)\n*<\/title>/.exec(content as any as string);
             return Promise.reject(
                 new HTTPError({
                     statusCode,
@@ -295,10 +296,9 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
         delete requestParams.queryParams;
     }
     requestParams.headers = getRequestHeaders(requestParams);
-    requestParams.useLegacy = true;
 
     const requestStartTime = Date.now();
-    return https.request(requestParams).then((response) => handleRequestResponse(response, requestParams, requestStartTime, retry));
+    return https.request<T>(requestParams).then((response) => handleRequestResponse<T>(response, requestParams, requestStartTime, retry));
 }
 
 export interface OWMParams extends Partial<Coord> {
@@ -510,7 +510,7 @@ export async function getOWMWeather(lat: number, lon: number) {
             sunriseTime: result.current.sunrise * 1000,
             sunsetTime: result.current.sunset * 1000,
             icon: result.current.weather[0]?.icon,
-            description: result.current.weather[0]?.description,
+            description: titlecase(result.current.weather[0]?.description),
             windBeaufortIcon: windBeaufortIcon(result.current.wind_gust * 3.6),
             windIcon: windIcon(result.current.wind_deg)
         },
@@ -519,7 +519,7 @@ export async function getOWMWeather(lat: number, lon: number) {
                 const d = {} as any;
                 d.time = data.dt * 1000;
                 d.icon = data.weather[0]?.icon;
-                d.description = data.weather[0]?.description;
+                d.description = titlecase(data.weather[0]?.description);
                 d.windSpeed = data.wind_speed * 3.6;
                 d.windGust = data.wind_gust * 3.6;
                 d.temperatureMin = Math.round(data.temp.min);
@@ -570,7 +570,7 @@ export async function getOWMWeather(lat: number, lon: number) {
         const d = {} as any;
         d.time = data.dt * 1000;
         d.icon = data.weather[0]?.icon;
-        d.description = data.weather[0]?.description;
+        d.description = titlecase(data.weather[0]?.description);
         d.windSpeed = data.wind_speed * 3.6; // max value
         d.temperature = Math.round(data.temp);
 

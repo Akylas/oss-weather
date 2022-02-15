@@ -16,14 +16,14 @@ android {
       // but continue the build even when errors are found:
       abortOnError false
   }
-  splits {
-      abi {
-          enable gradle.startParameter.taskNames.contains("assembleRelease")
-          reset()
-          include  'x86_64', 'arm64-v8a', 'armeabi-v7a'
-          universalApk false
-      }
-  }
+  // splits {
+  //     abi {
+  //         enable gradle.startParameter.taskNames.contains("assembleRelease")
+  //         reset()
+  //         include  'x86_64', 'arm64-v8a', 'armeabi-v7a'
+  //         universalApk false
+  //     }
+  // }
   aaptOptions {
     additionalParameters "--no-version-vectors"  
   }  

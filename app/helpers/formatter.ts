@@ -100,7 +100,7 @@ export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, 
             if (options.roundedTo05 === true) {
                 return [(Math.round(value * 2) / 2).toFixed(1), toImperialUnit(unit, imperial)];
             }
-            return [value.toFixed(1), toImperialUnit(unit, imperial)];
+            return [value.toFixed(), toImperialUnit(unit, imperial)];
         // }
         default:
             return [value.toFixed(), toImperialUnit(unit, imperial)];

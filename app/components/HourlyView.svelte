@@ -4,7 +4,7 @@
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { backgroundColor, onImperialChanged } from '~/variables';
-    import WeatherCollectionItem from '~/WeatherCollectionItem.svelte';
+    import WeatherCollectionItem from '~/components/WeatherCollectionItem.svelte';
 
     export let items: any[];
     let collectionView: NativeViewElementNode<CollectionView>;

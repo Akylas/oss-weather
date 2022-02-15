@@ -6,7 +6,7 @@
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
     import { borderColor, imperial, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
-    import WeatherIcon from '~/WeatherIcon.svelte';
+    import WeatherIcon from '~/components/WeatherIcon.svelte';
 
     let textPaint: Paint;
     let textIconPaint: Paint;

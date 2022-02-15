@@ -3,7 +3,7 @@
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import CActionBar from '~/CActionBar.svelte';
+    import CActionBar from '~/components/CActionBar.svelte';
     import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';

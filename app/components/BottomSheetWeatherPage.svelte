@@ -2,9 +2,9 @@
     import { getFromLocation } from '@nativescript-community/geocoding';
     import { Application } from '@nativescript/core';
     import { closeBottomSheet } from '~/bottomsheet';
-    import CActionBar from '~/CActionBar.svelte';
+    import CActionBar from '~/components/CActionBar.svelte';
     import { getOWMWeather, networkService, prepareItems } from '~/services/api';
-    import WeatherComponent from '~/WeatherComponent.svelte';
+    import WeatherComponent from '~/components/WeatherComponent.svelte';
 
     let items = [];
     let loading = false;

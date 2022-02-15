@@ -14,13 +14,10 @@
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
     import { mdiFontFamily } from '~/variables';
-    import ActionSheet from '~/ActionSheet.svelte';
-    import AlertView from '~/AlertView.svelte';
-    import ApiKeysBottomSheet from '~/APIKeysBottomSheet.svelte';
-    import CActionBar from '~/CActionBar.svelte';
+    import CActionBar from '~/components/CActionBar.svelte';
     import { toggleTheme } from '~/helpers/theme';
-    import WeatherComponent from '~/WeatherComponent.svelte';
-    import WeatherMapPage from '~/WeatherMapPage.svelte';
+    import WeatherComponent from '~/components/WeatherComponent.svelte';
+    import WeatherMapPage from '~/components/WeatherMapPage.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -46,6 +43,7 @@
     let page: NativeViewElementNode<Page>;
     async function showOptions() {
         try {
+            const ActionSheet = (await import('~/components/ActionSheet.svelte')).default;
             const result: { icon: string; id: string; text: string } = await showBottomSheet({
                 parent: page,
                 view: ActionSheet,
@@ -90,7 +88,7 @@
                         toggleTheme();
                         break;
                     case 'about':
-                        const About = require('~/About.svelte').default;
+                        const About = require('~/components/About.svelte').default;
                         navigate({ page: About });
                         break;
                 }
@@ -204,6 +202,7 @@
     }
 
     async function askForApiKey() {
+        const ApiKeysBottomSheet = (await import('~/components/ApiKeysBottomSheet.svelte')).default;
         const result = await showBottomSheet({
             parent: page,
             view: ApiKeysBottomSheet,
@@ -247,6 +246,7 @@
             return;
         }
         try {
+            const AlertView = (await import('~/components/AlertView.svelte')).default;
             showBottomSheet({
                 parent: page,
                 view: AlertView,

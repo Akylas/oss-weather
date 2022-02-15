@@ -1,12 +1,11 @@
 <script context="module" lang="ts">
     import { Align, LinearGradient, Paint, Path, Style, TileMode } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
-    import { Screen } from '@nativescript/core/platform';
     import dayjs from 'dayjs';
+    import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { imperial, subtitleColor, textColor } from '~/variables';
-    import WeatherIcon from '~/WeatherIcon.svelte';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);

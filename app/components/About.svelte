@@ -4,13 +4,12 @@
     import { lc } from '~/helpers/locale';
     import { share } from '~/utils/share';
     import { openLink } from '~/utils/ui';
-    import CActionBar from './CActionBar.svelte';
-    import SettingLabelIcon from './SettingLabelIcon.svelte';
-    import ThirdPartySoftwareBottomSheet from './ThirdPartySoftwareBottomSheet.svelte';
+    import CActionBar from '~/components/CActionBar.svelte';
+    import SettingLabelIcon from '~/components/SettingLabelIcon.svelte';
 
     const appVersion = __APP_VERSION__ + '.' + __APP_BUILD_NUMBER__;
 
-    function onTap(command) {
+    async function onTap(command) {
         switch (command) {
             case 'github':
                 openLink(GIT_URL);
@@ -24,6 +23,7 @@
                 openUrl(STORE_REVIEW_LINK);
                 break;
             case 'third_party':
+                const ThirdPartySoftwareBottomSheet = (await import('~/components/ThirdPartySoftwareBottomSheet.svelte')).default;
                 showBottomSheet({
                     parent: this,
                     view: ThirdPartySoftwareBottomSheet,

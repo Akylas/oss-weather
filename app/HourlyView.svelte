@@ -3,8 +3,8 @@
     import { Color } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { backgroundColor, onImperialChanged } from './variables';
-    import WeatherCollectionItem from './WeatherCollectionItem.svelte';
+    import { backgroundColor, onImperialChanged } from '~/variables';
+    import WeatherCollectionItem from '~/WeatherCollectionItem.svelte';
 
     export let items: any[];
     let collectionView: NativeViewElementNode<CollectionView>;

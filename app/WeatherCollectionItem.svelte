@@ -1,31 +1,18 @@
 <script context="module" lang="ts">
     import { Align, LinearGradient, Paint, Path, Style, TileMode } from '@nativescript-community/ui-canvas';
+    import { Color } from '@nativescript/core';
     import { Screen } from '@nativescript/core/platform';
     import dayjs from 'dayjs';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { imperial, primaryColor, subtitleColor, textColor } from '~/variables';
-    import WeatherIcon from './WeatherIcon.svelte';
+    import { imperial, subtitleColor, textColor } from '~/variables';
+    import WeatherIcon from '~/WeatherIcon.svelte';
 
-    import { LineChart } from '@nativescript-community/ui-chart';
-    import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
-    import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
-    import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
-    import { LineData } from '@nativescript-community/ui-chart/data/LineData';
-    import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import { Color } from '@nativescript/core';
-
-    const deviceHeight = Math.round(Screen.mainScreen.heightDIPs);
     const textPaint = new Paint();
-    // textPaint.setFontFamily(latoFontFamily);
-    textPaint.setAntiAlias(true);
     textPaint.setTextAlign(Align.CENTER);
     const paint = new Paint();
-    paint.setAntiAlias(true);
     paint.setTextAlign(Align.CENTER);
     const pathPaint = new Paint();
-    pathPaint.setAntiAlias(true);
     pathPaint.setColor('blue');
     pathPaint.setStrokeWidth(5);
     pathPaint.setStyle(Style.STROKE);
@@ -85,7 +72,6 @@
         redraw();
     }
     textColor.subscribe(redraw);
-
 
     function drawOnCanvas(event) {
         const endDay = dayjs().endOf('d').valueOf();

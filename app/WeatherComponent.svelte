@@ -3,11 +3,11 @@
     import { Application } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import DailyView from './DailyView.svelte';
-import { prefs } from './services/preferences';
-    import TopWeatherView from './TopWeatherView.svelte';
-    import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from './variables';
-    import WeatherIcon from './WeatherIcon.svelte';
+    import DailyView from '~/DailyView.svelte';
+    import { prefs } from '~/services/preferences';
+    import TopWeatherView from '~/TopWeatherView.svelte';
+    import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
+    import WeatherIcon from '~/WeatherIcon.svelte';
 
     export let items: any[];
 
@@ -28,7 +28,6 @@ import { prefs } from './services/preferences';
             }
         }
     }
-
 
     prefs.on('key:animations', () => {
         collectionView.nativeView.refresh();

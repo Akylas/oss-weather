@@ -1,4 +1,3 @@
-import { getAppId } from '@nativescript-community/extendedinfo';
 import * as SentryType from '@nativescript-community/sentry';
 
 let Sentry: typeof SentryType;

@@ -4,7 +4,6 @@ import { showSnack } from '@nativescript-community/ui-material-snackbar';
 import { BaseError } from 'make-error';
 import { l } from '~/helpers/locale';
 import { NoNetworkError } from '~/services/api';
-// import { Sentry, isSentryEnabled } from '~/utils/sentry';
 
 function evalTemplateString(resource: string, obj: {}) {
     if (!obj) {
@@ -58,7 +57,7 @@ export class CustomError extends BaseError {
 
     toJSON() {
         const error = {
-            message: this.message,
+            message: this.message
         };
         Object.getOwnPropertyNames(this).forEach((key) => {
             if (typeof this[key] !== 'function') {
@@ -102,7 +101,7 @@ export async function showError(err: Error | string) {
         title,
         okButtonText: showSendBugReport ? lc('send_bug_report') : undefined,
         cancelButtonText: showSendBugReport ? lc('cancel') : lc('ok'),
-        message,
+        message
     });
     // if (result && isSentryEnabled) {
     //     Sentry.captureException(err);
@@ -113,6 +112,6 @@ export async function showError(err: Error | string) {
 export function alert(message: string) {
     return mdAlert({
         okButtonText: l('ok'),
-        message,
+        message
     });
 }

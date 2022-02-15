@@ -2,7 +2,7 @@
     import { Frame } from '@nativescript/core/ui/frame';
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
-    import { textColor } from './variables';
+    import { textColor } from '~/variables';
 
     export let title: string;
     export let showMenuIcon: boolean = false;

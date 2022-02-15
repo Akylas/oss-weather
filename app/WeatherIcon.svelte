@@ -1,18 +1,18 @@
 <script context="module" lang="ts">
-    import { getBoolean, getString } from '@nativescript/core/application-settings';
-    import { File, knownFolders, path } from '@nativescript/core/file-system';
+    import { getBoolean } from '@nativescript/core/application-settings';
+    import { knownFolders } from '@nativescript/core/file-system';
     import { prefs } from '~/services/preferences';
     const appPath = knownFolders.currentApp().path;
     const cache = new Map();
-    function loadLottieJSON(iconSrc) {
-        if (!cache.has(iconSrc)) {
-            const file = File.fromPath(`${path.join(appPath, 'assets/lottie', iconSrc + '.json')}`);
-            const value = file.readTextSync();
-            cache.set(iconSrc, value);
-            return value;
-        }
-        return cache.get(iconSrc);
-    }
+    // function loadLottieJSON(iconSrc) {
+    //     if (!cache.has(iconSrc)) {
+    //         const file = File.fromPath(`${path.join(appPath, 'assets/lottie', iconSrc + '.json')}`);
+    //         const value = file.readTextSync();
+    //         cache.set(iconSrc, value);
+    //         return value;
+    //     }
+    //     return cache.get(iconSrc);
+    // }
 </script>
 
 <script lang="ts">

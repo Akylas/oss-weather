@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Application } from '@nativescript/core';
-    import { closeBottomSheet } from './bottomsheet';
-    import CActionBar from './CActionBar.svelte';
-    import { getOWMWeather, networkService, prepareItems } from './services/api';
-    import WeatherComponent from './WeatherComponent.svelte';
     import { getFromLocation } from '@nativescript-community/geocoding';
+    import { Application } from '@nativescript/core';
+    import { closeBottomSheet } from '~/bottomsheet';
+    import CActionBar from '~/CActionBar.svelte';
+    import { getOWMWeather, networkService, prepareItems } from '~/services/api';
+    import WeatherComponent from '~/WeatherComponent.svelte';
 
     let items = [];
     let loading = false;
@@ -23,7 +23,6 @@
             const results = await getFromLocation(weatherLocation.coord.lat, weatherLocation.coord.lon, 10);
             if (DEV_LOG) {
                 console.error('found addresses', results);
-
             }
             if (results?.length > 0) {
                 name = results[0].locality;

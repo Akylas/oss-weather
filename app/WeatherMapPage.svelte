@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
     import { getString } from '@nativescript/core/application-settings';
     import { lc } from '~/helpers/locale';
-    import CActionBar from './CActionBar.svelte';
+    import CActionBar from '~/CActionBar.svelte';
 </script>
 
 <script lang="ts">

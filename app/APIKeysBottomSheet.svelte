@@ -3,7 +3,7 @@
     import { closeBottomSheet } from '~/bottomsheet';
     import { l } from '~/helpers/locale';
     import { setOWMApiKey } from '~/services/api';
-    import { openLink } from './utils/ui';
+    import { openLink } from '~/utils/ui';
 
     let owmApiKey = getString('owmApiKey');
     let canClose = false;

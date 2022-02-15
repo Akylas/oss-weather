@@ -12,9 +12,9 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
-    import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
-    import HourlyView from './HourlyView.svelte';
-    import WeatherIcon from './WeatherIcon.svelte';
+    import HourlyView from '~/HourlyView.svelte';
+    import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
+    import WeatherIcon from '~/WeatherIcon.svelte';
 
     interface Item {
         alerts?: any;
@@ -171,7 +171,7 @@
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
                     precipChartSet.setCubicIntensity(0.4);
                 } else {
-                    precipChartSet.setValues( data.filter((d, i) => i % 5 === 0));
+                    precipChartSet.setValues(data.filter((d, i) => i % 5 === 0));
                     needsUpdate = true;
                 }
 
@@ -239,31 +239,31 @@
         </cgroup>
 
         <cgroup paddingLeft={0} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
-            <cspan fontSize={28} lineheight={32} fontFamily={wiFontFamily} text={item.windIcon} />
-            <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
-            <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
+            <cspan fontSize={28} lineHeight={32} text={item.windIcon} />
+            <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]}/>
+            <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} fontFamily={wiFontFamily}/>
         </cgroup>
         <cgroup paddingLeft={55} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
-            <cspan fontSize={24} fontFamily={wiFontFamily} text={item.moonIcon} />
+            <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text={item.moonIcon} />
             <cspan text={'\n' + l('moon')} />
         </cgroup>
         {#if item.cloudCover > 0}
             <cgroup paddingLeft={110} paddingTop={40} fontSize={14} verticalAlignment="top" textAlignment="center" width={60} color={item.cloudColor}>
-                <cspan fontSize={24} fontFamily={wiFontFamily} text="wi-cloud" />
+                <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
                 <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
         {/if}
         {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}
             <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 165 : 110} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
-                <cspan fontSize={24} fontFamily={wiFontFamily} text="wi-raindrop" />
+                <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={item.precipIntensity >= 0.1 ? '\n' + formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
                 <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
         {/if}
         {#if item.uvIndex > 0}
-            <cgroup paddingLeft={item.cloudCover > 0 ? 220 : 165} paddingTop={44} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
-                <cspan fontSize={30} lineheight={28} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
+            <cgroup paddingLeft={item.cloudCover > 0 ? 220 : 165} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
+                <cspan fontSize={30} lineHeight={32} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
                 <cspan paddingTop={14} text={'\n' + Math.round(item.uvIndex)} />
             </cgroup>
         {/if}

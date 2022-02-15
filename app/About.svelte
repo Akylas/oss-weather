@@ -1,15 +1,14 @@
 <script lang="ts">
-    import * as EInfo from '@nativescript-community/extendedinfo';
     import { openUrl } from '@nativescript/core/utils/utils';
     import { showBottomSheet } from '~/bottomsheet';
-    import { l, lc } from '~/helpers/locale';
+    import { lc } from '~/helpers/locale';
     import { share } from '~/utils/share';
     import { openLink } from '~/utils/ui';
     import CActionBar from './CActionBar.svelte';
     import SettingLabelIcon from './SettingLabelIcon.svelte';
     import ThirdPartySoftwareBottomSheet from './ThirdPartySoftwareBottomSheet.svelte';
 
-    const appVersion = EInfo.getVersionNameSync() + '.' + EInfo.getBuildNumberSync();
+    const appVersion = __APP_VERSION__ + '.' + __APP_BUILD_NUMBER__;
 
     function onTap(command) {
         switch (command) {

@@ -3,7 +3,7 @@
     import { request as requestPerm } from '@nativescript-community/perms';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Application, CoreTypes, Page } from '@nativescript/core';
+    import { CoreTypes, Page } from '@nativescript/core';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
@@ -14,13 +14,13 @@
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
     import { mdiFontFamily } from '~/variables';
-    import ActionSheet from './ActionSheet.svelte';
-    import AlertView from './AlertView.svelte';
-    import ApiKeysBottomSheet from './APIKeysBottomSheet.svelte';
-    import CActionBar from './CActionBar.svelte';
-    import { toggleTheme } from './helpers/theme';
-    import WeatherComponent from './WeatherComponent.svelte';
-    import WeatherMapPage from './WeatherMapPage.svelte';
+    import ActionSheet from '~/ActionSheet.svelte';
+    import AlertView from '~/AlertView.svelte';
+    import ApiKeysBottomSheet from '~/APIKeysBottomSheet.svelte';
+    import CActionBar from '~/CActionBar.svelte';
+    import { toggleTheme } from '~/helpers/theme';
+    import WeatherComponent from '~/WeatherComponent.svelte';
+    import WeatherMapPage from '~/WeatherMapPage.svelte';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -90,7 +90,7 @@
                         toggleTheme();
                         break;
                     case 'about':
-                        const About = require('./About.svelte').default;
+                        const About = require('~/About.svelte').default;
                         navigate({ page: About });
                         break;
                 }
@@ -144,7 +144,7 @@
 
     async function searchCity() {
         try {
-            const SelectCity = require('./SelectCity.svelte').default;
+            const SelectCity = require('~/SelectCity.svelte').default;
 
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {

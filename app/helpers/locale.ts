@@ -1,4 +1,4 @@
-import { l, lc, loadLocaleJSON, lt, lu } from '@nativescript-community/l';
+import { capitalize, l, lc, loadLocaleJSON, lt, lu } from '@nativescript-community/l';
 import { getString, setString } from '@nativescript/core/application-settings';
 import { Device } from '@nativescript/core/platform';
 import dayjs from 'dayjs';
@@ -71,7 +71,7 @@ export function convertTime(date: number | string | dayjs.Dayjs, formatStr: stri
         if (!date['format']) {
             date = dayjs(date);
         }
-        return (date as dayjs.Dayjs).format(formatStr);
+        return capitalize((date as dayjs.Dayjs).format(formatStr));
     }
     return '';
 }

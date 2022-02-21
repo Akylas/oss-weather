@@ -1,4 +1,5 @@
 project.ext.abiCodes = ['armeabi':1, 'armeabi-v7a':2, 'arm64-v8a':3, 'x86':4, 'x86_64':5]
+def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 
 android { 
   // we only enable split if specified as an arg or if in debug and abiFilters is used(through cli)
@@ -56,7 +57,7 @@ android {
       def absolutePathToAppResources = getAppResourcesPath()
       proguardFiles getDefaultProguardFile(
         'proguard-android-optimize.txt'),
-        "$absolutePathToAppResources/Android/proguard-rules.pro"
+        "$BUILD_TOOLS_PATH/proguard-rules.pro"
 
       debuggable false
       jniDebuggable false

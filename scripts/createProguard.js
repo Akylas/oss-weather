@@ -1,13 +1,14 @@
 const fs = require('fs');
 const path = require('path');
-const whitelist = fs.readFileSync(path.join('platforms', 'android', 'build-tools', 'whitelist.mdg'), { encoding: 'utf-8' });
+const buildToolsPath = path.join('platforms', 'android', 'build-tools');
+const whitelist = fs.readFileSync(path.join(buildToolsPath, 'whitelist.mdg'), { encoding: 'utf-8' });
 const whitelistfilteredLines = [...new Set(whitelist.split('\n'))].filter((l) => l.length > 0 && !l.startsWith('//'));
-const blacklist = fs.readFileSync(path.join('platforms', 'android', 'build-tools', 'blacklist.mdg'), { encoding: 'utf-8' });
+const blacklist = fs.readFileSync(path.join(buildToolsPath, 'blacklist.mdg'), { encoding: 'utf-8' });
 const blacklistfilteredLines = [...new Set(blacklist.split('\n'))].filter((l) => l.length > 0 && !l.startsWith('//'));
 
 // const KEEP_PARAMS = '-keep,includedescriptorclasses,allowoptimization public class';
 const KEEP_PARAMS = '-keep,allowoptimization public class';
-const data = `#-dontobfuscate
+let data = `#-dontobfuscate
 -dontwarn **
 #-keepattributes *Annotation*, EnclosingMethod, Exceptions, InnerClasses
 -keepattributes EnclosingMethod, InnerClasses
@@ -29,4 +30,11 @@ ${whitelistfilteredLines
     .join('\n')}
 `;
 
-fs.writeFileSync(path.join('App_Resources', 'Android', 'proguard-rules.pro'), data);
+const appProguard = path.join('App_Resources', 'Android', 'proguard-rules.pro');
+if (fs.existsSync(appProguard)) {
+    data += '\n' + fs.readFileSync(appProguard, 'utf-8');
+}
+
+fs.writeFileSync(path.join(buildToolsPath, 'proguard-rules.pro'), data);
+
+console.log('updated proguard file!');

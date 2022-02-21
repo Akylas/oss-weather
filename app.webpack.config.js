@@ -370,22 +370,24 @@ module.exports = (env, params = {}) => {
             from: 'node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
             to: 'fonts',
             globOptions,
-            transform: {
-                transformer(content, path) {
-                    return new Promise((resolve, reject) => {
-                        new Fontmin()
-                            .src(content)
-                            .use(Fontmin.glyph({ subset: usedMDIICons }))
-                            .run(function (err, files) {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve(files[0].contents);
-                                }
-                            });
-                    });
-                }
-            }
+            transform: !!production
+                ? {
+                      transformer(content, path) {
+                          return new Promise((resolve, reject) => {
+                              new Fontmin()
+                                  .src(content)
+                                  .use(Fontmin.glyph({ subset: usedMDIICons }))
+                                  .run(function (err, files) {
+                                      if (err) {
+                                          reject(err);
+                                      } else {
+                                          resolve(files[0].contents);
+                                      }
+                                  });
+                          });
+                      }
+                  }
+                : undefined
         },
         {
             from: 'fonts/weather-icons/weathericons-regular-webfont.ttf',

@@ -142,7 +142,7 @@
 
     async function searchCity() {
         try {
-            const SelectCity = require('~/SelectCity.svelte').default;
+            const SelectCity = require('~/components/SelectCity.svelte').default;
 
             const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {
@@ -202,7 +202,7 @@
     }
 
     async function askForApiKey() {
-        const ApiKeysBottomSheet = (await import('~/components/ApiKeysBottomSheet.svelte')).default;
+        const ApiKeysBottomSheet = (await import('~/components/APIKeysBottomSheet.svelte')).default;
         const result = await showBottomSheet({
             parent: page,
             view: ApiKeysBottomSheet,
@@ -290,11 +290,11 @@
         {:else}
             <gridlayout id="teststack" row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <label text={l('no_location_desc')} textAlignment="center" marginBottom={20} />
-                <mdbutton row={1} margin="4 0 4 0" padding="4" variant="outline" on:tap={getLocationAndWeather} verticalTextAlignment="center">
+                <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center">
                     <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
                     <cspan text={l('my_location').toUpperCase()} />
                 </mdbutton>
-                <mdbutton row={2} margin="4 0 4 0" padding="4" variant="outline" on:tap={searchCity} verticalTextAlignment="center">
+                <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" verticalTextAlignment="center">
                     <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" />
                     <cspan text={l('search_location').toUpperCase()} />
                 </mdbutton>

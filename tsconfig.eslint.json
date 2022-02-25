@@ -1,5 +1,5 @@
 {
 
     "extends": "./tsconfig.json",
-    "include": ["**/*", ".eslintrc.js", "app.webpack.config.js"]
+    "include": ["**/*", ".eslintrc.js", "*webpack.config.js"]
 }

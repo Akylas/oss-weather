@@ -239,7 +239,7 @@ end
       tag_name: tag,
       description: changelog,
       commitish: "master",
-      upload_assets: Dir.glob("../platforms/android/app/build/outputs/apk/release/*.apk")
+      upload_assets: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk"))
     )
   end
 

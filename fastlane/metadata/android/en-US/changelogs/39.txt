@@ -1,5 +1,0 @@
-*Bug fixes*
-- prevent crash oniOS
-- *android:* floating activity fix
-- show temp rounded
-- *iOS:* prevent crash

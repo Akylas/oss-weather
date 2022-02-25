@@ -1,2 +1,1 @@
-*Bug fixes*
-- buttons text alignment fix
+* Bug fixes and corrections

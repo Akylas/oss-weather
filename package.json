@@ -8,7 +8,7 @@
         "weathermap": "webpack --config weathermap.webpack.config.js --env production"
     },
     "main": "app/main",
-    "description": "NativeScript Application",
+    "description": "Access weather data from the public OpenWeatherMap data",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/farfromrefug/oss-weather/issues"

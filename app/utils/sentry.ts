@@ -12,7 +12,7 @@ export async function startSentry() {
                 dsn: SENTRY_DSN,
                 appPrefix: SENTRY_PREFIX,
                 release: `${__APP_ID__}@${__APP_VERSION__}+${__APP_BUILD_NUMBER__}`,
-                dist: `${__APP_BUILD_NUMBER__}.${global.isAndroid ? 'android' : 'ios'}`
+                dist: `${__APP_BUILD_NUMBER__}.${__ANDROID__ ? 'android' : 'ios'}`
             });
             Sentry.setTag('locale', Device.language);
             isSentryEnabled = true;

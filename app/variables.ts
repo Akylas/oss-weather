@@ -24,13 +24,11 @@ export function createGlobalEventListener(eventName: string) {
     };
 }
 
-// console.log('loading variables', locals);
-
 export const primaryColor = new Color(locals.primaryColor);
 export const accentColor = new Color(locals.accentColor);
 export const darkColor = new Color(locals.darkColor);
 // export const backgroundColor: string = locals.backgroundColor;
-export const latoFontFamily: string = locals.latoFontFamily;
+// export const latoFontFamily: string = locals.latoFontFamily;
 export const wiFontFamily: string = locals.wiFontFamily;
 
 export const mdiFontFamily: string = locals.mdiFontFamily;
@@ -43,7 +41,7 @@ export const screenWidthDips = Screen.mainScreen.widthDIPs;
 export const screenScale = Screen.mainScreen.scale;
 export let navigationBarHeight: number = parseFloat(locals.navigationBarHeight);
 
-if (global.isAndroid) {
+if (__ANDROID__) {
     const context: android.content.Context = ad.getApplicationContext();
     const hasPermanentMenuKey = android.view.ViewConfiguration.get(context).hasPermanentMenuKey();
     if (hasPermanentMenuKey) {
@@ -87,11 +85,9 @@ prefs.on('key:imperial', () => {
 });
 
 export function updateThemeColors(theme: string, force = false) {
-    // console.log('updateThemeColors', theme, force);
     try {
         if (!force) {
             theme = Application.systemAppearance();
-            // console.log('systemAppearance', theme);
         }
     } catch (err) {
         console.error('updateThemeColors', err);

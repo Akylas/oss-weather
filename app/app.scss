@@ -1,9 +1,6 @@
 ﻿@use "sass:color";
 @import './variables';
 
-.lato {
-    font-family: $lato-fontFamily;
-}
 .forecastfont {
     font-family: $forecastfont-fontFamily;
 }
@@ -18,7 +15,6 @@ htmllabel,
 canvaslabel,
 label,
 mdbutton {
-    // @extend .lato;
     color: black;
     .ns-dark &,
     .ns-black & {

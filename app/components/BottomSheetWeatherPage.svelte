@@ -36,7 +36,7 @@
         loading = true;
         try {
             const data = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
-            console.log('refresh', name, typeof name, weatherLocation);
+            DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
             if (!name) {
                 name = weatherLocation.coord.lat.toFixed(2) + ',' + weatherLocation.coord.lon.toFixed(2);
                 geocodeAddress();

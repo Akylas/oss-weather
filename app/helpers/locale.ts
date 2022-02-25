@@ -23,14 +23,14 @@ $lang.subscribe((newLang: string) => {
     try {
         require(`dayjs/locale/${newLang}`);
     } catch (err) {
-        console.log('failed to load dayjs locale', lang, `dayjs/locale/${newLang}`, err);
+        console.error('failed to load dayjs locale', lang, `dayjs/locale/${newLang}`, err);
     }
     dayjs.locale(lang); // switch back to default English locale globally
     try {
         const localeData = require(`~/i18n/${lang}.json`);
         loadLocaleJSON(localeData);
     } catch (err) {
-        console.log('failed to load lang json', lang, `~/i18n/${lang}.json`, err);
+        console.error('failed to load lang json', lang, `~/i18n/${lang}.json`, err);
     }
     globalObservable.notify({ eventName: 'language', data: lang });
 });
@@ -78,7 +78,7 @@ export function convertTime(date: number | string | dayjs.Dayjs, formatStr: stri
 
 prefs.on('key:language', () => {
     const newLanguage = getString('language');
-    console.log('language changed', newLanguage);
+    DEV_LOG && console.log('language changed', newLanguage);
     // on pref change we are updating
     if (newLanguage === lang) {
         return;

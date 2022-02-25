@@ -35,7 +35,8 @@
 
     let items = [];
 
-    let desiredAccuracy = global.isAndroid ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
+    //@ts-ignore
+    let desiredAccuracy = __ANDROID__ ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
     let timeout = 20000;
     let minimumUpdateTime = 1000; // Should update every 1 second according ;
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
@@ -113,7 +114,6 @@
             lastUpdate = Date.now();
             await updateView();
         } catch (err) {
-            console.log(err);
             if (err.statusCode === 403) {
                 setOWMApiKey(null);
                 askForApiKey();
@@ -237,7 +237,7 @@
     });
 
     onLanguageChanged((lang) => {
-        console.log('refresh triggered by lang change');
+        DEV_LOG && console.log('refresh triggered by lang change');
         refresh();
     });
 

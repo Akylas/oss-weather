@@ -22,7 +22,7 @@
     function onCollectionViewLayoutCompleted() {
         if (!isLayedout) {
             isLayedout = true;
-            if (global.isAndroid) {
+            if (__ANDROID__) {
                 // this is to test app runtime
                 Application.android.startActivity.reportFullyDrawn();
             }

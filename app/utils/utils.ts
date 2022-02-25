@@ -3,7 +3,7 @@ import { knownFolders } from '@nativescript/core/file-system';
 
 export function getDataFolder() {
     let dataFolder;
-    if (global.isAndroid) {
+    if (__ANDROID__) {
         const checkExternalMedia = function () {
             let mExternalStorageAvailable = false;
             let mExternalStorageWriteable = false;

@@ -74,6 +74,7 @@ lane :build_flavor do |params|
     version: version, # release version to create
     app_identifier: $app_id, # pass in the bundle_identifer of your app
   )
+  push_to_git_remote
   sentry_set_commits(
     version: version,
     app_identifier: $app_id, # pass in the bundle_identifer of your app
@@ -224,11 +225,8 @@ end
     puts "version:"  + version
     puts "versionCode:"  + versionCode
 
-    # sentry_create_release(
-    #   version: version, # release version to create
-    # )
     build_github
-    # sentry_upload
+    
     changelog = get_changelog(platform:platform, flavor:flavor)
     tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
     add_git_tag(tag: tag)

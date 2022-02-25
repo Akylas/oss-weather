@@ -5,6 +5,7 @@ android {
   // we only enable split if specified as an arg or if in debug and abiFilters is used(through cli)
   def splitEnabled = (gradle.startParameter.taskNames.contains("assembleDebug") && project.hasProperty('abiFilters')) || project.hasProperty('splitEnabled');
   defaultConfig {  
+    applicationId "com.akylas.weather"
     minSdkVersion 19
     versionCode 44
     resConfigs "en", "fr", "es"

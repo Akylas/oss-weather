@@ -26,6 +26,7 @@
   "gps_location": "buscar ubicación GPS",
   "gps_not_authorized": "habilite el GPS y autorice a OSS Weather a usarlo para determinar su ubicación",
   "gps_not_enabled": "habilite el GPS para permitir que OSS Weather determine su ubicación",
+  "gps_off": "la ubicación está desactivada",
   "imperial_units": "Unidades imperiales (°F, mPh),.",
   "ios": {
     "info": {

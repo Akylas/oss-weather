@@ -2,17 +2,12 @@ module.exports = {
     id: 'com.akylas.weather',
     ignoredNativeDependencies: ['@nativescript-community/sentry'],
     appResourcesPath: 'App_Resources',
-    webpackConfigPath: './app.webpack.config.js',
+    webpackConfigPath: 'app.webpack.config.js',
     appPath: 'app',
-    forceLog: false,
-    // profiling: 'timeline',
     android: {
-        maxLogcatObjectSize: 4096,
         markingMode: 'none',
-        // v8Flags: '--expose_gc',
-        codeCache: true,
-        enableMultithreadedJavascript: false,
-        forceLog: false
+        codeCache: true
     },
     cssParser: 'rework'
 };
+    

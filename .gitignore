@@ -57,3 +57,4 @@ pnpm-lock.yaml
 *.zip
 dist
 .vscode
+/webpack.stats.json

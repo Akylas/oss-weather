@@ -21,8 +21,8 @@
         "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "es2017", "dom"],
-        "baseUrl": ".",
         "types": ["node", "svelte"],  
+        "baseUrl": ".",
         "paths": {
             "~/*": ["app/*"]
         }

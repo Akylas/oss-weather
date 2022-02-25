@@ -12,7 +12,7 @@ fastlane_version '2.135.2'
 $app_id = 'com.akylas.weather'
 $lang = 'en-US'
 $ios_scheme = 'nsforecastie'
-$repository_name = 'farfromrefug/ns-forecastie'
+$repository_name = 'farfromrefug/oss-weather'
 
 desc 'test lane'
 lane :test do

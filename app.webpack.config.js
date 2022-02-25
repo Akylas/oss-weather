@@ -31,9 +31,10 @@ module.exports = (env, params = {}) => {
             {},
             {
                 production: true,
-                sentry: true,
-                sourceMap: true,
-                uploadSentry: true,
+                sentry: false,
+                uploadSentry: false,
+                apiKeys: true,
+                sourceMap: false,
                 uglify: true
             },
             env
@@ -55,6 +56,7 @@ module.exports = (env, params = {}) => {
         noconsole, // --env.noconsole
         devlog, // --env.devlog
         fakeall, // --env.fakeall
+        profile, // --env.profile
         fork = true, // --env.fakeall
         adhoc, // --env.adhoc
         locale = 'auto', // --env.locale
@@ -65,26 +67,23 @@ module.exports = (env, params = {}) => {
         includeOWMKey, // --env.includeOWMKey
         includeDefaultLocation // --env.includeDefaultLocation
     } = env;
-    console.log('env', env);
-    env.appComponents = env.appComponents || [];
-    env.appComponents.push('~/android/floatingactivity');
     env.appPath = nconfig.appPath;
     env.appResourcesPath = nconfig.appResourcesPath;
+    env.appComponents = env.appComponents || [];
+    env.appComponents.push('~/android/floatingactivity');
     const config = webpackConfig(env, params);
+
+    if (profile) {
+        config.profile = true;
+        config.stats = { preset: 'minimal', chunkModules: true, modules: true };
+    }
+
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
-    const tsconfig = 'tsconfig.json';
     const projectRoot = params.projectRoot || __dirname;
     const dist = nsWebpack.Utils.platform.getDistPath();
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
-    // config.stats = {
-    //     modulesSpace:Infinity,
-    //     optimizationBailout: true
-
-    // }
-
-    // safe as long as we dont use calc in css
     config.externals.push('~/licenses.json');
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
@@ -92,18 +91,12 @@ module.exports = (env, params = {}) => {
         }
         cb();
     });
-    // console.log('config.externals', config.externals);
 
     const coreModulesPackageName = fork ? '@akylas/nativescript' : '@nativescript/core';
     config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
     Object.assign(config.resolve.alias, {
         '@nativescript/core': `${coreModulesPackageName}`,
-        'tns-core-modules': `${coreModulesPackageName}`,
-        '@nativescript/core/accessibility$': '~/acessibilityShim',
-        '../../../accessibility$': '~/acessibilityShim',
-        '../../accessibility$': '~/acessibilityShim',
-        [`${coreModulesPackageName}/accessibility$`]: '~/acessibilityShim'
-        // 'svelte-native': '@akylas/svelte-native'
+        'tns-core-modules': `${coreModulesPackageName}`
     });
     let appVersion;
     let buildNumber;
@@ -119,8 +112,6 @@ module.exports = (env, params = {}) => {
         buildNumber = plistData.match(/<key>CFBundleVersion<\/key>[\s\n]*<string>([0-9]*)<\/string>/)[1];
     }
 
-    console.log('coreModulesPackageName', coreModulesPackageName);
-
     const package = require('./package.json');
     const nsconfig = require('./nativescript.config.js');
     const isIOS = platform === 'ios';
@@ -130,7 +121,6 @@ module.exports = (env, params = {}) => {
     const supportedLocales = readdirSync(join(projectRoot, appPath, 'i18n'))
         .filter((s) => s.endsWith('.json'))
         .map((s) => s.replace('.json', ''));
-    console.log('locales', supportedLocales);
     const defines = {
         PRODUCTION: !!production,
         process: 'global.process',
@@ -139,9 +129,8 @@ module.exports = (env, params = {}) => {
         __UI_USE_EXTERNAL_RENDERER__: true,
         __UI_USE_XML_PARSER__: false,
         'global.__AUTO_REGISTER_UI_MODULES__': false,
-        'global.isIOS': isIOS,
-        'global.autoRegisterUIModules': false,
-        'global.isAndroid': isAndroid,
+        __IOS__: isIOS,
+        __ANDROID__: isAndroid,
         'global.autoLoadPolyfills': false,
         'gVars.internalApp': false,
         TNS_ENV: JSON.stringify(mode),
@@ -175,6 +164,7 @@ module.exports = (env, params = {}) => {
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
             : 'undefined'
     };
+    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
 
     const symbolsParser = require('scss-symbols-parser');
     const mdiSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString());
@@ -186,7 +176,6 @@ module.exports = (env, params = {}) => {
     const weatherSymbols = symbolsParser.parseSymbols(readFileSync(weatherIconsCss).toString()).imports.reduce(function (acc, value) {
         return acc.concat(symbolsParser.parseSymbols(readFileSync(resolve(dirname(weatherIconsCss), value.filepath)).toString()).variables);
     }, []);
-    // console.log('weatherSymbols', weatherSymbols);
     const weatherIcons = weatherSymbols.reduce(function (acc, value) {
         acc[value.name.slice(1)] = value.value.slice(2, -1);
         return acc;
@@ -305,53 +294,6 @@ module.exports = (env, params = {}) => {
             }
         ]
     });
-    // if (!!production) {
-    config.module.rules.push({
-        // rules to replace mdi icons and not use nativescript-font-icon
-        test: /\.(js)$/,
-        use: [
-            {
-                loader: 'string-replace-loader',
-                options: {
-                    search: '__decorate\\(\\[[\\s\\n]*profile([^;]*)\\.prototype,\\s*"(.*?)",\\s*null\\);',
-                    replace: (match, p1, offset, string) => '',
-                    flags: 'gm'
-                }
-            },
-            {
-                loader: 'string-replace-loader',
-                options: {
-                    search: "profile\\(\\s*'(.*?)',",
-                    replace: (match, p1, offset, string) => '(',
-                    flags: 'g'
-                }
-            }
-        ]
-    });
-    // rules to clean up all Trace in production
-    // we must run it for all files even node_modules
-    config.module.rules.push({
-        test: /\.(js)$/,
-        use: [
-            {
-                loader: 'string-replace-loader',
-                options: {
-                    search: '(log|logger)\\.(debug|info)\\(\\(\\)(.*)\\)',
-                    replace: (match, p1, offset, string) => '',
-                    flags: 'g'
-                }
-            },
-            {
-                loader: 'string-replace-loader',
-                options: {
-                    search: 'Trace\\.isEnabled\\(\\)',
-                    replace: 'false',
-                    flags: 'g'
-                }
-            }
-        ]
-    });
-    // }
     // we remove default rules
     config.plugins = config.plugins.filter((p) => ['CopyPlugin', 'ForkTsCheckerWebpackPlugin'].indexOf(p.constructor.name) === -1);
     // we add our rules
@@ -393,30 +335,34 @@ module.exports = (env, params = {}) => {
             from: 'fonts/weather-icons/weathericons-regular-webfont.ttf',
             to: 'fonts',
             globOptions,
-            transform: {
-                transformer(content, path) {
-                    return new Promise((resolve, reject) => {
-                        new Fontmin()
-                            .src(content)
-                            .use(Fontmin.glyph({ subset: usedWIICons }))
-                            .run(function (err, files) {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve(files[0].contents);
-                                }
-                            });
-                    });
-                }
-            }
+            transform: !!production
+                ? {
+                      transformer(content, path) {
+                          return new Promise((resolve, reject) => {
+                              new Fontmin()
+                                  .src(content)
+                                  .use(Fontmin.glyph({ subset: usedWIICons }))
+                                  .run(function (err, files) {
+                                      if (err) {
+                                          reject(err);
+                                      } else {
+                                          resolve(files[0].contents);
+                                      }
+                                  });
+                          });
+                      }
+                  }
+                : undefined
         }
     ];
+    config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
 
     config.plugins.unshift(
         new webpack.ProvidePlugin({
             svN: '~/svelteNamespace'
         })
     );
+
     config.plugins.unshift(
         new webpack.ProvidePlugin({
             setTimeout: [require.resolve(coreModulesPackageName + '/timer/index.' + platform), 'setTimeout'],
@@ -427,16 +373,100 @@ module.exports = (env, params = {}) => {
             cancelAnimationFrame: [require.resolve(coreModulesPackageName + '/animation-frame'), 'cancelAnimationFrame']
         })
     );
-    config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
-    config.plugins.push(new IgnoreNotFoundExportPlugin());
-    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')})$`)));
+
+    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|nativescript-carto|nativescript-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
+
+    config.plugins.push(new IgnoreNotFoundExportPlugin());
+
+    const nativescriptReplace = '(NativeScript[\\/]dist[\\/]packages[\\/]core|@nativescript/core)';
+    config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(/http$/, (resource) => {
+            if (resource.context.match(nativescriptReplace)) {
+                resource.request = '@nativescript-community/https';
+            }
+        })
+    );
+
+    config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(/accessibility$/, (resource) => {
+            if (resource.context.match(nativescriptReplace)) {
+                resource.request = '~/shims/accessibility';
+            }
+        })
+    );
+    config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(/action-bar$/, (resource) => {
+            if (resource.context.match(nativescriptReplace)) {
+                resource.request = '~/shims/action-bar';
+            }
+        })
+    );
 
     // save as long as we dont use calc in css
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /punnycode$/ }));
-    // config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /accessibility$/ }));
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^url$/ }));
+
+    if (!!production) {
+        config.plugins.push(
+            new webpack.NormalModuleReplacementPlugin(/profiling$/, (resource) => {
+                if (resource.context.match(nativescriptReplace)) {
+                    resource.request = '~/shims/profile';
+                }
+            }),
+            new webpack.NormalModuleReplacementPlugin(/trace$/, (resource) => {
+                if (resource.context.match(nativescriptReplace)) {
+                    resource.request = '~/shims/trace';
+                }
+            })
+        );
+        config.module.rules.push(
+            {
+                // rules to replace mdi icons and not use nativescript-font-icon
+                test: /\.(js)$/,
+                use: [
+                    {
+                        loader: 'string-replace-loader',
+                        options: {
+                            search: '^__decorate\\(\\[((\\s|\\t|\\n)*?)profile((\\s|\\t|\\n)*?)\\],.*?,.*?,.*?\\);?',
+                            replace: (match, p1, offset, string) => '',
+                            flags: 'gm'
+                        }
+                    }
+                ]
+            },
+            {
+                // rules to replace mdi icons and not use nativescript-font-icon
+                test: /\.(ts)$/,
+                use: [
+                    {
+                        loader: 'string-replace-loader',
+                        options: {
+                            search: '@profile',
+                            replace: (match, p1, offset, string) => '',
+                            flags: ''
+                        }
+                    }
+                ]
+            },
+            // rules to clean up all Trace in production
+            // we must run it for all files even node_modules
+            {
+                test: /\.(ts|js)$/,
+                use: [
+                    {
+                        loader: 'string-replace-loader',
+                        options: {
+                            search: 'if\\s*\\(\\s*Trace.isEnabled\\(\\)\\s*\\)',
+                            replace: 'if (false)',
+                            flags: 'g'
+                        }
+                    }
+                ]
+            }
+        );
+    }
 
     if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
@@ -475,10 +505,8 @@ module.exports = (env, params = {}) => {
     //         })
     //     );
     // }
-    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|nativescript-carto|nativescript-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
     config.optimization.minimize = uglify !== undefined ? uglify : production;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
-    console.log('isAnySourceMapEnabled', isAnySourceMapEnabled);
     config.optimization.minimizer = [
         new TerserPlugin({
             parallel: true,

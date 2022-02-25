@@ -7,16 +7,13 @@ import {
     AndroidApplication,
     Application,
     ApplicationEventData,
-    Device,
     Frame,
     GridLayout,
     Trace,
-    View,
-    profile
+    View
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { showBottomSheet } from '~/bottomsheet';
-import Theme from '@nativescript-community/css-theme';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -48,7 +45,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         return this._rootView;
     }
 
-    @profile
     public onCreate(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, intentOrSuperFunc: android.content.Intent | Function, superFunc?: Function): void {
         const intent: android.content.Intent = superFunc ? (intentOrSuperFunc as android.content.Intent) : undefined;
         if (!superFunc) {
@@ -85,7 +81,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         moduleLoaded = true;
     }
 
-    @profile
     public onSaveInstanceState(activity: androidx.appcompat.app.AppCompatActivity, outState: android.os.Bundle, superFunc: Function): void {
         superFunc.call(activity, outState);
         const rootView = this._rootView;
@@ -97,7 +92,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         outState.putInt(ROOT_VIEW_ID_EXTRA, rootView._domId);
     }
 
-    @profile
     public onNewIntent(activity: androidx.appcompat.app.AppCompatActivity, intent: android.content.Intent, superSetIntentFunc: Function, superFunc: Function): void {
         superFunc.call(activity, intent);
         superSetIntentFunc.call(activity, intent);
@@ -116,7 +110,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         // }
     }
 
-    @profile
     public onStart(activity: any, superFunc: Function): void {
         superFunc.call(activity);
 
@@ -130,7 +123,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         }
     }
 
-    @profile
     public onStop(activity: any, superFunc: Function): void {
         superFunc.call(activity);
 
@@ -144,7 +136,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         }
     }
 
-    @profile
     public onPostResume(activity: any, superFunc: Function): void {
         superFunc.call(activity);
 
@@ -168,7 +159,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         }
     }
 
-    @profile
     public onDestroy(activity: any, superFunc: Function): void {
         try {
             if (Trace.isEnabled()) {
@@ -187,7 +177,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         }
     }
 
-    @profile
     public onBackPressed(activity: any, superFunc: Function): void {
         if (Trace.isEnabled()) {
             Trace.write('NativeScriptActivity.onBackPressed;', Trace.categories.NativeLifecycle);
@@ -227,7 +216,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         }
     }
 
-    @profile
     public onRequestPermissionsResult(activity: any, requestCode: number, permissions: String[], grantResults: number[], superFunc: Function): void {
         if (Trace.isEnabled()) {
             Trace.write('NativeScriptActivity.onRequestPermissionsResult;', Trace.categories.NativeLifecycle);
@@ -243,7 +231,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         } as AndroidActivityRequestPermissionsEventData);
     }
 
-    @profile
     public onActivityResult(activity: any, requestCode: number, resultCode: number, data: android.content.Intent, superFunc: Function): void {
         superFunc.call(activity, requestCode, resultCode, data);
         if (Trace.isEnabled()) {
@@ -294,7 +281,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             // this._rootView.cssClasses.add(CSSUtils.ROOT_VIEW_CSS_CLASS);
             const rootViewCssClasses = CSSUtils.getSystemCssClasses();
             rootViewCssClasses.forEach((c) => this._rootView.cssClasses.add(c));
-            // console.log('theme', Theme.getMode(), Application.android.systemAppearance, rootViewCssClasses, Array.from(this._rootView.cssClasses), this._rootView);
         }
 
         // setup view as styleScopeHost
@@ -313,7 +299,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             }
             const name = uri.getQueryParameter('name');
             const BottomSheetWeatherPage = (await import('~/components/BottomSheetWeatherPage.svelte')).default;
-            console.log('showBottomSheet', name, typeof name);
             await showBottomSheet({
                 parent: rootView,
                 view: BottomSheetWeatherPage,

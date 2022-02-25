@@ -1,9 +1,0 @@
-*Features*
-- imperial units support
-
-*Bug fixes*
-- remove lato font and use system font (smaller app)
-- use N color
-- openstreetmap maps
-- new hourly view
-- wind computation fixes

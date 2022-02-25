@@ -1,2 +1,0 @@
-*Bug fixes*
-- weather map only when location

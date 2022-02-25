@@ -1,2 +1,0 @@
-*Bug fixes*
-- crash fix for adhoc/sentry

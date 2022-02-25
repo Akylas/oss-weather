@@ -6,7 +6,7 @@ android {
   def splitEnabled = (gradle.startParameter.taskNames.contains("assembleDebug") && project.hasProperty('abiFilters')) || project.hasProperty('splitEnabled');
   defaultConfig {  
     minSdkVersion 19
-    versionCode 43
+    versionCode 44
     resConfigs "en", "fr", "es"
     versionName "1.2.1"
     ndk {

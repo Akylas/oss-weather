@@ -1,14 +1,19 @@
 ext {
     compileSdk = 31
     targetSdk = 31
+
+    // buildToolsVersion = "32.0.0"
+    // androidBuildToolsVersion = "7.1.2"
+    // kotlinVersion= "1.5.31"
+
     androidxVersion = "1.7.0"
-    androidXAppCompat = "1.4.0"
-    androidXAppCompatVersion = "1.4.0"
-    androidXFragment = "1.4.0"
+    androidXAppCompat = "1.4.1"
+    androidXAppCompatVersion = "1.4.1"
+    androidXFragment = "1.4.1"
     androidXTransition = "1.4.1"
     androidXRecyclerViewVersion = "1.2.1"
     androidXSwipeRefreshLayoutViewVersion = "1.1.0"
-    androidXMaterial = "1.5.0-beta01"
+    androidXMaterial = "1.6.0-alpha02"
     androidXBrowser = "1.4.0"
     okHttpVersion = "3.12.10"
 }

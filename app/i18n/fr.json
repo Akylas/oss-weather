@@ -1,6 +1,7 @@
 {
   "about": "à propos",
   "about_to_quit": "l'application est sur le point de se fermer car elle ne possède pas de clé API",
+  "gps_off": "La localisation est désactivée",
   "animations": "animations",
   "api_key": "clé API",
   "api_key_required": "Clé API requise",

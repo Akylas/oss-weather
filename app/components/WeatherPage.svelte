@@ -4,12 +4,13 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { CoreTypes, Page } from '@nativescript/core';
+    import { alert as mdAlert, confirm } from '@nativescript-community/ui-material-dialogs';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { showBottomSheet } from '~/bottomsheet';
-    import { l, onLanguageChanged } from '~/helpers/locale';
+    import { l, lc, onLanguageChanged } from '~/helpers/locale';
     import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, setOWMApiKey } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
@@ -165,16 +166,28 @@
             if ((Array.isArray(result) && result[0] !== 'authorized') || Object.keys(result).some((s) => result[s] !== 'authorized')) {
                 return alert(l('missing_location_perm'));
             }
-            loading = true;
             if (!gps) {
                 gps = new GPS();
             }
-            const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
-            if (location) {
-                saveLocation({
-                    name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
-                    coord: location
+            if (!gps.isEnabled()) {
+                const r = await confirm({
+                    title: lc('gps_off'),
+                    okButtonText: lc('settings'),
+                    cancelButtonText: lc('close')
                 });
+                if (__ANDROID__ && r) {
+                    await gps.openGPSSettings();
+                }
+            }
+            if (gps.isEnabled()) {
+                loading = true;
+                const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
+                if (location) {
+                    saveLocation({
+                        name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
+                        coord: location
+                    });
+                }
             }
         } catch (err) {
             showError(err);
@@ -290,11 +303,11 @@
         {:else}
             <gridlayout id="teststack" row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <label text={l('no_location_desc')} textAlignment="center" marginBottom={20} />
-                <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center">
+                <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
                     <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
                     <cspan text={l('my_location').toUpperCase()} />
                 </mdbutton>
-                <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" verticalTextAlignment="center">
+                <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
                     <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" />
                     <cspan text={l('search_location').toUpperCase()} />
                 </mdbutton>

@@ -9,6 +9,7 @@ const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
 const Fontmin = require('@akylas/fontmin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 function fixedFromCharCode(codePt) {
     if (codePt > 0xffff) {
@@ -362,6 +363,8 @@ module.exports = (env, params = {}) => {
             svN: '~/svelteNamespace'
         })
     );
+
+    config.plugins.push(new SpeedMeasurePlugin());
 
     config.plugins.unshift(
         new webpack.ProvidePlugin({

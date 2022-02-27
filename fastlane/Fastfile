@@ -199,10 +199,7 @@ end
   desc 'Build the Android application For Github.'
   lane :build_github do
     # prepare(platform:'android')
-    sh("npm", "run", "build.android.production.fdroid",
-        "--env.noconsole",
-        "--gradle=\"-PsplitEnabled\""
-      )
+    sh("npm", "run", "build.android.production.fdroid")
   end
 
   desc 'Ship to Github.'

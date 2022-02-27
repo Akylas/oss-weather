@@ -1,3 +1,4 @@
+
 project.ext.abiCodes = ['armeabi':1, 'armeabi-v7a':2, 'arm64-v8a':3, 'x86':4, 'x86_64':5]
 def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 
@@ -5,11 +6,18 @@ android {
   // we only enable split if specified as an arg or if in debug and abiFilters is used(through cli)
   def splitEnabled = (gradle.startParameter.taskNames.contains("assembleDebug") && project.hasProperty('abiFilters')) || project.hasProperty('splitEnabled');
   defaultConfig {  
-    applicationId "com.akylas.weather"
+    multiDexEnabled false
     minSdkVersion 19
     versionCode 44
-    resConfigs "en", "fr", "es"
     versionName "1.2.1"
+
+    if (project.hasProperty('resConfigs')) {
+      def resConfigs = project.findProperty('resConfigs')
+      reset()
+      include resConfigs.split(',')
+    } else {
+      resConfigs "en", "fr", "es"
+    }
     ndk {
       if (splitEnabled || project.hasProperty('abiFilters')) {
         abiFilters.clear()
@@ -37,12 +45,11 @@ android {
           universalApk project.hasProperty('universalApk')
       }
   }
-  aaptOptions {
-    additionalParameters "--no-version-vectors"  
-  }  
+  // aaptOptions {
+  //   additionalParameters "--no-version-vectors"  
+  // }  
   buildTypes { // THIS CAUSES RELEASE MODE ERROR ON APP LAUNCH
     release {
-      multiDexEnabled false
       // Enables code shrinking, obfuscation, and optimization for only
       // your project's release build type.
       minifyEnabled true
@@ -50,6 +57,9 @@ android {
       // Enables resource shrinking, which is performed by the
       // Android Gradle plugin.
       shrinkResources true
+
+      // Disables PNG crunching for the release build type.
+      crunchPngs false
 
 
       // Includes the default ProGuard rules files that are packaged with
@@ -65,14 +75,21 @@ android {
       renderscriptDebuggable false
     }
     debug {
-      defaultConfig {
-        minSdkVersion 21
-        multiDexEnabled true
-        versionNameSuffix "-dev"
-        resConfigs "en", "xxhdpi"
-      }
+      multiDexEnabled true;
     }
-  }
+  }  
+  // flavorDimensions "stage"
+  // productFlavors {
+  //   dev {
+  //     dimension "stage"
+  //     versionNameSuffix "-dev"
+  //     resConfigs "en", "xxhdpi"
+  //   }
+  //   prod {
+  //     dimension "stage"
+  //     resConfigs "en", "fr", "es"
+  //   }
+  // }
 }
 
 task createProguard {
@@ -86,15 +103,27 @@ task createProguard {
 }
 tasks.whenTaskAdded({ DefaultTask currentTask ->
     if (currentTask =~ /buildMetadata/) {
-        currentTask.finalizedBy("createProguard")
+        currentTask.finalizedBy(createProguard)
+    }
+    if (currentTask =~ /minify.*WithR8/) {
+        currentTask.dependsOn(createProguard)
     }
 })
 
 android.applicationVariants.all { variant ->
-    variant.outputs.each { output ->
-        def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter("ABI"), 0)
-        if (baseAbiVersionCode != null) {
-            output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
+    if (variant.buildType.name == "debug") {
+        variant.outputs.each { output ->
+            output.versionNameOverride = android.defaultConfig.versionName + "-dev";
+        }
+    } else {
+        variant.outputs.each { output ->
+            def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter("ABI"), 0)
+            if (baseAbiVersionCode != null) {
+                output.versionCodeOverride = baseAbiVersionCode * 10000000 + variant.versionCode
+            }
         }
     }
+}
+android.applicationVariants.all { variant ->
+    
 }

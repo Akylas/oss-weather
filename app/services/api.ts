@@ -243,7 +243,9 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
     let content: T;
     try {
         content = await response.content.toJSONAsync();
-    } catch (err) {}
+    } catch (err) {
+        console.error(err);
+    }
     if (!content) {
         content = (await response.content.toStringAsync()) as any;
     }

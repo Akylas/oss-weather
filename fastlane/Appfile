@@ -5,6 +5,3 @@ itunes_connect_id("martin.guillon@akylas.fr")
 team_name('Akylas')
 team_id "3UUB5NM43K"
 itc_team_id("1469488")
-json_key_data_raw(ENV["PLAYSTORE_JSON_KEY_DATA"])
-data()[:certs_git_url] = 'https://github.com/farfromrefug/dabba.ios.certs'
-data()[:main_lang_android] = 'fr-FR'

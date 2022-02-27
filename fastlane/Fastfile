@@ -9,7 +9,6 @@ def truncate(string, length = 20)
 end
 
 fastlane_version '2.135.2'
-$app_id = 'com.akylas.weather'
 $lang = 'en-US'
 $ios_scheme = 'nsforecastie'
 $repository_name = 'farfromrefug/oss-weather'
@@ -72,12 +71,10 @@ lane :build_flavor do |params|
 
   sentry_create_release(
     version: version, # release version to create
-    app_identifier: $app_id, # pass in the bundle_identifer of your app
   )
   push_to_git_remote
   sentry_set_commits(
     version: version,
-    app_identifier: $app_id, # pass in the bundle_identifer of your app
     auto: true, # enable completely automated commit management
     # clear: false, # clear all current commits from the release
     # commit: '...', # commit spec, see `sentry-cli releases help set-commits` for more information
@@ -184,9 +181,7 @@ end
     write_changelog(version:params[:versionCode], changelog:params[:changelog]);
     upload_to_play_store(
       track: track,
-      package_name:$app_id,
       track_promote_to: track,
-      json_key_data: ENV["PLAYSTORE_JSON_KEY_DATA"],
       aab: './platforms/android/app/build/outputs/bundle/release/app-release.aab'
     )
   end
@@ -232,7 +227,7 @@ end
     set_github_release(
       repository_name: $repository_name,
       api_token: ENV["GH_TOKEN"],
-      name: version,
+      name: "#{version} Build #{versionCode}",
       tag_name: tag,
       description: changelog,
       commitish: "master",

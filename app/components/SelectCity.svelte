@@ -5,14 +5,13 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/CActionBar.svelte';
     import { lc } from '~/helpers/locale';
-    import { photonSearch } from '~/services/api';
+    import { photonSearch, WeatherLocation } from '~/services/api';
     import { showError } from '~/utils/error';
     import { textColor,textLightColor } from '~/variables';
 
-    let page: NativeViewElementNode<Page>;
     let textField: NativeViewElementNode<TextField>;
     let loading = false;
-    let searchResults = [];
+    let searchResults: WeatherLocation[] = [];
     let searchAsTypeTimer: NodeJS.Timeout;
     let currentSearchText: string;
 
@@ -69,7 +68,7 @@
 </script>
 
 <frame backgroundColor="transparent">
-    <page bind:this={page} actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
+    <page actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
             <CActionBar title={lc('search_city')} modalWindow>
                 <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />

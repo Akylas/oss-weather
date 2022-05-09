@@ -11,7 +11,8 @@ end
 fastlane_version '2.135.2'
 $lang = 'en-US'
 $ios_scheme = 'nsforecastie'
-$repository_name = 'farfromrefug/oss-weather'
+$repository_name = 'Akylas/oss-weather'
+
 
 desc 'test lane'
 lane :test do
@@ -87,7 +88,7 @@ lane :build_flavor do |params|
   upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
   add_git_tag(tag: "#{platform}/#{flavor}/#{version}/#{versionCode}")
 
-  push_git_tags(force:true)
+  push_git_tags
 end
 
 
@@ -100,7 +101,7 @@ lane :get_changelog  do |params|
     ignorePlatform = "android"
   end
   isReleasable = analyze_commits(match: "#{platform}/#{flavor}*", ignore_scopes: [ignorePlatform])
-  logs = conventional_changelog(format: 'slack', title: "#{platform.capitalize} Beta", display_title:false, display_links:false, order:["feat", "fix", "refactor", "perf"])
+  logs = conventional_changelog(format: 'slack', title: "#{platform.capitalize} Beta", display_title:false, display_links:false, order:["feat", "fix", "refactor", "perf"], ignore_scopes: [ignorePlatform])
   puts logs
   logs
 end
@@ -158,26 +159,27 @@ platform :android do
   lane :sentry_upload do 
   end
 
-lane :write_changelog do |params| 
-  version = params[:version]
-  changelog = params[:changelog]
+  lane :write_changelog do |params| 
+    version = params[:version]
+    changelog = params[:changelog]
 
-  if (changelog && changelog.length > 500) 
-    changelog = changelog[0..499]
+    if (changelog && changelog.length > 500) 
+      changelog = changelog[0..499]
+    end
+
+    metadata_dir="metadata/android/#{$lang}/changelogs"
+    require 'fileutils'
+    system 'mkdir', '-p', metadata_dir
+    File.write("#{metadata_dir}/#{version}.txt", changelog)
+    # Create a new branch and upload a PR for it.
+    sh("git add #{metadata_dir}; git commit -m '#{version} release notes' --allow-empty")
   end
 
-  metadata_dir="metadata/android/#{$lang}/changelogs"
-  require 'fileutils'
-  system 'mkdir', '-p', metadata_dir
-  File.write("#{metadata_dir}/#{version}.txt", changelog)
-  # Create a new branch and upload a PR for it.
-  sh("git add #{metadata_dir}; git commit -m '#{version} release notes' --allow-empty")
-end
   lane :upload_store   do |params| 
     track = params[:flavor]
-    # if (track == 'beta') 
-    #   track = 'internal'
-    # end
+    if (track == 'beta') 
+      track = 'internal'
+    end
     write_changelog(version:params[:versionCode], changelog:params[:changelog]);
     upload_to_play_store(
       track: track,
@@ -188,12 +190,10 @@ end
 
   desc 'Build the Android application.'
     lane :build do
-      # prepare(platform:'android')
       sh("npm", "run", "build.android.production")
   end
   desc 'Build the Android application For Github.'
   lane :build_github do
-    # prepare(platform:'android')
     sh("npm", "run", "build.android.production.fdroid")
   end
 
@@ -218,16 +218,17 @@ end
     puts "versionCode:"  + versionCode
 
     build_github
-    
+
     changelog = get_changelog(platform:platform, flavor:flavor)
+    write_changelog(version:versionCode, changelog:changelog);
     tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
-    add_git_tag(tag: tag)
+    add_git_tag(tag: tag, force: true)
 
     push_git_tags(force:true)
     set_github_release(
       repository_name: $repository_name,
       api_token: ENV["GH_TOKEN"],
-      name: "#{version} Build #{versionCode}",
+      name: "v#{version} Build #{versionCode}",
       tag_name: tag,
       description: changelog,
       commitish: "master",

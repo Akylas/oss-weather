@@ -1,11 +1,12 @@
-import { capitalize, l, lc, loadLocaleJSON, lt, lu } from '@nativescript-community/l';
+import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale } from '@nativescript-community/l';
 import { getString, setString } from '@nativescript/core/application-settings';
-import { Device } from '@nativescript/core/platform';
+import { Application, Device } from '@nativescript/core';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { createGlobalEventListener, globalObservable } from '~/variables';
+import { titlecase } from './formatter';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 
@@ -38,6 +39,14 @@ function setLang(newLang) {
     newLang = getActualLanguage(newLang);
     if (supportedLanguages.indexOf(newLang) === -1) {
         newLang = 'en';
+    }
+    if (__IOS__) {
+        overrideNativeLocale(newLang);
+    } else {
+        // Application.android.foregroundActivity?.recreate();
+        const appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(newLang);
+        // Call this on the main thread as it may require Activity.restart()
+        androidx.appcompat.app.AppCompatDelegate['setApplicationLocales'](appLocale);
     }
     $lang.set(newLang);
 }
@@ -86,10 +95,29 @@ prefs.on('key:language', () => {
     setLang(newLanguage);
 });
 
+let currentLocale = null;
+export function getLocaleDisplayName(locale?) {
+    if (__IOS__) {
+        if (!currentLocale) {
+            //@ts-ignore
+            currentLocale = NSLocale.alloc().initWithLocaleIdentifier(lang);
+        }
+        return titlecase(currentLocale.localizedStringForLanguageCode(locale || lang));
+    } else {
+        if (!currentLocale) {
+            currentLocale = java.util.Locale.forLanguageTag(lang);
+        }
+        return titlecase(java.util.Locale.forLanguageTag(locale || lang).getDisplayLanguage(currentLocale));
+    }
+}
+
 setLang(deviceLanguage);
 
 export { l, lc, lt, lu };
-export const $l = derived([$lang], () => l);
-export const $lc = derived([$lang], () => lc);
-export const $lt = derived([$lang], () => lt);
-export const $lu = derived([$lang], () => lu);
+export const sl = derived([$lang], () => l);
+export const slc = derived([$lang], () => lc);
+export const slt = derived([$lang], () => lt);
+export const slu = derived([$lang], () => lu);
+// export const sconvertDuration = derived([$lang], () => convertDuration);
+export const scconvertTime = derived([$lang], () => convertTime);
+export const sgetLocaleDisplayName = derived([$lang], () => getLocaleDisplayName);

@@ -36,6 +36,7 @@ module.exports = (env, params = {}) => {
                 uploadSentry: false,
                 apiKeys: true,
                 sourceMap: false,
+                buildweathermap: true,
                 uglify: true
             },
             env
@@ -157,6 +158,7 @@ module.exports = (env, params = {}) => {
         DEV_LOG: !!devlog,
         TEST_LOGS: !!adhoc || !production,
         OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
+        MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',
         OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',
         DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',
         CLIMA_CELL_DEFAULT_KEY: `"${process.env.CLIMA_CELL_DEFAULT_KEY}"`,
@@ -182,8 +184,15 @@ module.exports = (env, params = {}) => {
         return acc;
     }, {});
 
-    const scssPrepend = `$lato-fontFamily: ${platform === 'android' ? 'res/lato' : 'Lato'};
-    $forecastfont-fontFamily: ${platform === 'android' ? 'iconvault_forecastfont' : 'iconvault'};
+    const appSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'css/variables.scss')).toString());
+    const appIcons = {};
+    appSymbols.variables
+        .filter((v) => v.name.startsWith('$app-'))
+        .forEach((v) => {
+            appIcons[v.name.replace('$app-', '')] = String.fromCharCode(parseInt(v.value.slice(2), 16));
+        });
+
+    const scssPrepend = `$app-fontFamily: app;
     $wi-fontFamily: ${platform === 'android' ? 'weathericons-regular-webfont' : 'Weather Icons'};
     $mdi-fontFamily: ${platform === 'android' ? 'materialdesignicons-webfont' : 'Material Design Icons'};
     `;
@@ -263,16 +272,24 @@ module.exports = (env, params = {}) => {
                     flags: 'g'
                 }
             },
+            // {
+            //     loader: 'string-replace-loader',
+            //     options: {
+            //         search: 'forecastfont-([a-z-]+)',
+            //         replace: (match, p1, offset, string) => {
+            //             if (forecastIcons[p1]) {
+            //                 return String.fromCharCode(parseInt(forecastIcons[p1], 16));
+            //             }
+            //             return match;
+            //         },
+            //         flags: 'g'
+            //     }
+            // },
             {
                 loader: 'string-replace-loader',
                 options: {
-                    search: 'forecastfont-([a-z-]+)',
-                    replace: (match, p1, offset, string) => {
-                        if (forecastIcons[p1]) {
-                            return String.fromCharCode(parseInt(forecastIcons[p1], 16));
-                        }
-                        return match;
-                    },
+                    search: 'app-([a-z0-9-_]+)',
+                    replace: (match, p1, offset, str) => appIcons[p1] || match,
                     flags: 'g'
                 }
             },

@@ -1,14 +1,22 @@
 <script context="module" lang="ts">
     import { Align, LinearGradient, Paint, Path, Style, TileMode } from '@nativescript-community/ui-canvas';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { imperial, subtitleColor, textColor } from '~/variables';
+    import { appFontFamily, imperial, subtitleColor, textColor } from '~/variables';
+    import HourlyView from './HourlyView.svelte';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
+    const appTextPaint = new Paint();
+    appTextPaint.fontFamily = appFontFamily;
+    appTextPaint.setTextAlign(Align.CENTER);
+    appTextPaint.setFontWeight('normal');
+    appTextPaint.setTextSize(11);
+    appTextPaint.setAlpha(180);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
     const pathPaint = new Paint();
@@ -59,7 +67,14 @@
 </script>
 
 <script lang="ts">
-    export let item;
+    export let item: Hourly & {
+        index: number;
+        min: number;
+        max: number;
+        tempDelta: number;
+        curveTempPoints: number[];
+        odd: boolean;
+    };
     let canvasView;
     let precipitationHeight = 0;
 
@@ -67,7 +82,7 @@
         canvasView && canvasView.nativeView.invalidate();
     }
     $: {
-        precipitationHeight = item.precipIntensity * 10;
+        precipitationHeight = item.precipAccumulation * 10;
         redraw();
     }
     textColor.subscribe(redraw);
@@ -90,14 +105,14 @@
             paint.setColor(item.precipColor);
             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 255);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
-            if ((precipProbability === -1 || precipProbability > 0.1) && item.precipIntensity >= 0.1) {
+            if ((precipProbability === -1 || precipProbability > 0.1) && item.precipAccumulation >= 0.1) {
                 textPaint.setTextSize(10);
                 textPaint.setColor($textColor);
                 textPaint.setAlpha(150);
                 if (precipProbability > 0) {
                     canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipIntensity, UNITS.MM), w2, h - 12, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM), w2, h - 12, textPaint);
             }
         }
         canvas.save();
@@ -182,12 +197,19 @@
         textPaint.setFontWeight('normal');
         textPaint.setTextSize(11);
         textPaint.setAlpha(180);
-        canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, w + 15, textPaint);
+        if (item.windSpeed) {
+            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, w + 15, appTextPaint);
+        }
         // console.log('drawn in ', Date.now() - startTime, item.index);
+    }
+    function onTap() {
+        if (item.description) {
+            showSnack({ message: item.description });
+        }
     }
 </script>
 
-<gridlayout>
+<gridlayout on:tap={onTap}>
     <canvas bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
     <!-- <linechart bind:this={lineChart} height="100%" backgroundColor="red" rowSpan={3}  {width} left={marginLeft}/> -->
     <WeatherIcon icon={item.icon} verticalAlignment="top" marginTop={27} />

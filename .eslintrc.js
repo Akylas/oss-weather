@@ -12,14 +12,13 @@ module.exports = {
         ecmaVersion: 2019,
         sourceType: 'module',
         project: ['tsconfig.eslint.json'],
-        // extraFileExtensions: ['.svelte'],
         warnOnUnsupportedTypeScriptVersion: false,
         tsconfigRootDir: __dirname
     },
     globals: { gVars: true, SENTRY_DSN: true, SENTRY_PREFIX: true, PRODUCTION: true, OWM_KEY: true },
-    plugins: ['prettier', 'svelte3', '@typescript-eslint'],
+    plugins: ['prettier', '@typescript-eslint'],
     overrides: [
-        { files: ['*.svelte'], processor: 'svelte3/svelte3' },
+        { files: ['*.svelte'], processor: 'svelte3/svelte3', plugins: ['prettier', 'svelte3', '@typescript-eslint'] },
         {
             files: '*.ts',
             rules: {

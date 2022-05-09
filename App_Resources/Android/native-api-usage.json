@@ -2,7 +2,9 @@
     "whitelist-plugins-usages": true,
     "whitelist": [
         "androidx.appcompat.app:AppCompatDelegate*",
-        "android.widget:Toast*"
+        "android.widget:Toast*",
+        "androidx.core.widget:NestedScrollView*",
+        "androidx.core.os:LocaleListCompat*"
     ],
     "blacklist": [
         "org.nativescript.widgets:TabLayout*",

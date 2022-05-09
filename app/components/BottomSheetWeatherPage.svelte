@@ -1,6 +1,6 @@
 <script lang="ts">
     import { getFromLocation } from '@nativescript-community/geocoding';
-    import { Application } from '@nativescript/core';
+    import { Application, Utils } from '@nativescript/core';
     import { closeBottomSheet } from '~/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
     import { getOWMWeather, networkService, prepareItems } from '~/services/api';
@@ -35,7 +35,7 @@
     async function refresh(weatherLocation) {
         loading = true;
         try {
-            const data = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            const data = await getOWMWeather(weatherLocation);
             DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
             if (!name) {
                 name = weatherLocation.coord.lat.toFixed(2) + ',' + weatherLocation.coord.lon.toFixed(2);
@@ -43,7 +43,7 @@
             }
             items = prepareItems(data, Date.now());
         } catch (err) {
-            android.widget.Toast.makeText(Application.android.context, err.toString(), android.widget.Toast.LENGTH_LONG);
+            android.widget.Toast.makeText(Utils.android.getApplicationContext(), err.toString(), android.widget.Toast.LENGTH_LONG);
             closeBottomSheet();
         } finally {
             loading = false;

@@ -31,8 +31,9 @@ export const darkColor = new Color(locals.darkColor);
 // export const latoFontFamily: string = locals.latoFontFamily;
 export const wiFontFamily: string = locals.wiFontFamily;
 
+export const appFontFamily: string = locals.appFontFamily;
 export const mdiFontFamily: string = locals.mdiFontFamily;
-export const forecastFontFamily: string = locals.forecastFontFamily;
+// export const forecastFontFamily: string = locals.forecastFontFamily;
 export const actionBarHeight: number = parseFloat(locals.actionBarHeight);
 export const statusBarHeight: number = parseFloat(locals.statusBarHeight);
 export const actionBarButtonHeight: number = parseFloat(locals.actionBarButtonHeight);

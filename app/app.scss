@@ -1,8 +1,11 @@
 ﻿@use "sass:color";
 @import './variables';
 
-.forecastfont {
-    font-family: $forecastfont-fontFamily;
+// .forecastfont {
+//     font-family: $forecastfont-fontFamily;
+// }
+.app {
+    font-family: $app-fontFamily;
 }
 .wi {
     font-family: $wi-fontFamily;

@@ -1,4 +1,6 @@
-import { nightColor, sunnyColor } from '~/variables';
+import { sun } from '@modern-dev/daylight';
+import { Color } from '@nativescript/core';
+import { cloudyColor, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { convertTime } from './locale';
 
 export { convertTime };
@@ -278,13 +280,7 @@ function calculateMoon(year, month, day, hours, minutes, seconds, utcOffset = 0)
 }
 
 export function getMoonPhase(date: Date) {
-    // Gets the current Julian date
-    // const lp = 2551443;
-    // const now = new Date(date.getFullYear(),date.getMonth()-1,date.getDate(),20,35,0);
-    // const phase = ((now.getTime() - new_moon)/1000) % lp;
     const phase = calculateMoon(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
-    // const result = Math.floor(phase /(24*3600))
-    // console.log('getMoonPhase', date, result);
     return phase;
 }
 export function moonIcon(moonPhase: number) {
@@ -325,4 +321,44 @@ export function windBeaufortIcon(windSpeed) {
         return null;
     }
     return windIcons[beaufortLevel];
+}
+
+const cardinals = ['app-wind_0', 'app-wind_1', 'app-wind_2', 'app-wind_3', 'app-wind_4', 'app-wind_5', 'app-wind_6', 'app-wind_7', 'app-wind_0'];
+export function windIcon(degrees) {
+    return cardinals[Math.round((degrees % 360) / 45)];
+}
+
+export enum WeatherDataType {
+    DAILY,
+    HOURLY,
+    CURRENT
+}
+export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain?, snow?) {
+    const dateTimes = sun.getTimes(new Date(d.time), coord.lat, coord.lon);
+    const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
+    if (type !== WeatherDataType.CURRENT) {
+        d.precipColor = rainColor;
+        d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
+        const dd = d as DailyData;
+        if (rain) {
+            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, dd.cloudCover), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+        } else if (snow) {
+            d.precipColor = snowColor;
+            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, dd.cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+        } else {
+            dd.color = Color.mix(sunnyColor, cloudyColor, dd.cloudCover).hex;
+        }
+    }
+    if (d['uvIndex'] !== undefined) {
+        d['uvIndexColor'] = colorForUV(d['uvIndex']);
+    }
+    if (type !== WeatherDataType.HOURLY) {
+        d['moonIcon'] = moonIcon(getMoonPhase(new Date(d.time)));
+    }
+
+    d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
+
+    d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
+    d.windIcon = windIcon(d.windBearing);
+    return d;
 }

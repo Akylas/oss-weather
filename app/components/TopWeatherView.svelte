@@ -13,12 +13,12 @@
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
     import HourlyView from '~/components/HourlyView.svelte';
-    import { imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
+    import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
 
     interface Item {
         alerts?: any;
-        minutely?: { time: number; precipIntensity: number }[];
+        minutely?: MinutelyData[];
         time: number;
         lastUpdate: number;
         sunsetTime: number;
@@ -31,7 +31,7 @@
         cloudCeiling?: number;
         uvIndex?: number;
         precipProbability?: number;
-        precipIntensity?: number;
+        precipAccumulation?: number;
         cloudColor?: string;
         uvIndexColor?: string;
         temperatureMin?: number;
@@ -57,7 +57,7 @@
     let cloudChartSet: LineDataSet;
     let lastChartData: {
         time: number;
-        precipIntensity: number;
+        precipAccumulation: number;
     }[];
     function updateLineChart(item: Item) {
         const chart = lineChart.nativeView;
@@ -137,16 +137,16 @@
 
             let needsToSetData = false;
             let needsUpdate = false;
-            const hasPrecip = data.some((d) => d.precipIntensity > 0);
+            const hasPrecip = data.some((d) => d.precipAccumulation > 0);
             let min = 10000;
             let max = -10000;
             data.forEach((h) => {
                 h['index'] = Math.round((h.time - now) / 60000);
-                if (h.precipIntensity < min) {
-                    min = h.precipIntensity;
+                if (h.precipAccumulation < min) {
+                    min = h.precipAccumulation;
                 }
-                if (h.precipIntensity > max) {
-                    max = h.precipIntensity;
+                if (h.precipAccumulation > max) {
+                    max = h.precipAccumulation;
                 }
             });
 
@@ -159,9 +159,9 @@
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(
                         data.filter((d, i) => i % 5 === 0),
-                        'precipIntensity',
+                        'precipAccumulation',
                         'index',
-                        'precipIntensity'
+                        'precipAccumulation'
                     );
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
@@ -239,7 +239,7 @@
         </cgroup>
 
         <cgroup paddingLeft={0} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
-            <cspan fontSize={28} lineHeight={32} text={item.windIcon} />
+            <cspan fontSize={24} lineHeight={32} text={item.windIcon} fontFamily={appFontFamily} />
             <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]}/>
             <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} fontFamily={wiFontFamily}/>
         </cgroup>
@@ -254,10 +254,10 @@
                 <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
         {/if}
-        {#if (item.precipProbability === -1 || item.precipIntensity >= 0.1) && item.precipProbability > 0.1}
+        {#if (item.precipProbability === -1 || item.precipAccumulation >= 0.1) && item.precipProbability > 0.1}
             <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 165 : 110} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
                 <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-raindrop" />
-                <cspan text={item.precipIntensity >= 0.1 ? '\n' + formatValueToUnit(item.precipIntensity, UNITS.MM) : null} />
+                <cspan text={item.precipAccumulation >= 0.1 ? '\n' + formatValueToUnit(item.precipAccumulation, UNITS.MM) : null} />
                 <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
         {/if}
@@ -269,9 +269,9 @@
         {/if}
 
         <cgroup paddingLeft={10} paddingBottom={10} fontSize={14} verticalAlignment="bottom">
-            <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise" />
+            <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
             <cspan text={convertTime(item.sunriseTime, 'HH:mm')} />
-            <cspan color="#ff7200" fontFamily={wiFontFamily} text="wi-sunset" />
+            <cspan color="#ff7200" fontFamily={wiFontFamily} text="  wi-sunset " />
             <cspan text={convertTime(item.sunsetTime, 'HH:mm')} />
         </cgroup>
         <cspan paddingRight={10} fontSize={14} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />

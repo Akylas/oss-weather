@@ -11,14 +11,13 @@
   "authorize": "autorizar",
   "bug_report_sent": "informe de error enviado",
   "cancel": "cancelar",
-  "cc_api_key": "Clave API de ClimaCell",
-  "climal_cell_api_key_optional_description": "para obtener datos meteorológicos minuciosos (opcional) se requiere una clave API gratuita de ClimaCell. \nPara permanecer bajo el plan gratuito, cada usuario debe crear su propia clave API. \nPuede hacerlo creando una cuenta en su sitio web.",
   "close": "cerca",
   "description": "descripción",
   "description_required": "se requiere una descripción",
   "email": "Email",
   "email_required": "Se requiere un e-mail válido",
   "english": "inglés",
+  "espagnol": "español",
   "error": "error",
   "expires": "expira",
   "file": "expediente",
@@ -74,6 +73,11 @@
     "dark": "oscuro",
     "light": "luz",
     "title": "tema"
+  },
+  "provider":{
+    "meteofrance":"MéteoFrance",
+    "openweathermap":"OpenWeatherMap",
+    "title":"provider"
   },
   "third_parties": "bibliotecas de terceros",
   "version": "versión",

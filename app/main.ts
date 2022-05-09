@@ -9,12 +9,12 @@ import { installMixins, themer } from '@nativescript-community/ui-material-core'
 import { ScrollView, Trace } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, NativeElementPropType, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
+import WeatherPage from '~/components/WeatherPage.svelte';
 // import { Application } from '@nativescript/core';
 import { start as startThemeHelper } from '~/helpers/theme';
 // import { startSentry } from '~/utils/sentry';
 // import { install } from '~/utils/logging';
 import './app.scss';
-import WeatherPage from './components/WeatherPage.svelte';
 
 // startSentry();
 overrideSpanAndFormattedString();
@@ -52,10 +52,9 @@ registerNativeViewElement('WebView', () => require('@nativescript/core').WebView
 //     },
 //     { override: true }
 // );
-// registerNativeViewElement('FormattedString', () => require('@nativescript/core').FormattedString, 'formattedText', {
-//     spans: NativeElementPropType.ObservableArray
-// });
-registerNativeViewElement('Span', () => require('@nativescript/core').Span, 'spans');
+
+//using 'spans' property breaks span(not cspan!) added without formattedstring
+registerNativeViewElement('span', () => require('@nativescript/core').Span, 'spans' );
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
 registerNativeViewElement('label', () => Label as any, null, {}, { override: true });

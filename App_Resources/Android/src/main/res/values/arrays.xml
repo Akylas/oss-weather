@@ -12,14 +12,24 @@
         <item name="dark">dark</item>
         <item name="black">black</item>
     </string-array>
+    <string-array name="providers">
+        <item name="meteofrance">@string/provider.meteofrance</item>
+        <item name="openweathermap">@string/provider.openweathermap</item>
+    </string-array>
+    <string-array name="providersValues">
+        <item name="meteofrance">meteofrance</item>
+        <item name="openweathermap">openweathermap</item>
+    </string-array>
     <string-array name="langs">
         <item name="auto">@string/theme.auto</item>
         <item name="fr">@string/english</item>
         <item name="en">@string/french</item>
+        <item name="en">@string/spanish</item>
     </string-array>
     <string-array name="langsValues">
         <item name="auto">auto</item>
         <item name="french">en</item>
         <item name="en">fr</item>
+        <item name="en">es</item>
     </string-array>
 </resources>

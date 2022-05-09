@@ -69,11 +69,6 @@ export function applyTheme(theme: Themes) {
 
 export let theme: Themes;
 
-export function toggleTheme() {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setString('theme', newTheme);
-}
-
 let started = false;
 export function start() {
     if (started) {
@@ -83,7 +78,7 @@ export function start() {
     if (__IOS__ && iOSNativeHelper.MajorVersion < 13) {
         theme = 'light';
     } else {
-        theme = (getString('theme', DEFAULT_THEME)) as Themes;
+        theme = getString('theme', DEFAULT_THEME) as Themes;
     }
 
     prefs.on('key:theme', () => {

@@ -40,6 +40,26 @@
             </dict>
             <dict>
                 <key>Type</key>
+                <string>PSMultiValueSpecifier</string>
+                <key>Title</key>
+                <string>provider</string>
+                <key>Key</key>
+                <string>provider</string>
+                <key>DefaultValue</key>
+                <string>openweathermap</string>
+                <key>Values</key>
+                <array>
+                    <string>openweathermap</string>
+                    <string>meteofrance</string>
+                </array>
+                <key>Titles</key>
+                <array>
+                    <string>openweathermap</string>
+                    <string>meteofrance</string>
+                </array>
+            </dict>
+            <dict>
+                <key>Type</key>
                 <string>PSToggleSwitchSpecifier</string>
                 <key>Title</key>
                 <string>animations</string>

@@ -6,7 +6,8 @@ module.exports = {
     appPath: 'app',
     android: {
         markingMode: 'none',
-        codeCache: true
+        codeCache: true,
+        maxLogcatObjectSize: 32768
     },
     cssParser: 'rework'
 };

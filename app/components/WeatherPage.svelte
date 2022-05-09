@@ -3,20 +3,19 @@
     import { request as requestPerm } from '@nativescript-community/perms';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { CoreTypes, Page } from '@nativescript/core';
+    import { Color, CoreTypes, Page } from '@nativescript/core';
     import { alert as mdAlert, confirm } from '@nativescript-community/ui-material-dialogs';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { showBottomSheet } from '~/bottomsheet';
-    import { l, lc, onLanguageChanged } from '~/helpers/locale';
-    import { getOWMWeather, hasOWMApiKey, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, setOWMApiKey } from '~/services/api';
+    import { sl, slc, l, lc, onLanguageChanged } from '~/helpers/locale';
+    import { geocodeAddress, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
-    import { mdiFontFamily } from '~/variables';
+    import { backgroundColor, mdiFontFamily } from '~/variables';
     import CActionBar from '~/components/CActionBar.svelte';
-    import { toggleTheme } from '~/helpers/theme';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
 
@@ -25,14 +24,9 @@
     let gps: GPS;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
-    let weatherLocation: {
-        coord: {
-            lat: number;
-            lon: number;
-        };
-        name?: string;
-    } = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
-    let weatherData = JSON.parse(getString('lastWeatherData', 'null'));
+    let provider: 'meteofrance' | 'openweathermap' = getString('provider', 'meteofrance') as any;
+    let weatherLocation: WeatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
+    let weatherData: WeatherData = JSON.parse(getString('lastWeatherData', 'null'));
 
     let items = [];
 
@@ -86,9 +80,6 @@
                     case 'gps_location':
                         getLocationAndWeather();
                         break;
-                    case 'dark_mode':
-                        toggleTheme();
-                        break;
                     case 'about':
                         const About = require('~/components/About.svelte').default;
                         navigate({ page: About });
@@ -110,14 +101,24 @@
             return;
         }
         loading = true;
+
         try {
-            weatherData = await getOWMWeather(weatherLocation.coord.lat, weatherLocation.coord.lon);
+            if (provider === 'openweathermap') {
+                const providerModule = await import('~/services/owm');
+                weatherData = await providerModule.getOWMWeather(weatherLocation);
+            } else if (provider === 'meteofrance') {
+                const providerModule = await import('~/services/mf');
+                weatherData = await providerModule.getMFWeather(weatherLocation);
+            }
             lastUpdate = Date.now();
             await updateView();
         } catch (err) {
             if (err.statusCode === 403) {
-                setOWMApiKey(null);
-                askForApiKey();
+                if (provider === 'openweathermap') {
+                    const providerModule = await import('~/services/owm');
+                    providerModule.setOWMApiKey(null);
+                    askForApiKey();
+                }
             } else {
                 showError(err);
             }
@@ -132,7 +133,7 @@
         setString('lastWeatherData', JSON.stringify(weatherData));
     }
 
-    function saveLocation(result) {
+    function saveLocation(result: WeatherLocation) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
         if (cityChanged) {
             weatherLocation = result;
@@ -143,9 +144,8 @@
 
     async function searchCity() {
         try {
-            const SelectCity = require('~/components/SelectCity.svelte').default;
-
-            const result = await showModal({ page: SelectCity, animated: true, fullscreen: true });
+            const SelectCity = (await import('~/components/SelectCity.svelte')).default;
+            const result = await showModal<WeatherLocation>({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {
                 saveLocation(result);
             }
@@ -183,10 +183,8 @@
                 loading = true;
                 const location = await gps.getCurrentLocation<LatLonKeys>({ desiredAccuracy, minimumUpdateTime, timeout });
                 if (location) {
-                    saveLocation({
-                        name: location.lat.toFixed(2) + ',' + location.lon.toFixed(2),
-                        coord: location
-                    });
+                    const result = await geocodeAddress(location);
+                    saveLocation(result);
                 }
             }
         } catch (err) {
@@ -197,9 +195,6 @@
     }
 
     async function refresh() {
-        if (!hasOWMApiKey()) {
-            return;
-        }
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
             return;
@@ -227,10 +222,12 @@
         }
     }
     onMount(async () => {
-        const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
-        if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
-            // wait a bit
-            setTimeout(() => askForApiKey(), 1000);
+        if (provider === 'openweathermap') {
+            const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+            if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
+                // wait a bit
+                setTimeout(() => askForApiKey(), 1000);
+            }
         }
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {
@@ -258,6 +255,7 @@
         if (!weatherData.alerts) {
             return;
         }
+        DEV_LOG && console.log('showAlerts', weatherData.alerts);
         try {
             const AlertView = (await import('~/components/AlertView.svelte')).default;
             showBottomSheet({
@@ -272,6 +270,10 @@
             showError(err);
         }
     }
+    prefs.on('key:provider', () => {
+        provider = getString('provider') as any;
+        refresh();
+    });
 </script>
 
 <page bind:this={page} actionBarHidden={true} id="home">
@@ -300,16 +302,26 @@
             <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
                 <WeatherComponent {items} />
             </pullrefresh>
+            <label
+                row="1"
+                fontSize={10}
+                backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
+                text={lc('powered_by', l(`provider.${provider}`))}
+                verticalAlignment="bottom"
+                horizontalAlignment="right"
+            />
         {:else}
             <gridlayout id="teststack" row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <label text={l('no_location_desc')} textAlignment="center" marginBottom={20} />
+                <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
                 <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
-                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" />
-                    <cspan text={l('my_location').toUpperCase()} />
+                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />
+                    <cspan text={$sl('my_location').toUpperCase()} verticalAlignment="center" />
                 </mdbutton>
-                <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
-                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" />
-                    <cspan text={l('search_location').toUpperCase()} />
+                <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" android:paddingTop={6} verticalTextAlignment="center">
+                    <!-- <formattedstring> -->
+                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="center" />
+                    <cspan text={$sl('search_location').toUpperCase()} verticalAlignment="center" />
+                    <!-- </formattedstring> -->
                 </mdbutton>
             </gridlayout>
         {/if}

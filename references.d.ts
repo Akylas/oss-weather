@@ -1,5 +1,5 @@
 //// <reference path="./node_modules/@nativescript/types-ios/lib/ios.d.ts" />
-/// <reference path="./node_modules/@nativescript/types-android/lib/android-26.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-android/lib/android-31.d.ts" />
 /// <reference path="./node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="./node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
 
@@ -14,6 +14,7 @@ declare const PRODUCTION: boolean;
 declare const SENTRY_DSN: string;
 declare const SENTRY_PREFIX: string;
 declare const OWM_DEFAULT_KEY: string;
+declare const MF_DEFAULT_KEY: string;
 declare const OWM_MY_KEY: string;
 declare const DARK_SKY_KEY: string;
 declare const CLIMA_CELL_DEFAULT_KEY: string;
@@ -45,12 +46,15 @@ interface LatLonKeys {
 //     export default SvelteComponent;
 // }
 declare module '*.scss';
-// declare module '*.svelte' {
-//     export default SvelteComponent;
-// }
+declare module '*.svelte' {
+    export { SvelteComponentDev as default } from 'svelte/internal';
+}
 namespace svelteNative.JSX {
     interface ViewAttributes {
         rippleColor?: Color | string;
+        verticalAlignment?: string;
+    }
+    interface SpanAttributes {
         verticalAlignment?: string;
     }
     export interface ButtonAttributes {

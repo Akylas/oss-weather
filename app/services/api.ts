@@ -1,22 +1,14 @@
-import { sun } from '@modern-dev/daylight';
+import { getFromLocation } from '@nativescript-community/geocoding';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
-import { Color } from '@nativescript/core/color';
 import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent } from '@nativescript/core/application';
-import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import dayjs from 'dayjs';
-import { ccMoonIcon, colorForIcon, colorForUV, getMoonPhase, moonIcon, titlecase, windBeaufortIcon } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
-import { cloudyColor, createGlobalEventListener, globalObservable, rainColor, snowColor, sunnyColor } from '~/variables';
-import { Alert, CityWeather, Coord, Rain, Snow, Weather } from './owm';
-import { Photon } from './photon';
-import { capitalize } from '@nativescript-community/l';
-let dsApiKey = getString('dsApiKey', DARK_SKY_KEY);
-let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+import { createGlobalEventListener, globalObservable } from '~/variables';
+import { Photon, PhotonProperties } from './photon';
 
-export { Alert, CityWeather, Coord, Rain, Snow, Weather };
 type HTTPSOptions = https.HttpsRequestOptions;
 
 export const onNetworkChanged = createGlobalEventListener('network');
@@ -31,45 +23,6 @@ export interface NetworkConnectionStateEventData extends EventData {
 
 export interface HttpRequestOptions extends HTTPSOptions {
     queryParams?: {};
-}
-
-export function setDSApiKey(apiKey) {
-    dsApiKey = apiKey;
-    if (apiKey) {
-        setString('dsApiKey', apiKey);
-    } else {
-        remove('dsApiKey');
-    }
-}
-export function hasDSApiKey() {
-    return !!dsApiKey;
-}
-export function setOWMApiKey(apiKey) {
-    owmApiKey = apiKey;
-    if (apiKey) {
-        setString('owmApiKey', apiKey);
-    } else {
-        remove('owmApiKey');
-    }
-}
-export function hasOWMApiKey() {
-    return !!owmApiKey;
-}
-
-function isDayTime(sunrise, sunset, time) {
-    // const sunrise = weatherData.sunrise;
-    // const sunset = weatherData.sunset;
-    if (sunrise && sunset) {
-        return time.isBefore(sunset) && time.isAfter(sunrise);
-    } else {
-        // fallback
-        const hourOfDay = time.get('h');
-        return hourOfDay >= 7 && hourOfDay < 20;
-    }
-}
-
-function timeout(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function queryString(params, location) {
@@ -238,7 +191,7 @@ class NetworkService extends Observable {
 
 export const networkService = new NetworkService();
 
-async function handleRequestResponse<T>(response: https.HttpsResponse<https.HttpsResponseLegacy<T>>, requestParams: HttpRequestOptions, requestStartTime, retry) {
+async function handleRequestResponse<T>(response: https.HttpsResponse<https.HttpsResponseLegacy<T>>, requestParams: HttpRequestOptions, requestStartTime, retry): Promise<T> {
     const statusCode = response.statusCode;
     let content: T;
     try {
@@ -250,19 +203,18 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
         content = (await response.content.toStringAsync()) as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
+    // DEV_LOG && console.log('handleRequestResponse', statusCode, content);
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
             jsonReturn = content;
         } else {
             const match = /<title>(.*)\n*<\/title>/.exec(content as any as string);
-            return Promise.reject(
-                new HTTPError({
-                    statusCode,
-                    message: match ? match[1] : content.toString(),
-                    requestParams
-                })
-            );
+            throw new HTTPError({
+                statusCode,
+                message: match ? match[1] : content.toString(),
+                requestParams
+            });
         }
         if (jsonReturn) {
             if (Array.isArray(jsonReturn)) {
@@ -279,7 +231,7 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
             });
         }
     }
-    return content;
+    return content as any as T;
 }
 function getRequestHeaders(requestParams?: HttpRequestOptions) {
     const headers = requestParams?.headers ?? {};
@@ -289,7 +241,7 @@ function getRequestHeaders(requestParams?: HttpRequestOptions) {
 
     return headers;
 }
-export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
+export async function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     if (!networkService.connected) {
         throw new NoNetworkError();
     }
@@ -300,34 +252,12 @@ export function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     requestParams.headers = getRequestHeaders(requestParams);
 
     const requestStartTime = Date.now();
-    return https.request<T>(requestParams).then((response) => handleRequestResponse<T>(response, requestParams, requestStartTime, retry));
+    DEV_LOG && console.log('request', requestParams);
+    const response = await https.request<T>(requestParams);
+    return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
 }
 
-export interface OWMParams extends Partial<Coord> {
-    id?: number; // cityId
-    q?: string; // search query
-}
-export async function fetchOWM(apiName: string, queryParams: OWMParams = {}) {
-    return request({
-        url: `https://api.openweathermap.org/data/2.5/${apiName}`,
-        method: 'GET',
-        queryParams: {
-            lang,
-            units: 'metric',
-            appid: owmApiKey,
-            ...queryParams
-        }
-    });
-}
-
-export async function getCityName(pos: Coord) {
-    const result: CityWeather = await fetchOWM('weather', {
-        lat: pos.lat,
-        lon: pos.lon
-    });
-    return result;
-}
-export function prepareItems(weatherData, lastUpdate) {
+export function prepareItems(weatherData: WeatherData, lastUpdate) {
     const newItems = [];
     // const endOfHour = dayjs()
     //     // .add(46, 'h')
@@ -367,14 +297,14 @@ export function prepareItems(weatherData, lastUpdate) {
             const delta = max - min;
             newItems.push(
                 Object.assign(currentDaily, {
-                    showHourly: false,
                     lastUpdate,
-                    hourly: hours.map((h, i) => {
-                        h.index = i;
-                        h.min = min;
-                        h.max = max;
-                        h.tempDelta = (h.temperature - min) / delta;
-                        h.curveTempPoints = [
+                    hourly: hours.map((h, i) => ({
+                        ...h,
+                        index: i,
+                        min,
+                        max,
+                        tempDelta: (h.temperature - min) / delta,
+                        curveTempPoints: [
                             hours[i - 3]?.temperature,
                             hours[i - 2]?.temperature,
                             hours[i - 1]?.temperature,
@@ -384,10 +314,9 @@ export function prepareItems(weatherData, lastUpdate) {
                             hours[i + 3]?.temperature
                         ]
                             .filter((s) => s !== undefined)
-                            .map((s) => (s - min) / delta);
-                        h.odd = i % 2 === 0;
-                        return h;
-                    }),
+                            .map((s) => (s - min) / delta),
+                        odd: i % 2 === 0
+                    })),
                     minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex) : [],
                     alerts: weatherData.alerts
                 })
@@ -406,213 +335,18 @@ export function prepareItems(weatherData, lastUpdate) {
 
     return newItems;
 }
-export async function getOWMWeather(lat: number, lon: number) {
-    const result = (await fetchOWM('onecall', {
-        lat,
-        lon
-    })) as {
-        alerts?: Alert[];
-        current: {
-            dt: number;
-            temp: number;
-            feels_like: number;
-            pressure: number;
-            humidity: number;
-            dew_point: number;
-            clouds: number;
-            wind_speed: number;
-            wind_gust?: number;
-            wind_deg: number;
-            weather: Weather[];
-            rain?: Rain;
-            snow?: Snow;
-            uvi: number;
-            sunrise: number;
-            visibility: number;
-            sunset: number;
-        };
-        minutely?: {
-            dt: number;
-            precipitation: number;
-        }[];
-        hourly?: {
-            dt: number;
-            temp: number;
-            feels_like: number;
-            pressure: number;
-            humidity: number;
-            dew_point: number;
-            clouds: number;
-            wind_speed: number;
-            wind_deg: number;
-            wind_gust?: number;
-            weather: Weather[];
-            pop: number;
-            snow?: Snow;
-            rain?: Rain;
-        }[];
-        daily?: {
-            dt: number;
-            sunrise: number;
-            sunset: number;
-            temp: {
-                day: number;
-                min: number;
-                max: number;
-                night: number;
-                eve: number;
-                morn: number;
-            };
-            feels_like: {
-                day: number;
-                night: number;
-                eve: number;
-                morn: number;
-            };
-            pressure: number;
-            humidity: number;
-            dew_point: number;
-            clouds: number;
-            wind_speed: number;
-            wind_gust?: number;
-            wind_deg: number;
-            weather: Weather[];
-            pop: number;
-            rain?: number;
-            snow?: number;
-            uvi: number;
-        }[];
-    };
-    // console.log('test', JSON.stringify(result.daily));
-
-    if (!result.minutely) {
-        result.minutely = [];
-    } else {
-        result.minutely.forEach((h) => {
-            h['precipIntensity'] = h.precipitation;
-            h['time'] = h.dt * 1000;
-            delete h.dt;
-            delete h.precipitation;
-        });
-    }
-
-    const r = {
-        currently: {
-            dt: result.current.dt * 1000,
-            temperature: Math.round(result.current.temp),
-            pressure: result.current.pressure,
-            humidity: result.current.humidity,
-            cloudCover: result.current.clouds,
-            windSpeed: result.current.wind_speed * 3.6,
-            windGust: result.current.wind_gust * 3.6,
-            windBearing: result.current.wind_deg,
-            uvIndexColor: colorForUV(result.current.uvi),
-            uvIndex: result.current.uvi,
-            moonIcon: moonIcon(getMoonPhase(new Date(result.current.dt * 1000))),
-            sunriseTime: result.current.sunrise * 1000,
-            sunsetTime: result.current.sunset * 1000,
-            icon: result.current.weather[0]?.icon,
-            description: titlecase(result.current.weather[0]?.description),
-            windBeaufortIcon: windBeaufortIcon(result.current.wind_gust * 3.6),
-            windIcon: windIcon(result.current.wind_deg)
-        },
-        daily: {
-            data: result.daily.map((data) => {
-                const d = {} as any;
-                d.time = data.dt * 1000;
-                d.icon = data.weather[0]?.icon;
-                d.description = titlecase(data.weather[0]?.description);
-                d.windSpeed = data.wind_speed * 3.6;
-                d.windGust = data.wind_gust * 3.6;
-                d.temperatureMin = Math.round(data.temp.min);
-                d.temperatureMax = Math.round(data.temp.max);
-                d.temperatureNight = Math.round(data.temp.night);
-
-                d.precipProbability = data.pop;
-                d.cloudCover = data.clouds;
-                d.windSpeed = data.wind_speed * 3.6;
-                d.windGust = data.wind_gust * 3.6;
-                d.windBearing = data.wind_deg;
-                d.humidity = data.humidity;
-                d.pressure = data.pressure;
-                d.moonIcon = moonIcon(getMoonPhase(new Date(d.time)));
-                d.sunriseTime = data.sunrise * 1000;
-                d.sunsetTime = data.sunset * 1000;
-                d.precipIntensity = d.precipAccumulation = data.snow ? data.snow : data.rain ? data.rain : 0;
-
-                // if (data.rain) {
-                //     d.color = Color.mix(sunnyColor, getRainColor(data.rain), 1).hex;
-                // } else if (data.snow) {
-                //     d.color = Color.mix(sunnyColor, snowColor, 1).hex;
-                // } else {
-                //     d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
-                // }
-                if (data.rain) {
-                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), rainColor, Math.min(d.precipIntensity * 10, 100)).hex;
-                } else if (data.snow) {
-                    d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), snowColor, Math.min(d.precipIntensity * 10, 100)).hex;
-                } else {
-                    d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
-                }
-                d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
-                d.uvIndexColor = colorForUV(data.uvi);
-                d.uvIndex = data.uvi;
-                d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
-                d.windIcon = windIcon(d.windBearing);
-                d.hourly = [];
-                return d;
-            })
-        },
-        minutely: {
-            data: result.minutely
-        },
-        alerts: result.alerts
-    } as any;
-    r.daily.data[0].hourly = result.hourly?.map((data) => {
-        const d = {} as any;
-        d.time = data.dt * 1000;
-        d.icon = data.weather[0]?.icon;
-        d.description = titlecase(data.weather[0]?.description);
-        d.windSpeed = data.wind_speed * 3.6; // max value
-        d.temperature = Math.round(data.temp);
-
-        d.windBearing = data.wind_deg;
-        d.precipIntensity = d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
-        d.precipProbability = data.pop;
-        d.cloudCover = data.clouds;
-        d.humidity = data.humidity;
-        d.windGust = data.wind_gust * 3.6;
-        d.windSpeed = data.wind_speed * 3.6;
-        d.pressure = data.pressure;
-        const dateTimes = sun.getTimes(new Date(d.time), lat, lon);
-        const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
-        d.precipColor = rainColor;
-        d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
-        if (data.rain) {
-            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), rainColor, d.precipIntensity * 10).hex;
-        } else if (data.snow) {
-            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, d.cloudCover), snowColor, d.precipIntensity * 10).hex;
-        } else {
-            d.color = Color.mix(sunnyColor, cloudyColor, d.cloudCover).hex;
-        }
-        if (data.snow && data.snow['1h']) {
-            d.precipAccumulation = data.snow['1h'] || 0;
-            d.precipColor = snowColor;
-        }
-        d.windBeaufortIcon = windBeaufortIcon(d.windSpeed);
-        d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
-        d.windIcon = windIcon(d.windBearing);
-        return d;
-    });
-    return r;
-}
-const cardinals = ['↓', '↙︎', '←', '↖︎', '↑', '↗︎', '→', '↘︎', '↓'];
-function windIcon(degrees) {
-    return cardinals[Math.round((degrees % 360) / 45)];
-}
 
 const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
 const supportedOSMValues = ['winter_sports'];
+
+export interface WeatherLocation {
+    name: string;
+    sys?: PhotonProperties;
+    coord: {
+        lat: number;
+        lon: number;
+    };
+}
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
     const results = await request<Photon>({
         url: 'https://photon.komoot.io/api',
@@ -628,9 +362,43 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
     });
     return results.features
         .filter((r) => supportedOSMKeys.indexOf(r.properties.osm_key) !== -1 || supportedOSMValues.indexOf(r.properties.osm_value) !== -1)
-        .map((f) => ({
-            name: f.properties.name,
-            sys: f.properties,
-            coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
-        }));
+        .map(
+            (f) =>
+                ({
+                    name: f.properties.name,
+                    sys: f.properties,
+                    coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
+                } as WeatherLocation)
+        );
+}
+
+export async function geocodeAddress(coord: { lat: number; lon: number }) {
+    try {
+        const results = await getFromLocation(coord.lat, coord.lon, 10);
+        if (DEV_LOG) {
+            console.error('found addresses', results);
+        }
+        if (results?.length > 0) {
+            const result = results[0];
+            return {
+                coord,
+                name: result.name || result.locality,
+                sys: {
+                    city: result.locality,
+                    country: result.country,
+                    state: result.administrativeArea,
+                    housenumber: result.subThoroughfare,
+                    postcode: result.postalCode,
+                    street: result.thoroughfare
+                }
+            } as WeatherLocation;
+        } else {
+            return {
+                coord,
+                name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
+            };
+        }
+    } catch (error) {
+        console.error('geocodeAddress error:', error);
+    }
 }

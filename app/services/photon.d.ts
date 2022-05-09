@@ -3,7 +3,7 @@ export interface Geometry {
     type: string;
 }
 
-export interface Properties {
+export interface PhotonProperties {
     osm_id: any;
     osm_type: string;
     extent: number[];
@@ -21,7 +21,7 @@ export interface Properties {
 export interface Feature {
     geometry: Geometry;
     type: string;
-    properties: Properties;
+    properties: PhotonProperties;
 }
 
 export interface Photon {

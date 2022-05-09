@@ -40,31 +40,30 @@
             // case 'rain-night':
             case '09n':
             case '10n':
-            // case 'rain_light-night':
+                // case 'rain_light-night':
                 realIcon = '4797-weather-rainynight';
                 break;
             // case 'rain-day':
             case '09d':
             case '10d':
-            // case 'rain_light':
-            // case 'rain_light-day':
-            // case 'rain':
+                // case 'rain_light':
+                // case 'rain_light-day':
+                // case 'rain':
                 realIcon = '4801-weather-partly-shower';
-                break;
-            case 'snow-night':
-                realIcon = '4798-weather-snownight';
                 break;
             // case 'snow-day':
             // case 'snow-night':
             case '13d':
-            case '13n':
-            // case 'snow':
-            // case 'sleet':
                 realIcon = '4793-weather-snow';
                 break;
+            case '13n':
+                realIcon = '4798-weather-snownight';
+                // case 'snow':
+                // case 'sleet':
+                break;
             // case 'wind':
-                // realIcon = '4806-weather-windy';
-                // break;
+            // realIcon = '4806-weather-windy';
+            // break;
             // case 'fog':
             case '50d':
             case '50n':
@@ -72,29 +71,29 @@
                 break;
             case '04d':
             case '04n':
-            // case 'cloudy':
-            // case 'cloudy-day':
-            // case 'cloudy-night':
-            // case 'mostly_cloudy':
-            // case 'mostly_cloudy-night':
-            // case 'mostly_cloudy-day':
+                // case 'cloudy':
+                // case 'cloudy-day':
+                // case 'cloudy-night':
+                // case 'mostly_cloudy':
+                // case 'mostly_cloudy-night':
+                // case 'mostly_cloudy-day':
                 // iconSrc = '4791-foggy';
                 realIcon = '4806-weather-windy';
                 break;
             case '03d':
             case '02d':
-            // case 'partly_cloudy':
-            // case 'partly_cloudy-day':
-            // case 'partly-cloudy-day':
-            // case 'drizzle':
-            // case 'drizzle-day':
+                // case 'partly_cloudy':
+                // case 'partly_cloudy-day':
+                // case 'partly-cloudy-day':
+                // case 'drizzle':
+                // case 'drizzle-day':
                 realIcon = '4800-weather-partly-cloudy';
                 break;
             case '02n':
             case '03n':
-            // case 'partly_cloudy-night':
-            // case 'drizzle-night':
-            // case 'partly-cloudy-night':
+                // case 'partly_cloudy-night':
+                // case 'drizzle-night':
+                // case 'partly-cloudy-night':
                 realIcon = '4796-weather-cloudynight';
                 break;
             case '11d':
@@ -104,9 +103,9 @@
         }
         if (realIcon) {
             if (autoPlay) {
-                iconSrc =  `~/assets/lottie/${realIcon}.lottie`;
+                iconSrc = `~/assets/lottie/${realIcon}.lottie`;
             } else {
-                iconSrc = `~/assets/images/${realIcon}.png`
+                iconSrc = `~/assets/images/${realIcon}.png`;
             }
         } else {
             iconSrc = realIcon;

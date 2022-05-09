@@ -5,7 +5,7 @@
     import { Color } from '@nativescript/core';
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l } from '~/helpers/locale';
-    import { borderColor, imperial, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import { appFontFamily, borderColor, imperial, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
 
     let textPaint: Paint;
@@ -13,6 +13,7 @@
     let textIconSubPaint: Paint;
     let paint: Paint;
     let wiPaint: Paint;
+    let appPaint: Paint;
 </script>
 
 <script lang="ts">
@@ -33,6 +34,9 @@
         wiPaint = new Paint();
         wiPaint.setFontFamily(wiFontFamily);
         wiPaint.setTextAlign(Align.CENTER);
+        appPaint = new Paint();
+        appPaint.setFontFamily(appFontFamily);
+        appPaint.setTextAlign(Align.CENTER);
     }
 
     $: {
@@ -63,7 +67,7 @@
         paint.setColor(item.color);
         canvas.drawRect(w - 5, 0, w, h, paint);
         paint.setColor($borderColor);
-        canvas.drawLine(0,h, w, h, paint);
+        canvas.drawLine(0, h, w, h, paint);
 
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22);
@@ -87,8 +91,8 @@
             subvalue?: string;
         }[] = [
             {
-                paint: undefined,
-                iconFontSize: 26,
+                iconFontSize: 20,
+                paint: appPaint,
                 icon: item.windIcon,
                 value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)
@@ -100,7 +104,7 @@
                 color: color,
                 iconFontSize: 20,
                 icon: precipIcon,
-                value: formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM),
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
             });
         } else if (item.cloudCover > 0) {
@@ -127,7 +131,9 @@
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || $textColor);
-            canvas.drawText(c.icon, x, 10 + 20, paint);
+            if (c.icon) {
+                canvas.drawText(c.icon, x, 10 + 20, paint);
+            }
             if (c.value) {
                 textIconSubPaint.setTextSize(12);
                 textIconSubPaint.setColor(c.color || $textColor);
@@ -185,7 +191,7 @@
             <cspan id="windBeaufortIcon" fontSize={20} fontFamily={wiFontFamily} text={item.windBeaufortIcon} verticalAlignment="top" textAlignment="left" paddingLeft={10} paddingTop={50} />
         {/if}
         <cgroup id="wind" fontSize={12} verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft={-100} paddingTop={10}>
-            <cspan fontSize={26} lineheight={28} text={item.windIcon} />
+            <cspan fontSize={26} lineheight={28} text={item.windIcon}   fontFamily={appFontFamily}/>
             <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
             <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
         </cgroup>

@@ -375,14 +375,12 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
 export async function geocodeAddress(coord: { lat: number; lon: number }) {
     try {
         const results = await getFromLocation(coord.lat, coord.lon, 10);
-        if (DEV_LOG) {
-            console.error('found addresses', results);
-        }
+        DEV_LOG && console.error('found addresses', results);
         if (results?.length > 0) {
             const result = results[0];
-            return {
+            const newData = {
                 coord,
-                name: result.name || result.locality,
+                name: result.locality,
                 sys: {
                     city: result.locality,
                     country: result.country,
@@ -392,6 +390,9 @@ export async function geocodeAddress(coord: { lat: number; lon: number }) {
                     street: result.thoroughfare
                 }
             } as WeatherLocation;
+            // console.log('geocodeAddress', coord, newData, formatAddress(newData.sys));
+            // newData.name = formatAddress(newData.sys);
+            return newData;
         } else {
             return {
                 coord,

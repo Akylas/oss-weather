@@ -24,7 +24,7 @@
     let gps: GPS;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
-    let provider: 'meteofrance' | 'openweathermap' = getString('provider', 'meteofrance') as any;
+    let provider: 'meteofrance' | 'openweathermap' = getString('provider', 'openweathermap') as any;
     if (!provider || provider.length === 0) {
         provider = 'openweathermap';
     }
@@ -106,7 +106,6 @@
         loading = true;
 
         try {
-            console.log('refreshWeather', `"${provider}"`);
             if (provider === 'openweathermap') {
                 const providerModule = await import('~/services/owm');
                 weatherData = await providerModule.getOWMWeather(weatherLocation);

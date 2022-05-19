@@ -8,7 +8,7 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 19
-    versionCode 45
+    versionCode 46
     versionName "1.3.0"
 
     if (project.hasProperty('resConfigs')) {

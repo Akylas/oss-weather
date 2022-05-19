@@ -102,7 +102,7 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
         uvIndex: dailyForecast.uv,
         windGust: windGust * 3.6,
         windSpeed: Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6),
-        windBearing: Math.round((windDegree.total / (windDegree.count || 1)) * 3.6),
+        windBearing: windDegree.count ? Math.round((windDegree.total / (windDegree.count)) * 3.6) : -1,
         cloudCover: Math.round(cloudCover.total / (cloudCover.count || 1)),
         precipAccumulation: Math.max(precipitationTotal, dailyForecast.precipitation['24h']),
         precipProbability,
@@ -318,7 +318,7 @@ export async function getMFWeather(weatherLocation: WeatherLocation) {
                 rain?.forecast.map(
                     (h) =>
                         ({
-                            precipAccumulation: h.rain > 1 ? h.rain : 0,
+                            intensity: h.rain - 1,
                             time: h.dt * 1000
                         } as MinutelyData)
                 ) || []

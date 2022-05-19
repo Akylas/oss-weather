@@ -1,24 +1,21 @@
 <script context="module" lang="ts">
-    import { Align, LayoutAlignment, LinearGradient, Paint, Path, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
-    import { Canvas } from '@nativescript-community/ui-canvas';
-
+    import { createNativeAttributedString } from '@nativescript-community/text';
+    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
-    import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
-    import { l } from '~/helpers/locale';
-    import { appFontFamily, borderColor, imperial, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
+    import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
+    import { appFontFamily, borderColor, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
     let textIconSubPaint: Paint;
     let paint: Paint;
     let wiPaint: Paint;
+    let mdiPaint: Paint;
     let appPaint: Paint;
 </script>
 
 <script lang="ts">
-    import { createNativeAttributedString } from '@nativescript-community/text';
-
     export let item: any;
     let canvasView;
     let color: string | Color;
@@ -37,6 +34,9 @@
         appPaint = new Paint();
         appPaint.setFontFamily(appFontFamily);
         appPaint.setTextAlign(Align.CENTER);
+        mdiPaint = new Paint();
+        mdiPaint.setFontFamily(mdiFontFamily);
+        mdiPaint.setTextAlign(Align.CENTER);
     }
 
     $: {
@@ -67,7 +67,7 @@
         paint.setColor(item.color);
         canvas.drawRect(w - 5, 0, w, h, paint);
         paint.setColor($borderColor);
-        canvas.drawLine(0, h, w, h, paint);
+        canvas.drawLine(0, h, w, h - 1, paint);
 
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22);
@@ -89,15 +89,16 @@
             icon: string;
             value: string | number;
             subvalue?: string;
-        }[] = [
-            {
+        }[] = [];
+        if (item.windSpeed) {
+            centeredItemsToDraw.push({
                 iconFontSize: 20,
                 paint: appPaint,
                 icon: item.windIcon,
                 value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)
-            }
-        ];
+            });
+        }
         if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
@@ -107,7 +108,7 @@
                 value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
             });
-        } else if (item.cloudCover > 0) {
+        } else if (item.cloudCover > 20) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: item.cloudColor,
@@ -117,13 +118,22 @@
                 subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial)
             });
         }
-        centeredItemsToDraw.push({
-            paint: wiPaint,
-            color: nightColor,
-            iconFontSize: 20,
-            icon: item.moonIcon,
-            value: l('moon')
-        });
+        if (item.uvIndex > 0) {
+            centeredItemsToDraw.push({
+                paint: mdiPaint,
+                color: item.uvIndexColor,
+                iconFontSize: 24,
+                icon: 'mdi-weather-sunny-alert',
+                value: Math.round(item.uvIndex)
+            });
+        }
+        // centeredItemsToDraw.push({
+        //     paint: wiPaint,
+        //     color: nightColor,
+        //     iconFontSize: 20,
+        //     icon: item.moonIcon,
+        //     value: l('moon')
+        // });
         const count = centeredItemsToDraw.length;
 
         centeredItemsToDraw.forEach((c, index) => {
@@ -175,6 +185,10 @@
         textPaint.setTextSize(13);
         textPaint.setColor($textLightColor);
         canvas.drawText(item.description, 10, h - 13, textPaint);
+
+        wiPaint.setColor(nightColor);
+        wiPaint.setTextSize(20);
+        canvas.drawText(item.moonIcon, 18, h - 28, wiPaint);
         // textPaint.setTextAlign(Align.RIGHT);
     }
 </script>

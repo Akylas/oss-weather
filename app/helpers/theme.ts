@@ -110,6 +110,7 @@ export function start() {
             applyTheme(theme);
             updateThemeColors(theme, force);
         } else {
+            updateThemeColors(theme, force);
             Application.on(Application.displayedEvent, () => {
                 applyTheme(theme);
                 updateThemeColors(theme, force);

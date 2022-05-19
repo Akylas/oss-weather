@@ -1,2 +1,8241 @@
-/*! For license information please see index.js.LICENSE.txt */
-(()=>{var t={918:()=>{L.TileLayer.WMSHeader=L.TileLayer.WMS.extend({initialize:function(t,i,e,n,o){L.TileLayer.WMS.prototype.initialize.call(this,t,i);this.headers=e;this.abort=n;this.results=o},createTile(t,i){const e=this.getTileUrl(t),n=document.createElement("img");n.setAttribute("role","presentation");self=this;!function(t,e,o,s){return r=this,a=function*(){let e={};o&&o.forEach((t=>{e[t.header]=t.value}));const r=new AbortController,a=r.signal;s&&s.subscribe((()=>{r.abort()}));const h=yield fetch(t,{method:"GET",headers:e,mode:"cors",signal:a});(t=>{const e=new FileReader;e.onload=()=>{n.src=e.result;self.results&&self.results.next(e.result)};e.readAsDataURL(t);i(null,n)})(yield h.blob())},new Promise(((t,i)=>{var e=t=>{try{o(a.next(t))}catch(t){i(t)}},n=t=>{try{o(a.throw(t))}catch(t){i(t)}},o=i=>i.done?t(i.value):Promise.resolve(i.value).then(e,n);o((a=a.apply(r,null)).next())}));var r,a}(e,0,this.headers,this.abort);return n}});L.TileLayer.wmsHeader=function(t,i,e,n,o){return new L.TileLayer.WMSHeader(t,i,e,n,o)}},169:function(t,i){!function(t){function i(t){var i,e,n,o;for(e=1,n=arguments.length;e<n;e++){o=arguments[e];for(i in o)t[i]=o[i]}return t}var e=Object.create||function(){function t(){}return function(i){t.prototype=i;return new t}}();function n(t,i){var e=Array.prototype.slice;if(t.bind)return t.bind.apply(t,e.call(arguments,1));var n=e.call(arguments,2);return function(){return t.apply(i,n.length?n.concat(e.call(arguments)):arguments)}}var o=0;function s(t){"_leaflet_id"in t||(t._leaflet_id=++o);return t._leaflet_id}function r(t,i,e){var n,o,s,r;r=function(){n=!1;if(o){s.apply(e,o);o=!1}};s=function(){if(n)o=arguments;else{t.apply(e,arguments);setTimeout(r,i);n=!0}};return s}function a(t,i,e){var n=i[1],o=i[0],s=n-o;return t===n&&e?t:((t-o)%s+s)%s+o}function h(){return!1}function l(t,i){if(!1===i)return t;var e=Math.pow(10,void 0===i?6:i);return Math.round(t*e)/e}function u(t){return t.trim?t.trim():t.replace(/^\s+|\s+$/g,"")}function c(t){return u(t).split(/\s+/)}function d(t,i){Object.prototype.hasOwnProperty.call(t,"options")||(t.options=t.options?e(t.options):{});for(var n in i)t.options[n]=i[n];return t.options}function _(t,i,e){var n=[];for(var o in t)n.push(encodeURIComponent(e?o.toUpperCase():o)+"="+encodeURIComponent(t[o]));return(i&&-1!==i.indexOf("?")?"&":"?")+n.join("&")}var p=/\{ *([\w_ -]+) *\}/g;function f(t,i){return t.replace(p,(function(t,e){var n=i[e];if(void 0===n)throw new Error("No value provided for variable "+t);"function"==typeof n&&(n=n(i));return n}))}var m=Array.isArray||function(t){return"[object Array]"===Object.prototype.toString.call(t)};function g(t,i){for(var e=0;e<t.length;e++)if(t[e]===i)return e;return-1}var v="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";function y(t){return window["webkit"+t]||window["moz"+t]||window["ms"+t]}var x=0;function w(t){var i=+new Date,e=Math.max(0,16-(i-x));x=i+e;return window.setTimeout(t,e)}var b=window.requestAnimationFrame||y("RequestAnimationFrame")||w,P=window.cancelAnimationFrame||y("CancelAnimationFrame")||y("CancelRequestAnimationFrame")||function(t){window.clearTimeout(t)};function T(t,i,e){if(!e||b!==w)return b.call(window,n(t,i));t.call(i)}function z(t){t&&P.call(window,t)}var M={__proto__:null,extend:i,create:e,bind:n,get lastId(){return o},stamp:s,throttle:r,wrapNum:a,falseFn:h,formatNum:l,trim:u,splitWords:c,setOptions:d,getParamString:_,template:f,isArray:m,indexOf:g,emptyImageUrl:v,requestFn:b,cancelFn:P,requestAnimFrame:T,cancelAnimFrame:z};function C(){}C.extend=function(t){var n=function(){d(this);this.initialize&&this.initialize.apply(this,arguments);this.callInitHooks()},o=n.__super__=this.prototype,s=e(o);s.constructor=n;n.prototype=s;for(var r in this)Object.prototype.hasOwnProperty.call(this,r)&&"prototype"!==r&&"__super__"!==r&&(n[r]=this[r]);t.statics&&i(n,t.statics);if(t.includes){!function(t){if("undefined"!=typeof L&&L&&L.Mixin){t=m(t)?t:[t];for(var i=0;i<t.length;i++)t[i],L.Mixin.Events}}(t.includes);i.apply(null,[s].concat(t.includes))}i(s,t);delete s.statics;delete s.includes;if(s.options){s.options=o.options?e(o.options):{};i(s.options,t.options)}s._initHooks=[];s.callInitHooks=function(){if(!this._initHooksCalled){o.callInitHooks&&o.callInitHooks.call(this);this._initHooksCalled=!0;for(var t=0,i=s._initHooks.length;t<i;t++)s._initHooks[t].call(this)}};return n};C.include=function(t){var e=this.prototype.options;i(this.prototype,t);if(t.options){this.prototype.options=e;this.mergeOptions(t.options)}return this};C.mergeOptions=function(t){i(this.prototype.options,t);return this};C.addInitHook=function(t){var i=Array.prototype.slice.call(arguments,1),e="function"==typeof t?t:function(){this[t].apply(this,i)};this.prototype._initHooks=this.prototype._initHooks||[];this.prototype._initHooks.push(e);return this};var S={on:function(t,i,e){if("object"==typeof t)for(var n in t)this._on(n,t[n],i);else for(var o=0,s=(t=c(t)).length;o<s;o++)this._on(t[o],i,e);return this},off:function(t,i,e){if(arguments.length)if("object"==typeof t)for(var n in t)this._off(n,t[n],i);else{t=c(t);for(var o=1===arguments.length,s=0,r=t.length;s<r;s++)o?this._off(t[s]):this._off(t[s],i,e)}else delete this._events;return this},_on:function(t,i,e){if("function"==typeof i){this._events=this._events||{};var n=this._events[t];if(!n){n=[];this._events[t]=n}e===this&&(e=void 0);for(var o={fn:i,ctx:e},s=n,r=0,a=s.length;r<a;r++)if(s[r].fn===i&&s[r].ctx===e)return;s.push(o)}},_off:function(t,i,e){var n,o,s;if(this._events&&(n=this._events[t]))if(1!==arguments.length){e===this&&(e=void 0);if("function"==typeof i)for(o=0,s=n.length;o<s;o++){var r=n[o];if(r.ctx===e&&r.fn===i){if(this._firingCount){r.fn=h;this._events[t]=n=n.slice()}n.splice(o,1);return}}}else{if(this._firingCount)for(o=0,s=n.length;o<s;o++)n[o].fn=h;delete this._events[t]}},fire:function(t,e,n){if(!this.listens(t,n))return this;var o=i({},e,{type:t,target:this,sourceTarget:e&&e.sourceTarget||this});if(this._events){var s=this._events[t];if(s){this._firingCount=this._firingCount+1||1;for(var r=0,a=s.length;r<a;r++){var h=s[r];h.fn.call(h.ctx||this,o)}this._firingCount--}}n&&this._propagateEvent(o);return this},listens:function(t,i){var e=this._events&&this._events[t];if(e&&e.length)return!0;if(i)for(var n in this._eventParents)if(this._eventParents[n].listens(t,i))return!0;return!1},once:function(t,i,e){if("object"==typeof t){for(var o in t)this.once(o,t[o],i);return this}var s=n((function(){this.off(t,i,e).off(t,s,e)}),this);return this.on(t,i,e).on(t,s,e)},addEventParent:function(t){this._eventParents=this._eventParents||{};this._eventParents[s(t)]=t;return this},removeEventParent:function(t){this._eventParents&&delete this._eventParents[s(t)];return this},_propagateEvent:function(t){for(var e in this._eventParents)this._eventParents[e].fire(t.type,i({layer:t.target,propagatedFrom:t.target},t),!0)}};S.addEventListener=S.on;S.removeEventListener=S.clearAllEventListeners=S.off;S.addOneTimeEventListener=S.once;S.fireEvent=S.fire;S.hasEventListeners=S.listens;var Z=C.extend(S);function E(t,i,e){this.x=e?Math.round(t):t;this.y=e?Math.round(i):i}var k=Math.trunc||function(t){return t>0?Math.floor(t):Math.ceil(t)};E.prototype={clone:function(){return new E(this.x,this.y)},add:function(t){return this.clone()._add(B(t))},_add:function(t){this.x+=t.x;this.y+=t.y;return this},subtract:function(t){return this.clone()._subtract(B(t))},_subtract:function(t){this.x-=t.x;this.y-=t.y;return this},divideBy:function(t){return this.clone()._divideBy(t)},_divideBy:function(t){this.x/=t;this.y/=t;return this},multiplyBy:function(t){return this.clone()._multiplyBy(t)},_multiplyBy:function(t){this.x*=t;this.y*=t;return this},scaleBy:function(t){return new E(this.x*t.x,this.y*t.y)},unscaleBy:function(t){return new E(this.x/t.x,this.y/t.y)},round:function(){return this.clone()._round()},_round:function(){this.x=Math.round(this.x);this.y=Math.round(this.y);return this},floor:function(){return this.clone()._floor()},_floor:function(){this.x=Math.floor(this.x);this.y=Math.floor(this.y);return this},ceil:function(){return this.clone()._ceil()},_ceil:function(){this.x=Math.ceil(this.x);this.y=Math.ceil(this.y);return this},trunc:function(){return this.clone()._trunc()},_trunc:function(){this.x=k(this.x);this.y=k(this.y);return this},distanceTo:function(t){var i=(t=B(t)).x-this.x,e=t.y-this.y;return Math.sqrt(i*i+e*e)},equals:function(t){return(t=B(t)).x===this.x&&t.y===this.y},contains:function(t){t=B(t);return Math.abs(t.x)<=Math.abs(this.x)&&Math.abs(t.y)<=Math.abs(this.y)},toString:function(){return"Point("+l(this.x)+", "+l(this.y)+")"}};function B(t,i,e){return t instanceof E?t:m(t)?new E(t[0],t[1]):null==t?t:"object"==typeof t&&"x"in t&&"y"in t?new E(t.x,t.y):new E(t,i,e)}function O(t,i){if(t)for(var e=i?[t,i]:t,n=0,o=e.length;n<o;n++)this.extend(e[n])}O.prototype={extend:function(t){t=B(t);if(this.min||this.max){this.min.x=Math.min(t.x,this.min.x);this.max.x=Math.max(t.x,this.max.x);this.min.y=Math.min(t.y,this.min.y);this.max.y=Math.max(t.y,this.max.y)}else{this.min=t.clone();this.max=t.clone()}return this},getCenter:function(t){return new E((this.min.x+this.max.x)/2,(this.min.y+this.max.y)/2,t)},getBottomLeft:function(){return new E(this.min.x,this.max.y)},getTopRight:function(){return new E(this.max.x,this.min.y)},getTopLeft:function(){return this.min},getBottomRight:function(){return this.max},getSize:function(){return this.max.subtract(this.min)},contains:function(t){var i,e;if((t="number"==typeof t[0]||t instanceof E?B(t):A(t))instanceof O){i=t.min;e=t.max}else i=e=t;return i.x>=this.min.x&&e.x<=this.max.x&&i.y>=this.min.y&&e.y<=this.max.y},intersects:function(t){t=A(t);var i=this.min,e=this.max,n=t.min,o=t.max,s=o.x>=i.x&&n.x<=e.x,r=o.y>=i.y&&n.y<=e.y;return s&&r},overlaps:function(t){t=A(t);var i=this.min,e=this.max,n=t.min,o=t.max,s=o.x>i.x&&n.x<e.x,r=o.y>i.y&&n.y<e.y;return s&&r},isValid:function(){return!(!this.min||!this.max)}};function A(t,i){return!t||t instanceof O?t:new O(t,i)}function I(t,i){if(t)for(var e=i?[t,i]:t,n=0,o=e.length;n<o;n++)this.extend(e[n])}I.prototype={extend:function(t){var i,e,n=this._southWest,o=this._northEast;if(t instanceof N){i=t;e=t}else{if(!(t instanceof I))return t?this.extend(D(t)||R(t)):this;i=t._southWest;e=t._northEast;if(!i||!e)return this}if(n||o){n.lat=Math.min(i.lat,n.lat);n.lng=Math.min(i.lng,n.lng);o.lat=Math.max(e.lat,o.lat);o.lng=Math.max(e.lng,o.lng)}else{this._southWest=new N(i.lat,i.lng);this._northEast=new N(e.lat,e.lng)}return this},pad:function(t){var i=this._southWest,e=this._northEast,n=Math.abs(i.lat-e.lat)*t,o=Math.abs(i.lng-e.lng)*t;return new I(new N(i.lat-n,i.lng-o),new N(e.lat+n,e.lng+o))},getCenter:function(){return new N((this._southWest.lat+this._northEast.lat)/2,(this._southWest.lng+this._northEast.lng)/2)},getSouthWest:function(){return this._southWest},getNorthEast:function(){return this._northEast},getNorthWest:function(){return new N(this.getNorth(),this.getWest())},getSouthEast:function(){return new N(this.getSouth(),this.getEast())},getWest:function(){return this._southWest.lng},getSouth:function(){return this._southWest.lat},getEast:function(){return this._northEast.lng},getNorth:function(){return this._northEast.lat},contains:function(t){t="number"==typeof t[0]||t instanceof N||"lat"in t?D(t):R(t);var i,e,n=this._southWest,o=this._northEast;if(t instanceof I){i=t.getSouthWest();e=t.getNorthEast()}else i=e=t;return i.lat>=n.lat&&e.lat<=o.lat&&i.lng>=n.lng&&e.lng<=o.lng},intersects:function(t){t=R(t);var i=this._southWest,e=this._northEast,n=t.getSouthWest(),o=t.getNorthEast(),s=o.lat>=i.lat&&n.lat<=e.lat,r=o.lng>=i.lng&&n.lng<=e.lng;return s&&r},overlaps:function(t){t=R(t);var i=this._southWest,e=this._northEast,n=t.getSouthWest(),o=t.getNorthEast(),s=o.lat>i.lat&&n.lat<e.lat,r=o.lng>i.lng&&n.lng<e.lng;return s&&r},toBBoxString:function(){return[this.getWest(),this.getSouth(),this.getEast(),this.getNorth()].join(",")},equals:function(t,i){if(!t)return!1;t=R(t);return this._southWest.equals(t.getSouthWest(),i)&&this._northEast.equals(t.getNorthEast(),i)},isValid:function(){return!(!this._southWest||!this._northEast)}};function R(t,i){return t instanceof I?t:new I(t,i)}function N(t,i,e){if(isNaN(t)||isNaN(i))throw new Error("Invalid LatLng object: ("+t+", "+i+")");this.lat=+t;this.lng=+i;void 0!==e&&(this.alt=+e)}N.prototype={equals:function(t,i){if(!t)return!1;t=D(t);return Math.max(Math.abs(this.lat-t.lat),Math.abs(this.lng-t.lng))<=(void 0===i?1e-9:i)},toString:function(t){return"LatLng("+l(this.lat,t)+", "+l(this.lng,t)+")"},distanceTo:function(t){return W.distance(this,D(t))},wrap:function(){return W.wrapLatLng(this)},toBounds:function(t){var i=180*t/40075017,e=i/Math.cos(Math.PI/180*this.lat);return R([this.lat-i,this.lng-e],[this.lat+i,this.lng+e])},clone:function(){return new N(this.lat,this.lng,this.alt)}};function D(t,i,e){return t instanceof N?t:m(t)&&"object"!=typeof t[0]?3===t.length?new N(t[0],t[1],t[2]):2===t.length?new N(t[0],t[1]):null:null==t?t:"object"==typeof t&&"lat"in t?new N(t.lat,"lng"in t?t.lng:t.lon,t.alt):void 0===i?null:new N(t,i,e)}var j,H={latLngToPoint:function(t,i){var e=this.projection.project(t),n=this.scale(i);return this.transformation._transform(e,n)},pointToLatLng:function(t,i){var e=this.scale(i),n=this.transformation.untransform(t,e);return this.projection.unproject(n)},project:function(t){return this.projection.project(t)},unproject:function(t){return this.projection.unproject(t)},scale:function(t){return 256*Math.pow(2,t)},zoom:function(t){return Math.log(t/256)/Math.LN2},getProjectedBounds:function(t){if(this.infinite)return null;var i=this.projection.bounds,e=this.scale(t);return new O(this.transformation.transform(i.min,e),this.transformation.transform(i.max,e))},infinite:!1,wrapLatLng:function(t){var i=this.wrapLng?a(t.lng,this.wrapLng,!0):t.lng;return new N(this.wrapLat?a(t.lat,this.wrapLat,!0):t.lat,i,t.alt)},wrapLatLngBounds:function(t){var i=t.getCenter(),e=this.wrapLatLng(i),n=i.lat-e.lat,o=i.lng-e.lng;if(0===n&&0===o)return t;var s=t.getSouthWest(),r=t.getNorthEast();return new I(new N(s.lat-n,s.lng-o),new N(r.lat-n,r.lng-o))}},W=i({},H,{wrapLng:[-180,180],R:6371e3,distance:function(t,i){var e=Math.PI/180,n=t.lat*e,o=i.lat*e,s=Math.sin((i.lat-t.lat)*e/2),r=Math.sin((i.lng-t.lng)*e/2),a=s*s+Math.cos(n)*Math.cos(o)*r*r,h=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));return this.R*h}}),F=6378137,U={R:F,MAX_LATITUDE:85.0511287798,project:function(t){var i=Math.PI/180,e=this.MAX_LATITUDE,n=Math.max(Math.min(e,t.lat),-e),o=Math.sin(n*i);return new E(this.R*t.lng*i,this.R*Math.log((1+o)/(1-o))/2)},unproject:function(t){var i=180/Math.PI;return new N((2*Math.atan(Math.exp(t.y/this.R))-Math.PI/2)*i,t.x*i/this.R)},bounds:(j=F*Math.PI,new O([-j,-j],[j,j]))};function V(t,i,e,n){if(m(t)){this._a=t[0];this._b=t[1];this._c=t[2];this._d=t[3]}else{this._a=t;this._b=i;this._c=e;this._d=n}}V.prototype={transform:function(t,i){return this._transform(t.clone(),i)},_transform:function(t,i){i=i||1;t.x=i*(this._a*t.x+this._b);t.y=i*(this._c*t.y+this._d);return t},untransform:function(t,i){i=i||1;return new E((t.x/i-this._b)/this._a,(t.y/i-this._d)/this._c)}};function G(t,i,e,n){return new V(t,i,e,n)}var q,K=i({},W,{code:"EPSG:3857",projection:U,transformation:(q=.5/(Math.PI*U.R),G(q,.5,-q,.5))}),Y=i({},K,{code:"EPSG:900913"});function X(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function J(t,i){var e,n,o,s,r,a,h="";for(e=0,o=t.length;e<o;e++){for(n=0,s=(r=t[e]).length;n<s;n++)h+=(n?"L":"M")+(a=r[n]).x+" "+a.y;h+=i?Bt.svg?"z":"x":""}return h||"M0 0"}var $=document.documentElement.style,Q="ActiveXObject"in window,tt=Q&&!document.addEventListener,it="msLaunchUri"in navigator&&!("documentMode"in document),et=kt("webkit"),nt=kt("android"),ot=kt("android 2")||kt("android 3"),st=parseInt(/WebKit\/([0-9]+)|$/.exec(navigator.userAgent)[1],10),rt=nt&&kt("Google")&&st<537&&!("AudioNode"in window),at=!!window.opera,ht=!it&&kt("chrome"),lt=kt("gecko")&&!et&&!at&&!Q,ut=!ht&&kt("safari"),ct=kt("phantom"),dt="OTransition"in $,_t=0===navigator.platform.indexOf("Win"),pt=Q&&"transition"in $,ft="WebKitCSSMatrix"in window&&"m11"in new window.WebKitCSSMatrix&&!ot,mt="MozPerspective"in $,gt=!window.L_DISABLE_3D&&(pt||ft||mt)&&!dt&&!ct,vt="undefined"!=typeof orientation||kt("mobile"),yt=vt&&et,xt=vt&&ft,wt=!window.PointerEvent&&window.MSPointerEvent,bt=!(!window.PointerEvent&&!wt),Pt="ontouchstart"in window||!!window.TouchEvent,Lt=!window.L_NO_TOUCH&&(Pt||bt),Tt=vt&&at,zt=vt&&lt,Mt=(window.devicePixelRatio||window.screen.deviceXDPI/window.screen.logicalXDPI)>1,Ct=function(){var t=!1;try{var i=Object.defineProperty({},"passive",{get:function(){t=!0}});window.addEventListener("testPassiveEventSupport",h,i);window.removeEventListener("testPassiveEventSupport",h,i)}catch(t){}return t}(),St=!!document.createElement("canvas").getContext,Zt=!(!document.createElementNS||!X("svg").createSVGRect),Et=!!Zt&&function(){var t=document.createElement("div");t.innerHTML="<svg/>";return"http://www.w3.org/2000/svg"===(t.firstChild&&t.firstChild.namespaceURI)}();function kt(t){return navigator.userAgent.toLowerCase().indexOf(t)>=0}var Bt={ie:Q,ielt9:tt,edge:it,webkit:et,android:nt,android23:ot,androidStock:rt,opera:at,chrome:ht,gecko:lt,safari:ut,phantom:ct,opera12:dt,win:_t,ie3d:pt,webkit3d:ft,gecko3d:mt,any3d:gt,mobile:vt,mobileWebkit:yt,mobileWebkit3d:xt,msPointer:wt,pointer:bt,touch:Lt,touchNative:Pt,mobileOpera:Tt,mobileGecko:zt,retina:Mt,passiveEvents:Ct,canvas:St,svg:Zt,vml:!Zt&&function(){try{var t=document.createElement("div");t.innerHTML='<v:shape adj="1"/>';var i=t.firstChild;i.style.behavior="url(#default#VML)";return i&&"object"==typeof i.adj}catch(t){return!1}}(),inlineSvg:Et},Ot=Bt.msPointer?"MSPointerDown":"pointerdown",At=Bt.msPointer?"MSPointerMove":"pointermove",It=Bt.msPointer?"MSPointerUp":"pointerup",Rt=Bt.msPointer?"MSPointerCancel":"pointercancel",Nt={touchstart:Ot,touchmove:At,touchend:It,touchcancel:Rt},Dt={touchstart:function(t,i){i.MSPOINTER_TYPE_TOUCH&&i.pointerType===i.MSPOINTER_TYPE_TOUCH&&Ai(i);Vt(t,i)},touchmove:Vt,touchend:Vt,touchcancel:Vt},jt={},Ht=!1;function Wt(t){jt[t.pointerId]=t}function Ft(t){jt[t.pointerId]&&(jt[t.pointerId]=t)}function Ut(t){delete jt[t.pointerId]}function Vt(t,i){if(i.pointerType!==(i.MSPOINTER_TYPE_MOUSE||"mouse")){i.touches=[];for(var e in jt)i.touches.push(jt[e]);i.changedTouches=[i];t(i)}}var Gt,qt,Kt,Yt,Xt,Jt=_i(["transform","webkitTransform","OTransform","MozTransform","msTransform"]),$t=_i(["webkitTransition","transition","OTransition","MozTransition","msTransition"]),Qt="webkitTransition"===$t||"OTransition"===$t?$t+"End":"transitionend";function ti(t){return"string"==typeof t?document.getElementById(t):t}function ii(t,i){var e=t.style[i]||t.currentStyle&&t.currentStyle[i];if((!e||"auto"===e)&&document.defaultView){var n=document.defaultView.getComputedStyle(t,null);e=n?n[i]:null}return"auto"===e?null:e}function ei(t,i,e){var n=document.createElement(t);n.className=i||"";e&&e.appendChild(n);return n}function ni(t){var i=t.parentNode;i&&i.removeChild(t)}function oi(t){for(;t.firstChild;)t.removeChild(t.firstChild)}function si(t){var i=t.parentNode;i&&i.lastChild!==t&&i.appendChild(t)}function ri(t){var i=t.parentNode;i&&i.firstChild!==t&&i.insertBefore(t,i.firstChild)}function ai(t,i){if(void 0!==t.classList)return t.classList.contains(i);var e=ci(t);return e.length>0&&new RegExp("(^|\\s)"+i+"(\\s|$)").test(e)}function hi(t,i){if(void 0!==t.classList)for(var e=c(i),n=0,o=e.length;n<o;n++)t.classList.add(e[n]);else if(!ai(t,i)){var s=ci(t);ui(t,(s?s+" ":"")+i)}}function li(t,i){void 0!==t.classList?t.classList.remove(i):ui(t,u((" "+ci(t)+" ").replace(" "+i+" "," ")))}function ui(t,i){void 0===t.className.baseVal?t.className=i:t.className.baseVal=i}function ci(t){t.correspondingElement&&(t=t.correspondingElement);return void 0===t.className.baseVal?t.className:t.className.baseVal}function di(t,i){"opacity"in t.style?t.style.opacity=i:"filter"in t.style&&function(t,i){var e=!1,n="DXImageTransform.Microsoft.Alpha";try{e=t.filters.item(n)}catch(t){if(1===i)return}i=Math.round(100*i);if(e){e.Enabled=100!==i;e.Opacity=i}else t.style.filter+=" progid:"+n+"(opacity="+i+")"}(t,i)}function _i(t){for(var i=document.documentElement.style,e=0;e<t.length;e++)if(t[e]in i)return t[e];return!1}function pi(t,i,e){var n=i||new E(0,0);t.style[Jt]=(Bt.ie3d?"translate("+n.x+"px,"+n.y+"px)":"translate3d("+n.x+"px,"+n.y+"px,0)")+(e?" scale("+e+")":"")}function fi(t,i){t._leaflet_pos=i;if(Bt.any3d)pi(t,i);else{t.style.left=i.x+"px";t.style.top=i.y+"px"}}function mi(t){return t._leaflet_pos||new E(0,0)}if("onselectstart"in document){Gt=function(){Ti(window,"selectstart",Ai)};qt=function(){Mi(window,"selectstart",Ai)}}else{var gi=_i(["userSelect","WebkitUserSelect","OUserSelect","MozUserSelect","msUserSelect"]);Gt=function(){if(gi){var t=document.documentElement.style;Kt=t[gi];t[gi]="none"}};qt=function(){if(gi){document.documentElement.style[gi]=Kt;Kt=void 0}}}function vi(){Ti(window,"dragstart",Ai)}function yi(){Mi(window,"dragstart",Ai)}function xi(t){for(;-1===t.tabIndex;)t=t.parentNode;if(t.style){wi();Yt=t;Xt=t.style.outline;t.style.outline="none";Ti(window,"keydown",wi)}}function wi(){if(Yt){Yt.style.outline=Xt;Yt=void 0;Xt=void 0;Mi(window,"keydown",wi)}}function bi(t){do{t=t.parentNode}while(!(t.offsetWidth&&t.offsetHeight||t===document.body));return t}function Pi(t){var i=t.getBoundingClientRect();return{x:i.width/t.offsetWidth||1,y:i.height/t.offsetHeight||1,boundingClientRect:i}}var Li={__proto__:null,TRANSFORM:Jt,TRANSITION:$t,TRANSITION_END:Qt,get:ti,getStyle:ii,create:ei,remove:ni,empty:oi,toFront:si,toBack:ri,hasClass:ai,addClass:hi,removeClass:li,setClass:ui,getClass:ci,setOpacity:di,testProp:_i,setTransform:pi,setPosition:fi,getPosition:mi,get disableTextSelection(){return Gt},get enableTextSelection(){return qt},disableImageDrag:vi,enableImageDrag:yi,preventOutline:xi,restoreOutline:wi,getSizedParentNode:bi,getScale:Pi};function Ti(t,i,e,n){if(i&&"object"==typeof i)for(var o in i)Zi(t,o,i[o],e);else for(var s=0,r=(i=c(i)).length;s<r;s++)Zi(t,i[s],e,n);return this}var zi="_leaflet_events";function Mi(t,i,e,n){if(1===arguments.length){Ci(t);delete t[zi]}else if(i&&"object"==typeof i)for(var o in i)Ei(t,o,i[o],e);else{i=c(i);if(2===arguments.length)Ci(t,(function(t){return-1!==g(i,t)}));else for(var s=0,r=i.length;s<r;s++)Ei(t,i[s],e,n)}return this}function Ci(t,i){for(var e in t[zi]){var n=e.split(/\d/)[0];i&&!i(n)||Ei(t,n,null,null,e)}}var Si={mouseenter:"mouseover",mouseleave:"mouseout",wheel:!("onwheel"in window)&&"mousewheel"};function Zi(t,i,e,n){var o=i+s(e)+(n?"_"+s(n):"");if(t[zi]&&t[zi][o])return this;var r=function(i){return e.call(n||t,i||window.event)},a=r;if(!Bt.touchNative&&Bt.pointer&&0===i.indexOf("touch"))r=function(t,i,e){"touchstart"===i&&function(){if(!Ht){document.addEventListener(Ot,Wt,!0);document.addEventListener(At,Ft,!0);document.addEventListener(It,Ut,!0);document.addEventListener(Rt,Ut,!0);Ht=!0}}();if(!Dt[i])return L.Util.falseFn;e=Dt[i].bind(this,e);t.addEventListener(Nt[i],e,!1);return e}(t,i,r);else if(Bt.touch&&"dblclick"===i)r=function(t,i){t.addEventListener("dblclick",i);var e,n=0;function o(t){if(1===t.detail){if("mouse"!==t.pointerType&&(!t.sourceCapabilities||t.sourceCapabilities.firesTouchEvents)){var o=Date.now();o-n<=200?2==++e&&i(function(t){var i,e,n={};for(e in t){i=t[e];n[e]=i&&i.bind?i.bind(t):i}t=n;n.type="dblclick";n.detail=2;n.isTrusted=!1;n._simulated=!0;return n}(t)):e=1;n=o}}else e=t.detail}t.addEventListener("click",o);return{dblclick:i,simDblclick:o}}(t,r);else if("addEventListener"in t)if("touchstart"===i||"touchmove"===i||"wheel"===i||"mousewheel"===i)t.addEventListener(Si[i]||i,r,!!Bt.passiveEvents&&{passive:!1});else if("mouseenter"===i||"mouseleave"===i){r=function(i){i=i||window.event;ji(t,i)&&a(i)};t.addEventListener(Si[i],r,!1)}else t.addEventListener(i,a,!1);else t.attachEvent("on"+i,r);t[zi]=t[zi]||{};t[zi][o]=r}function Ei(t,i,e,n,o){o=o||i+s(e)+(n?"_"+s(n):"");var r=t[zi]&&t[zi][o];if(!r)return this;!Bt.touchNative&&Bt.pointer&&0===i.indexOf("touch")?function(t,i,e){Nt[i]&&t.removeEventListener(Nt[i],e,!1)}(t,i,r):Bt.touch&&"dblclick"===i?function(t,i){t.removeEventListener("dblclick",i.dblclick);t.removeEventListener("click",i.simDblclick)}(t,r):"removeEventListener"in t?t.removeEventListener(Si[i]||i,r,!1):t.detachEvent("on"+i,r);t[zi][o]=null}function ki(t){t.stopPropagation?t.stopPropagation():t.originalEvent?t.originalEvent._stopped=!0:t.cancelBubble=!0;return this}function Bi(t){Zi(t,"wheel",ki);return this}function Oi(t){Ti(t,"mousedown touchstart dblclick contextmenu",ki);t._leaflet_disable_click=!0;return this}function Ai(t){t.preventDefault?t.preventDefault():t.returnValue=!1;return this}function Ii(t){Ai(t);ki(t);return this}function Ri(t,i){if(!i)return new E(t.clientX,t.clientY);var e=Pi(i),n=e.boundingClientRect;return new E((t.clientX-n.left)/e.x-i.clientLeft,(t.clientY-n.top)/e.y-i.clientTop)}var Ni=Bt.win&&Bt.chrome?2*window.devicePixelRatio:Bt.gecko?window.devicePixelRatio:1;function Di(t){return Bt.edge?t.wheelDeltaY/2:t.deltaY&&0===t.deltaMode?-t.deltaY/Ni:t.deltaY&&1===t.deltaMode?20*-t.deltaY:t.deltaY&&2===t.deltaMode?60*-t.deltaY:t.deltaX||t.deltaZ?0:t.wheelDelta?(t.wheelDeltaY||t.wheelDelta)/2:t.detail&&Math.abs(t.detail)<32765?20*-t.detail:t.detail?t.detail/-32765*60:0}function ji(t,i){var e=i.relatedTarget;if(!e)return!0;try{for(;e&&e!==t;)e=e.parentNode}catch(t){return!1}return e!==t}var Hi={__proto__:null,on:Ti,off:Mi,stopPropagation:ki,disableScrollPropagation:Bi,disableClickPropagation:Oi,preventDefault:Ai,stop:Ii,getMousePosition:Ri,getWheelDelta:Di,isExternalTarget:ji,addListener:Ti,removeListener:Mi},Wi=Z.extend({run:function(t,i,e,n){this.stop();this._el=t;this._inProgress=!0;this._duration=e||.25;this._easeOutPower=1/Math.max(n||.5,.2);this._startPos=mi(t);this._offset=i.subtract(this._startPos);this._startTime=+new Date;this.fire("start");this._animate()},stop:function(){if(this._inProgress){this._step(!0);this._complete()}},_animate:function(){this._animId=T(this._animate,this);this._step()},_step:function(t){var i=+new Date-this._startTime,e=1e3*this._duration;if(i<e)this._runFrame(this._easeOut(i/e),t);else{this._runFrame(1);this._complete()}},_runFrame:function(t,i){var e=this._startPos.add(this._offset.multiplyBy(t));i&&e._round();fi(this._el,e);this.fire("step")},_complete:function(){z(this._animId);this._inProgress=!1;this.fire("end")},_easeOut:function(t){return 1-Math.pow(1-t,this._easeOutPower)}}),Fi=Z.extend({options:{crs:K,center:void 0,zoom:void 0,minZoom:void 0,maxZoom:void 0,layers:[],maxBounds:void 0,renderer:void 0,zoomAnimation:!0,zoomAnimationThreshold:4,fadeAnimation:!0,markerZoomAnimation:!0,transform3DLimit:8388608,zoomSnap:1,zoomDelta:1,trackResize:!0},initialize:function(t,i){i=d(this,i);this._handlers=[];this._layers={};this._zoomBoundLayers={};this._sizeChanged=!0;this._initContainer(t);this._initLayout();this._onResize=n(this._onResize,this);this._initEvents();i.maxBounds&&this.setMaxBounds(i.maxBounds);void 0!==i.zoom&&(this._zoom=this._limitZoom(i.zoom));i.center&&void 0!==i.zoom&&this.setView(D(i.center),i.zoom,{reset:!0});this.callInitHooks();this._zoomAnimated=$t&&Bt.any3d&&!Bt.mobileOpera&&this.options.zoomAnimation;if(this._zoomAnimated){this._createAnimProxy();Ti(this._proxy,Qt,this._catchTransitionEnd,this)}this._addLayers(this.options.layers)},setView:function(t,e,n){e=void 0===e?this._zoom:this._limitZoom(e);t=this._limitCenter(D(t),e,this.options.maxBounds);n=n||{};this._stop();if(this._loaded&&!n.reset&&!0!==n){if(void 0!==n.animate){n.zoom=i({animate:n.animate},n.zoom);n.pan=i({animate:n.animate,duration:n.duration},n.pan)}if(this._zoom!==e?this._tryAnimatedZoom&&this._tryAnimatedZoom(t,e,n.zoom):this._tryAnimatedPan(t,n.pan)){clearTimeout(this._sizeTimer);return this}}this._resetView(t,e);return this},setZoom:function(t,i){if(!this._loaded){this._zoom=t;return this}return this.setView(this.getCenter(),t,{zoom:i})},zoomIn:function(t,i){t=t||(Bt.any3d?this.options.zoomDelta:1);return this.setZoom(this._zoom+t,i)},zoomOut:function(t,i){t=t||(Bt.any3d?this.options.zoomDelta:1);return this.setZoom(this._zoom-t,i)},setZoomAround:function(t,i,e){var n=this.getZoomScale(i),o=this.getSize().divideBy(2),s=(t instanceof E?t:this.latLngToContainerPoint(t)).subtract(o).multiplyBy(1-1/n),r=this.containerPointToLatLng(o.add(s));return this.setView(r,i,{zoom:e})},_getBoundsCenterZoom:function(t,i){i=i||{};t=t.getBounds?t.getBounds():R(t);var e=B(i.paddingTopLeft||i.padding||[0,0]),n=B(i.paddingBottomRight||i.padding||[0,0]),o=this.getBoundsZoom(t,!1,e.add(n));if((o="number"==typeof i.maxZoom?Math.min(i.maxZoom,o):o)===1/0)return{center:t.getCenter(),zoom:o};var s=n.subtract(e).divideBy(2),r=this.project(t.getSouthWest(),o),a=this.project(t.getNorthEast(),o);return{center:this.unproject(r.add(a).divideBy(2).add(s),o),zoom:o}},fitBounds:function(t,i){if(!(t=R(t)).isValid())throw new Error("Bounds are not valid.");var e=this._getBoundsCenterZoom(t,i);return this.setView(e.center,e.zoom,i)},fitWorld:function(t){return this.fitBounds([[-90,-180],[90,180]],t)},panTo:function(t,i){return this.setView(t,this._zoom,{pan:i})},panBy:function(t,i){i=i||{};if(!(t=B(t).round()).x&&!t.y)return this.fire("moveend");if(!0!==i.animate&&!this.getSize().contains(t)){this._resetView(this.unproject(this.project(this.getCenter()).add(t)),this.getZoom());return this}if(!this._panAnim){this._panAnim=new Wi;this._panAnim.on({step:this._onPanTransitionStep,end:this._onPanTransitionEnd},this)}i.noMoveStart||this.fire("movestart");if(!1!==i.animate){hi(this._mapPane,"leaflet-pan-anim");var e=this._getMapPanePos().subtract(t).round();this._panAnim.run(this._mapPane,e,i.duration||.25,i.easeLinearity)}else{this._rawPanBy(t);this.fire("move").fire("moveend")}return this},flyTo:function(t,i,e){if(!1===(e=e||{}).animate||!Bt.any3d)return this.setView(t,i,e);this._stop();var n=this.project(this.getCenter()),o=this.project(t),s=this.getSize(),r=this._zoom;t=D(t);i=void 0===i?r:i;var a=Math.max(s.x,s.y),h=a*this.getZoomScale(r,i),l=o.distanceTo(n)||1,u=1.42,c=2.0164;function d(t){var i=(h*h-a*a+(t?-1:1)*c*c*l*l)/(2*(t?h:a)*c*l),e=Math.sqrt(i*i+1)-i;return e<1e-9?-18:Math.log(e)}function _(t){return(Math.exp(t)-Math.exp(-t))/2}function p(t){return(Math.exp(t)+Math.exp(-t))/2}var f=d(0),m=Date.now(),g=(d(1)-f)/u,v=e.duration?1e3*e.duration:1e3*g*.8;this._moveStart(!0,e.noMoveStart);(function e(){var s=(Date.now()-m)/v,h=function(t){return 1-Math.pow(1-t,1.5)}(s)*g;if(s<=1){this._flyToFrame=T(e,this);this._move(this.unproject(n.add(o.subtract(n).multiplyBy(function(t){return a*(p(f)*(_(i=f+u*t)/p(i))-_(f))/c;var i}(h)/l)),r),this.getScaleZoom(a/function(t){return a*(p(f)/p(f+u*t))}(h),r),{flyTo:!0})}else this._move(t,i)._moveEnd(!0)}).call(this);return this},flyToBounds:function(t,i){var e=this._getBoundsCenterZoom(t,i);return this.flyTo(e.center,e.zoom,i)},setMaxBounds:function(t){if(!(t=R(t)).isValid()){this.options.maxBounds=null;return this.off("moveend",this._panInsideMaxBounds)}this.options.maxBounds&&this.off("moveend",this._panInsideMaxBounds);this.options.maxBounds=t;this._loaded&&this._panInsideMaxBounds();return this.on("moveend",this._panInsideMaxBounds)},setMinZoom:function(t){var i=this.options.minZoom;this.options.minZoom=t;if(this._loaded&&i!==t){this.fire("zoomlevelschange");if(this.getZoom()<this.options.minZoom)return this.setZoom(t)}return this},setMaxZoom:function(t){var i=this.options.maxZoom;this.options.maxZoom=t;if(this._loaded&&i!==t){this.fire("zoomlevelschange");if(this.getZoom()>this.options.maxZoom)return this.setZoom(t)}return this},panInsideBounds:function(t,i){this._enforcingBounds=!0;var e=this.getCenter(),n=this._limitCenter(e,this._zoom,R(t));e.equals(n)||this.panTo(n,i);this._enforcingBounds=!1;return this},panInside:function(t,i){var e=B((i=i||{}).paddingTopLeft||i.padding||[0,0]),n=B(i.paddingBottomRight||i.padding||[0,0]),o=this.project(this.getCenter()),s=this.project(t),r=this.getPixelBounds(),a=A([r.min.add(e),r.max.subtract(n)]),h=a.getSize();if(!a.contains(s)){this._enforcingBounds=!0;var l=s.subtract(a.getCenter()),u=a.extend(s).getSize().subtract(h);o.x+=l.x<0?-u.x:u.x;o.y+=l.y<0?-u.y:u.y;this.panTo(this.unproject(o),i);this._enforcingBounds=!1}return this},invalidateSize:function(t){if(!this._loaded)return this;t=i({animate:!1,pan:!0},!0===t?{animate:!0}:t);var e=this.getSize();this._sizeChanged=!0;this._lastCenter=null;var o=this.getSize(),s=e.divideBy(2).round(),r=o.divideBy(2).round(),a=s.subtract(r);if(!a.x&&!a.y)return this;if(t.animate&&t.pan)this.panBy(a);else{t.pan&&this._rawPanBy(a);this.fire("move");if(t.debounceMoveend){clearTimeout(this._sizeTimer);this._sizeTimer=setTimeout(n(this.fire,this,"moveend"),200)}else this.fire("moveend")}return this.fire("resize",{oldSize:e,newSize:o})},stop:function(){this.setZoom(this._limitZoom(this._zoom));this.options.zoomSnap||this.fire("viewreset");return this._stop()},locate:function(t){t=this._locateOptions=i({timeout:1e4,watch:!1},t);if(!("geolocation"in navigator)){this._handleGeolocationError({code:0,message:"Geolocation not supported."});return this}var e=n(this._handleGeolocationResponse,this),o=n(this._handleGeolocationError,this);t.watch?this._locationWatchId=navigator.geolocation.watchPosition(e,o,t):navigator.geolocation.getCurrentPosition(e,o,t);return this},stopLocate:function(){navigator.geolocation&&navigator.geolocation.clearWatch&&navigator.geolocation.clearWatch(this._locationWatchId);this._locateOptions&&(this._locateOptions.setView=!1);return this},_handleGeolocationError:function(t){if(this._container._leaflet_id){var i=t.code,e=t.message||(1===i?"permission denied":2===i?"position unavailable":"timeout");this._locateOptions.setView&&!this._loaded&&this.fitWorld();this.fire("locationerror",{code:i,message:"Geolocation error: "+e+"."})}},_handleGeolocationResponse:function(t){if(this._container._leaflet_id){var i=new N(t.coords.latitude,t.coords.longitude),e=i.toBounds(2*t.coords.accuracy),n=this._locateOptions;if(n.setView){var o=this.getBoundsZoom(e);this.setView(i,n.maxZoom?Math.min(o,n.maxZoom):o)}var s={latlng:i,bounds:e,timestamp:t.timestamp};for(var r in t.coords)"number"==typeof t.coords[r]&&(s[r]=t.coords[r]);this.fire("locationfound",s)}},addHandler:function(t,i){if(!i)return this;var e=this[t]=new i(this);this._handlers.push(e);this.options[t]&&e.enable();return this},remove:function(){this._initEvents(!0);this.options.maxBounds&&this.off("moveend",this._panInsideMaxBounds);if(this._containerId!==this._container._leaflet_id)throw new Error("Map container is being reused by another instance");try{delete this._container._leaflet_id;delete this._containerId}catch(t){this._container._leaflet_id=void 0;this._containerId=void 0}void 0!==this._locationWatchId&&this.stopLocate();this._stop();ni(this._mapPane);this._clearControlPos&&this._clearControlPos();if(this._resizeRequest){z(this._resizeRequest);this._resizeRequest=null}this._clearHandlers();this._loaded&&this.fire("unload");var t;for(t in this._layers)this._layers[t].remove();for(t in this._panes)ni(this._panes[t]);this._layers=[];this._panes=[];delete this._mapPane;delete this._renderer;return this},createPane:function(t,i){var e=ei("div","leaflet-pane"+(t?" leaflet-"+t.replace("Pane","")+"-pane":""),i||this._mapPane);t&&(this._panes[t]=e);return e},getCenter:function(){this._checkIfLoaded();return this._lastCenter&&!this._moved()?this._lastCenter:this.layerPointToLatLng(this._getCenterLayerPoint())},getZoom:function(){return this._zoom},getBounds:function(){var t=this.getPixelBounds();return new I(this.unproject(t.getBottomLeft()),this.unproject(t.getTopRight()))},getMinZoom:function(){return void 0===this.options.minZoom?this._layersMinZoom||0:this.options.minZoom},getMaxZoom:function(){return void 0===this.options.maxZoom?void 0===this._layersMaxZoom?1/0:this._layersMaxZoom:this.options.maxZoom},getBoundsZoom:function(t,i,e){t=R(t);e=B(e||[0,0]);var n=this.getZoom()||0,o=this.getMinZoom(),s=this.getMaxZoom(),r=t.getNorthWest(),a=t.getSouthEast(),h=this.getSize().subtract(e),l=A(this.project(a,n),this.project(r,n)).getSize(),u=Bt.any3d?this.options.zoomSnap:1,c=h.x/l.x,d=h.y/l.y,_=i?Math.max(c,d):Math.min(c,d);n=this.getScaleZoom(_,n);if(u){n=Math.round(n/(u/100))*(u/100);n=i?Math.ceil(n/u)*u:Math.floor(n/u)*u}return Math.max(o,Math.min(s,n))},getSize:function(){if(!this._size||this._sizeChanged){this._size=new E(this._container.clientWidth||0,this._container.clientHeight||0);this._sizeChanged=!1}return this._size.clone()},getPixelBounds:function(t,i){var e=this._getTopLeftPoint(t,i);return new O(e,e.add(this.getSize()))},getPixelOrigin:function(){this._checkIfLoaded();return this._pixelOrigin},getPixelWorldBounds:function(t){return this.options.crs.getProjectedBounds(void 0===t?this.getZoom():t)},getPane:function(t){return"string"==typeof t?this._panes[t]:t},getPanes:function(){return this._panes},getContainer:function(){return this._container},getZoomScale:function(t,i){var e=this.options.crs;i=void 0===i?this._zoom:i;return e.scale(t)/e.scale(i)},getScaleZoom:function(t,i){var e=this.options.crs;i=void 0===i?this._zoom:i;var n=e.zoom(t*e.scale(i));return isNaN(n)?1/0:n},project:function(t,i){i=void 0===i?this._zoom:i;return this.options.crs.latLngToPoint(D(t),i)},unproject:function(t,i){i=void 0===i?this._zoom:i;return this.options.crs.pointToLatLng(B(t),i)},layerPointToLatLng:function(t){var i=B(t).add(this.getPixelOrigin());return this.unproject(i)},latLngToLayerPoint:function(t){return this.project(D(t))._round()._subtract(this.getPixelOrigin())},wrapLatLng:function(t){return this.options.crs.wrapLatLng(D(t))},wrapLatLngBounds:function(t){return this.options.crs.wrapLatLngBounds(R(t))},distance:function(t,i){return this.options.crs.distance(D(t),D(i))},containerPointToLayerPoint:function(t){return B(t).subtract(this._getMapPanePos())},layerPointToContainerPoint:function(t){return B(t).add(this._getMapPanePos())},containerPointToLatLng:function(t){var i=this.containerPointToLayerPoint(B(t));return this.layerPointToLatLng(i)},latLngToContainerPoint:function(t){return this.layerPointToContainerPoint(this.latLngToLayerPoint(D(t)))},mouseEventToContainerPoint:function(t){return Ri(t,this._container)},mouseEventToLayerPoint:function(t){return this.containerPointToLayerPoint(this.mouseEventToContainerPoint(t))},mouseEventToLatLng:function(t){return this.layerPointToLatLng(this.mouseEventToLayerPoint(t))},_initContainer:function(t){var i=this._container=ti(t);if(!i)throw new Error("Map container not found.");if(i._leaflet_id)throw new Error("Map container is already initialized.");Ti(i,"scroll",this._onScroll,this);this._containerId=s(i)},_initLayout:function(){var t=this._container;this._fadeAnimated=this.options.fadeAnimation&&Bt.any3d;hi(t,"leaflet-container"+(Bt.touch?" leaflet-touch":"")+(Bt.retina?" leaflet-retina":"")+(Bt.ielt9?" leaflet-oldie":"")+(Bt.safari?" leaflet-safari":"")+(this._fadeAnimated?" leaflet-fade-anim":""));var i=ii(t,"position");"absolute"!==i&&"relative"!==i&&"fixed"!==i&&(t.style.position="relative");this._initPanes();this._initControlPos&&this._initControlPos()},_initPanes:function(){var t=this._panes={};this._paneRenderers={};this._mapPane=this.createPane("mapPane",this._container);fi(this._mapPane,new E(0,0));this.createPane("tilePane");this.createPane("overlayPane");this.createPane("shadowPane");this.createPane("markerPane");this.createPane("tooltipPane");this.createPane("popupPane");if(!this.options.markerZoomAnimation){hi(t.markerPane,"leaflet-zoom-hide");hi(t.shadowPane,"leaflet-zoom-hide")}},_resetView:function(t,i){fi(this._mapPane,new E(0,0));var e=!this._loaded;this._loaded=!0;i=this._limitZoom(i);this.fire("viewprereset");var n=this._zoom!==i;this._moveStart(n,!1)._move(t,i)._moveEnd(n);this.fire("viewreset");e&&this.fire("load")},_moveStart:function(t,i){t&&this.fire("zoomstart");i||this.fire("movestart");return this},_move:function(t,i,e,n){void 0===i&&(i=this._zoom);var o=this._zoom!==i;this._zoom=i;this._lastCenter=t;this._pixelOrigin=this._getNewPixelOrigin(t);if(n)e&&e.pinch&&this.fire("zoom",e);else{(o||e&&e.pinch)&&this.fire("zoom",e);this.fire("move",e)}return this},_moveEnd:function(t){t&&this.fire("zoomend");return this.fire("moveend")},_stop:function(){z(this._flyToFrame);this._panAnim&&this._panAnim.stop();return this},_rawPanBy:function(t){fi(this._mapPane,this._getMapPanePos().subtract(t))},_getZoomSpan:function(){return this.getMaxZoom()-this.getMinZoom()},_panInsideMaxBounds:function(){this._enforcingBounds||this.panInsideBounds(this.options.maxBounds)},_checkIfLoaded:function(){if(!this._loaded)throw new Error("Set map center and zoom first.")},_initEvents:function(t){this._targets={};this._targets[s(this._container)]=this;var i=t?Mi:Ti;i(this._container,"click dblclick mousedown mouseup mouseover mouseout mousemove contextmenu keypress keydown keyup",this._handleDOMEvent,this);this.options.trackResize&&i(window,"resize",this._onResize,this);Bt.any3d&&this.options.transform3DLimit&&(t?this.off:this.on).call(this,"moveend",this._onMoveEnd)},_onResize:function(){z(this._resizeRequest);this._resizeRequest=T((function(){this.invalidateSize({debounceMoveend:!0})}),this)},_onScroll:function(){this._container.scrollTop=0;this._container.scrollLeft=0},_onMoveEnd:function(){var t=this._getMapPanePos();Math.max(Math.abs(t.x),Math.abs(t.y))>=this.options.transform3DLimit&&this._resetView(this.getCenter(),this.getZoom())},_findEventTargets:function(t,i){for(var e,n=[],o="mouseout"===i||"mouseover"===i,r=t.target||t.srcElement,a=!1;r;){if((e=this._targets[s(r)])&&("click"===i||"preclick"===i)&&this._draggableMoved(e)){a=!0;break}if(e&&e.listens(i,!0)){if(o&&!ji(r,t))break;n.push(e);if(o)break}if(r===this._container)break;r=r.parentNode}n.length||a||o||!this.listens(i,!0)||(n=[this]);return n},_isClickDisabled:function(t){for(;t!==this._container;){if(t._leaflet_disable_click)return!0;t=t.parentNode}},_handleDOMEvent:function(t){var i=t.target||t.srcElement;if(!(!this._loaded||i._leaflet_disable_events||"click"===t.type&&this._isClickDisabled(i))){var e=t.type;"mousedown"===e&&xi(i);this._fireDOMEvent(t,e)}},_mouseEvents:["click","dblclick","mouseover","mouseout","contextmenu"],_fireDOMEvent:function(t,e,n){if("click"===t.type){var o=i({},t);o.type="preclick";this._fireDOMEvent(o,o.type,n)}var s=this._findEventTargets(t,e);if(n){for(var r=[],a=0;a<n.length;a++)n[a].listens(e,!0)&&r.push(n[a]);s=r.concat(s)}if(s.length){"contextmenu"===e&&Ai(t);var h=s[0],l={originalEvent:t};if("keypress"!==t.type&&"keydown"!==t.type&&"keyup"!==t.type){var u=h.getLatLng&&(!h._radius||h._radius<=10);l.containerPoint=u?this.latLngToContainerPoint(h.getLatLng()):this.mouseEventToContainerPoint(t);l.layerPoint=this.containerPointToLayerPoint(l.containerPoint);l.latlng=u?h.getLatLng():this.layerPointToLatLng(l.layerPoint)}for(a=0;a<s.length;a++){s[a].fire(e,l,!0);if(l.originalEvent._stopped||!1===s[a].options.bubblingMouseEvents&&-1!==g(this._mouseEvents,e))return}}},_draggableMoved:function(t){return(t=t.dragging&&t.dragging.enabled()?t:this).dragging&&t.dragging.moved()||this.boxZoom&&this.boxZoom.moved()},_clearHandlers:function(){for(var t=0,i=this._handlers.length;t<i;t++)this._handlers[t].disable()},whenReady:function(t,i){this._loaded?t.call(i||this,{target:this}):this.on("load",t,i);return this},_getMapPanePos:function(){return mi(this._mapPane)||new E(0,0)},_moved:function(){var t=this._getMapPanePos();return t&&!t.equals([0,0])},_getTopLeftPoint:function(t,i){return(t&&void 0!==i?this._getNewPixelOrigin(t,i):this.getPixelOrigin()).subtract(this._getMapPanePos())},_getNewPixelOrigin:function(t,i){var e=this.getSize()._divideBy(2);return this.project(t,i)._subtract(e)._add(this._getMapPanePos())._round()},_latLngToNewLayerPoint:function(t,i,e){var n=this._getNewPixelOrigin(e,i);return this.project(t,i)._subtract(n)},_latLngBoundsToNewLayerBounds:function(t,i,e){var n=this._getNewPixelOrigin(e,i);return A([this.project(t.getSouthWest(),i)._subtract(n),this.project(t.getNorthWest(),i)._subtract(n),this.project(t.getSouthEast(),i)._subtract(n),this.project(t.getNorthEast(),i)._subtract(n)])},_getCenterLayerPoint:function(){return this.containerPointToLayerPoint(this.getSize()._divideBy(2))},_getCenterOffset:function(t){return this.latLngToLayerPoint(t).subtract(this._getCenterLayerPoint())},_limitCenter:function(t,i,e){if(!e)return t;var n=this.project(t,i),o=this.getSize().divideBy(2),s=new O(n.subtract(o),n.add(o)),r=this._getBoundsOffset(s,e,i);return r.round().equals([0,0])?t:this.unproject(n.add(r),i)},_limitOffset:function(t,i){if(!i)return t;var e=this.getPixelBounds(),n=new O(e.min.add(t),e.max.add(t));return t.add(this._getBoundsOffset(n,i))},_getBoundsOffset:function(t,i,e){var n=A(this.project(i.getNorthEast(),e),this.project(i.getSouthWest(),e)),o=n.min.subtract(t.min),s=n.max.subtract(t.max);return new E(this._rebound(o.x,-s.x),this._rebound(o.y,-s.y))},_rebound:function(t,i){return t+i>0?Math.round(t-i)/2:Math.max(0,Math.ceil(t))-Math.max(0,Math.floor(i))},_limitZoom:function(t){var i=this.getMinZoom(),e=this.getMaxZoom(),n=Bt.any3d?this.options.zoomSnap:1;n&&(t=Math.round(t/n)*n);return Math.max(i,Math.min(e,t))},_onPanTransitionStep:function(){this.fire("move")},_onPanTransitionEnd:function(){li(this._mapPane,"leaflet-pan-anim");this.fire("moveend")},_tryAnimatedPan:function(t,i){var e=this._getCenterOffset(t)._trunc();if(!0!==(i&&i.animate)&&!this.getSize().contains(e))return!1;this.panBy(e,i);return!0},_createAnimProxy:function(){var t=this._proxy=ei("div","leaflet-proxy leaflet-zoom-animated");this._panes.mapPane.appendChild(t);this.on("zoomanim",(function(t){var i=Jt,e=this._proxy.style[i];pi(this._proxy,this.project(t.center,t.zoom),this.getZoomScale(t.zoom,1));e===this._proxy.style[i]&&this._animatingZoom&&this._onZoomTransitionEnd()}),this);this.on("load moveend",this._animMoveEnd,this);this._on("unload",this._destroyAnimProxy,this)},_destroyAnimProxy:function(){ni(this._proxy);this.off("load moveend",this._animMoveEnd,this);delete this._proxy},_animMoveEnd:function(){var t=this.getCenter(),i=this.getZoom();pi(this._proxy,this.project(t,i),this.getZoomScale(i,1))},_catchTransitionEnd:function(t){this._animatingZoom&&t.propertyName.indexOf("transform")>=0&&this._onZoomTransitionEnd()},_nothingToAnimate:function(){return!this._container.getElementsByClassName("leaflet-zoom-animated").length},_tryAnimatedZoom:function(t,i,e){if(this._animatingZoom)return!0;e=e||{};if(!this._zoomAnimated||!1===e.animate||this._nothingToAnimate()||Math.abs(i-this._zoom)>this.options.zoomAnimationThreshold)return!1;var n=this.getZoomScale(i),o=this._getCenterOffset(t)._divideBy(1-1/n);if(!0!==e.animate&&!this.getSize().contains(o))return!1;T((function(){this._moveStart(!0,!1)._animateZoom(t,i,!0)}),this);return!0},_animateZoom:function(t,i,e,o){if(this._mapPane){if(e){this._animatingZoom=!0;this._animateToCenter=t;this._animateToZoom=i;hi(this._mapPane,"leaflet-zoom-anim")}this.fire("zoomanim",{center:t,zoom:i,noUpdate:o});this._tempFireZoomEvent||(this._tempFireZoomEvent=this._zoom!==this._animateToZoom);this._move(this._animateToCenter,this._animateToZoom,void 0,!0);setTimeout(n(this._onZoomTransitionEnd,this),250)}},_onZoomTransitionEnd:function(){if(this._animatingZoom){this._mapPane&&li(this._mapPane,"leaflet-zoom-anim");this._animatingZoom=!1;this._move(this._animateToCenter,this._animateToZoom,void 0,!0);this._tempFireZoomEvent&&this.fire("zoom");delete this._tempFireZoomEvent;this.fire("move");this._moveEnd(!0)}}}),Ui=C.extend({options:{position:"topright"},initialize:function(t){d(this,t)},getPosition:function(){return this.options.position},setPosition:function(t){var i=this._map;i&&i.removeControl(this);this.options.position=t;i&&i.addControl(this);return this},getContainer:function(){return this._container},addTo:function(t){this.remove();this._map=t;var i=this._container=this.onAdd(t),e=this.getPosition(),n=t._controlCorners[e];hi(i,"leaflet-control");-1!==e.indexOf("bottom")?n.insertBefore(i,n.firstChild):n.appendChild(i);this._map.on("unload",this.remove,this);return this},remove:function(){if(!this._map)return this;ni(this._container);this.onRemove&&this.onRemove(this._map);this._map.off("unload",this.remove,this);this._map=null;return this},_refocusOnMap:function(t){this._map&&t&&t.screenX>0&&t.screenY>0&&this._map.getContainer().focus()}}),Vi=function(t){return new Ui(t)};Fi.include({addControl:function(t){t.addTo(this);return this},removeControl:function(t){t.remove();return this},_initControlPos:function(){var t=this._controlCorners={},i="leaflet-",e=this._controlContainer=ei("div",i+"control-container",this._container);function n(n,o){var s=i+n+" "+i+o;t[n+o]=ei("div",s,e)}n("top","left");n("top","right");n("bottom","left");n("bottom","right")},_clearControlPos:function(){for(var t in this._controlCorners)ni(this._controlCorners[t]);ni(this._controlContainer);delete this._controlCorners;delete this._controlContainer}});var Gi=Ui.extend({options:{collapsed:!0,position:"topright",autoZIndex:!0,hideSingleBase:!1,sortLayers:!1,sortFunction:function(t,i,e,n){return e<n?-1:n<e?1:0}},initialize:function(t,i,e){d(this,e);this._layerControlInputs=[];this._layers=[];this._lastZIndex=0;this._handlingClick=!1;for(var n in t)this._addLayer(t[n],n);for(n in i)this._addLayer(i[n],n,!0)},onAdd:function(t){this._initLayout();this._update();this._map=t;t.on("zoomend",this._checkDisabledLayers,this);for(var i=0;i<this._layers.length;i++)this._layers[i].layer.on("add remove",this._onLayerChange,this);return this._container},addTo:function(t){Ui.prototype.addTo.call(this,t);return this._expandIfNotCollapsed()},onRemove:function(){this._map.off("zoomend",this._checkDisabledLayers,this);for(var t=0;t<this._layers.length;t++)this._layers[t].layer.off("add remove",this._onLayerChange,this)},addBaseLayer:function(t,i){this._addLayer(t,i);return this._map?this._update():this},addOverlay:function(t,i){this._addLayer(t,i,!0);return this._map?this._update():this},removeLayer:function(t){t.off("add remove",this._onLayerChange,this);var i=this._getLayer(s(t));i&&this._layers.splice(this._layers.indexOf(i),1);return this._map?this._update():this},expand:function(){hi(this._container,"leaflet-control-layers-expanded");this._section.style.height=null;var t=this._map.getSize().y-(this._container.offsetTop+50);if(t<this._section.clientHeight){hi(this._section,"leaflet-control-layers-scrollbar");this._section.style.height=t+"px"}else li(this._section,"leaflet-control-layers-scrollbar");this._checkDisabledLayers();return this},collapse:function(){li(this._container,"leaflet-control-layers-expanded");return this},_initLayout:function(){var t="leaflet-control-layers",i=this._container=ei("div",t),e=this.options.collapsed;i.setAttribute("aria-haspopup",!0);Oi(i);Bi(i);var n=this._section=ei("section",t+"-list");if(e){this._map.on("click",this.collapse,this);Ti(i,{mouseenter:function(){Ti(n,"click",Ai);this.expand();setTimeout((function(){Mi(n,"click",Ai)}))},mouseleave:this.collapse},this)}var o=this._layersLink=ei("a",t+"-toggle",i);o.href="#";o.title="Layers";o.setAttribute("role","button");Ti(o,"click",Ai);Ti(o,"focus",this.expand,this);e||this.expand();this._baseLayersList=ei("div",t+"-base",n);this._separator=ei("div",t+"-separator",n);this._overlaysList=ei("div",t+"-overlays",n);i.appendChild(n)},_getLayer:function(t){for(var i=0;i<this._layers.length;i++)if(this._layers[i]&&s(this._layers[i].layer)===t)return this._layers[i]},_addLayer:function(t,i,e){this._map&&t.on("add remove",this._onLayerChange,this);this._layers.push({layer:t,name:i,overlay:e});this.options.sortLayers&&this._layers.sort(n((function(t,i){return this.options.sortFunction(t.layer,i.layer,t.name,i.name)}),this));if(this.options.autoZIndex&&t.setZIndex){this._lastZIndex++;t.setZIndex(this._lastZIndex)}this._expandIfNotCollapsed()},_update:function(){if(!this._container)return this;oi(this._baseLayersList);oi(this._overlaysList);this._layerControlInputs=[];var t,i,e,n,o=0;for(e=0;e<this._layers.length;e++){n=this._layers[e];this._addItem(n);i=i||n.overlay;t=t||!n.overlay;o+=n.overlay?0:1}if(this.options.hideSingleBase){t=t&&o>1;this._baseLayersList.style.display=t?"":"none"}this._separator.style.display=i&&t?"":"none";return this},_onLayerChange:function(t){this._handlingClick||this._update();var i=this._getLayer(s(t.target)),e=i.overlay?"add"===t.type?"overlayadd":"overlayremove":"add"===t.type?"baselayerchange":null;e&&this._map.fire(e,i)},_createRadioElement:function(t,i){var e='<input type="radio" class="leaflet-control-layers-selector" name="'+t+'"'+(i?' checked="checked"':"")+"/>",n=document.createElement("div");n.innerHTML=e;return n.firstChild},_addItem:function(t){var i,e=document.createElement("label"),n=this._map.hasLayer(t.layer);if(t.overlay){(i=document.createElement("input")).type="checkbox";i.className="leaflet-control-layers-selector";i.defaultChecked=n}else i=this._createRadioElement("leaflet-base-layers_"+s(this),n);this._layerControlInputs.push(i);i.layerId=s(t.layer);Ti(i,"click",this._onInputClick,this);var o=document.createElement("span");o.innerHTML=" "+t.name;var r=document.createElement("span");e.appendChild(r);r.appendChild(i);r.appendChild(o);(t.overlay?this._overlaysList:this._baseLayersList).appendChild(e);this._checkDisabledLayers();return e},_onInputClick:function(){var t,i,e=this._layerControlInputs,n=[],o=[];this._handlingClick=!0;for(var s=e.length-1;s>=0;s--){t=e[s];i=this._getLayer(t.layerId).layer;t.checked?n.push(i):t.checked||o.push(i)}for(s=0;s<o.length;s++)this._map.hasLayer(o[s])&&this._map.removeLayer(o[s]);for(s=0;s<n.length;s++)this._map.hasLayer(n[s])||this._map.addLayer(n[s]);this._handlingClick=!1;this._refocusOnMap()},_checkDisabledLayers:function(){for(var t,i,e=this._layerControlInputs,n=this._map.getZoom(),o=e.length-1;o>=0;o--){t=e[o];i=this._getLayer(t.layerId).layer;t.disabled=void 0!==i.options.minZoom&&n<i.options.minZoom||void 0!==i.options.maxZoom&&n>i.options.maxZoom}},_expandIfNotCollapsed:function(){this._map&&!this.options.collapsed&&this.expand();return this}}),qi=Ui.extend({options:{position:"topleft",zoomInText:'<span aria-hidden="true">+</span>',zoomInTitle:"Zoom in",zoomOutText:'<span aria-hidden="true">&#x2212;</span>',zoomOutTitle:"Zoom out"},onAdd:function(t){var i="leaflet-control-zoom",e=ei("div",i+" leaflet-bar"),n=this.options;this._zoomInButton=this._createButton(n.zoomInText,n.zoomInTitle,i+"-in",e,this._zoomIn);this._zoomOutButton=this._createButton(n.zoomOutText,n.zoomOutTitle,i+"-out",e,this._zoomOut);this._updateDisabled();t.on("zoomend zoomlevelschange",this._updateDisabled,this);return e},onRemove:function(t){t.off("zoomend zoomlevelschange",this._updateDisabled,this)},disable:function(){this._disabled=!0;this._updateDisabled();return this},enable:function(){this._disabled=!1;this._updateDisabled();return this},_zoomIn:function(t){!this._disabled&&this._map._zoom<this._map.getMaxZoom()&&this._map.zoomIn(this._map.options.zoomDelta*(t.shiftKey?3:1))},_zoomOut:function(t){!this._disabled&&this._map._zoom>this._map.getMinZoom()&&this._map.zoomOut(this._map.options.zoomDelta*(t.shiftKey?3:1))},_createButton:function(t,i,e,n,o){var s=ei("a",e,n);s.innerHTML=t;s.href="#";s.title=i;s.setAttribute("role","button");s.setAttribute("aria-label",i);Oi(s);Ti(s,"click",Ii);Ti(s,"click",o,this);Ti(s,"click",this._refocusOnMap,this);return s},_updateDisabled:function(){var t=this._map,i="leaflet-disabled";li(this._zoomInButton,i);li(this._zoomOutButton,i);this._zoomInButton.setAttribute("aria-disabled","false");this._zoomOutButton.setAttribute("aria-disabled","false");if(this._disabled||t._zoom===t.getMinZoom()){hi(this._zoomOutButton,i);this._zoomOutButton.setAttribute("aria-disabled","true")}if(this._disabled||t._zoom===t.getMaxZoom()){hi(this._zoomInButton,i);this._zoomInButton.setAttribute("aria-disabled","true")}}});Fi.mergeOptions({zoomControl:!0});Fi.addInitHook((function(){if(this.options.zoomControl){this.zoomControl=new qi;this.addControl(this.zoomControl)}}));var Ki=Ui.extend({options:{position:"bottomleft",maxWidth:100,metric:!0,imperial:!0},onAdd:function(t){var i="leaflet-control-scale",e=ei("div",i),n=this.options;this._addScales(n,i+"-line",e);t.on(n.updateWhenIdle?"moveend":"move",this._update,this);t.whenReady(this._update,this);return e},onRemove:function(t){t.off(this.options.updateWhenIdle?"moveend":"move",this._update,this)},_addScales:function(t,i,e){t.metric&&(this._mScale=ei("div",i,e));t.imperial&&(this._iScale=ei("div",i,e))},_update:function(){var t=this._map,i=t.getSize().y/2,e=t.distance(t.containerPointToLatLng([0,i]),t.containerPointToLatLng([this.options.maxWidth,i]));this._updateScales(e)},_updateScales:function(t){this.options.metric&&t&&this._updateMetric(t);this.options.imperial&&t&&this._updateImperial(t)},_updateMetric:function(t){var i=this._getRoundNum(t),e=i<1e3?i+" m":i/1e3+" km";this._updateScale(this._mScale,e,i/t)},_updateImperial:function(t){var i,e,n,o=3.2808399*t;if(o>5280){i=o/5280;e=this._getRoundNum(i);this._updateScale(this._iScale,e+" mi",e/i)}else{n=this._getRoundNum(o);this._updateScale(this._iScale,n+" ft",n/o)}},_updateScale:function(t,i,e){t.style.width=Math.round(this.options.maxWidth*e)+"px";t.innerHTML=i},_getRoundNum:function(t){var i=Math.pow(10,(Math.floor(t)+"").length-1),e=t/i;return i*(e>=10?10:e>=5?5:e>=3?3:e>=2?2:1)}}),Yi=Ui.extend({options:{position:"bottomright",prefix:'<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">'+(Bt.inlineSvg?'<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8"><path fill="#4C7BE1" d="M0 0h12v4H0z"/><path fill="#FFD500" d="M0 4h12v3H0z"/><path fill="#E0BC00" d="M0 7h12v1H0z"/></svg> ':"")+"Leaflet</a>"},initialize:function(t){d(this,t);this._attributions={}},onAdd:function(t){t.attributionControl=this;this._container=ei("div","leaflet-control-attribution");Oi(this._container);for(var i in t._layers)t._layers[i].getAttribution&&this.addAttribution(t._layers[i].getAttribution());this._update();t.on("layeradd",this._addAttribution,this);return this._container},onRemove:function(t){t.off("layeradd",this._addAttribution,this)},_addAttribution:function(t){if(t.layer.getAttribution){this.addAttribution(t.layer.getAttribution());t.layer.once("remove",(function(){this.removeAttribution(t.layer.getAttribution())}),this)}},setPrefix:function(t){this.options.prefix=t;this._update();return this},addAttribution:function(t){if(!t)return this;this._attributions[t]||(this._attributions[t]=0);this._attributions[t]++;this._update();return this},removeAttribution:function(t){if(!t)return this;if(this._attributions[t]){this._attributions[t]--;this._update()}return this},_update:function(){if(this._map){var t=[];for(var i in this._attributions)this._attributions[i]&&t.push(i);var e=[];this.options.prefix&&e.push(this.options.prefix);t.length&&e.push(t.join(", "));this._container.innerHTML=e.join(' <span aria-hidden="true">|</span> ')}}});Fi.mergeOptions({attributionControl:!0});Fi.addInitHook((function(){this.options.attributionControl&&(new Yi).addTo(this)}));Ui.Layers=Gi;Ui.Zoom=qi;Ui.Scale=Ki;Ui.Attribution=Yi;Vi.layers=function(t,i,e){return new Gi(t,i,e)};Vi.zoom=function(t){return new qi(t)};Vi.scale=function(t){return new Ki(t)};Vi.attribution=function(t){return new Yi(t)};var Xi=C.extend({initialize:function(t){this._map=t},enable:function(){if(this._enabled)return this;this._enabled=!0;this.addHooks();return this},disable:function(){if(!this._enabled)return this;this._enabled=!1;this.removeHooks();return this},enabled:function(){return!!this._enabled}});Xi.addTo=function(t,i){t.addHandler(i,this);return this};var Ji,$i={Events:S},Qi=Bt.touch?"touchstart mousedown":"mousedown",te=Z.extend({options:{clickTolerance:3},initialize:function(t,i,e,n){d(this,n);this._element=t;this._dragStartTarget=i||t;this._preventOutline=e},enable:function(){if(!this._enabled){Ti(this._dragStartTarget,Qi,this._onDown,this);this._enabled=!0}},disable:function(){if(this._enabled){te._dragging===this&&this.finishDrag(!0);Mi(this._dragStartTarget,Qi,this._onDown,this);this._enabled=!1;this._moved=!1}},_onDown:function(t){if(this._enabled){this._moved=!1;if(!ai(this._element,"leaflet-zoom-anim"))if(t.touches&&1!==t.touches.length)te._dragging===this&&this.finishDrag();else if(!(te._dragging||t.shiftKey||1!==t.which&&1!==t.button&&!t.touches)){te._dragging=this;this._preventOutline&&xi(this._element);vi();Gt();if(!this._moving){this.fire("down");var i=t.touches?t.touches[0]:t,e=bi(this._element);this._startPoint=new E(i.clientX,i.clientY);this._startPos=mi(this._element);this._parentScale=Pi(e);var n="mousedown"===t.type;Ti(document,n?"mousemove":"touchmove",this._onMove,this);Ti(document,n?"mouseup":"touchend touchcancel",this._onUp,this)}}}},_onMove:function(t){if(this._enabled)if(t.touches&&t.touches.length>1)this._moved=!0;else{var i=t.touches&&1===t.touches.length?t.touches[0]:t,e=new E(i.clientX,i.clientY)._subtract(this._startPoint);if((e.x||e.y)&&!(Math.abs(e.x)+Math.abs(e.y)<this.options.clickTolerance)){e.x/=this._parentScale.x;e.y/=this._parentScale.y;Ai(t);if(!this._moved){this.fire("dragstart");this._moved=!0;hi(document.body,"leaflet-dragging");this._lastTarget=t.target||t.srcElement;window.SVGElementInstance&&this._lastTarget instanceof window.SVGElementInstance&&(this._lastTarget=this._lastTarget.correspondingUseElement);hi(this._lastTarget,"leaflet-drag-target")}this._newPos=this._startPos.add(e);this._moving=!0;this._lastEvent=t;this._updatePosition()}}},_updatePosition:function(){var t={originalEvent:this._lastEvent};this.fire("predrag",t);fi(this._element,this._newPos);this.fire("drag",t)},_onUp:function(){this._enabled&&this.finishDrag()},finishDrag:function(t){li(document.body,"leaflet-dragging");if(this._lastTarget){li(this._lastTarget,"leaflet-drag-target");this._lastTarget=null}Mi(document,"mousemove touchmove",this._onMove,this);Mi(document,"mouseup touchend touchcancel",this._onUp,this);yi();qt();this._moved&&this._moving&&this.fire("dragend",{noInertia:t,distance:this._newPos.distanceTo(this._startPos)});this._moving=!1;te._dragging=!1}});function ie(t,i){if(!i||!t.length)return t.slice();var e=i*i;return function(t,i){var e=t.length,n=new(typeof Uint8Array!=void 0+""?Uint8Array:Array)(e);n[0]=n[e-1]=1;ne(t,n,i,0,e-1);var o,s=[];for(o=0;o<e;o++)n[o]&&s.push(t[o]);return s}(t=function(t,i){for(var e=[t[0]],n=1,o=0,s=t.length;n<s;n++)if((r=t[n],(h=(a=t[o]).x-r.x)*h+(l=a.y-r.y)*l)>i){e.push(t[n]);o=n}var r,a,h,l;o<s-1&&e.push(t[s-1]);return e}(t,e),e)}function ee(t,i,e){return Math.sqrt(ae(t,i,e,!0))}function ne(t,i,e,n,o){var s,r,a,h=0;for(r=n+1;r<=o-1;r++)if((a=ae(t[r],t[n],t[o],!0))>h){s=r;h=a}if(h>e){i[s]=1;ne(t,i,e,n,s);ne(t,i,e,s,o)}}function oe(t,i,e,n,o){var s,r,a,h=n?Ji:re(t,e),l=re(i,e);Ji=l;for(;;){if(!(h|l))return[t,i];if(h&l)return!1;a=re(r=se(t,i,s=h||l,e,o),e);if(s===h){t=r;h=a}else{i=r;l=a}}}function se(t,i,e,n,o){var s,r,a=i.x-t.x,h=i.y-t.y,l=n.min,u=n.max;if(8&e){s=t.x+a*(u.y-t.y)/h;r=u.y}else if(4&e){s=t.x+a*(l.y-t.y)/h;r=l.y}else if(2&e){s=u.x;r=t.y+h*(u.x-t.x)/a}else if(1&e){s=l.x;r=t.y+h*(l.x-t.x)/a}return new E(s,r,o)}function re(t,i){var e=0;t.x<i.min.x?e|=1:t.x>i.max.x&&(e|=2);t.y<i.min.y?e|=4:t.y>i.max.y&&(e|=8);return e}function ae(t,i,e,n){var o,s=i.x,r=i.y,a=e.x-s,h=e.y-r,l=a*a+h*h;if(l>0)if((o=((t.x-s)*a+(t.y-r)*h)/l)>1){s=e.x;r=e.y}else if(o>0){s+=a*o;r+=h*o}a=t.x-s;h=t.y-r;return n?a*a+h*h:new E(s,r)}function he(t){return!m(t[0])||"object"!=typeof t[0][0]&&void 0!==t[0][0]}function le(t){return he(t)}var ue={__proto__:null,simplify:ie,pointToSegmentDistance:ee,closestPointOnSegment:function(t,i,e){return ae(t,i,e)},clipSegment:oe,_getEdgeIntersection:se,_getBitCode:re,_sqClosestPointOnSegment:ae,isFlat:he,_flat:le};function ce(t,i,e){var n,o,s,r,a,h,l,u,c,d=[1,4,2,8];for(o=0,l=t.length;o<l;o++)t[o]._code=re(t[o],i);for(r=0;r<4;r++){u=d[r];n=[];for(o=0,s=(l=t.length)-1;o<l;s=o++){a=t[o];h=t[s];if(a._code&u){if(!(h._code&u)){(c=se(h,a,u,i,e))._code=re(c,i);n.push(c)}}else{if(h._code&u){(c=se(h,a,u,i,e))._code=re(c,i);n.push(c)}n.push(a)}}t=n}return t}var de={__proto__:null,clipPolygon:ce},_e={project:function(t){return new E(t.lng,t.lat)},unproject:function(t){return new N(t.y,t.x)},bounds:new O([-180,-90],[180,90])},pe={R:6378137,R_MINOR:6356752.314245179,bounds:new O([-20037508.34279,-15496570.73972],[20037508.34279,18764656.23138]),project:function(t){var i=Math.PI/180,e=this.R,n=t.lat*i,o=this.R_MINOR/e,s=Math.sqrt(1-o*o),r=s*Math.sin(n),a=Math.tan(Math.PI/4-n/2)/Math.pow((1-r)/(1+r),s/2);n=-e*Math.log(Math.max(a,1e-10));return new E(t.lng*i*e,n)},unproject:function(t){for(var i,e=180/Math.PI,n=this.R,o=this.R_MINOR/n,s=Math.sqrt(1-o*o),r=Math.exp(-t.y/n),a=Math.PI/2-2*Math.atan(r),h=0,l=.1;h<15&&Math.abs(l)>1e-7;h++){i=s*Math.sin(a);i=Math.pow((1-i)/(1+i),s/2);a+=l=Math.PI/2-2*Math.atan(r*i)-a}return new N(a*e,t.x*e/n)}},fe={__proto__:null,LonLat:_e,Mercator:pe,SphericalMercator:U},me=i({},W,{code:"EPSG:3395",projection:pe,transformation:function(){var t=.5/(Math.PI*pe.R);return G(t,.5,-t,.5)}()}),ge=i({},W,{code:"EPSG:4326",projection:_e,transformation:G(1/180,1,-1/180,.5)}),ve=i({},H,{projection:_e,transformation:G(1,0,-1,0),scale:function(t){return Math.pow(2,t)},zoom:function(t){return Math.log(t)/Math.LN2},distance:function(t,i){var e=i.lng-t.lng,n=i.lat-t.lat;return Math.sqrt(e*e+n*n)},infinite:!0});H.Earth=W;H.EPSG3395=me;H.EPSG3857=K;H.EPSG900913=Y;H.EPSG4326=ge;H.Simple=ve;var ye=Z.extend({options:{pane:"overlayPane",attribution:null,bubblingMouseEvents:!0},addTo:function(t){t.addLayer(this);return this},remove:function(){return this.removeFrom(this._map||this._mapToAdd)},removeFrom:function(t){t&&t.removeLayer(this);return this},getPane:function(t){return this._map.getPane(t?this.options[t]||t:this.options.pane)},addInteractiveTarget:function(t){this._map._targets[s(t)]=this;return this},removeInteractiveTarget:function(t){delete this._map._targets[s(t)];return this},getAttribution:function(){return this.options.attribution},_layerAdd:function(t){var i=t.target;if(i.hasLayer(this)){this._map=i;this._zoomAnimated=i._zoomAnimated;if(this.getEvents){var e=this.getEvents();i.on(e,this);this.once("remove",(function(){i.off(e,this)}),this)}this.onAdd(i);this.fire("add");i.fire("layeradd",{layer:this})}}});Fi.include({addLayer:function(t){if(!t._layerAdd)throw new Error("The provided object is not a Layer.");var i=s(t);if(this._layers[i])return this;this._layers[i]=t;t._mapToAdd=this;t.beforeAdd&&t.beforeAdd(this);this.whenReady(t._layerAdd,t);return this},removeLayer:function(t){var i=s(t);if(!this._layers[i])return this;this._loaded&&t.onRemove(this);delete this._layers[i];if(this._loaded){this.fire("layerremove",{layer:t});t.fire("remove")}t._map=t._mapToAdd=null;return this},hasLayer:function(t){return s(t)in this._layers},eachLayer:function(t,i){for(var e in this._layers)t.call(i,this._layers[e]);return this},_addLayers:function(t){for(var i=0,e=(t=t?m(t)?t:[t]:[]).length;i<e;i++)this.addLayer(t[i])},_addZoomLimit:function(t){if(!isNaN(t.options.maxZoom)||!isNaN(t.options.minZoom)){this._zoomBoundLayers[s(t)]=t;this._updateZoomLevels()}},_removeZoomLimit:function(t){var i=s(t);if(this._zoomBoundLayers[i]){delete this._zoomBoundLayers[i];this._updateZoomLevels()}},_updateZoomLevels:function(){var t=1/0,i=-1/0,e=this._getZoomSpan();for(var n in this._zoomBoundLayers){var o=this._zoomBoundLayers[n].options;t=void 0===o.minZoom?t:Math.min(t,o.minZoom);i=void 0===o.maxZoom?i:Math.max(i,o.maxZoom)}this._layersMaxZoom=i===-1/0?void 0:i;this._layersMinZoom=t===1/0?void 0:t;e!==this._getZoomSpan()&&this.fire("zoomlevelschange");void 0===this.options.maxZoom&&this._layersMaxZoom&&this.getZoom()>this._layersMaxZoom&&this.setZoom(this._layersMaxZoom);void 0===this.options.minZoom&&this._layersMinZoom&&this.getZoom()<this._layersMinZoom&&this.setZoom(this._layersMinZoom)}});var xe=ye.extend({initialize:function(t,i){d(this,i);this._layers={};var e,n;if(t)for(e=0,n=t.length;e<n;e++)this.addLayer(t[e])},addLayer:function(t){var i=this.getLayerId(t);this._layers[i]=t;this._map&&this._map.addLayer(t);return this},removeLayer:function(t){var i=t in this._layers?t:this.getLayerId(t);this._map&&this._layers[i]&&this._map.removeLayer(this._layers[i]);delete this._layers[i];return this},hasLayer:function(t){return("number"==typeof t?t:this.getLayerId(t))in this._layers},clearLayers:function(){return this.eachLayer(this.removeLayer,this)},invoke:function(t){var i,e,n=Array.prototype.slice.call(arguments,1);for(i in this._layers)(e=this._layers[i])[t]&&e[t].apply(e,n);return this},onAdd:function(t){this.eachLayer(t.addLayer,t)},onRemove:function(t){this.eachLayer(t.removeLayer,t)},eachLayer:function(t,i){for(var e in this._layers)t.call(i,this._layers[e]);return this},getLayer:function(t){return this._layers[t]},getLayers:function(){var t=[];this.eachLayer(t.push,t);return t},setZIndex:function(t){return this.invoke("setZIndex",t)},getLayerId:function(t){return s(t)}}),we=xe.extend({addLayer:function(t){if(this.hasLayer(t))return this;t.addEventParent(this);xe.prototype.addLayer.call(this,t);return this.fire("layeradd",{layer:t})},removeLayer:function(t){if(!this.hasLayer(t))return this;t in this._layers&&(t=this._layers[t]);t.removeEventParent(this);xe.prototype.removeLayer.call(this,t);return this.fire("layerremove",{layer:t})},setStyle:function(t){return this.invoke("setStyle",t)},bringToFront:function(){return this.invoke("bringToFront")},bringToBack:function(){return this.invoke("bringToBack")},getBounds:function(){var t=new I;for(var i in this._layers){var e=this._layers[i];t.extend(e.getBounds?e.getBounds():e.getLatLng())}return t}}),be=C.extend({options:{popupAnchor:[0,0],tooltipAnchor:[0,0],crossOrigin:!1},initialize:function(t){d(this,t)},createIcon:function(t){return this._createIcon("icon",t)},createShadow:function(t){return this._createIcon("shadow",t)},_createIcon:function(t,i){var e=this._getIconUrl(t);if(!e){if("icon"===t)throw new Error("iconUrl not set in Icon options (see the docs).");return null}var n=this._createImg(e,i&&"IMG"===i.tagName?i:null);this._setIconStyles(n,t);(this.options.crossOrigin||""===this.options.crossOrigin)&&(n.crossOrigin=!0===this.options.crossOrigin?"":this.options.crossOrigin);return n},_setIconStyles:function(t,i){var e=this.options,n=e[i+"Size"];"number"==typeof n&&(n=[n,n]);var o=B(n),s=B("shadow"===i&&e.shadowAnchor||e.iconAnchor||o&&o.divideBy(2,!0));t.className="leaflet-marker-"+i+" "+(e.className||"");if(s){t.style.marginLeft=-s.x+"px";t.style.marginTop=-s.y+"px"}if(o){t.style.width=o.x+"px";t.style.height=o.y+"px"}},_createImg:function(t,i){(i=i||document.createElement("img")).src=t;return i},_getIconUrl:function(t){return Bt.retina&&this.options[t+"RetinaUrl"]||this.options[t+"Url"]}}),Pe=be.extend({options:{iconUrl:"marker-icon.png",iconRetinaUrl:"marker-icon-2x.png",shadowUrl:"marker-shadow.png",iconSize:[25,41],iconAnchor:[12,41],popupAnchor:[1,-34],tooltipAnchor:[16,-28],shadowSize:[41,41]},_getIconUrl:function(t){"string"!=typeof Pe.imagePath&&(Pe.imagePath=this._detectIconPath());return(this.options.imagePath||Pe.imagePath)+be.prototype._getIconUrl.call(this,t)},_stripUrl:function(t){var i=function(t,i,e){var n=i.exec(t);return n&&n[e]};return(t=i(t,/^url\((['"])?(.+)\1\)$/,2))&&i(t,/^(.*)marker-icon\.png$/,1)},_detectIconPath:function(){var t=ei("div","leaflet-default-icon-path",document.body),i=ii(t,"background-image")||ii(t,"backgroundImage");document.body.removeChild(t);if(i=this._stripUrl(i))return i;var e=document.querySelector('link[href$="leaflet.css"]');return e?e.href.substring(0,e.href.length-"leaflet.css".length-1):""}}),Le=Xi.extend({initialize:function(t){this._marker=t},addHooks:function(){var t=this._marker._icon;this._draggable||(this._draggable=new te(t,t,!0));this._draggable.on({dragstart:this._onDragStart,predrag:this._onPreDrag,drag:this._onDrag,dragend:this._onDragEnd},this).enable();hi(t,"leaflet-marker-draggable")},removeHooks:function(){this._draggable.off({dragstart:this._onDragStart,predrag:this._onPreDrag,drag:this._onDrag,dragend:this._onDragEnd},this).disable();this._marker._icon&&li(this._marker._icon,"leaflet-marker-draggable")},moved:function(){return this._draggable&&this._draggable._moved},_adjustPan:function(t){var i=this._marker,e=i._map,n=this._marker.options.autoPanSpeed,o=this._marker.options.autoPanPadding,s=mi(i._icon),r=e.getPixelBounds(),a=e.getPixelOrigin(),h=A(r.min._subtract(a).add(o),r.max._subtract(a).subtract(o));if(!h.contains(s)){var l=B((Math.max(h.max.x,s.x)-h.max.x)/(r.max.x-h.max.x)-(Math.min(h.min.x,s.x)-h.min.x)/(r.min.x-h.min.x),(Math.max(h.max.y,s.y)-h.max.y)/(r.max.y-h.max.y)-(Math.min(h.min.y,s.y)-h.min.y)/(r.min.y-h.min.y)).multiplyBy(n);e.panBy(l,{animate:!1});this._draggable._newPos._add(l);this._draggable._startPos._add(l);fi(i._icon,this._draggable._newPos);this._onDrag(t);this._panRequest=T(this._adjustPan.bind(this,t))}},_onDragStart:function(){this._oldLatLng=this._marker.getLatLng();this._marker.closePopup&&this._marker.closePopup();this._marker.fire("movestart").fire("dragstart")},_onPreDrag:function(t){if(this._marker.options.autoPan){z(this._panRequest);this._panRequest=T(this._adjustPan.bind(this,t))}},_onDrag:function(t){var i=this._marker,e=i._shadow,n=mi(i._icon),o=i._map.layerPointToLatLng(n);e&&fi(e,n);i._latlng=o;t.latlng=o;t.oldLatLng=this._oldLatLng;i.fire("move",t).fire("drag",t)},_onDragEnd:function(t){z(this._panRequest);delete this._oldLatLng;this._marker.fire("moveend").fire("dragend",t)}}),Te=ye.extend({options:{icon:new Pe,interactive:!0,keyboard:!0,title:"",alt:"Marker",zIndexOffset:0,opacity:1,riseOnHover:!1,riseOffset:250,pane:"markerPane",shadowPane:"shadowPane",bubblingMouseEvents:!1,autoPanOnFocus:!0,draggable:!1,autoPan:!1,autoPanPadding:[50,50],autoPanSpeed:10},initialize:function(t,i){d(this,i);this._latlng=D(t)},onAdd:function(t){this._zoomAnimated=this._zoomAnimated&&t.options.markerZoomAnimation;this._zoomAnimated&&t.on("zoomanim",this._animateZoom,this);this._initIcon();this.update()},onRemove:function(t){if(this.dragging&&this.dragging.enabled()){this.options.draggable=!0;this.dragging.removeHooks()}delete this.dragging;this._zoomAnimated&&t.off("zoomanim",this._animateZoom,this);this._removeIcon();this._removeShadow()},getEvents:function(){return{zoom:this.update,viewreset:this.update}},getLatLng:function(){return this._latlng},setLatLng:function(t){var i=this._latlng;this._latlng=D(t);this.update();return this.fire("move",{oldLatLng:i,latlng:this._latlng})},setZIndexOffset:function(t){this.options.zIndexOffset=t;return this.update()},getIcon:function(){return this.options.icon},setIcon:function(t){this.options.icon=t;if(this._map){this._initIcon();this.update()}this._popup&&this.bindPopup(this._popup,this._popup.options);return this},getElement:function(){return this._icon},update:function(){if(this._icon&&this._map){var t=this._map.latLngToLayerPoint(this._latlng).round();this._setPos(t)}return this},_initIcon:function(){var t=this.options,i="leaflet-zoom-"+(this._zoomAnimated?"animated":"hide"),e=t.icon.createIcon(this._icon),n=!1;if(e!==this._icon){this._icon&&this._removeIcon();n=!0;t.title&&(e.title=t.title);"IMG"===e.tagName&&(e.alt=t.alt||"")}hi(e,i);if(t.keyboard){e.tabIndex="0";e.setAttribute("role","button")}this._icon=e;t.riseOnHover&&this.on({mouseover:this._bringToFront,mouseout:this._resetZIndex});this.options.autoPanOnFocus&&Ti(e,"focus",this._panOnFocus,this);var o=t.icon.createShadow(this._shadow),s=!1;if(o!==this._shadow){this._removeShadow();s=!0}if(o){hi(o,i);o.alt=""}this._shadow=o;t.opacity<1&&this._updateOpacity();n&&this.getPane().appendChild(this._icon);this._initInteraction();o&&s&&this.getPane(t.shadowPane).appendChild(this._shadow)},_removeIcon:function(){this.options.riseOnHover&&this.off({mouseover:this._bringToFront,mouseout:this._resetZIndex});this.options.autoPanOnFocus&&Mi(this._icon,"focus",this._panOnFocus,this);ni(this._icon);this.removeInteractiveTarget(this._icon);this._icon=null},_removeShadow:function(){this._shadow&&ni(this._shadow);this._shadow=null},_setPos:function(t){this._icon&&fi(this._icon,t);this._shadow&&fi(this._shadow,t);this._zIndex=t.y+this.options.zIndexOffset;this._resetZIndex()},_updateZIndex:function(t){this._icon&&(this._icon.style.zIndex=this._zIndex+t)},_animateZoom:function(t){var i=this._map._latLngToNewLayerPoint(this._latlng,t.zoom,t.center).round();this._setPos(i)},_initInteraction:function(){if(this.options.interactive){hi(this._icon,"leaflet-interactive");this.addInteractiveTarget(this._icon);if(Le){var t=this.options.draggable;if(this.dragging){t=this.dragging.enabled();this.dragging.disable()}this.dragging=new Le(this);t&&this.dragging.enable()}}},setOpacity:function(t){this.options.opacity=t;this._map&&this._updateOpacity();return this},_updateOpacity:function(){var t=this.options.opacity;this._icon&&di(this._icon,t);this._shadow&&di(this._shadow,t)},_bringToFront:function(){this._updateZIndex(this.options.riseOffset)},_resetZIndex:function(){this._updateZIndex(0)},_panOnFocus:function(){var t=this._map;if(t){var i=this.options.icon.options,e=i.iconSize?B(i.iconSize):B(0,0),n=i.iconAnchor?B(i.iconAnchor):B(0,0);t.panInside(this._latlng,{paddingTopLeft:n,paddingBottomRight:e.subtract(n)})}},_getPopupAnchor:function(){return this.options.icon.options.popupAnchor},_getTooltipAnchor:function(){return this.options.icon.options.tooltipAnchor}}),ze=ye.extend({options:{stroke:!0,color:"#3388ff",weight:3,opacity:1,lineCap:"round",lineJoin:"round",dashArray:null,dashOffset:null,fill:!1,fillColor:null,fillOpacity:.2,fillRule:"evenodd",interactive:!0,bubblingMouseEvents:!0},beforeAdd:function(t){this._renderer=t.getRenderer(this)},onAdd:function(){this._renderer._initPath(this);this._reset();this._renderer._addPath(this)},onRemove:function(){this._renderer._removePath(this)},redraw:function(){this._map&&this._renderer._updatePath(this);return this},setStyle:function(t){d(this,t);if(this._renderer){this._renderer._updateStyle(this);this.options.stroke&&t&&Object.prototype.hasOwnProperty.call(t,"weight")&&this._updateBounds()}return this},bringToFront:function(){this._renderer&&this._renderer._bringToFront(this);return this},bringToBack:function(){this._renderer&&this._renderer._bringToBack(this);return this},getElement:function(){return this._path},_reset:function(){this._project();this._update()},_clickTolerance:function(){return(this.options.stroke?this.options.weight/2:0)+(this._renderer.options.tolerance||0)}}),Me=ze.extend({options:{fill:!0,radius:10},initialize:function(t,i){d(this,i);this._latlng=D(t);this._radius=this.options.radius},setLatLng:function(t){var i=this._latlng;this._latlng=D(t);this.redraw();return this.fire("move",{oldLatLng:i,latlng:this._latlng})},getLatLng:function(){return this._latlng},setRadius:function(t){this.options.radius=this._radius=t;return this.redraw()},getRadius:function(){return this._radius},setStyle:function(t){var i=t&&t.radius||this._radius;ze.prototype.setStyle.call(this,t);this.setRadius(i);return this},_project:function(){this._point=this._map.latLngToLayerPoint(this._latlng);this._updateBounds()},_updateBounds:function(){var t=this._radius,i=this._radiusY||t,e=this._clickTolerance(),n=[t+e,i+e];this._pxBounds=new O(this._point.subtract(n),this._point.add(n))},_update:function(){this._map&&this._updatePath()},_updatePath:function(){this._renderer._updateCircle(this)},_empty:function(){return this._radius&&!this._renderer._bounds.intersects(this._pxBounds)},_containsPoint:function(t){return t.distanceTo(this._point)<=this._radius+this._clickTolerance()}}),Ce=Me.extend({initialize:function(t,e,n){"number"==typeof e&&(e=i({},n,{radius:e}));d(this,e);this._latlng=D(t);if(isNaN(this.options.radius))throw new Error("Circle radius cannot be NaN");this._mRadius=this.options.radius},setRadius:function(t){this._mRadius=t;return this.redraw()},getRadius:function(){return this._mRadius},getBounds:function(){var t=[this._radius,this._radiusY||this._radius];return new I(this._map.layerPointToLatLng(this._point.subtract(t)),this._map.layerPointToLatLng(this._point.add(t)))},setStyle:ze.prototype.setStyle,_project:function(){var t=this._latlng.lng,i=this._latlng.lat,e=this._map,n=e.options.crs;if(n.distance===W.distance){var o=Math.PI/180,s=this._mRadius/W.R/o,r=e.project([i+s,t]),a=e.project([i-s,t]),h=r.add(a).divideBy(2),l=e.unproject(h).lat,u=Math.acos((Math.cos(s*o)-Math.sin(i*o)*Math.sin(l*o))/(Math.cos(i*o)*Math.cos(l*o)))/o;(isNaN(u)||0===u)&&(u=s/Math.cos(Math.PI/180*i));this._point=h.subtract(e.getPixelOrigin());this._radius=isNaN(u)?0:h.x-e.project([l,t-u]).x;this._radiusY=h.y-r.y}else{var c=n.unproject(n.project(this._latlng).subtract([this._mRadius,0]));this._point=e.latLngToLayerPoint(this._latlng);this._radius=this._point.x-e.latLngToLayerPoint(c).x}this._updateBounds()}}),Se=ze.extend({options:{smoothFactor:1,noClip:!1},initialize:function(t,i){d(this,i);this._setLatLngs(t)},getLatLngs:function(){return this._latlngs},setLatLngs:function(t){this._setLatLngs(t);return this.redraw()},isEmpty:function(){return!this._latlngs.length},closestLayerPoint:function(t){for(var i,e,n=1/0,o=null,s=ae,r=0,a=this._parts.length;r<a;r++)for(var h=this._parts[r],l=1,u=h.length;l<u;l++){var c=s(t,i=h[l-1],e=h[l],!0);if(c<n){n=c;o=s(t,i,e)}}o&&(o.distance=Math.sqrt(n));return o},getCenter:function(){if(!this._map)throw new Error("Must add layer to map before using getCenter()");var t,i,e,n,o,s,r,a=this._rings[0],h=a.length;if(!h)return null;for(t=0,i=0;t<h-1;t++)i+=a[t].distanceTo(a[t+1])/2;if(0===i)return this._map.layerPointToLatLng(a[0]);for(t=0,n=0;t<h-1;t++){o=a[t];s=a[t+1];if((n+=e=o.distanceTo(s))>i){r=(n-i)/e;return this._map.layerPointToLatLng([s.x-r*(s.x-o.x),s.y-r*(s.y-o.y)])}}},getBounds:function(){return this._bounds},addLatLng:function(t,i){i=i||this._defaultShape();t=D(t);i.push(t);this._bounds.extend(t);return this.redraw()},_setLatLngs:function(t){this._bounds=new I;this._latlngs=this._convertLatLngs(t)},_defaultShape:function(){return he(this._latlngs)?this._latlngs:this._latlngs[0]},_convertLatLngs:function(t){for(var i=[],e=he(t),n=0,o=t.length;n<o;n++)if(e){i[n]=D(t[n]);this._bounds.extend(i[n])}else i[n]=this._convertLatLngs(t[n]);return i},_project:function(){var t=new O;this._rings=[];this._projectLatlngs(this._latlngs,this._rings,t);if(this._bounds.isValid()&&t.isValid()){this._rawPxBounds=t;this._updateBounds()}},_updateBounds:function(){var t=this._clickTolerance(),i=new E(t,t);this._rawPxBounds&&(this._pxBounds=new O([this._rawPxBounds.min.subtract(i),this._rawPxBounds.max.add(i)]))},_projectLatlngs:function(t,i,e){var n,o,s=t[0]instanceof N,r=t.length;if(s){o=[];for(n=0;n<r;n++){o[n]=this._map.latLngToLayerPoint(t[n]);e.extend(o[n])}i.push(o)}else for(n=0;n<r;n++)this._projectLatlngs(t[n],i,e)},_clipPoints:function(){var t=this._renderer._bounds;this._parts=[];if(this._pxBounds&&this._pxBounds.intersects(t))if(this.options.noClip)this._parts=this._rings;else{var i,e,n,o,s,r,a,h=this._parts;for(i=0,n=0,o=this._rings.length;i<o;i++)for(e=0,s=(a=this._rings[i]).length;e<s-1;e++)if(r=oe(a[e],a[e+1],t,e,!0)){h[n]=h[n]||[];h[n].push(r[0]);if(r[1]!==a[e+1]||e===s-2){h[n].push(r[1]);n++}}}},_simplifyPoints:function(){for(var t=this._parts,i=this.options.smoothFactor,e=0,n=t.length;e<n;e++)t[e]=ie(t[e],i)},_update:function(){if(this._map){this._clipPoints();this._simplifyPoints();this._updatePath()}},_updatePath:function(){this._renderer._updatePoly(this)},_containsPoint:function(t,i){var e,n,o,s,r,a,h=this._clickTolerance();if(!this._pxBounds||!this._pxBounds.contains(t))return!1;for(e=0,s=this._parts.length;e<s;e++)for(n=0,o=(r=(a=this._parts[e]).length)-1;n<r;o=n++)if((i||0!==n)&&ee(t,a[o],a[n])<=h)return!0;return!1}});Se._flat=le;var Ze=Se.extend({options:{fill:!0},isEmpty:function(){return!this._latlngs.length||!this._latlngs[0].length},getCenter:function(){if(!this._map)throw new Error("Must add layer to map before using getCenter()");var t,i,e,n,o,s,r,a,h,l=this._rings[0],u=l.length;if(!u)return null;s=r=a=0;for(t=0,i=u-1;t<u;i=t++){e=l[t];n=l[i];o=e.y*n.x-n.y*e.x;r+=(e.x+n.x)*o;a+=(e.y+n.y)*o;s+=3*o}h=0===s?l[0]:[r/s,a/s];return this._map.layerPointToLatLng(h)},_convertLatLngs:function(t){var i=Se.prototype._convertLatLngs.call(this,t),e=i.length;e>=2&&i[0]instanceof N&&i[0].equals(i[e-1])&&i.pop();return i},_setLatLngs:function(t){Se.prototype._setLatLngs.call(this,t);he(this._latlngs)&&(this._latlngs=[this._latlngs])},_defaultShape:function(){return he(this._latlngs[0])?this._latlngs[0]:this._latlngs[0][0]},_clipPoints:function(){var t=this._renderer._bounds,i=this.options.weight,e=new E(i,i);t=new O(t.min.subtract(e),t.max.add(e));this._parts=[];if(this._pxBounds&&this._pxBounds.intersects(t))if(this.options.noClip)this._parts=this._rings;else for(var n,o=0,s=this._rings.length;o<s;o++)(n=ce(this._rings[o],t,!0)).length&&this._parts.push(n)},_updatePath:function(){this._renderer._updatePoly(this,!0)},_containsPoint:function(t){var i,e,n,o,s,r,a,h,l=!1;if(!this._pxBounds||!this._pxBounds.contains(t))return!1;for(o=0,a=this._parts.length;o<a;o++)for(s=0,r=(h=(i=this._parts[o]).length)-1;s<h;r=s++){e=i[s];n=i[r];e.y>t.y!=n.y>t.y&&t.x<(n.x-e.x)*(t.y-e.y)/(n.y-e.y)+e.x&&(l=!l)}return l||Se.prototype._containsPoint.call(this,t,!0)}}),Ee=we.extend({initialize:function(t,i){d(this,i);this._layers={};t&&this.addData(t)},addData:function(t){var i,e,n,o=m(t)?t:t.features;if(o){for(i=0,e=o.length;i<e;i++)((n=o[i]).geometries||n.geometry||n.features||n.coordinates)&&this.addData(n);return this}var s=this.options;if(s.filter&&!s.filter(t))return this;var r=ke(t,s);if(!r)return this;r.feature=De(t);r.defaultOptions=r.options;this.resetStyle(r);s.onEachFeature&&s.onEachFeature(t,r);return this.addLayer(r)},resetStyle:function(t){if(void 0===t)return this.eachLayer(this.resetStyle,this);t.options=i({},t.defaultOptions);this._setLayerStyle(t,this.options.style);return this},setStyle:function(t){return this.eachLayer((function(i){this._setLayerStyle(i,t)}),this)},_setLayerStyle:function(t,i){if(t.setStyle){"function"==typeof i&&(i=i(t.feature));t.setStyle(i)}}});function ke(t,i){var e,n,o,s,r="Feature"===t.type?t.geometry:t,a=r?r.coordinates:null,h=[],l=i&&i.pointToLayer,u=i&&i.coordsToLatLng||Oe;if(!a&&!r)return null;switch(r.type){case"Point":return Be(l,t,e=u(a),i);case"MultiPoint":for(o=0,s=a.length;o<s;o++){e=u(a[o]);h.push(Be(l,t,e,i))}return new we(h);case"LineString":case"MultiLineString":n=Ae(a,"LineString"===r.type?0:1,u);return new Se(n,i);case"Polygon":case"MultiPolygon":n=Ae(a,"Polygon"===r.type?1:2,u);return new Ze(n,i);case"GeometryCollection":for(o=0,s=r.geometries.length;o<s;o++){var c=ke({geometry:r.geometries[o],type:"Feature",properties:t.properties},i);c&&h.push(c)}return new we(h);default:throw new Error("Invalid GeoJSON object.")}}function Be(t,i,e,n){return t?t(i,e):new Te(e,n&&n.markersInheritOptions&&n)}function Oe(t){return new N(t[1],t[0],t[2])}function Ae(t,i,e){for(var n,o=[],s=0,r=t.length;s<r;s++){n=i?Ae(t[s],i-1,e):(e||Oe)(t[s]);o.push(n)}return o}function Ie(t,i){return void 0!==(t=D(t)).alt?[l(t.lng,i),l(t.lat,i),l(t.alt,i)]:[l(t.lng,i),l(t.lat,i)]}function Re(t,i,e,n){for(var o=[],s=0,r=t.length;s<r;s++)o.push(i?Re(t[s],i-1,e,n):Ie(t[s],n));!i&&e&&o.push(o[0]);return o}function Ne(t,e){return t.feature?i({},t.feature,{geometry:e}):De(e)}function De(t){return"Feature"===t.type||"FeatureCollection"===t.type?t:{type:"Feature",properties:{},geometry:t}}var je={toGeoJSON:function(t){return Ne(this,{type:"Point",coordinates:Ie(this.getLatLng(),t)})}};Te.include(je);Ce.include(je);Me.include(je);Se.include({toGeoJSON:function(t){var i=!he(this._latlngs);return Ne(this,{type:(i?"Multi":"")+"LineString",coordinates:Re(this._latlngs,i?1:0,!1,t)})}});Ze.include({toGeoJSON:function(t){var i=!he(this._latlngs),e=i&&!he(this._latlngs[0]),n=Re(this._latlngs,e?2:i?1:0,!0,t);i||(n=[n]);return Ne(this,{type:(e?"Multi":"")+"Polygon",coordinates:n})}});xe.include({toMultiPoint:function(t){var i=[];this.eachLayer((function(e){i.push(e.toGeoJSON(t).geometry.coordinates)}));return Ne(this,{type:"MultiPoint",coordinates:i})},toGeoJSON:function(t){var i=this.feature&&this.feature.geometry&&this.feature.geometry.type;if("MultiPoint"===i)return this.toMultiPoint(t);var e="GeometryCollection"===i,n=[];this.eachLayer((function(i){if(i.toGeoJSON){var o=i.toGeoJSON(t);if(e)n.push(o.geometry);else{var s=De(o);"FeatureCollection"===s.type?n.push.apply(n,s.features):n.push(s)}}}));return e?Ne(this,{geometries:n,type:"GeometryCollection"}):{type:"FeatureCollection",features:n}}});function He(t,i){return new Ee(t,i)}var We=He,Fe=ye.extend({options:{opacity:1,alt:"",interactive:!1,crossOrigin:!1,errorOverlayUrl:"",zIndex:1,className:""},initialize:function(t,i,e){this._url=t;this._bounds=R(i);d(this,e)},onAdd:function(){if(!this._image){this._initImage();this.options.opacity<1&&this._updateOpacity()}if(this.options.interactive){hi(this._image,"leaflet-interactive");this.addInteractiveTarget(this._image)}this.getPane().appendChild(this._image);this._reset()},onRemove:function(){ni(this._image);this.options.interactive&&this.removeInteractiveTarget(this._image)},setOpacity:function(t){this.options.opacity=t;this._image&&this._updateOpacity();return this},setStyle:function(t){t.opacity&&this.setOpacity(t.opacity);return this},bringToFront:function(){this._map&&si(this._image);return this},bringToBack:function(){this._map&&ri(this._image);return this},setUrl:function(t){this._url=t;this._image&&(this._image.src=t);return this},setBounds:function(t){this._bounds=R(t);this._map&&this._reset();return this},getEvents:function(){var t={zoom:this._reset,viewreset:this._reset};this._zoomAnimated&&(t.zoomanim=this._animateZoom);return t},setZIndex:function(t){this.options.zIndex=t;this._updateZIndex();return this},getBounds:function(){return this._bounds},getElement:function(){return this._image},_initImage:function(){var t="IMG"===this._url.tagName,i=this._image=t?this._url:ei("img");hi(i,"leaflet-image-layer");this._zoomAnimated&&hi(i,"leaflet-zoom-animated");this.options.className&&hi(i,this.options.className);i.onselectstart=h;i.onmousemove=h;i.onload=n(this.fire,this,"load");i.onerror=n(this._overlayOnError,this,"error");(this.options.crossOrigin||""===this.options.crossOrigin)&&(i.crossOrigin=!0===this.options.crossOrigin?"":this.options.crossOrigin);this.options.zIndex&&this._updateZIndex();if(t)this._url=i.src;else{i.src=this._url;i.alt=this.options.alt}},_animateZoom:function(t){var i=this._map.getZoomScale(t.zoom),e=this._map._latLngBoundsToNewLayerBounds(this._bounds,t.zoom,t.center).min;pi(this._image,e,i)},_reset:function(){var t=this._image,i=new O(this._map.latLngToLayerPoint(this._bounds.getNorthWest()),this._map.latLngToLayerPoint(this._bounds.getSouthEast())),e=i.getSize();fi(t,i.min);t.style.width=e.x+"px";t.style.height=e.y+"px"},_updateOpacity:function(){di(this._image,this.options.opacity)},_updateZIndex:function(){this._image&&void 0!==this.options.zIndex&&null!==this.options.zIndex&&(this._image.style.zIndex=this.options.zIndex)},_overlayOnError:function(){this.fire("error");var t=this.options.errorOverlayUrl;if(t&&this._url!==t){this._url=t;this._image.src=t}},getCenter:function(){return this._bounds.getCenter()}}),Ue=Fe.extend({options:{autoplay:!0,loop:!0,keepAspectRatio:!0,muted:!1,playsInline:!0},_initImage:function(){var t="VIDEO"===this._url.tagName,i=this._image=t?this._url:ei("video");hi(i,"leaflet-image-layer");this._zoomAnimated&&hi(i,"leaflet-zoom-animated");this.options.className&&hi(i,this.options.className);i.onselectstart=h;i.onmousemove=h;i.onloadeddata=n(this.fire,this,"load");if(t){for(var e=i.getElementsByTagName("source"),o=[],s=0;s<e.length;s++)o.push(e[s].src);this._url=e.length>0?o:[i.src]}else{m(this._url)||(this._url=[this._url]);!this.options.keepAspectRatio&&Object.prototype.hasOwnProperty.call(i.style,"objectFit")&&(i.style.objectFit="fill");i.autoplay=!!this.options.autoplay;i.loop=!!this.options.loop;i.muted=!!this.options.muted;i.playsInline=!!this.options.playsInline;for(var r=0;r<this._url.length;r++){var a=ei("source");a.src=this._url[r];i.appendChild(a)}}}}),Ve=Fe.extend({_initImage:function(){var t=this._image=this._url;hi(t,"leaflet-image-layer");this._zoomAnimated&&hi(t,"leaflet-zoom-animated");this.options.className&&hi(t,this.options.className);t.onselectstart=h;t.onmousemove=h}}),Ge=ye.extend({options:{interactive:!1,offset:[0,0],className:"",pane:void 0},initialize:function(t,i){d(this,t);this._source=i},openOn:function(t){(t=arguments.length?t:this._source._map).hasLayer(this)||t.addLayer(this);return this},close:function(){this._map&&this._map.removeLayer(this);return this},toggle:function(t){if(this._map)this.close();else{arguments.length?this._source=t:t=this._source;this._prepareOpen();this.openOn(t._map)}return this},onAdd:function(t){this._zoomAnimated=t._zoomAnimated;this._container||this._initLayout();t._fadeAnimated&&di(this._container,0);clearTimeout(this._removeTimeout);this.getPane().appendChild(this._container);this.update();t._fadeAnimated&&di(this._container,1);this.bringToFront();if(this.options.interactive){hi(this._container,"leaflet-interactive");this.addInteractiveTarget(this._container)}},onRemove:function(t){if(t._fadeAnimated){di(this._container,0);this._removeTimeout=setTimeout(n(ni,void 0,this._container),200)}else ni(this._container);if(this.options.interactive){li(this._container,"leaflet-interactive");this.removeInteractiveTarget(this._container)}},getLatLng:function(){return this._latlng},setLatLng:function(t){this._latlng=D(t);if(this._map){this._updatePosition();this._adjustPan()}return this},getContent:function(){return this._content},setContent:function(t){this._content=t;this.update();return this},getElement:function(){return this._container},update:function(){if(this._map){this._container.style.visibility="hidden";this._updateContent();this._updateLayout();this._updatePosition();this._container.style.visibility="";this._adjustPan()}},getEvents:function(){var t={zoom:this._updatePosition,viewreset:this._updatePosition};this._zoomAnimated&&(t.zoomanim=this._animateZoom);return t},isOpen:function(){return!!this._map&&this._map.hasLayer(this)},bringToFront:function(){this._map&&si(this._container);return this},bringToBack:function(){this._map&&ri(this._container);return this},_prepareOpen:function(t){var i=this._source;if(!i._map)return!1;if(i instanceof we){i=null;var e=this._source._layers;for(var n in e)if(e[n]._map){i=e[n];break}if(!i)return!1;this._source=i}if(!t)if(i.getCenter)t=i.getCenter();else if(i.getLatLng)t=i.getLatLng();else{if(!i.getBounds)throw new Error("Unable to get source layer LatLng.");t=i.getBounds().getCenter()}this.setLatLng(t);this._map&&this.update();return!0},_updateContent:function(){if(this._content){var t=this._contentNode,i="function"==typeof this._content?this._content(this._source||this):this._content;if("string"==typeof i)t.innerHTML=i;else{for(;t.hasChildNodes();)t.removeChild(t.firstChild);t.appendChild(i)}this.fire("contentupdate")}},_updatePosition:function(){if(this._map){var t=this._map.latLngToLayerPoint(this._latlng),i=B(this.options.offset),e=this._getAnchor();this._zoomAnimated?fi(this._container,t.add(e)):i=i.add(t).add(e);var n=this._containerBottom=-i.y,o=this._containerLeft=-Math.round(this._containerWidth/2)+i.x;this._container.style.bottom=n+"px";this._container.style.left=o+"px"}},_getAnchor:function(){return[0,0]}});Fi.include({_initOverlay:function(t,i,e,n){var o=i;o instanceof t||(o=new t(n).setContent(i));e&&o.setLatLng(e);return o}});ye.include({_initOverlay:function(t,i,e,n){var o=e;if(o instanceof t){d(o,n);o._source=this}else(o=i&&!n?i:new t(n,this)).setContent(e);return o}});var qe=Ge.extend({options:{pane:"popupPane",offset:[0,7],maxWidth:300,minWidth:50,maxHeight:null,autoPan:!0,autoPanPaddingTopLeft:null,autoPanPaddingBottomRight:null,autoPanPadding:[5,5],keepInView:!1,closeButton:!0,autoClose:!0,closeOnEscapeKey:!0,className:""},openOn:function(t){!(t=arguments.length?t:this._source._map).hasLayer(this)&&t._popup&&t._popup.options.autoClose&&t.removeLayer(t._popup);t._popup=this;return Ge.prototype.openOn.call(this,t)},onAdd:function(t){Ge.prototype.onAdd.call(this,t);t.fire("popupopen",{popup:this});if(this._source){this._source.fire("popupopen",{popup:this},!0);this._source instanceof ze||this._source.on("preclick",ki)}},onRemove:function(t){Ge.prototype.onRemove.call(this,t);t.fire("popupclose",{popup:this});if(this._source){this._source.fire("popupclose",{popup:this},!0);this._source instanceof ze||this._source.off("preclick",ki)}},getEvents:function(){var t=Ge.prototype.getEvents.call(this);(void 0!==this.options.closeOnClick?this.options.closeOnClick:this._map.options.closePopupOnClick)&&(t.preclick=this.close);this.options.keepInView&&(t.moveend=this._adjustPan);return t},_initLayout:function(){var t="leaflet-popup",i=this._container=ei("div",t+" "+(this.options.className||"")+" leaflet-zoom-animated"),e=this._wrapper=ei("div",t+"-content-wrapper",i);this._contentNode=ei("div",t+"-content",e);Oi(i);Bi(this._contentNode);Ti(i,"contextmenu",ki);this._tipContainer=ei("div",t+"-tip-container",i);this._tip=ei("div",t+"-tip",this._tipContainer);if(this.options.closeButton){var n=this._closeButton=ei("a",t+"-close-button",i);n.setAttribute("role","button");n.setAttribute("aria-label","Close popup");n.href="#close";n.innerHTML='<span aria-hidden="true">&#215;</span>';Ti(n,"click",this.close,this)}},_updateLayout:function(){var t=this._contentNode,i=t.style;i.width="";i.whiteSpace="nowrap";var e=t.offsetWidth;e=Math.min(e,this.options.maxWidth);e=Math.max(e,this.options.minWidth);i.width=e+1+"px";i.whiteSpace="";i.height="";var n=t.offsetHeight,o=this.options.maxHeight,s="leaflet-popup-scrolled";if(o&&n>o){i.height=o+"px";hi(t,s)}else li(t,s);this._containerWidth=this._container.offsetWidth},_animateZoom:function(t){var i=this._map._latLngToNewLayerPoint(this._latlng,t.zoom,t.center),e=this._getAnchor();fi(this._container,i.add(e))},_adjustPan:function(t){if(this.options.autoPan){this._map._panAnim&&this._map._panAnim.stop();var i=this._map,e=parseInt(ii(this._container,"marginBottom"),10)||0,n=this._container.offsetHeight+e,o=this._containerWidth,s=new E(this._containerLeft,-n-this._containerBottom);s._add(mi(this._container));var r=i.layerPointToContainerPoint(s),a=B(this.options.autoPanPadding),h=B(this.options.autoPanPaddingTopLeft||a),l=B(this.options.autoPanPaddingBottomRight||a),u=i.getSize(),c=0,d=0;r.x+o+l.x>u.x&&(c=r.x+o-u.x+l.x);r.x-c-h.x<0&&(c=r.x-h.x);r.y+n+l.y>u.y&&(d=r.y+n-u.y+l.y);r.y-d-h.y<0&&(d=r.y-h.y);(c||d)&&i.fire("autopanstart").panBy([c,d],{animate:t&&"moveend"===t.type})}},_getAnchor:function(){return B(this._source&&this._source._getPopupAnchor?this._source._getPopupAnchor():[0,0])}});Fi.mergeOptions({closePopupOnClick:!0});Fi.include({openPopup:function(t,i,e){this._initOverlay(qe,t,i,e).openOn(this);return this},closePopup:function(t){(t=arguments.length?t:this._popup)&&t.close();return this}});ye.include({bindPopup:function(t,i){this._popup=this._initOverlay(qe,this._popup,t,i);if(!this._popupHandlersAdded){this.on({click:this._openPopup,keypress:this._onKeyPress,remove:this.closePopup,move:this._movePopup});this._popupHandlersAdded=!0}return this},unbindPopup:function(){if(this._popup){this.off({click:this._openPopup,keypress:this._onKeyPress,remove:this.closePopup,move:this._movePopup});this._popupHandlersAdded=!1;this._popup=null}return this},openPopup:function(t){this._popup&&this._popup._prepareOpen(t)&&this._popup.openOn(this._map);return this},closePopup:function(){this._popup&&this._popup.close();return this},togglePopup:function(){this._popup&&this._popup.toggle(this);return this},isPopupOpen:function(){return!!this._popup&&this._popup.isOpen()},setPopupContent:function(t){this._popup&&this._popup.setContent(t);return this},getPopup:function(){return this._popup},_openPopup:function(t){if(this._popup&&this._map){Ii(t);var i=t.layer||t.target;if(this._popup._source!==i||i instanceof ze){this._popup._source=i;this.openPopup(t.latlng)}else this._map.hasLayer(this._popup)?this.closePopup():this.openPopup(t.latlng)}},_movePopup:function(t){this._popup.setLatLng(t.latlng)},_onKeyPress:function(t){13===t.originalEvent.keyCode&&this._openPopup(t)}});var Ke=Ge.extend({options:{pane:"tooltipPane",offset:[0,0],direction:"auto",permanent:!1,sticky:!1,opacity:.9},onAdd:function(t){Ge.prototype.onAdd.call(this,t);this.setOpacity(this.options.opacity);t.fire("tooltipopen",{tooltip:this});if(this._source){this.addEventParent(this._source);this._source.fire("tooltipopen",{tooltip:this},!0)}},onRemove:function(t){Ge.prototype.onRemove.call(this,t);t.fire("tooltipclose",{tooltip:this});if(this._source){this.removeEventParent(this._source);this._source.fire("tooltipclose",{tooltip:this},!0)}},getEvents:function(){var t=Ge.prototype.getEvents.call(this);this.options.permanent||(t.preclick=this.close);return t},_initLayout:function(){var t="leaflet-tooltip "+(this.options.className||"")+" leaflet-zoom-"+(this._zoomAnimated?"animated":"hide");this._contentNode=this._container=ei("div",t)},_updateLayout:function(){},_adjustPan:function(){},_setPosition:function(t){var i,e,n=this._map,o=this._container,s=n.latLngToContainerPoint(n.getCenter()),r=n.layerPointToContainerPoint(t),a=this.options.direction,h=o.offsetWidth,l=o.offsetHeight,u=B(this.options.offset),c=this._getAnchor();if("top"===a){i=h/2;e=l}else if("bottom"===a){i=h/2;e=0}else if("center"===a){i=h/2;e=l/2}else if("right"===a){i=0;e=l/2}else if("left"===a){i=h;e=l/2}else if(r.x<s.x){a="right";i=0;e=l/2}else{a="left";i=h+2*(u.x+c.x);e=l/2}t=t.subtract(B(i,e,!0)).add(u).add(c);li(o,"leaflet-tooltip-right");li(o,"leaflet-tooltip-left");li(o,"leaflet-tooltip-top");li(o,"leaflet-tooltip-bottom");hi(o,"leaflet-tooltip-"+a);fi(o,t)},_updatePosition:function(){var t=this._map.latLngToLayerPoint(this._latlng);this._setPosition(t)},setOpacity:function(t){this.options.opacity=t;this._container&&di(this._container,t)},_animateZoom:function(t){var i=this._map._latLngToNewLayerPoint(this._latlng,t.zoom,t.center);this._setPosition(i)},_getAnchor:function(){return B(this._source&&this._source._getTooltipAnchor&&!this.options.sticky?this._source._getTooltipAnchor():[0,0])}});Fi.include({openTooltip:function(t,i,e){this._initOverlay(Ke,t,i,e).openOn(this);return this},closeTooltip:function(t){t.close();return this}});ye.include({bindTooltip:function(t,i){this._tooltip&&this.isTooltipOpen()&&this.unbindTooltip();this._tooltip=this._initOverlay(Ke,this._tooltip,t,i);this._initTooltipInteractions();this._tooltip.options.permanent&&this._map&&this._map.hasLayer(this)&&this.openTooltip();return this},unbindTooltip:function(){if(this._tooltip){this._initTooltipInteractions(!0);this.closeTooltip();this._tooltip=null}return this},_initTooltipInteractions:function(t){if(t||!this._tooltipHandlersAdded){var i=t?"off":"on",e={remove:this.closeTooltip,move:this._moveTooltip};if(this._tooltip.options.permanent)e.add=this._openTooltip;else{e.mouseover=this._openTooltip;e.mouseout=this.closeTooltip;e.click=this._openTooltip}this._tooltip.options.sticky&&(e.mousemove=this._moveTooltip);this[i](e);this._tooltipHandlersAdded=!t}},openTooltip:function(t){this._tooltip&&this._tooltip._prepareOpen(t)&&this._tooltip.openOn(this._map);return this},closeTooltip:function(){if(this._tooltip)return this._tooltip.close()},toggleTooltip:function(){this._tooltip&&this._tooltip.toggle(this);return this},isTooltipOpen:function(){return this._tooltip.isOpen()},setTooltipContent:function(t){this._tooltip&&this._tooltip.setContent(t);return this},getTooltip:function(){return this._tooltip},_openTooltip:function(t){if(this._tooltip&&this._map&&(!this._map.dragging||!this._map.dragging.moving())){this._tooltip._source=t.layer||t.target;this.openTooltip(this._tooltip.options.sticky?t.latlng:void 0)}},_moveTooltip:function(t){var i,e,n=t.latlng;if(this._tooltip.options.sticky&&t.originalEvent){i=this._map.mouseEventToContainerPoint(t.originalEvent);e=this._map.containerPointToLayerPoint(i);n=this._map.layerPointToLatLng(e)}this._tooltip.setLatLng(n)}});var Ye=be.extend({options:{iconSize:[12,12],html:!1,bgPos:null,className:"leaflet-div-icon"},createIcon:function(t){var i=t&&"DIV"===t.tagName?t:document.createElement("div"),e=this.options;if(e.html instanceof Element){oi(i);i.appendChild(e.html)}else i.innerHTML=!1!==e.html?e.html:"";if(e.bgPos){var n=B(e.bgPos);i.style.backgroundPosition=-n.x+"px "+-n.y+"px"}this._setIconStyles(i,"icon");return i},createShadow:function(){return null}});be.Default=Pe;var Xe=ye.extend({options:{tileSize:256,opacity:1,updateWhenIdle:Bt.mobile,updateWhenZooming:!0,updateInterval:200,zIndex:1,bounds:null,minZoom:0,maxZoom:void 0,maxNativeZoom:void 0,minNativeZoom:void 0,noWrap:!1,pane:"tilePane",className:"",keepBuffer:2},initialize:function(t){d(this,t)},onAdd:function(){this._initContainer();this._levels={};this._tiles={};this._resetView()},beforeAdd:function(t){t._addZoomLimit(this)},onRemove:function(t){this._removeAllTiles();ni(this._container);t._removeZoomLimit(this);this._container=null;this._tileZoom=void 0},bringToFront:function(){if(this._map){si(this._container);this._setAutoZIndex(Math.max)}return this},bringToBack:function(){if(this._map){ri(this._container);this._setAutoZIndex(Math.min)}return this},getContainer:function(){return this._container},setOpacity:function(t){this.options.opacity=t;this._updateOpacity();return this},setZIndex:function(t){this.options.zIndex=t;this._updateZIndex();return this},isLoading:function(){return this._loading},redraw:function(){if(this._map){this._removeAllTiles();var t=this._clampZoom(this._map.getZoom());if(t!==this._tileZoom){this._tileZoom=t;this._updateLevels()}this._update()}return this},getEvents:function(){var t={viewprereset:this._invalidateAll,viewreset:this._resetView,zoom:this._resetView,moveend:this._onMoveEnd};if(!this.options.updateWhenIdle){this._onMove||(this._onMove=r(this._onMoveEnd,this.options.updateInterval,this));t.move=this._onMove}this._zoomAnimated&&(t.zoomanim=this._animateZoom);return t},createTile:function(){return document.createElement("div")},getTileSize:function(){var t=this.options.tileSize;return t instanceof E?t:new E(t,t)},_updateZIndex:function(){this._container&&void 0!==this.options.zIndex&&null!==this.options.zIndex&&(this._container.style.zIndex=this.options.zIndex)},_setAutoZIndex:function(t){for(var i,e=this.getPane().children,n=-t(-1/0,1/0),o=0,s=e.length;o<s;o++){i=e[o].style.zIndex;e[o]!==this._container&&i&&(n=t(n,+i))}if(isFinite(n)){this.options.zIndex=n+t(-1,1);this._updateZIndex()}},_updateOpacity:function(){if(this._map&&!Bt.ielt9){di(this._container,this.options.opacity);var t=+new Date,i=!1,e=!1;for(var n in this._tiles){var o=this._tiles[n];if(o.current&&o.loaded){var s=Math.min(1,(t-o.loaded)/200);di(o.el,s);if(s<1)i=!0;else{o.active?e=!0:this._onOpaqueTile(o);o.active=!0}}}e&&!this._noPrune&&this._pruneTiles();if(i){z(this._fadeFrame);this._fadeFrame=T(this._updateOpacity,this)}}},_onOpaqueTile:h,_initContainer:function(){if(!this._container){this._container=ei("div","leaflet-layer "+(this.options.className||""));this._updateZIndex();this.options.opacity<1&&this._updateOpacity();this.getPane().appendChild(this._container)}},_updateLevels:function(){var t=this._tileZoom,i=this.options.maxZoom;if(void 0!==t){for(var e in this._levels){e=Number(e);if(this._levels[e].el.children.length||e===t){this._levels[e].el.style.zIndex=i-Math.abs(t-e);this._onUpdateLevel(e)}else{ni(this._levels[e].el);this._removeTilesAtZoom(e);this._onRemoveLevel(e);delete this._levels[e]}}var n=this._levels[t],o=this._map;if(!n){(n=this._levels[t]={}).el=ei("div","leaflet-tile-container leaflet-zoom-animated",this._container);n.el.style.zIndex=i;n.origin=o.project(o.unproject(o.getPixelOrigin()),t).round();n.zoom=t;this._setZoomTransform(n,o.getCenter(),o.getZoom());n.el.offsetWidth;this._onCreateLevel(n)}this._level=n;return n}},_onUpdateLevel:h,_onRemoveLevel:h,_onCreateLevel:h,_pruneTiles:function(){if(this._map){var t,i,e=this._map.getZoom();if(e>this.options.maxZoom||e<this.options.minZoom)this._removeAllTiles();else{for(t in this._tiles)(i=this._tiles[t]).retain=i.current;for(t in this._tiles)if((i=this._tiles[t]).current&&!i.active){var n=i.coords;this._retainParent(n.x,n.y,n.z,n.z-5)||this._retainChildren(n.x,n.y,n.z,n.z+2)}for(t in this._tiles)this._tiles[t].retain||this._removeTile(t)}}},_removeTilesAtZoom:function(t){for(var i in this._tiles)this._tiles[i].coords.z===t&&this._removeTile(i)},_removeAllTiles:function(){for(var t in this._tiles)this._removeTile(t)},_invalidateAll:function(){for(var t in this._levels){ni(this._levels[t].el);this._onRemoveLevel(Number(t));delete this._levels[t]}this._removeAllTiles();this._tileZoom=void 0},_retainParent:function(t,i,e,n){var o=Math.floor(t/2),s=Math.floor(i/2),r=e-1,a=new E(+o,+s);a.z=+r;var h=this._tileCoordsToKey(a),l=this._tiles[h];if(l&&l.active){l.retain=!0;return!0}l&&l.loaded&&(l.retain=!0);return r>n&&this._retainParent(o,s,r,n)},_retainChildren:function(t,i,e,n){for(var o=2*t;o<2*t+2;o++)for(var s=2*i;s<2*i+2;s++){var r=new E(o,s);r.z=e+1;var a=this._tileCoordsToKey(r),h=this._tiles[a];if(h&&h.active)h.retain=!0;else{h&&h.loaded&&(h.retain=!0);e+1<n&&this._retainChildren(o,s,e+1,n)}}},_resetView:function(t){var i=t&&(t.pinch||t.flyTo);this._setView(this._map.getCenter(),this._map.getZoom(),i,i)},_animateZoom:function(t){this._setView(t.center,t.zoom,!0,t.noUpdate)},_clampZoom:function(t){var i=this.options;return void 0!==i.minNativeZoom&&t<i.minNativeZoom?i.minNativeZoom:void 0!==i.maxNativeZoom&&i.maxNativeZoom<t?i.maxNativeZoom:t},_setView:function(t,i,e,n){var o=Math.round(i);o=void 0!==this.options.maxZoom&&o>this.options.maxZoom||void 0!==this.options.minZoom&&o<this.options.minZoom?void 0:this._clampZoom(o);var s=this.options.updateWhenZooming&&o!==this._tileZoom;if(!n||s){this._tileZoom=o;this._abortLoading&&this._abortLoading();this._updateLevels();this._resetGrid();void 0!==o&&this._update(t);e||this._pruneTiles();this._noPrune=!!e}this._setZoomTransforms(t,i)},_setZoomTransforms:function(t,i){for(var e in this._levels)this._setZoomTransform(this._levels[e],t,i)},_setZoomTransform:function(t,i,e){var n=this._map.getZoomScale(e,t.zoom),o=t.origin.multiplyBy(n).subtract(this._map._getNewPixelOrigin(i,e)).round();Bt.any3d?pi(t.el,o,n):fi(t.el,o)},_resetGrid:function(){var t=this._map,i=t.options.crs,e=this._tileSize=this.getTileSize(),n=this._tileZoom,o=this._map.getPixelWorldBounds(this._tileZoom);o&&(this._globalTileRange=this._pxBoundsToTileRange(o));this._wrapX=i.wrapLng&&!this.options.noWrap&&[Math.floor(t.project([0,i.wrapLng[0]],n).x/e.x),Math.ceil(t.project([0,i.wrapLng[1]],n).x/e.y)];this._wrapY=i.wrapLat&&!this.options.noWrap&&[Math.floor(t.project([i.wrapLat[0],0],n).y/e.x),Math.ceil(t.project([i.wrapLat[1],0],n).y/e.y)]},_onMoveEnd:function(){this._map&&!this._map._animatingZoom&&this._update()},_getTiledPixelBounds:function(t){var i=this._map,e=i._animatingZoom?Math.max(i._animateToZoom,i.getZoom()):i.getZoom(),n=i.getZoomScale(e,this._tileZoom),o=i.project(t,this._tileZoom).floor(),s=i.getSize().divideBy(2*n);return new O(o.subtract(s),o.add(s))},_update:function(t){var i=this._map;if(i){var e=this._clampZoom(i.getZoom());void 0===t&&(t=i.getCenter());if(void 0!==this._tileZoom){var n=this._getTiledPixelBounds(t),o=this._pxBoundsToTileRange(n),s=o.getCenter(),r=[],a=this.options.keepBuffer,h=new O(o.getBottomLeft().subtract([a,-a]),o.getTopRight().add([a,-a]));if(!(isFinite(o.min.x)&&isFinite(o.min.y)&&isFinite(o.max.x)&&isFinite(o.max.y)))throw new Error("Attempted to load an infinite number of tiles");for(var l in this._tiles){var u=this._tiles[l].coords;u.z===this._tileZoom&&h.contains(new E(u.x,u.y))||(this._tiles[l].current=!1)}if(Math.abs(e-this._tileZoom)>1)this._setView(t,e);else{for(var c=o.min.y;c<=o.max.y;c++)for(var d=o.min.x;d<=o.max.x;d++){var _=new E(d,c);_.z=this._tileZoom;if(this._isValidTile(_)){var p=this._tiles[this._tileCoordsToKey(_)];p?p.current=!0:r.push(_)}}r.sort((function(t,i){return t.distanceTo(s)-i.distanceTo(s)}));if(0!==r.length){if(!this._loading){this._loading=!0;this.fire("loading")}var f=document.createDocumentFragment();for(d=0;d<r.length;d++)this._addTile(r[d],f);this._level.el.appendChild(f)}}}}},_isValidTile:function(t){var i=this._map.options.crs;if(!i.infinite){var e=this._globalTileRange;if(!i.wrapLng&&(t.x<e.min.x||t.x>e.max.x)||!i.wrapLat&&(t.y<e.min.y||t.y>e.max.y))return!1}if(!this.options.bounds)return!0;var n=this._tileCoordsToBounds(t);return R(this.options.bounds).overlaps(n)},_keyToBounds:function(t){return this._tileCoordsToBounds(this._keyToTileCoords(t))},_tileCoordsToNwSe:function(t){var i=this._map,e=this.getTileSize(),n=t.scaleBy(e),o=n.add(e);return[i.unproject(n,t.z),i.unproject(o,t.z)]},_tileCoordsToBounds:function(t){var i=this._tileCoordsToNwSe(t),e=new I(i[0],i[1]);this.options.noWrap||(e=this._map.wrapLatLngBounds(e));return e},_tileCoordsToKey:function(t){return t.x+":"+t.y+":"+t.z},_keyToTileCoords:function(t){var i=t.split(":"),e=new E(+i[0],+i[1]);e.z=+i[2];return e},_removeTile:function(t){var i=this._tiles[t];if(i){ni(i.el);delete this._tiles[t];this.fire("tileunload",{tile:i.el,coords:this._keyToTileCoords(t)})}},_initTile:function(t){hi(t,"leaflet-tile");var i=this.getTileSize();t.style.width=i.x+"px";t.style.height=i.y+"px";t.onselectstart=h;t.onmousemove=h;Bt.ielt9&&this.options.opacity<1&&di(t,this.options.opacity)},_addTile:function(t,i){var e=this._getTilePos(t),o=this._tileCoordsToKey(t),s=this.createTile(this._wrapCoords(t),n(this._tileReady,this,t));this._initTile(s);this.createTile.length<2&&T(n(this._tileReady,this,t,null,s));fi(s,e);this._tiles[o]={el:s,coords:t,current:!0};i.appendChild(s);this.fire("tileloadstart",{tile:s,coords:t})},_tileReady:function(t,i,e){i&&this.fire("tileerror",{error:i,tile:e,coords:t});var o=this._tileCoordsToKey(t);if(e=this._tiles[o]){e.loaded=+new Date;if(this._map._fadeAnimated){di(e.el,0);z(this._fadeFrame);this._fadeFrame=T(this._updateOpacity,this)}else{e.active=!0;this._pruneTiles()}if(!i){hi(e.el,"leaflet-tile-loaded");this.fire("tileload",{tile:e.el,coords:t})}if(this._noTilesToLoad()){this._loading=!1;this.fire("load");Bt.ielt9||!this._map._fadeAnimated?T(this._pruneTiles,this):setTimeout(n(this._pruneTiles,this),250)}}},_getTilePos:function(t){return t.scaleBy(this.getTileSize()).subtract(this._level.origin)},_wrapCoords:function(t){var i=new E(this._wrapX?a(t.x,this._wrapX):t.x,this._wrapY?a(t.y,this._wrapY):t.y);i.z=t.z;return i},_pxBoundsToTileRange:function(t){var i=this.getTileSize();return new O(t.min.unscaleBy(i).floor(),t.max.unscaleBy(i).ceil().subtract([1,1]))},_noTilesToLoad:function(){for(var t in this._tiles)if(!this._tiles[t].loaded)return!1;return!0}}),Je=Xe.extend({options:{minZoom:0,maxZoom:18,subdomains:"abc",errorTileUrl:"",zoomOffset:0,tms:!1,zoomReverse:!1,detectRetina:!1,crossOrigin:!1,referrerPolicy:!1},initialize:function(t,i){this._url=t;if((i=d(this,i)).detectRetina&&Bt.retina&&i.maxZoom>0){i.tileSize=Math.floor(i.tileSize/2);if(i.zoomReverse){i.zoomOffset--;i.minZoom++}else{i.zoomOffset++;i.maxZoom--}i.minZoom=Math.max(0,i.minZoom)}"string"==typeof i.subdomains&&(i.subdomains=i.subdomains.split(""));this.on("tileunload",this._onTileRemove)},setUrl:function(t,i){this._url===t&&void 0===i&&(i=!0);this._url=t;i||this.redraw();return this},createTile:function(t,i){var e=document.createElement("img");Ti(e,"load",n(this._tileOnLoad,this,i,e));Ti(e,"error",n(this._tileOnError,this,i,e));(this.options.crossOrigin||""===this.options.crossOrigin)&&(e.crossOrigin=!0===this.options.crossOrigin?"":this.options.crossOrigin);"string"==typeof this.options.referrerPolicy&&(e.referrerPolicy=this.options.referrerPolicy);e.alt="";e.setAttribute("role","presentation");e.src=this.getTileUrl(t);return e},getTileUrl:function(t){var e={r:Bt.retina?"@2x":"",s:this._getSubdomain(t),x:t.x,y:t.y,z:this._getZoomForUrl()};if(this._map&&!this._map.options.crs.infinite){var n=this._globalTileRange.max.y-t.y;this.options.tms&&(e.y=n);e["-y"]=n}return f(this._url,i(e,this.options))},_tileOnLoad:function(t,i){Bt.ielt9?setTimeout(n(t,this,null,i),0):t(null,i)},_tileOnError:function(t,i,e){var n=this.options.errorTileUrl;n&&i.getAttribute("src")!==n&&(i.src=n);t(e,i)},_onTileRemove:function(t){t.tile.onload=null},_getZoomForUrl:function(){var t=this._tileZoom,i=this.options.maxZoom;this.options.zoomReverse&&(t=i-t);return t+this.options.zoomOffset},_getSubdomain:function(t){var i=Math.abs(t.x+t.y)%this.options.subdomains.length;return this.options.subdomains[i]},_abortLoading:function(){var t,i;for(t in this._tiles)if(this._tiles[t].coords.z!==this._tileZoom){(i=this._tiles[t].el).onload=h;i.onerror=h;if(!i.complete){i.src=v;var e=this._tiles[t].coords;ni(i);delete this._tiles[t];this.fire("tileabort",{tile:i,coords:e})}}},_removeTile:function(t){var i=this._tiles[t];if(i){i.el.setAttribute("src",v);return Xe.prototype._removeTile.call(this,t)}},_tileReady:function(t,i,e){if(this._map&&(!e||e.getAttribute("src")!==v))return Xe.prototype._tileReady.call(this,t,i,e)}});function $e(t,i){return new Je(t,i)}var Qe=Je.extend({defaultWmsParams:{service:"WMS",request:"GetMap",layers:"",styles:"",format:"image/jpeg",transparent:!1,version:"1.1.1"},options:{crs:null,uppercase:!1},initialize:function(t,e){this._url=t;var n=i({},this.defaultWmsParams);for(var o in e)o in this.options||(n[o]=e[o]);var s=(e=d(this,e)).detectRetina&&Bt.retina?2:1,r=this.getTileSize();n.width=r.x*s;n.height=r.y*s;this.wmsParams=n},onAdd:function(t){this._crs=this.options.crs||t.options.crs;this._wmsVersion=parseFloat(this.wmsParams.version);var i=this._wmsVersion>=1.3?"crs":"srs";this.wmsParams[i]=this._crs.code;Je.prototype.onAdd.call(this,t)},getTileUrl:function(t){var i=this._tileCoordsToNwSe(t),e=this._crs,n=A(e.project(i[0]),e.project(i[1])),o=n.min,s=n.max,r=(this._wmsVersion>=1.3&&this._crs===ge?[o.y,o.x,s.y,s.x]:[o.x,o.y,s.x,s.y]).join(","),a=Je.prototype.getTileUrl.call(this,t);return a+_(this.wmsParams,a,this.options.uppercase)+(this.options.uppercase?"&BBOX=":"&bbox=")+r},setParams:function(t,e){i(this.wmsParams,t);e||this.redraw();return this}});Je.WMS=Qe;$e.wms=function(t,i){return new Qe(t,i)};var tn=ye.extend({options:{padding:.1},initialize:function(t){d(this,t);s(this);this._layers=this._layers||{}},onAdd:function(){if(!this._container){this._initContainer();this._zoomAnimated&&hi(this._container,"leaflet-zoom-animated")}this.getPane().appendChild(this._container);this._update();this.on("update",this._updatePaths,this)},onRemove:function(){this.off("update",this._updatePaths,this);this._destroyContainer()},getEvents:function(){var t={viewreset:this._reset,zoom:this._onZoom,moveend:this._update,zoomend:this._onZoomEnd};this._zoomAnimated&&(t.zoomanim=this._onAnimZoom);return t},_onAnimZoom:function(t){this._updateTransform(t.center,t.zoom)},_onZoom:function(){this._updateTransform(this._map.getCenter(),this._map.getZoom())},_updateTransform:function(t,i){var e=this._map.getZoomScale(i,this._zoom),n=this._map.getSize().multiplyBy(.5+this.options.padding),o=this._map.project(this._center,i),s=n.multiplyBy(-e).add(o).subtract(this._map._getNewPixelOrigin(t,i));Bt.any3d?pi(this._container,s,e):fi(this._container,s)},_reset:function(){this._update();this._updateTransform(this._center,this._zoom);for(var t in this._layers)this._layers[t]._reset()},_onZoomEnd:function(){for(var t in this._layers)this._layers[t]._project()},_updatePaths:function(){for(var t in this._layers)this._layers[t]._update()},_update:function(){var t=this.options.padding,i=this._map.getSize(),e=this._map.containerPointToLayerPoint(i.multiplyBy(-t)).round();this._bounds=new O(e,e.add(i.multiplyBy(1+2*t)).round());this._center=this._map.getCenter();this._zoom=this._map.getZoom()}}),en=tn.extend({options:{tolerance:0},getEvents:function(){var t=tn.prototype.getEvents.call(this);t.viewprereset=this._onViewPreReset;return t},_onViewPreReset:function(){this._postponeUpdatePaths=!0},onAdd:function(){tn.prototype.onAdd.call(this);this._draw()},_initContainer:function(){var t=this._container=document.createElement("canvas");Ti(t,"mousemove",this._onMouseMove,this);Ti(t,"click dblclick mousedown mouseup contextmenu",this._onClick,this);Ti(t,"mouseout",this._handleMouseOut,this);t._leaflet_disable_events=!0;this._ctx=t.getContext("2d")},_destroyContainer:function(){z(this._redrawRequest);delete this._ctx;ni(this._container);Mi(this._container);delete this._container},_updatePaths:function(){if(!this._postponeUpdatePaths){this._redrawBounds=null;for(var t in this._layers)this._layers[t]._update();this._redraw()}},_update:function(){if(!this._map._animatingZoom||!this._bounds){tn.prototype._update.call(this);var t=this._bounds,i=this._container,e=t.getSize(),n=Bt.retina?2:1;fi(i,t.min);i.width=n*e.x;i.height=n*e.y;i.style.width=e.x+"px";i.style.height=e.y+"px";Bt.retina&&this._ctx.scale(2,2);this._ctx.translate(-t.min.x,-t.min.y);this.fire("update")}},_reset:function(){tn.prototype._reset.call(this);if(this._postponeUpdatePaths){this._postponeUpdatePaths=!1;this._updatePaths()}},_initPath:function(t){this._updateDashArray(t);this._layers[s(t)]=t;var i=t._order={layer:t,prev:this._drawLast,next:null};this._drawLast&&(this._drawLast.next=i);this._drawLast=i;this._drawFirst=this._drawFirst||this._drawLast},_addPath:function(t){this._requestRedraw(t)},_removePath:function(t){var i=t._order,e=i.next,n=i.prev;e?e.prev=n:this._drawLast=n;n?n.next=e:this._drawFirst=e;delete t._order;delete this._layers[s(t)];this._requestRedraw(t)},_updatePath:function(t){this._extendRedrawBounds(t);t._project();t._update();this._requestRedraw(t)},_updateStyle:function(t){this._updateDashArray(t);this._requestRedraw(t)},_updateDashArray:function(t){if("string"==typeof t.options.dashArray){var i,e,n=t.options.dashArray.split(/[, ]+/),o=[];for(e=0;e<n.length;e++){i=Number(n[e]);if(isNaN(i))return;o.push(i)}t.options._dashArray=o}else t.options._dashArray=t.options.dashArray},_requestRedraw:function(t){if(this._map){this._extendRedrawBounds(t);this._redrawRequest=this._redrawRequest||T(this._redraw,this)}},_extendRedrawBounds:function(t){if(t._pxBounds){var i=(t.options.weight||0)+1;this._redrawBounds=this._redrawBounds||new O;this._redrawBounds.extend(t._pxBounds.min.subtract([i,i]));this._redrawBounds.extend(t._pxBounds.max.add([i,i]))}},_redraw:function(){this._redrawRequest=null;if(this._redrawBounds){this._redrawBounds.min._floor();this._redrawBounds.max._ceil()}this._clear();this._draw();this._redrawBounds=null},_clear:function(){var t=this._redrawBounds;if(t){var i=t.getSize();this._ctx.clearRect(t.min.x,t.min.y,i.x,i.y)}else{this._ctx.save();this._ctx.setTransform(1,0,0,1,0,0);this._ctx.clearRect(0,0,this._container.width,this._container.height);this._ctx.restore()}},_draw:function(){var t,i=this._redrawBounds;this._ctx.save();if(i){var e=i.getSize();this._ctx.beginPath();this._ctx.rect(i.min.x,i.min.y,e.x,e.y);this._ctx.clip()}this._drawing=!0;for(var n=this._drawFirst;n;n=n.next){t=n.layer;(!i||t._pxBounds&&t._pxBounds.intersects(i))&&t._updatePath()}this._drawing=!1;this._ctx.restore()},_updatePoly:function(t,i){if(this._drawing){var e,n,o,s,r=t._parts,a=r.length,h=this._ctx;if(a){h.beginPath();for(e=0;e<a;e++){for(n=0,o=r[e].length;n<o;n++){s=r[e][n];h[n?"lineTo":"moveTo"](s.x,s.y)}i&&h.closePath()}this._fillStroke(h,t)}}},_updateCircle:function(t){if(this._drawing&&!t._empty()){var i=t._point,e=this._ctx,n=Math.max(Math.round(t._radius),1),o=(Math.max(Math.round(t._radiusY),1)||n)/n;if(1!==o){e.save();e.scale(1,o)}e.beginPath();e.arc(i.x,i.y/o,n,0,2*Math.PI,!1);1!==o&&e.restore();this._fillStroke(e,t)}},_fillStroke:function(t,i){var e=i.options;if(e.fill){t.globalAlpha=e.fillOpacity;t.fillStyle=e.fillColor||e.color;t.fill(e.fillRule||"evenodd")}if(e.stroke&&0!==e.weight){t.setLineDash&&t.setLineDash(i.options&&i.options._dashArray||[]);t.globalAlpha=e.opacity;t.lineWidth=e.weight;t.strokeStyle=e.color;t.lineCap=e.lineCap;t.lineJoin=e.lineJoin;t.stroke()}},_onClick:function(t){for(var i,e,n=this._map.mouseEventToLayerPoint(t),o=this._drawFirst;o;o=o.next)(i=o.layer).options.interactive&&i._containsPoint(n)&&("click"!==t.type&&"preclick"!==t.type||!this._map._draggableMoved(i))&&(e=i);this._fireEvent(!!e&&[e],t)},_onMouseMove:function(t){if(this._map&&!this._map.dragging.moving()&&!this._map._animatingZoom){var i=this._map.mouseEventToLayerPoint(t);this._handleMouseHover(t,i)}},_handleMouseOut:function(t){var i=this._hoveredLayer;if(i){li(this._container,"leaflet-interactive");this._fireEvent([i],t,"mouseout");this._hoveredLayer=null;this._mouseHoverThrottled=!1}},_handleMouseHover:function(t,i){if(!this._mouseHoverThrottled){for(var e,o,s=this._drawFirst;s;s=s.next)(e=s.layer).options.interactive&&e._containsPoint(i)&&(o=e);if(o!==this._hoveredLayer){this._handleMouseOut(t);if(o){hi(this._container,"leaflet-interactive");this._fireEvent([o],t,"mouseover");this._hoveredLayer=o}}this._fireEvent(!!this._hoveredLayer&&[this._hoveredLayer],t);this._mouseHoverThrottled=!0;setTimeout(n((function(){this._mouseHoverThrottled=!1}),this),32)}},_fireEvent:function(t,i,e){this._map._fireDOMEvent(i,e||i.type,t)},_bringToFront:function(t){var i=t._order;if(i){var e=i.next,n=i.prev;if(e){e.prev=n;n?n.next=e:e&&(this._drawFirst=e);i.prev=this._drawLast;this._drawLast.next=i;i.next=null;this._drawLast=i;this._requestRedraw(t)}}},_bringToBack:function(t){var i=t._order;if(i){var e=i.next,n=i.prev;if(n){n.next=e;e?e.prev=n:n&&(this._drawLast=n);i.prev=null;i.next=this._drawFirst;this._drawFirst.prev=i;this._drawFirst=i;this._requestRedraw(t)}}}});function nn(t){return Bt.canvas?new en(t):null}var on=function(){try{document.namespaces.add("lvml","urn:schemas-microsoft-com:vml");return function(t){return document.createElement("<lvml:"+t+' class="lvml">')}}catch(t){}return function(t){return document.createElement("<"+t+' xmlns="urn:schemas-microsoft.com:vml" class="lvml">')}}(),sn={_initContainer:function(){this._container=ei("div","leaflet-vml-container")},_update:function(){if(!this._map._animatingZoom){tn.prototype._update.call(this);this.fire("update")}},_initPath:function(t){var i=t._container=on("shape");hi(i,"leaflet-vml-shape "+(this.options.className||""));i.coordsize="1 1";t._path=on("path");i.appendChild(t._path);this._updateStyle(t);this._layers[s(t)]=t},_addPath:function(t){var i=t._container;this._container.appendChild(i);t.options.interactive&&t.addInteractiveTarget(i)},_removePath:function(t){var i=t._container;ni(i);t.removeInteractiveTarget(i);delete this._layers[s(t)]},_updateStyle:function(t){var i=t._stroke,e=t._fill,n=t.options,o=t._container;o.stroked=!!n.stroke;o.filled=!!n.fill;if(n.stroke){i||(i=t._stroke=on("stroke"));o.appendChild(i);i.weight=n.weight+"px";i.color=n.color;i.opacity=n.opacity;n.dashArray?i.dashStyle=m(n.dashArray)?n.dashArray.join(" "):n.dashArray.replace(/( *, *)/g," "):i.dashStyle="";i.endcap=n.lineCap.replace("butt","flat");i.joinstyle=n.lineJoin}else if(i){o.removeChild(i);t._stroke=null}if(n.fill){e||(e=t._fill=on("fill"));o.appendChild(e);e.color=n.fillColor||n.color;e.opacity=n.fillOpacity}else if(e){o.removeChild(e);t._fill=null}},_updateCircle:function(t){var i=t._point.round(),e=Math.round(t._radius),n=Math.round(t._radiusY||e);this._setPath(t,t._empty()?"M0 0":"AL "+i.x+","+i.y+" "+e+","+n+" 0,23592600")},_setPath:function(t,i){t._path.v=i},_bringToFront:function(t){si(t._container)},_bringToBack:function(t){ri(t._container)}},rn=Bt.vml?on:X,an=tn.extend({_initContainer:function(){this._container=rn("svg");this._container.setAttribute("pointer-events","none");this._rootGroup=rn("g");this._container.appendChild(this._rootGroup)},_destroyContainer:function(){ni(this._container);Mi(this._container);delete this._container;delete this._rootGroup;delete this._svgSize},_update:function(){if(!this._map._animatingZoom||!this._bounds){tn.prototype._update.call(this);var t=this._bounds,i=t.getSize(),e=this._container;if(!this._svgSize||!this._svgSize.equals(i)){this._svgSize=i;e.setAttribute("width",i.x);e.setAttribute("height",i.y)}fi(e,t.min);e.setAttribute("viewBox",[t.min.x,t.min.y,i.x,i.y].join(" "));this.fire("update")}},_initPath:function(t){var i=t._path=rn("path");t.options.className&&hi(i,t.options.className);t.options.interactive&&hi(i,"leaflet-interactive");this._updateStyle(t);this._layers[s(t)]=t},_addPath:function(t){this._rootGroup||this._initContainer();this._rootGroup.appendChild(t._path);t.addInteractiveTarget(t._path)},_removePath:function(t){ni(t._path);t.removeInteractiveTarget(t._path);delete this._layers[s(t)]},_updatePath:function(t){t._project();t._update()},_updateStyle:function(t){var i=t._path,e=t.options;if(i){if(e.stroke){i.setAttribute("stroke",e.color);i.setAttribute("stroke-opacity",e.opacity);i.setAttribute("stroke-width",e.weight);i.setAttribute("stroke-linecap",e.lineCap);i.setAttribute("stroke-linejoin",e.lineJoin);e.dashArray?i.setAttribute("stroke-dasharray",e.dashArray):i.removeAttribute("stroke-dasharray");e.dashOffset?i.setAttribute("stroke-dashoffset",e.dashOffset):i.removeAttribute("stroke-dashoffset")}else i.setAttribute("stroke","none");if(e.fill){i.setAttribute("fill",e.fillColor||e.color);i.setAttribute("fill-opacity",e.fillOpacity);i.setAttribute("fill-rule",e.fillRule||"evenodd")}else i.setAttribute("fill","none")}},_updatePoly:function(t,i){this._setPath(t,J(t._parts,i))},_updateCircle:function(t){var i=t._point,e=Math.max(Math.round(t._radius),1),n="a"+e+","+(Math.max(Math.round(t._radiusY),1)||e)+" 0 1,0 ",o=t._empty()?"M0 0":"M"+(i.x-e)+","+i.y+n+2*e+",0 "+n+2*-e+",0 ";this._setPath(t,o)},_setPath:function(t,i){t._path.setAttribute("d",i)},_bringToFront:function(t){si(t._path)},_bringToBack:function(t){ri(t._path)}});Bt.vml&&an.include(sn);function hn(t){return Bt.svg||Bt.vml?new an(t):null}Fi.include({getRenderer:function(t){var i=t.options.renderer||this._getPaneRenderer(t.options.pane)||this.options.renderer||this._renderer;i||(i=this._renderer=this._createRenderer());this.hasLayer(i)||this.addLayer(i);return i},_getPaneRenderer:function(t){if("overlayPane"===t||void 0===t)return!1;var i=this._paneRenderers[t];if(void 0===i){i=this._createRenderer({pane:t});this._paneRenderers[t]=i}return i},_createRenderer:function(t){return this.options.preferCanvas&&nn(t)||hn(t)}});var ln=Ze.extend({initialize:function(t,i){Ze.prototype.initialize.call(this,this._boundsToLatLngs(t),i)},setBounds:function(t){return this.setLatLngs(this._boundsToLatLngs(t))},_boundsToLatLngs:function(t){return[(t=R(t)).getSouthWest(),t.getNorthWest(),t.getNorthEast(),t.getSouthEast()]}});an.create=rn;an.pointsToPath=J;Ee.geometryToLayer=ke;Ee.coordsToLatLng=Oe;Ee.coordsToLatLngs=Ae;Ee.latLngToCoords=Ie;Ee.latLngsToCoords=Re;Ee.getFeature=Ne;Ee.asFeature=De;Fi.mergeOptions({boxZoom:!0});var un=Xi.extend({initialize:function(t){this._map=t;this._container=t._container;this._pane=t._panes.overlayPane;this._resetStateTimeout=0;t.on("unload",this._destroy,this)},addHooks:function(){Ti(this._container,"mousedown",this._onMouseDown,this)},removeHooks:function(){Mi(this._container,"mousedown",this._onMouseDown,this)},moved:function(){return this._moved},_destroy:function(){ni(this._pane);delete this._pane},_resetState:function(){this._resetStateTimeout=0;this._moved=!1},_clearDeferredResetState:function(){if(0!==this._resetStateTimeout){clearTimeout(this._resetStateTimeout);this._resetStateTimeout=0}},_onMouseDown:function(t){if(!t.shiftKey||1!==t.which&&1!==t.button)return!1;this._clearDeferredResetState();this._resetState();Gt();vi();this._startPoint=this._map.mouseEventToContainerPoint(t);Ti(document,{contextmenu:Ii,mousemove:this._onMouseMove,mouseup:this._onMouseUp,keydown:this._onKeyDown},this)},_onMouseMove:function(t){if(!this._moved){this._moved=!0;this._box=ei("div","leaflet-zoom-box",this._container);hi(this._container,"leaflet-crosshair");this._map.fire("boxzoomstart")}this._point=this._map.mouseEventToContainerPoint(t);var i=new O(this._point,this._startPoint),e=i.getSize();fi(this._box,i.min);this._box.style.width=e.x+"px";this._box.style.height=e.y+"px"},_finish:function(){if(this._moved){ni(this._box);li(this._container,"leaflet-crosshair")}qt();yi();Mi(document,{contextmenu:Ii,mousemove:this._onMouseMove,mouseup:this._onMouseUp,keydown:this._onKeyDown},this)},_onMouseUp:function(t){if(1===t.which||1===t.button){this._finish();if(this._moved){this._clearDeferredResetState();this._resetStateTimeout=setTimeout(n(this._resetState,this),0);var i=new I(this._map.containerPointToLatLng(this._startPoint),this._map.containerPointToLatLng(this._point));this._map.fitBounds(i).fire("boxzoomend",{boxZoomBounds:i})}}},_onKeyDown:function(t){if(27===t.keyCode){this._finish();this._clearDeferredResetState();this._resetState()}}});Fi.addInitHook("addHandler","boxZoom",un);Fi.mergeOptions({doubleClickZoom:!0});var cn=Xi.extend({addHooks:function(){this._map.on("dblclick",this._onDoubleClick,this)},removeHooks:function(){this._map.off("dblclick",this._onDoubleClick,this)},_onDoubleClick:function(t){var i=this._map,e=i.getZoom(),n=i.options.zoomDelta,o=t.originalEvent.shiftKey?e-n:e+n;"center"===i.options.doubleClickZoom?i.setZoom(o):i.setZoomAround(t.containerPoint,o)}});Fi.addInitHook("addHandler","doubleClickZoom",cn);Fi.mergeOptions({dragging:!0,inertia:!0,inertiaDeceleration:3400,inertiaMaxSpeed:1/0,easeLinearity:.2,worldCopyJump:!1,maxBoundsViscosity:0});var dn=Xi.extend({addHooks:function(){if(!this._draggable){var t=this._map;this._draggable=new te(t._mapPane,t._container);this._draggable.on({dragstart:this._onDragStart,drag:this._onDrag,dragend:this._onDragEnd},this);this._draggable.on("predrag",this._onPreDragLimit,this);if(t.options.worldCopyJump){this._draggable.on("predrag",this._onPreDragWrap,this);t.on("zoomend",this._onZoomEnd,this);t.whenReady(this._onZoomEnd,this)}}hi(this._map._container,"leaflet-grab leaflet-touch-drag");this._draggable.enable();this._positions=[];this._times=[]},removeHooks:function(){li(this._map._container,"leaflet-grab");li(this._map._container,"leaflet-touch-drag");this._draggable.disable()},moved:function(){return this._draggable&&this._draggable._moved},moving:function(){return this._draggable&&this._draggable._moving},_onDragStart:function(){var t=this._map;t._stop();if(this._map.options.maxBounds&&this._map.options.maxBoundsViscosity){var i=R(this._map.options.maxBounds);this._offsetLimit=A(this._map.latLngToContainerPoint(i.getNorthWest()).multiplyBy(-1),this._map.latLngToContainerPoint(i.getSouthEast()).multiplyBy(-1).add(this._map.getSize()));this._viscosity=Math.min(1,Math.max(0,this._map.options.maxBoundsViscosity))}else this._offsetLimit=null;t.fire("movestart").fire("dragstart");if(t.options.inertia){this._positions=[];this._times=[]}},_onDrag:function(t){if(this._map.options.inertia){var i=this._lastTime=+new Date,e=this._lastPos=this._draggable._absPos||this._draggable._newPos;this._positions.push(e);this._times.push(i);this._prunePositions(i)}this._map.fire("move",t).fire("drag",t)},_prunePositions:function(t){for(;this._positions.length>1&&t-this._times[0]>50;){this._positions.shift();this._times.shift()}},_onZoomEnd:function(){var t=this._map.getSize().divideBy(2),i=this._map.latLngToLayerPoint([0,0]);this._initialWorldOffset=i.subtract(t).x;this._worldWidth=this._map.getPixelWorldBounds().getSize().x},_viscousLimit:function(t,i){return t-(t-i)*this._viscosity},_onPreDragLimit:function(){if(this._viscosity&&this._offsetLimit){var t=this._draggable._newPos.subtract(this._draggable._startPos),i=this._offsetLimit;t.x<i.min.x&&(t.x=this._viscousLimit(t.x,i.min.x));t.y<i.min.y&&(t.y=this._viscousLimit(t.y,i.min.y));t.x>i.max.x&&(t.x=this._viscousLimit(t.x,i.max.x));t.y>i.max.y&&(t.y=this._viscousLimit(t.y,i.max.y));this._draggable._newPos=this._draggable._startPos.add(t)}},_onPreDragWrap:function(){var t=this._worldWidth,i=Math.round(t/2),e=this._initialWorldOffset,n=this._draggable._newPos.x,o=(n-i+e)%t+i-e,s=(n+i+e)%t-i-e,r=Math.abs(o+e)<Math.abs(s+e)?o:s;this._draggable._absPos=this._draggable._newPos.clone();this._draggable._newPos.x=r},_onDragEnd:function(t){var i=this._map,e=i.options,n=!e.inertia||t.noInertia||this._times.length<2;i.fire("dragend",t);if(n)i.fire("moveend");else{this._prunePositions(+new Date);var o=this._lastPos.subtract(this._positions[0]),s=(this._lastTime-this._times[0])/1e3,r=e.easeLinearity,a=o.multiplyBy(r/s),h=a.distanceTo([0,0]),l=Math.min(e.inertiaMaxSpeed,h),u=a.multiplyBy(l/h),c=l/(e.inertiaDeceleration*r),d=u.multiplyBy(-c/2).round();if(d.x||d.y){d=i._limitOffset(d,i.options.maxBounds);T((function(){i.panBy(d,{duration:c,easeLinearity:r,noMoveStart:!0,animate:!0})}))}else i.fire("moveend")}}});Fi.addInitHook("addHandler","dragging",dn);Fi.mergeOptions({keyboard:!0,keyboardPanDelta:80});var _n=Xi.extend({keyCodes:{left:[37],right:[39],down:[40],up:[38],zoomIn:[187,107,61,171],zoomOut:[189,109,54,173]},initialize:function(t){this._map=t;this._setPanDelta(t.options.keyboardPanDelta);this._setZoomDelta(t.options.zoomDelta)},addHooks:function(){var t=this._map._container;t.tabIndex<=0&&(t.tabIndex="0");Ti(t,{focus:this._onFocus,blur:this._onBlur,mousedown:this._onMouseDown},this);this._map.on({focus:this._addHooks,blur:this._removeHooks},this)},removeHooks:function(){this._removeHooks();Mi(this._map._container,{focus:this._onFocus,blur:this._onBlur,mousedown:this._onMouseDown},this);this._map.off({focus:this._addHooks,blur:this._removeHooks},this)},_onMouseDown:function(){if(!this._focused){var t=document.body,i=document.documentElement,e=t.scrollTop||i.scrollTop,n=t.scrollLeft||i.scrollLeft;this._map._container.focus();window.scrollTo(n,e)}},_onFocus:function(){this._focused=!0;this._map.fire("focus")},_onBlur:function(){this._focused=!1;this._map.fire("blur")},_setPanDelta:function(t){var i,e,n=this._panKeys={},o=this.keyCodes;for(i=0,e=o.left.length;i<e;i++)n[o.left[i]]=[-1*t,0];for(i=0,e=o.right.length;i<e;i++)n[o.right[i]]=[t,0];for(i=0,e=o.down.length;i<e;i++)n[o.down[i]]=[0,t];for(i=0,e=o.up.length;i<e;i++)n[o.up[i]]=[0,-1*t]},_setZoomDelta:function(t){var i,e,n=this._zoomKeys={},o=this.keyCodes;for(i=0,e=o.zoomIn.length;i<e;i++)n[o.zoomIn[i]]=t;for(i=0,e=o.zoomOut.length;i<e;i++)n[o.zoomOut[i]]=-t},_addHooks:function(){Ti(document,"keydown",this._onKeyDown,this)},_removeHooks:function(){Mi(document,"keydown",this._onKeyDown,this)},_onKeyDown:function(t){if(!(t.altKey||t.ctrlKey||t.metaKey)){var i,e=t.keyCode,n=this._map;if(e in this._panKeys){if(!n._panAnim||!n._panAnim._inProgress){i=this._panKeys[e];t.shiftKey&&(i=B(i).multiplyBy(3));n.panBy(i);n.options.maxBounds&&n.panInsideBounds(n.options.maxBounds)}}else if(e in this._zoomKeys)n.setZoom(n.getZoom()+(t.shiftKey?3:1)*this._zoomKeys[e]);else{if(27!==e||!n._popup||!n._popup.options.closeOnEscapeKey)return;n.closePopup()}Ii(t)}}});Fi.addInitHook("addHandler","keyboard",_n);Fi.mergeOptions({scrollWheelZoom:!0,wheelDebounceTime:40,wheelPxPerZoomLevel:60});var pn=Xi.extend({addHooks:function(){Ti(this._map._container,"wheel",this._onWheelScroll,this);this._delta=0},removeHooks:function(){Mi(this._map._container,"wheel",this._onWheelScroll,this)},_onWheelScroll:function(t){var i=Di(t),e=this._map.options.wheelDebounceTime;this._delta+=i;this._lastMousePos=this._map.mouseEventToContainerPoint(t);this._startTime||(this._startTime=+new Date);var o=Math.max(e-(+new Date-this._startTime),0);clearTimeout(this._timer);this._timer=setTimeout(n(this._performZoom,this),o);Ii(t)},_performZoom:function(){var t=this._map,i=t.getZoom(),e=this._map.options.zoomSnap||0;t._stop();var n=this._delta/(4*this._map.options.wheelPxPerZoomLevel),o=4*Math.log(2/(1+Math.exp(-Math.abs(n))))/Math.LN2,s=e?Math.ceil(o/e)*e:o,r=t._limitZoom(i+(this._delta>0?s:-s))-i;this._delta=0;this._startTime=null;r&&("center"===t.options.scrollWheelZoom?t.setZoom(i+r):t.setZoomAround(this._lastMousePos,i+r))}});Fi.addInitHook("addHandler","scrollWheelZoom",pn);Fi.mergeOptions({tapHold:Bt.touchNative&&Bt.safari&&Bt.mobile,tapTolerance:15});var fn=Xi.extend({addHooks:function(){Ti(this._map._container,"touchstart",this._onDown,this)},removeHooks:function(){Mi(this._map._container,"touchstart",this._onDown,this)},_onDown:function(t){clearTimeout(this._holdTimeout);if(1===t.touches.length){var i=t.touches[0];this._startPos=this._newPos=new E(i.clientX,i.clientY);this._holdTimeout=setTimeout(n((function(){this._cancel();if(this._isTapValid()){Ti(document,"touchend",Ai);Ti(document,"touchend touchcancel",this._cancelClickPrevent);this._simulateEvent("contextmenu",i)}}),this),600);Ti(document,"touchend touchcancel contextmenu",this._cancel,this);Ti(document,"touchmove",this._onMove,this)}},_cancelClickPrevent:function t(){Mi(document,"touchend",Ai);Mi(document,"touchend touchcancel",t)},_cancel:function(){clearTimeout(this._holdTimeout);Mi(document,"touchend touchcancel contextmenu",this._cancel,this);Mi(document,"touchmove",this._onMove,this)},_onMove:function(t){var i=t.touches[0];this._newPos=new E(i.clientX,i.clientY)},_isTapValid:function(){return this._newPos.distanceTo(this._startPos)<=this._map.options.tapTolerance},_simulateEvent:function(t,i){var e=new MouseEvent(t,{bubbles:!0,cancelable:!0,view:window,screenX:i.screenX,screenY:i.screenY,clientX:i.clientX,clientY:i.clientY});e._simulated=!0;i.target.dispatchEvent(e)}});Fi.addInitHook("addHandler","tapHold",fn);Fi.mergeOptions({touchZoom:Bt.touch,bounceAtZoomLimits:!0});var mn=Xi.extend({addHooks:function(){hi(this._map._container,"leaflet-touch-zoom");Ti(this._map._container,"touchstart",this._onTouchStart,this)},removeHooks:function(){li(this._map._container,"leaflet-touch-zoom");Mi(this._map._container,"touchstart",this._onTouchStart,this)},_onTouchStart:function(t){var i=this._map;if(t.touches&&2===t.touches.length&&!i._animatingZoom&&!this._zooming){var e=i.mouseEventToContainerPoint(t.touches[0]),n=i.mouseEventToContainerPoint(t.touches[1]);this._centerPoint=i.getSize()._divideBy(2);this._startLatLng=i.containerPointToLatLng(this._centerPoint);"center"!==i.options.touchZoom&&(this._pinchStartLatLng=i.containerPointToLatLng(e.add(n)._divideBy(2)));this._startDist=e.distanceTo(n);this._startZoom=i.getZoom();this._moved=!1;this._zooming=!0;i._stop();Ti(document,"touchmove",this._onTouchMove,this);Ti(document,"touchend touchcancel",this._onTouchEnd,this);Ai(t)}},_onTouchMove:function(t){if(t.touches&&2===t.touches.length&&this._zooming){var i=this._map,e=i.mouseEventToContainerPoint(t.touches[0]),o=i.mouseEventToContainerPoint(t.touches[1]),s=e.distanceTo(o)/this._startDist;this._zoom=i.getScaleZoom(s,this._startZoom);!i.options.bounceAtZoomLimits&&(this._zoom<i.getMinZoom()&&s<1||this._zoom>i.getMaxZoom()&&s>1)&&(this._zoom=i._limitZoom(this._zoom));if("center"===i.options.touchZoom){this._center=this._startLatLng;if(1===s)return}else{var r=e._add(o)._divideBy(2)._subtract(this._centerPoint);if(1===s&&0===r.x&&0===r.y)return;this._center=i.unproject(i.project(this._pinchStartLatLng,this._zoom).subtract(r),this._zoom)}if(!this._moved){i._moveStart(!0,!1);this._moved=!0}z(this._animRequest);var a=n(i._move,i,this._center,this._zoom,{pinch:!0,round:!1});this._animRequest=T(a,this,!0);Ai(t)}},_onTouchEnd:function(){if(this._moved&&this._zooming){this._zooming=!1;z(this._animRequest);Mi(document,"touchmove",this._onTouchMove,this);Mi(document,"touchend touchcancel",this._onTouchEnd,this);this._map.options.zoomAnimation?this._map._animateZoom(this._center,this._map._limitZoom(this._zoom),!0,this._map.options.zoomSnap):this._map._resetView(this._center,this._map._limitZoom(this._zoom))}else this._zooming=!1}});Fi.addInitHook("addHandler","touchZoom",mn);Fi.BoxZoom=un;Fi.DoubleClickZoom=cn;Fi.Drag=dn;Fi.Keyboard=_n;Fi.ScrollWheelZoom=pn;Fi.TapHold=fn;Fi.TouchZoom=mn;t.Bounds=O;t.Browser=Bt;t.CRS=H;t.Canvas=en;t.Circle=Ce;t.CircleMarker=Me;t.Class=C;t.Control=Ui;t.DivIcon=Ye;t.DivOverlay=Ge;t.DomEvent=Hi;t.DomUtil=Li;t.Draggable=te;t.Evented=Z;t.FeatureGroup=we;t.GeoJSON=Ee;t.GridLayer=Xe;t.Handler=Xi;t.Icon=be;t.ImageOverlay=Fe;t.LatLng=N;t.LatLngBounds=I;t.Layer=ye;t.LayerGroup=xe;t.LineUtil=ue;t.Map=Fi;t.Marker=Te;t.Mixin=$i;t.Path=ze;t.Point=E;t.PolyUtil=de;t.Polygon=Ze;t.Polyline=Se;t.Popup=qe;t.PosAnimation=Wi;t.Projection=fe;t.Rectangle=ln;t.Renderer=tn;t.SVG=an;t.SVGOverlay=Ve;t.TileLayer=Je;t.Tooltip=Ke;t.Transformation=V;t.Util=M;t.VideoOverlay=Ue;t.bind=n;t.bounds=A;t.canvas=nn;t.circle=function(t,i,e){return new Ce(t,i,e)};t.circleMarker=function(t,i){return new Me(t,i)};t.control=Vi;t.divIcon=function(t){return new Ye(t)};t.extend=i;t.featureGroup=function(t,i){return new we(t,i)};t.geoJSON=He;t.geoJson=We;t.gridLayer=function(t){return new Xe(t)};t.icon=function(t){return new be(t)};t.imageOverlay=function(t,i,e){return new Fe(t,i,e)};t.latLng=D;t.latLngBounds=R;t.layerGroup=function(t,i){return new xe(t,i)};t.map=function(t,i){return new Fi(t,i)};t.marker=function(t,i){return new Te(t,i)};t.point=B;t.polygon=function(t,i){return new Ze(t,i)};t.polyline=function(t,i){return new Se(t,i)};t.popup=function(t,i){return new qe(t,i)};t.rectangle=function(t,i){return new ln(t,i)};t.setOptions=d;t.stamp=s;t.svg=hn;t.svgOverlay=function(t,i,e){return new Ve(t,i,e)};t.tileLayer=$e;t.tooltip=function(t,i){return new Ke(t,i)};t.transformation=G;t.version="1.8.0";t.videoOverlay=function(t,i,e){return new Ue(t,i,e)};var gn=window.L;t.noConflict=function(){window.L=gn;return this};window.L=t}(i)}},i={};function e(n){var o=i[n];if(void 0!==o)return o.exports;var s=i[n]={exports:{}};t[n].call(s.exports,s,s.exports,e);return s.exports}e.n=t=>{var i=t&&t.__esModule?()=>t.default:()=>t;e.d(i,{a:i});return i};e.d=(t,i)=>{for(var n in i)e.o(i,n)&&!e.o(t,n)&&Object.defineProperty(t,n,{enumerable:!0,get:i[n]})};e.o=(t,i)=>Object.prototype.hasOwnProperty.call(t,i);e.r=t=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(t,Symbol.toStringTag,{value:"Module"});Object.defineProperty(t,"__esModule",{value:!0})};var n={};(()=>{e.r(n);var t=e(169);e(918);function i(t){const i=window.location.search.substring(1).split("&");for(let e=0;e<i.length;e++){const n=i[e].split("=");if(n[0]===t)return n[1]}}const o=(i("position")||"45.18453,5.75").split(",").map(parseFloat),s=parseFloat(i("zoom")||"8"),r=i("owm_key"),a=t.map("map",{zoomControl:!1}).setView(o,s);t.TileLayer.mergeOptions({dumpToCanvas:t.Browser.canvas&&!t.Browser.ie});t.TileLayer.include({_onUpdateLevel(t,i){this.options.dumpToCanvas&&(this._levels[t].canvas.style.zIndex=this.options.maxZoom-Math.abs(i-t))},_onRemoveLevel(i){this.options.dumpToCanvas&&t.DomUtil.remove(this._levels[i].canvas)},_onCreateLevel(i){if(this.options.dumpToCanvas){i.canvas=t.DomUtil.create("canvas","leaflet-tile-container leaflet-zoom-animated",this._container);i.ctx=i.canvas.getContext("2d");this._resetCanvasSize(i)}},_removeTile(i){if(this.options.dumpToCanvas){const e=this._tiles[i],n=this._levels[e.coords.z],o=this.getTileSize();if(n){const i=t.point(e.coords.x,e.coords.y).subtract(n.canvasRange.min).scaleBy(this.getTileSize());n.ctx.clearRect(i.x,i.y,o.x,o.y)}}t.GridLayer.prototype._removeTile.call(this,i)},_resetCanvasSize(i){const e=this.options.keepBuffer,n=this._getTiledPixelBounds(this._map.getCenter()),o=this._pxBoundsToTileRange(n),s=this.getTileSize();o.min=o.min.subtract([e,e]);o.max=o.max.add([e+1,e+1]);const r=t.bounds(o.min.scaleBy(s),o.max.add([1,1]).scaleBy(s)),a=r.max.subtract(r.min);let h=!1;if(a.x>i.canvas.width||a.y>i.canvas.height){const e={x:i.canvas.width,y:i.canvas.height},n=t.DomUtil.create("canvas");n.style.width=(n.width=e.x)+"px";n.style.height=(n.height=e.y)+"px";n.getContext("2d").drawImage(i.canvas,0,0);i.canvas.style.width=(i.canvas.width=a.x)+"px";i.canvas.style.height=(i.canvas.height=a.y)+"px";i.ctx.drawImage(n,0,0)}if(i.canvasRange){const e=i.canvasRange.min.subtract(o.min).scaleBy(this.getTileSize());if(t.Browser.safari){if(!this._tmpCanvas){const e=this._tmpCanvas=t.DomUtil.create("canvas");e.width=i.canvas.width;e.height=i.canvas.height;this._tmpContext=e.getContext("2d")}this._tmpContext.clearRect(0,0,i.canvas.width,i.canvas.height);this._tmpContext.drawImage(i.canvas,0,0);i.ctx.clearRect(0,0,i.canvas.width,i.canvas.height);i.ctx.drawImage(this._tmpCanvas,e.x,e.y)}else{i.ctx.globalCompositeOperation="copy";i.ctx.drawImage(i.canvas,e.x,e.y);i.ctx.globalCompositeOperation="source-over"}h=!0}i.canvasRange=o;i.canvasPxRange=r;i.canvasOrigin=r.min;h&&this._setCanvasZoomTransform(i,this._map.getCenter(),this._map.getZoom())},_setZoomTransform(i,e,n){t.GridLayer.prototype._setZoomTransform.call(this,i,e,n);this.options.dumpToCanvas&&this._setCanvasZoomTransform(i,e,n)},_setCanvasZoomTransform(i,e,n){if(!i.canvasOrigin)return;const o=this._map.getZoomScale(n,i.zoom),s=i.canvasOrigin.multiplyBy(o).subtract(this._map._getNewPixelOrigin(e,n)).round();t.Browser.any3d?t.DomUtil.setTransform(i.canvas,s,o):t.DomUtil.setPosition(i.canvas,s)},_onOpaqueTile(t){if(this.options.dumpToCanvas){try{this.dumpPixels(t.coords,t.el)}catch(i){return this.fire("tileerror",{error:"Could not copy tile pixels: "+i,tile:t,coods:t.coords})}t.el.style.display="none"}},dumpPixels(i,e){const n=this._levels[i.z],o=this.getTileSize();if(!n.canvasRange||!this.options.dumpToCanvas)return;n.canvasRange.contains(i)||this._resetCanvasSize(n);const s=t.point(i.x,i.y).subtract(n.canvasRange.min).scaleBy(this.getTileSize());n.ctx.drawImage(e,s.x,s.y,o.x,o.y);return this}});t.TileLayer.wmsHeader("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,pmIgnore:!1,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'},[{header:"User-Agent",value:"AlpiMaps"}]).addTo(a);t.tileLayer(`https://{s}.sat.owm.io/vane/2.0/weather/PA0/{z}/{x}/{y}?appid=${r}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`,{maxZoom:18,pmIgnore:!1,subdomains:["a","b","c"]}).addTo(a)})();self.webapp=n})();
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./node_modules/.pnpm/leaflet-wms-header@1.0.13/node_modules/leaflet-wms-header/index.js":
+/***/ (() => {
+
+"use strict";
+
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
+function fetchImage(url, callback, headers, abort) {
+  return __async(this, null, function* () {
+    let _headers = {};
+    if (headers) {
+      headers.forEach((h) => {
+        _headers[h.header] = h.value;
+      });
+    }
+    const controller = new AbortController();
+    const signal = controller.signal;
+    if (abort) {
+      abort.subscribe(() => {
+        controller.abort();
+      });
+    }
+    const f = yield fetch(url, {
+      method: "GET",
+      headers: _headers,
+      mode: "cors",
+      signal
+    });
+    const blob = yield f.blob();
+    callback(blob);
+  });
+}
+L.TileLayer.WMSHeader = L.TileLayer.WMS.extend({
+  initialize: function(url, options, headers, abort, results) {
+    L.TileLayer.WMS.prototype.initialize.call(this, url, options);
+    this.headers = headers;
+    this.abort = abort;
+    this.results = results;
+  },
+  createTile(coords, done) {
+    const url = this.getTileUrl(coords);
+    const img = document.createElement("img");
+    img.setAttribute("role", "presentation");
+    self = this;
+    fetchImage(url, (resp) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        img.src = reader.result;
+        if (self.results) {
+          self.results.next(reader.result);
+        }
+        ;
+      };
+      reader.readAsDataURL(resp);
+      done(null, img);
+    }, this.headers, this.abort);
+    return img;
+  }
+});
+L.TileLayer.wmsHeader = function(url, options, headers, abort, results) {
+  return new L.TileLayer.WMSHeader(url, options, headers, abort, results);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/.pnpm/leaflet@1.8.0/node_modules/leaflet/dist/leaflet-src.js":
+/***/ (function(__unused_webpack_module, exports) {
+
+/* @preserve
+ * Leaflet 1.8.0, a JS library for interactive maps. https://leafletjs.com
+ * (c) 2010-2022 Vladimir Agafonkin, (c) 2010-2011 CloudMade
+ */
+(function(global, factory) {
+   true ? factory(exports) : 0;
+})(this, function(exports2) {
+  "use strict";
+  var version = "1.8.0";
+  function extend(dest) {
+    var i, j, len, src;
+    for (j = 1, len = arguments.length; j < len; j++) {
+      src = arguments[j];
+      for (i in src) {
+        dest[i] = src[i];
+      }
+    }
+    return dest;
+  }
+  var create$2 = Object.create || function() {
+    function F() {
+    }
+    return function(proto) {
+      F.prototype = proto;
+      return new F();
+    };
+  }();
+  function bind(fn, obj) {
+    var slice = Array.prototype.slice;
+    if (fn.bind) {
+      return fn.bind.apply(fn, slice.call(arguments, 1));
+    }
+    var args = slice.call(arguments, 2);
+    return function() {
+      return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
+    };
+  }
+  var lastId = 0;
+  function stamp(obj) {
+    if (!("_leaflet_id" in obj)) {
+      obj["_leaflet_id"] = ++lastId;
+    }
+    return obj._leaflet_id;
+  }
+  function throttle(fn, time, context) {
+    var lock, args, wrapperFn, later;
+    later = function() {
+      lock = false;
+      if (args) {
+        wrapperFn.apply(context, args);
+        args = false;
+      }
+    };
+    wrapperFn = function() {
+      if (lock) {
+        args = arguments;
+      } else {
+        fn.apply(context, arguments);
+        setTimeout(later, time);
+        lock = true;
+      }
+    };
+    return wrapperFn;
+  }
+  function wrapNum(x, range, includeMax) {
+    var max = range[1], min = range[0], d = max - min;
+    return x === max && includeMax ? x : ((x - min) % d + d) % d + min;
+  }
+  function falseFn() {
+    return false;
+  }
+  function formatNum(num, precision) {
+    if (precision === false) {
+      return num;
+    }
+    var pow = Math.pow(10, precision === void 0 ? 6 : precision);
+    return Math.round(num * pow) / pow;
+  }
+  function trim(str) {
+    return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, "");
+  }
+  function splitWords(str) {
+    return trim(str).split(/\s+/);
+  }
+  function setOptions(obj, options) {
+    if (!Object.prototype.hasOwnProperty.call(obj, "options")) {
+      obj.options = obj.options ? create$2(obj.options) : {};
+    }
+    for (var i in options) {
+      obj.options[i] = options[i];
+    }
+    return obj.options;
+  }
+  function getParamString(obj, existingUrl, uppercase) {
+    var params = [];
+    for (var i in obj) {
+      params.push(encodeURIComponent(uppercase ? i.toUpperCase() : i) + "=" + encodeURIComponent(obj[i]));
+    }
+    return (!existingUrl || existingUrl.indexOf("?") === -1 ? "?" : "&") + params.join("&");
+  }
+  var templateRe = /\{ *([\w_ -]+) *\}/g;
+  function template(str, data) {
+    return str.replace(templateRe, function(str2, key) {
+      var value = data[key];
+      if (value === void 0) {
+        throw new Error("No value provided for variable " + str2);
+      } else if (typeof value === "function") {
+        value = value(data);
+      }
+      return value;
+    });
+  }
+  var isArray = Array.isArray || function(obj) {
+    return Object.prototype.toString.call(obj) === "[object Array]";
+  };
+  function indexOf(array, el) {
+    for (var i = 0; i < array.length; i++) {
+      if (array[i] === el) {
+        return i;
+      }
+    }
+    return -1;
+  }
+  var emptyImageUrl = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+  function getPrefixed(name) {
+    return window["webkit" + name] || window["moz" + name] || window["ms" + name];
+  }
+  var lastTime = 0;
+  function timeoutDefer(fn) {
+    var time = +new Date(), timeToCall = Math.max(0, 16 - (time - lastTime));
+    lastTime = time + timeToCall;
+    return window.setTimeout(fn, timeToCall);
+  }
+  var requestFn = window.requestAnimationFrame || getPrefixed("RequestAnimationFrame") || timeoutDefer;
+  var cancelFn = window.cancelAnimationFrame || getPrefixed("CancelAnimationFrame") || getPrefixed("CancelRequestAnimationFrame") || function(id) {
+    window.clearTimeout(id);
+  };
+  function requestAnimFrame(fn, context, immediate) {
+    if (immediate && requestFn === timeoutDefer) {
+      fn.call(context);
+    } else {
+      return requestFn.call(window, bind(fn, context));
+    }
+  }
+  function cancelAnimFrame(id) {
+    if (id) {
+      cancelFn.call(window, id);
+    }
+  }
+  var Util = {
+    __proto__: null,
+    extend,
+    create: create$2,
+    bind,
+    get lastId() {
+      return lastId;
+    },
+    stamp,
+    throttle,
+    wrapNum,
+    falseFn,
+    formatNum,
+    trim,
+    splitWords,
+    setOptions,
+    getParamString,
+    template,
+    isArray,
+    indexOf,
+    emptyImageUrl,
+    requestFn,
+    cancelFn,
+    requestAnimFrame,
+    cancelAnimFrame
+  };
+  function Class() {
+  }
+  Class.extend = function(props) {
+    var NewClass = function() {
+      setOptions(this);
+      if (this.initialize) {
+        this.initialize.apply(this, arguments);
+      }
+      this.callInitHooks();
+    };
+    var parentProto = NewClass.__super__ = this.prototype;
+    var proto = create$2(parentProto);
+    proto.constructor = NewClass;
+    NewClass.prototype = proto;
+    for (var i in this) {
+      if (Object.prototype.hasOwnProperty.call(this, i) && i !== "prototype" && i !== "__super__") {
+        NewClass[i] = this[i];
+      }
+    }
+    if (props.statics) {
+      extend(NewClass, props.statics);
+    }
+    if (props.includes) {
+      checkDeprecatedMixinEvents(props.includes);
+      extend.apply(null, [proto].concat(props.includes));
+    }
+    extend(proto, props);
+    delete proto.statics;
+    delete proto.includes;
+    if (proto.options) {
+      proto.options = parentProto.options ? create$2(parentProto.options) : {};
+      extend(proto.options, props.options);
+    }
+    proto._initHooks = [];
+    proto.callInitHooks = function() {
+      if (this._initHooksCalled) {
+        return;
+      }
+      if (parentProto.callInitHooks) {
+        parentProto.callInitHooks.call(this);
+      }
+      this._initHooksCalled = true;
+      for (var i2 = 0, len = proto._initHooks.length; i2 < len; i2++) {
+        proto._initHooks[i2].call(this);
+      }
+    };
+    return NewClass;
+  };
+  Class.include = function(props) {
+    var parentOptions = this.prototype.options;
+    extend(this.prototype, props);
+    if (props.options) {
+      this.prototype.options = parentOptions;
+      this.mergeOptions(props.options);
+    }
+    return this;
+  };
+  Class.mergeOptions = function(options) {
+    extend(this.prototype.options, options);
+    return this;
+  };
+  Class.addInitHook = function(fn) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    var init = typeof fn === "function" ? fn : function() {
+      this[fn].apply(this, args);
+    };
+    this.prototype._initHooks = this.prototype._initHooks || [];
+    this.prototype._initHooks.push(init);
+    return this;
+  };
+  function checkDeprecatedMixinEvents(includes) {
+    if (typeof L === "undefined" || !L || !L.Mixin) {
+      return;
+    }
+    includes = isArray(includes) ? includes : [includes];
+    for (var i = 0; i < includes.length; i++) {
+      if (includes[i] === L.Mixin.Events) {
+        console.warn("Deprecated include of L.Mixin.Events: this property will be removed in future releases, please inherit from L.Evented instead.", new Error().stack);
+      }
+    }
+  }
+  var Events = {
+    on: function(types, fn, context) {
+      if (typeof types === "object") {
+        for (var type in types) {
+          this._on(type, types[type], fn);
+        }
+      } else {
+        types = splitWords(types);
+        for (var i = 0, len = types.length; i < len; i++) {
+          this._on(types[i], fn, context);
+        }
+      }
+      return this;
+    },
+    off: function(types, fn, context) {
+      if (!arguments.length) {
+        delete this._events;
+      } else if (typeof types === "object") {
+        for (var type in types) {
+          this._off(type, types[type], fn);
+        }
+      } else {
+        types = splitWords(types);
+        var removeAll = arguments.length === 1;
+        for (var i = 0, len = types.length; i < len; i++) {
+          if (removeAll) {
+            this._off(types[i]);
+          } else {
+            this._off(types[i], fn, context);
+          }
+        }
+      }
+      return this;
+    },
+    _on: function(type, fn, context) {
+      if (typeof fn !== "function") {
+        console.warn("wrong listener type: " + typeof fn);
+        return;
+      }
+      this._events = this._events || {};
+      var typeListeners = this._events[type];
+      if (!typeListeners) {
+        typeListeners = [];
+        this._events[type] = typeListeners;
+      }
+      if (context === this) {
+        context = void 0;
+      }
+      var newListener = { fn, ctx: context }, listeners = typeListeners;
+      for (var i = 0, len = listeners.length; i < len; i++) {
+        if (listeners[i].fn === fn && listeners[i].ctx === context) {
+          return;
+        }
+      }
+      listeners.push(newListener);
+    },
+    _off: function(type, fn, context) {
+      var listeners, i, len;
+      if (!this._events) {
+        return;
+      }
+      listeners = this._events[type];
+      if (!listeners) {
+        return;
+      }
+      if (arguments.length === 1) {
+        if (this._firingCount) {
+          for (i = 0, len = listeners.length; i < len; i++) {
+            listeners[i].fn = falseFn;
+          }
+        }
+        delete this._events[type];
+        return;
+      }
+      if (context === this) {
+        context = void 0;
+      }
+      if (typeof fn !== "function") {
+        console.warn("wrong listener type: " + typeof fn);
+        return;
+      }
+      for (i = 0, len = listeners.length; i < len; i++) {
+        var l = listeners[i];
+        if (l.ctx !== context) {
+          continue;
+        }
+        if (l.fn === fn) {
+          if (this._firingCount) {
+            l.fn = falseFn;
+            this._events[type] = listeners = listeners.slice();
+          }
+          listeners.splice(i, 1);
+          return;
+        }
+      }
+      console.warn("listener not found");
+    },
+    fire: function(type, data, propagate) {
+      if (!this.listens(type, propagate)) {
+        return this;
+      }
+      var event = extend({}, data, {
+        type,
+        target: this,
+        sourceTarget: data && data.sourceTarget || this
+      });
+      if (this._events) {
+        var listeners = this._events[type];
+        if (listeners) {
+          this._firingCount = this._firingCount + 1 || 1;
+          for (var i = 0, len = listeners.length; i < len; i++) {
+            var l = listeners[i];
+            l.fn.call(l.ctx || this, event);
+          }
+          this._firingCount--;
+        }
+      }
+      if (propagate) {
+        this._propagateEvent(event);
+      }
+      return this;
+    },
+    listens: function(type, propagate) {
+      if (typeof type !== "string") {
+        console.warn('"string" type argument expected');
+      }
+      var listeners = this._events && this._events[type];
+      if (listeners && listeners.length) {
+        return true;
+      }
+      if (propagate) {
+        for (var id in this._eventParents) {
+          if (this._eventParents[id].listens(type, propagate)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+    once: function(types, fn, context) {
+      if (typeof types === "object") {
+        for (var type in types) {
+          this.once(type, types[type], fn);
+        }
+        return this;
+      }
+      var handler = bind(function() {
+        this.off(types, fn, context).off(types, handler, context);
+      }, this);
+      return this.on(types, fn, context).on(types, handler, context);
+    },
+    addEventParent: function(obj) {
+      this._eventParents = this._eventParents || {};
+      this._eventParents[stamp(obj)] = obj;
+      return this;
+    },
+    removeEventParent: function(obj) {
+      if (this._eventParents) {
+        delete this._eventParents[stamp(obj)];
+      }
+      return this;
+    },
+    _propagateEvent: function(e) {
+      for (var id in this._eventParents) {
+        this._eventParents[id].fire(e.type, extend({
+          layer: e.target,
+          propagatedFrom: e.target
+        }, e), true);
+      }
+    }
+  };
+  Events.addEventListener = Events.on;
+  Events.removeEventListener = Events.clearAllEventListeners = Events.off;
+  Events.addOneTimeEventListener = Events.once;
+  Events.fireEvent = Events.fire;
+  Events.hasEventListeners = Events.listens;
+  var Evented = Class.extend(Events);
+  function Point(x, y, round) {
+    this.x = round ? Math.round(x) : x;
+    this.y = round ? Math.round(y) : y;
+  }
+  var trunc = Math.trunc || function(v) {
+    return v > 0 ? Math.floor(v) : Math.ceil(v);
+  };
+  Point.prototype = {
+    clone: function() {
+      return new Point(this.x, this.y);
+    },
+    add: function(point) {
+      return this.clone()._add(toPoint(point));
+    },
+    _add: function(point) {
+      this.x += point.x;
+      this.y += point.y;
+      return this;
+    },
+    subtract: function(point) {
+      return this.clone()._subtract(toPoint(point));
+    },
+    _subtract: function(point) {
+      this.x -= point.x;
+      this.y -= point.y;
+      return this;
+    },
+    divideBy: function(num) {
+      return this.clone()._divideBy(num);
+    },
+    _divideBy: function(num) {
+      this.x /= num;
+      this.y /= num;
+      return this;
+    },
+    multiplyBy: function(num) {
+      return this.clone()._multiplyBy(num);
+    },
+    _multiplyBy: function(num) {
+      this.x *= num;
+      this.y *= num;
+      return this;
+    },
+    scaleBy: function(point) {
+      return new Point(this.x * point.x, this.y * point.y);
+    },
+    unscaleBy: function(point) {
+      return new Point(this.x / point.x, this.y / point.y);
+    },
+    round: function() {
+      return this.clone()._round();
+    },
+    _round: function() {
+      this.x = Math.round(this.x);
+      this.y = Math.round(this.y);
+      return this;
+    },
+    floor: function() {
+      return this.clone()._floor();
+    },
+    _floor: function() {
+      this.x = Math.floor(this.x);
+      this.y = Math.floor(this.y);
+      return this;
+    },
+    ceil: function() {
+      return this.clone()._ceil();
+    },
+    _ceil: function() {
+      this.x = Math.ceil(this.x);
+      this.y = Math.ceil(this.y);
+      return this;
+    },
+    trunc: function() {
+      return this.clone()._trunc();
+    },
+    _trunc: function() {
+      this.x = trunc(this.x);
+      this.y = trunc(this.y);
+      return this;
+    },
+    distanceTo: function(point) {
+      point = toPoint(point);
+      var x = point.x - this.x, y = point.y - this.y;
+      return Math.sqrt(x * x + y * y);
+    },
+    equals: function(point) {
+      point = toPoint(point);
+      return point.x === this.x && point.y === this.y;
+    },
+    contains: function(point) {
+      point = toPoint(point);
+      return Math.abs(point.x) <= Math.abs(this.x) && Math.abs(point.y) <= Math.abs(this.y);
+    },
+    toString: function() {
+      return "Point(" + formatNum(this.x) + ", " + formatNum(this.y) + ")";
+    }
+  };
+  function toPoint(x, y, round) {
+    if (x instanceof Point) {
+      return x;
+    }
+    if (isArray(x)) {
+      return new Point(x[0], x[1]);
+    }
+    if (x === void 0 || x === null) {
+      return x;
+    }
+    if (typeof x === "object" && "x" in x && "y" in x) {
+      return new Point(x.x, x.y);
+    }
+    return new Point(x, y, round);
+  }
+  function Bounds(a, b) {
+    if (!a) {
+      return;
+    }
+    var points = b ? [a, b] : a;
+    for (var i = 0, len = points.length; i < len; i++) {
+      this.extend(points[i]);
+    }
+  }
+  Bounds.prototype = {
+    extend: function(point) {
+      point = toPoint(point);
+      if (!this.min && !this.max) {
+        this.min = point.clone();
+        this.max = point.clone();
+      } else {
+        this.min.x = Math.min(point.x, this.min.x);
+        this.max.x = Math.max(point.x, this.max.x);
+        this.min.y = Math.min(point.y, this.min.y);
+        this.max.y = Math.max(point.y, this.max.y);
+      }
+      return this;
+    },
+    getCenter: function(round) {
+      return new Point((this.min.x + this.max.x) / 2, (this.min.y + this.max.y) / 2, round);
+    },
+    getBottomLeft: function() {
+      return new Point(this.min.x, this.max.y);
+    },
+    getTopRight: function() {
+      return new Point(this.max.x, this.min.y);
+    },
+    getTopLeft: function() {
+      return this.min;
+    },
+    getBottomRight: function() {
+      return this.max;
+    },
+    getSize: function() {
+      return this.max.subtract(this.min);
+    },
+    contains: function(obj) {
+      var min, max;
+      if (typeof obj[0] === "number" || obj instanceof Point) {
+        obj = toPoint(obj);
+      } else {
+        obj = toBounds(obj);
+      }
+      if (obj instanceof Bounds) {
+        min = obj.min;
+        max = obj.max;
+      } else {
+        min = max = obj;
+      }
+      return min.x >= this.min.x && max.x <= this.max.x && min.y >= this.min.y && max.y <= this.max.y;
+    },
+    intersects: function(bounds) {
+      bounds = toBounds(bounds);
+      var min = this.min, max = this.max, min2 = bounds.min, max2 = bounds.max, xIntersects = max2.x >= min.x && min2.x <= max.x, yIntersects = max2.y >= min.y && min2.y <= max.y;
+      return xIntersects && yIntersects;
+    },
+    overlaps: function(bounds) {
+      bounds = toBounds(bounds);
+      var min = this.min, max = this.max, min2 = bounds.min, max2 = bounds.max, xOverlaps = max2.x > min.x && min2.x < max.x, yOverlaps = max2.y > min.y && min2.y < max.y;
+      return xOverlaps && yOverlaps;
+    },
+    isValid: function() {
+      return !!(this.min && this.max);
+    }
+  };
+  function toBounds(a, b) {
+    if (!a || a instanceof Bounds) {
+      return a;
+    }
+    return new Bounds(a, b);
+  }
+  function LatLngBounds(corner1, corner2) {
+    if (!corner1) {
+      return;
+    }
+    var latlngs = corner2 ? [corner1, corner2] : corner1;
+    for (var i = 0, len = latlngs.length; i < len; i++) {
+      this.extend(latlngs[i]);
+    }
+  }
+  LatLngBounds.prototype = {
+    extend: function(obj) {
+      var sw = this._southWest, ne = this._northEast, sw2, ne2;
+      if (obj instanceof LatLng) {
+        sw2 = obj;
+        ne2 = obj;
+      } else if (obj instanceof LatLngBounds) {
+        sw2 = obj._southWest;
+        ne2 = obj._northEast;
+        if (!sw2 || !ne2) {
+          return this;
+        }
+      } else {
+        return obj ? this.extend(toLatLng(obj) || toLatLngBounds(obj)) : this;
+      }
+      if (!sw && !ne) {
+        this._southWest = new LatLng(sw2.lat, sw2.lng);
+        this._northEast = new LatLng(ne2.lat, ne2.lng);
+      } else {
+        sw.lat = Math.min(sw2.lat, sw.lat);
+        sw.lng = Math.min(sw2.lng, sw.lng);
+        ne.lat = Math.max(ne2.lat, ne.lat);
+        ne.lng = Math.max(ne2.lng, ne.lng);
+      }
+      return this;
+    },
+    pad: function(bufferRatio) {
+      var sw = this._southWest, ne = this._northEast, heightBuffer = Math.abs(sw.lat - ne.lat) * bufferRatio, widthBuffer = Math.abs(sw.lng - ne.lng) * bufferRatio;
+      return new LatLngBounds(new LatLng(sw.lat - heightBuffer, sw.lng - widthBuffer), new LatLng(ne.lat + heightBuffer, ne.lng + widthBuffer));
+    },
+    getCenter: function() {
+      return new LatLng((this._southWest.lat + this._northEast.lat) / 2, (this._southWest.lng + this._northEast.lng) / 2);
+    },
+    getSouthWest: function() {
+      return this._southWest;
+    },
+    getNorthEast: function() {
+      return this._northEast;
+    },
+    getNorthWest: function() {
+      return new LatLng(this.getNorth(), this.getWest());
+    },
+    getSouthEast: function() {
+      return new LatLng(this.getSouth(), this.getEast());
+    },
+    getWest: function() {
+      return this._southWest.lng;
+    },
+    getSouth: function() {
+      return this._southWest.lat;
+    },
+    getEast: function() {
+      return this._northEast.lng;
+    },
+    getNorth: function() {
+      return this._northEast.lat;
+    },
+    contains: function(obj) {
+      if (typeof obj[0] === "number" || obj instanceof LatLng || "lat" in obj) {
+        obj = toLatLng(obj);
+      } else {
+        obj = toLatLngBounds(obj);
+      }
+      var sw = this._southWest, ne = this._northEast, sw2, ne2;
+      if (obj instanceof LatLngBounds) {
+        sw2 = obj.getSouthWest();
+        ne2 = obj.getNorthEast();
+      } else {
+        sw2 = ne2 = obj;
+      }
+      return sw2.lat >= sw.lat && ne2.lat <= ne.lat && sw2.lng >= sw.lng && ne2.lng <= ne.lng;
+    },
+    intersects: function(bounds) {
+      bounds = toLatLngBounds(bounds);
+      var sw = this._southWest, ne = this._northEast, sw2 = bounds.getSouthWest(), ne2 = bounds.getNorthEast(), latIntersects = ne2.lat >= sw.lat && sw2.lat <= ne.lat, lngIntersects = ne2.lng >= sw.lng && sw2.lng <= ne.lng;
+      return latIntersects && lngIntersects;
+    },
+    overlaps: function(bounds) {
+      bounds = toLatLngBounds(bounds);
+      var sw = this._southWest, ne = this._northEast, sw2 = bounds.getSouthWest(), ne2 = bounds.getNorthEast(), latOverlaps = ne2.lat > sw.lat && sw2.lat < ne.lat, lngOverlaps = ne2.lng > sw.lng && sw2.lng < ne.lng;
+      return latOverlaps && lngOverlaps;
+    },
+    toBBoxString: function() {
+      return [this.getWest(), this.getSouth(), this.getEast(), this.getNorth()].join(",");
+    },
+    equals: function(bounds, maxMargin) {
+      if (!bounds) {
+        return false;
+      }
+      bounds = toLatLngBounds(bounds);
+      return this._southWest.equals(bounds.getSouthWest(), maxMargin) && this._northEast.equals(bounds.getNorthEast(), maxMargin);
+    },
+    isValid: function() {
+      return !!(this._southWest && this._northEast);
+    }
+  };
+  function toLatLngBounds(a, b) {
+    if (a instanceof LatLngBounds) {
+      return a;
+    }
+    return new LatLngBounds(a, b);
+  }
+  function LatLng(lat, lng, alt) {
+    if (isNaN(lat) || isNaN(lng)) {
+      throw new Error("Invalid LatLng object: (" + lat + ", " + lng + ")");
+    }
+    this.lat = +lat;
+    this.lng = +lng;
+    if (alt !== void 0) {
+      this.alt = +alt;
+    }
+  }
+  LatLng.prototype = {
+    equals: function(obj, maxMargin) {
+      if (!obj) {
+        return false;
+      }
+      obj = toLatLng(obj);
+      var margin = Math.max(Math.abs(this.lat - obj.lat), Math.abs(this.lng - obj.lng));
+      return margin <= (maxMargin === void 0 ? 1e-9 : maxMargin);
+    },
+    toString: function(precision) {
+      return "LatLng(" + formatNum(this.lat, precision) + ", " + formatNum(this.lng, precision) + ")";
+    },
+    distanceTo: function(other) {
+      return Earth.distance(this, toLatLng(other));
+    },
+    wrap: function() {
+      return Earth.wrapLatLng(this);
+    },
+    toBounds: function(sizeInMeters) {
+      var latAccuracy = 180 * sizeInMeters / 40075017, lngAccuracy = latAccuracy / Math.cos(Math.PI / 180 * this.lat);
+      return toLatLngBounds([this.lat - latAccuracy, this.lng - lngAccuracy], [this.lat + latAccuracy, this.lng + lngAccuracy]);
+    },
+    clone: function() {
+      return new LatLng(this.lat, this.lng, this.alt);
+    }
+  };
+  function toLatLng(a, b, c) {
+    if (a instanceof LatLng) {
+      return a;
+    }
+    if (isArray(a) && typeof a[0] !== "object") {
+      if (a.length === 3) {
+        return new LatLng(a[0], a[1], a[2]);
+      }
+      if (a.length === 2) {
+        return new LatLng(a[0], a[1]);
+      }
+      return null;
+    }
+    if (a === void 0 || a === null) {
+      return a;
+    }
+    if (typeof a === "object" && "lat" in a) {
+      return new LatLng(a.lat, "lng" in a ? a.lng : a.lon, a.alt);
+    }
+    if (b === void 0) {
+      return null;
+    }
+    return new LatLng(a, b, c);
+  }
+  var CRS = {
+    latLngToPoint: function(latlng, zoom2) {
+      var projectedPoint = this.projection.project(latlng), scale2 = this.scale(zoom2);
+      return this.transformation._transform(projectedPoint, scale2);
+    },
+    pointToLatLng: function(point, zoom2) {
+      var scale2 = this.scale(zoom2), untransformedPoint = this.transformation.untransform(point, scale2);
+      return this.projection.unproject(untransformedPoint);
+    },
+    project: function(latlng) {
+      return this.projection.project(latlng);
+    },
+    unproject: function(point) {
+      return this.projection.unproject(point);
+    },
+    scale: function(zoom2) {
+      return 256 * Math.pow(2, zoom2);
+    },
+    zoom: function(scale2) {
+      return Math.log(scale2 / 256) / Math.LN2;
+    },
+    getProjectedBounds: function(zoom2) {
+      if (this.infinite) {
+        return null;
+      }
+      var b = this.projection.bounds, s = this.scale(zoom2), min = this.transformation.transform(b.min, s), max = this.transformation.transform(b.max, s);
+      return new Bounds(min, max);
+    },
+    infinite: false,
+    wrapLatLng: function(latlng) {
+      var lng = this.wrapLng ? wrapNum(latlng.lng, this.wrapLng, true) : latlng.lng, lat = this.wrapLat ? wrapNum(latlng.lat, this.wrapLat, true) : latlng.lat, alt = latlng.alt;
+      return new LatLng(lat, lng, alt);
+    },
+    wrapLatLngBounds: function(bounds) {
+      var center = bounds.getCenter(), newCenter = this.wrapLatLng(center), latShift = center.lat - newCenter.lat, lngShift = center.lng - newCenter.lng;
+      if (latShift === 0 && lngShift === 0) {
+        return bounds;
+      }
+      var sw = bounds.getSouthWest(), ne = bounds.getNorthEast(), newSw = new LatLng(sw.lat - latShift, sw.lng - lngShift), newNe = new LatLng(ne.lat - latShift, ne.lng - lngShift);
+      return new LatLngBounds(newSw, newNe);
+    }
+  };
+  var Earth = extend({}, CRS, {
+    wrapLng: [-180, 180],
+    R: 6371e3,
+    distance: function(latlng1, latlng2) {
+      var rad = Math.PI / 180, lat1 = latlng1.lat * rad, lat2 = latlng2.lat * rad, sinDLat = Math.sin((latlng2.lat - latlng1.lat) * rad / 2), sinDLon = Math.sin((latlng2.lng - latlng1.lng) * rad / 2), a = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon, c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return this.R * c;
+    }
+  });
+  var earthRadius = 6378137;
+  var SphericalMercator = {
+    R: earthRadius,
+    MAX_LATITUDE: 85.0511287798,
+    project: function(latlng) {
+      var d = Math.PI / 180, max = this.MAX_LATITUDE, lat = Math.max(Math.min(max, latlng.lat), -max), sin = Math.sin(lat * d);
+      return new Point(this.R * latlng.lng * d, this.R * Math.log((1 + sin) / (1 - sin)) / 2);
+    },
+    unproject: function(point) {
+      var d = 180 / Math.PI;
+      return new LatLng((2 * Math.atan(Math.exp(point.y / this.R)) - Math.PI / 2) * d, point.x * d / this.R);
+    },
+    bounds: function() {
+      var d = earthRadius * Math.PI;
+      return new Bounds([-d, -d], [d, d]);
+    }()
+  };
+  function Transformation(a, b, c, d) {
+    if (isArray(a)) {
+      this._a = a[0];
+      this._b = a[1];
+      this._c = a[2];
+      this._d = a[3];
+      return;
+    }
+    this._a = a;
+    this._b = b;
+    this._c = c;
+    this._d = d;
+  }
+  Transformation.prototype = {
+    transform: function(point, scale2) {
+      return this._transform(point.clone(), scale2);
+    },
+    _transform: function(point, scale2) {
+      scale2 = scale2 || 1;
+      point.x = scale2 * (this._a * point.x + this._b);
+      point.y = scale2 * (this._c * point.y + this._d);
+      return point;
+    },
+    untransform: function(point, scale2) {
+      scale2 = scale2 || 1;
+      return new Point((point.x / scale2 - this._b) / this._a, (point.y / scale2 - this._d) / this._c);
+    }
+  };
+  function toTransformation(a, b, c, d) {
+    return new Transformation(a, b, c, d);
+  }
+  var EPSG3857 = extend({}, Earth, {
+    code: "EPSG:3857",
+    projection: SphericalMercator,
+    transformation: function() {
+      var scale2 = 0.5 / (Math.PI * SphericalMercator.R);
+      return toTransformation(scale2, 0.5, -scale2, 0.5);
+    }()
+  });
+  var EPSG900913 = extend({}, EPSG3857, {
+    code: "EPSG:900913"
+  });
+  function svgCreate(name) {
+    return document.createElementNS("http://www.w3.org/2000/svg", name);
+  }
+  function pointsToPath(rings, closed) {
+    var str = "", i, j, len, len2, points, p;
+    for (i = 0, len = rings.length; i < len; i++) {
+      points = rings[i];
+      for (j = 0, len2 = points.length; j < len2; j++) {
+        p = points[j];
+        str += (j ? "L" : "M") + p.x + " " + p.y;
+      }
+      str += closed ? Browser.svg ? "z" : "x" : "";
+    }
+    return str || "M0 0";
+  }
+  var style = document.documentElement.style;
+  var ie = "ActiveXObject" in window;
+  var ielt9 = ie && !document.addEventListener;
+  var edge = "msLaunchUri" in navigator && !("documentMode" in document);
+  var webkit = userAgentContains("webkit");
+  var android = userAgentContains("android");
+  var android23 = userAgentContains("android 2") || userAgentContains("android 3");
+  var webkitVer = parseInt(/WebKit\/([0-9]+)|$/.exec(navigator.userAgent)[1], 10);
+  var androidStock = android && userAgentContains("Google") && webkitVer < 537 && !("AudioNode" in window);
+  var opera = !!window.opera;
+  var chrome = !edge && userAgentContains("chrome");
+  var gecko = userAgentContains("gecko") && !webkit && !opera && !ie;
+  var safari = !chrome && userAgentContains("safari");
+  var phantom = userAgentContains("phantom");
+  var opera12 = "OTransition" in style;
+  var win = navigator.platform.indexOf("Win") === 0;
+  var ie3d = ie && "transition" in style;
+  var webkit3d = "WebKitCSSMatrix" in window && "m11" in new window.WebKitCSSMatrix() && !android23;
+  var gecko3d = "MozPerspective" in style;
+  var any3d = !window.L_DISABLE_3D && (ie3d || webkit3d || gecko3d) && !opera12 && !phantom;
+  var mobile = typeof orientation !== "undefined" || userAgentContains("mobile");
+  var mobileWebkit = mobile && webkit;
+  var mobileWebkit3d = mobile && webkit3d;
+  var msPointer = !window.PointerEvent && window.MSPointerEvent;
+  var pointer = !!(window.PointerEvent || msPointer);
+  var touchNative = "ontouchstart" in window || !!window.TouchEvent;
+  var touch = !window.L_NO_TOUCH && (touchNative || pointer);
+  var mobileOpera = mobile && opera;
+  var mobileGecko = mobile && gecko;
+  var retina = (window.devicePixelRatio || window.screen.deviceXDPI / window.screen.logicalXDPI) > 1;
+  var passiveEvents = function() {
+    var supportsPassiveOption = false;
+    try {
+      var opts = Object.defineProperty({}, "passive", {
+        get: function() {
+          supportsPassiveOption = true;
+        }
+      });
+      window.addEventListener("testPassiveEventSupport", falseFn, opts);
+      window.removeEventListener("testPassiveEventSupport", falseFn, opts);
+    } catch (e) {
+    }
+    return supportsPassiveOption;
+  }();
+  var canvas$1 = function() {
+    return !!document.createElement("canvas").getContext;
+  }();
+  var svg$1 = !!(document.createElementNS && svgCreate("svg").createSVGRect);
+  var inlineSvg = !!svg$1 && function() {
+    var div = document.createElement("div");
+    div.innerHTML = "<svg/>";
+    return (div.firstChild && div.firstChild.namespaceURI) === "http://www.w3.org/2000/svg";
+  }();
+  var vml = !svg$1 && function() {
+    try {
+      var div = document.createElement("div");
+      div.innerHTML = '<v:shape adj="1"/>';
+      var shape = div.firstChild;
+      shape.style.behavior = "url(#default#VML)";
+      return shape && typeof shape.adj === "object";
+    } catch (e) {
+      return false;
+    }
+  }();
+  function userAgentContains(str) {
+    return navigator.userAgent.toLowerCase().indexOf(str) >= 0;
+  }
+  var Browser = {
+    ie,
+    ielt9,
+    edge,
+    webkit,
+    android,
+    android23,
+    androidStock,
+    opera,
+    chrome,
+    gecko,
+    safari,
+    phantom,
+    opera12,
+    win,
+    ie3d,
+    webkit3d,
+    gecko3d,
+    any3d,
+    mobile,
+    mobileWebkit,
+    mobileWebkit3d,
+    msPointer,
+    pointer,
+    touch,
+    touchNative,
+    mobileOpera,
+    mobileGecko,
+    retina,
+    passiveEvents,
+    canvas: canvas$1,
+    svg: svg$1,
+    vml,
+    inlineSvg
+  };
+  var POINTER_DOWN = Browser.msPointer ? "MSPointerDown" : "pointerdown";
+  var POINTER_MOVE = Browser.msPointer ? "MSPointerMove" : "pointermove";
+  var POINTER_UP = Browser.msPointer ? "MSPointerUp" : "pointerup";
+  var POINTER_CANCEL = Browser.msPointer ? "MSPointerCancel" : "pointercancel";
+  var pEvent = {
+    touchstart: POINTER_DOWN,
+    touchmove: POINTER_MOVE,
+    touchend: POINTER_UP,
+    touchcancel: POINTER_CANCEL
+  };
+  var handle = {
+    touchstart: _onPointerStart,
+    touchmove: _handlePointer,
+    touchend: _handlePointer,
+    touchcancel: _handlePointer
+  };
+  var _pointers = {};
+  var _pointerDocListener = false;
+  function addPointerListener(obj, type, handler) {
+    if (type === "touchstart") {
+      _addPointerDocListener();
+    }
+    if (!handle[type]) {
+      console.warn("wrong event specified:", type);
+      return L.Util.falseFn;
+    }
+    handler = handle[type].bind(this, handler);
+    obj.addEventListener(pEvent[type], handler, false);
+    return handler;
+  }
+  function removePointerListener(obj, type, handler) {
+    if (!pEvent[type]) {
+      console.warn("wrong event specified:", type);
+      return;
+    }
+    obj.removeEventListener(pEvent[type], handler, false);
+  }
+  function _globalPointerDown(e) {
+    _pointers[e.pointerId] = e;
+  }
+  function _globalPointerMove(e) {
+    if (_pointers[e.pointerId]) {
+      _pointers[e.pointerId] = e;
+    }
+  }
+  function _globalPointerUp(e) {
+    delete _pointers[e.pointerId];
+  }
+  function _addPointerDocListener() {
+    if (!_pointerDocListener) {
+      document.addEventListener(POINTER_DOWN, _globalPointerDown, true);
+      document.addEventListener(POINTER_MOVE, _globalPointerMove, true);
+      document.addEventListener(POINTER_UP, _globalPointerUp, true);
+      document.addEventListener(POINTER_CANCEL, _globalPointerUp, true);
+      _pointerDocListener = true;
+    }
+  }
+  function _handlePointer(handler, e) {
+    if (e.pointerType === (e.MSPOINTER_TYPE_MOUSE || "mouse")) {
+      return;
+    }
+    e.touches = [];
+    for (var i in _pointers) {
+      e.touches.push(_pointers[i]);
+    }
+    e.changedTouches = [e];
+    handler(e);
+  }
+  function _onPointerStart(handler, e) {
+    if (e.MSPOINTER_TYPE_TOUCH && e.pointerType === e.MSPOINTER_TYPE_TOUCH) {
+      preventDefault(e);
+    }
+    _handlePointer(handler, e);
+  }
+  function makeDblclick(event) {
+    var newEvent = {}, prop, i;
+    for (i in event) {
+      prop = event[i];
+      newEvent[i] = prop && prop.bind ? prop.bind(event) : prop;
+    }
+    event = newEvent;
+    newEvent.type = "dblclick";
+    newEvent.detail = 2;
+    newEvent.isTrusted = false;
+    newEvent._simulated = true;
+    return newEvent;
+  }
+  var delay = 200;
+  function addDoubleTapListener(obj, handler) {
+    obj.addEventListener("dblclick", handler);
+    var last = 0, detail;
+    function simDblclick(e) {
+      if (e.detail !== 1) {
+        detail = e.detail;
+        return;
+      }
+      if (e.pointerType === "mouse" || e.sourceCapabilities && !e.sourceCapabilities.firesTouchEvents) {
+        return;
+      }
+      var now = Date.now();
+      if (now - last <= delay) {
+        detail++;
+        if (detail === 2) {
+          handler(makeDblclick(e));
+        }
+      } else {
+        detail = 1;
+      }
+      last = now;
+    }
+    obj.addEventListener("click", simDblclick);
+    return {
+      dblclick: handler,
+      simDblclick
+    };
+  }
+  function removeDoubleTapListener(obj, handlers) {
+    obj.removeEventListener("dblclick", handlers.dblclick);
+    obj.removeEventListener("click", handlers.simDblclick);
+  }
+  var TRANSFORM = testProp(["transform", "webkitTransform", "OTransform", "MozTransform", "msTransform"]);
+  var TRANSITION = testProp(["webkitTransition", "transition", "OTransition", "MozTransition", "msTransition"]);
+  var TRANSITION_END = TRANSITION === "webkitTransition" || TRANSITION === "OTransition" ? TRANSITION + "End" : "transitionend";
+  function get(id) {
+    return typeof id === "string" ? document.getElementById(id) : id;
+  }
+  function getStyle(el, style2) {
+    var value = el.style[style2] || el.currentStyle && el.currentStyle[style2];
+    if ((!value || value === "auto") && document.defaultView) {
+      var css = document.defaultView.getComputedStyle(el, null);
+      value = css ? css[style2] : null;
+    }
+    return value === "auto" ? null : value;
+  }
+  function create$1(tagName, className, container) {
+    var el = document.createElement(tagName);
+    el.className = className || "";
+    if (container) {
+      container.appendChild(el);
+    }
+    return el;
+  }
+  function remove(el) {
+    var parent = el.parentNode;
+    if (parent) {
+      parent.removeChild(el);
+    }
+  }
+  function empty(el) {
+    while (el.firstChild) {
+      el.removeChild(el.firstChild);
+    }
+  }
+  function toFront(el) {
+    var parent = el.parentNode;
+    if (parent && parent.lastChild !== el) {
+      parent.appendChild(el);
+    }
+  }
+  function toBack(el) {
+    var parent = el.parentNode;
+    if (parent && parent.firstChild !== el) {
+      parent.insertBefore(el, parent.firstChild);
+    }
+  }
+  function hasClass(el, name) {
+    if (el.classList !== void 0) {
+      return el.classList.contains(name);
+    }
+    var className = getClass(el);
+    return className.length > 0 && new RegExp("(^|\\s)" + name + "(\\s|$)").test(className);
+  }
+  function addClass(el, name) {
+    if (el.classList !== void 0) {
+      var classes = splitWords(name);
+      for (var i = 0, len = classes.length; i < len; i++) {
+        el.classList.add(classes[i]);
+      }
+    } else if (!hasClass(el, name)) {
+      var className = getClass(el);
+      setClass(el, (className ? className + " " : "") + name);
+    }
+  }
+  function removeClass(el, name) {
+    if (el.classList !== void 0) {
+      el.classList.remove(name);
+    } else {
+      setClass(el, trim((" " + getClass(el) + " ").replace(" " + name + " ", " ")));
+    }
+  }
+  function setClass(el, name) {
+    if (el.className.baseVal === void 0) {
+      el.className = name;
+    } else {
+      el.className.baseVal = name;
+    }
+  }
+  function getClass(el) {
+    if (el.correspondingElement) {
+      el = el.correspondingElement;
+    }
+    return el.className.baseVal === void 0 ? el.className : el.className.baseVal;
+  }
+  function setOpacity(el, value) {
+    if ("opacity" in el.style) {
+      el.style.opacity = value;
+    } else if ("filter" in el.style) {
+      _setOpacityIE(el, value);
+    }
+  }
+  function _setOpacityIE(el, value) {
+    var filter = false, filterName = "DXImageTransform.Microsoft.Alpha";
+    try {
+      filter = el.filters.item(filterName);
+    } catch (e) {
+      if (value === 1) {
+        return;
+      }
+    }
+    value = Math.round(value * 100);
+    if (filter) {
+      filter.Enabled = value !== 100;
+      filter.Opacity = value;
+    } else {
+      el.style.filter += " progid:" + filterName + "(opacity=" + value + ")";
+    }
+  }
+  function testProp(props) {
+    var style2 = document.documentElement.style;
+    for (var i = 0; i < props.length; i++) {
+      if (props[i] in style2) {
+        return props[i];
+      }
+    }
+    return false;
+  }
+  function setTransform(el, offset, scale2) {
+    var pos = offset || new Point(0, 0);
+    el.style[TRANSFORM] = (Browser.ie3d ? "translate(" + pos.x + "px," + pos.y + "px)" : "translate3d(" + pos.x + "px," + pos.y + "px,0)") + (scale2 ? " scale(" + scale2 + ")" : "");
+  }
+  function setPosition(el, point) {
+    el._leaflet_pos = point;
+    if (Browser.any3d) {
+      setTransform(el, point);
+    } else {
+      el.style.left = point.x + "px";
+      el.style.top = point.y + "px";
+    }
+  }
+  function getPosition(el) {
+    return el._leaflet_pos || new Point(0, 0);
+  }
+  var disableTextSelection;
+  var enableTextSelection;
+  var _userSelect;
+  if ("onselectstart" in document) {
+    disableTextSelection = function() {
+      on(window, "selectstart", preventDefault);
+    };
+    enableTextSelection = function() {
+      off(window, "selectstart", preventDefault);
+    };
+  } else {
+    var userSelectProperty = testProp(["userSelect", "WebkitUserSelect", "OUserSelect", "MozUserSelect", "msUserSelect"]);
+    disableTextSelection = function() {
+      if (userSelectProperty) {
+        var style2 = document.documentElement.style;
+        _userSelect = style2[userSelectProperty];
+        style2[userSelectProperty] = "none";
+      }
+    };
+    enableTextSelection = function() {
+      if (userSelectProperty) {
+        document.documentElement.style[userSelectProperty] = _userSelect;
+        _userSelect = void 0;
+      }
+    };
+  }
+  function disableImageDrag() {
+    on(window, "dragstart", preventDefault);
+  }
+  function enableImageDrag() {
+    off(window, "dragstart", preventDefault);
+  }
+  var _outlineElement, _outlineStyle;
+  function preventOutline(element) {
+    while (element.tabIndex === -1) {
+      element = element.parentNode;
+    }
+    if (!element.style) {
+      return;
+    }
+    restoreOutline();
+    _outlineElement = element;
+    _outlineStyle = element.style.outline;
+    element.style.outline = "none";
+    on(window, "keydown", restoreOutline);
+  }
+  function restoreOutline() {
+    if (!_outlineElement) {
+      return;
+    }
+    _outlineElement.style.outline = _outlineStyle;
+    _outlineElement = void 0;
+    _outlineStyle = void 0;
+    off(window, "keydown", restoreOutline);
+  }
+  function getSizedParentNode(element) {
+    do {
+      element = element.parentNode;
+    } while ((!element.offsetWidth || !element.offsetHeight) && element !== document.body);
+    return element;
+  }
+  function getScale(element) {
+    var rect = element.getBoundingClientRect();
+    return {
+      x: rect.width / element.offsetWidth || 1,
+      y: rect.height / element.offsetHeight || 1,
+      boundingClientRect: rect
+    };
+  }
+  var DomUtil = {
+    __proto__: null,
+    TRANSFORM,
+    TRANSITION,
+    TRANSITION_END,
+    get,
+    getStyle,
+    create: create$1,
+    remove,
+    empty,
+    toFront,
+    toBack,
+    hasClass,
+    addClass,
+    removeClass,
+    setClass,
+    getClass,
+    setOpacity,
+    testProp,
+    setTransform,
+    setPosition,
+    getPosition,
+    get disableTextSelection() {
+      return disableTextSelection;
+    },
+    get enableTextSelection() {
+      return enableTextSelection;
+    },
+    disableImageDrag,
+    enableImageDrag,
+    preventOutline,
+    restoreOutline,
+    getSizedParentNode,
+    getScale
+  };
+  function on(obj, types, fn, context) {
+    if (types && typeof types === "object") {
+      for (var type in types) {
+        addOne(obj, type, types[type], fn);
+      }
+    } else {
+      types = splitWords(types);
+      for (var i = 0, len = types.length; i < len; i++) {
+        addOne(obj, types[i], fn, context);
+      }
+    }
+    return this;
+  }
+  var eventsKey = "_leaflet_events";
+  function off(obj, types, fn, context) {
+    if (arguments.length === 1) {
+      batchRemove(obj);
+      delete obj[eventsKey];
+    } else if (types && typeof types === "object") {
+      for (var type in types) {
+        removeOne(obj, type, types[type], fn);
+      }
+    } else {
+      types = splitWords(types);
+      if (arguments.length === 2) {
+        batchRemove(obj, function(type2) {
+          return indexOf(types, type2) !== -1;
+        });
+      } else {
+        for (var i = 0, len = types.length; i < len; i++) {
+          removeOne(obj, types[i], fn, context);
+        }
+      }
+    }
+    return this;
+  }
+  function batchRemove(obj, filterFn) {
+    for (var id in obj[eventsKey]) {
+      var type = id.split(/\d/)[0];
+      if (!filterFn || filterFn(type)) {
+        removeOne(obj, type, null, null, id);
+      }
+    }
+  }
+  var mouseSubst = {
+    mouseenter: "mouseover",
+    mouseleave: "mouseout",
+    wheel: !("onwheel" in window) && "mousewheel"
+  };
+  function addOne(obj, type, fn, context) {
+    var id = type + stamp(fn) + (context ? "_" + stamp(context) : "");
+    if (obj[eventsKey] && obj[eventsKey][id]) {
+      return this;
+    }
+    var handler = function(e) {
+      return fn.call(context || obj, e || window.event);
+    };
+    var originalHandler = handler;
+    if (!Browser.touchNative && Browser.pointer && type.indexOf("touch") === 0) {
+      handler = addPointerListener(obj, type, handler);
+    } else if (Browser.touch && type === "dblclick") {
+      handler = addDoubleTapListener(obj, handler);
+    } else if ("addEventListener" in obj) {
+      if (type === "touchstart" || type === "touchmove" || type === "wheel" || type === "mousewheel") {
+        obj.addEventListener(mouseSubst[type] || type, handler, Browser.passiveEvents ? { passive: false } : false);
+      } else if (type === "mouseenter" || type === "mouseleave") {
+        handler = function(e) {
+          e = e || window.event;
+          if (isExternalTarget(obj, e)) {
+            originalHandler(e);
+          }
+        };
+        obj.addEventListener(mouseSubst[type], handler, false);
+      } else {
+        obj.addEventListener(type, originalHandler, false);
+      }
+    } else {
+      obj.attachEvent("on" + type, handler);
+    }
+    obj[eventsKey] = obj[eventsKey] || {};
+    obj[eventsKey][id] = handler;
+  }
+  function removeOne(obj, type, fn, context, id) {
+    id = id || type + stamp(fn) + (context ? "_" + stamp(context) : "");
+    var handler = obj[eventsKey] && obj[eventsKey][id];
+    if (!handler) {
+      return this;
+    }
+    if (!Browser.touchNative && Browser.pointer && type.indexOf("touch") === 0) {
+      removePointerListener(obj, type, handler);
+    } else if (Browser.touch && type === "dblclick") {
+      removeDoubleTapListener(obj, handler);
+    } else if ("removeEventListener" in obj) {
+      obj.removeEventListener(mouseSubst[type] || type, handler, false);
+    } else {
+      obj.detachEvent("on" + type, handler);
+    }
+    obj[eventsKey][id] = null;
+  }
+  function stopPropagation(e) {
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    } else if (e.originalEvent) {
+      e.originalEvent._stopped = true;
+    } else {
+      e.cancelBubble = true;
+    }
+    return this;
+  }
+  function disableScrollPropagation(el) {
+    addOne(el, "wheel", stopPropagation);
+    return this;
+  }
+  function disableClickPropagation(el) {
+    on(el, "mousedown touchstart dblclick contextmenu", stopPropagation);
+    el["_leaflet_disable_click"] = true;
+    return this;
+  }
+  function preventDefault(e) {
+    if (e.preventDefault) {
+      e.preventDefault();
+    } else {
+      e.returnValue = false;
+    }
+    return this;
+  }
+  function stop(e) {
+    preventDefault(e);
+    stopPropagation(e);
+    return this;
+  }
+  function getMousePosition(e, container) {
+    if (!container) {
+      return new Point(e.clientX, e.clientY);
+    }
+    var scale2 = getScale(container), offset = scale2.boundingClientRect;
+    return new Point((e.clientX - offset.left) / scale2.x - container.clientLeft, (e.clientY - offset.top) / scale2.y - container.clientTop);
+  }
+  var wheelPxFactor = Browser.win && Browser.chrome ? 2 * window.devicePixelRatio : Browser.gecko ? window.devicePixelRatio : 1;
+  function getWheelDelta(e) {
+    return Browser.edge ? e.wheelDeltaY / 2 : e.deltaY && e.deltaMode === 0 ? -e.deltaY / wheelPxFactor : e.deltaY && e.deltaMode === 1 ? -e.deltaY * 20 : e.deltaY && e.deltaMode === 2 ? -e.deltaY * 60 : e.deltaX || e.deltaZ ? 0 : e.wheelDelta ? (e.wheelDeltaY || e.wheelDelta) / 2 : e.detail && Math.abs(e.detail) < 32765 ? -e.detail * 20 : e.detail ? e.detail / -32765 * 60 : 0;
+  }
+  function isExternalTarget(el, e) {
+    var related = e.relatedTarget;
+    if (!related) {
+      return true;
+    }
+    try {
+      while (related && related !== el) {
+        related = related.parentNode;
+      }
+    } catch (err) {
+      return false;
+    }
+    return related !== el;
+  }
+  var DomEvent = {
+    __proto__: null,
+    on,
+    off,
+    stopPropagation,
+    disableScrollPropagation,
+    disableClickPropagation,
+    preventDefault,
+    stop,
+    getMousePosition,
+    getWheelDelta,
+    isExternalTarget,
+    addListener: on,
+    removeListener: off
+  };
+  var PosAnimation = Evented.extend({
+    run: function(el, newPos, duration, easeLinearity) {
+      this.stop();
+      this._el = el;
+      this._inProgress = true;
+      this._duration = duration || 0.25;
+      this._easeOutPower = 1 / Math.max(easeLinearity || 0.5, 0.2);
+      this._startPos = getPosition(el);
+      this._offset = newPos.subtract(this._startPos);
+      this._startTime = +new Date();
+      this.fire("start");
+      this._animate();
+    },
+    stop: function() {
+      if (!this._inProgress) {
+        return;
+      }
+      this._step(true);
+      this._complete();
+    },
+    _animate: function() {
+      this._animId = requestAnimFrame(this._animate, this);
+      this._step();
+    },
+    _step: function(round) {
+      var elapsed = +new Date() - this._startTime, duration = this._duration * 1e3;
+      if (elapsed < duration) {
+        this._runFrame(this._easeOut(elapsed / duration), round);
+      } else {
+        this._runFrame(1);
+        this._complete();
+      }
+    },
+    _runFrame: function(progress, round) {
+      var pos = this._startPos.add(this._offset.multiplyBy(progress));
+      if (round) {
+        pos._round();
+      }
+      setPosition(this._el, pos);
+      this.fire("step");
+    },
+    _complete: function() {
+      cancelAnimFrame(this._animId);
+      this._inProgress = false;
+      this.fire("end");
+    },
+    _easeOut: function(t) {
+      return 1 - Math.pow(1 - t, this._easeOutPower);
+    }
+  });
+  var Map = Evented.extend({
+    options: {
+      crs: EPSG3857,
+      center: void 0,
+      zoom: void 0,
+      minZoom: void 0,
+      maxZoom: void 0,
+      layers: [],
+      maxBounds: void 0,
+      renderer: void 0,
+      zoomAnimation: true,
+      zoomAnimationThreshold: 4,
+      fadeAnimation: true,
+      markerZoomAnimation: true,
+      transform3DLimit: 8388608,
+      zoomSnap: 1,
+      zoomDelta: 1,
+      trackResize: true
+    },
+    initialize: function(id, options) {
+      options = setOptions(this, options);
+      this._handlers = [];
+      this._layers = {};
+      this._zoomBoundLayers = {};
+      this._sizeChanged = true;
+      this._initContainer(id);
+      this._initLayout();
+      this._onResize = bind(this._onResize, this);
+      this._initEvents();
+      if (options.maxBounds) {
+        this.setMaxBounds(options.maxBounds);
+      }
+      if (options.zoom !== void 0) {
+        this._zoom = this._limitZoom(options.zoom);
+      }
+      if (options.center && options.zoom !== void 0) {
+        this.setView(toLatLng(options.center), options.zoom, { reset: true });
+      }
+      this.callInitHooks();
+      this._zoomAnimated = TRANSITION && Browser.any3d && !Browser.mobileOpera && this.options.zoomAnimation;
+      if (this._zoomAnimated) {
+        this._createAnimProxy();
+        on(this._proxy, TRANSITION_END, this._catchTransitionEnd, this);
+      }
+      this._addLayers(this.options.layers);
+    },
+    setView: function(center, zoom2, options) {
+      zoom2 = zoom2 === void 0 ? this._zoom : this._limitZoom(zoom2);
+      center = this._limitCenter(toLatLng(center), zoom2, this.options.maxBounds);
+      options = options || {};
+      this._stop();
+      if (this._loaded && !options.reset && options !== true) {
+        if (options.animate !== void 0) {
+          options.zoom = extend({ animate: options.animate }, options.zoom);
+          options.pan = extend({ animate: options.animate, duration: options.duration }, options.pan);
+        }
+        var moved = this._zoom !== zoom2 ? this._tryAnimatedZoom && this._tryAnimatedZoom(center, zoom2, options.zoom) : this._tryAnimatedPan(center, options.pan);
+        if (moved) {
+          clearTimeout(this._sizeTimer);
+          return this;
+        }
+      }
+      this._resetView(center, zoom2);
+      return this;
+    },
+    setZoom: function(zoom2, options) {
+      if (!this._loaded) {
+        this._zoom = zoom2;
+        return this;
+      }
+      return this.setView(this.getCenter(), zoom2, { zoom: options });
+    },
+    zoomIn: function(delta, options) {
+      delta = delta || (Browser.any3d ? this.options.zoomDelta : 1);
+      return this.setZoom(this._zoom + delta, options);
+    },
+    zoomOut: function(delta, options) {
+      delta = delta || (Browser.any3d ? this.options.zoomDelta : 1);
+      return this.setZoom(this._zoom - delta, options);
+    },
+    setZoomAround: function(latlng, zoom2, options) {
+      var scale2 = this.getZoomScale(zoom2), viewHalf = this.getSize().divideBy(2), containerPoint = latlng instanceof Point ? latlng : this.latLngToContainerPoint(latlng), centerOffset = containerPoint.subtract(viewHalf).multiplyBy(1 - 1 / scale2), newCenter = this.containerPointToLatLng(viewHalf.add(centerOffset));
+      return this.setView(newCenter, zoom2, { zoom: options });
+    },
+    _getBoundsCenterZoom: function(bounds, options) {
+      options = options || {};
+      bounds = bounds.getBounds ? bounds.getBounds() : toLatLngBounds(bounds);
+      var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]), paddingBR = toPoint(options.paddingBottomRight || options.padding || [0, 0]), zoom2 = this.getBoundsZoom(bounds, false, paddingTL.add(paddingBR));
+      zoom2 = typeof options.maxZoom === "number" ? Math.min(options.maxZoom, zoom2) : zoom2;
+      if (zoom2 === Infinity) {
+        return {
+          center: bounds.getCenter(),
+          zoom: zoom2
+        };
+      }
+      var paddingOffset = paddingBR.subtract(paddingTL).divideBy(2), swPoint = this.project(bounds.getSouthWest(), zoom2), nePoint = this.project(bounds.getNorthEast(), zoom2), center = this.unproject(swPoint.add(nePoint).divideBy(2).add(paddingOffset), zoom2);
+      return {
+        center,
+        zoom: zoom2
+      };
+    },
+    fitBounds: function(bounds, options) {
+      bounds = toLatLngBounds(bounds);
+      if (!bounds.isValid()) {
+        throw new Error("Bounds are not valid.");
+      }
+      var target = this._getBoundsCenterZoom(bounds, options);
+      return this.setView(target.center, target.zoom, options);
+    },
+    fitWorld: function(options) {
+      return this.fitBounds([[-90, -180], [90, 180]], options);
+    },
+    panTo: function(center, options) {
+      return this.setView(center, this._zoom, { pan: options });
+    },
+    panBy: function(offset, options) {
+      offset = toPoint(offset).round();
+      options = options || {};
+      if (!offset.x && !offset.y) {
+        return this.fire("moveend");
+      }
+      if (options.animate !== true && !this.getSize().contains(offset)) {
+        this._resetView(this.unproject(this.project(this.getCenter()).add(offset)), this.getZoom());
+        return this;
+      }
+      if (!this._panAnim) {
+        this._panAnim = new PosAnimation();
+        this._panAnim.on({
+          "step": this._onPanTransitionStep,
+          "end": this._onPanTransitionEnd
+        }, this);
+      }
+      if (!options.noMoveStart) {
+        this.fire("movestart");
+      }
+      if (options.animate !== false) {
+        addClass(this._mapPane, "leaflet-pan-anim");
+        var newPos = this._getMapPanePos().subtract(offset).round();
+        this._panAnim.run(this._mapPane, newPos, options.duration || 0.25, options.easeLinearity);
+      } else {
+        this._rawPanBy(offset);
+        this.fire("move").fire("moveend");
+      }
+      return this;
+    },
+    flyTo: function(targetCenter, targetZoom, options) {
+      options = options || {};
+      if (options.animate === false || !Browser.any3d) {
+        return this.setView(targetCenter, targetZoom, options);
+      }
+      this._stop();
+      var from = this.project(this.getCenter()), to = this.project(targetCenter), size = this.getSize(), startZoom = this._zoom;
+      targetCenter = toLatLng(targetCenter);
+      targetZoom = targetZoom === void 0 ? startZoom : targetZoom;
+      var w0 = Math.max(size.x, size.y), w1 = w0 * this.getZoomScale(startZoom, targetZoom), u1 = to.distanceTo(from) || 1, rho = 1.42, rho2 = rho * rho;
+      function r(i) {
+        var s1 = i ? -1 : 1, s2 = i ? w1 : w0, t1 = w1 * w1 - w0 * w0 + s1 * rho2 * rho2 * u1 * u1, b1 = 2 * s2 * rho2 * u1, b = t1 / b1, sq = Math.sqrt(b * b + 1) - b;
+        var log = sq < 1e-9 ? -18 : Math.log(sq);
+        return log;
+      }
+      function sinh(n) {
+        return (Math.exp(n) - Math.exp(-n)) / 2;
+      }
+      function cosh(n) {
+        return (Math.exp(n) + Math.exp(-n)) / 2;
+      }
+      function tanh(n) {
+        return sinh(n) / cosh(n);
+      }
+      var r0 = r(0);
+      function w(s) {
+        return w0 * (cosh(r0) / cosh(r0 + rho * s));
+      }
+      function u(s) {
+        return w0 * (cosh(r0) * tanh(r0 + rho * s) - sinh(r0)) / rho2;
+      }
+      function easeOut(t) {
+        return 1 - Math.pow(1 - t, 1.5);
+      }
+      var start = Date.now(), S = (r(1) - r0) / rho, duration = options.duration ? 1e3 * options.duration : 1e3 * S * 0.8;
+      function frame() {
+        var t = (Date.now() - start) / duration, s = easeOut(t) * S;
+        if (t <= 1) {
+          this._flyToFrame = requestAnimFrame(frame, this);
+          this._move(this.unproject(from.add(to.subtract(from).multiplyBy(u(s) / u1)), startZoom), this.getScaleZoom(w0 / w(s), startZoom), { flyTo: true });
+        } else {
+          this._move(targetCenter, targetZoom)._moveEnd(true);
+        }
+      }
+      this._moveStart(true, options.noMoveStart);
+      frame.call(this);
+      return this;
+    },
+    flyToBounds: function(bounds, options) {
+      var target = this._getBoundsCenterZoom(bounds, options);
+      return this.flyTo(target.center, target.zoom, options);
+    },
+    setMaxBounds: function(bounds) {
+      bounds = toLatLngBounds(bounds);
+      if (!bounds.isValid()) {
+        this.options.maxBounds = null;
+        return this.off("moveend", this._panInsideMaxBounds);
+      } else if (this.options.maxBounds) {
+        this.off("moveend", this._panInsideMaxBounds);
+      }
+      this.options.maxBounds = bounds;
+      if (this._loaded) {
+        this._panInsideMaxBounds();
+      }
+      return this.on("moveend", this._panInsideMaxBounds);
+    },
+    setMinZoom: function(zoom2) {
+      var oldZoom = this.options.minZoom;
+      this.options.minZoom = zoom2;
+      if (this._loaded && oldZoom !== zoom2) {
+        this.fire("zoomlevelschange");
+        if (this.getZoom() < this.options.minZoom) {
+          return this.setZoom(zoom2);
+        }
+      }
+      return this;
+    },
+    setMaxZoom: function(zoom2) {
+      var oldZoom = this.options.maxZoom;
+      this.options.maxZoom = zoom2;
+      if (this._loaded && oldZoom !== zoom2) {
+        this.fire("zoomlevelschange");
+        if (this.getZoom() > this.options.maxZoom) {
+          return this.setZoom(zoom2);
+        }
+      }
+      return this;
+    },
+    panInsideBounds: function(bounds, options) {
+      this._enforcingBounds = true;
+      var center = this.getCenter(), newCenter = this._limitCenter(center, this._zoom, toLatLngBounds(bounds));
+      if (!center.equals(newCenter)) {
+        this.panTo(newCenter, options);
+      }
+      this._enforcingBounds = false;
+      return this;
+    },
+    panInside: function(latlng, options) {
+      options = options || {};
+      var paddingTL = toPoint(options.paddingTopLeft || options.padding || [0, 0]), paddingBR = toPoint(options.paddingBottomRight || options.padding || [0, 0]), pixelCenter = this.project(this.getCenter()), pixelPoint = this.project(latlng), pixelBounds = this.getPixelBounds(), paddedBounds = toBounds([pixelBounds.min.add(paddingTL), pixelBounds.max.subtract(paddingBR)]), paddedSize = paddedBounds.getSize();
+      if (!paddedBounds.contains(pixelPoint)) {
+        this._enforcingBounds = true;
+        var centerOffset = pixelPoint.subtract(paddedBounds.getCenter());
+        var offset = paddedBounds.extend(pixelPoint).getSize().subtract(paddedSize);
+        pixelCenter.x += centerOffset.x < 0 ? -offset.x : offset.x;
+        pixelCenter.y += centerOffset.y < 0 ? -offset.y : offset.y;
+        this.panTo(this.unproject(pixelCenter), options);
+        this._enforcingBounds = false;
+      }
+      return this;
+    },
+    invalidateSize: function(options) {
+      if (!this._loaded) {
+        return this;
+      }
+      options = extend({
+        animate: false,
+        pan: true
+      }, options === true ? { animate: true } : options);
+      var oldSize = this.getSize();
+      this._sizeChanged = true;
+      this._lastCenter = null;
+      var newSize = this.getSize(), oldCenter = oldSize.divideBy(2).round(), newCenter = newSize.divideBy(2).round(), offset = oldCenter.subtract(newCenter);
+      if (!offset.x && !offset.y) {
+        return this;
+      }
+      if (options.animate && options.pan) {
+        this.panBy(offset);
+      } else {
+        if (options.pan) {
+          this._rawPanBy(offset);
+        }
+        this.fire("move");
+        if (options.debounceMoveend) {
+          clearTimeout(this._sizeTimer);
+          this._sizeTimer = setTimeout(bind(this.fire, this, "moveend"), 200);
+        } else {
+          this.fire("moveend");
+        }
+      }
+      return this.fire("resize", {
+        oldSize,
+        newSize
+      });
+    },
+    stop: function() {
+      this.setZoom(this._limitZoom(this._zoom));
+      if (!this.options.zoomSnap) {
+        this.fire("viewreset");
+      }
+      return this._stop();
+    },
+    locate: function(options) {
+      options = this._locateOptions = extend({
+        timeout: 1e4,
+        watch: false
+      }, options);
+      if (!("geolocation" in navigator)) {
+        this._handleGeolocationError({
+          code: 0,
+          message: "Geolocation not supported."
+        });
+        return this;
+      }
+      var onResponse = bind(this._handleGeolocationResponse, this), onError = bind(this._handleGeolocationError, this);
+      if (options.watch) {
+        this._locationWatchId = navigator.geolocation.watchPosition(onResponse, onError, options);
+      } else {
+        navigator.geolocation.getCurrentPosition(onResponse, onError, options);
+      }
+      return this;
+    },
+    stopLocate: function() {
+      if (navigator.geolocation && navigator.geolocation.clearWatch) {
+        navigator.geolocation.clearWatch(this._locationWatchId);
+      }
+      if (this._locateOptions) {
+        this._locateOptions.setView = false;
+      }
+      return this;
+    },
+    _handleGeolocationError: function(error) {
+      if (!this._container._leaflet_id) {
+        return;
+      }
+      var c = error.code, message = error.message || (c === 1 ? "permission denied" : c === 2 ? "position unavailable" : "timeout");
+      if (this._locateOptions.setView && !this._loaded) {
+        this.fitWorld();
+      }
+      this.fire("locationerror", {
+        code: c,
+        message: "Geolocation error: " + message + "."
+      });
+    },
+    _handleGeolocationResponse: function(pos) {
+      if (!this._container._leaflet_id) {
+        return;
+      }
+      var lat = pos.coords.latitude, lng = pos.coords.longitude, latlng = new LatLng(lat, lng), bounds = latlng.toBounds(pos.coords.accuracy * 2), options = this._locateOptions;
+      if (options.setView) {
+        var zoom2 = this.getBoundsZoom(bounds);
+        this.setView(latlng, options.maxZoom ? Math.min(zoom2, options.maxZoom) : zoom2);
+      }
+      var data = {
+        latlng,
+        bounds,
+        timestamp: pos.timestamp
+      };
+      for (var i in pos.coords) {
+        if (typeof pos.coords[i] === "number") {
+          data[i] = pos.coords[i];
+        }
+      }
+      this.fire("locationfound", data);
+    },
+    addHandler: function(name, HandlerClass) {
+      if (!HandlerClass) {
+        return this;
+      }
+      var handler = this[name] = new HandlerClass(this);
+      this._handlers.push(handler);
+      if (this.options[name]) {
+        handler.enable();
+      }
+      return this;
+    },
+    remove: function() {
+      this._initEvents(true);
+      if (this.options.maxBounds) {
+        this.off("moveend", this._panInsideMaxBounds);
+      }
+      if (this._containerId !== this._container._leaflet_id) {
+        throw new Error("Map container is being reused by another instance");
+      }
+      try {
+        delete this._container._leaflet_id;
+        delete this._containerId;
+      } catch (e) {
+        this._container._leaflet_id = void 0;
+        this._containerId = void 0;
+      }
+      if (this._locationWatchId !== void 0) {
+        this.stopLocate();
+      }
+      this._stop();
+      remove(this._mapPane);
+      if (this._clearControlPos) {
+        this._clearControlPos();
+      }
+      if (this._resizeRequest) {
+        cancelAnimFrame(this._resizeRequest);
+        this._resizeRequest = null;
+      }
+      this._clearHandlers();
+      if (this._loaded) {
+        this.fire("unload");
+      }
+      var i;
+      for (i in this._layers) {
+        this._layers[i].remove();
+      }
+      for (i in this._panes) {
+        remove(this._panes[i]);
+      }
+      this._layers = [];
+      this._panes = [];
+      delete this._mapPane;
+      delete this._renderer;
+      return this;
+    },
+    createPane: function(name, container) {
+      var className = "leaflet-pane" + (name ? " leaflet-" + name.replace("Pane", "") + "-pane" : ""), pane = create$1("div", className, container || this._mapPane);
+      if (name) {
+        this._panes[name] = pane;
+      }
+      return pane;
+    },
+    getCenter: function() {
+      this._checkIfLoaded();
+      if (this._lastCenter && !this._moved()) {
+        return this._lastCenter;
+      }
+      return this.layerPointToLatLng(this._getCenterLayerPoint());
+    },
+    getZoom: function() {
+      return this._zoom;
+    },
+    getBounds: function() {
+      var bounds = this.getPixelBounds(), sw = this.unproject(bounds.getBottomLeft()), ne = this.unproject(bounds.getTopRight());
+      return new LatLngBounds(sw, ne);
+    },
+    getMinZoom: function() {
+      return this.options.minZoom === void 0 ? this._layersMinZoom || 0 : this.options.minZoom;
+    },
+    getMaxZoom: function() {
+      return this.options.maxZoom === void 0 ? this._layersMaxZoom === void 0 ? Infinity : this._layersMaxZoom : this.options.maxZoom;
+    },
+    getBoundsZoom: function(bounds, inside, padding) {
+      bounds = toLatLngBounds(bounds);
+      padding = toPoint(padding || [0, 0]);
+      var zoom2 = this.getZoom() || 0, min = this.getMinZoom(), max = this.getMaxZoom(), nw = bounds.getNorthWest(), se = bounds.getSouthEast(), size = this.getSize().subtract(padding), boundsSize = toBounds(this.project(se, zoom2), this.project(nw, zoom2)).getSize(), snap = Browser.any3d ? this.options.zoomSnap : 1, scalex = size.x / boundsSize.x, scaley = size.y / boundsSize.y, scale2 = inside ? Math.max(scalex, scaley) : Math.min(scalex, scaley);
+      zoom2 = this.getScaleZoom(scale2, zoom2);
+      if (snap) {
+        zoom2 = Math.round(zoom2 / (snap / 100)) * (snap / 100);
+        zoom2 = inside ? Math.ceil(zoom2 / snap) * snap : Math.floor(zoom2 / snap) * snap;
+      }
+      return Math.max(min, Math.min(max, zoom2));
+    },
+    getSize: function() {
+      if (!this._size || this._sizeChanged) {
+        this._size = new Point(this._container.clientWidth || 0, this._container.clientHeight || 0);
+        this._sizeChanged = false;
+      }
+      return this._size.clone();
+    },
+    getPixelBounds: function(center, zoom2) {
+      var topLeftPoint = this._getTopLeftPoint(center, zoom2);
+      return new Bounds(topLeftPoint, topLeftPoint.add(this.getSize()));
+    },
+    getPixelOrigin: function() {
+      this._checkIfLoaded();
+      return this._pixelOrigin;
+    },
+    getPixelWorldBounds: function(zoom2) {
+      return this.options.crs.getProjectedBounds(zoom2 === void 0 ? this.getZoom() : zoom2);
+    },
+    getPane: function(pane) {
+      return typeof pane === "string" ? this._panes[pane] : pane;
+    },
+    getPanes: function() {
+      return this._panes;
+    },
+    getContainer: function() {
+      return this._container;
+    },
+    getZoomScale: function(toZoom, fromZoom) {
+      var crs = this.options.crs;
+      fromZoom = fromZoom === void 0 ? this._zoom : fromZoom;
+      return crs.scale(toZoom) / crs.scale(fromZoom);
+    },
+    getScaleZoom: function(scale2, fromZoom) {
+      var crs = this.options.crs;
+      fromZoom = fromZoom === void 0 ? this._zoom : fromZoom;
+      var zoom2 = crs.zoom(scale2 * crs.scale(fromZoom));
+      return isNaN(zoom2) ? Infinity : zoom2;
+    },
+    project: function(latlng, zoom2) {
+      zoom2 = zoom2 === void 0 ? this._zoom : zoom2;
+      return this.options.crs.latLngToPoint(toLatLng(latlng), zoom2);
+    },
+    unproject: function(point, zoom2) {
+      zoom2 = zoom2 === void 0 ? this._zoom : zoom2;
+      return this.options.crs.pointToLatLng(toPoint(point), zoom2);
+    },
+    layerPointToLatLng: function(point) {
+      var projectedPoint = toPoint(point).add(this.getPixelOrigin());
+      return this.unproject(projectedPoint);
+    },
+    latLngToLayerPoint: function(latlng) {
+      var projectedPoint = this.project(toLatLng(latlng))._round();
+      return projectedPoint._subtract(this.getPixelOrigin());
+    },
+    wrapLatLng: function(latlng) {
+      return this.options.crs.wrapLatLng(toLatLng(latlng));
+    },
+    wrapLatLngBounds: function(latlng) {
+      return this.options.crs.wrapLatLngBounds(toLatLngBounds(latlng));
+    },
+    distance: function(latlng1, latlng2) {
+      return this.options.crs.distance(toLatLng(latlng1), toLatLng(latlng2));
+    },
+    containerPointToLayerPoint: function(point) {
+      return toPoint(point).subtract(this._getMapPanePos());
+    },
+    layerPointToContainerPoint: function(point) {
+      return toPoint(point).add(this._getMapPanePos());
+    },
+    containerPointToLatLng: function(point) {
+      var layerPoint = this.containerPointToLayerPoint(toPoint(point));
+      return this.layerPointToLatLng(layerPoint);
+    },
+    latLngToContainerPoint: function(latlng) {
+      return this.layerPointToContainerPoint(this.latLngToLayerPoint(toLatLng(latlng)));
+    },
+    mouseEventToContainerPoint: function(e) {
+      return getMousePosition(e, this._container);
+    },
+    mouseEventToLayerPoint: function(e) {
+      return this.containerPointToLayerPoint(this.mouseEventToContainerPoint(e));
+    },
+    mouseEventToLatLng: function(e) {
+      return this.layerPointToLatLng(this.mouseEventToLayerPoint(e));
+    },
+    _initContainer: function(id) {
+      var container = this._container = get(id);
+      if (!container) {
+        throw new Error("Map container not found.");
+      } else if (container._leaflet_id) {
+        throw new Error("Map container is already initialized.");
+      }
+      on(container, "scroll", this._onScroll, this);
+      this._containerId = stamp(container);
+    },
+    _initLayout: function() {
+      var container = this._container;
+      this._fadeAnimated = this.options.fadeAnimation && Browser.any3d;
+      addClass(container, "leaflet-container" + (Browser.touch ? " leaflet-touch" : "") + (Browser.retina ? " leaflet-retina" : "") + (Browser.ielt9 ? " leaflet-oldie" : "") + (Browser.safari ? " leaflet-safari" : "") + (this._fadeAnimated ? " leaflet-fade-anim" : ""));
+      var position = getStyle(container, "position");
+      if (position !== "absolute" && position !== "relative" && position !== "fixed") {
+        container.style.position = "relative";
+      }
+      this._initPanes();
+      if (this._initControlPos) {
+        this._initControlPos();
+      }
+    },
+    _initPanes: function() {
+      var panes = this._panes = {};
+      this._paneRenderers = {};
+      this._mapPane = this.createPane("mapPane", this._container);
+      setPosition(this._mapPane, new Point(0, 0));
+      this.createPane("tilePane");
+      this.createPane("overlayPane");
+      this.createPane("shadowPane");
+      this.createPane("markerPane");
+      this.createPane("tooltipPane");
+      this.createPane("popupPane");
+      if (!this.options.markerZoomAnimation) {
+        addClass(panes.markerPane, "leaflet-zoom-hide");
+        addClass(panes.shadowPane, "leaflet-zoom-hide");
+      }
+    },
+    _resetView: function(center, zoom2) {
+      setPosition(this._mapPane, new Point(0, 0));
+      var loading = !this._loaded;
+      this._loaded = true;
+      zoom2 = this._limitZoom(zoom2);
+      this.fire("viewprereset");
+      var zoomChanged = this._zoom !== zoom2;
+      this._moveStart(zoomChanged, false)._move(center, zoom2)._moveEnd(zoomChanged);
+      this.fire("viewreset");
+      if (loading) {
+        this.fire("load");
+      }
+    },
+    _moveStart: function(zoomChanged, noMoveStart) {
+      if (zoomChanged) {
+        this.fire("zoomstart");
+      }
+      if (!noMoveStart) {
+        this.fire("movestart");
+      }
+      return this;
+    },
+    _move: function(center, zoom2, data, supressEvent) {
+      if (zoom2 === void 0) {
+        zoom2 = this._zoom;
+      }
+      var zoomChanged = this._zoom !== zoom2;
+      this._zoom = zoom2;
+      this._lastCenter = center;
+      this._pixelOrigin = this._getNewPixelOrigin(center);
+      if (!supressEvent) {
+        if (zoomChanged || data && data.pinch) {
+          this.fire("zoom", data);
+        }
+        this.fire("move", data);
+      } else if (data && data.pinch) {
+        this.fire("zoom", data);
+      }
+      return this;
+    },
+    _moveEnd: function(zoomChanged) {
+      if (zoomChanged) {
+        this.fire("zoomend");
+      }
+      return this.fire("moveend");
+    },
+    _stop: function() {
+      cancelAnimFrame(this._flyToFrame);
+      if (this._panAnim) {
+        this._panAnim.stop();
+      }
+      return this;
+    },
+    _rawPanBy: function(offset) {
+      setPosition(this._mapPane, this._getMapPanePos().subtract(offset));
+    },
+    _getZoomSpan: function() {
+      return this.getMaxZoom() - this.getMinZoom();
+    },
+    _panInsideMaxBounds: function() {
+      if (!this._enforcingBounds) {
+        this.panInsideBounds(this.options.maxBounds);
+      }
+    },
+    _checkIfLoaded: function() {
+      if (!this._loaded) {
+        throw new Error("Set map center and zoom first.");
+      }
+    },
+    _initEvents: function(remove2) {
+      this._targets = {};
+      this._targets[stamp(this._container)] = this;
+      var onOff = remove2 ? off : on;
+      onOff(this._container, "click dblclick mousedown mouseup mouseover mouseout mousemove contextmenu keypress keydown keyup", this._handleDOMEvent, this);
+      if (this.options.trackResize) {
+        onOff(window, "resize", this._onResize, this);
+      }
+      if (Browser.any3d && this.options.transform3DLimit) {
+        (remove2 ? this.off : this.on).call(this, "moveend", this._onMoveEnd);
+      }
+    },
+    _onResize: function() {
+      cancelAnimFrame(this._resizeRequest);
+      this._resizeRequest = requestAnimFrame(function() {
+        this.invalidateSize({ debounceMoveend: true });
+      }, this);
+    },
+    _onScroll: function() {
+      this._container.scrollTop = 0;
+      this._container.scrollLeft = 0;
+    },
+    _onMoveEnd: function() {
+      var pos = this._getMapPanePos();
+      if (Math.max(Math.abs(pos.x), Math.abs(pos.y)) >= this.options.transform3DLimit) {
+        this._resetView(this.getCenter(), this.getZoom());
+      }
+    },
+    _findEventTargets: function(e, type) {
+      var targets = [], target, isHover = type === "mouseout" || type === "mouseover", src = e.target || e.srcElement, dragging = false;
+      while (src) {
+        target = this._targets[stamp(src)];
+        if (target && (type === "click" || type === "preclick") && this._draggableMoved(target)) {
+          dragging = true;
+          break;
+        }
+        if (target && target.listens(type, true)) {
+          if (isHover && !isExternalTarget(src, e)) {
+            break;
+          }
+          targets.push(target);
+          if (isHover) {
+            break;
+          }
+        }
+        if (src === this._container) {
+          break;
+        }
+        src = src.parentNode;
+      }
+      if (!targets.length && !dragging && !isHover && this.listens(type, true)) {
+        targets = [this];
+      }
+      return targets;
+    },
+    _isClickDisabled: function(el) {
+      while (el !== this._container) {
+        if (el["_leaflet_disable_click"]) {
+          return true;
+        }
+        el = el.parentNode;
+      }
+    },
+    _handleDOMEvent: function(e) {
+      var el = e.target || e.srcElement;
+      if (!this._loaded || el["_leaflet_disable_events"] || e.type === "click" && this._isClickDisabled(el)) {
+        return;
+      }
+      var type = e.type;
+      if (type === "mousedown") {
+        preventOutline(el);
+      }
+      this._fireDOMEvent(e, type);
+    },
+    _mouseEvents: ["click", "dblclick", "mouseover", "mouseout", "contextmenu"],
+    _fireDOMEvent: function(e, type, canvasTargets) {
+      if (e.type === "click") {
+        var synth = extend({}, e);
+        synth.type = "preclick";
+        this._fireDOMEvent(synth, synth.type, canvasTargets);
+      }
+      var targets = this._findEventTargets(e, type);
+      if (canvasTargets) {
+        var filtered = [];
+        for (var i = 0; i < canvasTargets.length; i++) {
+          if (canvasTargets[i].listens(type, true)) {
+            filtered.push(canvasTargets[i]);
+          }
+        }
+        targets = filtered.concat(targets);
+      }
+      if (!targets.length) {
+        return;
+      }
+      if (type === "contextmenu") {
+        preventDefault(e);
+      }
+      var target = targets[0];
+      var data = {
+        originalEvent: e
+      };
+      if (e.type !== "keypress" && e.type !== "keydown" && e.type !== "keyup") {
+        var isMarker = target.getLatLng && (!target._radius || target._radius <= 10);
+        data.containerPoint = isMarker ? this.latLngToContainerPoint(target.getLatLng()) : this.mouseEventToContainerPoint(e);
+        data.layerPoint = this.containerPointToLayerPoint(data.containerPoint);
+        data.latlng = isMarker ? target.getLatLng() : this.layerPointToLatLng(data.layerPoint);
+      }
+      for (i = 0; i < targets.length; i++) {
+        targets[i].fire(type, data, true);
+        if (data.originalEvent._stopped || targets[i].options.bubblingMouseEvents === false && indexOf(this._mouseEvents, type) !== -1) {
+          return;
+        }
+      }
+    },
+    _draggableMoved: function(obj) {
+      obj = obj.dragging && obj.dragging.enabled() ? obj : this;
+      return obj.dragging && obj.dragging.moved() || this.boxZoom && this.boxZoom.moved();
+    },
+    _clearHandlers: function() {
+      for (var i = 0, len = this._handlers.length; i < len; i++) {
+        this._handlers[i].disable();
+      }
+    },
+    whenReady: function(callback, context) {
+      if (this._loaded) {
+        callback.call(context || this, { target: this });
+      } else {
+        this.on("load", callback, context);
+      }
+      return this;
+    },
+    _getMapPanePos: function() {
+      return getPosition(this._mapPane) || new Point(0, 0);
+    },
+    _moved: function() {
+      var pos = this._getMapPanePos();
+      return pos && !pos.equals([0, 0]);
+    },
+    _getTopLeftPoint: function(center, zoom2) {
+      var pixelOrigin = center && zoom2 !== void 0 ? this._getNewPixelOrigin(center, zoom2) : this.getPixelOrigin();
+      return pixelOrigin.subtract(this._getMapPanePos());
+    },
+    _getNewPixelOrigin: function(center, zoom2) {
+      var viewHalf = this.getSize()._divideBy(2);
+      return this.project(center, zoom2)._subtract(viewHalf)._add(this._getMapPanePos())._round();
+    },
+    _latLngToNewLayerPoint: function(latlng, zoom2, center) {
+      var topLeft = this._getNewPixelOrigin(center, zoom2);
+      return this.project(latlng, zoom2)._subtract(topLeft);
+    },
+    _latLngBoundsToNewLayerBounds: function(latLngBounds, zoom2, center) {
+      var topLeft = this._getNewPixelOrigin(center, zoom2);
+      return toBounds([
+        this.project(latLngBounds.getSouthWest(), zoom2)._subtract(topLeft),
+        this.project(latLngBounds.getNorthWest(), zoom2)._subtract(topLeft),
+        this.project(latLngBounds.getSouthEast(), zoom2)._subtract(topLeft),
+        this.project(latLngBounds.getNorthEast(), zoom2)._subtract(topLeft)
+      ]);
+    },
+    _getCenterLayerPoint: function() {
+      return this.containerPointToLayerPoint(this.getSize()._divideBy(2));
+    },
+    _getCenterOffset: function(latlng) {
+      return this.latLngToLayerPoint(latlng).subtract(this._getCenterLayerPoint());
+    },
+    _limitCenter: function(center, zoom2, bounds) {
+      if (!bounds) {
+        return center;
+      }
+      var centerPoint = this.project(center, zoom2), viewHalf = this.getSize().divideBy(2), viewBounds = new Bounds(centerPoint.subtract(viewHalf), centerPoint.add(viewHalf)), offset = this._getBoundsOffset(viewBounds, bounds, zoom2);
+      if (offset.round().equals([0, 0])) {
+        return center;
+      }
+      return this.unproject(centerPoint.add(offset), zoom2);
+    },
+    _limitOffset: function(offset, bounds) {
+      if (!bounds) {
+        return offset;
+      }
+      var viewBounds = this.getPixelBounds(), newBounds = new Bounds(viewBounds.min.add(offset), viewBounds.max.add(offset));
+      return offset.add(this._getBoundsOffset(newBounds, bounds));
+    },
+    _getBoundsOffset: function(pxBounds, maxBounds, zoom2) {
+      var projectedMaxBounds = toBounds(this.project(maxBounds.getNorthEast(), zoom2), this.project(maxBounds.getSouthWest(), zoom2)), minOffset = projectedMaxBounds.min.subtract(pxBounds.min), maxOffset = projectedMaxBounds.max.subtract(pxBounds.max), dx = this._rebound(minOffset.x, -maxOffset.x), dy = this._rebound(minOffset.y, -maxOffset.y);
+      return new Point(dx, dy);
+    },
+    _rebound: function(left, right) {
+      return left + right > 0 ? Math.round(left - right) / 2 : Math.max(0, Math.ceil(left)) - Math.max(0, Math.floor(right));
+    },
+    _limitZoom: function(zoom2) {
+      var min = this.getMinZoom(), max = this.getMaxZoom(), snap = Browser.any3d ? this.options.zoomSnap : 1;
+      if (snap) {
+        zoom2 = Math.round(zoom2 / snap) * snap;
+      }
+      return Math.max(min, Math.min(max, zoom2));
+    },
+    _onPanTransitionStep: function() {
+      this.fire("move");
+    },
+    _onPanTransitionEnd: function() {
+      removeClass(this._mapPane, "leaflet-pan-anim");
+      this.fire("moveend");
+    },
+    _tryAnimatedPan: function(center, options) {
+      var offset = this._getCenterOffset(center)._trunc();
+      if ((options && options.animate) !== true && !this.getSize().contains(offset)) {
+        return false;
+      }
+      this.panBy(offset, options);
+      return true;
+    },
+    _createAnimProxy: function() {
+      var proxy = this._proxy = create$1("div", "leaflet-proxy leaflet-zoom-animated");
+      this._panes.mapPane.appendChild(proxy);
+      this.on("zoomanim", function(e) {
+        var prop = TRANSFORM, transform = this._proxy.style[prop];
+        setTransform(this._proxy, this.project(e.center, e.zoom), this.getZoomScale(e.zoom, 1));
+        if (transform === this._proxy.style[prop] && this._animatingZoom) {
+          this._onZoomTransitionEnd();
+        }
+      }, this);
+      this.on("load moveend", this._animMoveEnd, this);
+      this._on("unload", this._destroyAnimProxy, this);
+    },
+    _destroyAnimProxy: function() {
+      remove(this._proxy);
+      this.off("load moveend", this._animMoveEnd, this);
+      delete this._proxy;
+    },
+    _animMoveEnd: function() {
+      var c = this.getCenter(), z = this.getZoom();
+      setTransform(this._proxy, this.project(c, z), this.getZoomScale(z, 1));
+    },
+    _catchTransitionEnd: function(e) {
+      if (this._animatingZoom && e.propertyName.indexOf("transform") >= 0) {
+        this._onZoomTransitionEnd();
+      }
+    },
+    _nothingToAnimate: function() {
+      return !this._container.getElementsByClassName("leaflet-zoom-animated").length;
+    },
+    _tryAnimatedZoom: function(center, zoom2, options) {
+      if (this._animatingZoom) {
+        return true;
+      }
+      options = options || {};
+      if (!this._zoomAnimated || options.animate === false || this._nothingToAnimate() || Math.abs(zoom2 - this._zoom) > this.options.zoomAnimationThreshold) {
+        return false;
+      }
+      var scale2 = this.getZoomScale(zoom2), offset = this._getCenterOffset(center)._divideBy(1 - 1 / scale2);
+      if (options.animate !== true && !this.getSize().contains(offset)) {
+        return false;
+      }
+      requestAnimFrame(function() {
+        this._moveStart(true, false)._animateZoom(center, zoom2, true);
+      }, this);
+      return true;
+    },
+    _animateZoom: function(center, zoom2, startAnim, noUpdate) {
+      if (!this._mapPane) {
+        return;
+      }
+      if (startAnim) {
+        this._animatingZoom = true;
+        this._animateToCenter = center;
+        this._animateToZoom = zoom2;
+        addClass(this._mapPane, "leaflet-zoom-anim");
+      }
+      this.fire("zoomanim", {
+        center,
+        zoom: zoom2,
+        noUpdate
+      });
+      if (!this._tempFireZoomEvent) {
+        this._tempFireZoomEvent = this._zoom !== this._animateToZoom;
+      }
+      this._move(this._animateToCenter, this._animateToZoom, void 0, true);
+      setTimeout(bind(this._onZoomTransitionEnd, this), 250);
+    },
+    _onZoomTransitionEnd: function() {
+      if (!this._animatingZoom) {
+        return;
+      }
+      if (this._mapPane) {
+        removeClass(this._mapPane, "leaflet-zoom-anim");
+      }
+      this._animatingZoom = false;
+      this._move(this._animateToCenter, this._animateToZoom, void 0, true);
+      if (this._tempFireZoomEvent) {
+        this.fire("zoom");
+      }
+      delete this._tempFireZoomEvent;
+      this.fire("move");
+      this._moveEnd(true);
+    }
+  });
+  function createMap(id, options) {
+    return new Map(id, options);
+  }
+  var Control = Class.extend({
+    options: {
+      position: "topright"
+    },
+    initialize: function(options) {
+      setOptions(this, options);
+    },
+    getPosition: function() {
+      return this.options.position;
+    },
+    setPosition: function(position) {
+      var map = this._map;
+      if (map) {
+        map.removeControl(this);
+      }
+      this.options.position = position;
+      if (map) {
+        map.addControl(this);
+      }
+      return this;
+    },
+    getContainer: function() {
+      return this._container;
+    },
+    addTo: function(map) {
+      this.remove();
+      this._map = map;
+      var container = this._container = this.onAdd(map), pos = this.getPosition(), corner = map._controlCorners[pos];
+      addClass(container, "leaflet-control");
+      if (pos.indexOf("bottom") !== -1) {
+        corner.insertBefore(container, corner.firstChild);
+      } else {
+        corner.appendChild(container);
+      }
+      this._map.on("unload", this.remove, this);
+      return this;
+    },
+    remove: function() {
+      if (!this._map) {
+        return this;
+      }
+      remove(this._container);
+      if (this.onRemove) {
+        this.onRemove(this._map);
+      }
+      this._map.off("unload", this.remove, this);
+      this._map = null;
+      return this;
+    },
+    _refocusOnMap: function(e) {
+      if (this._map && e && e.screenX > 0 && e.screenY > 0) {
+        this._map.getContainer().focus();
+      }
+    }
+  });
+  var control = function(options) {
+    return new Control(options);
+  };
+  Map.include({
+    addControl: function(control2) {
+      control2.addTo(this);
+      return this;
+    },
+    removeControl: function(control2) {
+      control2.remove();
+      return this;
+    },
+    _initControlPos: function() {
+      var corners = this._controlCorners = {}, l = "leaflet-", container = this._controlContainer = create$1("div", l + "control-container", this._container);
+      function createCorner(vSide, hSide) {
+        var className = l + vSide + " " + l + hSide;
+        corners[vSide + hSide] = create$1("div", className, container);
+      }
+      createCorner("top", "left");
+      createCorner("top", "right");
+      createCorner("bottom", "left");
+      createCorner("bottom", "right");
+    },
+    _clearControlPos: function() {
+      for (var i in this._controlCorners) {
+        remove(this._controlCorners[i]);
+      }
+      remove(this._controlContainer);
+      delete this._controlCorners;
+      delete this._controlContainer;
+    }
+  });
+  var Layers = Control.extend({
+    options: {
+      collapsed: true,
+      position: "topright",
+      autoZIndex: true,
+      hideSingleBase: false,
+      sortLayers: false,
+      sortFunction: function(layerA, layerB, nameA, nameB) {
+        return nameA < nameB ? -1 : nameB < nameA ? 1 : 0;
+      }
+    },
+    initialize: function(baseLayers, overlays, options) {
+      setOptions(this, options);
+      this._layerControlInputs = [];
+      this._layers = [];
+      this._lastZIndex = 0;
+      this._handlingClick = false;
+      for (var i in baseLayers) {
+        this._addLayer(baseLayers[i], i);
+      }
+      for (i in overlays) {
+        this._addLayer(overlays[i], i, true);
+      }
+    },
+    onAdd: function(map) {
+      this._initLayout();
+      this._update();
+      this._map = map;
+      map.on("zoomend", this._checkDisabledLayers, this);
+      for (var i = 0; i < this._layers.length; i++) {
+        this._layers[i].layer.on("add remove", this._onLayerChange, this);
+      }
+      return this._container;
+    },
+    addTo: function(map) {
+      Control.prototype.addTo.call(this, map);
+      return this._expandIfNotCollapsed();
+    },
+    onRemove: function() {
+      this._map.off("zoomend", this._checkDisabledLayers, this);
+      for (var i = 0; i < this._layers.length; i++) {
+        this._layers[i].layer.off("add remove", this._onLayerChange, this);
+      }
+    },
+    addBaseLayer: function(layer, name) {
+      this._addLayer(layer, name);
+      return this._map ? this._update() : this;
+    },
+    addOverlay: function(layer, name) {
+      this._addLayer(layer, name, true);
+      return this._map ? this._update() : this;
+    },
+    removeLayer: function(layer) {
+      layer.off("add remove", this._onLayerChange, this);
+      var obj = this._getLayer(stamp(layer));
+      if (obj) {
+        this._layers.splice(this._layers.indexOf(obj), 1);
+      }
+      return this._map ? this._update() : this;
+    },
+    expand: function() {
+      addClass(this._container, "leaflet-control-layers-expanded");
+      this._section.style.height = null;
+      var acceptableHeight = this._map.getSize().y - (this._container.offsetTop + 50);
+      if (acceptableHeight < this._section.clientHeight) {
+        addClass(this._section, "leaflet-control-layers-scrollbar");
+        this._section.style.height = acceptableHeight + "px";
+      } else {
+        removeClass(this._section, "leaflet-control-layers-scrollbar");
+      }
+      this._checkDisabledLayers();
+      return this;
+    },
+    collapse: function() {
+      removeClass(this._container, "leaflet-control-layers-expanded");
+      return this;
+    },
+    _initLayout: function() {
+      var className = "leaflet-control-layers", container = this._container = create$1("div", className), collapsed = this.options.collapsed;
+      container.setAttribute("aria-haspopup", true);
+      disableClickPropagation(container);
+      disableScrollPropagation(container);
+      var section = this._section = create$1("section", className + "-list");
+      if (collapsed) {
+        this._map.on("click", this.collapse, this);
+        on(container, {
+          mouseenter: function() {
+            on(section, "click", preventDefault);
+            this.expand();
+            setTimeout(function() {
+              off(section, "click", preventDefault);
+            });
+          },
+          mouseleave: this.collapse
+        }, this);
+      }
+      var link = this._layersLink = create$1("a", className + "-toggle", container);
+      link.href = "#";
+      link.title = "Layers";
+      link.setAttribute("role", "button");
+      on(link, "click", preventDefault);
+      on(link, "focus", this.expand, this);
+      if (!collapsed) {
+        this.expand();
+      }
+      this._baseLayersList = create$1("div", className + "-base", section);
+      this._separator = create$1("div", className + "-separator", section);
+      this._overlaysList = create$1("div", className + "-overlays", section);
+      container.appendChild(section);
+    },
+    _getLayer: function(id) {
+      for (var i = 0; i < this._layers.length; i++) {
+        if (this._layers[i] && stamp(this._layers[i].layer) === id) {
+          return this._layers[i];
+        }
+      }
+    },
+    _addLayer: function(layer, name, overlay) {
+      if (this._map) {
+        layer.on("add remove", this._onLayerChange, this);
+      }
+      this._layers.push({
+        layer,
+        name,
+        overlay
+      });
+      if (this.options.sortLayers) {
+        this._layers.sort(bind(function(a, b) {
+          return this.options.sortFunction(a.layer, b.layer, a.name, b.name);
+        }, this));
+      }
+      if (this.options.autoZIndex && layer.setZIndex) {
+        this._lastZIndex++;
+        layer.setZIndex(this._lastZIndex);
+      }
+      this._expandIfNotCollapsed();
+    },
+    _update: function() {
+      if (!this._container) {
+        return this;
+      }
+      empty(this._baseLayersList);
+      empty(this._overlaysList);
+      this._layerControlInputs = [];
+      var baseLayersPresent, overlaysPresent, i, obj, baseLayersCount = 0;
+      for (i = 0; i < this._layers.length; i++) {
+        obj = this._layers[i];
+        this._addItem(obj);
+        overlaysPresent = overlaysPresent || obj.overlay;
+        baseLayersPresent = baseLayersPresent || !obj.overlay;
+        baseLayersCount += !obj.overlay ? 1 : 0;
+      }
+      if (this.options.hideSingleBase) {
+        baseLayersPresent = baseLayersPresent && baseLayersCount > 1;
+        this._baseLayersList.style.display = baseLayersPresent ? "" : "none";
+      }
+      this._separator.style.display = overlaysPresent && baseLayersPresent ? "" : "none";
+      return this;
+    },
+    _onLayerChange: function(e) {
+      if (!this._handlingClick) {
+        this._update();
+      }
+      var obj = this._getLayer(stamp(e.target));
+      var type = obj.overlay ? e.type === "add" ? "overlayadd" : "overlayremove" : e.type === "add" ? "baselayerchange" : null;
+      if (type) {
+        this._map.fire(type, obj);
+      }
+    },
+    _createRadioElement: function(name, checked) {
+      var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"' + (checked ? ' checked="checked"' : "") + "/>";
+      var radioFragment = document.createElement("div");
+      radioFragment.innerHTML = radioHtml;
+      return radioFragment.firstChild;
+    },
+    _addItem: function(obj) {
+      var label = document.createElement("label"), checked = this._map.hasLayer(obj.layer), input;
+      if (obj.overlay) {
+        input = document.createElement("input");
+        input.type = "checkbox";
+        input.className = "leaflet-control-layers-selector";
+        input.defaultChecked = checked;
+      } else {
+        input = this._createRadioElement("leaflet-base-layers_" + stamp(this), checked);
+      }
+      this._layerControlInputs.push(input);
+      input.layerId = stamp(obj.layer);
+      on(input, "click", this._onInputClick, this);
+      var name = document.createElement("span");
+      name.innerHTML = " " + obj.name;
+      var holder = document.createElement("span");
+      label.appendChild(holder);
+      holder.appendChild(input);
+      holder.appendChild(name);
+      var container = obj.overlay ? this._overlaysList : this._baseLayersList;
+      container.appendChild(label);
+      this._checkDisabledLayers();
+      return label;
+    },
+    _onInputClick: function() {
+      var inputs = this._layerControlInputs, input, layer;
+      var addedLayers = [], removedLayers = [];
+      this._handlingClick = true;
+      for (var i = inputs.length - 1; i >= 0; i--) {
+        input = inputs[i];
+        layer = this._getLayer(input.layerId).layer;
+        if (input.checked) {
+          addedLayers.push(layer);
+        } else if (!input.checked) {
+          removedLayers.push(layer);
+        }
+      }
+      for (i = 0; i < removedLayers.length; i++) {
+        if (this._map.hasLayer(removedLayers[i])) {
+          this._map.removeLayer(removedLayers[i]);
+        }
+      }
+      for (i = 0; i < addedLayers.length; i++) {
+        if (!this._map.hasLayer(addedLayers[i])) {
+          this._map.addLayer(addedLayers[i]);
+        }
+      }
+      this._handlingClick = false;
+      this._refocusOnMap();
+    },
+    _checkDisabledLayers: function() {
+      var inputs = this._layerControlInputs, input, layer, zoom2 = this._map.getZoom();
+      for (var i = inputs.length - 1; i >= 0; i--) {
+        input = inputs[i];
+        layer = this._getLayer(input.layerId).layer;
+        input.disabled = layer.options.minZoom !== void 0 && zoom2 < layer.options.minZoom || layer.options.maxZoom !== void 0 && zoom2 > layer.options.maxZoom;
+      }
+    },
+    _expandIfNotCollapsed: function() {
+      if (this._map && !this.options.collapsed) {
+        this.expand();
+      }
+      return this;
+    }
+  });
+  var layers = function(baseLayers, overlays, options) {
+    return new Layers(baseLayers, overlays, options);
+  };
+  var Zoom = Control.extend({
+    options: {
+      position: "topleft",
+      zoomInText: '<span aria-hidden="true">+</span>',
+      zoomInTitle: "Zoom in",
+      zoomOutText: '<span aria-hidden="true">&#x2212;</span>',
+      zoomOutTitle: "Zoom out"
+    },
+    onAdd: function(map) {
+      var zoomName = "leaflet-control-zoom", container = create$1("div", zoomName + " leaflet-bar"), options = this.options;
+      this._zoomInButton = this._createButton(options.zoomInText, options.zoomInTitle, zoomName + "-in", container, this._zoomIn);
+      this._zoomOutButton = this._createButton(options.zoomOutText, options.zoomOutTitle, zoomName + "-out", container, this._zoomOut);
+      this._updateDisabled();
+      map.on("zoomend zoomlevelschange", this._updateDisabled, this);
+      return container;
+    },
+    onRemove: function(map) {
+      map.off("zoomend zoomlevelschange", this._updateDisabled, this);
+    },
+    disable: function() {
+      this._disabled = true;
+      this._updateDisabled();
+      return this;
+    },
+    enable: function() {
+      this._disabled = false;
+      this._updateDisabled();
+      return this;
+    },
+    _zoomIn: function(e) {
+      if (!this._disabled && this._map._zoom < this._map.getMaxZoom()) {
+        this._map.zoomIn(this._map.options.zoomDelta * (e.shiftKey ? 3 : 1));
+      }
+    },
+    _zoomOut: function(e) {
+      if (!this._disabled && this._map._zoom > this._map.getMinZoom()) {
+        this._map.zoomOut(this._map.options.zoomDelta * (e.shiftKey ? 3 : 1));
+      }
+    },
+    _createButton: function(html, title, className, container, fn) {
+      var link = create$1("a", className, container);
+      link.innerHTML = html;
+      link.href = "#";
+      link.title = title;
+      link.setAttribute("role", "button");
+      link.setAttribute("aria-label", title);
+      disableClickPropagation(link);
+      on(link, "click", stop);
+      on(link, "click", fn, this);
+      on(link, "click", this._refocusOnMap, this);
+      return link;
+    },
+    _updateDisabled: function() {
+      var map = this._map, className = "leaflet-disabled";
+      removeClass(this._zoomInButton, className);
+      removeClass(this._zoomOutButton, className);
+      this._zoomInButton.setAttribute("aria-disabled", "false");
+      this._zoomOutButton.setAttribute("aria-disabled", "false");
+      if (this._disabled || map._zoom === map.getMinZoom()) {
+        addClass(this._zoomOutButton, className);
+        this._zoomOutButton.setAttribute("aria-disabled", "true");
+      }
+      if (this._disabled || map._zoom === map.getMaxZoom()) {
+        addClass(this._zoomInButton, className);
+        this._zoomInButton.setAttribute("aria-disabled", "true");
+      }
+    }
+  });
+  Map.mergeOptions({
+    zoomControl: true
+  });
+  Map.addInitHook(function() {
+    if (this.options.zoomControl) {
+      this.zoomControl = new Zoom();
+      this.addControl(this.zoomControl);
+    }
+  });
+  var zoom = function(options) {
+    return new Zoom(options);
+  };
+  var Scale = Control.extend({
+    options: {
+      position: "bottomleft",
+      maxWidth: 100,
+      metric: true,
+      imperial: true
+    },
+    onAdd: function(map) {
+      var className = "leaflet-control-scale", container = create$1("div", className), options = this.options;
+      this._addScales(options, className + "-line", container);
+      map.on(options.updateWhenIdle ? "moveend" : "move", this._update, this);
+      map.whenReady(this._update, this);
+      return container;
+    },
+    onRemove: function(map) {
+      map.off(this.options.updateWhenIdle ? "moveend" : "move", this._update, this);
+    },
+    _addScales: function(options, className, container) {
+      if (options.metric) {
+        this._mScale = create$1("div", className, container);
+      }
+      if (options.imperial) {
+        this._iScale = create$1("div", className, container);
+      }
+    },
+    _update: function() {
+      var map = this._map, y = map.getSize().y / 2;
+      var maxMeters = map.distance(map.containerPointToLatLng([0, y]), map.containerPointToLatLng([this.options.maxWidth, y]));
+      this._updateScales(maxMeters);
+    },
+    _updateScales: function(maxMeters) {
+      if (this.options.metric && maxMeters) {
+        this._updateMetric(maxMeters);
+      }
+      if (this.options.imperial && maxMeters) {
+        this._updateImperial(maxMeters);
+      }
+    },
+    _updateMetric: function(maxMeters) {
+      var meters = this._getRoundNum(maxMeters), label = meters < 1e3 ? meters + " m" : meters / 1e3 + " km";
+      this._updateScale(this._mScale, label, meters / maxMeters);
+    },
+    _updateImperial: function(maxMeters) {
+      var maxFeet = maxMeters * 3.2808399, maxMiles, miles, feet;
+      if (maxFeet > 5280) {
+        maxMiles = maxFeet / 5280;
+        miles = this._getRoundNum(maxMiles);
+        this._updateScale(this._iScale, miles + " mi", miles / maxMiles);
+      } else {
+        feet = this._getRoundNum(maxFeet);
+        this._updateScale(this._iScale, feet + " ft", feet / maxFeet);
+      }
+    },
+    _updateScale: function(scale2, text, ratio) {
+      scale2.style.width = Math.round(this.options.maxWidth * ratio) + "px";
+      scale2.innerHTML = text;
+    },
+    _getRoundNum: function(num) {
+      var pow10 = Math.pow(10, (Math.floor(num) + "").length - 1), d = num / pow10;
+      d = d >= 10 ? 10 : d >= 5 ? 5 : d >= 3 ? 3 : d >= 2 ? 2 : 1;
+      return pow10 * d;
+    }
+  });
+  var scale = function(options) {
+    return new Scale(options);
+  };
+  var ukrainianFlag = '<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8"><path fill="#4C7BE1" d="M0 0h12v4H0z"/><path fill="#FFD500" d="M0 4h12v3H0z"/><path fill="#E0BC00" d="M0 7h12v1H0z"/></svg>';
+  var Attribution = Control.extend({
+    options: {
+      position: "bottomright",
+      prefix: '<a href="https://leafletjs.com" title="A JavaScript library for interactive maps">' + (Browser.inlineSvg ? ukrainianFlag + " " : "") + "Leaflet</a>"
+    },
+    initialize: function(options) {
+      setOptions(this, options);
+      this._attributions = {};
+    },
+    onAdd: function(map) {
+      map.attributionControl = this;
+      this._container = create$1("div", "leaflet-control-attribution");
+      disableClickPropagation(this._container);
+      for (var i in map._layers) {
+        if (map._layers[i].getAttribution) {
+          this.addAttribution(map._layers[i].getAttribution());
+        }
+      }
+      this._update();
+      map.on("layeradd", this._addAttribution, this);
+      return this._container;
+    },
+    onRemove: function(map) {
+      map.off("layeradd", this._addAttribution, this);
+    },
+    _addAttribution: function(ev) {
+      if (ev.layer.getAttribution) {
+        this.addAttribution(ev.layer.getAttribution());
+        ev.layer.once("remove", function() {
+          this.removeAttribution(ev.layer.getAttribution());
+        }, this);
+      }
+    },
+    setPrefix: function(prefix) {
+      this.options.prefix = prefix;
+      this._update();
+      return this;
+    },
+    addAttribution: function(text) {
+      if (!text) {
+        return this;
+      }
+      if (!this._attributions[text]) {
+        this._attributions[text] = 0;
+      }
+      this._attributions[text]++;
+      this._update();
+      return this;
+    },
+    removeAttribution: function(text) {
+      if (!text) {
+        return this;
+      }
+      if (this._attributions[text]) {
+        this._attributions[text]--;
+        this._update();
+      }
+      return this;
+    },
+    _update: function() {
+      if (!this._map) {
+        return;
+      }
+      var attribs = [];
+      for (var i in this._attributions) {
+        if (this._attributions[i]) {
+          attribs.push(i);
+        }
+      }
+      var prefixAndAttribs = [];
+      if (this.options.prefix) {
+        prefixAndAttribs.push(this.options.prefix);
+      }
+      if (attribs.length) {
+        prefixAndAttribs.push(attribs.join(", "));
+      }
+      this._container.innerHTML = prefixAndAttribs.join(' <span aria-hidden="true">|</span> ');
+    }
+  });
+  Map.mergeOptions({
+    attributionControl: true
+  });
+  Map.addInitHook(function() {
+    if (this.options.attributionControl) {
+      new Attribution().addTo(this);
+    }
+  });
+  var attribution = function(options) {
+    return new Attribution(options);
+  };
+  Control.Layers = Layers;
+  Control.Zoom = Zoom;
+  Control.Scale = Scale;
+  Control.Attribution = Attribution;
+  control.layers = layers;
+  control.zoom = zoom;
+  control.scale = scale;
+  control.attribution = attribution;
+  var Handler = Class.extend({
+    initialize: function(map) {
+      this._map = map;
+    },
+    enable: function() {
+      if (this._enabled) {
+        return this;
+      }
+      this._enabled = true;
+      this.addHooks();
+      return this;
+    },
+    disable: function() {
+      if (!this._enabled) {
+        return this;
+      }
+      this._enabled = false;
+      this.removeHooks();
+      return this;
+    },
+    enabled: function() {
+      return !!this._enabled;
+    }
+  });
+  Handler.addTo = function(map, name) {
+    map.addHandler(name, this);
+    return this;
+  };
+  var Mixin = { Events };
+  var START = Browser.touch ? "touchstart mousedown" : "mousedown";
+  var Draggable = Evented.extend({
+    options: {
+      clickTolerance: 3
+    },
+    initialize: function(element, dragStartTarget, preventOutline2, options) {
+      setOptions(this, options);
+      this._element = element;
+      this._dragStartTarget = dragStartTarget || element;
+      this._preventOutline = preventOutline2;
+    },
+    enable: function() {
+      if (this._enabled) {
+        return;
+      }
+      on(this._dragStartTarget, START, this._onDown, this);
+      this._enabled = true;
+    },
+    disable: function() {
+      if (!this._enabled) {
+        return;
+      }
+      if (Draggable._dragging === this) {
+        this.finishDrag(true);
+      }
+      off(this._dragStartTarget, START, this._onDown, this);
+      this._enabled = false;
+      this._moved = false;
+    },
+    _onDown: function(e) {
+      if (!this._enabled) {
+        return;
+      }
+      this._moved = false;
+      if (hasClass(this._element, "leaflet-zoom-anim")) {
+        return;
+      }
+      if (e.touches && e.touches.length !== 1) {
+        if (Draggable._dragging === this) {
+          this.finishDrag();
+        }
+        return;
+      }
+      if (Draggable._dragging || e.shiftKey || e.which !== 1 && e.button !== 1 && !e.touches) {
+        return;
+      }
+      Draggable._dragging = this;
+      if (this._preventOutline) {
+        preventOutline(this._element);
+      }
+      disableImageDrag();
+      disableTextSelection();
+      if (this._moving) {
+        return;
+      }
+      this.fire("down");
+      var first = e.touches ? e.touches[0] : e, sizedParent = getSizedParentNode(this._element);
+      this._startPoint = new Point(first.clientX, first.clientY);
+      this._startPos = getPosition(this._element);
+      this._parentScale = getScale(sizedParent);
+      var mouseevent = e.type === "mousedown";
+      on(document, mouseevent ? "mousemove" : "touchmove", this._onMove, this);
+      on(document, mouseevent ? "mouseup" : "touchend touchcancel", this._onUp, this);
+    },
+    _onMove: function(e) {
+      if (!this._enabled) {
+        return;
+      }
+      if (e.touches && e.touches.length > 1) {
+        this._moved = true;
+        return;
+      }
+      var first = e.touches && e.touches.length === 1 ? e.touches[0] : e, offset = new Point(first.clientX, first.clientY)._subtract(this._startPoint);
+      if (!offset.x && !offset.y) {
+        return;
+      }
+      if (Math.abs(offset.x) + Math.abs(offset.y) < this.options.clickTolerance) {
+        return;
+      }
+      offset.x /= this._parentScale.x;
+      offset.y /= this._parentScale.y;
+      preventDefault(e);
+      if (!this._moved) {
+        this.fire("dragstart");
+        this._moved = true;
+        addClass(document.body, "leaflet-dragging");
+        this._lastTarget = e.target || e.srcElement;
+        if (window.SVGElementInstance && this._lastTarget instanceof window.SVGElementInstance) {
+          this._lastTarget = this._lastTarget.correspondingUseElement;
+        }
+        addClass(this._lastTarget, "leaflet-drag-target");
+      }
+      this._newPos = this._startPos.add(offset);
+      this._moving = true;
+      this._lastEvent = e;
+      this._updatePosition();
+    },
+    _updatePosition: function() {
+      var e = { originalEvent: this._lastEvent };
+      this.fire("predrag", e);
+      setPosition(this._element, this._newPos);
+      this.fire("drag", e);
+    },
+    _onUp: function() {
+      if (!this._enabled) {
+        return;
+      }
+      this.finishDrag();
+    },
+    finishDrag: function(noInertia) {
+      removeClass(document.body, "leaflet-dragging");
+      if (this._lastTarget) {
+        removeClass(this._lastTarget, "leaflet-drag-target");
+        this._lastTarget = null;
+      }
+      off(document, "mousemove touchmove", this._onMove, this);
+      off(document, "mouseup touchend touchcancel", this._onUp, this);
+      enableImageDrag();
+      enableTextSelection();
+      if (this._moved && this._moving) {
+        this.fire("dragend", {
+          noInertia,
+          distance: this._newPos.distanceTo(this._startPos)
+        });
+      }
+      this._moving = false;
+      Draggable._dragging = false;
+    }
+  });
+  function simplify(points, tolerance) {
+    if (!tolerance || !points.length) {
+      return points.slice();
+    }
+    var sqTolerance = tolerance * tolerance;
+    points = _reducePoints(points, sqTolerance);
+    points = _simplifyDP(points, sqTolerance);
+    return points;
+  }
+  function pointToSegmentDistance(p, p1, p2) {
+    return Math.sqrt(_sqClosestPointOnSegment(p, p1, p2, true));
+  }
+  function closestPointOnSegment(p, p1, p2) {
+    return _sqClosestPointOnSegment(p, p1, p2);
+  }
+  function _simplifyDP(points, sqTolerance) {
+    var len = points.length, ArrayConstructor = typeof Uint8Array !== void 0 + "" ? Uint8Array : Array, markers = new ArrayConstructor(len);
+    markers[0] = markers[len - 1] = 1;
+    _simplifyDPStep(points, markers, sqTolerance, 0, len - 1);
+    var i, newPoints = [];
+    for (i = 0; i < len; i++) {
+      if (markers[i]) {
+        newPoints.push(points[i]);
+      }
+    }
+    return newPoints;
+  }
+  function _simplifyDPStep(points, markers, sqTolerance, first, last) {
+    var maxSqDist = 0, index2, i, sqDist;
+    for (i = first + 1; i <= last - 1; i++) {
+      sqDist = _sqClosestPointOnSegment(points[i], points[first], points[last], true);
+      if (sqDist > maxSqDist) {
+        index2 = i;
+        maxSqDist = sqDist;
+      }
+    }
+    if (maxSqDist > sqTolerance) {
+      markers[index2] = 1;
+      _simplifyDPStep(points, markers, sqTolerance, first, index2);
+      _simplifyDPStep(points, markers, sqTolerance, index2, last);
+    }
+  }
+  function _reducePoints(points, sqTolerance) {
+    var reducedPoints = [points[0]];
+    for (var i = 1, prev = 0, len = points.length; i < len; i++) {
+      if (_sqDist(points[i], points[prev]) > sqTolerance) {
+        reducedPoints.push(points[i]);
+        prev = i;
+      }
+    }
+    if (prev < len - 1) {
+      reducedPoints.push(points[len - 1]);
+    }
+    return reducedPoints;
+  }
+  var _lastCode;
+  function clipSegment(a, b, bounds, useLastCode, round) {
+    var codeA = useLastCode ? _lastCode : _getBitCode(a, bounds), codeB = _getBitCode(b, bounds), codeOut, p, newCode;
+    _lastCode = codeB;
+    while (true) {
+      if (!(codeA | codeB)) {
+        return [a, b];
+      }
+      if (codeA & codeB) {
+        return false;
+      }
+      codeOut = codeA || codeB;
+      p = _getEdgeIntersection(a, b, codeOut, bounds, round);
+      newCode = _getBitCode(p, bounds);
+      if (codeOut === codeA) {
+        a = p;
+        codeA = newCode;
+      } else {
+        b = p;
+        codeB = newCode;
+      }
+    }
+  }
+  function _getEdgeIntersection(a, b, code, bounds, round) {
+    var dx = b.x - a.x, dy = b.y - a.y, min = bounds.min, max = bounds.max, x, y;
+    if (code & 8) {
+      x = a.x + dx * (max.y - a.y) / dy;
+      y = max.y;
+    } else if (code & 4) {
+      x = a.x + dx * (min.y - a.y) / dy;
+      y = min.y;
+    } else if (code & 2) {
+      x = max.x;
+      y = a.y + dy * (max.x - a.x) / dx;
+    } else if (code & 1) {
+      x = min.x;
+      y = a.y + dy * (min.x - a.x) / dx;
+    }
+    return new Point(x, y, round);
+  }
+  function _getBitCode(p, bounds) {
+    var code = 0;
+    if (p.x < bounds.min.x) {
+      code |= 1;
+    } else if (p.x > bounds.max.x) {
+      code |= 2;
+    }
+    if (p.y < bounds.min.y) {
+      code |= 4;
+    } else if (p.y > bounds.max.y) {
+      code |= 8;
+    }
+    return code;
+  }
+  function _sqDist(p1, p2) {
+    var dx = p2.x - p1.x, dy = p2.y - p1.y;
+    return dx * dx + dy * dy;
+  }
+  function _sqClosestPointOnSegment(p, p1, p2, sqDist) {
+    var x = p1.x, y = p1.y, dx = p2.x - x, dy = p2.y - y, dot = dx * dx + dy * dy, t;
+    if (dot > 0) {
+      t = ((p.x - x) * dx + (p.y - y) * dy) / dot;
+      if (t > 1) {
+        x = p2.x;
+        y = p2.y;
+      } else if (t > 0) {
+        x += dx * t;
+        y += dy * t;
+      }
+    }
+    dx = p.x - x;
+    dy = p.y - y;
+    return sqDist ? dx * dx + dy * dy : new Point(x, y);
+  }
+  function isFlat(latlngs) {
+    return !isArray(latlngs[0]) || typeof latlngs[0][0] !== "object" && typeof latlngs[0][0] !== "undefined";
+  }
+  function _flat(latlngs) {
+    console.warn("Deprecated use of _flat, please use L.LineUtil.isFlat instead.");
+    return isFlat(latlngs);
+  }
+  var LineUtil = {
+    __proto__: null,
+    simplify,
+    pointToSegmentDistance,
+    closestPointOnSegment,
+    clipSegment,
+    _getEdgeIntersection,
+    _getBitCode,
+    _sqClosestPointOnSegment,
+    isFlat,
+    _flat
+  };
+  function clipPolygon(points, bounds, round) {
+    var clippedPoints, edges = [1, 4, 2, 8], i, j, k, a, b, len, edge2, p;
+    for (i = 0, len = points.length; i < len; i++) {
+      points[i]._code = _getBitCode(points[i], bounds);
+    }
+    for (k = 0; k < 4; k++) {
+      edge2 = edges[k];
+      clippedPoints = [];
+      for (i = 0, len = points.length, j = len - 1; i < len; j = i++) {
+        a = points[i];
+        b = points[j];
+        if (!(a._code & edge2)) {
+          if (b._code & edge2) {
+            p = _getEdgeIntersection(b, a, edge2, bounds, round);
+            p._code = _getBitCode(p, bounds);
+            clippedPoints.push(p);
+          }
+          clippedPoints.push(a);
+        } else if (!(b._code & edge2)) {
+          p = _getEdgeIntersection(b, a, edge2, bounds, round);
+          p._code = _getBitCode(p, bounds);
+          clippedPoints.push(p);
+        }
+      }
+      points = clippedPoints;
+    }
+    return points;
+  }
+  var PolyUtil = {
+    __proto__: null,
+    clipPolygon
+  };
+  var LonLat = {
+    project: function(latlng) {
+      return new Point(latlng.lng, latlng.lat);
+    },
+    unproject: function(point) {
+      return new LatLng(point.y, point.x);
+    },
+    bounds: new Bounds([-180, -90], [180, 90])
+  };
+  var Mercator = {
+    R: 6378137,
+    R_MINOR: 6356752314245179e-9,
+    bounds: new Bounds([-2003750834279e-5, -1549657073972e-5], [2003750834279e-5, 1876465623138e-5]),
+    project: function(latlng) {
+      var d = Math.PI / 180, r = this.R, y = latlng.lat * d, tmp = this.R_MINOR / r, e = Math.sqrt(1 - tmp * tmp), con = e * Math.sin(y);
+      var ts = Math.tan(Math.PI / 4 - y / 2) / Math.pow((1 - con) / (1 + con), e / 2);
+      y = -r * Math.log(Math.max(ts, 1e-10));
+      return new Point(latlng.lng * d * r, y);
+    },
+    unproject: function(point) {
+      var d = 180 / Math.PI, r = this.R, tmp = this.R_MINOR / r, e = Math.sqrt(1 - tmp * tmp), ts = Math.exp(-point.y / r), phi = Math.PI / 2 - 2 * Math.atan(ts);
+      for (var i = 0, dphi = 0.1, con; i < 15 && Math.abs(dphi) > 1e-7; i++) {
+        con = e * Math.sin(phi);
+        con = Math.pow((1 - con) / (1 + con), e / 2);
+        dphi = Math.PI / 2 - 2 * Math.atan(ts * con) - phi;
+        phi += dphi;
+      }
+      return new LatLng(phi * d, point.x * d / r);
+    }
+  };
+  var index = {
+    __proto__: null,
+    LonLat,
+    Mercator,
+    SphericalMercator
+  };
+  var EPSG3395 = extend({}, Earth, {
+    code: "EPSG:3395",
+    projection: Mercator,
+    transformation: function() {
+      var scale2 = 0.5 / (Math.PI * Mercator.R);
+      return toTransformation(scale2, 0.5, -scale2, 0.5);
+    }()
+  });
+  var EPSG4326 = extend({}, Earth, {
+    code: "EPSG:4326",
+    projection: LonLat,
+    transformation: toTransformation(1 / 180, 1, -1 / 180, 0.5)
+  });
+  var Simple = extend({}, CRS, {
+    projection: LonLat,
+    transformation: toTransformation(1, 0, -1, 0),
+    scale: function(zoom2) {
+      return Math.pow(2, zoom2);
+    },
+    zoom: function(scale2) {
+      return Math.log(scale2) / Math.LN2;
+    },
+    distance: function(latlng1, latlng2) {
+      var dx = latlng2.lng - latlng1.lng, dy = latlng2.lat - latlng1.lat;
+      return Math.sqrt(dx * dx + dy * dy);
+    },
+    infinite: true
+  });
+  CRS.Earth = Earth;
+  CRS.EPSG3395 = EPSG3395;
+  CRS.EPSG3857 = EPSG3857;
+  CRS.EPSG900913 = EPSG900913;
+  CRS.EPSG4326 = EPSG4326;
+  CRS.Simple = Simple;
+  var Layer = Evented.extend({
+    options: {
+      pane: "overlayPane",
+      attribution: null,
+      bubblingMouseEvents: true
+    },
+    addTo: function(map) {
+      map.addLayer(this);
+      return this;
+    },
+    remove: function() {
+      return this.removeFrom(this._map || this._mapToAdd);
+    },
+    removeFrom: function(obj) {
+      if (obj) {
+        obj.removeLayer(this);
+      }
+      return this;
+    },
+    getPane: function(name) {
+      return this._map.getPane(name ? this.options[name] || name : this.options.pane);
+    },
+    addInteractiveTarget: function(targetEl) {
+      this._map._targets[stamp(targetEl)] = this;
+      return this;
+    },
+    removeInteractiveTarget: function(targetEl) {
+      delete this._map._targets[stamp(targetEl)];
+      return this;
+    },
+    getAttribution: function() {
+      return this.options.attribution;
+    },
+    _layerAdd: function(e) {
+      var map = e.target;
+      if (!map.hasLayer(this)) {
+        return;
+      }
+      this._map = map;
+      this._zoomAnimated = map._zoomAnimated;
+      if (this.getEvents) {
+        var events = this.getEvents();
+        map.on(events, this);
+        this.once("remove", function() {
+          map.off(events, this);
+        }, this);
+      }
+      this.onAdd(map);
+      this.fire("add");
+      map.fire("layeradd", { layer: this });
+    }
+  });
+  Map.include({
+    addLayer: function(layer) {
+      if (!layer._layerAdd) {
+        throw new Error("The provided object is not a Layer.");
+      }
+      var id = stamp(layer);
+      if (this._layers[id]) {
+        return this;
+      }
+      this._layers[id] = layer;
+      layer._mapToAdd = this;
+      if (layer.beforeAdd) {
+        layer.beforeAdd(this);
+      }
+      this.whenReady(layer._layerAdd, layer);
+      return this;
+    },
+    removeLayer: function(layer) {
+      var id = stamp(layer);
+      if (!this._layers[id]) {
+        return this;
+      }
+      if (this._loaded) {
+        layer.onRemove(this);
+      }
+      delete this._layers[id];
+      if (this._loaded) {
+        this.fire("layerremove", { layer });
+        layer.fire("remove");
+      }
+      layer._map = layer._mapToAdd = null;
+      return this;
+    },
+    hasLayer: function(layer) {
+      return stamp(layer) in this._layers;
+    },
+    eachLayer: function(method, context) {
+      for (var i in this._layers) {
+        method.call(context, this._layers[i]);
+      }
+      return this;
+    },
+    _addLayers: function(layers2) {
+      layers2 = layers2 ? isArray(layers2) ? layers2 : [layers2] : [];
+      for (var i = 0, len = layers2.length; i < len; i++) {
+        this.addLayer(layers2[i]);
+      }
+    },
+    _addZoomLimit: function(layer) {
+      if (!isNaN(layer.options.maxZoom) || !isNaN(layer.options.minZoom)) {
+        this._zoomBoundLayers[stamp(layer)] = layer;
+        this._updateZoomLevels();
+      }
+    },
+    _removeZoomLimit: function(layer) {
+      var id = stamp(layer);
+      if (this._zoomBoundLayers[id]) {
+        delete this._zoomBoundLayers[id];
+        this._updateZoomLevels();
+      }
+    },
+    _updateZoomLevels: function() {
+      var minZoom = Infinity, maxZoom = -Infinity, oldZoomSpan = this._getZoomSpan();
+      for (var i in this._zoomBoundLayers) {
+        var options = this._zoomBoundLayers[i].options;
+        minZoom = options.minZoom === void 0 ? minZoom : Math.min(minZoom, options.minZoom);
+        maxZoom = options.maxZoom === void 0 ? maxZoom : Math.max(maxZoom, options.maxZoom);
+      }
+      this._layersMaxZoom = maxZoom === -Infinity ? void 0 : maxZoom;
+      this._layersMinZoom = minZoom === Infinity ? void 0 : minZoom;
+      if (oldZoomSpan !== this._getZoomSpan()) {
+        this.fire("zoomlevelschange");
+      }
+      if (this.options.maxZoom === void 0 && this._layersMaxZoom && this.getZoom() > this._layersMaxZoom) {
+        this.setZoom(this._layersMaxZoom);
+      }
+      if (this.options.minZoom === void 0 && this._layersMinZoom && this.getZoom() < this._layersMinZoom) {
+        this.setZoom(this._layersMinZoom);
+      }
+    }
+  });
+  var LayerGroup = Layer.extend({
+    initialize: function(layers2, options) {
+      setOptions(this, options);
+      this._layers = {};
+      var i, len;
+      if (layers2) {
+        for (i = 0, len = layers2.length; i < len; i++) {
+          this.addLayer(layers2[i]);
+        }
+      }
+    },
+    addLayer: function(layer) {
+      var id = this.getLayerId(layer);
+      this._layers[id] = layer;
+      if (this._map) {
+        this._map.addLayer(layer);
+      }
+      return this;
+    },
+    removeLayer: function(layer) {
+      var id = layer in this._layers ? layer : this.getLayerId(layer);
+      if (this._map && this._layers[id]) {
+        this._map.removeLayer(this._layers[id]);
+      }
+      delete this._layers[id];
+      return this;
+    },
+    hasLayer: function(layer) {
+      var layerId = typeof layer === "number" ? layer : this.getLayerId(layer);
+      return layerId in this._layers;
+    },
+    clearLayers: function() {
+      return this.eachLayer(this.removeLayer, this);
+    },
+    invoke: function(methodName) {
+      var args = Array.prototype.slice.call(arguments, 1), i, layer;
+      for (i in this._layers) {
+        layer = this._layers[i];
+        if (layer[methodName]) {
+          layer[methodName].apply(layer, args);
+        }
+      }
+      return this;
+    },
+    onAdd: function(map) {
+      this.eachLayer(map.addLayer, map);
+    },
+    onRemove: function(map) {
+      this.eachLayer(map.removeLayer, map);
+    },
+    eachLayer: function(method, context) {
+      for (var i in this._layers) {
+        method.call(context, this._layers[i]);
+      }
+      return this;
+    },
+    getLayer: function(id) {
+      return this._layers[id];
+    },
+    getLayers: function() {
+      var layers2 = [];
+      this.eachLayer(layers2.push, layers2);
+      return layers2;
+    },
+    setZIndex: function(zIndex) {
+      return this.invoke("setZIndex", zIndex);
+    },
+    getLayerId: function(layer) {
+      return stamp(layer);
+    }
+  });
+  var layerGroup = function(layers2, options) {
+    return new LayerGroup(layers2, options);
+  };
+  var FeatureGroup = LayerGroup.extend({
+    addLayer: function(layer) {
+      if (this.hasLayer(layer)) {
+        return this;
+      }
+      layer.addEventParent(this);
+      LayerGroup.prototype.addLayer.call(this, layer);
+      return this.fire("layeradd", { layer });
+    },
+    removeLayer: function(layer) {
+      if (!this.hasLayer(layer)) {
+        return this;
+      }
+      if (layer in this._layers) {
+        layer = this._layers[layer];
+      }
+      layer.removeEventParent(this);
+      LayerGroup.prototype.removeLayer.call(this, layer);
+      return this.fire("layerremove", { layer });
+    },
+    setStyle: function(style2) {
+      return this.invoke("setStyle", style2);
+    },
+    bringToFront: function() {
+      return this.invoke("bringToFront");
+    },
+    bringToBack: function() {
+      return this.invoke("bringToBack");
+    },
+    getBounds: function() {
+      var bounds = new LatLngBounds();
+      for (var id in this._layers) {
+        var layer = this._layers[id];
+        bounds.extend(layer.getBounds ? layer.getBounds() : layer.getLatLng());
+      }
+      return bounds;
+    }
+  });
+  var featureGroup = function(layers2, options) {
+    return new FeatureGroup(layers2, options);
+  };
+  var Icon = Class.extend({
+    options: {
+      popupAnchor: [0, 0],
+      tooltipAnchor: [0, 0],
+      crossOrigin: false
+    },
+    initialize: function(options) {
+      setOptions(this, options);
+    },
+    createIcon: function(oldIcon) {
+      return this._createIcon("icon", oldIcon);
+    },
+    createShadow: function(oldIcon) {
+      return this._createIcon("shadow", oldIcon);
+    },
+    _createIcon: function(name, oldIcon) {
+      var src = this._getIconUrl(name);
+      if (!src) {
+        if (name === "icon") {
+          throw new Error("iconUrl not set in Icon options (see the docs).");
+        }
+        return null;
+      }
+      var img = this._createImg(src, oldIcon && oldIcon.tagName === "IMG" ? oldIcon : null);
+      this._setIconStyles(img, name);
+      if (this.options.crossOrigin || this.options.crossOrigin === "") {
+        img.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
+      }
+      return img;
+    },
+    _setIconStyles: function(img, name) {
+      var options = this.options;
+      var sizeOption = options[name + "Size"];
+      if (typeof sizeOption === "number") {
+        sizeOption = [sizeOption, sizeOption];
+      }
+      var size = toPoint(sizeOption), anchor = toPoint(name === "shadow" && options.shadowAnchor || options.iconAnchor || size && size.divideBy(2, true));
+      img.className = "leaflet-marker-" + name + " " + (options.className || "");
+      if (anchor) {
+        img.style.marginLeft = -anchor.x + "px";
+        img.style.marginTop = -anchor.y + "px";
+      }
+      if (size) {
+        img.style.width = size.x + "px";
+        img.style.height = size.y + "px";
+      }
+    },
+    _createImg: function(src, el) {
+      el = el || document.createElement("img");
+      el.src = src;
+      return el;
+    },
+    _getIconUrl: function(name) {
+      return Browser.retina && this.options[name + "RetinaUrl"] || this.options[name + "Url"];
+    }
+  });
+  function icon(options) {
+    return new Icon(options);
+  }
+  var IconDefault = Icon.extend({
+    options: {
+      iconUrl: "marker-icon.png",
+      iconRetinaUrl: "marker-icon-2x.png",
+      shadowUrl: "marker-shadow.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      tooltipAnchor: [16, -28],
+      shadowSize: [41, 41]
+    },
+    _getIconUrl: function(name) {
+      if (typeof IconDefault.imagePath !== "string") {
+        IconDefault.imagePath = this._detectIconPath();
+      }
+      return (this.options.imagePath || IconDefault.imagePath) + Icon.prototype._getIconUrl.call(this, name);
+    },
+    _stripUrl: function(path) {
+      var strip = function(str, re, idx) {
+        var match = re.exec(str);
+        return match && match[idx];
+      };
+      path = strip(path, /^url\((['"])?(.+)\1\)$/, 2);
+      return path && strip(path, /^(.*)marker-icon\.png$/, 1);
+    },
+    _detectIconPath: function() {
+      var el = create$1("div", "leaflet-default-icon-path", document.body);
+      var path = getStyle(el, "background-image") || getStyle(el, "backgroundImage");
+      document.body.removeChild(el);
+      path = this._stripUrl(path);
+      if (path) {
+        return path;
+      }
+      var link = document.querySelector('link[href$="leaflet.css"]');
+      if (!link) {
+        return "";
+      }
+      return link.href.substring(0, link.href.length - "leaflet.css".length - 1);
+    }
+  });
+  var MarkerDrag = Handler.extend({
+    initialize: function(marker2) {
+      this._marker = marker2;
+    },
+    addHooks: function() {
+      var icon2 = this._marker._icon;
+      if (!this._draggable) {
+        this._draggable = new Draggable(icon2, icon2, true);
+      }
+      this._draggable.on({
+        dragstart: this._onDragStart,
+        predrag: this._onPreDrag,
+        drag: this._onDrag,
+        dragend: this._onDragEnd
+      }, this).enable();
+      addClass(icon2, "leaflet-marker-draggable");
+    },
+    removeHooks: function() {
+      this._draggable.off({
+        dragstart: this._onDragStart,
+        predrag: this._onPreDrag,
+        drag: this._onDrag,
+        dragend: this._onDragEnd
+      }, this).disable();
+      if (this._marker._icon) {
+        removeClass(this._marker._icon, "leaflet-marker-draggable");
+      }
+    },
+    moved: function() {
+      return this._draggable && this._draggable._moved;
+    },
+    _adjustPan: function(e) {
+      var marker2 = this._marker, map = marker2._map, speed = this._marker.options.autoPanSpeed, padding = this._marker.options.autoPanPadding, iconPos = getPosition(marker2._icon), bounds = map.getPixelBounds(), origin = map.getPixelOrigin();
+      var panBounds = toBounds(bounds.min._subtract(origin).add(padding), bounds.max._subtract(origin).subtract(padding));
+      if (!panBounds.contains(iconPos)) {
+        var movement = toPoint((Math.max(panBounds.max.x, iconPos.x) - panBounds.max.x) / (bounds.max.x - panBounds.max.x) - (Math.min(panBounds.min.x, iconPos.x) - panBounds.min.x) / (bounds.min.x - panBounds.min.x), (Math.max(panBounds.max.y, iconPos.y) - panBounds.max.y) / (bounds.max.y - panBounds.max.y) - (Math.min(panBounds.min.y, iconPos.y) - panBounds.min.y) / (bounds.min.y - panBounds.min.y)).multiplyBy(speed);
+        map.panBy(movement, { animate: false });
+        this._draggable._newPos._add(movement);
+        this._draggable._startPos._add(movement);
+        setPosition(marker2._icon, this._draggable._newPos);
+        this._onDrag(e);
+        this._panRequest = requestAnimFrame(this._adjustPan.bind(this, e));
+      }
+    },
+    _onDragStart: function() {
+      this._oldLatLng = this._marker.getLatLng();
+      this._marker.closePopup && this._marker.closePopup();
+      this._marker.fire("movestart").fire("dragstart");
+    },
+    _onPreDrag: function(e) {
+      if (this._marker.options.autoPan) {
+        cancelAnimFrame(this._panRequest);
+        this._panRequest = requestAnimFrame(this._adjustPan.bind(this, e));
+      }
+    },
+    _onDrag: function(e) {
+      var marker2 = this._marker, shadow = marker2._shadow, iconPos = getPosition(marker2._icon), latlng = marker2._map.layerPointToLatLng(iconPos);
+      if (shadow) {
+        setPosition(shadow, iconPos);
+      }
+      marker2._latlng = latlng;
+      e.latlng = latlng;
+      e.oldLatLng = this._oldLatLng;
+      marker2.fire("move", e).fire("drag", e);
+    },
+    _onDragEnd: function(e) {
+      cancelAnimFrame(this._panRequest);
+      delete this._oldLatLng;
+      this._marker.fire("moveend").fire("dragend", e);
+    }
+  });
+  var Marker = Layer.extend({
+    options: {
+      icon: new IconDefault(),
+      interactive: true,
+      keyboard: true,
+      title: "",
+      alt: "Marker",
+      zIndexOffset: 0,
+      opacity: 1,
+      riseOnHover: false,
+      riseOffset: 250,
+      pane: "markerPane",
+      shadowPane: "shadowPane",
+      bubblingMouseEvents: false,
+      autoPanOnFocus: true,
+      draggable: false,
+      autoPan: false,
+      autoPanPadding: [50, 50],
+      autoPanSpeed: 10
+    },
+    initialize: function(latlng, options) {
+      setOptions(this, options);
+      this._latlng = toLatLng(latlng);
+    },
+    onAdd: function(map) {
+      this._zoomAnimated = this._zoomAnimated && map.options.markerZoomAnimation;
+      if (this._zoomAnimated) {
+        map.on("zoomanim", this._animateZoom, this);
+      }
+      this._initIcon();
+      this.update();
+    },
+    onRemove: function(map) {
+      if (this.dragging && this.dragging.enabled()) {
+        this.options.draggable = true;
+        this.dragging.removeHooks();
+      }
+      delete this.dragging;
+      if (this._zoomAnimated) {
+        map.off("zoomanim", this._animateZoom, this);
+      }
+      this._removeIcon();
+      this._removeShadow();
+    },
+    getEvents: function() {
+      return {
+        zoom: this.update,
+        viewreset: this.update
+      };
+    },
+    getLatLng: function() {
+      return this._latlng;
+    },
+    setLatLng: function(latlng) {
+      var oldLatLng = this._latlng;
+      this._latlng = toLatLng(latlng);
+      this.update();
+      return this.fire("move", { oldLatLng, latlng: this._latlng });
+    },
+    setZIndexOffset: function(offset) {
+      this.options.zIndexOffset = offset;
+      return this.update();
+    },
+    getIcon: function() {
+      return this.options.icon;
+    },
+    setIcon: function(icon2) {
+      this.options.icon = icon2;
+      if (this._map) {
+        this._initIcon();
+        this.update();
+      }
+      if (this._popup) {
+        this.bindPopup(this._popup, this._popup.options);
+      }
+      return this;
+    },
+    getElement: function() {
+      return this._icon;
+    },
+    update: function() {
+      if (this._icon && this._map) {
+        var pos = this._map.latLngToLayerPoint(this._latlng).round();
+        this._setPos(pos);
+      }
+      return this;
+    },
+    _initIcon: function() {
+      var options = this.options, classToAdd = "leaflet-zoom-" + (this._zoomAnimated ? "animated" : "hide");
+      var icon2 = options.icon.createIcon(this._icon), addIcon = false;
+      if (icon2 !== this._icon) {
+        if (this._icon) {
+          this._removeIcon();
+        }
+        addIcon = true;
+        if (options.title) {
+          icon2.title = options.title;
+        }
+        if (icon2.tagName === "IMG") {
+          icon2.alt = options.alt || "";
+        }
+      }
+      addClass(icon2, classToAdd);
+      if (options.keyboard) {
+        icon2.tabIndex = "0";
+        icon2.setAttribute("role", "button");
+      }
+      this._icon = icon2;
+      if (options.riseOnHover) {
+        this.on({
+          mouseover: this._bringToFront,
+          mouseout: this._resetZIndex
+        });
+      }
+      if (this.options.autoPanOnFocus) {
+        on(icon2, "focus", this._panOnFocus, this);
+      }
+      var newShadow = options.icon.createShadow(this._shadow), addShadow = false;
+      if (newShadow !== this._shadow) {
+        this._removeShadow();
+        addShadow = true;
+      }
+      if (newShadow) {
+        addClass(newShadow, classToAdd);
+        newShadow.alt = "";
+      }
+      this._shadow = newShadow;
+      if (options.opacity < 1) {
+        this._updateOpacity();
+      }
+      if (addIcon) {
+        this.getPane().appendChild(this._icon);
+      }
+      this._initInteraction();
+      if (newShadow && addShadow) {
+        this.getPane(options.shadowPane).appendChild(this._shadow);
+      }
+    },
+    _removeIcon: function() {
+      if (this.options.riseOnHover) {
+        this.off({
+          mouseover: this._bringToFront,
+          mouseout: this._resetZIndex
+        });
+      }
+      if (this.options.autoPanOnFocus) {
+        off(this._icon, "focus", this._panOnFocus, this);
+      }
+      remove(this._icon);
+      this.removeInteractiveTarget(this._icon);
+      this._icon = null;
+    },
+    _removeShadow: function() {
+      if (this._shadow) {
+        remove(this._shadow);
+      }
+      this._shadow = null;
+    },
+    _setPos: function(pos) {
+      if (this._icon) {
+        setPosition(this._icon, pos);
+      }
+      if (this._shadow) {
+        setPosition(this._shadow, pos);
+      }
+      this._zIndex = pos.y + this.options.zIndexOffset;
+      this._resetZIndex();
+    },
+    _updateZIndex: function(offset) {
+      if (this._icon) {
+        this._icon.style.zIndex = this._zIndex + offset;
+      }
+    },
+    _animateZoom: function(opt) {
+      var pos = this._map._latLngToNewLayerPoint(this._latlng, opt.zoom, opt.center).round();
+      this._setPos(pos);
+    },
+    _initInteraction: function() {
+      if (!this.options.interactive) {
+        return;
+      }
+      addClass(this._icon, "leaflet-interactive");
+      this.addInteractiveTarget(this._icon);
+      if (MarkerDrag) {
+        var draggable = this.options.draggable;
+        if (this.dragging) {
+          draggable = this.dragging.enabled();
+          this.dragging.disable();
+        }
+        this.dragging = new MarkerDrag(this);
+        if (draggable) {
+          this.dragging.enable();
+        }
+      }
+    },
+    setOpacity: function(opacity) {
+      this.options.opacity = opacity;
+      if (this._map) {
+        this._updateOpacity();
+      }
+      return this;
+    },
+    _updateOpacity: function() {
+      var opacity = this.options.opacity;
+      if (this._icon) {
+        setOpacity(this._icon, opacity);
+      }
+      if (this._shadow) {
+        setOpacity(this._shadow, opacity);
+      }
+    },
+    _bringToFront: function() {
+      this._updateZIndex(this.options.riseOffset);
+    },
+    _resetZIndex: function() {
+      this._updateZIndex(0);
+    },
+    _panOnFocus: function() {
+      var map = this._map;
+      if (!map) {
+        return;
+      }
+      var iconOpts = this.options.icon.options;
+      var size = iconOpts.iconSize ? toPoint(iconOpts.iconSize) : toPoint(0, 0);
+      var anchor = iconOpts.iconAnchor ? toPoint(iconOpts.iconAnchor) : toPoint(0, 0);
+      map.panInside(this._latlng, {
+        paddingTopLeft: anchor,
+        paddingBottomRight: size.subtract(anchor)
+      });
+    },
+    _getPopupAnchor: function() {
+      return this.options.icon.options.popupAnchor;
+    },
+    _getTooltipAnchor: function() {
+      return this.options.icon.options.tooltipAnchor;
+    }
+  });
+  function marker(latlng, options) {
+    return new Marker(latlng, options);
+  }
+  var Path = Layer.extend({
+    options: {
+      stroke: true,
+      color: "#3388ff",
+      weight: 3,
+      opacity: 1,
+      lineCap: "round",
+      lineJoin: "round",
+      dashArray: null,
+      dashOffset: null,
+      fill: false,
+      fillColor: null,
+      fillOpacity: 0.2,
+      fillRule: "evenodd",
+      interactive: true,
+      bubblingMouseEvents: true
+    },
+    beforeAdd: function(map) {
+      this._renderer = map.getRenderer(this);
+    },
+    onAdd: function() {
+      this._renderer._initPath(this);
+      this._reset();
+      this._renderer._addPath(this);
+    },
+    onRemove: function() {
+      this._renderer._removePath(this);
+    },
+    redraw: function() {
+      if (this._map) {
+        this._renderer._updatePath(this);
+      }
+      return this;
+    },
+    setStyle: function(style2) {
+      setOptions(this, style2);
+      if (this._renderer) {
+        this._renderer._updateStyle(this);
+        if (this.options.stroke && style2 && Object.prototype.hasOwnProperty.call(style2, "weight")) {
+          this._updateBounds();
+        }
+      }
+      return this;
+    },
+    bringToFront: function() {
+      if (this._renderer) {
+        this._renderer._bringToFront(this);
+      }
+      return this;
+    },
+    bringToBack: function() {
+      if (this._renderer) {
+        this._renderer._bringToBack(this);
+      }
+      return this;
+    },
+    getElement: function() {
+      return this._path;
+    },
+    _reset: function() {
+      this._project();
+      this._update();
+    },
+    _clickTolerance: function() {
+      return (this.options.stroke ? this.options.weight / 2 : 0) + (this._renderer.options.tolerance || 0);
+    }
+  });
+  var CircleMarker = Path.extend({
+    options: {
+      fill: true,
+      radius: 10
+    },
+    initialize: function(latlng, options) {
+      setOptions(this, options);
+      this._latlng = toLatLng(latlng);
+      this._radius = this.options.radius;
+    },
+    setLatLng: function(latlng) {
+      var oldLatLng = this._latlng;
+      this._latlng = toLatLng(latlng);
+      this.redraw();
+      return this.fire("move", { oldLatLng, latlng: this._latlng });
+    },
+    getLatLng: function() {
+      return this._latlng;
+    },
+    setRadius: function(radius) {
+      this.options.radius = this._radius = radius;
+      return this.redraw();
+    },
+    getRadius: function() {
+      return this._radius;
+    },
+    setStyle: function(options) {
+      var radius = options && options.radius || this._radius;
+      Path.prototype.setStyle.call(this, options);
+      this.setRadius(radius);
+      return this;
+    },
+    _project: function() {
+      this._point = this._map.latLngToLayerPoint(this._latlng);
+      this._updateBounds();
+    },
+    _updateBounds: function() {
+      var r = this._radius, r2 = this._radiusY || r, w = this._clickTolerance(), p = [r + w, r2 + w];
+      this._pxBounds = new Bounds(this._point.subtract(p), this._point.add(p));
+    },
+    _update: function() {
+      if (this._map) {
+        this._updatePath();
+      }
+    },
+    _updatePath: function() {
+      this._renderer._updateCircle(this);
+    },
+    _empty: function() {
+      return this._radius && !this._renderer._bounds.intersects(this._pxBounds);
+    },
+    _containsPoint: function(p) {
+      return p.distanceTo(this._point) <= this._radius + this._clickTolerance();
+    }
+  });
+  function circleMarker(latlng, options) {
+    return new CircleMarker(latlng, options);
+  }
+  var Circle = CircleMarker.extend({
+    initialize: function(latlng, options, legacyOptions) {
+      if (typeof options === "number") {
+        options = extend({}, legacyOptions, { radius: options });
+      }
+      setOptions(this, options);
+      this._latlng = toLatLng(latlng);
+      if (isNaN(this.options.radius)) {
+        throw new Error("Circle radius cannot be NaN");
+      }
+      this._mRadius = this.options.radius;
+    },
+    setRadius: function(radius) {
+      this._mRadius = radius;
+      return this.redraw();
+    },
+    getRadius: function() {
+      return this._mRadius;
+    },
+    getBounds: function() {
+      var half = [this._radius, this._radiusY || this._radius];
+      return new LatLngBounds(this._map.layerPointToLatLng(this._point.subtract(half)), this._map.layerPointToLatLng(this._point.add(half)));
+    },
+    setStyle: Path.prototype.setStyle,
+    _project: function() {
+      var lng = this._latlng.lng, lat = this._latlng.lat, map = this._map, crs = map.options.crs;
+      if (crs.distance === Earth.distance) {
+        var d = Math.PI / 180, latR = this._mRadius / Earth.R / d, top = map.project([lat + latR, lng]), bottom = map.project([lat - latR, lng]), p = top.add(bottom).divideBy(2), lat2 = map.unproject(p).lat, lngR = Math.acos((Math.cos(latR * d) - Math.sin(lat * d) * Math.sin(lat2 * d)) / (Math.cos(lat * d) * Math.cos(lat2 * d))) / d;
+        if (isNaN(lngR) || lngR === 0) {
+          lngR = latR / Math.cos(Math.PI / 180 * lat);
+        }
+        this._point = p.subtract(map.getPixelOrigin());
+        this._radius = isNaN(lngR) ? 0 : p.x - map.project([lat2, lng - lngR]).x;
+        this._radiusY = p.y - top.y;
+      } else {
+        var latlng2 = crs.unproject(crs.project(this._latlng).subtract([this._mRadius, 0]));
+        this._point = map.latLngToLayerPoint(this._latlng);
+        this._radius = this._point.x - map.latLngToLayerPoint(latlng2).x;
+      }
+      this._updateBounds();
+    }
+  });
+  function circle(latlng, options, legacyOptions) {
+    return new Circle(latlng, options, legacyOptions);
+  }
+  var Polyline = Path.extend({
+    options: {
+      smoothFactor: 1,
+      noClip: false
+    },
+    initialize: function(latlngs, options) {
+      setOptions(this, options);
+      this._setLatLngs(latlngs);
+    },
+    getLatLngs: function() {
+      return this._latlngs;
+    },
+    setLatLngs: function(latlngs) {
+      this._setLatLngs(latlngs);
+      return this.redraw();
+    },
+    isEmpty: function() {
+      return !this._latlngs.length;
+    },
+    closestLayerPoint: function(p) {
+      var minDistance = Infinity, minPoint = null, closest = _sqClosestPointOnSegment, p1, p2;
+      for (var j = 0, jLen = this._parts.length; j < jLen; j++) {
+        var points = this._parts[j];
+        for (var i = 1, len = points.length; i < len; i++) {
+          p1 = points[i - 1];
+          p2 = points[i];
+          var sqDist = closest(p, p1, p2, true);
+          if (sqDist < minDistance) {
+            minDistance = sqDist;
+            minPoint = closest(p, p1, p2);
+          }
+        }
+      }
+      if (minPoint) {
+        minPoint.distance = Math.sqrt(minDistance);
+      }
+      return minPoint;
+    },
+    getCenter: function() {
+      if (!this._map) {
+        throw new Error("Must add layer to map before using getCenter()");
+      }
+      var i, halfDist, segDist, dist, p1, p2, ratio, points = this._rings[0], len = points.length;
+      if (!len) {
+        return null;
+      }
+      for (i = 0, halfDist = 0; i < len - 1; i++) {
+        halfDist += points[i].distanceTo(points[i + 1]) / 2;
+      }
+      if (halfDist === 0) {
+        return this._map.layerPointToLatLng(points[0]);
+      }
+      for (i = 0, dist = 0; i < len - 1; i++) {
+        p1 = points[i];
+        p2 = points[i + 1];
+        segDist = p1.distanceTo(p2);
+        dist += segDist;
+        if (dist > halfDist) {
+          ratio = (dist - halfDist) / segDist;
+          return this._map.layerPointToLatLng([
+            p2.x - ratio * (p2.x - p1.x),
+            p2.y - ratio * (p2.y - p1.y)
+          ]);
+        }
+      }
+    },
+    getBounds: function() {
+      return this._bounds;
+    },
+    addLatLng: function(latlng, latlngs) {
+      latlngs = latlngs || this._defaultShape();
+      latlng = toLatLng(latlng);
+      latlngs.push(latlng);
+      this._bounds.extend(latlng);
+      return this.redraw();
+    },
+    _setLatLngs: function(latlngs) {
+      this._bounds = new LatLngBounds();
+      this._latlngs = this._convertLatLngs(latlngs);
+    },
+    _defaultShape: function() {
+      return isFlat(this._latlngs) ? this._latlngs : this._latlngs[0];
+    },
+    _convertLatLngs: function(latlngs) {
+      var result = [], flat = isFlat(latlngs);
+      for (var i = 0, len = latlngs.length; i < len; i++) {
+        if (flat) {
+          result[i] = toLatLng(latlngs[i]);
+          this._bounds.extend(result[i]);
+        } else {
+          result[i] = this._convertLatLngs(latlngs[i]);
+        }
+      }
+      return result;
+    },
+    _project: function() {
+      var pxBounds = new Bounds();
+      this._rings = [];
+      this._projectLatlngs(this._latlngs, this._rings, pxBounds);
+      if (this._bounds.isValid() && pxBounds.isValid()) {
+        this._rawPxBounds = pxBounds;
+        this._updateBounds();
+      }
+    },
+    _updateBounds: function() {
+      var w = this._clickTolerance(), p = new Point(w, w);
+      if (!this._rawPxBounds) {
+        return;
+      }
+      this._pxBounds = new Bounds([
+        this._rawPxBounds.min.subtract(p),
+        this._rawPxBounds.max.add(p)
+      ]);
+    },
+    _projectLatlngs: function(latlngs, result, projectedBounds) {
+      var flat = latlngs[0] instanceof LatLng, len = latlngs.length, i, ring;
+      if (flat) {
+        ring = [];
+        for (i = 0; i < len; i++) {
+          ring[i] = this._map.latLngToLayerPoint(latlngs[i]);
+          projectedBounds.extend(ring[i]);
+        }
+        result.push(ring);
+      } else {
+        for (i = 0; i < len; i++) {
+          this._projectLatlngs(latlngs[i], result, projectedBounds);
+        }
+      }
+    },
+    _clipPoints: function() {
+      var bounds = this._renderer._bounds;
+      this._parts = [];
+      if (!this._pxBounds || !this._pxBounds.intersects(bounds)) {
+        return;
+      }
+      if (this.options.noClip) {
+        this._parts = this._rings;
+        return;
+      }
+      var parts = this._parts, i, j, k, len, len2, segment, points;
+      for (i = 0, k = 0, len = this._rings.length; i < len; i++) {
+        points = this._rings[i];
+        for (j = 0, len2 = points.length; j < len2 - 1; j++) {
+          segment = clipSegment(points[j], points[j + 1], bounds, j, true);
+          if (!segment) {
+            continue;
+          }
+          parts[k] = parts[k] || [];
+          parts[k].push(segment[0]);
+          if (segment[1] !== points[j + 1] || j === len2 - 2) {
+            parts[k].push(segment[1]);
+            k++;
+          }
+        }
+      }
+    },
+    _simplifyPoints: function() {
+      var parts = this._parts, tolerance = this.options.smoothFactor;
+      for (var i = 0, len = parts.length; i < len; i++) {
+        parts[i] = simplify(parts[i], tolerance);
+      }
+    },
+    _update: function() {
+      if (!this._map) {
+        return;
+      }
+      this._clipPoints();
+      this._simplifyPoints();
+      this._updatePath();
+    },
+    _updatePath: function() {
+      this._renderer._updatePoly(this);
+    },
+    _containsPoint: function(p, closed) {
+      var i, j, k, len, len2, part, w = this._clickTolerance();
+      if (!this._pxBounds || !this._pxBounds.contains(p)) {
+        return false;
+      }
+      for (i = 0, len = this._parts.length; i < len; i++) {
+        part = this._parts[i];
+        for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
+          if (!closed && j === 0) {
+            continue;
+          }
+          if (pointToSegmentDistance(p, part[k], part[j]) <= w) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  });
+  function polyline(latlngs, options) {
+    return new Polyline(latlngs, options);
+  }
+  Polyline._flat = _flat;
+  var Polygon = Polyline.extend({
+    options: {
+      fill: true
+    },
+    isEmpty: function() {
+      return !this._latlngs.length || !this._latlngs[0].length;
+    },
+    getCenter: function() {
+      if (!this._map) {
+        throw new Error("Must add layer to map before using getCenter()");
+      }
+      var i, j, p1, p2, f, area, x, y, center, points = this._rings[0], len = points.length;
+      if (!len) {
+        return null;
+      }
+      area = x = y = 0;
+      for (i = 0, j = len - 1; i < len; j = i++) {
+        p1 = points[i];
+        p2 = points[j];
+        f = p1.y * p2.x - p2.y * p1.x;
+        x += (p1.x + p2.x) * f;
+        y += (p1.y + p2.y) * f;
+        area += f * 3;
+      }
+      if (area === 0) {
+        center = points[0];
+      } else {
+        center = [x / area, y / area];
+      }
+      return this._map.layerPointToLatLng(center);
+    },
+    _convertLatLngs: function(latlngs) {
+      var result = Polyline.prototype._convertLatLngs.call(this, latlngs), len = result.length;
+      if (len >= 2 && result[0] instanceof LatLng && result[0].equals(result[len - 1])) {
+        result.pop();
+      }
+      return result;
+    },
+    _setLatLngs: function(latlngs) {
+      Polyline.prototype._setLatLngs.call(this, latlngs);
+      if (isFlat(this._latlngs)) {
+        this._latlngs = [this._latlngs];
+      }
+    },
+    _defaultShape: function() {
+      return isFlat(this._latlngs[0]) ? this._latlngs[0] : this._latlngs[0][0];
+    },
+    _clipPoints: function() {
+      var bounds = this._renderer._bounds, w = this.options.weight, p = new Point(w, w);
+      bounds = new Bounds(bounds.min.subtract(p), bounds.max.add(p));
+      this._parts = [];
+      if (!this._pxBounds || !this._pxBounds.intersects(bounds)) {
+        return;
+      }
+      if (this.options.noClip) {
+        this._parts = this._rings;
+        return;
+      }
+      for (var i = 0, len = this._rings.length, clipped; i < len; i++) {
+        clipped = clipPolygon(this._rings[i], bounds, true);
+        if (clipped.length) {
+          this._parts.push(clipped);
+        }
+      }
+    },
+    _updatePath: function() {
+      this._renderer._updatePoly(this, true);
+    },
+    _containsPoint: function(p) {
+      var inside = false, part, p1, p2, i, j, k, len, len2;
+      if (!this._pxBounds || !this._pxBounds.contains(p)) {
+        return false;
+      }
+      for (i = 0, len = this._parts.length; i < len; i++) {
+        part = this._parts[i];
+        for (j = 0, len2 = part.length, k = len2 - 1; j < len2; k = j++) {
+          p1 = part[j];
+          p2 = part[k];
+          if (p1.y > p.y !== p2.y > p.y && p.x < (p2.x - p1.x) * (p.y - p1.y) / (p2.y - p1.y) + p1.x) {
+            inside = !inside;
+          }
+        }
+      }
+      return inside || Polyline.prototype._containsPoint.call(this, p, true);
+    }
+  });
+  function polygon(latlngs, options) {
+    return new Polygon(latlngs, options);
+  }
+  var GeoJSON = FeatureGroup.extend({
+    initialize: function(geojson, options) {
+      setOptions(this, options);
+      this._layers = {};
+      if (geojson) {
+        this.addData(geojson);
+      }
+    },
+    addData: function(geojson) {
+      var features = isArray(geojson) ? geojson : geojson.features, i, len, feature;
+      if (features) {
+        for (i = 0, len = features.length; i < len; i++) {
+          feature = features[i];
+          if (feature.geometries || feature.geometry || feature.features || feature.coordinates) {
+            this.addData(feature);
+          }
+        }
+        return this;
+      }
+      var options = this.options;
+      if (options.filter && !options.filter(geojson)) {
+        return this;
+      }
+      var layer = geometryToLayer(geojson, options);
+      if (!layer) {
+        return this;
+      }
+      layer.feature = asFeature(geojson);
+      layer.defaultOptions = layer.options;
+      this.resetStyle(layer);
+      if (options.onEachFeature) {
+        options.onEachFeature(geojson, layer);
+      }
+      return this.addLayer(layer);
+    },
+    resetStyle: function(layer) {
+      if (layer === void 0) {
+        return this.eachLayer(this.resetStyle, this);
+      }
+      layer.options = extend({}, layer.defaultOptions);
+      this._setLayerStyle(layer, this.options.style);
+      return this;
+    },
+    setStyle: function(style2) {
+      return this.eachLayer(function(layer) {
+        this._setLayerStyle(layer, style2);
+      }, this);
+    },
+    _setLayerStyle: function(layer, style2) {
+      if (layer.setStyle) {
+        if (typeof style2 === "function") {
+          style2 = style2(layer.feature);
+        }
+        layer.setStyle(style2);
+      }
+    }
+  });
+  function geometryToLayer(geojson, options) {
+    var geometry = geojson.type === "Feature" ? geojson.geometry : geojson, coords = geometry ? geometry.coordinates : null, layers2 = [], pointToLayer = options && options.pointToLayer, _coordsToLatLng = options && options.coordsToLatLng || coordsToLatLng, latlng, latlngs, i, len;
+    if (!coords && !geometry) {
+      return null;
+    }
+    switch (geometry.type) {
+      case "Point":
+        latlng = _coordsToLatLng(coords);
+        return _pointToLayer(pointToLayer, geojson, latlng, options);
+      case "MultiPoint":
+        for (i = 0, len = coords.length; i < len; i++) {
+          latlng = _coordsToLatLng(coords[i]);
+          layers2.push(_pointToLayer(pointToLayer, geojson, latlng, options));
+        }
+        return new FeatureGroup(layers2);
+      case "LineString":
+      case "MultiLineString":
+        latlngs = coordsToLatLngs(coords, geometry.type === "LineString" ? 0 : 1, _coordsToLatLng);
+        return new Polyline(latlngs, options);
+      case "Polygon":
+      case "MultiPolygon":
+        latlngs = coordsToLatLngs(coords, geometry.type === "Polygon" ? 1 : 2, _coordsToLatLng);
+        return new Polygon(latlngs, options);
+      case "GeometryCollection":
+        for (i = 0, len = geometry.geometries.length; i < len; i++) {
+          var layer = geometryToLayer({
+            geometry: geometry.geometries[i],
+            type: "Feature",
+            properties: geojson.properties
+          }, options);
+          if (layer) {
+            layers2.push(layer);
+          }
+        }
+        return new FeatureGroup(layers2);
+      default:
+        throw new Error("Invalid GeoJSON object.");
+    }
+  }
+  function _pointToLayer(pointToLayerFn, geojson, latlng, options) {
+    return pointToLayerFn ? pointToLayerFn(geojson, latlng) : new Marker(latlng, options && options.markersInheritOptions && options);
+  }
+  function coordsToLatLng(coords) {
+    return new LatLng(coords[1], coords[0], coords[2]);
+  }
+  function coordsToLatLngs(coords, levelsDeep, _coordsToLatLng) {
+    var latlngs = [];
+    for (var i = 0, len = coords.length, latlng; i < len; i++) {
+      latlng = levelsDeep ? coordsToLatLngs(coords[i], levelsDeep - 1, _coordsToLatLng) : (_coordsToLatLng || coordsToLatLng)(coords[i]);
+      latlngs.push(latlng);
+    }
+    return latlngs;
+  }
+  function latLngToCoords(latlng, precision) {
+    latlng = toLatLng(latlng);
+    return latlng.alt !== void 0 ? [formatNum(latlng.lng, precision), formatNum(latlng.lat, precision), formatNum(latlng.alt, precision)] : [formatNum(latlng.lng, precision), formatNum(latlng.lat, precision)];
+  }
+  function latLngsToCoords(latlngs, levelsDeep, closed, precision) {
+    var coords = [];
+    for (var i = 0, len = latlngs.length; i < len; i++) {
+      coords.push(levelsDeep ? latLngsToCoords(latlngs[i], levelsDeep - 1, closed, precision) : latLngToCoords(latlngs[i], precision));
+    }
+    if (!levelsDeep && closed) {
+      coords.push(coords[0]);
+    }
+    return coords;
+  }
+  function getFeature(layer, newGeometry) {
+    return layer.feature ? extend({}, layer.feature, { geometry: newGeometry }) : asFeature(newGeometry);
+  }
+  function asFeature(geojson) {
+    if (geojson.type === "Feature" || geojson.type === "FeatureCollection") {
+      return geojson;
+    }
+    return {
+      type: "Feature",
+      properties: {},
+      geometry: geojson
+    };
+  }
+  var PointToGeoJSON = {
+    toGeoJSON: function(precision) {
+      return getFeature(this, {
+        type: "Point",
+        coordinates: latLngToCoords(this.getLatLng(), precision)
+      });
+    }
+  };
+  Marker.include(PointToGeoJSON);
+  Circle.include(PointToGeoJSON);
+  CircleMarker.include(PointToGeoJSON);
+  Polyline.include({
+    toGeoJSON: function(precision) {
+      var multi = !isFlat(this._latlngs);
+      var coords = latLngsToCoords(this._latlngs, multi ? 1 : 0, false, precision);
+      return getFeature(this, {
+        type: (multi ? "Multi" : "") + "LineString",
+        coordinates: coords
+      });
+    }
+  });
+  Polygon.include({
+    toGeoJSON: function(precision) {
+      var holes = !isFlat(this._latlngs), multi = holes && !isFlat(this._latlngs[0]);
+      var coords = latLngsToCoords(this._latlngs, multi ? 2 : holes ? 1 : 0, true, precision);
+      if (!holes) {
+        coords = [coords];
+      }
+      return getFeature(this, {
+        type: (multi ? "Multi" : "") + "Polygon",
+        coordinates: coords
+      });
+    }
+  });
+  LayerGroup.include({
+    toMultiPoint: function(precision) {
+      var coords = [];
+      this.eachLayer(function(layer) {
+        coords.push(layer.toGeoJSON(precision).geometry.coordinates);
+      });
+      return getFeature(this, {
+        type: "MultiPoint",
+        coordinates: coords
+      });
+    },
+    toGeoJSON: function(precision) {
+      var type = this.feature && this.feature.geometry && this.feature.geometry.type;
+      if (type === "MultiPoint") {
+        return this.toMultiPoint(precision);
+      }
+      var isGeometryCollection = type === "GeometryCollection", jsons = [];
+      this.eachLayer(function(layer) {
+        if (layer.toGeoJSON) {
+          var json = layer.toGeoJSON(precision);
+          if (isGeometryCollection) {
+            jsons.push(json.geometry);
+          } else {
+            var feature = asFeature(json);
+            if (feature.type === "FeatureCollection") {
+              jsons.push.apply(jsons, feature.features);
+            } else {
+              jsons.push(feature);
+            }
+          }
+        }
+      });
+      if (isGeometryCollection) {
+        return getFeature(this, {
+          geometries: jsons,
+          type: "GeometryCollection"
+        });
+      }
+      return {
+        type: "FeatureCollection",
+        features: jsons
+      };
+    }
+  });
+  function geoJSON(geojson, options) {
+    return new GeoJSON(geojson, options);
+  }
+  var geoJson = geoJSON;
+  var ImageOverlay = Layer.extend({
+    options: {
+      opacity: 1,
+      alt: "",
+      interactive: false,
+      crossOrigin: false,
+      errorOverlayUrl: "",
+      zIndex: 1,
+      className: ""
+    },
+    initialize: function(url, bounds, options) {
+      this._url = url;
+      this._bounds = toLatLngBounds(bounds);
+      setOptions(this, options);
+    },
+    onAdd: function() {
+      if (!this._image) {
+        this._initImage();
+        if (this.options.opacity < 1) {
+          this._updateOpacity();
+        }
+      }
+      if (this.options.interactive) {
+        addClass(this._image, "leaflet-interactive");
+        this.addInteractiveTarget(this._image);
+      }
+      this.getPane().appendChild(this._image);
+      this._reset();
+    },
+    onRemove: function() {
+      remove(this._image);
+      if (this.options.interactive) {
+        this.removeInteractiveTarget(this._image);
+      }
+    },
+    setOpacity: function(opacity) {
+      this.options.opacity = opacity;
+      if (this._image) {
+        this._updateOpacity();
+      }
+      return this;
+    },
+    setStyle: function(styleOpts) {
+      if (styleOpts.opacity) {
+        this.setOpacity(styleOpts.opacity);
+      }
+      return this;
+    },
+    bringToFront: function() {
+      if (this._map) {
+        toFront(this._image);
+      }
+      return this;
+    },
+    bringToBack: function() {
+      if (this._map) {
+        toBack(this._image);
+      }
+      return this;
+    },
+    setUrl: function(url) {
+      this._url = url;
+      if (this._image) {
+        this._image.src = url;
+      }
+      return this;
+    },
+    setBounds: function(bounds) {
+      this._bounds = toLatLngBounds(bounds);
+      if (this._map) {
+        this._reset();
+      }
+      return this;
+    },
+    getEvents: function() {
+      var events = {
+        zoom: this._reset,
+        viewreset: this._reset
+      };
+      if (this._zoomAnimated) {
+        events.zoomanim = this._animateZoom;
+      }
+      return events;
+    },
+    setZIndex: function(value) {
+      this.options.zIndex = value;
+      this._updateZIndex();
+      return this;
+    },
+    getBounds: function() {
+      return this._bounds;
+    },
+    getElement: function() {
+      return this._image;
+    },
+    _initImage: function() {
+      var wasElementSupplied = this._url.tagName === "IMG";
+      var img = this._image = wasElementSupplied ? this._url : create$1("img");
+      addClass(img, "leaflet-image-layer");
+      if (this._zoomAnimated) {
+        addClass(img, "leaflet-zoom-animated");
+      }
+      if (this.options.className) {
+        addClass(img, this.options.className);
+      }
+      img.onselectstart = falseFn;
+      img.onmousemove = falseFn;
+      img.onload = bind(this.fire, this, "load");
+      img.onerror = bind(this._overlayOnError, this, "error");
+      if (this.options.crossOrigin || this.options.crossOrigin === "") {
+        img.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
+      }
+      if (this.options.zIndex) {
+        this._updateZIndex();
+      }
+      if (wasElementSupplied) {
+        this._url = img.src;
+        return;
+      }
+      img.src = this._url;
+      img.alt = this.options.alt;
+    },
+    _animateZoom: function(e) {
+      var scale2 = this._map.getZoomScale(e.zoom), offset = this._map._latLngBoundsToNewLayerBounds(this._bounds, e.zoom, e.center).min;
+      setTransform(this._image, offset, scale2);
+    },
+    _reset: function() {
+      var image = this._image, bounds = new Bounds(this._map.latLngToLayerPoint(this._bounds.getNorthWest()), this._map.latLngToLayerPoint(this._bounds.getSouthEast())), size = bounds.getSize();
+      setPosition(image, bounds.min);
+      image.style.width = size.x + "px";
+      image.style.height = size.y + "px";
+    },
+    _updateOpacity: function() {
+      setOpacity(this._image, this.options.opacity);
+    },
+    _updateZIndex: function() {
+      if (this._image && this.options.zIndex !== void 0 && this.options.zIndex !== null) {
+        this._image.style.zIndex = this.options.zIndex;
+      }
+    },
+    _overlayOnError: function() {
+      this.fire("error");
+      var errorUrl = this.options.errorOverlayUrl;
+      if (errorUrl && this._url !== errorUrl) {
+        this._url = errorUrl;
+        this._image.src = errorUrl;
+      }
+    },
+    getCenter: function() {
+      return this._bounds.getCenter();
+    }
+  });
+  var imageOverlay = function(url, bounds, options) {
+    return new ImageOverlay(url, bounds, options);
+  };
+  var VideoOverlay = ImageOverlay.extend({
+    options: {
+      autoplay: true,
+      loop: true,
+      keepAspectRatio: true,
+      muted: false,
+      playsInline: true
+    },
+    _initImage: function() {
+      var wasElementSupplied = this._url.tagName === "VIDEO";
+      var vid = this._image = wasElementSupplied ? this._url : create$1("video");
+      addClass(vid, "leaflet-image-layer");
+      if (this._zoomAnimated) {
+        addClass(vid, "leaflet-zoom-animated");
+      }
+      if (this.options.className) {
+        addClass(vid, this.options.className);
+      }
+      vid.onselectstart = falseFn;
+      vid.onmousemove = falseFn;
+      vid.onloadeddata = bind(this.fire, this, "load");
+      if (wasElementSupplied) {
+        var sourceElements = vid.getElementsByTagName("source");
+        var sources = [];
+        for (var j = 0; j < sourceElements.length; j++) {
+          sources.push(sourceElements[j].src);
+        }
+        this._url = sourceElements.length > 0 ? sources : [vid.src];
+        return;
+      }
+      if (!isArray(this._url)) {
+        this._url = [this._url];
+      }
+      if (!this.options.keepAspectRatio && Object.prototype.hasOwnProperty.call(vid.style, "objectFit")) {
+        vid.style["objectFit"] = "fill";
+      }
+      vid.autoplay = !!this.options.autoplay;
+      vid.loop = !!this.options.loop;
+      vid.muted = !!this.options.muted;
+      vid.playsInline = !!this.options.playsInline;
+      for (var i = 0; i < this._url.length; i++) {
+        var source = create$1("source");
+        source.src = this._url[i];
+        vid.appendChild(source);
+      }
+    }
+  });
+  function videoOverlay(video, bounds, options) {
+    return new VideoOverlay(video, bounds, options);
+  }
+  var SVGOverlay = ImageOverlay.extend({
+    _initImage: function() {
+      var el = this._image = this._url;
+      addClass(el, "leaflet-image-layer");
+      if (this._zoomAnimated) {
+        addClass(el, "leaflet-zoom-animated");
+      }
+      if (this.options.className) {
+        addClass(el, this.options.className);
+      }
+      el.onselectstart = falseFn;
+      el.onmousemove = falseFn;
+    }
+  });
+  function svgOverlay(el, bounds, options) {
+    return new SVGOverlay(el, bounds, options);
+  }
+  var DivOverlay = Layer.extend({
+    options: {
+      interactive: false,
+      offset: [0, 0],
+      className: "",
+      pane: void 0
+    },
+    initialize: function(options, source) {
+      setOptions(this, options);
+      this._source = source;
+    },
+    openOn: function(map) {
+      map = arguments.length ? map : this._source._map;
+      if (!map.hasLayer(this)) {
+        map.addLayer(this);
+      }
+      return this;
+    },
+    close: function() {
+      if (this._map) {
+        this._map.removeLayer(this);
+      }
+      return this;
+    },
+    toggle: function(layer) {
+      if (this._map) {
+        this.close();
+      } else {
+        if (arguments.length) {
+          this._source = layer;
+        } else {
+          layer = this._source;
+        }
+        this._prepareOpen();
+        this.openOn(layer._map);
+      }
+      return this;
+    },
+    onAdd: function(map) {
+      this._zoomAnimated = map._zoomAnimated;
+      if (!this._container) {
+        this._initLayout();
+      }
+      if (map._fadeAnimated) {
+        setOpacity(this._container, 0);
+      }
+      clearTimeout(this._removeTimeout);
+      this.getPane().appendChild(this._container);
+      this.update();
+      if (map._fadeAnimated) {
+        setOpacity(this._container, 1);
+      }
+      this.bringToFront();
+      if (this.options.interactive) {
+        addClass(this._container, "leaflet-interactive");
+        this.addInteractiveTarget(this._container);
+      }
+    },
+    onRemove: function(map) {
+      if (map._fadeAnimated) {
+        setOpacity(this._container, 0);
+        this._removeTimeout = setTimeout(bind(remove, void 0, this._container), 200);
+      } else {
+        remove(this._container);
+      }
+      if (this.options.interactive) {
+        removeClass(this._container, "leaflet-interactive");
+        this.removeInteractiveTarget(this._container);
+      }
+    },
+    getLatLng: function() {
+      return this._latlng;
+    },
+    setLatLng: function(latlng) {
+      this._latlng = toLatLng(latlng);
+      if (this._map) {
+        this._updatePosition();
+        this._adjustPan();
+      }
+      return this;
+    },
+    getContent: function() {
+      return this._content;
+    },
+    setContent: function(content) {
+      this._content = content;
+      this.update();
+      return this;
+    },
+    getElement: function() {
+      return this._container;
+    },
+    update: function() {
+      if (!this._map) {
+        return;
+      }
+      this._container.style.visibility = "hidden";
+      this._updateContent();
+      this._updateLayout();
+      this._updatePosition();
+      this._container.style.visibility = "";
+      this._adjustPan();
+    },
+    getEvents: function() {
+      var events = {
+        zoom: this._updatePosition,
+        viewreset: this._updatePosition
+      };
+      if (this._zoomAnimated) {
+        events.zoomanim = this._animateZoom;
+      }
+      return events;
+    },
+    isOpen: function() {
+      return !!this._map && this._map.hasLayer(this);
+    },
+    bringToFront: function() {
+      if (this._map) {
+        toFront(this._container);
+      }
+      return this;
+    },
+    bringToBack: function() {
+      if (this._map) {
+        toBack(this._container);
+      }
+      return this;
+    },
+    _prepareOpen: function(latlng) {
+      var source = this._source;
+      if (!source._map) {
+        return false;
+      }
+      if (source instanceof FeatureGroup) {
+        source = null;
+        var layers2 = this._source._layers;
+        for (var id in layers2) {
+          if (layers2[id]._map) {
+            source = layers2[id];
+            break;
+          }
+        }
+        if (!source) {
+          return false;
+        }
+        this._source = source;
+      }
+      if (!latlng) {
+        if (source.getCenter) {
+          latlng = source.getCenter();
+        } else if (source.getLatLng) {
+          latlng = source.getLatLng();
+        } else if (source.getBounds) {
+          latlng = source.getBounds().getCenter();
+        } else {
+          throw new Error("Unable to get source layer LatLng.");
+        }
+      }
+      this.setLatLng(latlng);
+      if (this._map) {
+        this.update();
+      }
+      return true;
+    },
+    _updateContent: function() {
+      if (!this._content) {
+        return;
+      }
+      var node = this._contentNode;
+      var content = typeof this._content === "function" ? this._content(this._source || this) : this._content;
+      if (typeof content === "string") {
+        node.innerHTML = content;
+      } else {
+        while (node.hasChildNodes()) {
+          node.removeChild(node.firstChild);
+        }
+        node.appendChild(content);
+      }
+      this.fire("contentupdate");
+    },
+    _updatePosition: function() {
+      if (!this._map) {
+        return;
+      }
+      var pos = this._map.latLngToLayerPoint(this._latlng), offset = toPoint(this.options.offset), anchor = this._getAnchor();
+      if (this._zoomAnimated) {
+        setPosition(this._container, pos.add(anchor));
+      } else {
+        offset = offset.add(pos).add(anchor);
+      }
+      var bottom = this._containerBottom = -offset.y, left = this._containerLeft = -Math.round(this._containerWidth / 2) + offset.x;
+      this._container.style.bottom = bottom + "px";
+      this._container.style.left = left + "px";
+    },
+    _getAnchor: function() {
+      return [0, 0];
+    }
+  });
+  Map.include({
+    _initOverlay: function(OverlayClass, content, latlng, options) {
+      var overlay = content;
+      if (!(overlay instanceof OverlayClass)) {
+        overlay = new OverlayClass(options).setContent(content);
+      }
+      if (latlng) {
+        overlay.setLatLng(latlng);
+      }
+      return overlay;
+    }
+  });
+  Layer.include({
+    _initOverlay: function(OverlayClass, old, content, options) {
+      var overlay = content;
+      if (overlay instanceof OverlayClass) {
+        setOptions(overlay, options);
+        overlay._source = this;
+      } else {
+        overlay = old && !options ? old : new OverlayClass(options, this);
+        overlay.setContent(content);
+      }
+      return overlay;
+    }
+  });
+  var Popup = DivOverlay.extend({
+    options: {
+      pane: "popupPane",
+      offset: [0, 7],
+      maxWidth: 300,
+      minWidth: 50,
+      maxHeight: null,
+      autoPan: true,
+      autoPanPaddingTopLeft: null,
+      autoPanPaddingBottomRight: null,
+      autoPanPadding: [5, 5],
+      keepInView: false,
+      closeButton: true,
+      autoClose: true,
+      closeOnEscapeKey: true,
+      className: ""
+    },
+    openOn: function(map) {
+      map = arguments.length ? map : this._source._map;
+      if (!map.hasLayer(this) && map._popup && map._popup.options.autoClose) {
+        map.removeLayer(map._popup);
+      }
+      map._popup = this;
+      return DivOverlay.prototype.openOn.call(this, map);
+    },
+    onAdd: function(map) {
+      DivOverlay.prototype.onAdd.call(this, map);
+      map.fire("popupopen", { popup: this });
+      if (this._source) {
+        this._source.fire("popupopen", { popup: this }, true);
+        if (!(this._source instanceof Path)) {
+          this._source.on("preclick", stopPropagation);
+        }
+      }
+    },
+    onRemove: function(map) {
+      DivOverlay.prototype.onRemove.call(this, map);
+      map.fire("popupclose", { popup: this });
+      if (this._source) {
+        this._source.fire("popupclose", { popup: this }, true);
+        if (!(this._source instanceof Path)) {
+          this._source.off("preclick", stopPropagation);
+        }
+      }
+    },
+    getEvents: function() {
+      var events = DivOverlay.prototype.getEvents.call(this);
+      if (this.options.closeOnClick !== void 0 ? this.options.closeOnClick : this._map.options.closePopupOnClick) {
+        events.preclick = this.close;
+      }
+      if (this.options.keepInView) {
+        events.moveend = this._adjustPan;
+      }
+      return events;
+    },
+    _initLayout: function() {
+      var prefix = "leaflet-popup", container = this._container = create$1("div", prefix + " " + (this.options.className || "") + " leaflet-zoom-animated");
+      var wrapper = this._wrapper = create$1("div", prefix + "-content-wrapper", container);
+      this._contentNode = create$1("div", prefix + "-content", wrapper);
+      disableClickPropagation(container);
+      disableScrollPropagation(this._contentNode);
+      on(container, "contextmenu", stopPropagation);
+      this._tipContainer = create$1("div", prefix + "-tip-container", container);
+      this._tip = create$1("div", prefix + "-tip", this._tipContainer);
+      if (this.options.closeButton) {
+        var closeButton = this._closeButton = create$1("a", prefix + "-close-button", container);
+        closeButton.setAttribute("role", "button");
+        closeButton.setAttribute("aria-label", "Close popup");
+        closeButton.href = "#close";
+        closeButton.innerHTML = '<span aria-hidden="true">&#215;</span>';
+        on(closeButton, "click", this.close, this);
+      }
+    },
+    _updateLayout: function() {
+      var container = this._contentNode, style2 = container.style;
+      style2.width = "";
+      style2.whiteSpace = "nowrap";
+      var width = container.offsetWidth;
+      width = Math.min(width, this.options.maxWidth);
+      width = Math.max(width, this.options.minWidth);
+      style2.width = width + 1 + "px";
+      style2.whiteSpace = "";
+      style2.height = "";
+      var height = container.offsetHeight, maxHeight = this.options.maxHeight, scrolledClass = "leaflet-popup-scrolled";
+      if (maxHeight && height > maxHeight) {
+        style2.height = maxHeight + "px";
+        addClass(container, scrolledClass);
+      } else {
+        removeClass(container, scrolledClass);
+      }
+      this._containerWidth = this._container.offsetWidth;
+    },
+    _animateZoom: function(e) {
+      var pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center), anchor = this._getAnchor();
+      setPosition(this._container, pos.add(anchor));
+    },
+    _adjustPan: function(e) {
+      if (!this.options.autoPan) {
+        return;
+      }
+      if (this._map._panAnim) {
+        this._map._panAnim.stop();
+      }
+      var map = this._map, marginBottom = parseInt(getStyle(this._container, "marginBottom"), 10) || 0, containerHeight = this._container.offsetHeight + marginBottom, containerWidth = this._containerWidth, layerPos = new Point(this._containerLeft, -containerHeight - this._containerBottom);
+      layerPos._add(getPosition(this._container));
+      var containerPos = map.layerPointToContainerPoint(layerPos), padding = toPoint(this.options.autoPanPadding), paddingTL = toPoint(this.options.autoPanPaddingTopLeft || padding), paddingBR = toPoint(this.options.autoPanPaddingBottomRight || padding), size = map.getSize(), dx = 0, dy = 0;
+      if (containerPos.x + containerWidth + paddingBR.x > size.x) {
+        dx = containerPos.x + containerWidth - size.x + paddingBR.x;
+      }
+      if (containerPos.x - dx - paddingTL.x < 0) {
+        dx = containerPos.x - paddingTL.x;
+      }
+      if (containerPos.y + containerHeight + paddingBR.y > size.y) {
+        dy = containerPos.y + containerHeight - size.y + paddingBR.y;
+      }
+      if (containerPos.y - dy - paddingTL.y < 0) {
+        dy = containerPos.y - paddingTL.y;
+      }
+      if (dx || dy) {
+        map.fire("autopanstart").panBy([dx, dy], { animate: e && e.type === "moveend" });
+      }
+    },
+    _getAnchor: function() {
+      return toPoint(this._source && this._source._getPopupAnchor ? this._source._getPopupAnchor() : [0, 0]);
+    }
+  });
+  var popup = function(options, source) {
+    return new Popup(options, source);
+  };
+  Map.mergeOptions({
+    closePopupOnClick: true
+  });
+  Map.include({
+    openPopup: function(popup2, latlng, options) {
+      this._initOverlay(Popup, popup2, latlng, options).openOn(this);
+      return this;
+    },
+    closePopup: function(popup2) {
+      popup2 = arguments.length ? popup2 : this._popup;
+      if (popup2) {
+        popup2.close();
+      }
+      return this;
+    }
+  });
+  Layer.include({
+    bindPopup: function(content, options) {
+      this._popup = this._initOverlay(Popup, this._popup, content, options);
+      if (!this._popupHandlersAdded) {
+        this.on({
+          click: this._openPopup,
+          keypress: this._onKeyPress,
+          remove: this.closePopup,
+          move: this._movePopup
+        });
+        this._popupHandlersAdded = true;
+      }
+      return this;
+    },
+    unbindPopup: function() {
+      if (this._popup) {
+        this.off({
+          click: this._openPopup,
+          keypress: this._onKeyPress,
+          remove: this.closePopup,
+          move: this._movePopup
+        });
+        this._popupHandlersAdded = false;
+        this._popup = null;
+      }
+      return this;
+    },
+    openPopup: function(latlng) {
+      if (this._popup && this._popup._prepareOpen(latlng)) {
+        this._popup.openOn(this._map);
+      }
+      return this;
+    },
+    closePopup: function() {
+      if (this._popup) {
+        this._popup.close();
+      }
+      return this;
+    },
+    togglePopup: function() {
+      if (this._popup) {
+        this._popup.toggle(this);
+      }
+      return this;
+    },
+    isPopupOpen: function() {
+      return this._popup ? this._popup.isOpen() : false;
+    },
+    setPopupContent: function(content) {
+      if (this._popup) {
+        this._popup.setContent(content);
+      }
+      return this;
+    },
+    getPopup: function() {
+      return this._popup;
+    },
+    _openPopup: function(e) {
+      if (!this._popup || !this._map) {
+        return;
+      }
+      stop(e);
+      var target = e.layer || e.target;
+      if (this._popup._source === target && !(target instanceof Path)) {
+        if (this._map.hasLayer(this._popup)) {
+          this.closePopup();
+        } else {
+          this.openPopup(e.latlng);
+        }
+        return;
+      }
+      this._popup._source = target;
+      this.openPopup(e.latlng);
+    },
+    _movePopup: function(e) {
+      this._popup.setLatLng(e.latlng);
+    },
+    _onKeyPress: function(e) {
+      if (e.originalEvent.keyCode === 13) {
+        this._openPopup(e);
+      }
+    }
+  });
+  var Tooltip = DivOverlay.extend({
+    options: {
+      pane: "tooltipPane",
+      offset: [0, 0],
+      direction: "auto",
+      permanent: false,
+      sticky: false,
+      opacity: 0.9
+    },
+    onAdd: function(map) {
+      DivOverlay.prototype.onAdd.call(this, map);
+      this.setOpacity(this.options.opacity);
+      map.fire("tooltipopen", { tooltip: this });
+      if (this._source) {
+        this.addEventParent(this._source);
+        this._source.fire("tooltipopen", { tooltip: this }, true);
+      }
+    },
+    onRemove: function(map) {
+      DivOverlay.prototype.onRemove.call(this, map);
+      map.fire("tooltipclose", { tooltip: this });
+      if (this._source) {
+        this.removeEventParent(this._source);
+        this._source.fire("tooltipclose", { tooltip: this }, true);
+      }
+    },
+    getEvents: function() {
+      var events = DivOverlay.prototype.getEvents.call(this);
+      if (!this.options.permanent) {
+        events.preclick = this.close;
+      }
+      return events;
+    },
+    _initLayout: function() {
+      var prefix = "leaflet-tooltip", className = prefix + " " + (this.options.className || "") + " leaflet-zoom-" + (this._zoomAnimated ? "animated" : "hide");
+      this._contentNode = this._container = create$1("div", className);
+    },
+    _updateLayout: function() {
+    },
+    _adjustPan: function() {
+    },
+    _setPosition: function(pos) {
+      var subX, subY, map = this._map, container = this._container, centerPoint = map.latLngToContainerPoint(map.getCenter()), tooltipPoint = map.layerPointToContainerPoint(pos), direction = this.options.direction, tooltipWidth = container.offsetWidth, tooltipHeight = container.offsetHeight, offset = toPoint(this.options.offset), anchor = this._getAnchor();
+      if (direction === "top") {
+        subX = tooltipWidth / 2;
+        subY = tooltipHeight;
+      } else if (direction === "bottom") {
+        subX = tooltipWidth / 2;
+        subY = 0;
+      } else if (direction === "center") {
+        subX = tooltipWidth / 2;
+        subY = tooltipHeight / 2;
+      } else if (direction === "right") {
+        subX = 0;
+        subY = tooltipHeight / 2;
+      } else if (direction === "left") {
+        subX = tooltipWidth;
+        subY = tooltipHeight / 2;
+      } else if (tooltipPoint.x < centerPoint.x) {
+        direction = "right";
+        subX = 0;
+        subY = tooltipHeight / 2;
+      } else {
+        direction = "left";
+        subX = tooltipWidth + (offset.x + anchor.x) * 2;
+        subY = tooltipHeight / 2;
+      }
+      pos = pos.subtract(toPoint(subX, subY, true)).add(offset).add(anchor);
+      removeClass(container, "leaflet-tooltip-right");
+      removeClass(container, "leaflet-tooltip-left");
+      removeClass(container, "leaflet-tooltip-top");
+      removeClass(container, "leaflet-tooltip-bottom");
+      addClass(container, "leaflet-tooltip-" + direction);
+      setPosition(container, pos);
+    },
+    _updatePosition: function() {
+      var pos = this._map.latLngToLayerPoint(this._latlng);
+      this._setPosition(pos);
+    },
+    setOpacity: function(opacity) {
+      this.options.opacity = opacity;
+      if (this._container) {
+        setOpacity(this._container, opacity);
+      }
+    },
+    _animateZoom: function(e) {
+      var pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center);
+      this._setPosition(pos);
+    },
+    _getAnchor: function() {
+      return toPoint(this._source && this._source._getTooltipAnchor && !this.options.sticky ? this._source._getTooltipAnchor() : [0, 0]);
+    }
+  });
+  var tooltip = function(options, source) {
+    return new Tooltip(options, source);
+  };
+  Map.include({
+    openTooltip: function(tooltip2, latlng, options) {
+      this._initOverlay(Tooltip, tooltip2, latlng, options).openOn(this);
+      return this;
+    },
+    closeTooltip: function(tooltip2) {
+      tooltip2.close();
+      return this;
+    }
+  });
+  Layer.include({
+    bindTooltip: function(content, options) {
+      if (this._tooltip && this.isTooltipOpen()) {
+        this.unbindTooltip();
+      }
+      this._tooltip = this._initOverlay(Tooltip, this._tooltip, content, options);
+      this._initTooltipInteractions();
+      if (this._tooltip.options.permanent && this._map && this._map.hasLayer(this)) {
+        this.openTooltip();
+      }
+      return this;
+    },
+    unbindTooltip: function() {
+      if (this._tooltip) {
+        this._initTooltipInteractions(true);
+        this.closeTooltip();
+        this._tooltip = null;
+      }
+      return this;
+    },
+    _initTooltipInteractions: function(remove2) {
+      if (!remove2 && this._tooltipHandlersAdded) {
+        return;
+      }
+      var onOff = remove2 ? "off" : "on", events = {
+        remove: this.closeTooltip,
+        move: this._moveTooltip
+      };
+      if (!this._tooltip.options.permanent) {
+        events.mouseover = this._openTooltip;
+        events.mouseout = this.closeTooltip;
+        events.click = this._openTooltip;
+      } else {
+        events.add = this._openTooltip;
+      }
+      if (this._tooltip.options.sticky) {
+        events.mousemove = this._moveTooltip;
+      }
+      this[onOff](events);
+      this._tooltipHandlersAdded = !remove2;
+    },
+    openTooltip: function(latlng) {
+      if (this._tooltip && this._tooltip._prepareOpen(latlng)) {
+        this._tooltip.openOn(this._map);
+      }
+      return this;
+    },
+    closeTooltip: function() {
+      if (this._tooltip) {
+        return this._tooltip.close();
+      }
+    },
+    toggleTooltip: function() {
+      if (this._tooltip) {
+        this._tooltip.toggle(this);
+      }
+      return this;
+    },
+    isTooltipOpen: function() {
+      return this._tooltip.isOpen();
+    },
+    setTooltipContent: function(content) {
+      if (this._tooltip) {
+        this._tooltip.setContent(content);
+      }
+      return this;
+    },
+    getTooltip: function() {
+      return this._tooltip;
+    },
+    _openTooltip: function(e) {
+      if (!this._tooltip || !this._map || this._map.dragging && this._map.dragging.moving()) {
+        return;
+      }
+      this._tooltip._source = e.layer || e.target;
+      this.openTooltip(this._tooltip.options.sticky ? e.latlng : void 0);
+    },
+    _moveTooltip: function(e) {
+      var latlng = e.latlng, containerPoint, layerPoint;
+      if (this._tooltip.options.sticky && e.originalEvent) {
+        containerPoint = this._map.mouseEventToContainerPoint(e.originalEvent);
+        layerPoint = this._map.containerPointToLayerPoint(containerPoint);
+        latlng = this._map.layerPointToLatLng(layerPoint);
+      }
+      this._tooltip.setLatLng(latlng);
+    }
+  });
+  var DivIcon = Icon.extend({
+    options: {
+      iconSize: [12, 12],
+      html: false,
+      bgPos: null,
+      className: "leaflet-div-icon"
+    },
+    createIcon: function(oldIcon) {
+      var div = oldIcon && oldIcon.tagName === "DIV" ? oldIcon : document.createElement("div"), options = this.options;
+      if (options.html instanceof Element) {
+        empty(div);
+        div.appendChild(options.html);
+      } else {
+        div.innerHTML = options.html !== false ? options.html : "";
+      }
+      if (options.bgPos) {
+        var bgPos = toPoint(options.bgPos);
+        div.style.backgroundPosition = -bgPos.x + "px " + -bgPos.y + "px";
+      }
+      this._setIconStyles(div, "icon");
+      return div;
+    },
+    createShadow: function() {
+      return null;
+    }
+  });
+  function divIcon(options) {
+    return new DivIcon(options);
+  }
+  Icon.Default = IconDefault;
+  var GridLayer = Layer.extend({
+    options: {
+      tileSize: 256,
+      opacity: 1,
+      updateWhenIdle: Browser.mobile,
+      updateWhenZooming: true,
+      updateInterval: 200,
+      zIndex: 1,
+      bounds: null,
+      minZoom: 0,
+      maxZoom: void 0,
+      maxNativeZoom: void 0,
+      minNativeZoom: void 0,
+      noWrap: false,
+      pane: "tilePane",
+      className: "",
+      keepBuffer: 2
+    },
+    initialize: function(options) {
+      setOptions(this, options);
+    },
+    onAdd: function() {
+      this._initContainer();
+      this._levels = {};
+      this._tiles = {};
+      this._resetView();
+    },
+    beforeAdd: function(map) {
+      map._addZoomLimit(this);
+    },
+    onRemove: function(map) {
+      this._removeAllTiles();
+      remove(this._container);
+      map._removeZoomLimit(this);
+      this._container = null;
+      this._tileZoom = void 0;
+    },
+    bringToFront: function() {
+      if (this._map) {
+        toFront(this._container);
+        this._setAutoZIndex(Math.max);
+      }
+      return this;
+    },
+    bringToBack: function() {
+      if (this._map) {
+        toBack(this._container);
+        this._setAutoZIndex(Math.min);
+      }
+      return this;
+    },
+    getContainer: function() {
+      return this._container;
+    },
+    setOpacity: function(opacity) {
+      this.options.opacity = opacity;
+      this._updateOpacity();
+      return this;
+    },
+    setZIndex: function(zIndex) {
+      this.options.zIndex = zIndex;
+      this._updateZIndex();
+      return this;
+    },
+    isLoading: function() {
+      return this._loading;
+    },
+    redraw: function() {
+      if (this._map) {
+        this._removeAllTiles();
+        var tileZoom = this._clampZoom(this._map.getZoom());
+        if (tileZoom !== this._tileZoom) {
+          this._tileZoom = tileZoom;
+          this._updateLevels();
+        }
+        this._update();
+      }
+      return this;
+    },
+    getEvents: function() {
+      var events = {
+        viewprereset: this._invalidateAll,
+        viewreset: this._resetView,
+        zoom: this._resetView,
+        moveend: this._onMoveEnd
+      };
+      if (!this.options.updateWhenIdle) {
+        if (!this._onMove) {
+          this._onMove = throttle(this._onMoveEnd, this.options.updateInterval, this);
+        }
+        events.move = this._onMove;
+      }
+      if (this._zoomAnimated) {
+        events.zoomanim = this._animateZoom;
+      }
+      return events;
+    },
+    createTile: function() {
+      return document.createElement("div");
+    },
+    getTileSize: function() {
+      var s = this.options.tileSize;
+      return s instanceof Point ? s : new Point(s, s);
+    },
+    _updateZIndex: function() {
+      if (this._container && this.options.zIndex !== void 0 && this.options.zIndex !== null) {
+        this._container.style.zIndex = this.options.zIndex;
+      }
+    },
+    _setAutoZIndex: function(compare) {
+      var layers2 = this.getPane().children, edgeZIndex = -compare(-Infinity, Infinity);
+      for (var i = 0, len = layers2.length, zIndex; i < len; i++) {
+        zIndex = layers2[i].style.zIndex;
+        if (layers2[i] !== this._container && zIndex) {
+          edgeZIndex = compare(edgeZIndex, +zIndex);
+        }
+      }
+      if (isFinite(edgeZIndex)) {
+        this.options.zIndex = edgeZIndex + compare(-1, 1);
+        this._updateZIndex();
+      }
+    },
+    _updateOpacity: function() {
+      if (!this._map) {
+        return;
+      }
+      if (Browser.ielt9) {
+        return;
+      }
+      setOpacity(this._container, this.options.opacity);
+      var now = +new Date(), nextFrame = false, willPrune = false;
+      for (var key in this._tiles) {
+        var tile = this._tiles[key];
+        if (!tile.current || !tile.loaded) {
+          continue;
+        }
+        var fade = Math.min(1, (now - tile.loaded) / 200);
+        setOpacity(tile.el, fade);
+        if (fade < 1) {
+          nextFrame = true;
+        } else {
+          if (tile.active) {
+            willPrune = true;
+          } else {
+            this._onOpaqueTile(tile);
+          }
+          tile.active = true;
+        }
+      }
+      if (willPrune && !this._noPrune) {
+        this._pruneTiles();
+      }
+      if (nextFrame) {
+        cancelAnimFrame(this._fadeFrame);
+        this._fadeFrame = requestAnimFrame(this._updateOpacity, this);
+      }
+    },
+    _onOpaqueTile: falseFn,
+    _initContainer: function() {
+      if (this._container) {
+        return;
+      }
+      this._container = create$1("div", "leaflet-layer " + (this.options.className || ""));
+      this._updateZIndex();
+      if (this.options.opacity < 1) {
+        this._updateOpacity();
+      }
+      this.getPane().appendChild(this._container);
+    },
+    _updateLevels: function() {
+      var zoom2 = this._tileZoom, maxZoom = this.options.maxZoom;
+      if (zoom2 === void 0) {
+        return void 0;
+      }
+      for (var z in this._levels) {
+        z = Number(z);
+        if (this._levels[z].el.children.length || z === zoom2) {
+          this._levels[z].el.style.zIndex = maxZoom - Math.abs(zoom2 - z);
+          this._onUpdateLevel(z);
+        } else {
+          remove(this._levels[z].el);
+          this._removeTilesAtZoom(z);
+          this._onRemoveLevel(z);
+          delete this._levels[z];
+        }
+      }
+      var level = this._levels[zoom2], map = this._map;
+      if (!level) {
+        level = this._levels[zoom2] = {};
+        level.el = create$1("div", "leaflet-tile-container leaflet-zoom-animated", this._container);
+        level.el.style.zIndex = maxZoom;
+        level.origin = map.project(map.unproject(map.getPixelOrigin()), zoom2).round();
+        level.zoom = zoom2;
+        this._setZoomTransform(level, map.getCenter(), map.getZoom());
+        falseFn(level.el.offsetWidth);
+        this._onCreateLevel(level);
+      }
+      this._level = level;
+      return level;
+    },
+    _onUpdateLevel: falseFn,
+    _onRemoveLevel: falseFn,
+    _onCreateLevel: falseFn,
+    _pruneTiles: function() {
+      if (!this._map) {
+        return;
+      }
+      var key, tile;
+      var zoom2 = this._map.getZoom();
+      if (zoom2 > this.options.maxZoom || zoom2 < this.options.minZoom) {
+        this._removeAllTiles();
+        return;
+      }
+      for (key in this._tiles) {
+        tile = this._tiles[key];
+        tile.retain = tile.current;
+      }
+      for (key in this._tiles) {
+        tile = this._tiles[key];
+        if (tile.current && !tile.active) {
+          var coords = tile.coords;
+          if (!this._retainParent(coords.x, coords.y, coords.z, coords.z - 5)) {
+            this._retainChildren(coords.x, coords.y, coords.z, coords.z + 2);
+          }
+        }
+      }
+      for (key in this._tiles) {
+        if (!this._tiles[key].retain) {
+          this._removeTile(key);
+        }
+      }
+    },
+    _removeTilesAtZoom: function(zoom2) {
+      for (var key in this._tiles) {
+        if (this._tiles[key].coords.z !== zoom2) {
+          continue;
+        }
+        this._removeTile(key);
+      }
+    },
+    _removeAllTiles: function() {
+      for (var key in this._tiles) {
+        this._removeTile(key);
+      }
+    },
+    _invalidateAll: function() {
+      for (var z in this._levels) {
+        remove(this._levels[z].el);
+        this._onRemoveLevel(Number(z));
+        delete this._levels[z];
+      }
+      this._removeAllTiles();
+      this._tileZoom = void 0;
+    },
+    _retainParent: function(x, y, z, minZoom) {
+      var x2 = Math.floor(x / 2), y2 = Math.floor(y / 2), z2 = z - 1, coords2 = new Point(+x2, +y2);
+      coords2.z = +z2;
+      var key = this._tileCoordsToKey(coords2), tile = this._tiles[key];
+      if (tile && tile.active) {
+        tile.retain = true;
+        return true;
+      } else if (tile && tile.loaded) {
+        tile.retain = true;
+      }
+      if (z2 > minZoom) {
+        return this._retainParent(x2, y2, z2, minZoom);
+      }
+      return false;
+    },
+    _retainChildren: function(x, y, z, maxZoom) {
+      for (var i = 2 * x; i < 2 * x + 2; i++) {
+        for (var j = 2 * y; j < 2 * y + 2; j++) {
+          var coords = new Point(i, j);
+          coords.z = z + 1;
+          var key = this._tileCoordsToKey(coords), tile = this._tiles[key];
+          if (tile && tile.active) {
+            tile.retain = true;
+            continue;
+          } else if (tile && tile.loaded) {
+            tile.retain = true;
+          }
+          if (z + 1 < maxZoom) {
+            this._retainChildren(i, j, z + 1, maxZoom);
+          }
+        }
+      }
+    },
+    _resetView: function(e) {
+      var animating = e && (e.pinch || e.flyTo);
+      this._setView(this._map.getCenter(), this._map.getZoom(), animating, animating);
+    },
+    _animateZoom: function(e) {
+      this._setView(e.center, e.zoom, true, e.noUpdate);
+    },
+    _clampZoom: function(zoom2) {
+      var options = this.options;
+      if (options.minNativeZoom !== void 0 && zoom2 < options.minNativeZoom) {
+        return options.minNativeZoom;
+      }
+      if (options.maxNativeZoom !== void 0 && options.maxNativeZoom < zoom2) {
+        return options.maxNativeZoom;
+      }
+      return zoom2;
+    },
+    _setView: function(center, zoom2, noPrune, noUpdate) {
+      var tileZoom = Math.round(zoom2);
+      if (this.options.maxZoom !== void 0 && tileZoom > this.options.maxZoom || this.options.minZoom !== void 0 && tileZoom < this.options.minZoom) {
+        tileZoom = void 0;
+      } else {
+        tileZoom = this._clampZoom(tileZoom);
+      }
+      var tileZoomChanged = this.options.updateWhenZooming && tileZoom !== this._tileZoom;
+      if (!noUpdate || tileZoomChanged) {
+        this._tileZoom = tileZoom;
+        if (this._abortLoading) {
+          this._abortLoading();
+        }
+        this._updateLevels();
+        this._resetGrid();
+        if (tileZoom !== void 0) {
+          this._update(center);
+        }
+        if (!noPrune) {
+          this._pruneTiles();
+        }
+        this._noPrune = !!noPrune;
+      }
+      this._setZoomTransforms(center, zoom2);
+    },
+    _setZoomTransforms: function(center, zoom2) {
+      for (var i in this._levels) {
+        this._setZoomTransform(this._levels[i], center, zoom2);
+      }
+    },
+    _setZoomTransform: function(level, center, zoom2) {
+      var scale2 = this._map.getZoomScale(zoom2, level.zoom), translate = level.origin.multiplyBy(scale2).subtract(this._map._getNewPixelOrigin(center, zoom2)).round();
+      if (Browser.any3d) {
+        setTransform(level.el, translate, scale2);
+      } else {
+        setPosition(level.el, translate);
+      }
+    },
+    _resetGrid: function() {
+      var map = this._map, crs = map.options.crs, tileSize = this._tileSize = this.getTileSize(), tileZoom = this._tileZoom;
+      var bounds = this._map.getPixelWorldBounds(this._tileZoom);
+      if (bounds) {
+        this._globalTileRange = this._pxBoundsToTileRange(bounds);
+      }
+      this._wrapX = crs.wrapLng && !this.options.noWrap && [
+        Math.floor(map.project([0, crs.wrapLng[0]], tileZoom).x / tileSize.x),
+        Math.ceil(map.project([0, crs.wrapLng[1]], tileZoom).x / tileSize.y)
+      ];
+      this._wrapY = crs.wrapLat && !this.options.noWrap && [
+        Math.floor(map.project([crs.wrapLat[0], 0], tileZoom).y / tileSize.x),
+        Math.ceil(map.project([crs.wrapLat[1], 0], tileZoom).y / tileSize.y)
+      ];
+    },
+    _onMoveEnd: function() {
+      if (!this._map || this._map._animatingZoom) {
+        return;
+      }
+      this._update();
+    },
+    _getTiledPixelBounds: function(center) {
+      var map = this._map, mapZoom = map._animatingZoom ? Math.max(map._animateToZoom, map.getZoom()) : map.getZoom(), scale2 = map.getZoomScale(mapZoom, this._tileZoom), pixelCenter = map.project(center, this._tileZoom).floor(), halfSize = map.getSize().divideBy(scale2 * 2);
+      return new Bounds(pixelCenter.subtract(halfSize), pixelCenter.add(halfSize));
+    },
+    _update: function(center) {
+      var map = this._map;
+      if (!map) {
+        return;
+      }
+      var zoom2 = this._clampZoom(map.getZoom());
+      if (center === void 0) {
+        center = map.getCenter();
+      }
+      if (this._tileZoom === void 0) {
+        return;
+      }
+      var pixelBounds = this._getTiledPixelBounds(center), tileRange = this._pxBoundsToTileRange(pixelBounds), tileCenter = tileRange.getCenter(), queue = [], margin = this.options.keepBuffer, noPruneRange = new Bounds(tileRange.getBottomLeft().subtract([margin, -margin]), tileRange.getTopRight().add([margin, -margin]));
+      if (!(isFinite(tileRange.min.x) && isFinite(tileRange.min.y) && isFinite(tileRange.max.x) && isFinite(tileRange.max.y))) {
+        throw new Error("Attempted to load an infinite number of tiles");
+      }
+      for (var key in this._tiles) {
+        var c = this._tiles[key].coords;
+        if (c.z !== this._tileZoom || !noPruneRange.contains(new Point(c.x, c.y))) {
+          this._tiles[key].current = false;
+        }
+      }
+      if (Math.abs(zoom2 - this._tileZoom) > 1) {
+        this._setView(center, zoom2);
+        return;
+      }
+      for (var j = tileRange.min.y; j <= tileRange.max.y; j++) {
+        for (var i = tileRange.min.x; i <= tileRange.max.x; i++) {
+          var coords = new Point(i, j);
+          coords.z = this._tileZoom;
+          if (!this._isValidTile(coords)) {
+            continue;
+          }
+          var tile = this._tiles[this._tileCoordsToKey(coords)];
+          if (tile) {
+            tile.current = true;
+          } else {
+            queue.push(coords);
+          }
+        }
+      }
+      queue.sort(function(a, b) {
+        return a.distanceTo(tileCenter) - b.distanceTo(tileCenter);
+      });
+      if (queue.length !== 0) {
+        if (!this._loading) {
+          this._loading = true;
+          this.fire("loading");
+        }
+        var fragment = document.createDocumentFragment();
+        for (i = 0; i < queue.length; i++) {
+          this._addTile(queue[i], fragment);
+        }
+        this._level.el.appendChild(fragment);
+      }
+    },
+    _isValidTile: function(coords) {
+      var crs = this._map.options.crs;
+      if (!crs.infinite) {
+        var bounds = this._globalTileRange;
+        if (!crs.wrapLng && (coords.x < bounds.min.x || coords.x > bounds.max.x) || !crs.wrapLat && (coords.y < bounds.min.y || coords.y > bounds.max.y)) {
+          return false;
+        }
+      }
+      if (!this.options.bounds) {
+        return true;
+      }
+      var tileBounds = this._tileCoordsToBounds(coords);
+      return toLatLngBounds(this.options.bounds).overlaps(tileBounds);
+    },
+    _keyToBounds: function(key) {
+      return this._tileCoordsToBounds(this._keyToTileCoords(key));
+    },
+    _tileCoordsToNwSe: function(coords) {
+      var map = this._map, tileSize = this.getTileSize(), nwPoint = coords.scaleBy(tileSize), sePoint = nwPoint.add(tileSize), nw = map.unproject(nwPoint, coords.z), se = map.unproject(sePoint, coords.z);
+      return [nw, se];
+    },
+    _tileCoordsToBounds: function(coords) {
+      var bp = this._tileCoordsToNwSe(coords), bounds = new LatLngBounds(bp[0], bp[1]);
+      if (!this.options.noWrap) {
+        bounds = this._map.wrapLatLngBounds(bounds);
+      }
+      return bounds;
+    },
+    _tileCoordsToKey: function(coords) {
+      return coords.x + ":" + coords.y + ":" + coords.z;
+    },
+    _keyToTileCoords: function(key) {
+      var k = key.split(":"), coords = new Point(+k[0], +k[1]);
+      coords.z = +k[2];
+      return coords;
+    },
+    _removeTile: function(key) {
+      var tile = this._tiles[key];
+      if (!tile) {
+        return;
+      }
+      remove(tile.el);
+      delete this._tiles[key];
+      this.fire("tileunload", {
+        tile: tile.el,
+        coords: this._keyToTileCoords(key)
+      });
+    },
+    _initTile: function(tile) {
+      addClass(tile, "leaflet-tile");
+      var tileSize = this.getTileSize();
+      tile.style.width = tileSize.x + "px";
+      tile.style.height = tileSize.y + "px";
+      tile.onselectstart = falseFn;
+      tile.onmousemove = falseFn;
+      if (Browser.ielt9 && this.options.opacity < 1) {
+        setOpacity(tile, this.options.opacity);
+      }
+    },
+    _addTile: function(coords, container) {
+      var tilePos = this._getTilePos(coords), key = this._tileCoordsToKey(coords);
+      var tile = this.createTile(this._wrapCoords(coords), bind(this._tileReady, this, coords));
+      this._initTile(tile);
+      if (this.createTile.length < 2) {
+        requestAnimFrame(bind(this._tileReady, this, coords, null, tile));
+      }
+      setPosition(tile, tilePos);
+      this._tiles[key] = {
+        el: tile,
+        coords,
+        current: true
+      };
+      container.appendChild(tile);
+      this.fire("tileloadstart", {
+        tile,
+        coords
+      });
+    },
+    _tileReady: function(coords, err, tile) {
+      if (err) {
+        this.fire("tileerror", {
+          error: err,
+          tile,
+          coords
+        });
+      }
+      var key = this._tileCoordsToKey(coords);
+      tile = this._tiles[key];
+      if (!tile) {
+        return;
+      }
+      tile.loaded = +new Date();
+      if (this._map._fadeAnimated) {
+        setOpacity(tile.el, 0);
+        cancelAnimFrame(this._fadeFrame);
+        this._fadeFrame = requestAnimFrame(this._updateOpacity, this);
+      } else {
+        tile.active = true;
+        this._pruneTiles();
+      }
+      if (!err) {
+        addClass(tile.el, "leaflet-tile-loaded");
+        this.fire("tileload", {
+          tile: tile.el,
+          coords
+        });
+      }
+      if (this._noTilesToLoad()) {
+        this._loading = false;
+        this.fire("load");
+        if (Browser.ielt9 || !this._map._fadeAnimated) {
+          requestAnimFrame(this._pruneTiles, this);
+        } else {
+          setTimeout(bind(this._pruneTiles, this), 250);
+        }
+      }
+    },
+    _getTilePos: function(coords) {
+      return coords.scaleBy(this.getTileSize()).subtract(this._level.origin);
+    },
+    _wrapCoords: function(coords) {
+      var newCoords = new Point(this._wrapX ? wrapNum(coords.x, this._wrapX) : coords.x, this._wrapY ? wrapNum(coords.y, this._wrapY) : coords.y);
+      newCoords.z = coords.z;
+      return newCoords;
+    },
+    _pxBoundsToTileRange: function(bounds) {
+      var tileSize = this.getTileSize();
+      return new Bounds(bounds.min.unscaleBy(tileSize).floor(), bounds.max.unscaleBy(tileSize).ceil().subtract([1, 1]));
+    },
+    _noTilesToLoad: function() {
+      for (var key in this._tiles) {
+        if (!this._tiles[key].loaded) {
+          return false;
+        }
+      }
+      return true;
+    }
+  });
+  function gridLayer(options) {
+    return new GridLayer(options);
+  }
+  var TileLayer = GridLayer.extend({
+    options: {
+      minZoom: 0,
+      maxZoom: 18,
+      subdomains: "abc",
+      errorTileUrl: "",
+      zoomOffset: 0,
+      tms: false,
+      zoomReverse: false,
+      detectRetina: false,
+      crossOrigin: false,
+      referrerPolicy: false
+    },
+    initialize: function(url, options) {
+      this._url = url;
+      options = setOptions(this, options);
+      if (options.detectRetina && Browser.retina && options.maxZoom > 0) {
+        options.tileSize = Math.floor(options.tileSize / 2);
+        if (!options.zoomReverse) {
+          options.zoomOffset++;
+          options.maxZoom--;
+        } else {
+          options.zoomOffset--;
+          options.minZoom++;
+        }
+        options.minZoom = Math.max(0, options.minZoom);
+      }
+      if (typeof options.subdomains === "string") {
+        options.subdomains = options.subdomains.split("");
+      }
+      this.on("tileunload", this._onTileRemove);
+    },
+    setUrl: function(url, noRedraw) {
+      if (this._url === url && noRedraw === void 0) {
+        noRedraw = true;
+      }
+      this._url = url;
+      if (!noRedraw) {
+        this.redraw();
+      }
+      return this;
+    },
+    createTile: function(coords, done) {
+      var tile = document.createElement("img");
+      on(tile, "load", bind(this._tileOnLoad, this, done, tile));
+      on(tile, "error", bind(this._tileOnError, this, done, tile));
+      if (this.options.crossOrigin || this.options.crossOrigin === "") {
+        tile.crossOrigin = this.options.crossOrigin === true ? "" : this.options.crossOrigin;
+      }
+      if (typeof this.options.referrerPolicy === "string") {
+        tile.referrerPolicy = this.options.referrerPolicy;
+      }
+      tile.alt = "";
+      tile.setAttribute("role", "presentation");
+      tile.src = this.getTileUrl(coords);
+      return tile;
+    },
+    getTileUrl: function(coords) {
+      var data = {
+        r: Browser.retina ? "@2x" : "",
+        s: this._getSubdomain(coords),
+        x: coords.x,
+        y: coords.y,
+        z: this._getZoomForUrl()
+      };
+      if (this._map && !this._map.options.crs.infinite) {
+        var invertedY = this._globalTileRange.max.y - coords.y;
+        if (this.options.tms) {
+          data["y"] = invertedY;
+        }
+        data["-y"] = invertedY;
+      }
+      return template(this._url, extend(data, this.options));
+    },
+    _tileOnLoad: function(done, tile) {
+      if (Browser.ielt9) {
+        setTimeout(bind(done, this, null, tile), 0);
+      } else {
+        done(null, tile);
+      }
+    },
+    _tileOnError: function(done, tile, e) {
+      var errorUrl = this.options.errorTileUrl;
+      if (errorUrl && tile.getAttribute("src") !== errorUrl) {
+        tile.src = errorUrl;
+      }
+      done(e, tile);
+    },
+    _onTileRemove: function(e) {
+      e.tile.onload = null;
+    },
+    _getZoomForUrl: function() {
+      var zoom2 = this._tileZoom, maxZoom = this.options.maxZoom, zoomReverse = this.options.zoomReverse, zoomOffset = this.options.zoomOffset;
+      if (zoomReverse) {
+        zoom2 = maxZoom - zoom2;
+      }
+      return zoom2 + zoomOffset;
+    },
+    _getSubdomain: function(tilePoint) {
+      var index2 = Math.abs(tilePoint.x + tilePoint.y) % this.options.subdomains.length;
+      return this.options.subdomains[index2];
+    },
+    _abortLoading: function() {
+      var i, tile;
+      for (i in this._tiles) {
+        if (this._tiles[i].coords.z !== this._tileZoom) {
+          tile = this._tiles[i].el;
+          tile.onload = falseFn;
+          tile.onerror = falseFn;
+          if (!tile.complete) {
+            tile.src = emptyImageUrl;
+            var coords = this._tiles[i].coords;
+            remove(tile);
+            delete this._tiles[i];
+            this.fire("tileabort", {
+              tile,
+              coords
+            });
+          }
+        }
+      }
+    },
+    _removeTile: function(key) {
+      var tile = this._tiles[key];
+      if (!tile) {
+        return;
+      }
+      tile.el.setAttribute("src", emptyImageUrl);
+      return GridLayer.prototype._removeTile.call(this, key);
+    },
+    _tileReady: function(coords, err, tile) {
+      if (!this._map || tile && tile.getAttribute("src") === emptyImageUrl) {
+        return;
+      }
+      return GridLayer.prototype._tileReady.call(this, coords, err, tile);
+    }
+  });
+  function tileLayer(url, options) {
+    return new TileLayer(url, options);
+  }
+  var TileLayerWMS = TileLayer.extend({
+    defaultWmsParams: {
+      service: "WMS",
+      request: "GetMap",
+      layers: "",
+      styles: "",
+      format: "image/jpeg",
+      transparent: false,
+      version: "1.1.1"
+    },
+    options: {
+      crs: null,
+      uppercase: false
+    },
+    initialize: function(url, options) {
+      this._url = url;
+      var wmsParams = extend({}, this.defaultWmsParams);
+      for (var i in options) {
+        if (!(i in this.options)) {
+          wmsParams[i] = options[i];
+        }
+      }
+      options = setOptions(this, options);
+      var realRetina = options.detectRetina && Browser.retina ? 2 : 1;
+      var tileSize = this.getTileSize();
+      wmsParams.width = tileSize.x * realRetina;
+      wmsParams.height = tileSize.y * realRetina;
+      this.wmsParams = wmsParams;
+    },
+    onAdd: function(map) {
+      this._crs = this.options.crs || map.options.crs;
+      this._wmsVersion = parseFloat(this.wmsParams.version);
+      var projectionKey = this._wmsVersion >= 1.3 ? "crs" : "srs";
+      this.wmsParams[projectionKey] = this._crs.code;
+      TileLayer.prototype.onAdd.call(this, map);
+    },
+    getTileUrl: function(coords) {
+      var tileBounds = this._tileCoordsToNwSe(coords), crs = this._crs, bounds = toBounds(crs.project(tileBounds[0]), crs.project(tileBounds[1])), min = bounds.min, max = bounds.max, bbox = (this._wmsVersion >= 1.3 && this._crs === EPSG4326 ? [min.y, min.x, max.y, max.x] : [min.x, min.y, max.x, max.y]).join(","), url = TileLayer.prototype.getTileUrl.call(this, coords);
+      return url + getParamString(this.wmsParams, url, this.options.uppercase) + (this.options.uppercase ? "&BBOX=" : "&bbox=") + bbox;
+    },
+    setParams: function(params, noRedraw) {
+      extend(this.wmsParams, params);
+      if (!noRedraw) {
+        this.redraw();
+      }
+      return this;
+    }
+  });
+  function tileLayerWMS(url, options) {
+    return new TileLayerWMS(url, options);
+  }
+  TileLayer.WMS = TileLayerWMS;
+  tileLayer.wms = tileLayerWMS;
+  var Renderer = Layer.extend({
+    options: {
+      padding: 0.1
+    },
+    initialize: function(options) {
+      setOptions(this, options);
+      stamp(this);
+      this._layers = this._layers || {};
+    },
+    onAdd: function() {
+      if (!this._container) {
+        this._initContainer();
+        if (this._zoomAnimated) {
+          addClass(this._container, "leaflet-zoom-animated");
+        }
+      }
+      this.getPane().appendChild(this._container);
+      this._update();
+      this.on("update", this._updatePaths, this);
+    },
+    onRemove: function() {
+      this.off("update", this._updatePaths, this);
+      this._destroyContainer();
+    },
+    getEvents: function() {
+      var events = {
+        viewreset: this._reset,
+        zoom: this._onZoom,
+        moveend: this._update,
+        zoomend: this._onZoomEnd
+      };
+      if (this._zoomAnimated) {
+        events.zoomanim = this._onAnimZoom;
+      }
+      return events;
+    },
+    _onAnimZoom: function(ev) {
+      this._updateTransform(ev.center, ev.zoom);
+    },
+    _onZoom: function() {
+      this._updateTransform(this._map.getCenter(), this._map.getZoom());
+    },
+    _updateTransform: function(center, zoom2) {
+      var scale2 = this._map.getZoomScale(zoom2, this._zoom), viewHalf = this._map.getSize().multiplyBy(0.5 + this.options.padding), currentCenterPoint = this._map.project(this._center, zoom2), topLeftOffset = viewHalf.multiplyBy(-scale2).add(currentCenterPoint).subtract(this._map._getNewPixelOrigin(center, zoom2));
+      if (Browser.any3d) {
+        setTransform(this._container, topLeftOffset, scale2);
+      } else {
+        setPosition(this._container, topLeftOffset);
+      }
+    },
+    _reset: function() {
+      this._update();
+      this._updateTransform(this._center, this._zoom);
+      for (var id in this._layers) {
+        this._layers[id]._reset();
+      }
+    },
+    _onZoomEnd: function() {
+      for (var id in this._layers) {
+        this._layers[id]._project();
+      }
+    },
+    _updatePaths: function() {
+      for (var id in this._layers) {
+        this._layers[id]._update();
+      }
+    },
+    _update: function() {
+      var p = this.options.padding, size = this._map.getSize(), min = this._map.containerPointToLayerPoint(size.multiplyBy(-p)).round();
+      this._bounds = new Bounds(min, min.add(size.multiplyBy(1 + p * 2)).round());
+      this._center = this._map.getCenter();
+      this._zoom = this._map.getZoom();
+    }
+  });
+  var Canvas = Renderer.extend({
+    options: {
+      tolerance: 0
+    },
+    getEvents: function() {
+      var events = Renderer.prototype.getEvents.call(this);
+      events.viewprereset = this._onViewPreReset;
+      return events;
+    },
+    _onViewPreReset: function() {
+      this._postponeUpdatePaths = true;
+    },
+    onAdd: function() {
+      Renderer.prototype.onAdd.call(this);
+      this._draw();
+    },
+    _initContainer: function() {
+      var container = this._container = document.createElement("canvas");
+      on(container, "mousemove", this._onMouseMove, this);
+      on(container, "click dblclick mousedown mouseup contextmenu", this._onClick, this);
+      on(container, "mouseout", this._handleMouseOut, this);
+      container["_leaflet_disable_events"] = true;
+      this._ctx = container.getContext("2d");
+    },
+    _destroyContainer: function() {
+      cancelAnimFrame(this._redrawRequest);
+      delete this._ctx;
+      remove(this._container);
+      off(this._container);
+      delete this._container;
+    },
+    _updatePaths: function() {
+      if (this._postponeUpdatePaths) {
+        return;
+      }
+      var layer;
+      this._redrawBounds = null;
+      for (var id in this._layers) {
+        layer = this._layers[id];
+        layer._update();
+      }
+      this._redraw();
+    },
+    _update: function() {
+      if (this._map._animatingZoom && this._bounds) {
+        return;
+      }
+      Renderer.prototype._update.call(this);
+      var b = this._bounds, container = this._container, size = b.getSize(), m = Browser.retina ? 2 : 1;
+      setPosition(container, b.min);
+      container.width = m * size.x;
+      container.height = m * size.y;
+      container.style.width = size.x + "px";
+      container.style.height = size.y + "px";
+      if (Browser.retina) {
+        this._ctx.scale(2, 2);
+      }
+      this._ctx.translate(-b.min.x, -b.min.y);
+      this.fire("update");
+    },
+    _reset: function() {
+      Renderer.prototype._reset.call(this);
+      if (this._postponeUpdatePaths) {
+        this._postponeUpdatePaths = false;
+        this._updatePaths();
+      }
+    },
+    _initPath: function(layer) {
+      this._updateDashArray(layer);
+      this._layers[stamp(layer)] = layer;
+      var order = layer._order = {
+        layer,
+        prev: this._drawLast,
+        next: null
+      };
+      if (this._drawLast) {
+        this._drawLast.next = order;
+      }
+      this._drawLast = order;
+      this._drawFirst = this._drawFirst || this._drawLast;
+    },
+    _addPath: function(layer) {
+      this._requestRedraw(layer);
+    },
+    _removePath: function(layer) {
+      var order = layer._order;
+      var next = order.next;
+      var prev = order.prev;
+      if (next) {
+        next.prev = prev;
+      } else {
+        this._drawLast = prev;
+      }
+      if (prev) {
+        prev.next = next;
+      } else {
+        this._drawFirst = next;
+      }
+      delete layer._order;
+      delete this._layers[stamp(layer)];
+      this._requestRedraw(layer);
+    },
+    _updatePath: function(layer) {
+      this._extendRedrawBounds(layer);
+      layer._project();
+      layer._update();
+      this._requestRedraw(layer);
+    },
+    _updateStyle: function(layer) {
+      this._updateDashArray(layer);
+      this._requestRedraw(layer);
+    },
+    _updateDashArray: function(layer) {
+      if (typeof layer.options.dashArray === "string") {
+        var parts = layer.options.dashArray.split(/[, ]+/), dashArray = [], dashValue, i;
+        for (i = 0; i < parts.length; i++) {
+          dashValue = Number(parts[i]);
+          if (isNaN(dashValue)) {
+            return;
+          }
+          dashArray.push(dashValue);
+        }
+        layer.options._dashArray = dashArray;
+      } else {
+        layer.options._dashArray = layer.options.dashArray;
+      }
+    },
+    _requestRedraw: function(layer) {
+      if (!this._map) {
+        return;
+      }
+      this._extendRedrawBounds(layer);
+      this._redrawRequest = this._redrawRequest || requestAnimFrame(this._redraw, this);
+    },
+    _extendRedrawBounds: function(layer) {
+      if (layer._pxBounds) {
+        var padding = (layer.options.weight || 0) + 1;
+        this._redrawBounds = this._redrawBounds || new Bounds();
+        this._redrawBounds.extend(layer._pxBounds.min.subtract([padding, padding]));
+        this._redrawBounds.extend(layer._pxBounds.max.add([padding, padding]));
+      }
+    },
+    _redraw: function() {
+      this._redrawRequest = null;
+      if (this._redrawBounds) {
+        this._redrawBounds.min._floor();
+        this._redrawBounds.max._ceil();
+      }
+      this._clear();
+      this._draw();
+      this._redrawBounds = null;
+    },
+    _clear: function() {
+      var bounds = this._redrawBounds;
+      if (bounds) {
+        var size = bounds.getSize();
+        this._ctx.clearRect(bounds.min.x, bounds.min.y, size.x, size.y);
+      } else {
+        this._ctx.save();
+        this._ctx.setTransform(1, 0, 0, 1, 0, 0);
+        this._ctx.clearRect(0, 0, this._container.width, this._container.height);
+        this._ctx.restore();
+      }
+    },
+    _draw: function() {
+      var layer, bounds = this._redrawBounds;
+      this._ctx.save();
+      if (bounds) {
+        var size = bounds.getSize();
+        this._ctx.beginPath();
+        this._ctx.rect(bounds.min.x, bounds.min.y, size.x, size.y);
+        this._ctx.clip();
+      }
+      this._drawing = true;
+      for (var order = this._drawFirst; order; order = order.next) {
+        layer = order.layer;
+        if (!bounds || layer._pxBounds && layer._pxBounds.intersects(bounds)) {
+          layer._updatePath();
+        }
+      }
+      this._drawing = false;
+      this._ctx.restore();
+    },
+    _updatePoly: function(layer, closed) {
+      if (!this._drawing) {
+        return;
+      }
+      var i, j, len2, p, parts = layer._parts, len = parts.length, ctx = this._ctx;
+      if (!len) {
+        return;
+      }
+      ctx.beginPath();
+      for (i = 0; i < len; i++) {
+        for (j = 0, len2 = parts[i].length; j < len2; j++) {
+          p = parts[i][j];
+          ctx[j ? "lineTo" : "moveTo"](p.x, p.y);
+        }
+        if (closed) {
+          ctx.closePath();
+        }
+      }
+      this._fillStroke(ctx, layer);
+    },
+    _updateCircle: function(layer) {
+      if (!this._drawing || layer._empty()) {
+        return;
+      }
+      var p = layer._point, ctx = this._ctx, r = Math.max(Math.round(layer._radius), 1), s = (Math.max(Math.round(layer._radiusY), 1) || r) / r;
+      if (s !== 1) {
+        ctx.save();
+        ctx.scale(1, s);
+      }
+      ctx.beginPath();
+      ctx.arc(p.x, p.y / s, r, 0, Math.PI * 2, false);
+      if (s !== 1) {
+        ctx.restore();
+      }
+      this._fillStroke(ctx, layer);
+    },
+    _fillStroke: function(ctx, layer) {
+      var options = layer.options;
+      if (options.fill) {
+        ctx.globalAlpha = options.fillOpacity;
+        ctx.fillStyle = options.fillColor || options.color;
+        ctx.fill(options.fillRule || "evenodd");
+      }
+      if (options.stroke && options.weight !== 0) {
+        if (ctx.setLineDash) {
+          ctx.setLineDash(layer.options && layer.options._dashArray || []);
+        }
+        ctx.globalAlpha = options.opacity;
+        ctx.lineWidth = options.weight;
+        ctx.strokeStyle = options.color;
+        ctx.lineCap = options.lineCap;
+        ctx.lineJoin = options.lineJoin;
+        ctx.stroke();
+      }
+    },
+    _onClick: function(e) {
+      var point = this._map.mouseEventToLayerPoint(e), layer, clickedLayer;
+      for (var order = this._drawFirst; order; order = order.next) {
+        layer = order.layer;
+        if (layer.options.interactive && layer._containsPoint(point)) {
+          if (!(e.type === "click" || e.type === "preclick") || !this._map._draggableMoved(layer)) {
+            clickedLayer = layer;
+          }
+        }
+      }
+      this._fireEvent(clickedLayer ? [clickedLayer] : false, e);
+    },
+    _onMouseMove: function(e) {
+      if (!this._map || this._map.dragging.moving() || this._map._animatingZoom) {
+        return;
+      }
+      var point = this._map.mouseEventToLayerPoint(e);
+      this._handleMouseHover(e, point);
+    },
+    _handleMouseOut: function(e) {
+      var layer = this._hoveredLayer;
+      if (layer) {
+        removeClass(this._container, "leaflet-interactive");
+        this._fireEvent([layer], e, "mouseout");
+        this._hoveredLayer = null;
+        this._mouseHoverThrottled = false;
+      }
+    },
+    _handleMouseHover: function(e, point) {
+      if (this._mouseHoverThrottled) {
+        return;
+      }
+      var layer, candidateHoveredLayer;
+      for (var order = this._drawFirst; order; order = order.next) {
+        layer = order.layer;
+        if (layer.options.interactive && layer._containsPoint(point)) {
+          candidateHoveredLayer = layer;
+        }
+      }
+      if (candidateHoveredLayer !== this._hoveredLayer) {
+        this._handleMouseOut(e);
+        if (candidateHoveredLayer) {
+          addClass(this._container, "leaflet-interactive");
+          this._fireEvent([candidateHoveredLayer], e, "mouseover");
+          this._hoveredLayer = candidateHoveredLayer;
+        }
+      }
+      this._fireEvent(this._hoveredLayer ? [this._hoveredLayer] : false, e);
+      this._mouseHoverThrottled = true;
+      setTimeout(bind(function() {
+        this._mouseHoverThrottled = false;
+      }, this), 32);
+    },
+    _fireEvent: function(layers2, e, type) {
+      this._map._fireDOMEvent(e, type || e.type, layers2);
+    },
+    _bringToFront: function(layer) {
+      var order = layer._order;
+      if (!order) {
+        return;
+      }
+      var next = order.next;
+      var prev = order.prev;
+      if (next) {
+        next.prev = prev;
+      } else {
+        return;
+      }
+      if (prev) {
+        prev.next = next;
+      } else if (next) {
+        this._drawFirst = next;
+      }
+      order.prev = this._drawLast;
+      this._drawLast.next = order;
+      order.next = null;
+      this._drawLast = order;
+      this._requestRedraw(layer);
+    },
+    _bringToBack: function(layer) {
+      var order = layer._order;
+      if (!order) {
+        return;
+      }
+      var next = order.next;
+      var prev = order.prev;
+      if (prev) {
+        prev.next = next;
+      } else {
+        return;
+      }
+      if (next) {
+        next.prev = prev;
+      } else if (prev) {
+        this._drawLast = prev;
+      }
+      order.prev = null;
+      order.next = this._drawFirst;
+      this._drawFirst.prev = order;
+      this._drawFirst = order;
+      this._requestRedraw(layer);
+    }
+  });
+  function canvas(options) {
+    return Browser.canvas ? new Canvas(options) : null;
+  }
+  var vmlCreate = function() {
+    try {
+      document.namespaces.add("lvml", "urn:schemas-microsoft-com:vml");
+      return function(name) {
+        return document.createElement("<lvml:" + name + ' class="lvml">');
+      };
+    } catch (e) {
+    }
+    return function(name) {
+      return document.createElement("<" + name + ' xmlns="urn:schemas-microsoft.com:vml" class="lvml">');
+    };
+  }();
+  var vmlMixin = {
+    _initContainer: function() {
+      this._container = create$1("div", "leaflet-vml-container");
+    },
+    _update: function() {
+      if (this._map._animatingZoom) {
+        return;
+      }
+      Renderer.prototype._update.call(this);
+      this.fire("update");
+    },
+    _initPath: function(layer) {
+      var container = layer._container = vmlCreate("shape");
+      addClass(container, "leaflet-vml-shape " + (this.options.className || ""));
+      container.coordsize = "1 1";
+      layer._path = vmlCreate("path");
+      container.appendChild(layer._path);
+      this._updateStyle(layer);
+      this._layers[stamp(layer)] = layer;
+    },
+    _addPath: function(layer) {
+      var container = layer._container;
+      this._container.appendChild(container);
+      if (layer.options.interactive) {
+        layer.addInteractiveTarget(container);
+      }
+    },
+    _removePath: function(layer) {
+      var container = layer._container;
+      remove(container);
+      layer.removeInteractiveTarget(container);
+      delete this._layers[stamp(layer)];
+    },
+    _updateStyle: function(layer) {
+      var stroke = layer._stroke, fill = layer._fill, options = layer.options, container = layer._container;
+      container.stroked = !!options.stroke;
+      container.filled = !!options.fill;
+      if (options.stroke) {
+        if (!stroke) {
+          stroke = layer._stroke = vmlCreate("stroke");
+        }
+        container.appendChild(stroke);
+        stroke.weight = options.weight + "px";
+        stroke.color = options.color;
+        stroke.opacity = options.opacity;
+        if (options.dashArray) {
+          stroke.dashStyle = isArray(options.dashArray) ? options.dashArray.join(" ") : options.dashArray.replace(/( *, *)/g, " ");
+        } else {
+          stroke.dashStyle = "";
+        }
+        stroke.endcap = options.lineCap.replace("butt", "flat");
+        stroke.joinstyle = options.lineJoin;
+      } else if (stroke) {
+        container.removeChild(stroke);
+        layer._stroke = null;
+      }
+      if (options.fill) {
+        if (!fill) {
+          fill = layer._fill = vmlCreate("fill");
+        }
+        container.appendChild(fill);
+        fill.color = options.fillColor || options.color;
+        fill.opacity = options.fillOpacity;
+      } else if (fill) {
+        container.removeChild(fill);
+        layer._fill = null;
+      }
+    },
+    _updateCircle: function(layer) {
+      var p = layer._point.round(), r = Math.round(layer._radius), r2 = Math.round(layer._radiusY || r);
+      this._setPath(layer, layer._empty() ? "M0 0" : "AL " + p.x + "," + p.y + " " + r + "," + r2 + " 0," + 65535 * 360);
+    },
+    _setPath: function(layer, path) {
+      layer._path.v = path;
+    },
+    _bringToFront: function(layer) {
+      toFront(layer._container);
+    },
+    _bringToBack: function(layer) {
+      toBack(layer._container);
+    }
+  };
+  var create = Browser.vml ? vmlCreate : svgCreate;
+  var SVG = Renderer.extend({
+    _initContainer: function() {
+      this._container = create("svg");
+      this._container.setAttribute("pointer-events", "none");
+      this._rootGroup = create("g");
+      this._container.appendChild(this._rootGroup);
+    },
+    _destroyContainer: function() {
+      remove(this._container);
+      off(this._container);
+      delete this._container;
+      delete this._rootGroup;
+      delete this._svgSize;
+    },
+    _update: function() {
+      if (this._map._animatingZoom && this._bounds) {
+        return;
+      }
+      Renderer.prototype._update.call(this);
+      var b = this._bounds, size = b.getSize(), container = this._container;
+      if (!this._svgSize || !this._svgSize.equals(size)) {
+        this._svgSize = size;
+        container.setAttribute("width", size.x);
+        container.setAttribute("height", size.y);
+      }
+      setPosition(container, b.min);
+      container.setAttribute("viewBox", [b.min.x, b.min.y, size.x, size.y].join(" "));
+      this.fire("update");
+    },
+    _initPath: function(layer) {
+      var path = layer._path = create("path");
+      if (layer.options.className) {
+        addClass(path, layer.options.className);
+      }
+      if (layer.options.interactive) {
+        addClass(path, "leaflet-interactive");
+      }
+      this._updateStyle(layer);
+      this._layers[stamp(layer)] = layer;
+    },
+    _addPath: function(layer) {
+      if (!this._rootGroup) {
+        this._initContainer();
+      }
+      this._rootGroup.appendChild(layer._path);
+      layer.addInteractiveTarget(layer._path);
+    },
+    _removePath: function(layer) {
+      remove(layer._path);
+      layer.removeInteractiveTarget(layer._path);
+      delete this._layers[stamp(layer)];
+    },
+    _updatePath: function(layer) {
+      layer._project();
+      layer._update();
+    },
+    _updateStyle: function(layer) {
+      var path = layer._path, options = layer.options;
+      if (!path) {
+        return;
+      }
+      if (options.stroke) {
+        path.setAttribute("stroke", options.color);
+        path.setAttribute("stroke-opacity", options.opacity);
+        path.setAttribute("stroke-width", options.weight);
+        path.setAttribute("stroke-linecap", options.lineCap);
+        path.setAttribute("stroke-linejoin", options.lineJoin);
+        if (options.dashArray) {
+          path.setAttribute("stroke-dasharray", options.dashArray);
+        } else {
+          path.removeAttribute("stroke-dasharray");
+        }
+        if (options.dashOffset) {
+          path.setAttribute("stroke-dashoffset", options.dashOffset);
+        } else {
+          path.removeAttribute("stroke-dashoffset");
+        }
+      } else {
+        path.setAttribute("stroke", "none");
+      }
+      if (options.fill) {
+        path.setAttribute("fill", options.fillColor || options.color);
+        path.setAttribute("fill-opacity", options.fillOpacity);
+        path.setAttribute("fill-rule", options.fillRule || "evenodd");
+      } else {
+        path.setAttribute("fill", "none");
+      }
+    },
+    _updatePoly: function(layer, closed) {
+      this._setPath(layer, pointsToPath(layer._parts, closed));
+    },
+    _updateCircle: function(layer) {
+      var p = layer._point, r = Math.max(Math.round(layer._radius), 1), r2 = Math.max(Math.round(layer._radiusY), 1) || r, arc = "a" + r + "," + r2 + " 0 1,0 ";
+      var d = layer._empty() ? "M0 0" : "M" + (p.x - r) + "," + p.y + arc + r * 2 + ",0 " + arc + -r * 2 + ",0 ";
+      this._setPath(layer, d);
+    },
+    _setPath: function(layer, path) {
+      layer._path.setAttribute("d", path);
+    },
+    _bringToFront: function(layer) {
+      toFront(layer._path);
+    },
+    _bringToBack: function(layer) {
+      toBack(layer._path);
+    }
+  });
+  if (Browser.vml) {
+    SVG.include(vmlMixin);
+  }
+  function svg(options) {
+    return Browser.svg || Browser.vml ? new SVG(options) : null;
+  }
+  Map.include({
+    getRenderer: function(layer) {
+      var renderer = layer.options.renderer || this._getPaneRenderer(layer.options.pane) || this.options.renderer || this._renderer;
+      if (!renderer) {
+        renderer = this._renderer = this._createRenderer();
+      }
+      if (!this.hasLayer(renderer)) {
+        this.addLayer(renderer);
+      }
+      return renderer;
+    },
+    _getPaneRenderer: function(name) {
+      if (name === "overlayPane" || name === void 0) {
+        return false;
+      }
+      var renderer = this._paneRenderers[name];
+      if (renderer === void 0) {
+        renderer = this._createRenderer({ pane: name });
+        this._paneRenderers[name] = renderer;
+      }
+      return renderer;
+    },
+    _createRenderer: function(options) {
+      return this.options.preferCanvas && canvas(options) || svg(options);
+    }
+  });
+  var Rectangle = Polygon.extend({
+    initialize: function(latLngBounds, options) {
+      Polygon.prototype.initialize.call(this, this._boundsToLatLngs(latLngBounds), options);
+    },
+    setBounds: function(latLngBounds) {
+      return this.setLatLngs(this._boundsToLatLngs(latLngBounds));
+    },
+    _boundsToLatLngs: function(latLngBounds) {
+      latLngBounds = toLatLngBounds(latLngBounds);
+      return [
+        latLngBounds.getSouthWest(),
+        latLngBounds.getNorthWest(),
+        latLngBounds.getNorthEast(),
+        latLngBounds.getSouthEast()
+      ];
+    }
+  });
+  function rectangle(latLngBounds, options) {
+    return new Rectangle(latLngBounds, options);
+  }
+  SVG.create = create;
+  SVG.pointsToPath = pointsToPath;
+  GeoJSON.geometryToLayer = geometryToLayer;
+  GeoJSON.coordsToLatLng = coordsToLatLng;
+  GeoJSON.coordsToLatLngs = coordsToLatLngs;
+  GeoJSON.latLngToCoords = latLngToCoords;
+  GeoJSON.latLngsToCoords = latLngsToCoords;
+  GeoJSON.getFeature = getFeature;
+  GeoJSON.asFeature = asFeature;
+  Map.mergeOptions({
+    boxZoom: true
+  });
+  var BoxZoom = Handler.extend({
+    initialize: function(map) {
+      this._map = map;
+      this._container = map._container;
+      this._pane = map._panes.overlayPane;
+      this._resetStateTimeout = 0;
+      map.on("unload", this._destroy, this);
+    },
+    addHooks: function() {
+      on(this._container, "mousedown", this._onMouseDown, this);
+    },
+    removeHooks: function() {
+      off(this._container, "mousedown", this._onMouseDown, this);
+    },
+    moved: function() {
+      return this._moved;
+    },
+    _destroy: function() {
+      remove(this._pane);
+      delete this._pane;
+    },
+    _resetState: function() {
+      this._resetStateTimeout = 0;
+      this._moved = false;
+    },
+    _clearDeferredResetState: function() {
+      if (this._resetStateTimeout !== 0) {
+        clearTimeout(this._resetStateTimeout);
+        this._resetStateTimeout = 0;
+      }
+    },
+    _onMouseDown: function(e) {
+      if (!e.shiftKey || e.which !== 1 && e.button !== 1) {
+        return false;
+      }
+      this._clearDeferredResetState();
+      this._resetState();
+      disableTextSelection();
+      disableImageDrag();
+      this._startPoint = this._map.mouseEventToContainerPoint(e);
+      on(document, {
+        contextmenu: stop,
+        mousemove: this._onMouseMove,
+        mouseup: this._onMouseUp,
+        keydown: this._onKeyDown
+      }, this);
+    },
+    _onMouseMove: function(e) {
+      if (!this._moved) {
+        this._moved = true;
+        this._box = create$1("div", "leaflet-zoom-box", this._container);
+        addClass(this._container, "leaflet-crosshair");
+        this._map.fire("boxzoomstart");
+      }
+      this._point = this._map.mouseEventToContainerPoint(e);
+      var bounds = new Bounds(this._point, this._startPoint), size = bounds.getSize();
+      setPosition(this._box, bounds.min);
+      this._box.style.width = size.x + "px";
+      this._box.style.height = size.y + "px";
+    },
+    _finish: function() {
+      if (this._moved) {
+        remove(this._box);
+        removeClass(this._container, "leaflet-crosshair");
+      }
+      enableTextSelection();
+      enableImageDrag();
+      off(document, {
+        contextmenu: stop,
+        mousemove: this._onMouseMove,
+        mouseup: this._onMouseUp,
+        keydown: this._onKeyDown
+      }, this);
+    },
+    _onMouseUp: function(e) {
+      if (e.which !== 1 && e.button !== 1) {
+        return;
+      }
+      this._finish();
+      if (!this._moved) {
+        return;
+      }
+      this._clearDeferredResetState();
+      this._resetStateTimeout = setTimeout(bind(this._resetState, this), 0);
+      var bounds = new LatLngBounds(this._map.containerPointToLatLng(this._startPoint), this._map.containerPointToLatLng(this._point));
+      this._map.fitBounds(bounds).fire("boxzoomend", { boxZoomBounds: bounds });
+    },
+    _onKeyDown: function(e) {
+      if (e.keyCode === 27) {
+        this._finish();
+        this._clearDeferredResetState();
+        this._resetState();
+      }
+    }
+  });
+  Map.addInitHook("addHandler", "boxZoom", BoxZoom);
+  Map.mergeOptions({
+    doubleClickZoom: true
+  });
+  var DoubleClickZoom = Handler.extend({
+    addHooks: function() {
+      this._map.on("dblclick", this._onDoubleClick, this);
+    },
+    removeHooks: function() {
+      this._map.off("dblclick", this._onDoubleClick, this);
+    },
+    _onDoubleClick: function(e) {
+      var map = this._map, oldZoom = map.getZoom(), delta = map.options.zoomDelta, zoom2 = e.originalEvent.shiftKey ? oldZoom - delta : oldZoom + delta;
+      if (map.options.doubleClickZoom === "center") {
+        map.setZoom(zoom2);
+      } else {
+        map.setZoomAround(e.containerPoint, zoom2);
+      }
+    }
+  });
+  Map.addInitHook("addHandler", "doubleClickZoom", DoubleClickZoom);
+  Map.mergeOptions({
+    dragging: true,
+    inertia: true,
+    inertiaDeceleration: 3400,
+    inertiaMaxSpeed: Infinity,
+    easeLinearity: 0.2,
+    worldCopyJump: false,
+    maxBoundsViscosity: 0
+  });
+  var Drag = Handler.extend({
+    addHooks: function() {
+      if (!this._draggable) {
+        var map = this._map;
+        this._draggable = new Draggable(map._mapPane, map._container);
+        this._draggable.on({
+          dragstart: this._onDragStart,
+          drag: this._onDrag,
+          dragend: this._onDragEnd
+        }, this);
+        this._draggable.on("predrag", this._onPreDragLimit, this);
+        if (map.options.worldCopyJump) {
+          this._draggable.on("predrag", this._onPreDragWrap, this);
+          map.on("zoomend", this._onZoomEnd, this);
+          map.whenReady(this._onZoomEnd, this);
+        }
+      }
+      addClass(this._map._container, "leaflet-grab leaflet-touch-drag");
+      this._draggable.enable();
+      this._positions = [];
+      this._times = [];
+    },
+    removeHooks: function() {
+      removeClass(this._map._container, "leaflet-grab");
+      removeClass(this._map._container, "leaflet-touch-drag");
+      this._draggable.disable();
+    },
+    moved: function() {
+      return this._draggable && this._draggable._moved;
+    },
+    moving: function() {
+      return this._draggable && this._draggable._moving;
+    },
+    _onDragStart: function() {
+      var map = this._map;
+      map._stop();
+      if (this._map.options.maxBounds && this._map.options.maxBoundsViscosity) {
+        var bounds = toLatLngBounds(this._map.options.maxBounds);
+        this._offsetLimit = toBounds(this._map.latLngToContainerPoint(bounds.getNorthWest()).multiplyBy(-1), this._map.latLngToContainerPoint(bounds.getSouthEast()).multiplyBy(-1).add(this._map.getSize()));
+        this._viscosity = Math.min(1, Math.max(0, this._map.options.maxBoundsViscosity));
+      } else {
+        this._offsetLimit = null;
+      }
+      map.fire("movestart").fire("dragstart");
+      if (map.options.inertia) {
+        this._positions = [];
+        this._times = [];
+      }
+    },
+    _onDrag: function(e) {
+      if (this._map.options.inertia) {
+        var time = this._lastTime = +new Date(), pos = this._lastPos = this._draggable._absPos || this._draggable._newPos;
+        this._positions.push(pos);
+        this._times.push(time);
+        this._prunePositions(time);
+      }
+      this._map.fire("move", e).fire("drag", e);
+    },
+    _prunePositions: function(time) {
+      while (this._positions.length > 1 && time - this._times[0] > 50) {
+        this._positions.shift();
+        this._times.shift();
+      }
+    },
+    _onZoomEnd: function() {
+      var pxCenter = this._map.getSize().divideBy(2), pxWorldCenter = this._map.latLngToLayerPoint([0, 0]);
+      this._initialWorldOffset = pxWorldCenter.subtract(pxCenter).x;
+      this._worldWidth = this._map.getPixelWorldBounds().getSize().x;
+    },
+    _viscousLimit: function(value, threshold) {
+      return value - (value - threshold) * this._viscosity;
+    },
+    _onPreDragLimit: function() {
+      if (!this._viscosity || !this._offsetLimit) {
+        return;
+      }
+      var offset = this._draggable._newPos.subtract(this._draggable._startPos);
+      var limit = this._offsetLimit;
+      if (offset.x < limit.min.x) {
+        offset.x = this._viscousLimit(offset.x, limit.min.x);
+      }
+      if (offset.y < limit.min.y) {
+        offset.y = this._viscousLimit(offset.y, limit.min.y);
+      }
+      if (offset.x > limit.max.x) {
+        offset.x = this._viscousLimit(offset.x, limit.max.x);
+      }
+      if (offset.y > limit.max.y) {
+        offset.y = this._viscousLimit(offset.y, limit.max.y);
+      }
+      this._draggable._newPos = this._draggable._startPos.add(offset);
+    },
+    _onPreDragWrap: function() {
+      var worldWidth = this._worldWidth, halfWidth = Math.round(worldWidth / 2), dx = this._initialWorldOffset, x = this._draggable._newPos.x, newX1 = (x - halfWidth + dx) % worldWidth + halfWidth - dx, newX2 = (x + halfWidth + dx) % worldWidth - halfWidth - dx, newX = Math.abs(newX1 + dx) < Math.abs(newX2 + dx) ? newX1 : newX2;
+      this._draggable._absPos = this._draggable._newPos.clone();
+      this._draggable._newPos.x = newX;
+    },
+    _onDragEnd: function(e) {
+      var map = this._map, options = map.options, noInertia = !options.inertia || e.noInertia || this._times.length < 2;
+      map.fire("dragend", e);
+      if (noInertia) {
+        map.fire("moveend");
+      } else {
+        this._prunePositions(+new Date());
+        var direction = this._lastPos.subtract(this._positions[0]), duration = (this._lastTime - this._times[0]) / 1e3, ease = options.easeLinearity, speedVector = direction.multiplyBy(ease / duration), speed = speedVector.distanceTo([0, 0]), limitedSpeed = Math.min(options.inertiaMaxSpeed, speed), limitedSpeedVector = speedVector.multiplyBy(limitedSpeed / speed), decelerationDuration = limitedSpeed / (options.inertiaDeceleration * ease), offset = limitedSpeedVector.multiplyBy(-decelerationDuration / 2).round();
+        if (!offset.x && !offset.y) {
+          map.fire("moveend");
+        } else {
+          offset = map._limitOffset(offset, map.options.maxBounds);
+          requestAnimFrame(function() {
+            map.panBy(offset, {
+              duration: decelerationDuration,
+              easeLinearity: ease,
+              noMoveStart: true,
+              animate: true
+            });
+          });
+        }
+      }
+    }
+  });
+  Map.addInitHook("addHandler", "dragging", Drag);
+  Map.mergeOptions({
+    keyboard: true,
+    keyboardPanDelta: 80
+  });
+  var Keyboard = Handler.extend({
+    keyCodes: {
+      left: [37],
+      right: [39],
+      down: [40],
+      up: [38],
+      zoomIn: [187, 107, 61, 171],
+      zoomOut: [189, 109, 54, 173]
+    },
+    initialize: function(map) {
+      this._map = map;
+      this._setPanDelta(map.options.keyboardPanDelta);
+      this._setZoomDelta(map.options.zoomDelta);
+    },
+    addHooks: function() {
+      var container = this._map._container;
+      if (container.tabIndex <= 0) {
+        container.tabIndex = "0";
+      }
+      on(container, {
+        focus: this._onFocus,
+        blur: this._onBlur,
+        mousedown: this._onMouseDown
+      }, this);
+      this._map.on({
+        focus: this._addHooks,
+        blur: this._removeHooks
+      }, this);
+    },
+    removeHooks: function() {
+      this._removeHooks();
+      off(this._map._container, {
+        focus: this._onFocus,
+        blur: this._onBlur,
+        mousedown: this._onMouseDown
+      }, this);
+      this._map.off({
+        focus: this._addHooks,
+        blur: this._removeHooks
+      }, this);
+    },
+    _onMouseDown: function() {
+      if (this._focused) {
+        return;
+      }
+      var body = document.body, docEl = document.documentElement, top = body.scrollTop || docEl.scrollTop, left = body.scrollLeft || docEl.scrollLeft;
+      this._map._container.focus();
+      window.scrollTo(left, top);
+    },
+    _onFocus: function() {
+      this._focused = true;
+      this._map.fire("focus");
+    },
+    _onBlur: function() {
+      this._focused = false;
+      this._map.fire("blur");
+    },
+    _setPanDelta: function(panDelta) {
+      var keys = this._panKeys = {}, codes = this.keyCodes, i, len;
+      for (i = 0, len = codes.left.length; i < len; i++) {
+        keys[codes.left[i]] = [-1 * panDelta, 0];
+      }
+      for (i = 0, len = codes.right.length; i < len; i++) {
+        keys[codes.right[i]] = [panDelta, 0];
+      }
+      for (i = 0, len = codes.down.length; i < len; i++) {
+        keys[codes.down[i]] = [0, panDelta];
+      }
+      for (i = 0, len = codes.up.length; i < len; i++) {
+        keys[codes.up[i]] = [0, -1 * panDelta];
+      }
+    },
+    _setZoomDelta: function(zoomDelta) {
+      var keys = this._zoomKeys = {}, codes = this.keyCodes, i, len;
+      for (i = 0, len = codes.zoomIn.length; i < len; i++) {
+        keys[codes.zoomIn[i]] = zoomDelta;
+      }
+      for (i = 0, len = codes.zoomOut.length; i < len; i++) {
+        keys[codes.zoomOut[i]] = -zoomDelta;
+      }
+    },
+    _addHooks: function() {
+      on(document, "keydown", this._onKeyDown, this);
+    },
+    _removeHooks: function() {
+      off(document, "keydown", this._onKeyDown, this);
+    },
+    _onKeyDown: function(e) {
+      if (e.altKey || e.ctrlKey || e.metaKey) {
+        return;
+      }
+      var key = e.keyCode, map = this._map, offset;
+      if (key in this._panKeys) {
+        if (!map._panAnim || !map._panAnim._inProgress) {
+          offset = this._panKeys[key];
+          if (e.shiftKey) {
+            offset = toPoint(offset).multiplyBy(3);
+          }
+          map.panBy(offset);
+          if (map.options.maxBounds) {
+            map.panInsideBounds(map.options.maxBounds);
+          }
+        }
+      } else if (key in this._zoomKeys) {
+        map.setZoom(map.getZoom() + (e.shiftKey ? 3 : 1) * this._zoomKeys[key]);
+      } else if (key === 27 && map._popup && map._popup.options.closeOnEscapeKey) {
+        map.closePopup();
+      } else {
+        return;
+      }
+      stop(e);
+    }
+  });
+  Map.addInitHook("addHandler", "keyboard", Keyboard);
+  Map.mergeOptions({
+    scrollWheelZoom: true,
+    wheelDebounceTime: 40,
+    wheelPxPerZoomLevel: 60
+  });
+  var ScrollWheelZoom = Handler.extend({
+    addHooks: function() {
+      on(this._map._container, "wheel", this._onWheelScroll, this);
+      this._delta = 0;
+    },
+    removeHooks: function() {
+      off(this._map._container, "wheel", this._onWheelScroll, this);
+    },
+    _onWheelScroll: function(e) {
+      var delta = getWheelDelta(e);
+      var debounce = this._map.options.wheelDebounceTime;
+      this._delta += delta;
+      this._lastMousePos = this._map.mouseEventToContainerPoint(e);
+      if (!this._startTime) {
+        this._startTime = +new Date();
+      }
+      var left = Math.max(debounce - (+new Date() - this._startTime), 0);
+      clearTimeout(this._timer);
+      this._timer = setTimeout(bind(this._performZoom, this), left);
+      stop(e);
+    },
+    _performZoom: function() {
+      var map = this._map, zoom2 = map.getZoom(), snap = this._map.options.zoomSnap || 0;
+      map._stop();
+      var d2 = this._delta / (this._map.options.wheelPxPerZoomLevel * 4), d3 = 4 * Math.log(2 / (1 + Math.exp(-Math.abs(d2)))) / Math.LN2, d4 = snap ? Math.ceil(d3 / snap) * snap : d3, delta = map._limitZoom(zoom2 + (this._delta > 0 ? d4 : -d4)) - zoom2;
+      this._delta = 0;
+      this._startTime = null;
+      if (!delta) {
+        return;
+      }
+      if (map.options.scrollWheelZoom === "center") {
+        map.setZoom(zoom2 + delta);
+      } else {
+        map.setZoomAround(this._lastMousePos, zoom2 + delta);
+      }
+    }
+  });
+  Map.addInitHook("addHandler", "scrollWheelZoom", ScrollWheelZoom);
+  var tapHoldDelay = 600;
+  Map.mergeOptions({
+    tapHold: Browser.touchNative && Browser.safari && Browser.mobile,
+    tapTolerance: 15
+  });
+  var TapHold = Handler.extend({
+    addHooks: function() {
+      on(this._map._container, "touchstart", this._onDown, this);
+    },
+    removeHooks: function() {
+      off(this._map._container, "touchstart", this._onDown, this);
+    },
+    _onDown: function(e) {
+      clearTimeout(this._holdTimeout);
+      if (e.touches.length !== 1) {
+        return;
+      }
+      var first = e.touches[0];
+      this._startPos = this._newPos = new Point(first.clientX, first.clientY);
+      this._holdTimeout = setTimeout(bind(function() {
+        this._cancel();
+        if (!this._isTapValid()) {
+          return;
+        }
+        on(document, "touchend", preventDefault);
+        on(document, "touchend touchcancel", this._cancelClickPrevent);
+        this._simulateEvent("contextmenu", first);
+      }, this), tapHoldDelay);
+      on(document, "touchend touchcancel contextmenu", this._cancel, this);
+      on(document, "touchmove", this._onMove, this);
+    },
+    _cancelClickPrevent: function cancelClickPrevent() {
+      off(document, "touchend", preventDefault);
+      off(document, "touchend touchcancel", cancelClickPrevent);
+    },
+    _cancel: function() {
+      clearTimeout(this._holdTimeout);
+      off(document, "touchend touchcancel contextmenu", this._cancel, this);
+      off(document, "touchmove", this._onMove, this);
+    },
+    _onMove: function(e) {
+      var first = e.touches[0];
+      this._newPos = new Point(first.clientX, first.clientY);
+    },
+    _isTapValid: function() {
+      return this._newPos.distanceTo(this._startPos) <= this._map.options.tapTolerance;
+    },
+    _simulateEvent: function(type, e) {
+      var simulatedEvent = new MouseEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        screenX: e.screenX,
+        screenY: e.screenY,
+        clientX: e.clientX,
+        clientY: e.clientY
+      });
+      simulatedEvent._simulated = true;
+      e.target.dispatchEvent(simulatedEvent);
+    }
+  });
+  Map.addInitHook("addHandler", "tapHold", TapHold);
+  Map.mergeOptions({
+    touchZoom: Browser.touch,
+    bounceAtZoomLimits: true
+  });
+  var TouchZoom = Handler.extend({
+    addHooks: function() {
+      addClass(this._map._container, "leaflet-touch-zoom");
+      on(this._map._container, "touchstart", this._onTouchStart, this);
+    },
+    removeHooks: function() {
+      removeClass(this._map._container, "leaflet-touch-zoom");
+      off(this._map._container, "touchstart", this._onTouchStart, this);
+    },
+    _onTouchStart: function(e) {
+      var map = this._map;
+      if (!e.touches || e.touches.length !== 2 || map._animatingZoom || this._zooming) {
+        return;
+      }
+      var p1 = map.mouseEventToContainerPoint(e.touches[0]), p2 = map.mouseEventToContainerPoint(e.touches[1]);
+      this._centerPoint = map.getSize()._divideBy(2);
+      this._startLatLng = map.containerPointToLatLng(this._centerPoint);
+      if (map.options.touchZoom !== "center") {
+        this._pinchStartLatLng = map.containerPointToLatLng(p1.add(p2)._divideBy(2));
+      }
+      this._startDist = p1.distanceTo(p2);
+      this._startZoom = map.getZoom();
+      this._moved = false;
+      this._zooming = true;
+      map._stop();
+      on(document, "touchmove", this._onTouchMove, this);
+      on(document, "touchend touchcancel", this._onTouchEnd, this);
+      preventDefault(e);
+    },
+    _onTouchMove: function(e) {
+      if (!e.touches || e.touches.length !== 2 || !this._zooming) {
+        return;
+      }
+      var map = this._map, p1 = map.mouseEventToContainerPoint(e.touches[0]), p2 = map.mouseEventToContainerPoint(e.touches[1]), scale2 = p1.distanceTo(p2) / this._startDist;
+      this._zoom = map.getScaleZoom(scale2, this._startZoom);
+      if (!map.options.bounceAtZoomLimits && (this._zoom < map.getMinZoom() && scale2 < 1 || this._zoom > map.getMaxZoom() && scale2 > 1)) {
+        this._zoom = map._limitZoom(this._zoom);
+      }
+      if (map.options.touchZoom === "center") {
+        this._center = this._startLatLng;
+        if (scale2 === 1) {
+          return;
+        }
+      } else {
+        var delta = p1._add(p2)._divideBy(2)._subtract(this._centerPoint);
+        if (scale2 === 1 && delta.x === 0 && delta.y === 0) {
+          return;
+        }
+        this._center = map.unproject(map.project(this._pinchStartLatLng, this._zoom).subtract(delta), this._zoom);
+      }
+      if (!this._moved) {
+        map._moveStart(true, false);
+        this._moved = true;
+      }
+      cancelAnimFrame(this._animRequest);
+      var moveFn = bind(map._move, map, this._center, this._zoom, { pinch: true, round: false });
+      this._animRequest = requestAnimFrame(moveFn, this, true);
+      preventDefault(e);
+    },
+    _onTouchEnd: function() {
+      if (!this._moved || !this._zooming) {
+        this._zooming = false;
+        return;
+      }
+      this._zooming = false;
+      cancelAnimFrame(this._animRequest);
+      off(document, "touchmove", this._onTouchMove, this);
+      off(document, "touchend touchcancel", this._onTouchEnd, this);
+      if (this._map.options.zoomAnimation) {
+        this._map._animateZoom(this._center, this._map._limitZoom(this._zoom), true, this._map.options.zoomSnap);
+      } else {
+        this._map._resetView(this._center, this._map._limitZoom(this._zoom));
+      }
+    }
+  });
+  Map.addInitHook("addHandler", "touchZoom", TouchZoom);
+  Map.BoxZoom = BoxZoom;
+  Map.DoubleClickZoom = DoubleClickZoom;
+  Map.Drag = Drag;
+  Map.Keyboard = Keyboard;
+  Map.ScrollWheelZoom = ScrollWheelZoom;
+  Map.TapHold = TapHold;
+  Map.TouchZoom = TouchZoom;
+  exports2.Bounds = Bounds;
+  exports2.Browser = Browser;
+  exports2.CRS = CRS;
+  exports2.Canvas = Canvas;
+  exports2.Circle = Circle;
+  exports2.CircleMarker = CircleMarker;
+  exports2.Class = Class;
+  exports2.Control = Control;
+  exports2.DivIcon = DivIcon;
+  exports2.DivOverlay = DivOverlay;
+  exports2.DomEvent = DomEvent;
+  exports2.DomUtil = DomUtil;
+  exports2.Draggable = Draggable;
+  exports2.Evented = Evented;
+  exports2.FeatureGroup = FeatureGroup;
+  exports2.GeoJSON = GeoJSON;
+  exports2.GridLayer = GridLayer;
+  exports2.Handler = Handler;
+  exports2.Icon = Icon;
+  exports2.ImageOverlay = ImageOverlay;
+  exports2.LatLng = LatLng;
+  exports2.LatLngBounds = LatLngBounds;
+  exports2.Layer = Layer;
+  exports2.LayerGroup = LayerGroup;
+  exports2.LineUtil = LineUtil;
+  exports2.Map = Map;
+  exports2.Marker = Marker;
+  exports2.Mixin = Mixin;
+  exports2.Path = Path;
+  exports2.Point = Point;
+  exports2.PolyUtil = PolyUtil;
+  exports2.Polygon = Polygon;
+  exports2.Polyline = Polyline;
+  exports2.Popup = Popup;
+  exports2.PosAnimation = PosAnimation;
+  exports2.Projection = index;
+  exports2.Rectangle = Rectangle;
+  exports2.Renderer = Renderer;
+  exports2.SVG = SVG;
+  exports2.SVGOverlay = SVGOverlay;
+  exports2.TileLayer = TileLayer;
+  exports2.Tooltip = Tooltip;
+  exports2.Transformation = Transformation;
+  exports2.Util = Util;
+  exports2.VideoOverlay = VideoOverlay;
+  exports2.bind = bind;
+  exports2.bounds = toBounds;
+  exports2.canvas = canvas;
+  exports2.circle = circle;
+  exports2.circleMarker = circleMarker;
+  exports2.control = control;
+  exports2.divIcon = divIcon;
+  exports2.extend = extend;
+  exports2.featureGroup = featureGroup;
+  exports2.geoJSON = geoJSON;
+  exports2.geoJson = geoJson;
+  exports2.gridLayer = gridLayer;
+  exports2.icon = icon;
+  exports2.imageOverlay = imageOverlay;
+  exports2.latLng = toLatLng;
+  exports2.latLngBounds = toLatLngBounds;
+  exports2.layerGroup = layerGroup;
+  exports2.map = createMap;
+  exports2.marker = marker;
+  exports2.point = toPoint;
+  exports2.polygon = polygon;
+  exports2.polyline = polyline;
+  exports2.popup = popup;
+  exports2.rectangle = rectangle;
+  exports2.setOptions = setOptions;
+  exports2.stamp = stamp;
+  exports2.svg = svg;
+  exports2.svgOverlay = svgOverlay;
+  exports2.tileLayer = tileLayer;
+  exports2.tooltip = tooltip;
+  exports2.transformation = toTransformation;
+  exports2.version = version;
+  exports2.videoOverlay = videoOverlay;
+  var oldL = window.L;
+  exports2.noConflict = function() {
+    window.L = oldL;
+    return this;
+  };
+  window.L = exports2;
+});
+
+
+/***/ }),
+
+/***/ "./map/app.css":
+/***/ (() => {
+
+"use strict";
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./node_modules/.pnpm/leaflet@1.8.0/node_modules/leaflet/dist/leaflet.css":
+/***/ (() => {
+
+"use strict";
+// extracted by mini-css-extract-plugin
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var leaflet_dist_leaflet_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./node_modules/.pnpm/leaflet@1.8.0/node_modules/leaflet/dist/leaflet.css");
+/* harmony import */ var _app_css__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./map/app.css");
+/* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./node_modules/.pnpm/leaflet@1.8.0/node_modules/leaflet/dist/leaflet-src.js");
+/* harmony import */ var leaflet__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(leaflet__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var leaflet_wms_header__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./node_modules/.pnpm/leaflet-wms-header@1.0.13/node_modules/leaflet-wms-header/index.js");
+/* harmony import */ var leaflet_wms_header__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(leaflet_wms_header__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+function GetURLParameter(sParam) {
+    const sPageURL = window.location.search.substring(1);
+    const sURLVariables = sPageURL.split('&');
+    for (let i = 0; i < sURLVariables.length; i++) {
+        const sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1];
+        }
+    }
+}
+const position = (GetURLParameter('position') || '45.18453,5.75').split(',').map(parseFloat);
+const zoom = parseFloat(GetURLParameter('zoom') || '8');
+const OWM_KEY = GetURLParameter('owm_key');
+const map = leaflet__WEBPACK_IMPORTED_MODULE_2__.map('map', { zoomControl: false }).setView(position, zoom);
+// @class TileLayer
+leaflet__WEBPACK_IMPORTED_MODULE_2__.TileLayer.mergeOptions({
+    // @option keepBuffer
+    // The amount of tiles outside the visible map area to be kept in the stitched
+    // `TileLayer`.
+    // @option dumpToCanvas: Boolean = true
+    // Whether to dump loaded tiles to a `<canvas>` to prevent some rendering
+    // artifacts. (Disabled by default in IE)
+    dumpToCanvas: leaflet__WEBPACK_IMPORTED_MODULE_2__.Browser.canvas && !leaflet__WEBPACK_IMPORTED_MODULE_2__.Browser.ie
+});
+leaflet__WEBPACK_IMPORTED_MODULE_2__.TileLayer.include({
+    _onUpdateLevel(z, zoom) {
+        if (this.options.dumpToCanvas) {
+            this._levels[z].canvas.style.zIndex = this.options.maxZoom - Math.abs(zoom - z);
+        }
+    },
+    _onRemoveLevel(z) {
+        if (this.options.dumpToCanvas) {
+            leaflet__WEBPACK_IMPORTED_MODULE_2__.DomUtil.remove(this._levels[z].canvas);
+        }
+    },
+    _onCreateLevel(level) {
+        if (this.options.dumpToCanvas) {
+            level.canvas = leaflet__WEBPACK_IMPORTED_MODULE_2__.DomUtil.create('canvas', 'leaflet-tile-container leaflet-zoom-animated', this._container);
+            level.ctx = level.canvas.getContext('2d');
+            this._resetCanvasSize(level);
+        }
+    },
+    _removeTile(key) {
+        if (this.options.dumpToCanvas) {
+            const tile = this._tiles[key];
+            const level = this._levels[tile.coords.z];
+            const tileSize = this.getTileSize();
+            if (level) {
+                // Where in the canvas should this tile go?
+                const offset = leaflet__WEBPACK_IMPORTED_MODULE_2__.point(tile.coords.x, tile.coords.y).subtract(level.canvasRange.min).scaleBy(this.getTileSize());
+                level.ctx.clearRect(offset.x, offset.y, tileSize.x, tileSize.y);
+            }
+        }
+        leaflet__WEBPACK_IMPORTED_MODULE_2__.GridLayer.prototype._removeTile.call(this, key);
+    },
+    _resetCanvasSize(level) {
+        const buff = this.options.keepBuffer, pixelBounds = this._getTiledPixelBounds(this._map.getCenter()), tileRange = this._pxBoundsToTileRange(pixelBounds), tileSize = this.getTileSize();
+        tileRange.min = tileRange.min.subtract([buff, buff]); // This adds the no-prune buffer
+        tileRange.max = tileRange.max.add([buff + 1, buff + 1]);
+        const pixelRange = leaflet__WEBPACK_IMPORTED_MODULE_2__.bounds(tileRange.min.scaleBy(tileSize), tileRange.max.add([1, 1]).scaleBy(tileSize) // This prevents an off-by-one when checking if tiles are inside
+        ), neededSize = pixelRange.max.subtract(pixelRange.min);
+        let mustRepositionCanvas = false;
+        // Resize the canvas, if needed, and only to make it bigger.
+        if (neededSize.x > level.canvas.width || neededSize.y > level.canvas.height) {
+            // Resizing canvases erases the currently drawn content, I'm afraid.
+            // To keep it, dump the pixels to another canvas, then display it on
+            // top. This could be done with getImageData/putImageData, but that
+            // would break for tainted canvases (in non-CORS tilesets)
+            const oldSize = { x: level.canvas.width, y: level.canvas.height };
+            // console.info('Resizing canvas from ', oldSize, 'to ', neededSize);
+            const tmpCanvas = leaflet__WEBPACK_IMPORTED_MODULE_2__.DomUtil.create('canvas');
+            tmpCanvas.style.width = (tmpCanvas.width = oldSize.x) + 'px';
+            tmpCanvas.style.height = (tmpCanvas.height = oldSize.y) + 'px';
+            tmpCanvas.getContext('2d').drawImage(level.canvas, 0, 0);
+            // var data = level.ctx.getImageData(0, 0, oldSize.x, oldSize.y);
+            level.canvas.style.width = (level.canvas.width = neededSize.x) + 'px';
+            level.canvas.style.height = (level.canvas.height = neededSize.y) + 'px';
+            level.ctx.drawImage(tmpCanvas, 0, 0);
+            // level.ctx.putImageData(data, 0, 0, 0, 0, oldSize.x, oldSize.y);
+        }
+        // Translate the canvas contents if it's moved around
+        if (level.canvasRange) {
+            const offset = level.canvasRange.min.subtract(tileRange.min).scaleBy(this.getTileSize());
+            // 			console.info('Offsetting by ', offset);
+            if (!leaflet__WEBPACK_IMPORTED_MODULE_2__.Browser.safari) {
+                // By default, canvases copy things "on top of" existing pixels, but we want
+                // this to *replace* the existing pixels when doing a drawImage() call.
+                // This will also clear the sides, so no clearRect() calls are needed to make room
+                // for the new tiles.
+                level.ctx.globalCompositeOperation = 'copy';
+                level.ctx.drawImage(level.canvas, offset.x, offset.y);
+                level.ctx.globalCompositeOperation = 'source-over';
+            }
+            else {
+                // Safari clears the canvas when copying from itself :-(
+                if (!this._tmpCanvas) {
+                    const t = (this._tmpCanvas = leaflet__WEBPACK_IMPORTED_MODULE_2__.DomUtil.create('canvas'));
+                    t.width = level.canvas.width;
+                    t.height = level.canvas.height;
+                    this._tmpContext = t.getContext('2d');
+                }
+                this._tmpContext.clearRect(0, 0, level.canvas.width, level.canvas.height);
+                this._tmpContext.drawImage(level.canvas, 0, 0);
+                level.ctx.clearRect(0, 0, level.canvas.width, level.canvas.height);
+                level.ctx.drawImage(this._tmpCanvas, offset.x, offset.y);
+            }
+            mustRepositionCanvas = true; // Wait until new props are set
+        }
+        level.canvasRange = tileRange;
+        level.canvasPxRange = pixelRange;
+        level.canvasOrigin = pixelRange.min;
+        // console.log('Canvas tile range: ', level, tileRange.min, tileRange.max );
+        // console.log('Canvas pixel range: ', pixelRange.min, pixelRange.max );
+        // console.log('Level origin: ', level.origin );
+        if (mustRepositionCanvas) {
+            this._setCanvasZoomTransform(level, this._map.getCenter(), this._map.getZoom());
+        }
+    },
+    /// set transform/position of canvas, in addition to the transform/position of the individual tile container
+    _setZoomTransform(level, center, zoom) {
+        leaflet__WEBPACK_IMPORTED_MODULE_2__.GridLayer.prototype._setZoomTransform.call(this, level, center, zoom);
+        if (this.options.dumpToCanvas) {
+            this._setCanvasZoomTransform(level, center, zoom);
+        }
+    },
+    // This will get called twice:
+    // * From _setZoomTransform
+    // * When the canvas has shifted due to a new tile being loaded
+    _setCanvasZoomTransform(level, center, zoom) {
+        // console.log('_setCanvasZoomTransform', level, center, zoom);
+        if (!level.canvasOrigin) {
+            return;
+        }
+        const scale = this._map.getZoomScale(zoom, level.zoom), translate = level.canvasOrigin.multiplyBy(scale).subtract(this._map._getNewPixelOrigin(center, zoom)).round();
+        if (leaflet__WEBPACK_IMPORTED_MODULE_2__.Browser.any3d) {
+            leaflet__WEBPACK_IMPORTED_MODULE_2__.DomUtil.setTransform(level.canvas, translate, scale);
+        }
+        else {
+            leaflet__WEBPACK_IMPORTED_MODULE_2__.DomUtil.setPosition(level.canvas, translate);
+        }
+    },
+    _onOpaqueTile(tile) {
+        if (!this.options.dumpToCanvas) {
+            return;
+        }
+        // Guard against an NS_ERROR_NOT_AVAILABLE (or similar) exception
+        // when a non-image-tile has been loaded (e.g. a WMS error).
+        // Checking for tile.el.complete is not enough, as it has been
+        // already marked as loaded and ready somehow.
+        try {
+            this.dumpPixels(tile.coords, tile.el);
+        }
+        catch (ex) {
+            return this.fire('tileerror', {
+                error: 'Could not copy tile pixels: ' + ex,
+                tile,
+                coods: tile.coords
+            });
+        }
+        // If dumping the pixels was successful, then hide the tile.
+        // Do not remove the tile itself, as it is needed to check if the whole
+        // level (and its canvas) should be removed (via level.el.children.length)
+        tile.el.style.display = 'none';
+    },
+    // @section Extension methods
+    // @uninheritable
+    // @method dumpPixels(coords: Object, imageSource: CanvasImageSource): this
+    // Dumps pixels from the given `CanvasImageSource` into the layer, into
+    // the space for the tile represented by the `coords` tile coordinates (an object
+    // like `{x: Number, y: Number, z: Number}`; the image source must have the
+    // same size as the `tileSize` option for the layer. Has no effect if `dumpToCanvas`
+    // is `false`.
+    dumpPixels(coords, imageSource) {
+        const level = this._levels[coords.z], tileSize = this.getTileSize();
+        if (!level.canvasRange || !this.options.dumpToCanvas) {
+            return;
+        }
+        // Check if the tile is inside the currently visible map bounds
+        // There is a possible race condition when tiles are loaded after they
+        // have been panned outside of the map.
+        if (!level.canvasRange.contains(coords)) {
+            this._resetCanvasSize(level);
+        }
+        // Where in the canvas should this tile go?
+        const offset = leaflet__WEBPACK_IMPORTED_MODULE_2__.point(coords.x, coords.y).subtract(level.canvasRange.min).scaleBy(this.getTileSize());
+        level.ctx.drawImage(imageSource, offset.x, offset.y, tileSize.x, tileSize.y);
+        // TODO: Clear the pixels of other levels' canvases where they overlap
+        // this newly dumped tile.
+        return this;
+    }
+});
+leaflet__WEBPACK_IMPORTED_MODULE_2__.TileLayer.wmsHeader('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    pmIgnore: false,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}, [
+    {
+        header: 'User-Agent',
+        value: 'AlpiMaps'
+    }
+]).addTo(map);
+leaflet__WEBPACK_IMPORTED_MODULE_2__.tileLayer(`https://{s}.sat.owm.io/vane/2.0/weather/PA0/{z}/{x}/{y}?appid=${OWM_KEY}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`, {
+    maxZoom: 18,
+    pmIgnore: false,
+    subdomains: ['a', 'b', 'c']
+}).addTo(map);
+
+})();
+
+self.webapp = __webpack_exports__;
+/******/ })()
+;

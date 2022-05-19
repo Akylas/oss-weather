@@ -97,10 +97,12 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
         },
         minutely: {
             data:
-                result.minutely?.map((h) => ({
-                    precipAccumulation: h.precipitation,
-                    time: h.dt * 1000
-                })) || []
+                result.minutely
+                    ?.map((h) => ({
+                        intensity: h.precipitation >= 0.76 ? 3 : h.precipitation >= 0.11 ? 2 : h.precipitation > 0 ? 1 : 0,
+                        time: h.dt * 1000
+                    }))
+                    .filter((d, i) => i % 5 === 0) || []
         },
         alerts: result.alerts
     } as WeatherData;

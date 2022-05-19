@@ -8,10 +8,10 @@
 
     export let items: any[];
     let collectionView: NativeViewElementNode<CollectionView>;
-    export let scrollIndex = 0;
 
     function onDataPopulated() {
-        collectionView.nativeView.scrollToIndex(scrollIndex, false);
+        showLeftShadow = true;
+        showRightShadow = false;
     }
 
     let showLeftShadow = false;

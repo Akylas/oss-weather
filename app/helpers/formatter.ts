@@ -325,6 +325,9 @@ export function windBeaufortIcon(windSpeed) {
 
 const cardinals = ['app-wind_0', 'app-wind_1', 'app-wind_2', 'app-wind_3', 'app-wind_4', 'app-wind_5', 'app-wind_6', 'app-wind_7', 'app-wind_0'];
 export function windIcon(degrees) {
+    if (degrees === -1) {
+        return 'app-refresh';
+    }
     return cardinals[Math.round((degrees % 360) / 45)];
 }
 

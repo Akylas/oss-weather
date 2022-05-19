@@ -1,0 +1,2 @@
+*Bug fixes*
+- correctly discover location address

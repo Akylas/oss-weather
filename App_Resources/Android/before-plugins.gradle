@@ -8,7 +8,7 @@ ext {
     androidXTransition = "1.4.1"
     androidXRecyclerViewVersion = "1.2.1"
     androidXSwipeRefreshLayoutViewVersion = "1.1.0"
-    androidXMaterial = "1.6.0-rc01"
+    androidXMaterial = "1.6.0"
     androidXBrowser = "1.4.0"
     androidXPreferenceVersion = "1.2.0"
 }

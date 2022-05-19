@@ -76,6 +76,7 @@
   },
   "share_application": "partager l'application",
   "source_code": "code source",
+  "source_code_desc": "obtenir le code source de l'application sur Github",
   "spanish": "espagnol",
   "theme": {
     "auto": "auto",
@@ -85,6 +86,7 @@
     "title": "theme"
   },
   "third_parties": "bibliothèques tierces",
+  "third_parties_desc": "les logiciels que nous aimons et utilisons",
   "version": "version",
   "weather_map": "carte météo"
 }

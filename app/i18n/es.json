@@ -76,6 +76,7 @@
   },
   "share_application": "compartir aplicación",
   "source_code": "código fuente",
+  "source_code_desc": "obtener el código fuente de la aplicación en github",
   "spanish": "Español",
   "theme": {
     "auto": "auto",
@@ -85,6 +86,7 @@
     "title": "tema"
   },
   "third_parties": "bibliotecas de terceros",
+  "third_parties_desc": "el software que amamos y utilizamos",
   "version": "versión",
   "weather_map": "mapa climático"
 }

@@ -17,8 +17,8 @@
   "email": "email",
   "email_required": "a valid email is required",
   "english": "english",
-  "spanish": "spanish",
   "error": "error",
+  "espagnol": "spanish",
   "expires": "expires",
   "file": "file",
   "french": "french",
@@ -26,6 +26,7 @@
   "gps_not_authorized": "please enable GPS and authorize OSS Weather to use it to determine your location",
   "gps_not_enabled": "please enable GPS to allow OSS Weather to determine your location",
   "gps_off": "the location is disabled",
+  "heavy": "heavy",
   "imperial_units": "imperial units(°F, mPh,...)",
   "ios": {
     "info": {
@@ -36,7 +37,9 @@
   },
   "language": "language",
   "last_updated": "last updated",
+  "light": "light",
   "loading": "loading",
+  "medium": "moderate",
   "missing_location_perm": "location permission is missing",
   "moon": "moon",
   "my_location": "my location",
@@ -73,6 +76,7 @@
   },
   "share_application": "share application",
   "source_code": "source code",
+  "spanish": "spanish",
   "theme": {
     "auto": "auto",
     "black": "black",

@@ -108,7 +108,7 @@ export function updateThemeColors(theme: string, force = false) {
         backgroundColor.set('#ffffff');
         textColor.set('#000000');
         textLightColor.set('#444444');
-        borderColor.set('#cccccc55');
+        borderColor.set('#cccccc99');
         subtitleColor.set('#444444');
         iconColor.set('#444444');
     }

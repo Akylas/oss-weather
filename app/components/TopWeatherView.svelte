@@ -1,6 +1,5 @@
 <script lang="ts">
-    import Theme from '@nativescript-community/css-theme';
-    import { Align } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, Paint } from '@nativescript-community/ui-canvas';
     import { LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
@@ -10,12 +9,25 @@
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
+    import HourlyView from '~/components/HourlyView.svelte';
+    import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { l, lc } from '~/helpers/locale';
-    import HourlyView from '~/components/HourlyView.svelte';
     import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
-    import WeatherIcon from '~/components/WeatherIcon.svelte';
 
+    const textIconPaint = new Paint();
+    textIconPaint.setTextAlign(Align.CENTER);
+    const textIconSubPaint = new Paint();
+    textIconSubPaint.setTextAlign(Align.CENTER);
+    const wiPaint = new Paint();
+    wiPaint.setFontFamily(wiFontFamily);
+    wiPaint.setTextAlign(Align.CENTER);
+    const mdiPaint = new Paint();
+    mdiPaint.setFontFamily(mdiFontFamily);
+    mdiPaint.setTextAlign(Align.CENTER);
+    const appPaint = new Paint();
+    appPaint.setFontFamily(appFontFamily);
+    appPaint.setTextAlign(Align.CENTER);
     interface Item {
         alerts?: any;
         minutely?: MinutelyData[];
@@ -57,8 +69,12 @@
     let cloudChartSet: LineDataSet;
     let lastChartData: {
         time: number;
-        precipAccumulation: number;
+        intensity: number;
     }[];
+
+    let color: string | Color;
+    let precipIcon: string;
+
     function updateLineChart(item: Item) {
         const chart = lineChart.nativeView;
         if (chart) {
@@ -81,7 +97,6 @@
             }
             lastChartData = data;
             if (!chartInitialized) {
-                const darkTheme = /dark|black/.test(Theme.getMode());
                 const limitColor = new Color($textColor).setAlpha(0.5).hex;
                 chartInitialized = true;
                 chart.setNoDataText(null);
@@ -110,14 +125,14 @@
                 leftAxis.setDrawAxisLine(false);
                 leftAxis.removeAllLimitLines();
 
-                let limitLine = new LimitLine(0, l('light').toUpperCase());
+                let limitLine = new LimitLine(1, l('light').toUpperCase());
                 limitLine.setLineWidth(0);
                 limitLine.setXOffset(0);
                 limitLine.setTextColor(limitColor);
                 limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
                 leftAxis.addLimitLine(limitLine);
 
-                limitLine = new LimitLine(2.5, l('medium').toUpperCase());
+                limitLine = new LimitLine(2, l('medium').toUpperCase());
                 limitLine.setLineWidth(1);
                 limitLine.setLineColor(limitColor);
                 limitLine.enableDashedLine(2, 2, 0);
@@ -125,7 +140,7 @@
                 limitLine.setTextColor(limitColor);
                 limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
                 leftAxis.addLimitLine(limitLine);
-                limitLine = new LimitLine(7.6, l('heavy').toUpperCase());
+                limitLine = new LimitLine(3, l('heavy').toUpperCase());
                 limitLine.setLineWidth(1);
                 limitLine.setLineColor(limitColor);
                 limitLine.enableDashedLine(2, 2, 0);
@@ -137,32 +152,17 @@
 
             let needsToSetData = false;
             let needsUpdate = false;
-            const hasPrecip = data.some((d) => d.precipAccumulation > 0);
-            let min = 10000;
-            let max = -10000;
-            data.forEach((h) => {
-                h['index'] = Math.round((h.time - now) / 60000);
-                if (h.precipAccumulation < min) {
-                    min = h.precipAccumulation;
-                }
-                if (h.precipAccumulation > max) {
-                    max = h.precipAccumulation;
-                }
-            });
+            const hasPrecip = data.some((d) => d.intensity > 0);
 
             const leftAxis = chart.getAxisLeft();
-            leftAxis.setAxisMaximum(Math.max(max, 2.4));
+            leftAxis.setAxisMinimum(0);
+            leftAxis.setAxisMaximum(4);
             leftAxis.setDrawLimitLines(hasPrecip);
             if (hasPrecip) {
                 const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
                     needsToSetData = true;
-                    precipChartSet = new LineDataSet(
-                        data.filter((d, i) => i % 5 === 0),
-                        'precipAccumulation',
-                        'index',
-                        'precipAccumulation'
-                    );
+                    precipChartSet = new LineDataSet('intensity', 'index', 'intensity');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
                     // precipChartSet.setDrawCircles(true);
@@ -171,7 +171,7 @@
                     precipChartSet.setMode(Mode.CUBIC_BEZIER);
                     precipChartSet.setCubicIntensity(0.4);
                 } else {
-                    precipChartSet.setValues(data.filter((d, i) => i % 5 === 0));
+                    precipChartSet.setValues(data);
                     needsUpdate = true;
                 }
 
@@ -218,12 +218,98 @@
             updateLineChart(item);
         }
     }
+
+    $: {
+        if (item && item.icon.startsWith('13')) {
+            color = snowColor;
+            precipIcon = 'wi-snowflake-cold';
+        } else {
+            color = rainColor;
+            precipIcon = 'wi-raindrop';
+        }
+    }
+
+    function drawOnCanvas({ canvas }: { canvas: Canvas }) {
+        const w = canvas.getWidth();
+
+        let centeredItemsToDraw: {
+            color?: string | Color;
+            paint?: Paint;
+            iconFontSize: number;
+            icon: string;
+            value: string | number;
+            subvalue?: string;
+        }[] = [];
+        if (item.windSpeed) {
+            centeredItemsToDraw.push({
+                iconFontSize: 20,
+                paint: appPaint,
+                icon: item.windIcon,
+                value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
+                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+            });
+        }
+        centeredItemsToDraw.push({
+            paint: wiPaint,
+            color: nightColor,
+            iconFontSize: 20,
+            icon: item.moonIcon,
+            value: l('moon')
+        });
+        if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1) {
+            centeredItemsToDraw.push({
+                paint: wiPaint,
+                color: color,
+                iconFontSize: 20,
+                icon: precipIcon,
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
+                subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
+            });
+        } else if (item.cloudCover > 20) {
+            centeredItemsToDraw.push({
+                paint: wiPaint,
+                color: item.cloudColor,
+                iconFontSize: 20,
+                icon: 'wi-cloud',
+                value: Math.round(item.cloudCover) + '%',
+                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial)
+            });
+        }
+        if (item.uvIndex > 0) {
+            centeredItemsToDraw.push({
+                paint: mdiPaint,
+                color: item.uvIndexColor,
+                iconFontSize: 24,
+                icon: 'mdi-weather-sunny-alert',
+                value: Math.round(item.uvIndex)
+            });
+        }
+        centeredItemsToDraw.forEach((c, index) => {
+            let x = index * 55 + 26;
+            const paint = c.paint || textIconPaint;
+            paint.setTextSize(c.iconFontSize);
+            paint.setColor(c.color || $textColor);
+            if (c.icon) {
+                canvas.drawText(c.icon, x, 40 + 20, paint);
+            }
+            if (c.value) {
+                textIconSubPaint.setTextSize(12);
+                textIconSubPaint.setColor(c.color || $textColor);
+                canvas.drawText(c.value + '', x, 40 + 39, textIconSubPaint);
+            }
+            if (c.subvalue) {
+                textIconSubPaint.setTextSize(9);
+                textIconSubPaint.setColor(c.color || $textColor);
+                canvas.drawText(c.subvalue + '', x, 40 + 50, textIconSubPaint);
+            }
+        });
+    }
 </script>
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan={2}>
+    <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
         <cspan id="first" paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} textTransform="capitalize" />
 
         {#if item.temperature !== undefined}
@@ -238,35 +324,35 @@
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
         </cgroup>
 
-        <cgroup paddingLeft={0} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
+        <!-- <cgroup paddingLeft={0} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
             <cspan fontSize={24} lineHeight={32} text={item.windIcon} fontFamily={appFontFamily} />
             <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]}/>
             <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} fontFamily={wiFontFamily}/>
-        </cgroup>
-        <cgroup paddingLeft={55} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
+        </cgroup> -->
+        <!-- <cgroup paddingLeft={55} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
             <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text={item.moonIcon} />
             <cspan text={'\n' + l('moon')} />
-        </cgroup>
-        {#if item.cloudCover > 0}
+        </cgroup> -->
+        <!-- {#if item.cloudCover > 0}
             <cgroup paddingLeft={110} paddingTop={40} fontSize={14} verticalAlignment="top" textAlignment="center" width={60} color={item.cloudColor}>
                 <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-cloud" />
                 <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
                 <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
             </cgroup>
-        {/if}
-        {#if (item.precipProbability === -1 || item.precipAccumulation >= 0.1) && item.precipProbability > 0.1}
+        {/if} -->
+        <!-- {#if (item.precipProbability === -1 || item.precipAccumulation >= 0.1) && item.precipProbability > 0.1}
             <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 165 : 110} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
                 <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-raindrop" />
                 <cspan text={item.precipAccumulation >= 0.1 ? '\n' + formatValueToUnit(item.precipAccumulation, UNITS.MM) : null} />
                 <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
             </cgroup>
-        {/if}
-        {#if item.uvIndex > 0}
+        {/if} -->
+        <!-- {#if item.uvIndex > 0}
             <cgroup paddingLeft={item.cloudCover > 0 ? 220 : 165} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
                 <cspan fontSize={30} lineHeight={32} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
                 <cspan paddingTop={14} text={'\n' + Math.round(item.uvIndex)} />
             </cgroup>
-        {/if}
+        {/if} -->
 
         <cgroup paddingLeft={10} paddingBottom={10} fontSize={14} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />

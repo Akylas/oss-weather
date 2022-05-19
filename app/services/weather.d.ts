@@ -19,7 +19,7 @@ interface Minutely {
 }
 
 interface MinutelyData {
-    precipAccumulation: number;
+    intensity: number;
     time: number;
 }
 

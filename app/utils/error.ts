@@ -96,7 +96,7 @@ export async function showError(err: Error | string) {
     if (realError instanceof NoNetworkError) {
         showSendBugReport = false;
     }
-    console.log('showError', message, err, err['stack']);
+    console.error('showError', message, err, err['stack']);
     const result = await confirm({
         title,
         okButtonText: showSendBugReport ? lc('send_bug_report') : undefined,

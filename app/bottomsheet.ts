@@ -34,7 +34,10 @@ export function showBottomSheet<T>(modalOptions: ShowBottomSheetOptions): Promis
         let resolved = false;
         const closeCallback = (result: T) => {
             if (resolved) return;
-            modalStack.pop();
+            const index = modalStack.indexOf(componentInstanceInfo);
+            if (index !== -1) {
+                modalStack.splice(index, 1);
+            }
             resolved = true;
             resolve(result);
             componentInstanceInfo.viewInstance.$destroy(); // don't let an exception in destroy kill the promise callback

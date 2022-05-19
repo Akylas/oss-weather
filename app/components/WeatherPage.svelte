@@ -25,6 +25,9 @@
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
     let provider: 'meteofrance' | 'openweathermap' = getString('provider', 'meteofrance') as any;
+    if (!provider || provider.length === 0) {
+        provider = 'openweathermap';
+    }
     let weatherLocation: WeatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(getString('lastWeatherData', 'null'));
 
@@ -103,6 +106,7 @@
         loading = true;
 
         try {
+            console.log('refreshWeather', `"${provider}"`);
             if (provider === 'openweathermap') {
                 const providerModule = await import('~/services/owm');
                 weatherData = await providerModule.getOWMWeather(weatherLocation);
@@ -110,8 +114,10 @@
                 const providerModule = await import('~/services/mf');
                 weatherData = await providerModule.getMFWeather(weatherLocation);
             }
-            lastUpdate = Date.now();
-            await updateView();
+            if (weatherData) {
+                lastUpdate = Date.now();
+                await updateView();
+            }
         } catch (err) {
             if (err.statusCode === 403) {
                 if (provider === 'openweathermap') {
@@ -270,7 +276,7 @@
             showError(err);
         }
     }
-    prefs.on('key:provider', () => {
+    prefs.on('key:provider', (event) => {
         provider = getString('provider') as any;
         refresh();
     });

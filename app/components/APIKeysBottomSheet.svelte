@@ -25,7 +25,7 @@
 <stacklayout class="bottomsheet" padding="10" iosIgnoreSafeArea={true}>
     <label text={l('api_key_required_description')} />
     <gridlayout rows="auto" columns="auto,*, auto" marginTop={5}>
-        <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10" />
+        <!-- <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10"/> -->
         <textfield text={owmApiKey} on:textChange={(e) => (owmApiKey = e.value)} col={1} hint={l('api_key')} placeholder={l('api_key')} placeholderColor="lightgray" />
         <mdbutton variant="text" class="icon-btn" text="mdi-open-in-app" col={2} on:tap={openWeatherMap} />
     </gridlayout>

@@ -18,6 +18,7 @@
   "email_required": "un email valide est requis",
   "english": "anglais",
   "error": "erreur",
+  "espagnol": "espagnol",
   "expires": "expire",
   "file": "fichier",
   "french": "français",
@@ -25,6 +26,7 @@
   "gps_not_authorized": "activez le GPS et autorisez OSS Weather à l'utiliser pour vous localiser",
   "gps_not_enabled": "activez le GPS pour permettre à OSS Weather de vous localiser",
   "gps_off": "La localisation est désactivée",
+  "heavy": "lourd",
   "imperial_units": "Unités impériales (°F, mPh),",
   "ios": {
     "info": {
@@ -35,7 +37,9 @@
   },
   "language": "langue",
   "last_updated": "dernière mise à jour",
+  "light": "lumière",
   "loading": "chargement",
+  "medium": "modérément modéré",
   "missing_location_perm": "l'autorisation de localisation est manquante",
   "moon": "lune",
   "my_location": "ma position",
@@ -48,6 +52,7 @@
   "open_website": "site web ouvert",
   "owm_api_key": "Clé d'API OpenWeatherMap",
   "please_describe_error": "veuillez décrire l'erreur",
+  "powered_by": "alimenté par %1$s",
   "preferences": "préférences",
   "provider": {
     "meteofrance": "MéteoFrance",

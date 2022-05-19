@@ -32,10 +32,10 @@
                 </array>
                 <key>Titles</key>
                 <array>
-                    <string>auto</string>
-                    <string>light</string>
-                    <string>dark</string>
-                    <string>black</string>
+                    <string>theme.auto</string>
+                    <string>theme.light</string>
+                    <string>theme.dark</string>
+                    <string>theme.black</string>
                 </array>
             </dict>
             <dict>
@@ -54,8 +54,8 @@
                 </array>
                 <key>Titles</key>
                 <array>
-                    <string>openweathermap</string>
-                    <string>meteofrance</string>
+                    <string>provider.openweathermap</string>
+                    <string>provider.meteofrance</string>
                 </array>
             </dict>
             <dict>
@@ -86,12 +86,14 @@
                     <string>auto</string>
                     <string>en</string>
                     <string>fr</string>
+                    <string>es</string>
                 </array>
                 <key>Titles</key>
                 <array>
                     <string>auto</string>
-                    <string>en</string>
-                    <string>fr</string>
+                    <string>english</string>
+                    <string>french</string>
+                    <string>spanish</string>
                 </array>
             </dict>
         </array>

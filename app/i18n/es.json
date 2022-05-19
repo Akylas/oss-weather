@@ -17,8 +17,8 @@
   "email": "Email",
   "email_required": "Se requiere un e-mail válido",
   "english": "inglés",
-  "espagnol": "español",
   "error": "error",
+  "espagnol": "español",
   "expires": "expira",
   "file": "expediente",
   "french": "francés",
@@ -26,6 +26,7 @@
   "gps_not_authorized": "habilite el GPS y autorice a OSS Weather a usarlo para determinar su ubicación",
   "gps_not_enabled": "habilite el GPS para permitir que OSS Weather determine su ubicación",
   "gps_off": "la ubicación está desactivada",
+  "heavy": "pesado",
   "imperial_units": "Unidades imperiales (°F, mPh),.",
   "ios": {
     "info": {
@@ -36,7 +37,9 @@
   },
   "language": "idioma",
   "last_updated": "última actualización",
+  "light": "luz",
   "loading": "cargando",
+  "medium": "moderada",
   "missing_location_perm": "falta el permiso de ubicación",
   "moon": "Luna",
   "my_location": "mi ubicacion",
@@ -49,7 +52,13 @@
   "open_website": "sitio web abierto",
   "owm_api_key": "Clave de API de OpenWeatherMap",
   "please_describe_error": "por favor describa el error",
+  "powered_by": "alimentado por %1$s",
   "preferences": "preferencias",
+  "provider": {
+    "meteofrance": "MéteoFrance",
+    "openweathermap": "OpenWeatherMap",
+    "title": "provider"
+  },
   "quit": "dejar",
   "refresh": "actualizar",
   "review_application": "revisar la solicitud",
@@ -67,17 +76,13 @@
   },
   "share_application": "compartir aplicación",
   "source_code": "código fuente",
+  "spanish": "Español",
   "theme": {
     "auto": "auto",
     "black": "negro",
     "dark": "oscuro",
     "light": "luz",
     "title": "tema"
-  },
-  "provider":{
-    "meteofrance":"MéteoFrance",
-    "openweathermap":"OpenWeatherMap",
-    "title":"provider"
   },
   "third_parties": "bibliotecas de terceros",
   "version": "versión",

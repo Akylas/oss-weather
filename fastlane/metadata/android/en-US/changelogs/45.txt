@@ -1,0 +1,13 @@
+*Features*
+- meteofrance support
+
+*Bug fixes*
+- prevent unwanted `-` in temperatues
+- faster daily item drawing
+- wind speed rounded
+- remove ui-image for faster an leaner app
+- import fixes
+- check for gps enabled
+- weather alert fix
+- multiple fixes and improvements
+-  locale fixe

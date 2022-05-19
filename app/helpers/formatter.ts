@@ -365,3 +365,42 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
     d.windIcon = windIcon(d.windBearing);
     return d;
 }
+
+export function formatAddress(address, part = 0) {
+    let result = '';
+    // if ((properties.layer === 'housenumber' || properties.name || properties.osm_value || properties.osm_key || properties.class) && address && address.houseNumber) {
+    if (address && address.houseNumber) {
+        result += address.houseNumber + ' ';
+    }
+    if (address.street) {
+        result += address.street + ' ';
+    }
+
+    if (part === 1 && result.length > 0) {
+        return result;
+    }
+    if (part === 2) {
+        if (result.length === 0) {
+            return undefined;
+        } else {
+            result = '';
+        }
+    }
+    // if (address.postcode) {
+    //     result += address.postcode + ' ';
+    // }
+    if (address.city) {
+        result += address.city;
+        if (address.county && address.county !== address.city) {
+            result += '(' + address.county + ')';
+        }
+        result += ' ';
+    }
+    // if (address.county) {
+    //     result += address.county + ' ';
+    // }
+    // if (address.state) {
+    //     result += address.state + ' ';
+    // }
+    return result.trim();
+}

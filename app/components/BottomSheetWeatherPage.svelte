@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { getFromLocation } from '@nativescript-community/geocoding';
-    import { Application, Utils } from '@nativescript/core';
+    import { Utils } from '@nativescript/core';
+    import { getString } from '@nativescript/core/application-settings';
     import { closeBottomSheet } from '~/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
-    import { getOWMWeather, networkService, prepareItems } from '~/services/api';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
+    import { geocodeAddress, networkService, prepareItems } from '~/services/api';
 
     let items = [];
     let loading = false;
@@ -18,28 +18,24 @@
     export let name;
     networkService.start(); // ensure it is started
 
-    async function geocodeAddress() {
-        try {
-            const results = await getFromLocation(weatherLocation.coord.lat, weatherLocation.coord.lon, 10);
-            if (DEV_LOG) {
-                console.error('found addresses', results);
-            }
-            if (results?.length > 0) {
-                name = results[0].locality;
-            }
-        } catch (error) {
-            console.error('geocodeAddress error:', error);
-        }
-    }
-
     async function refresh(weatherLocation) {
         loading = true;
         try {
-            const data = await getOWMWeather(weatherLocation);
+            const provider: 'meteofrance' | 'openweathermap' = getString('provider', 'openweathermap') as any;
+            let data: WeatherData;
+            if (provider === 'openweathermap') {
+                const providerModule = await import('~/services/owm');
+                data = await providerModule.getOWMWeather(weatherLocation);
+            } else if (provider === 'meteofrance') {
+                const providerModule = await import('~/services/mf');
+                data = await providerModule.getMFWeather(weatherLocation);
+            }
             DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
             if (!name) {
                 name = weatherLocation.coord.lat.toFixed(2) + ',' + weatherLocation.coord.lon.toFixed(2);
-                geocodeAddress();
+                geocodeAddress(weatherLocation.coord).then((r) => {
+                    name = r.name;
+                });
             }
             items = prepareItems(data, Date.now());
         } catch (err) {

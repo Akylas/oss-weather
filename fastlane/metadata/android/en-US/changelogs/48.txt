@@ -1,0 +1,2 @@
+*Bug fixes*
+- prevent crash when rain is coming!

@@ -162,7 +162,7 @@
                 const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
                     needsToSetData = true;
-                    precipChartSet = new LineDataSet('intensity', 'index', 'intensity');
+                    precipChartSet = new LineDataSet(data,'intensity', undefined, 'intensity');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
                     // precipChartSet.setDrawCircles(true);

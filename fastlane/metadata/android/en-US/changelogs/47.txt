@@ -1,0 +1,8 @@
+*Features*
+- meteofrance support
+
+*Bug fixes*
+- weather alert fix
+- multiple fixes and improvements
+-  locale fixe
+- correctly discover location address

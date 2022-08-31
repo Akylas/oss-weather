@@ -70,6 +70,7 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
 
     const cloudCover = { count: 0, total: 0 };
     const windSpeed = { count: 0, total: 0 };
+    // const windSpeeds = [];
     const windDegree = { count: 0, total: 0 };
     let windGust = null;
 
@@ -81,6 +82,7 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
             if (hourForecast.wind.speed) {
                 windSpeed.count++;
                 windSpeed.total += hourForecast.wind.speed;
+                // windSpeeds.push(hourForecast.wind.speed);
             }
             if (hourForecast.wind.direction !== 'Variable') {
                 windDegree.count++;
@@ -92,6 +94,7 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
             }
         }
     }
+    // console.log('day:', dayjs(dayStartTime).format('ddd DD/MM'), dayStartTime, dayEndTime, dailyForecast, cloudCover, windSpeed, windSpeeds, windDegree, rainSnowLimitTotal);
     const d = {
         time: dayStartTime,
         description: dailyForecast.weather12H == null ? '' : dailyForecast.weather12H.desc,
@@ -101,9 +104,9 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
         humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
         uvIndex: dailyForecast.uv,
         windGust: windGust * 3.6,
-        windSpeed: Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6),
-        windBearing: windDegree.count ? Math.round((windDegree.total / (windDegree.count)) * 3.6) : -1,
-        cloudCover: Math.round(cloudCover.total / (cloudCover.count || 1)),
+        windSpeed: windSpeed.count > 1 ? Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6) : 0,
+        windBearing: windDegree.count > 1 ? Math.round((windDegree.total / windDegree.count) * 3.6) : -1,
+        cloudCover: cloudCover.count > 1 ? Math.round(cloudCover.total / (cloudCover.count || 1)) : -1,
         precipAccumulation: Math.max(precipitationTotal, dailyForecast.precipitation['24h']),
         precipProbability,
         // precipProbability: Math.round(probPrecipitationTotal.total / (probPrecipitationTotal.count || 1)),

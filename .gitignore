@@ -10,6 +10,7 @@ certs
 pnpm-lock.yaml
 *.js.map
 e2e/**/*.js
+app/**/*.js
 /mochawesome-report
 /fastlane/report.xml
 /gpx
@@ -41,6 +42,7 @@ yarn-error.log*
 .idea
 .cloud
 .project
+.yarn
 tmp/
 typings/
 
@@ -53,6 +55,7 @@ typings/
 !.vscode/extensions.json
 /.sentryclirc
 pnpm-lock.yaml
+yarn.lock
 /fastlane/report.xml
 *.zip
 dist

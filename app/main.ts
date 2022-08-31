@@ -54,7 +54,7 @@ registerNativeViewElement('WebView', () => require('@nativescript/core').WebView
 // );
 
 //using 'spans' property breaks span(not cspan!) added without formattedstring
-registerNativeViewElement('span', () => require('@nativescript/core').Span, 'spans' );
+registerNativeViewElement('span', () => require('@nativescript/core').Span, 'spans');
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
 registerNativeViewElement('label', () => Label as any, null, {}, { override: true });
@@ -86,6 +86,27 @@ if (__IOS__) {
     const primaryColor = variables.primaryColor;
     themer.setPrimaryColor(primaryColor);
     themer.setAccentColor(primaryColor);
+}
+if (__ANDROID__) {
+    (global as any).setInterval = (handler, timeout, ...args) => {
+        timeout += 0;
+        const invoke = () => handler(...args);
+        const zoneBound = zonedCallback(invoke);
+        return (global as any).__setInterval(() => {
+            zoneBound();
+        }, timeout || 0);
+    };
+    (global as any).clearInterval = (global as any).__clearInterval;
+    (global as any).setTimeout = (handler, timeout, ...args) => {
+        timeout += 0;
+        const invoke = () => handler(...args);
+        const zoneBound = zonedCallback(invoke);
+        return (global as any).__setTimeout(() => {
+            zoneBound();
+        }, timeout || 0);
+    };
+
+    (global as any).clearTimeout = (global as any).__clearTimeout;
 }
 
 themer.createShape('round', {

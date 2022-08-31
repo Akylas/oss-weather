@@ -70,18 +70,23 @@ lane :build_flavor do |params|
   puts "version:"  + version
   puts "versionCode:"  + versionCode
 
+  # sentry_create_release = './node_modules/.bin/sentry-cli'
   # sentry_create_release(
+    # sentry_cli_path: sentry_create_release,
   #   version: version, # release version to create
   # )
   push_to_git_remote
   # sentry_set_commits(
+    # sentry_cli_path: sentry_create_release,
   #   version: version,
   #   auto: true, # enable completely automated commit management
   #   # clear: false, # clear all current commits from the release
   #   # commit: '...', # commit spec, see `sentry-cli releases help set-commits` for more information
   # )
 
-  # sentry_upload
+  # sentry_upload(
+  #   sentry_cli_path: sentry_create_release,
+  # )
 
   changelog = get_changelog(platform:platform, flavor:flavor)
 

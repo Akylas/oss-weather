@@ -157,6 +157,7 @@ function convertMFICon(icon: string) {
         case 14:
             return '10' + night;
         case 16:
+            return '12' + night;
         case 24:
         case 25:
         case 26:

@@ -45,6 +45,7 @@ yarn-error.log*
 .yarn
 tmp/
 typings/
+._.DS_Store
 
 
 # Visual Studio Code

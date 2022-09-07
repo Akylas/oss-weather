@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="__PACKAGE__">
     <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" />
-    <uses-sdk android:targetSdkVersion="__APILEVEL__" />
     <permission android:name="com.akylas.weather.broadcast" android:protectionLevel="signatureOrSystem"></permission>
     <uses-permission android:name="akylas.alpi.maps.broadcast" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

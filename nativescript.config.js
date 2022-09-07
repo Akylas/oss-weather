@@ -6,7 +6,7 @@ module.exports = {
     android: {
         markingMode: 'none',
         codeCache: true,
-        maxLogcatObjectSize: 32768
+        enableMultithreadedJavascript: false
     },
     cssParser: 'rework'
 };

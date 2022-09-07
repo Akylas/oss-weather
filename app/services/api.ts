@@ -1,3 +1,4 @@
+import { foregroundEvent } from '@akylas/nativescript/application';
 import { getFromLocation } from '@nativescript-community/geocoding';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
@@ -169,7 +170,7 @@ class NetworkService extends Observable {
             return;
         }
         this.monitoring = true;
-        applicationOn(resumeEvent, this.onAppResume, this);
+        applicationOn(foregroundEvent, this.onAppResume, this);
         startMonitoring(this.onConnectionStateChange.bind(this));
         this.connectionType = getConnectionType();
     }
@@ -177,7 +178,7 @@ class NetworkService extends Observable {
         if (!this.monitoring) {
             return;
         }
-        applicationOff(resumeEvent, this.onAppResume, this);
+        applicationOff(foregroundEvent, this.onAppResume, this);
         this.monitoring = false;
         stopMonitoring();
     }

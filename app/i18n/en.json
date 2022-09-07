@@ -44,7 +44,7 @@
   "moon": "moon",
   "my_location": "my location",
   "name": "name",
-  "no_location_desc": "You haven't chosen a location yet. \nYou can search to use your GPS location",
+  "no_location_desc": "You haven't chosen a location yet. \nYou can search or use your GPS location",
   "no_location_set": "no location set",
   "no_network": "no network",
   "non_valid_email": "non valid email",

@@ -77,10 +77,6 @@
         textPaint.setTextSize(15);
         canvas.drawText(convertTime(item.time, 'DD/MM'), 10, 46, textPaint);
 
-        if (item.windBeaufortIcon) {
-            wiPaint.setTextSize(20);
-            canvas.drawText(item.windBeaufortIcon, 10, 70, wiPaint);
-        }
 
         let centeredItemsToDraw: {
             color?: string | Color;
@@ -181,6 +177,12 @@
         canvas.translate(0, 5);
         staticLayout.draw(canvas);
         canvas.restore();
+
+        if (item.windBeaufortIcon) {
+            wiPaint.setColor($textColor);
+            wiPaint.setTextSize(20);
+            canvas.drawText(item.windBeaufortIcon, 40, h - 28, wiPaint);
+        }
 
         textPaint.setTextSize(13);
         textPaint.setColor($textLightColor);

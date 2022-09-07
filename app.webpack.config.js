@@ -41,6 +41,20 @@ module.exports = (env, params = {}) => {
             },
             env
         );
+    } else if (env.timeline) {
+        env = Object.assign(
+            {},
+            {
+                production: true,
+                sentry: false,
+                noconsole: false,
+                uploadSentry: false,
+                buildweathermap: true,
+                sourceMap: false,
+                uglify: true
+            },
+            env
+        );
     }
     const nconfig = require('./nativescript.config');
     const {
@@ -61,6 +75,7 @@ module.exports = (env, params = {}) => {
         profile, // --env.profile
         fork = true, // --env.fakeall
         adhoc, // --env.adhoc
+        timeline, // --env.timeline
         locale = 'auto', // --env.locale
         theme = 'auto', // --env.theme
         buildweathermap, // --env.buildweathermap
@@ -428,7 +443,8 @@ module.exports = (env, params = {}) => {
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /punnycode$/ }));
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^url$/ }));
 
-    if (!!production) {
+    if (!!production && !timeline) {
+        console.log('removing N profiling');
         config.plugins.push(
             new webpack.NormalModuleReplacementPlugin(/profiling$/, (resource) => {
                 if (resource.context.match(nativescriptReplace)) {

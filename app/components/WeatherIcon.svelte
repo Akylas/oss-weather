@@ -99,6 +99,11 @@
             case '11d':
             case '11n':
                 realIcon = '4805-weather-thunder';
+                break
+                // not available through OWM 
+            case '12d':
+            case '12n':
+                realIcon = '4792-weather-stormshowersday';
                 break;
         }
         if (realIcon) {

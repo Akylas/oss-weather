@@ -44,7 +44,7 @@
   "moon": "lune",
   "my_location": "ma position",
   "name": "nom",
-  "no_location_desc": "Vous n'avez pas encore choisi d'emplacement.\nVous pouvez chercher votre localisation GPS",
+  "no_location_desc": "Vous n'avez pas encore choisi d'emplacement.\nVous pouvez chercher ou utiliser votre localisation GPS",
   "no_location_set": "aucun emplacement défini",
   "no_network": "pas de réseau",
   "non_valid_email": "email non valide",

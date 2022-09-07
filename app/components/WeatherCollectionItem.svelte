@@ -198,6 +198,7 @@
         textPaint.setTextSize(11);
         textPaint.setAlpha(180);
         if (item.windSpeed) {
+            appTextPaint.setColor($textColor);
             canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, w + 15, appTextPaint);
         }
         // console.log('drawn in ', Date.now() - startTime, item.index);

@@ -132,3 +132,30 @@ configurations {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'
     }
 }
+
+// sentry {
+//     // Disables or enables the automatic configuration of ProGuard
+//     // for Sentry.  This injects a default config for ProGuard so
+//     // you don't need to do it manually.
+
+//     // Only enable it if you are using sentry-android <= v1.7,
+//     // sentry-android >= v2.0 already does it automatically.
+//     autoProguardConfig false
+
+//     // Enables or disables the automatic upload of mapping files
+//     // during a build.  If you disable this, you'll need to manually
+//     // upload the mapping files with sentry-cli when you do a release.
+//     autoUpload false
+
+//     // Disables or enables the automatic configuration of Native Symbols
+//     // for Sentry. This executes sentry-cli automatically so
+//     // you don't need to do it manually.
+//     // Default is disabled.
+//     uploadNativeSymbols false
+
+//     // Does or doesn't include the source code of native code for Sentry.
+//     // This executes sentry-cli with the --include-sources param. automatically so
+//     // you don't need to do it manually.
+//     // Default is disabled.
+//     includeNativeSources false
+// }

@@ -1,14 +1,15 @@
 ext {
-    compileSdk = 31
-    targetSdk = 31
-    androidxVersion = "1.7.0"
-    androidXAppCompat = "1.6.0-alpha03"
-    androidXAppCompatVersion = "1.6.0-alpha03"
-    androidXFragment = "1.4.1"
+    compileSdk = 33
+    targetSdk = 33
+    buildToolsVersion = "33.0.0"
+    androidxVersion = "1.8.0"
+    androidXAppCompat = "1.6.0-beta01"
+    androidXAppCompatVersion = "1.6.0-beta01"
+    androidXFragment = "1.5.2"
     androidXTransition = "1.4.1"
-    androidXRecyclerViewVersion = "1.2.1"
+    androidXRecyclerViewVersion = "1.3.0-beta02"
     androidXSwipeRefreshLayoutViewVersion = "1.1.0"
-    androidXMaterial = "1.6.0"
+    androidXMaterial = "1.6.1"
     androidXBrowser = "1.4.0"
     androidXPreferenceVersion = "1.2.0"
 }

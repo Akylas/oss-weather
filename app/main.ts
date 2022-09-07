@@ -13,7 +13,6 @@ import WeatherPage from '~/components/WeatherPage.svelte';
 // import { Application } from '@nativescript/core';
 import { start as startThemeHelper } from '~/helpers/theme';
 // import { startSentry } from '~/utils/sentry';
-// import { install } from '~/utils/logging';
 import './app.scss';
 
 // startSentry();

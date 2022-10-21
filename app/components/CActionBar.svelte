@@ -40,7 +40,6 @@
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
     <label
         id="title"
-        color={$textColor}
         col={1}
         colSpan={3}
         class="actionBarTitle"
@@ -54,7 +53,7 @@
     {/if} -->
     <stackLayout col={0} orientation="horizontal">
         <slot name="left" />
-        <mdbutton color={$textColor} variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
+        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
     </stackLayout>
     <stackLayout col={2} orientation="horizontal">
         <slot />

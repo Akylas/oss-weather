@@ -316,7 +316,7 @@
                 horizontalAlignment="right"
             />
         {:else}
-            <gridlayout id="teststack" row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
+            <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
                 <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
                     <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />

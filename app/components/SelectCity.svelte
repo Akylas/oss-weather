@@ -67,7 +67,7 @@
     }
 </script>
 
-<frame backgroundColor="transparent">
+<!-- <frame backgroundColor="transparent"> -->
     <page actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
             <CActionBar title={lc('search_city')} modalWindow>
@@ -88,4 +88,4 @@
             </collectionview>
         </gridLayout>
     </page>
-</frame>
+<!-- </frame> -->

@@ -5,6 +5,7 @@ import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
+import { install as installGestures } from '@nativescript-community/gesturehandler';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
 import { ScrollView, Trace } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
@@ -16,6 +17,7 @@ import { start as startThemeHelper } from '~/helpers/theme';
 import './app.scss';
 
 // startSentry();
+// installGestures(true);
 overrideSpanAndFormattedString();
 installMixins();
 installUIMixins();
@@ -85,27 +87,6 @@ if (__IOS__) {
     const primaryColor = variables.primaryColor;
     themer.setPrimaryColor(primaryColor);
     themer.setAccentColor(primaryColor);
-}
-if (__ANDROID__) {
-    (global as any).setInterval = (handler, timeout, ...args) => {
-        timeout += 0;
-        const invoke = () => handler(...args);
-        const zoneBound = zonedCallback(invoke);
-        return (global as any).__setInterval(() => {
-            zoneBound();
-        }, timeout || 0);
-    };
-    (global as any).clearInterval = (global as any).__clearInterval;
-    (global as any).setTimeout = (handler, timeout, ...args) => {
-        timeout += 0;
-        const invoke = () => handler(...args);
-        const zoneBound = zonedCallback(invoke);
-        return (global as any).__setTimeout(() => {
-            zoneBound();
-        }, timeout || 0);
-    };
-
-    (global as any).clearTimeout = (global as any).__clearTimeout;
 }
 
 themer.createShape('round', {

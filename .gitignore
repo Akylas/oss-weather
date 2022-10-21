@@ -62,3 +62,4 @@ yarn.lock
 dist
 .vscode
 /webpack.stats.json
+App_Resources/iOS/Settings.bundle/**/Root.strings

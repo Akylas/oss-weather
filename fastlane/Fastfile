@@ -159,7 +159,6 @@ platform :ios do
 end
 
 platform :android do
-
   desc 'Upload  to Sentry'
   lane :sentry_upload do 
   end
@@ -194,8 +193,8 @@ platform :android do
   end
 
   desc 'Build the Android application.'
-    lane :build do
-      sh("npm", "run", "build.android.production")
+  lane :build do
+    sh("npm", "run", "build.android.production")
   end
   desc 'Build the Android application For Github.'
   lane :build_github do

@@ -7,7 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const IgnoreNotFoundExportPlugin = require('./IgnoreNotFoundExportPlugin');
+const IgnoreNotFoundExportPlugin = require('./scripts/IgnoreNotFoundExportPlugin');
 const Fontmin = require('@akylas/fontmin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
@@ -34,6 +34,7 @@ module.exports = (env, params = {}) => {
                 production: true,
                 sentry: false,
                 uploadSentry: false,
+                noconsole: true,
                 apiKeys: true,
                 sourceMap: false,
                 buildweathermap: true,
@@ -88,6 +89,24 @@ module.exports = (env, params = {}) => {
     env.appResourcesPath = nconfig.appResourcesPath;
     env.appComponents = env.appComponents || [];
     env.appComponents.push('~/android/floatingactivity');
+
+    nsWebpack.chainWebpack((config, env) => {
+        config.when(env.production, (config) => {
+            config.module
+                .rule('svelte')
+                .use('string-replace-loader')
+                .loader('string-replace-loader')
+                .before('svelte-loader')
+                .options({
+                    search: 'createElementNS\\("https:\\/\\/svelte.dev\\/docs#template-syntax-svelte-options"',
+                    replace: 'createElementNS(svN',
+                    flags: 'gm'
+                })
+                .end();
+        });
+
+        return config;
+    });
     const config = webpackConfig(env, params);
 
     if (profile) {
@@ -547,7 +566,7 @@ module.exports = (env, params = {}) => {
         new TerserPlugin({
             parallel: true,
             terserOptions: {
-                ecma: platform === 'android' ? 2020 : 2017,
+                ecma: isAndroid ? 2020 : 2017,
                 module: true,
                 toplevel: false,
                 keep_classnames: platform !== 'android',

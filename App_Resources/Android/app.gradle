@@ -50,6 +50,7 @@ android {
   // }  
   buildTypes { // THIS CAUSES RELEASE MODE ERROR ON APP LAUNCH
     release {
+      multiDexEnabled false
       // Enables code shrinking, obfuscation, and optimization for only
       // your project's release build type.
       minifyEnabled true

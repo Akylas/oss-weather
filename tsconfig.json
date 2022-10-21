@@ -11,6 +11,7 @@
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "allowUnreachableCode": false,
+        "allowSyntheticDefaultImports": true,
         "allowUnusedLabels": false,
         "noEmitHelpers": true,
         "noEmitOnError": false,
@@ -18,14 +19,14 @@
         "noImplicitReturns": false,
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
-        "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "es2017", "dom"],
-        "types": ["node", "svelte"],  
+        "types": ["node", "svelte", "svelte-native"],  
         "baseUrl": ".",
         "paths": {
             "~/*": ["app/*"]
-        }
+        },
+        "plugins": [{ "transform": "@nativescript/webpack/dist/transformers/NativeClass", "type": "raw" }]
     },
     "include": ["app/**/*", "references.d.ts"],
     "exclude": ["node_modules", "platforms", "**/angular"]

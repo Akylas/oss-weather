@@ -1,5 +1,4 @@
-//// <reference path="./node_modules/@nativescript/types-ios/lib/ios.d.ts" />
-/// <reference path="./node_modules/@nativescript/types-android/lib/android-31.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-android/lib/android-32.d.ts" />
 /// <reference path="./node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="./node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
 
@@ -45,23 +44,27 @@ interface LatLonKeys {
 // declare module '*.svelte' {
 //     export default SvelteComponent;
 // }
-declare module '*.scss';
-declare module '*.svelte' {
-    export { SvelteComponentDev as default } from 'svelte/internal';
+declare module '*.scss' {
+    // const content: any;
+
+    // export default content;
+    // export function toString(): string
+    export const locals;
+    // export const i
 }
 namespace svelteNative.JSX {
     interface ViewAttributes {
         rippleColor?: Color | string;
         verticalAlignment?: string;
-    }
-    interface SpanAttributes {
-        verticalAlignment?: string;
+        dynamicElevationOffset?: string | number;
+        elevation?: string | number;
     }
     export interface ButtonAttributes {
         variant?: string;
         shape?: string;
     }
     export interface SpanAttributes {
+        verticalAlignment?: string;
         verticalTextAlignment?: string;
     }
     export interface SliderAttributes {
@@ -74,6 +77,6 @@ namespace svelteNative.JSX {
         minFontSize?: number;
         maxFontSize?: number;
         lineBreak?: string;
-        _html?: string;
+        html?: string;
     }
 }

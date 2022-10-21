@@ -80,6 +80,9 @@ export function start() {
     } else {
         theme = getString('theme', DEFAULT_THEME) as Themes;
     }
+    if (theme.length === 0) {
+        theme = DEFAULT_THEME as Themes;
+    }
 
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;

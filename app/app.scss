@@ -24,6 +24,7 @@ mdbutton {
         color: white;
     }
 }
+
 mdbutton {
     shape: round;
     padding: 0;
@@ -31,12 +32,10 @@ mdbutton {
 
 mdtextfield {
     color: black;
-    backgroundcolor-color: white;
     placeholder-color: black;
     .ns-dark &,
     .ns-black & {
         color: white;
-        backgroundcolor-color: black;
         placeholder-color: white;
     }
 }
@@ -112,14 +111,8 @@ page,
 }
 
 .actionBarTitle {
-    // @extend .lato;
     font-size: 20;
     font-weight: 500;
-    color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-    }
 }
 
 .actionBarSubtitle {

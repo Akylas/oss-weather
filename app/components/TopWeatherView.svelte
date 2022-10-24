@@ -309,7 +309,7 @@
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
-    <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
+    <canvaslabel id="top-label" colSpan={2} on:draw={drawOnCanvas}>
         <cspan id="first" paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} textTransform="capitalize" />
 
         {#if item.temperature !== undefined}

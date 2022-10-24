@@ -237,6 +237,6 @@
 
         <line color={$borderColor} startX="0%" startY="0" stopX="100%" stopY="0" strokewidth={1} />
     </canvaslabel> -->
-    <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
+    <canvas id="dailyView" bind:this={canvasView} on:draw={drawOnCanvas} />
     <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
 </gridLayout>

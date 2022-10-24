@@ -9,6 +9,7 @@
     "name": "OSS Weather"
   },
   "authorize": "authorize",
+  "auto_black":"use black for auto dark theme",
   "bug_report_sent": "bug report sent",
   "cancel": "cancel",
   "close": "close",

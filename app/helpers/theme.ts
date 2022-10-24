@@ -1,6 +1,6 @@
 import Theme from '@nativescript-community/css-theme';
-import { Application } from '@nativescript/core';
-import { getString, setString } from '@nativescript/core/application-settings';
+import { Application, Utils } from '@nativescript/core';
+import { getBoolean, getString, setString } from '@nativescript/core/application-settings';
 import { iOSNativeHelper } from '@nativescript/core/utils';
 import { prefs } from '~/services/preferences';
 import { createGlobalEventListener, globalObservable, updateThemeColors } from '~/variables';
@@ -8,15 +8,23 @@ import { createGlobalEventListener, globalObservable, updateThemeColors } from '
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
 export const onThemeChanged = createGlobalEventListener('theme');
+export let theme: Themes;
+
+let started = false;
+const autoDarkToBlack = getBoolean('auto_black', false);
+const ThemeBlack = 'ns-black';
 
 Application.on(Application.systemAppearanceChangedEvent, (event) => {
     if (theme === 'auto') {
-        updateThemeColors(event.newValue);
-        globalObservable.notify({ eventName: 'theme', data: event.newValue });
+        let theme = event.newValue;
+        if (autoDarkToBlack && theme === 'dark') {
+            theme = 'black';
+        }
+        updateThemeColors(theme);
+        globalObservable.notify({ eventName: 'theme', data: theme });
     }
 });
 
-const ThemeBlack = 'ns-black';
 export function applyTheme(theme: Themes) {
     const AppCompatDelegate = __ANDROID__ ? androidx.appcompat.app.AppCompatDelegate : undefined;
     switch (theme) {
@@ -67,9 +75,20 @@ export function applyTheme(theme: Themes) {
     }
 }
 
-export let theme: Themes;
+function getRealTheme(theme) {
+    if (theme === 'auto') {
+        try {
+            theme = Application.systemAppearance();
+            if (autoDarkToBlack && theme === 'dark') {
+                theme = 'black';
+            }
+        } catch (err) {
+            console.error('updateThemeColors', err);
+        }
+    }
+    return theme;
+}
 
-let started = false;
 export function start() {
     if (started) {
         return;
@@ -84,6 +103,14 @@ export function start() {
         theme = DEFAULT_THEME as Themes;
     }
 
+    prefs.on('key:auto_black', () => {
+        if (theme === 'auto') {
+            const realTheme = getRealTheme(theme);
+            updateThemeColors(realTheme);
+            globalObservable.notify({ eventName: 'theme', data: realTheme });
+        }
+    });
+
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;
         if (__IOS__ && iOSNativeHelper.MajorVersion < 13) {
@@ -95,28 +122,29 @@ export function start() {
         }
 
         theme = newTheme;
-        // sTheme.set(newTheme);
         applyTheme(newTheme);
-        updateThemeColors(newTheme, newTheme !== 'auto');
-        globalObservable.notify({ eventName: 'theme', data: theme });
+        const realTheme = getRealTheme(newTheme);
+        updateThemeColors(realTheme);
+        globalObservable.notify({ eventName: 'theme', data: realTheme });
     });
-    const force = theme !== 'auto';
+    const realTheme = getRealTheme(theme);
     if (__ANDROID__) {
         applyTheme(theme);
-        if (Application.android && Application.android.context) {
-            updateThemeColors(theme, force);
+        const context = Utils.ad.getApplicationContext();
+        if (context) {
+            updateThemeColors(realTheme);
         } else {
-            Application.on(Application.launchEvent, () => updateThemeColors(theme, force));
+            Application.on(Application.launchEvent, () => updateThemeColors(realTheme));
         }
     } else {
         if (Application.ios && Application.ios.window) {
             applyTheme(theme);
-            updateThemeColors(theme, force);
+            updateThemeColors(realTheme);
         } else {
-            updateThemeColors(theme, force);
+            updateThemeColors(realTheme);
             Application.on(Application.displayedEvent, () => {
                 applyTheme(theme);
-                updateThemeColors(theme, force);
+                updateThemeColors(realTheme);
             });
         }
     }

@@ -85,14 +85,7 @@ prefs.on('key:imperial', () => {
     globalObservable.notify({ eventName: 'imperial', data: newImperial });
 });
 
-export function updateThemeColors(theme: string, force = false) {
-    try {
-        if (!force) {
-            theme = Application.systemAppearance();
-        }
-    } catch (err) {
-        console.error('updateThemeColors', err);
-    }
+export function updateThemeColors(theme: string) {
     if (theme === 'dark' || theme === 'black') {
         textColor.set('#ffffff');
         textLightColor.set('#aaaaaa');

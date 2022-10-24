@@ -11,10 +11,11 @@ export const onThemeChanged = createGlobalEventListener('theme');
 export let theme: Themes;
 
 let started = false;
-const autoDarkToBlack = getBoolean('auto_black', false);
+let autoDarkToBlack = getBoolean('auto_black', false);
 const ThemeBlack = 'ns-black';
 
 Application.on(Application.systemAppearanceChangedEvent, (event) => {
+    DEV_LOG && console.log('systemAppearanceChangedEvent', theme, event.newValue, autoDarkToBlack);
     if (theme === 'auto') {
         let theme = event.newValue;
         if (autoDarkToBlack && theme === 'dark') {
@@ -25,57 +26,63 @@ Application.on(Application.systemAppearanceChangedEvent, (event) => {
     }
 });
 
+const AppCompatDelegate = __ANDROID__ ? androidx.appcompat.app.AppCompatDelegate : undefined;
 export function applyTheme(theme: Themes) {
-    const AppCompatDelegate = __ANDROID__ ? androidx.appcompat.app.AppCompatDelegate : undefined;
-    switch (theme) {
-        case 'auto':
-            Theme.setMode(Theme.Auto);
-            if (__ANDROID__) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            } else {
-                if (Application.ios.window) {
-                    //@ts-ignore
-                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
+    try {
+        DEV_LOG && console.log('applyTheme', theme);
+        switch (theme) {
+            case 'auto':
+                Theme.setMode(Theme.Auto);
+                if (__ANDROID__) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                } else {
+                    if (Application.ios.window) {
+                        //@ts-ignore
+                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
+                    }
                 }
-            }
-            break;
-        case 'light':
-            Theme.setMode(Theme.Light);
-            if (__ANDROID__) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            } else {
-                if (Application.ios.window) {
-                    //@ts-ignore
-                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
+                break;
+            case 'light':
+                Theme.setMode(Theme.Light);
+                if (__ANDROID__) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                } else {
+                    if (Application.ios.window) {
+                        //@ts-ignore
+                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
+                    }
                 }
-            }
-            break;
-        case 'dark':
-            Theme.setMode(Theme.Dark);
-            if (__ANDROID__) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                if (Application.ios.window) {
-                    //@ts-ignore
-                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                break;
+            case 'dark':
+                Theme.setMode(Theme.Dark);
+                if (__ANDROID__) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                } else {
+                    if (Application.ios.window) {
+                        //@ts-ignore
+                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                    }
                 }
-            }
-            break;
-        case 'black':
-            Theme.setMode(ThemeBlack);
-            if (__ANDROID__) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            } else {
-                if (Application.ios.window) {
-                    //@ts-ignore
-                    (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                break;
+            case 'black':
+                Theme.setMode(ThemeBlack);
+                if (__ANDROID__) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                } else {
+                    if (Application.ios.window) {
+                        //@ts-ignore
+                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                    }
                 }
-            }
-            break;
+                break;
+        }
+    } catch (error) {
+        console.error('applyTheme', error);
     }
 }
 
 function getRealTheme(theme) {
+    DEV_LOG && console.log('getRealTheme', theme);
     if (theme === 'auto') {
         try {
             theme = Application.systemAppearance();
@@ -83,7 +90,7 @@ function getRealTheme(theme) {
                 theme = 'black';
             }
         } catch (err) {
-            console.error('updateThemeColors', err);
+            console.error('getRealTheme', err);
         }
     }
     return theme;
@@ -104,6 +111,8 @@ export function start() {
     }
 
     prefs.on('key:auto_black', () => {
+        autoDarkToBlack = getBoolean('auto_black');
+        DEV_LOG && console.log('key:auto_black', theme, autoDarkToBlack);
         if (theme === 'auto') {
             const realTheme = getRealTheme(theme);
             updateThemeColors(realTheme);
@@ -113,6 +122,7 @@ export function start() {
 
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;
+        DEV_LOG && console.log('key:theme', theme, newTheme, autoDarkToBlack);
         if (__IOS__ && iOSNativeHelper.MajorVersion < 13) {
             newTheme = 'light';
         }
@@ -126,16 +136,27 @@ export function start() {
         const realTheme = getRealTheme(newTheme);
         updateThemeColors(realTheme);
         globalObservable.notify({ eventName: 'theme', data: realTheme });
+        // if (__ANDROID__) {
+        //     // we recreate the activity to get the change
+        //     const activity = Application.android.startActivity as androidx.appcompat.app.AppCompatActivity;
+        //     activity.recreate();
+        //     if (Application.android.foregroundActivity !== activity) {
+        //         (Application.android.foregroundActivity as androidx.appcompat.app.AppCompatActivity).recreate();
+        //     }
+        // }
     });
     const realTheme = getRealTheme(theme);
     if (__ANDROID__) {
-        applyTheme(theme);
         const context = Utils.ad.getApplicationContext();
         if (context) {
-            updateThemeColors(realTheme);
+            applyTheme(theme);
         } else {
-            Application.on(Application.launchEvent, () => updateThemeColors(realTheme));
+            Application.on(Application.launchEvent, () => {
+                applyTheme(theme);
+                updateThemeColors(realTheme);
+            });
         }
+        updateThemeColors(realTheme);
     } else {
         if (Application.ios && Application.ios.window) {
             applyTheme(theme);

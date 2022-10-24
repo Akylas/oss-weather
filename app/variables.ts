@@ -86,6 +86,7 @@ prefs.on('key:imperial', () => {
 });
 
 export function updateThemeColors(theme: string) {
+    DEV_LOG && console.log('updateThemeColors', theme);
     if (theme === 'dark' || theme === 'black') {
         textColor.set('#ffffff');
         textLightColor.set('#aaaaaa');

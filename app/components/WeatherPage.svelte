@@ -18,6 +18,7 @@
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
+    import { hasOWMApiKey } from '~/services/owm';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -228,8 +229,7 @@
     }
     onMount(async () => {
         if (provider === 'openweathermap') {
-            const owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
-            if ((!owmApiKey || owmApiKey === OWM_DEFAULT_KEY) && weatherLocation) {
+            if (!hasOWMApiKey() && weatherLocation) {
                 // wait a bit
                 setTimeout(() => askForApiKey(), 1000);
             }

@@ -2,7 +2,7 @@
     import { getString } from '@nativescript/core/application-settings';
     import { closeBottomSheet } from '~/bottomsheet';
     import { l } from '~/helpers/locale';
-    import { setOWMApiKey } from '~/services/api';
+    import { setOWMApiKey } from '~/services/owm';
     import { openLink } from '~/utils/ui';
 
     let owmApiKey = getString('owmApiKey');
@@ -22,7 +22,7 @@
     }
 </script>
 
-<stacklayout class="bottomsheet" padding="10" iosIgnoreSafeArea={true}>
+<stacklayout padding="10" iosIgnoreSafeArea={true}>
     <label text={l('api_key_required_description')} />
     <gridlayout rows="auto" columns="auto,*, auto" marginTop={5}>
         <!-- <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10"/> -->

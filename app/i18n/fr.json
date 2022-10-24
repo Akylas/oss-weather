@@ -9,6 +9,7 @@
     "name": "OSS Météo"
   },
   "authorize": "autoriser",
+  "auto_black":"utiliser noir pour le thème auto sombre",
   "bug_report_sent": "rapport de bug envoyé",
   "cancel": "annuler",
   "close": "fermer",

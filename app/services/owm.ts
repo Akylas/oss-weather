@@ -9,6 +9,7 @@ import { prefs } from './preferences';
 function readOwmApiKeySetting() {
     let key = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
     if (key.length === 0) {
+        remove('owmApiKey');
         key = OWM_MY_KEY || OWM_DEFAULT_KEY;
     }
     return key;
@@ -21,7 +22,7 @@ prefs.on('key:owmApiKey', (event) => {
 
 export function setOWMApiKey(apiKey) {
     owmApiKey = apiKey;
-    if (apiKey) {
+    if (apiKey && apiKey.length) {
         setString('owmApiKey', apiKey);
     } else {
         remove('owmApiKey');

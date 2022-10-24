@@ -39,7 +39,7 @@
 
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
     <label
-        id="title"
+        id="actionbar-title"
         col={1}
         colSpan={3}
         class="actionBarTitle"

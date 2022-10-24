@@ -7,7 +7,7 @@ declare const DEFAULT_LOCALE: string;
 declare const DEFAULT_THEME: string;
 declare const TNS_ENV: string;
 declare const DEV_LOG: boolean;
-declare const TEST_LOGS: boolean;
+declare const TEST_LOG: boolean;
 declare const NO_CONSOLE: boolean;
 declare const PRODUCTION: boolean;
 declare const SENTRY_DSN: string;

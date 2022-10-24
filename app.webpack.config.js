@@ -27,7 +27,21 @@ module.exports = (env, params = {}) => {
             env[k] = true;
         }
     });
-    if (env.adhoc) {
+    if (env.adhoc_sentry) {
+        env = Object.assign(
+            {},
+            {
+                production: true,
+                sentry: true,
+                uploadSentry: true,
+                testlog: true,
+                noconsole: false,
+                sourceMap: true,
+                uglify: true
+            },
+            env
+        );
+    } else if (env.adhoc) {
         env = Object.assign(
             {},
             {
@@ -37,6 +51,7 @@ module.exports = (env, params = {}) => {
                 noconsole: true,
                 apiKeys: true,
                 sourceMap: false,
+                testlog: false,
                 buildweathermap: true,
                 uglify: true
             },
@@ -72,6 +87,7 @@ module.exports = (env, params = {}) => {
         uglify, // --env.uglify
         noconsole, // --env.noconsole
         devlog, // --env.devlog
+        testlog, // --env.testlog
         fakeall, // --env.fakeall
         profile, // --env.profile
         fork = true, // --env.fakeall
@@ -129,11 +145,14 @@ module.exports = (env, params = {}) => {
     });
 
     const coreModulesPackageName = fork ? '@akylas/nativescript' : '@nativescript/core';
-    config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
-    Object.assign(config.resolve.alias, {
-        '@nativescript/core': `${coreModulesPackageName}`,
-        'tns-core-modules': `${coreModulesPackageName}`
-    });
+    if (fork) {
+        config.resolve.modules = [resolve(__dirname, `node_modules/${coreModulesPackageName}`), resolve(__dirname, 'node_modules'), `node_modules/${coreModulesPackageName}`, 'node_modules'];
+        Object.assign(config.resolve.alias, {
+            '@nativescript/core': `${coreModulesPackageName}`,
+            'tns-core-modules': `${coreModulesPackageName}`
+        });
+    }
+
     let appVersion;
     let buildNumber;
     if (platform === 'android') {
@@ -190,7 +209,7 @@ module.exports = (env, params = {}) => {
                 : `market://details?id=${nsconfig.id}`
         }"`,
         DEV_LOG: !!devlog,
-        TEST_LOGS: !!adhoc || !production,
+        TEST_LOG: !!devlog || !!testlog,
         OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
         MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',
         OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',
@@ -441,21 +460,22 @@ module.exports = (env, params = {}) => {
             }
         })
     );
-
-    config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(/accessibility$/, (resource) => {
-            if (resource.context.match(nativescriptReplace)) {
-                resource.request = '~/shims/accessibility';
-            }
-        })
-    );
-    config.plugins.push(
-        new webpack.NormalModuleReplacementPlugin(/action-bar$/, (resource) => {
-            if (resource.context.match(nativescriptReplace)) {
-                resource.request = '~/shims/action-bar';
-            }
-        })
-    );
+    if (fork) {
+        config.plugins.push(
+            new webpack.NormalModuleReplacementPlugin(/accessibility$/, (resource) => {
+                if (resource.context.match(nativescriptReplace)) {
+                    resource.request = '~/shims/accessibility';
+                }
+            })
+        );
+        config.plugins.push(
+            new webpack.NormalModuleReplacementPlugin(/action-bar$/, (resource) => {
+                if (resource.context.match(nativescriptReplace)) {
+                    resource.request = '~/shims/action-bar';
+                }
+            })
+        );
+    }
 
     // save as long as we dont use calc in css
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));

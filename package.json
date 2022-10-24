@@ -15,7 +15,7 @@
     },
     "repository": "https://github.com/farfromrefug/oss-weather",
     "dependencies": {
-        "@akylas/nativescript": "link:../NativeScript/dist/packages/core",
+        "@akylas/nativescript": "8.3.6",
         "@akylas/nativescript-inappbrowser": "3.1.6",
         "@mdi/font": "7.0.96",
         "@modern-dev/daylight": "0.1.0",

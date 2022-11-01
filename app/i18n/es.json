@@ -9,6 +9,7 @@
     "name": "OSS Tiempo"
   },
   "authorize": "autorizar",
+  "auto_black":"uso negro para el tema oscuro auto",
   "bug_report_sent": "informe de error enviado",
   "cancel": "cancelar",
   "close": "cerca",

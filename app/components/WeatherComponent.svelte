@@ -8,6 +8,7 @@
     import TopWeatherView from '~/components/TopWeatherView.svelte';
     import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
+    import { onThemeChanged } from '~/helpers/theme';
 
     export let items: any[];
 
@@ -24,7 +25,7 @@
             isLayedout = true;
             try {
                 (Application.android.foregroundActivity as android.app.Activity).reportFullyDrawn();
-            } catch(err){ }
+            } catch (err) {}
         }
     }
 
@@ -33,8 +34,8 @@
     });
 
     // onThemeChanged(() => {
-    // console.log('onThemeChanged');
-    // collectionView.nativeView.refresh();
+    //     console.log('onThemeChanged');
+    //     collectionView.nativeView.refreshVisibleItems();
     // });
 </script>
 

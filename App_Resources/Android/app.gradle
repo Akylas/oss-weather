@@ -78,19 +78,7 @@ android {
     debug {
       multiDexEnabled true;
     }
-  }  
-  // flavorDimensions "stage"
-  // productFlavors {
-  //   dev {
-  //     dimension "stage"
-  //     versionNameSuffix "-dev"
-  //     resConfigs "en", "xxhdpi"
-  //   }
-  //   prod {
-  //     dimension "stage"
-  //     resConfigs "en", "fr", "es"
-  //   }
-  // }
+  }
 }
 
 task createProguard {
@@ -125,9 +113,6 @@ android.applicationVariants.all { variant ->
     }
 }
 
-// dependencies {
-      // implementation "androidx.core:core:1.7.0"
-// }
 configurations {
     all {
         exclude group: 'androidx.lifecycle', module: 'lifecycle-viewmodel-ktx'

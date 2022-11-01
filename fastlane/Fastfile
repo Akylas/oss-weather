@@ -1,3 +1,4 @@
+require 'json'
 class String
   def titlecase
     split(/([[:alpha:]]+)/).map(&:capitalize).join
@@ -7,17 +8,42 @@ end
 def truncate(string, length = 20)
   string.size > length+5 ? [string[0,length],string[-5,5]].join("...") : string
 end
+def writeFileIfNotExist(filePath, string)
+  if !File.exist?(filePath) 
+    File.write(filePath, string)
+  end
+end
 
 fastlane_version '2.135.2'
-$lang = 'en-US'
-$ios_scheme = 'nsforecastie'
-$repository_name = 'Akylas/oss-weather'
+opt_out_usage
+$ios_scheme = File.basename(File.expand_path('..')).gsub(/[^a-zA-Z0-9]/, "")
 
+packageJSON = JSON.parse(File.read('../package.json'))
+fastlaneOptions = packageJSON['fastlane'] || Hash.new
+puts "packageJSON:"  + JSON.generate(packageJSON)
+puts "fastlaneOptions:"  + JSON.generate(fastlaneOptions)
+
+app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
 
 desc 'test lane'
 lane :test do
     Dir.chdir("..") do
         print "TEST SUCCESSFUL!"
+    end
+    if (fastlaneOptions['sftp'])
+      server_url = fastlaneOptions['sftp']['url']
+      server_user = fastlaneOptions['sftp']['user']
+      server_port = fastlaneOptions['sftp']['port']
+      target_dir = fastlaneOptions['sftp']['target_dir']
+      server_key = fastlaneOptions['sftp']['server_key'] || "#{Dir.home}/.ssh/id_rsa"
+      sftp_upload(
+        server_url: server_url,
+        server_port: server_port,
+        server_user: server_user,
+        server_key: server_key,
+        target_dir:  target_dir, 
+        file_paths: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk")),
+      )
     end
 end
 desc 'Check Git Status'
@@ -33,26 +59,31 @@ lane :checkGitStatus do
         end
     end
 end
+desc 'Check Sentry Cli Status'
+lane :checkSentryClitatus do
+    if sentry_check_cli_installed()
+      UI.success('Sentry cli installed, all good! 💪')
+    else
+      error_message = "We cant find sentry cli"
+      UI.user_error!(error_message)
+    end
+end
 
 desc 'Ensure deps are installed'
 lane :tns_install do |params| 
-  sh("devns", "install")
-
+  sh("ns", "install")
 end
+
 desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
-  sh("rm", "-fr", "platforms/" + platform)
-  sh("devns", "prepare", platform, "--release", "--env.adhoc")
-
+  sh("ns", "prepare", platform, "--release", "--env.adhoc")
 end
 
 lane :build_flavor do |params| 
   platform = params[:platform]
   flavor = params[:flavor]
-
-  build
-
+  options = params[:options]
   version = ""
   versionCode = ""
   
@@ -65,42 +96,80 @@ lane :build_flavor do |params|
   # this is because we generate different sources for android and ios so we have different sourceMaps
   # and so to map errors correctly we use different dist for ios and android
   sentryDist =  versionCode + '.' + platform # optional distribution of the release usually the buildnumber
+
+  sentry_cli_path = './node_modules/.bin/sentry-cli'
+  sentry_version = "#{app_identifier}@#{version}+#{versionCode}"
   puts "platform:"  + platform
   puts "flavor:"  + flavor
   puts "version:"  + version
   puts "versionCode:"  + versionCode
+  puts "sentry_version:"  + sentry_version
+  puts "options:"  + JSON.generate(options.to_json)
 
-  # sentry_create_release = './node_modules/.bin/sentry-cli'
-  # sentry_create_release(
-    # sentry_cli_path: sentry_create_release,
-  #   version: version, # release version to create
-  # )
+  sentry_create_release(
+    sentry_cli_path: sentry_cli_path,
+    version: sentry_version
+  )
+  build(flavor: flavor, options: options)
   push_to_git_remote
-  # sentry_set_commits(
-    # sentry_cli_path: sentry_create_release,
-  #   version: version,
-  #   auto: true, # enable completely automated commit management
-  #   # clear: false, # clear all current commits from the release
-  #   # commit: '...', # commit spec, see `sentry-cli releases help set-commits` for more information
-  # )
 
-  # sentry_upload(
-  #   sentry_cli_path: sentry_create_release,
-  # )
+  sh("npm", "run", "sentry-set-commits", "#{sentry_version}")
 
+  sentry_upload(
+    sentry_cli_path: sentry_cli_path,
+  )
+
+  tag = "#{platform}/#{flavor}/#{version}/#{versionCode}";
   changelog = get_changelog(platform:platform, flavor:flavor)
-
-  upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
-  add_git_tag(tag: "#{platform}/#{flavor}/#{version}/#{versionCode}")
-
-  push_git_tags
+  if (platform == 'android')
+    write_changelog(version:versionCode, changelog:changelog);
+  end
+  case flavor
+  when 'appcenter'
+    upload_appcenter(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
+  when 'github'
+    repository_name = fastlaneOptions['github_repository_name'] || packageJSON['repository'].match(/([^\/]+\/[^\/]+)(\.git)?$/)[1]
+    set_github_release(
+      repository_name: repository_name,
+      api_token: ENV["GH_TOKEN"],
+      name: "v#{version} Build #{versionCode}",
+      tag_name: tag,
+      description: changelog,
+      commitish: "master",
+      upload_assets: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk"))
+    )
+  # when 'fdroid'
+  #   if (fastlaneOptions['sftp'])
+  #     server_url = fastlaneOptions['sftp']['url']
+  #     server_user = fastlaneOptions['sftp']['user']
+  #     server_port = fastlaneOptions['sftp']['port']
+  #     target_dir = fastlaneOptions['sftp']['target_dir']
+  #     server_key = fastlaneOptions['sftp']['server_key'] || "#{Dir.home}/.ssh/id_rsa"
+  #     sftp_upload(
+  #       server_url: server_url,
+  #       server_port: server_port,
+  #       server_user: server_user,
+  #       server_key: server_key,
+  #       target_dir:  target_dir, 
+  #       file_paths: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk")),
+  #     )
+  #   end
+  when 'alpha','beta'
+    upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
+  end
+  
+  if !git_tag_exists(tag: tag)
+    add_git_tag(tag: tag, force: true)
+    push_git_tags(force: true)
+  end
+  push_to_git_remote
 end
 
 
 lane :get_changelog  do |params| 
   platform = params[:platform]
   flavor = params[:flavor]
-  puts "get_changelog "+  platform
+  puts "get_changelog "+  platform + " "+  flavor
   ignorePlatform = 'ios'
   if(platform == "ios") 
     ignorePlatform = "android"
@@ -112,7 +181,6 @@ lane :get_changelog  do |params|
 end
 
 platform :ios do
-
   desc 'Upload Dsyms to Sentry'
   lane :sentry_upload do 
     sentry_upload_dsym
@@ -124,17 +192,22 @@ platform :ios do
         groups: [params[:flavor]],
         notify_external_testers: true
       )
+    
   end
-
   desc 'Fetch certificates and provisioning profiles'
   lane :certificates do
-      match(type: 'development')
-      match(type: "appstore")
+      match(type: 'development', clone_branch_directly:true, generate_apple_certs: false)
+      match(type: "appstore", clone_branch_directly:true, generate_apple_certs: false)
   end
 
   desc 'Build the iOS application.'
-  lane :build do
-      match(type: "appstore")
+  lane :build do |params| 
+      if (params[:flavor] == "appcenter")
+        register_devices(devices_file: "./fastlane/devices.txt")
+        match(type: "adhoc", force_for_new_devices: true, generate_apple_certs: false)
+      else
+        match(type: "appstore", clone_branch_directly:true, generate_apple_certs: false)
+      end
       prepare(platform:'ios')
       build_ios_app(
         output_directory:"dist",
@@ -143,17 +216,22 @@ platform :ios do
       )
   end
 
+  lane :fdroid do
+    build_flavor(platform:'ios', flavor:'fdroid')
+  end
 
   desc 'Ship iOS build to Testflight.'
   lane :beta do
+    checkSentryClitatus
     checkGitStatus
     tns_install(platform:'ios')
     build_flavor(platform:'ios', flavor:'beta')
   end
   desc 'Ship iOS build to Testflight.'
   lane :alpha do
-    # checkGitStatus
-    # tns_install(platform:'ios')
+    checkSentryClitatus
+    checkGitStatus
+    tns_install(platform:'ios')
     build_flavor(platform:'ios', flavor:'alpha')
   end
 end
@@ -171,10 +249,11 @@ platform :android do
       changelog = changelog[0..499]
     end
 
-    metadata_dir="metadata/android/#{$lang}/changelogs"
+    metadata_dir="metadata/android"
     require 'fileutils'
     system 'mkdir', '-p', metadata_dir
-    File.write("#{metadata_dir}/#{version}.txt", changelog)
+    writeFileIfNotExist("#{metadata_dir}/fr-FR/changelogs/#{version}.txt", changelog)
+    writeFileIfNotExist("#{metadata_dir}/en-US/changelogs/#{version}.txt", changelog)
     # Create a new branch and upload a PR for it.
     sh("git add #{metadata_dir}; git commit -m '#{version} release notes' --allow-empty")
   end
@@ -184,7 +263,6 @@ platform :android do
     if (track == 'beta') 
       track = 'internal'
     end
-    write_changelog(version:params[:versionCode], changelog:params[:changelog]);
     upload_to_play_store(
       track: track,
       track_promote_to: track,
@@ -193,64 +271,57 @@ platform :android do
   end
 
   desc 'Build the Android application.'
-  lane :build do
-    sh("npm", "run", "build.android.production")
-  end
-  desc 'Build the Android application For Github.'
-  lane :build_github do
-    sh("npm", "run", "build.android.production.fdroid")
+  lane :build do |params|
+    sh("rm", "-fr", "platforms/android")
+    options = params[:options]
+    puts "build flavor:"  + params[:flavor]
+    puts "build options:"  + JSON.generate(options.to_json)
+    case params[:flavor]
+    when 'fdroid','github'
+      if (options[:sentry])
+        sh("npm", "run", "build.android.production.fdroid.sentry")
+      else 
+        sh("npm", "run", "build.android.production.fdroid")
+      end
+    when 'alpha'
+      sh("npm", "run", "build.android.production", "--", "--env.reportall", "--env.testlog")
+    else
+      sh("npm", "run", "build.android.production")
+    end
   end
 
   desc 'Ship to Github.'
-  lane :github do
-    # checkGitStatus
-    platform = "android"
-    tns_install(platform:platform)
-    version = ""
-    versionCode = ""
-    flavor = "github"
-
-    
-    Dir.chdir("..") do
-      version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
-      versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
+  lane :github do |options|
+    if (options[:sentry])
+      checkSentryClitatus
     end
-    
-    puts "platform:"  + platform
-    puts "flavor:"  + flavor
-    puts "version:"  + version
-    puts "versionCode:"  + versionCode
+    checkGitStatus
+    build_flavor(platform:'android', flavor:'github', options: options)
+  end
 
-    build_github
-
-    changelog = get_changelog(platform:platform, flavor:flavor)
-    write_changelog(version:versionCode, changelog:changelog);
-    tag  = "#{platform}/#{flavor}/#{version}/#{versionCode}";
-    add_git_tag(tag: tag, force: true)
-
-    push_git_tags(force:true)
-    set_github_release(
-      repository_name: $repository_name,
-      api_token: ENV["GH_TOKEN"],
-      name: "v#{version} Build #{versionCode}",
-      tag_name: tag,
-      description: changelog,
-      commitish: "master",
-      upload_assets: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk"))
-    )
+  desc 'build for fdroid.'
+  lane :fdroid do |options|
+    if (options[:sentry])
+      checkSentryClitatus
+    end
+    checkGitStatus
+    build_flavor(platform:'android', flavor:'fdroid', options: options)
   end
 
   desc 'Ship to Android Playstore Beta.'
-  lane :beta do
+  lane :beta do |options|
+    checkSentryClitatus
     checkGitStatus
     tns_install(platform:'android')
-    build_flavor(platform:'android', flavor:'beta')
+    build_flavor(platform:'android', flavor:'beta', options: options)
   end
+
   desc 'Ship to Android Playstore Alpha.'
-  lane :alpha do
+  lane :alpha do |options|
+    checkSentryClitatus
     checkGitStatus
     tns_install(platform:'android')
-    build_flavor(platform:'android', flavor:'alpha')
+    build_flavor(platform:'android', flavor:'alpha', options: options)
   end
 end
 

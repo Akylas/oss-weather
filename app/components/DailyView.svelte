@@ -196,47 +196,6 @@
 </script>
 
 <gridLayout height={100}>
-    <!-- <canvaslabel paddingRight={5}>
-        <rectangle horizontalAlignment="right" fillColor={item.color} width={5} height="100%" translateX={5} />
-        <cgroup id="time" fontSize={22} verticalAlignment="top" paddingLeft={10} paddingTop={5}>
-            <cspan text={convertTime(item.time, 'ddd ')} textTransform="capitalize" />
-            <cspan fontSize={15} color={$textLightColor} text={'\n' + convertTime(item.time, 'DD/MM')} />
-        </cgroup>
-
-        {#if item.windBeaufortIcon}
-            <cspan id="windBeaufortIcon" fontSize={20} fontFamily={wiFontFamily} text={item.windBeaufortIcon} verticalAlignment="top" textAlignment="left" paddingLeft={10} paddingTop={50} />
-        {/if}
-        <cgroup id="wind" fontSize={12} verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft={-100} paddingTop={10}>
-            <cspan fontSize={26} lineheight={28} text={item.windIcon}   fontFamily={appFontFamily}/>
-            <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]} />
-            <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} />
-        </cgroup>
-
-        {#if (item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1}
-            <cgroup id="precip" {color} fontSize={12} verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingTop={10}>
-                <cspan fontSize={20} lineheight={28} fontFamily={wiFontFamily} text={precipIcon} />
-                <cspan text={'\n' + formatValueToUnit(Math.floor(item.precipAccumulation), UNITS.MM)} />
-                <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
-            </cgroup>
-        {:else if item.cloudCover > 0}
-            <cgroup id="cloud" paddingTop={10} fontSize={12} verticalAlignment="top" horizontalAlignment="center" textAlignment="center" color={item.cloudColor}>
-                <cspan fontSize={20} lineheight={28} fontFamily={wiFontFamily} text="wi-cloud" />
-                <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
-                <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
-            </cgroup>
-        {/if}
-        <cgroup id="moon" color={nightColor} fontSize={12} verticalAlignment="top" horizontalAlignment="center" textAlignment="center" paddingLeft={100} paddingTop={10}>
-            <cspan fontSize={20} lineheight={28} fontFamily={wiFontFamily} text={item.moonIcon} />
-            <cspan text={'\n' + l('moon')} />
-        </cgroup>
-        <cgroup id="temp" fontSize={20} verticalAlignment="top" textAlignment="right" paddingTop={5} paddingRight={5}>
-            <cspan fontSize={17} color={$textLightColor} text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
-            <cspan text={' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
-        </cgroup>
-        <cspan paddingLeft={10} paddingBottom={10} fontSize={13} color={$textLightColor} text={item.description} textTransform="capitalize" verticalAlignment="bottom" textAlignment="left" />
-
-        <line color={$borderColor} startX="0%" startY="0" stopX="100%" stopY="0" strokewidth={1} />
-    </canvaslabel> -->
     <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
     <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
 </gridLayout>

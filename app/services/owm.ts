@@ -29,7 +29,7 @@ export function setOWMApiKey(apiKey) {
     }
 }
 export function hasOWMApiKey() {
-    return owmApiKey && owmApiKey.length && owmApiKey !== OWM_MY_KEY && owmApiKey !== OWM_DEFAULT_KEY;
+    return owmApiKey && owmApiKey.length && owmApiKey !== OWM_DEFAULT_KEY;
 }
 export function getOWMApiKey() {
     return owmApiKey;

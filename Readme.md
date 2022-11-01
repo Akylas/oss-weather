@@ -2,7 +2,8 @@
 
 <h1 align="center">Access weather data from the public OpenWeatherMap data</h1>
 <p align="center">
-<a href="https://www.gnu.org/licenses/gpl-3.0" alt="License: GPLv3"><img src="https://img.shields.io/badge/license-GPL%20v3-blue"></a> <a href="https://github.com/farfromrefug/oss-weather/releases" alt="Release version"><img src="https://img.shields.io/github/v/release/farfromrefug/oss-weather?color=ff5200"/></a>
+  <a href="https://github.com/farfromrefug/oss-weather" alt="License"><img src="https://img.shields.io/badge/License-MIT-blue.svg"/></a>
+ <a href="https://github.com/farfromrefug/oss-weather/releases" alt="Release version"><img src="https://img.shields.io/github/v/release/farfromrefug/oss-weather?color=ff5200"/></a>
 <p align="center">
 <br>You can get the <a href="https://github.com/farfromrefug/oss-weather/releases/latest">latest release on GitHub</a>
 </p>

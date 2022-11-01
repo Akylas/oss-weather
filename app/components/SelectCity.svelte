@@ -68,12 +68,12 @@
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
-    <page actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
+    <page id="selectCity" actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
         <gridLayout rows="auto,auto,*">
             <CActionBar title={lc('search_city')} modalWindow>
                 <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />
             </CActionBar>
-            <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} color={$textColor} />
+            <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
             <collectionview row={2} rowHeight={80} items={searchResults}>
                 <Template let:item>
                     <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">

@@ -23,6 +23,7 @@ label {
         color: white;
     }
 }
+
 mdbutton {
     shape: round;
     padding: 0;
@@ -116,14 +117,8 @@ page,
 }
 
 .actionBarTitle {
-    // @extend .lato;
     font-size: 20;
     font-weight: 500;
-    color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-    }
 }
 
 .actionBarSubtitle {

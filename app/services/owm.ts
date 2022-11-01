@@ -4,19 +4,35 @@ import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { WeatherLocation, request } from './api';
 import { CityWeather, Coord, OneCallResult } from './openweathermap';
+import { prefs } from './preferences';
 
-let owmApiKey = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+function readOwmApiKeySetting() {
+    let key = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+    if (key.length === 0) {
+        remove('owmApiKey');
+        key = OWM_MY_KEY || OWM_DEFAULT_KEY;
+    }
+    return key;
+}
+
+let owmApiKey = readOwmApiKeySetting();
+prefs.on('key:owmApiKey', (event) => {
+    owmApiKey = readOwmApiKeySetting();
+});
 
 export function setOWMApiKey(apiKey) {
     owmApiKey = apiKey;
-    if (apiKey) {
+    if (apiKey && apiKey.length) {
         setString('owmApiKey', apiKey);
     } else {
         remove('owmApiKey');
     }
 }
 export function hasOWMApiKey() {
-    return !!owmApiKey;
+    return owmApiKey && owmApiKey.length && owmApiKey !== OWM_MY_KEY && owmApiKey !== OWM_DEFAULT_KEY;
+}
+export function getOWMApiKey() {
+    return owmApiKey;
 }
 
 export interface OWMParams extends Partial<Coord> {

@@ -29,6 +29,14 @@ test lane
 
 Check Git Status
 
+### checkSentryClitatus
+
+```sh
+[bundle exec] fastlane checkSentryClitatus
+```
+
+Check Sentry Cli Status
+
 ### tns_install
 
 ```sh
@@ -98,6 +106,14 @@ Fetch certificates and provisioning profiles
 
 Build the iOS application.
 
+### ios fdroid
+
+```sh
+[bundle exec] fastlane ios fdroid
+```
+
+
+
 ### ios beta
 
 ```sh
@@ -151,14 +167,6 @@ Upload  to Sentry
 
 Build the Android application.
 
-### android build_github
-
-```sh
-[bundle exec] fastlane android build_github
-```
-
-Build the Android application For Github.
-
 ### android github
 
 ```sh
@@ -166,6 +174,14 @@ Build the Android application For Github.
 ```
 
 Ship to Github.
+
+### android fdroid
+
+```sh
+[bundle exec] fastlane android fdroid
+```
+
+build for fdroid.
 
 ### android beta
 

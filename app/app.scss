@@ -16,8 +16,7 @@
 
 htmllabel,
 canvaslabel,
-label,
-mdbutton {
+label {
     color: black;
     .ns-dark &,
     .ns-black & {
@@ -27,16 +26,21 @@ mdbutton {
 mdbutton {
     shape: round;
     padding: 0;
+    ripple-color: gray;
+    color: black;
+    .ns-dark &,
+    .ns-black & {
+        color: white;
+        ripple-color: white;
+    }
 }
 
 mdtextfield {
     color: black;
-    backgroundcolor-color: white;
     placeholder-color: black;
     .ns-dark &,
     .ns-black & {
         color: white;
-        backgroundcolor-color: black;
         placeholder-color: white;
     }
 }
@@ -129,16 +133,8 @@ page,
 
 .icon-btn {
     @extend .mdi;
-    ripple-color: gray;
-    color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-        ripple-color: white;
-    }
+    
     width: $actionbar-button-height;
     height: $actionbar-button-height;
     font-size: 24;
-    // margin: 0;
-    // padding: 0;
 }

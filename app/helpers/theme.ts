@@ -1,3 +1,4 @@
+import { getRootView } from '@akylas/nativescript/application';
 import Theme from '@nativescript-community/css-theme';
 import { Application } from '@nativescript/core';
 import { getString, setString } from '@nativescript/core/application-settings';
@@ -102,12 +103,20 @@ export function start() {
     });
     const force = theme !== 'auto';
     if (__ANDROID__) {
-        applyTheme(theme);
-        if (Application.android && Application.android.context) {
+        const rootView = getRootView();
+        if (rootView) {
+            applyTheme(theme);
             updateThemeColors(theme, force);
         } else {
-            Application.on(Application.launchEvent, () => updateThemeColors(theme, force));
+            Application.on(Application.launchEvent, () => {
+                applyTheme(theme);
+                updateThemeColors(theme, force)
+            });
+
         }
+        // if (Application.android && Application.android.context) {
+        // } else {
+        // }
     } else {
         if (Application.ios && Application.ios.window) {
             applyTheme(theme);

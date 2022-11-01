@@ -1,0 +1,13 @@
+*Bug fixes*
+- MeteoFrance missing icon
+- MeteoFrance: dont show windSpeed if cant be computed
+- color fixes for themes and icons
+- prevent error on reportFullyDrawn
+- events fix
+- correctly install sentry
+- prevent theme errors
+- fixed crash on custom api key
+- remove key if empty
+- empty alert view in production
+- weather color fix for MeteoFrance
+- theme fixes

@@ -7,7 +7,9 @@
         "build.android.production": "cross-var devns build android --release --clean --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.sentry=0 --env.sourceMap=0  --env.report --aab",
         "build.android.production.fdroid": "cross-var devns build android --release --clean --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc --env.report --gradleArgs=-PsplitEnabled  --gradleArgs=-PabiFilters=arm64-v8a,armeabi-v7a",
         "build.android.production.fdroid.sentry": "npm run build.android.production.fdroid -- --config=nativescript.config.sentry.js --env.adhoc_sentry",
-        "weathermap": "webpack --config weathermap.webpack.config.js --env production"
+        "weathermap": "webpack --config weathermap.webpack.config.js --env production",
+        "run.ios.device": "ns run ios --no-hmr",
+        "run.ios.device.production": "ns run ios --bundle --release --env.production --env.adhoc"
     },
     "main": "app/main",
     "description": "Access weather data from the public OpenWeatherMap data",
@@ -26,7 +28,7 @@
         "@nativescript-community/geocoding": "3.1.0",
         "@nativescript-community/gesturehandler": "2.0.5",
         "@nativescript-community/gps": "3.1.5",
-        "@nativescript-community/https": "4.0.8",
+        "@nativescript-community/https": "4.0.10",
         "@nativescript-community/l": "4.2.26",
         "@nativescript-community/licenses": "2.0.7",
         "@nativescript-community/perms": "2.2.13",
@@ -38,7 +40,7 @@
         "@nativescript-community/ui-canvaslabel": "1.1.6",
         "@nativescript-community/ui-chart": "1.2.21",
         "@nativescript-community/ui-collectionview": "4.0.63",
-        "@nativescript-community/ui-label": "1.2.12",
+        "@nativescript-community/ui-label": "1.2.13",
         "@nativescript-community/ui-lottie": "5.0.0",
         "@nativescript-community/ui-material-activityindicator": "7.0.29",
         "@nativescript-community/ui-material-bottomsheet": "7.0.29",

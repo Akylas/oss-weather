@@ -1,0 +1,3 @@
+*Bug fixes*
+- production builds fix
+- rain chart axis labels fix

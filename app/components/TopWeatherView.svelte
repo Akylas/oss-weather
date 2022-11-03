@@ -110,7 +110,7 @@
                 xAxis.setDrawGridLines(false);
                 xAxis.setDrawMarkTicks(true);
                 xAxis.setValueFormatter({
-                    getAxisLabel: (value, axis) => Math.round(value / 10) * 10 + 'm'
+                    getAxisLabel: (value, axis) => Math.round(dayjs(value).diff(now, 'm') / 10) * 10 + 'm'
                 });
                 xAxis.setLabelCount(7, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
@@ -162,7 +162,7 @@
                 const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
                     needsToSetData = true;
-                    precipChartSet = new LineDataSet(data,'intensity', undefined, 'intensity');
+                    precipChartSet = new LineDataSet(data, 'intensity', 'time', 'intensity');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
                     // precipChartSet.setDrawCircles(true);

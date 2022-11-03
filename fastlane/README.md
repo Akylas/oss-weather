@@ -37,10 +37,10 @@ Check Git Status
 
 Check Sentry Cli Status
 
-### tns_install
+### npm_installl
 
 ```sh
-[bundle exec] fastlane tns_install
+[bundle exec] fastlane npm_installl
 ```
 
 Ensure deps are installed
@@ -105,14 +105,6 @@ Fetch certificates and provisioning profiles
 ```
 
 Build the iOS application.
-
-### ios fdroid
-
-```sh
-[bundle exec] fastlane ios fdroid
-```
-
-
 
 ### ios beta
 

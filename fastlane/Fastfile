@@ -20,7 +20,7 @@ $ios_scheme = File.basename(File.expand_path('..')).gsub(/[^a-zA-Z0-9]/, "")
 
 packageJSON = JSON.parse(File.read('../package.json'))
 fastlaneOptions = packageJSON['fastlane'] || Hash.new
-puts "packageJSON:"  + JSON.generate(packageJSON)
+# puts "packageJSON:"  + JSON.generate(packageJSON)
 puts "fastlaneOptions:"  + JSON.generate(fastlaneOptions)
 
 app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
@@ -106,18 +106,21 @@ lane :build_flavor do |params|
   puts "sentry_version:"  + sentry_version
   puts "options:"  + JSON.generate(options.to_json)
 
-  sentry_create_release(
-    sentry_cli_path: sentry_cli_path,
-    version: sentry_version
-  )
+  if (options[:sentry])
+    sentry_create_release(
+      sentry_cli_path: sentry_cli_path,
+      version: sentry_version
+    )
+  end
   build(flavor: flavor, options: options)
   push_to_git_remote
 
-  sh("npm", "run", "sentry-set-commits", "#{sentry_version}")
-
-  sentry_upload(
-    sentry_cli_path: sentry_cli_path,
-  )
+  if (options[:sentry])
+    sh("npm", "run", "sentry-set-commits", "#{sentry_version}")
+    sentry_upload(
+      sentry_cli_path: sentry_cli_path,
+    )
+  end
 
   tag = "#{platform}/#{flavor}/#{version}/#{versionCode}";
   changelog = get_changelog(platform:platform, flavor:flavor)

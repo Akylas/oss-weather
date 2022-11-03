@@ -70,13 +70,14 @@ lane :checkSentryClitatus do
 end
 
 desc 'Ensure deps are installed'
-lane :tns_install do |params| 
+lane :npm_installl do |params| 
   sh("ns", "install")
 end
 
 desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
+  sh("rm", "-fr", "platforms/#{platform}")
   sh("ns", "prepare", platform, "--release", "--env.adhoc")
 end
 
@@ -219,23 +220,19 @@ platform :ios do
       )
   end
 
-  lane :fdroid do
-    build_flavor(platform:'ios', flavor:'fdroid')
-  end
-
   desc 'Ship iOS build to Testflight.'
-  lane :beta do
+  lane :beta do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'ios')
-    build_flavor(platform:'ios', flavor:'beta')
+    npm_installl(platform:'ios')
+    build_flavor(platform:'ios', flavor:'beta', options:options)
   end
   desc 'Ship iOS build to Testflight.'
-  lane :alpha do
+  lane :alpha do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'ios')
-    build_flavor(platform:'ios', flavor:'alpha')
+    npm_installl(platform:'ios')
+    build_flavor(platform:'ios', flavor:'alpha', options:options)
   end
 end
 
@@ -315,7 +312,7 @@ platform :android do
   lane :beta do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'android')
+    npm_installl(platform:'android')
     build_flavor(platform:'android', flavor:'beta', options: options)
   end
 
@@ -323,7 +320,7 @@ platform :android do
   lane :alpha do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'android')
+    npm_installl(platform:'android')
     build_flavor(platform:'android', flavor:'alpha', options: options)
   end
 end

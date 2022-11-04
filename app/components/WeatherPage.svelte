@@ -169,7 +169,7 @@
     async function getLocationAndWeather() {
         try {
             const result = await requestPerm('location');
-            if ((Array.isArray(result) && result[0] !== 'authorized') || Object.keys(result).some((s) => result[s] !== 'authorized')) {
+            if ((Array.isArray(result) && result[0] !== 'authorized')) {
                 return alert(l('missing_location_perm'));
             }
             if (!gps) {

@@ -11,8 +11,8 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
-    import { l, lc } from '~/helpers/locale';
+    import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
+    import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
 
     const textIconPaint = new Paint();
@@ -57,9 +57,9 @@
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
-            return convertTime(date, 'dddd HH:mm');
+            return formatDate(date, 'dddd LT');
         } else {
-            return convertTime(date, 'HH:mm');
+            return formatTime(date, 'LT');
         }
     }
     //@ts-ignore
@@ -162,7 +162,7 @@
                 const color = item.icon.startsWith('13') ? snowColor : rainColor;
                 if (!precipChartSet) {
                     needsToSetData = true;
-                    precipChartSet = new LineDataSet(data,'intensity', undefined, 'intensity');
+                    precipChartSet = new LineDataSet(data, 'intensity', undefined, 'intensity');
                     precipChartSet.setAxisDependency(AxisDependency.LEFT);
                     precipChartSet.setLineWidth(1);
                     // precipChartSet.setDrawCircles(true);
@@ -310,7 +310,7 @@
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
     <canvaslabel id="top-label" colSpan={2} on:draw={drawOnCanvas}>
-        <cspan id="first" paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={convertTime(item.time, 'dddd')} textTransform="capitalize" />
+        <cspan id="first" paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
 
         {#if item.temperature !== undefined}
             <cgroup id="test" paddingLeft={10} fontSize={12} verticalAlignment="top">
@@ -356,9 +356,9 @@
 
         <cgroup paddingLeft={10} paddingBottom={10} fontSize={14} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
-            <cspan text={convertTime(item.sunriseTime, 'HH:mm')} />
+            <cspan text={formatTime(item.sunriseTime)} />
             <cspan color="#ff7200" fontFamily={wiFontFamily} text="  wi-sunset " />
-            <cspan text={convertTime(item.sunsetTime, 'HH:mm')} />
+            <cspan text={formatTime(item.sunsetTime)} />
         </cgroup>
         <cspan paddingRight={10} fontSize={14} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
     </canvaslabel>

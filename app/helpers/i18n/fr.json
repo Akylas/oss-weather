@@ -1,0 +1,93 @@
+{
+  "about": "à propos",
+  "about_to_quit": "l'application est sur le point de se fermer car elle ne possède pas de clé API",
+  "animations": "animations",
+  "api_key": "clé API",
+  "api_key_required": "Clé API requise",
+  "api_key_required_description": "pour obtenir les données météorologiques d'OpenWeatherMap, une clé API gratuite est requise. L'application en distribue une par défault, cependant pour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé API. \nVous pouvez le faire en créant un compte sur leur site Web.",
+  "app": {
+    "name": "OSS Météo"
+  },
+  "authorize": "autoriser",
+  "auto_black":"utiliser noir pour le thème auto sombre",
+  "bug_report_sent": "rapport de bug envoyé",
+  "cancel": "annuler",
+  "close": "fermer",
+  "description": "description",
+  "description_required": "une description est requise",
+  "email": "email",
+  "email_required": "un email valide est requis",
+  "english": "anglais",
+  "error": "erreur",
+  "espagnol": "espagnol",
+  "expires": "expire",
+  "file": "fichier",
+  "french": "français",
+  "gps_location": "trouver votre position GPS",
+  "gps_not_authorized": "activez le GPS et autorisez OSS Weather à l'utiliser pour vous localiser",
+  "gps_not_enabled": "activez le GPS pour permettre à OSS Weather de vous localiser",
+  "gps_off": "La localisation est désactivée",
+  "heavy": "lourd",
+  "imperial_units": "Unités impériales (°F, mPh),",
+  "ios": {
+    "info": {
+      "plist": {
+        "NSLocationWhenInUseUsageDescription": "'NS Météo' utilise le GPS pour afficher votre météo"
+      }
+    }
+  },
+  "language": "langue",
+  "last_updated": "dernière mise à jour",
+  "light": "lumière",
+  "loading": "chargement",
+  "medium": "modérément modéré",
+  "missing_location_perm": "l'autorisation de localisation est manquante",
+  "moon": "lune",
+  "my_location": "ma position",
+  "name": "nom",
+  "no_location_desc": "Vous n'avez pas encore choisi d'emplacement.\nVous pouvez chercher ou utiliser votre localisation GPS",
+  "no_location_set": "aucun emplacement défini",
+  "no_network": "pas de réseau",
+  "non_valid_email": "email non valide",
+  "ok": "OK",
+  "open_website": "site web ouvert",
+  "owm_api_key": "Clé d'API OpenWeatherMap",
+  "please_describe_error": "veuillez décrire l'erreur",
+  "powered_by": "alimenté par %1$s",
+  "preferences": "préférences",
+  "provider": {
+    "meteofrance": "MéteoFrance",
+    "openweathermap": "OpenWeatherMap",
+    "title": "fournisseur"
+  },
+  "quit": "quitter",
+  "refresh": "rafraîchir",
+  "review_application": "noter l'application",
+  "search": "chercher",
+  "search_city": "rechercher",
+  "search_location": "rechercher",
+  "select": "sélectionner",
+  "select_location": "sélectionnez un emplacement",
+  "select_on_map": "sélectionner sur une carte",
+  "send": "envoyer",
+  "send_bug_report": "envoyer un rapport de bug",
+  "send_bug_report_desc": "entrez un mail et une description du bug rencontré",
+  "settings": {
+    "title": "réglages"
+  },
+  "share_application": "partager l'application",
+  "source_code": "code source",
+  "source_code_desc": "obtenir le code source de l'application sur Github",
+  "spanish": "espagnol",
+  "theme": {
+    "auto": "auto",
+    "black": "black",
+    "dark": "dark",
+    "light": "light",
+    "title": "theme"
+  },
+  "third_parties": "bibliothèques tierces",
+  "third_parties_desc": "les logiciels que nous aimons et utilisons",
+  "version": "version",
+  "weather_map": "carte météo"
+}

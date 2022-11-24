@@ -1,17 +1,26 @@
 import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale } from '@nativescript-community/l';
 import { getString, setString } from '@nativescript/core/application-settings';
-import { Application, Device } from '@nativescript/core';
+import { Application, ApplicationSettings, Device } from '@nativescript/core';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { createGlobalEventListener, globalObservable } from '~/variables';
 import { titlecase } from './formatter';
+import { ad } from '@nativescript/core/utils';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 
 export let lang;
 export const $lang = writable(null);
+let default24Clock = false;
+if (__ANDROID__) {
+    default24Clock = android.text.format.DateFormat.is24HourFormat(ad.getApplicationContext());
+}
+export let clock_24 = ApplicationSettings.getBoolean('clock_24', default24Clock);
+export const clock_24Store = writable(null);
+
+console.log('clock_24', clock_24);
 
 export const onLanguageChanged = createGlobalEventListener('language');
 
@@ -58,14 +67,10 @@ function getActualLanguage(language) {
     }
     language = language.split('-')[0].toLowerCase();
     switch (language) {
-        case 'en':
-            return 'en';
         case 'cs':
             return 'cz';
         case 'jp':
             return 'ja';
-        case 'kr':
-            return 'kr';
         case 'lv':
             return 'la';
         default:
@@ -75,12 +80,33 @@ function getActualLanguage(language) {
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
-export function convertTime(date: number | string | dayjs.Dayjs, formatStr: string) {
+export function formatDate(date: number | string | dayjs.Dayjs, formatStr: string) {
     if (date) {
         if (!date['format']) {
             date = dayjs(date);
         }
+
+        if (clock_24 && formatStr.indexOf('LT') >= 0) {
+            formatStr.replaceAll('LT', 'HH:mm');
+        } else if (clock_24 && formatStr.indexOf('LTS') >= 0) {
+            formatStr = 'HH:mm:ss';
+            formatStr.replaceAll('LTS', 'HH:mm:ss');
+        }
         return capitalize((date as dayjs.Dayjs).format(formatStr));
+    }
+    return '';
+}
+export function formatTime(date: number | dayjs.Dayjs | string | Date, formatStr: string = 'LT') {
+    if (date) {
+        if (!date['format']) {
+            date = dayjs(date);
+        }
+        if (clock_24 && formatStr === 'LT') {
+            formatStr = 'HH:mm';
+        } else if (clock_24 && formatStr === 'LTS') {
+            formatStr = 'HH:mm:ss';
+        }
+        return (date as dayjs.Dayjs).format(formatStr);
     }
     return '';
 }
@@ -93,6 +119,13 @@ prefs.on('key:language', () => {
         return;
     }
     setLang(newLanguage);
+});
+
+prefs.on('key:clock_24', () => {
+    const newValue = ApplicationSettings.getBoolean('clock_24', default24Clock);
+    DEV_LOG && console.log('clock_24 changed', newValue);
+    clock_24 = newValue;
+    clock_24Store.set(newValue);
 });
 
 let currentLocale = null;
@@ -119,5 +152,6 @@ export const slc = derived([$lang], () => lc);
 export const slt = derived([$lang], () => lt);
 export const slu = derived([$lang], () => lu);
 // export const sconvertDuration = derived([$lang], () => convertDuration);
-export const scconvertTime = derived([$lang], () => convertTime);
+export const scformatDate = derived($lang, () => formatDate);
+export const scformatTime = derived([$lang, clock_24Store], () => formatTime);
 export const sgetLocaleDisplayName = derived([$lang], () => getLocaleDisplayName);

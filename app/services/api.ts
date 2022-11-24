@@ -376,7 +376,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
 export async function geocodeAddress(coord: { lat: number; lon: number }) {
     try {
         const results = await getFromLocation(coord.lat, coord.lon, 10);
-        DEV_LOG && console.error('found addresses', results);
+        DEV_LOG && console.log('found addresses', results);
         if (results?.length > 0) {
             const result = results[0];
             const newData = {

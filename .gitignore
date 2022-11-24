@@ -63,3 +63,4 @@ dist
 .vscode
 /webpack.stats.json
 App_Resources/iOS/Settings.bundle/**/Root.strings
+App_Resources/iOS/Settings.bundle/*.lproj/Root.strings

@@ -110,5 +110,8 @@
         "extends": [
             "@commitlint/config-conventional"
         ]
+    },
+    "resolutions": {
+        "@akylas/nativescript": "portal:/home/mguillon/dev/nativescript/NativeScript/dist/packages/core"
     }
 }

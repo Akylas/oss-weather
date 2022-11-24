@@ -1,5 +1,8 @@
+import { Frame } from '@nativescript/core';
 import * as app from '@nativescript/core/application';
 import { knownFolders } from '@nativescript/core/file-system';
+import { Dayjs } from 'dayjs';
+import { lc } from '~/helpers/locale';
 
 export function getDataFolder() {
     let dataFolder;
@@ -31,4 +34,22 @@ export function getDataFolder() {
         dataFolder = knownFolders.documents().path;
     }
     return dataFolder;
+}
+
+export async function pickDate(currentDate: Dayjs) {
+    if (__ANDROID__) {
+        return new Promise<number>((resolve, reject) => {
+            const datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker().setTitleText(lc('pick_date')).setSelection(new java.lang.Long(currentDate.valueOf())).build();
+            datePicker.addOnDismissListener(
+                new android.content.DialogInterface.OnDismissListener({
+                    onDismiss: () => {
+                        resolve(datePicker.getSelection().longValue());
+                    }
+                })
+            );
+            const parentView = Frame.topmost() || app.getRootView();
+            datePicker.show(parentView._getRootFragmentManager(), 'datepicker');
+        });
+    }
+    
 }

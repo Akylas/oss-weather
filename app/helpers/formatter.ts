@@ -336,18 +336,19 @@ export enum WeatherDataType {
 }
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain?, snow?) {
     const dateTimes = sun.getTimes(new Date(d.time), coord.lat, coord.lon);
-    const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
+    // const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
     if (type !== WeatherDataType.CURRENT) {
         d.precipColor = rainColor;
-        d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
+        // d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
         const dd = d as DailyData;
+        const cloudCover = Math.max(dd.cloudCover, 0)
         if (rain) {
-            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, dd.cloudCover), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         } else if (snow) {
             d.precipColor = snowColor;
-            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, dd.cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         } else {
-            dd.color = Color.mix(sunnyColor, cloudyColor, dd.cloudCover).hex;
+            dd.color = Color.mix(sunnyColor, cloudyColor, cloudCover).hex;
         }
     }
     if (d['uvIndex'] !== undefined) {

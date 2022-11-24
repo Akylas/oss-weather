@@ -1,14 +1,5 @@
 git_url "git@github.com:Akylas/ios_certs.git"
 storage_mode("git")
-
-type("appstore") # The default type, can be: appstore, adhoc, enterprise or development
-
-# git_url(CredentialsManager::AppfileConfig.try_fetch_value(:certs_git_url))
-# app_identifier(CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier))
-# username(CredentialsManager::AppfileConfig.try_fetch_value(:apple_id))
-# team_id(CredentialsManager::AppfileConfig.try_fetch_value(:team_id))
-# team_name(CredentialsManager::AppfileConfig.try_fetch_value(:team_name))
+type("appstore") # The default type, can be: appstore, adhoc, enterprise or devel
 app_identifier("com.akylas.weather")
 username("martin.guillon@akylas.fr")
-# team_id('C6Y854G7YW')
-# team_name('DABBA CONSIGNE')

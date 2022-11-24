@@ -29,10 +29,18 @@ test lane
 
 Check Git Status
 
-### tns_install
+### checkSentryClitatus
 
 ```sh
-[bundle exec] fastlane tns_install
+[bundle exec] fastlane checkSentryClitatus
+```
+
+Check Sentry Cli Status
+
+### npm_installl
+
+```sh
+[bundle exec] fastlane npm_installl
 ```
 
 Ensure deps are installed
@@ -151,14 +159,6 @@ Upload  to Sentry
 
 Build the Android application.
 
-### android build_github
-
-```sh
-[bundle exec] fastlane android build_github
-```
-
-Build the Android application For Github.
-
 ### android github
 
 ```sh
@@ -166,6 +166,14 @@ Build the Android application For Github.
 ```
 
 Ship to Github.
+
+### android fdroid
+
+```sh
+[bundle exec] fastlane android fdroid
+```
+
+build for fdroid.
 
 ### android beta
 

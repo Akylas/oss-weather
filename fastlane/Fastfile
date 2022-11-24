@@ -20,7 +20,7 @@ $ios_scheme = File.basename(File.expand_path('..')).gsub(/[^a-zA-Z0-9]/, "")
 
 packageJSON = JSON.parse(File.read('../package.json'))
 fastlaneOptions = packageJSON['fastlane'] || Hash.new
-puts "packageJSON:"  + JSON.generate(packageJSON)
+# puts "packageJSON:"  + JSON.generate(packageJSON)
 puts "fastlaneOptions:"  + JSON.generate(fastlaneOptions)
 
 app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
@@ -70,13 +70,14 @@ lane :checkSentryClitatus do
 end
 
 desc 'Ensure deps are installed'
-lane :tns_install do |params| 
+lane :npm_installl do |params| 
   sh("ns", "install")
 end
 
 desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
+  sh("rm", "-fr", "platforms/#{platform}")
   sh("ns", "prepare", platform, "--release", "--env.adhoc")
 end
 
@@ -106,18 +107,21 @@ lane :build_flavor do |params|
   puts "sentry_version:"  + sentry_version
   puts "options:"  + JSON.generate(options.to_json)
 
-  sentry_create_release(
-    sentry_cli_path: sentry_cli_path,
-    version: sentry_version
-  )
+  if (options[:sentry])
+    sentry_create_release(
+      sentry_cli_path: sentry_cli_path,
+      version: sentry_version
+    )
+  end
   build(flavor: flavor, options: options)
   push_to_git_remote
 
-  sh("npm", "run", "sentry-set-commits", "#{sentry_version}")
-
-  sentry_upload(
-    sentry_cli_path: sentry_cli_path,
-  )
+  if (options[:sentry])
+    sh("npm", "run", "sentry-set-commits", "#{sentry_version}")
+    sentry_upload(
+      sentry_cli_path: sentry_cli_path,
+    )
+  end
 
   tag = "#{platform}/#{flavor}/#{version}/#{versionCode}";
   changelog = get_changelog(platform:platform, flavor:flavor)
@@ -216,23 +220,19 @@ platform :ios do
       )
   end
 
-  lane :fdroid do
-    build_flavor(platform:'ios', flavor:'fdroid')
-  end
-
   desc 'Ship iOS build to Testflight.'
-  lane :beta do
+  lane :beta do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'ios')
-    build_flavor(platform:'ios', flavor:'beta')
+    npm_installl(platform:'ios')
+    build_flavor(platform:'ios', flavor:'beta', options:options)
   end
   desc 'Ship iOS build to Testflight.'
-  lane :alpha do
+  lane :alpha do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'ios')
-    build_flavor(platform:'ios', flavor:'alpha')
+    npm_installl(platform:'ios')
+    build_flavor(platform:'ios', flavor:'alpha', options:options)
   end
 end
 
@@ -312,7 +312,7 @@ platform :android do
   lane :beta do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'android')
+    npm_installl(platform:'android')
     build_flavor(platform:'android', flavor:'beta', options: options)
   end
 
@@ -320,7 +320,7 @@ platform :android do
   lane :alpha do |options|
     checkSentryClitatus
     checkGitStatus
-    tns_install(platform:'android')
+    npm_installl(platform:'android')
     build_flavor(platform:'android', flavor:'alpha', options: options)
   end
 end

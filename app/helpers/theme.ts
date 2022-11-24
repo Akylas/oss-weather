@@ -1,3 +1,4 @@
+import { getRootView } from '@akylas/nativescript/application';
 import Theme from '@nativescript-community/css-theme';
 import { Application, Utils } from '@nativescript/core';
 import { getBoolean, getString, setString } from '@nativescript/core/application-settings';

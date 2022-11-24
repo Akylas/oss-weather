@@ -1,7 +1,7 @@
 <script lang="ts">
     import { titlecase } from '~/helpers/formatter';
     import { formatDate, l } from '~/helpers/locale';
-    import { Alert } from '~/services/openweathermap';
+    import type { Alert } from '~/services/openweathermap';
 
     export let alerts: Alert[];
 </script>

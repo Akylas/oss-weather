@@ -20,9 +20,8 @@ if (__ANDROID__) {
 export let clock_24 = ApplicationSettings.getBoolean('clock_24', default24Clock);
 export const clock_24Store = writable(null);
 
-console.log('clock_24', clock_24);
-
 export const onLanguageChanged = createGlobalEventListener('language');
+export const onTimeChanged = createGlobalEventListener('time');
 
 $lang.subscribe((newLang: string) => {
     lang = newLang;

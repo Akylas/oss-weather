@@ -1,7 +1,6 @@
-import { Application, Color, Observable } from '@nativescript/core';
+import { Application, Color, Observable, Utils } from '@nativescript/core';
 import { getBoolean } from '@nativescript/core/application-settings';
 import { Screen } from '@nativescript/core/platform';
-import { ad } from '@nativescript/core/utils/utils';
 import { get_current_component } from 'svelte/internal';
 import { writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
@@ -43,7 +42,7 @@ export const screenScale = Screen.mainScreen.scale;
 export let navigationBarHeight: number = parseFloat(locals.navigationBarHeight);
 
 if (__ANDROID__) {
-    const context: android.content.Context = ad.getApplicationContext();
+    const context: android.content.Context = Utils.android.getApplicationContext();
     const hasPermanentMenuKey = android.view.ViewConfiguration.get(context).hasPermanentMenuKey();
     if (hasPermanentMenuKey) {
         navigationBarHeight = 0;

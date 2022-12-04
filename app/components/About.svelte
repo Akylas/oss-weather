@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { openUrl } from '@nativescript/core/utils/utils';
     import { showBottomSheet } from '~/bottomsheet';
     import { lc } from '~/helpers/locale';
     import { share } from '~/utils/share';
@@ -20,7 +19,7 @@
                 });
                 break;
             case 'review':
-                openUrl(STORE_REVIEW_LINK);
+                openLink(STORE_REVIEW_LINK);
                 break;
             case 'third_party':
                 const ThirdPartySoftwareBottomSheet = (await import('~/components/ThirdPartySoftwareBottomSheet.svelte')).default;

@@ -49,6 +49,7 @@
         "@nativescript-community/ui-material-dialogs": "7.0.31",
         "@nativescript-community/ui-material-snackbar": "7.0.31",
         "@nativescript-community/ui-material-textfield": "7.0.31",
+        "@nativescript-community/ui-popover": "0.1.5",
         "@nativescript-community/ui-pulltorefresh": "2.5.1",
         "@nativescript/detox": "^1.0.1",
         "@nativescript/iqkeyboardmanager": "2.1.0",
@@ -56,6 +57,7 @@
         "leaflet": "1.9.3",
         "leaflet-wms-header": "^1.0.13",
         "make-error": "1.3.6",
+        "suncalc": "1.9.0",
         "svelte-native": "1.0.5",
         "weather-icons": "1.3.2"
     },

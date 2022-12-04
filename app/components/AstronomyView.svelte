@@ -12,7 +12,7 @@
     import { Color } from '@nativescript/core';
     import dayjs, { Dayjs } from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { convertTime } from '~/helpers/locale';
+    import { formatTime } from '~/helpers/locale';
     import { showError } from '~/utils/error';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { showPopover } from '@nativescript-community/ui-popover/svelte';
@@ -213,11 +213,11 @@
         <canvaslabel bind:this={bottomLabel} row={2} colSpan={3} fontSize="18" padding="0 10 0 10">
             <cgroup color="#ffa500" verticalAlignment="center">
                 <cspan fontFamily={mdiFontFamily} text="mdi-weather-sunset-up" />
-                <cspan text={' ' + convertTime(sunTimes.sunriseEnd, 'HH:mm')} />
+                <cspan text={' ' + formatTime(sunTimes.sunriseEnd, 'LT')} />
             </cgroup>
             <cgroup color="#ff7200" textAlignment="center" verticalAlignment="center">
                 <cspan fontFamily={mdiFontFamily} text="mdi-weather-sunset-down" />
-                <cspan text={' ' + convertTime(sunTimes.sunsetStart, 'HH:mm')} />
+                <cspan text={' ' + formatTime(sunTimes.sunsetStart, 'LT')} />
             </cgroup>
             <cgroup textAlignment="right" verticalAlignment="center">
                 <cspan fontFamily={mdiFontFamily} text={getMoonPhaseIcon(illumination)} />

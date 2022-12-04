@@ -8,6 +8,7 @@ import { prefs } from './preferences';
 
 function readOwmApiKeySetting() {
     let key = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+    DEV_LOG && console.log('readOwmApiKeySetting', key);
     if (key.length === 0) {
         remove('owmApiKey');
         key = OWM_MY_KEY || OWM_DEFAULT_KEY;

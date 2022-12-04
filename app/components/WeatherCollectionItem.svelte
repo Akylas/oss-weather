@@ -4,10 +4,10 @@
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { convertTime, formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { appFontFamily, imperial, subtitleColor, textColor } from '~/variables';
-    import HourlyView from './HourlyView.svelte';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
@@ -188,10 +188,10 @@
         textPaint.setFontWeight('bold');
         textPaint.setColor($textColor);
         textPaint.setTextSize(14);
-        canvas.drawText(convertTime(item.time, 'HH:mm'), w2, 16, textPaint);
+        canvas.drawText(formatTime(item.time), w2, 16, textPaint);
         if (item.time > endDay) {
             textPaint.setTextSize(12);
-            canvas.drawText(convertTime(item.time, 'ddd'), w2, 28, textPaint);
+            canvas.drawText(formatDate(item.time, 'ddd'), w2, 28, textPaint);
             // decale += 10;
         }
         textPaint.setFontWeight('normal');

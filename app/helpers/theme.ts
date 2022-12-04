@@ -78,7 +78,7 @@ export function applyTheme(theme: Themes) {
                 break;
         }
     } catch (error) {
-        console.error('applyTheme', error);
+        console.error('applyTheme', error, error.stack);
     }
 }
 

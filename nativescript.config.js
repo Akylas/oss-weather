@@ -7,8 +7,7 @@ module.exports = {
     android: {
         markingMode: 'none',
         codeCache: true,
-        enableMultithreadedJavascript: false,
-        enableTimers: true
+        enableMultithreadedJavascript: false
     },
     cssParser: 'rework',
     hooks: [

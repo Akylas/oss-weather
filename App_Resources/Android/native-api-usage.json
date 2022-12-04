@@ -7,7 +7,9 @@
         "androidx.core.os:LocaleListCompat*",
 
         "com.google.android.material.datepicker.MaterialDatePicker:Builder*",
-        "com.google.android.material.datepicker:MaterialDatePicker*"
+        "com.google.android.material.datepicker:MaterialDatePicker*",
+
+        "android.text.format:DateFormat*"
     ],
     "blacklist": [
         "org.nativescript.widgets:TabLayout*",

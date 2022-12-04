@@ -1,9 +1,7 @@
 import { sun } from '@modern-dev/daylight';
 import { Color } from '@nativescript/core';
 import { cloudyColor, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
-import { convertTime } from './locale';
-
-export { convertTime };
+import { formatDate } from './locale';
 
 export enum UNITS {
     InchHg = 'InchHg',
@@ -63,7 +61,7 @@ export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, 
             }
             return [Math.round(value * 10) / 10, '°'];
         case UNITS.Date:
-            return [convertTime(value, 'M/d/yy h:mm a'), ''];
+            return [formatDate(value, 'L LT'), ''];
 
         case UNITS.SpeedM:
         case UNITS.Distance:

@@ -3,7 +3,8 @@
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { convertTime, convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
+    import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
+    import { formatDate } from '~/helpers/locale';
     import { appFontFamily, borderColor, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
 
     let textPaint: Paint;
@@ -72,11 +73,10 @@
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22);
         textPaint.setColor($textColor);
-        canvas.drawText(convertTime(item.time, 'ddd '), 10, 26, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd '), 10, 26, textPaint);
         textPaint.setColor($textLightColor);
         textPaint.setTextSize(15);
-        canvas.drawText(convertTime(item.time, 'DD/MM'), 10, 46, textPaint);
-
+        canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46, textPaint);
 
         let centeredItemsToDraw: {
             color?: string | Color;
@@ -196,6 +196,6 @@
 </script>
 
 <gridLayout height={100}>
-    <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
+    <canvas id="dailyView" bind:this={canvasView} on:draw={drawOnCanvas} />
     <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
 </gridLayout>

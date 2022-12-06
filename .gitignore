@@ -26,7 +26,7 @@ App_Resources/Android/src/main/res/values*/strings.xml
 # NativeScript Template
 *.js.map
 !webpack.config.js
-*.css
+app/**/*.css
 
 # Logs
 logs

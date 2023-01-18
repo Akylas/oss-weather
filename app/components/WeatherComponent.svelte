@@ -1,8 +1,7 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Application } from '@nativescript/core';
-    import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import Template from '~/utils/svelte/Template.svelte';
     import DailyView from '~/components/DailyView.svelte';
     import { prefs } from '~/services/preferences';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
@@ -12,7 +11,7 @@
 
     export let items: any[];
 
-    let collectionView: NativeViewElementNode<CollectionView>;
+    let collectionView: CollectionView;
     const topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
 
     function itemTemplateSelector(item, index, items) {
@@ -30,7 +29,7 @@
     }
 
     prefs.on('key:animations', () => {
-        collectionView.nativeView.refresh();
+        collectionView.refresh();
     });
 
     // onThemeChanged(() => {
@@ -52,10 +51,10 @@
         <TopWeatherView {item} height={topHeight} />
     </Template>
     <Template key="info" let:item>
-        <gridLayout rows="auto" columns="auto,*" class="alertView" verticalAlignment="center" paddingLeft={20}>
+        <gridlayout rows="auto" columns="auto,*" class="alertView" verticalAlignment="center" paddingLeft={20}>
             <WeatherIcon col={0} verticalAlignment="middle" fontSize={50} icon={item.icon} />
             <label col={1} fontSize={16} paddingLeft={4} verticalAlignment="middle" text={item.summary} maxLines={2} />
-        </gridLayout>
+        </gridlayout>
     </Template>
     <Template key="daily" let:item>
         <DailyView {item} />

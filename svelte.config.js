@@ -1,5 +1,4 @@
 const sveltePreprocess = require('svelte-preprocess');
-// const svelteNativePreprocessor = require('svelte-native-preprocessor');
 // const { transformSync } = require('@swc/core');
 // const { typescript } = require('svelte-preprocess-esbuild');
 
@@ -21,6 +20,5 @@ module.exports = {
                 }
             }
         })
-        // svelteNativePreprocessor()
     ]
 };

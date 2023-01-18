@@ -7,9 +7,8 @@
     import { alert as mdAlert, confirm } from '@nativescript-community/ui-material-dialogs';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { onMount } from 'svelte';
-    import { navigate, showModal } from 'svelte-native';
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import { showBottomSheet } from '~/bottomsheet';
+    import { navigate, showModal } from '~/utils/svelte/navigation';
+    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
     import { sl, slc, l, lc, onLanguageChanged } from '~/helpers/locale';
     import { geocodeAddress, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
@@ -38,9 +37,9 @@
     let desiredAccuracy = __ANDROID__ ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
     let timeout = 20000;
     let minimumUpdateTime = 1000; // Should update every 1 second according ;
-    let pullRefresh: NativeViewElementNode<PullToRefresh>;
+    let pullRefresh: PullToRefresh;
     let networkConnected = networkService.connected;
-    let page: NativeViewElementNode<Page>;
+    let page: Page;
     async function showOptions() {
         try {
             const ActionSheet = (await import('~/components/ActionSheet.svelte')).default;
@@ -206,12 +205,12 @@
             return;
         }
         if (pullRefresh) {
-            pullRefresh.nativeView.refreshing = true;
+            pullRefresh.refreshing = true;
         }
 
         await refreshWeather();
         if (pullRefresh) {
-            pullRefresh.nativeView.refreshing = false;
+            pullRefresh.refreshing = false;
         }
     }
 
@@ -284,7 +283,7 @@
 <page bind:this={page} actionBarHidden={true} id="home">
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
-            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
+            <activityindicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
             <mdbutton
                 visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
                 variant="text"
@@ -304,9 +303,9 @@
         {#if !networkConnected && !weatherData}
             <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
-            <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
+            <pulltorefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
                 <WeatherComponent {items} />
-            </pullrefresh>
+            </pulltorefresh>
             <label
                 row="1"
                 fontSize={10}

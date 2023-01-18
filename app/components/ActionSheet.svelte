@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { closeBottomSheet } from '~/bottomsheet';
+    import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import { accentColor } from '~/variables';
 
     export let options: { text: string; icon: string }[];

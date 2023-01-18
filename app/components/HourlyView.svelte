@@ -1,13 +1,12 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Color } from '@nativescript/core';
-    import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import Template from '~/utils/svelte/Template.svelte';
     import { backgroundColor, onImperialChanged } from '~/variables';
     import WeatherCollectionItem from '~/components/WeatherCollectionItem.svelte';
 
     export let items: any[];
-    let collectionView: NativeViewElementNode<CollectionView>;
+    let collectionView: CollectionView;
 
     function onDataPopulated() {
         showLeftShadow = true;
@@ -22,7 +21,7 @@
     }
 
     onImperialChanged(() => {
-        collectionView.nativeView.refreshVisibleItems();
+        collectionView.refreshVisibleItems();
     });
 </script>
 

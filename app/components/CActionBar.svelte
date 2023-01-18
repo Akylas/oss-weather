@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Frame } from '@nativescript/core/ui/frame';
     import { onMount } from 'svelte';
-    import { closeModal, goBack } from 'svelte-native';
+    import { closeModal, goBack } from '~/utils/svelte/navigation';
     import { textColor } from '~/variables';
 
     export let title: string;
@@ -37,7 +37,7 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
 </script>
 
-<gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
+<gridlayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
     <label
         id="actionbar-title"
         col={1}
@@ -51,11 +51,11 @@
     <!-- {#if showLogo && !title}
         <label col={1} class="activelook" fontSize={28} color="white" text="logo" verticalAlignment="center" marginLeft={6} />
     {/if} -->
-    <stackLayout col={0} orientation="horizontal">
+    <stacklayout col={0} orientation="horizontal">
         <slot name="left" />
         <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
-    </stackLayout>
-    <stackLayout col={2} orientation="horizontal">
+    </stacklayout>
+    <stacklayout col={2} orientation="horizontal">
         <slot />
-    </stackLayout>
-</gridLayout>
+    </stacklayout>
+</gridlayout>

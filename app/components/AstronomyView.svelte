@@ -11,7 +11,6 @@
     import { ViewPortHandler } from '@nativescript-community/ui-chart/utils/ViewPortHandler';
     import { Color } from '@nativescript/core';
     import dayjs, { Dayjs } from 'dayjs';
-    import { NativeViewElementNode } from 'svelte-native/dom';
     import { formatTime } from '~/helpers/locale';
     import { showError } from '~/utils/error';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
@@ -25,7 +24,7 @@
 </script>
 
 <script lang="ts">
-    let chart: NativeViewElementNode<LineChart>;
+    let chart: LineChart;
     export let height: number = 300;
 
     let chartInitialized = false;
@@ -38,13 +37,13 @@
     let sunPoses: any[]; // SunPosition[];
     let moonPoses: any[]; // MoonPosition[];
 
-    let bottomLabel: NativeViewElementNode<CanvasLabel>;
+    let bottomLabel: CanvasLabel;
     function updateChartData(startTime: Dayjs) {
         if (!chart) {
             return;
         }
         const computeStartTime = startTime.startOf('d');
-        const chartView = chart.nativeView;
+        const chartView = chart;
         const sets = [];
         sunPoses = [];
         moonPoses = [];
@@ -202,7 +201,7 @@
     }
 </script>
 
-<gridLayout {height} rows="auto,200,*" columns="auto,*,auto">
+<gridlayout {height} rows="auto,200,*" columns="auto,*,auto">
     <mdbutton variant="text" class="icon-btn" text="mdi-chevron-left" horizontalAlignment="left" on:tap={() => (startTime = startTime.subtract(1, 'd'))} />
     <label col={1} text={startTime.format('LL')} textAlignment="center" verticalTextAlignment="center" on:tap={selectDate} fontSize="17" />
     <mdbutton col={2} variant="text" class="icon-btn" text="mdi-chevron-right" horizontalAlignment="right" on:tap={() => (startTime = startTime.add(1, 'd'))} />
@@ -225,4 +224,4 @@
             </cgroup>
         </canvaslabel>
     {/if}
-</gridLayout>
+</gridlayout>

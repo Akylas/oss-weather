@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { showBottomSheet } from '~/bottomsheet';
+    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
     import { lc } from '~/helpers/locale';
     import { share } from '~/utils/share';
     import { openLink } from '~/utils/ui';
@@ -37,14 +37,14 @@
 <page actionBarHidden={true}>
     <gridlayout rows="auto,*">
         <CActionBar title={lc('about')} />
-        <scrollView row={1}>
-            <stackLayout>
+        <scrollview row={1}>
+            <stacklayout>
                 <SettingLabelIcon title={lc('version')} subtitle={appVersion} />
                 <SettingLabelIcon title={lc('source_code')} subtitle={lc('source_code_desc')} icon="mdi-chevron-right" on:tap={() => onTap('github')} />
                 <SettingLabelIcon title={lc('third_parties')} subtitle={lc('third_parties_desc')} icon="mdi-chevron-right" on:tap={() => onTap('third_party')} />
                 <SettingLabelIcon title={lc('share_application')} icon="mdi-chevron-right" on:tap={() => onTap('share')} />
                 <SettingLabelIcon title={lc('review_application')} icon="mdi-chevron-right" on:tap={() => onTap('review')} />
-            </stackLayout>
-        </scrollView>
+            </stacklayout>
+        </scrollview>
     </gridlayout>
 </page>

@@ -3,6 +3,7 @@
         "target": "es2019",
         "module": "esnext",
         "moduleResolution": "node",
+        "jsxFactory": "svelteDominative.JSX",
         "declaration": false,
         "removeComments": false,
         "emitDecoratorMetadata": false,
@@ -21,13 +22,17 @@
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "es2017", "dom"],
-        "types": ["node", "svelte", "svelte-native"],  
+        "types": ["node", "svelte"],  
         "baseUrl": ".",
         "paths": {
             "~/*": ["app/*"]
         },
+        "typeRoots": ["typings"],
         "plugins": [{ "transform": "@nativescript/webpack/dist/transformers/NativeClass", "type": "raw" }]
     },
-    "include": ["app/**/*", "references.d.ts"],
+    "svelteOptions": {
+        "namespace": "svelteDominative"
+    },
+    "include": ["app/**/*", "typings"],
     "exclude": ["node_modules", "platforms", "**/angular"]
 }

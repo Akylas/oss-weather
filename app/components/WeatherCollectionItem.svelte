@@ -5,7 +5,7 @@
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatValueToUnit, UNITS } from '~/helpers/formatter';
-    import { formatTime } from '~/helpers/locale';
+    import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { appFontFamily, imperial, subtitleColor, textColor } from '~/variables';
 

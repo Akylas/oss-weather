@@ -8,7 +8,6 @@
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
-    import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
@@ -306,7 +305,7 @@
     }
 </script>
 
-<gridLayout rows="auto,*" {height} columns="*,auto">
+<gridlayout rows="auto,*" {height} columns="*,auto">
     <!-- htmllabel 10 more views -->
     <!-- label 25 more views !!! -->
     <canvaslabel id="top-label" colSpan={2} on:draw={drawOnCanvas}>
@@ -365,4 +364,4 @@
     <linechart bind:this={lineChart} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
     <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
-</gridLayout>
+</gridlayout>

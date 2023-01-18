@@ -195,7 +195,7 @@
     }
 </script>
 
-<gridLayout height={100}>
+<gridlayout height={100}>
     <canvas id="dailyView" bind:this={canvasView} on:draw={drawOnCanvas} />
     <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
-</gridLayout>
+</gridlayout>

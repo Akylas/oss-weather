@@ -468,13 +468,13 @@ module.exports = (env, params = {}) => {
                 }
             })
         );
-        config.plugins.push(
-            new webpack.NormalModuleReplacementPlugin(/action-bar$/, (resource) => {
-                if (resource.context.match(nativescriptReplace)) {
-                    resource.request = '~/shims/action-bar';
-                }
-            })
-        );
+        // config.plugins.push(
+        //     new webpack.NormalModuleReplacementPlugin(/action-bar$/, (resource) => {
+        //         if (resource.context.match(nativescriptReplace)) {
+        //             resource.request = '~/shims/action-bar';
+        //         }
+        //     })
+        // );
     }
 
     // save as long as we dont use calc in css

@@ -319,7 +319,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     }
 }
 
-@JavaProxy('com.akylas.weather.FloatingActivity')
+@JavaProxy('__PACKAGE__.FloatingActivity')
 @NativeClass
 class Activity extends androidx.appcompat.app.AppCompatActivity {
     isNativeScriptActivity: boolean;

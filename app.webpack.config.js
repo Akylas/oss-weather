@@ -325,6 +325,14 @@ module.exports = (env, params = {}) => {
                     flags: 'g'
                 }
             },
+            {
+                loader: 'string-replace-loader',
+                options: {
+                    search: '__PACKAGE__',
+                    replace: nconfig.id,
+                    flags: 'g'
+                }
+            },
             // {
             //     loader: 'string-replace-loader',
             //     options: {

@@ -17,7 +17,7 @@ module.exports = {
         sveltePreprocess({
             typescript: {
                 compilerOptions: {
-                    target: 'es2019'
+                    target: 'es2020'
                 }
             }
         })

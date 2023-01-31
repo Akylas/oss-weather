@@ -55,7 +55,7 @@ registerNativeViewElement('WebView', () => require('@nativescript/core').WebView
 // );
 
 //using 'spans' property breaks span(not cspan!) added without formattedstring
-registerNativeViewElement('span', () => require('@nativescript/core').Span, 'spans');
+registerNativeViewElement('span', () => require('@nativescript/core').Span);
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
 registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
 registerNativeViewElement('label', () => Label as any, null, {}, { override: true });

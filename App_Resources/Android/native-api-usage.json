@@ -1,15 +1,14 @@
 {
     "whitelist-plugins-usages": true,
     "whitelist": [
-        "androidx.appcompat.app:AppCompatDelegate*",
-        "android.widget:Toast*",
-        "androidx.core.widget:NestedScrollView*",
-        "androidx.core.os:LocaleListCompat*",
+        "androidx.appcompat.app:AppCompatDelegate",
+        "android.widget:Toast",
+        "androidx.core.widget:NestedScrollView",
+        "androidx.core.os:LocaleListCompat",
 
-        "com.google.android.material.datepicker.MaterialDatePicker:Builder*",
-        "com.google.android.material.datepicker:MaterialDatePicker*",
-
-        "android.text.format:DateFormat*"
+        "com.google.android.material.datepicker.MaterialDatePicker:Builder",
+        "com.google.android.material.datepicker:MaterialDatePicker",
+        "android.text.format:DateFormat"
     ],
     "blacklist": [
         "org.nativescript.widgets:TabLayout*",

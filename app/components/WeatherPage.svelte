@@ -319,14 +319,12 @@
             <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
                 <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
                 <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
-                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />
-                    <cspan text={$sl('my_location').toUpperCase()} verticalAlignment="center" />
+                    <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />
+                    <span text={$sl('my_location').toUpperCase()} verticalAlignment="center" />
                 </mdbutton>
                 <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" android:paddingTop={6} verticalTextAlignment="center">
-                    <!-- <formattedstring> -->
-                    <cspan fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="center" />
-                    <cspan text={$sl('search_location').toUpperCase()} verticalAlignment="center" />
-                    <!-- </formattedstring> -->
+                    <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="center" />
+                    <span text={$sl('search_location').toUpperCase()} verticalAlignment="center" />
                 </mdbutton>
             </gridlayout>
         {/if}

@@ -73,7 +73,7 @@
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22);
         textPaint.setColor($textColor);
-        canvas.drawText(formatDate(item.time, 'ddd '), 10, 26, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd'), 10, 26, textPaint);
         textPaint.setColor($textLightColor);
         textPaint.setTextSize(15);
         canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46, textPaint);

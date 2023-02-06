@@ -14,7 +14,7 @@
                 <label col={1} fontSize={14} padding="0 4 4 0" textWrap={true}>
                     <span fontSize={17} text="{alert.event}{'\n'}" />
                     <span fontSize={17} text="{alert.sender_name}{'\n'}" />
-                    <span text="{titlecase(l('expires'))}: {formatDate(alert.end, 'HH:mm dddd')}{'\n'}" />
+                    <span text="{titlecase(l('expires'))}: {formatDate(alert.end, 'dddd LT')}{'\n'}" />
                     <span color="#aaa" text={alert.description} />
                 </label>
             </gridLayout>

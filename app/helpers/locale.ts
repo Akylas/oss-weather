@@ -79,17 +79,17 @@ function getActualLanguage(language) {
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
-export function formatDate(date: number | string | dayjs.Dayjs, formatStr: string) {
+export function formatDate(date: number | string | dayjs.Dayjs, formatStr: string = 'dddd LT') {
     if (date) {
         if (!date['format']) {
             date = dayjs(date);
         }
 
         if (clock_24 && formatStr.indexOf('LT') >= 0) {
-            formatStr.replaceAll('LT', 'HH:mm');
+            formatStr.replace(/LT/g, 'HH:mm');
         } else if (clock_24 && formatStr.indexOf('LTS') >= 0) {
-            formatStr = 'HH:mm:ss';
-            formatStr.replaceAll('LTS', 'HH:mm:ss');
+            // formatStr = 'HH:mm:ss';
+            formatStr.replace(/LTS/g, 'HH:mm:ss');
         }
         return capitalize((date as dayjs.Dayjs).format(formatStr));
     }

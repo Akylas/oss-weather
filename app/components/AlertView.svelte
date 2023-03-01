@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { Template } from 'svelte-native/components';
     import { titlecase } from '~/helpers/formatter';
     import { formatDate, l } from '~/helpers/locale';
     import type { Alert } from '~/services/openweathermap';
@@ -6,18 +7,18 @@
     export let alerts: Alert[];
 </script>
 
-<scrollview id="scrollView" class="bottomsheet" iosIgnoreSafeArea={true}>
-    <stackLayout>
-        {#each alerts as alert}
+<collectionview id="scrollView" class="bottomsheet" iosIgnoreSafeArea={true} items={alerts}>
+    <Template let:item>
+        <gridLayout>
             <gridLayout class="alertView" columns="auto,*" rows="auto">
                 <label verticalAlignment="top" marginLeft={10} color="#EFB644" fontSize={36} class="icon-btn" text="mdi-alert" />
                 <label col={1} fontSize={14} padding="0 4 4 0" textWrap={true}>
-                    <span fontSize={17} text="{alert.event}{'\n'}" />
-                    <span fontSize={17} text="{alert.sender_name}{'\n'}" />
-                    <span text="{titlecase(l('expires'))}: {formatDate(alert.end, 'dddd LT')}{'\n'}" />
-                    <span color="#aaa" text={alert.description} />
+                    <span fontSize={17} text="{item.event}{'\n'}" />
+                    <span fontSize={17} text="{item.sender_name}{'\n'}" />
+                    <span text="{titlecase(l('expires'))}: {formatDate(item.end, 'dddd LT')}{'\n'}" />
+                    <span color="#aaa" text={item.description} />
                 </label>
             </gridLayout>
-        {/each}
-    </stackLayout>
-</scrollview>
+        </gridLayout>
+    </Template>
+</collectionview>

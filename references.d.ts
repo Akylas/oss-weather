@@ -44,9 +44,9 @@ interface LatLonKeys {
     lon: number;
     altitude?: number;
 }
-// declare module '*.svelte' {
-//     export default SvelteComponent;
-// }
+declare module '*.svelte' {
+    export { SvelteComponent as default };
+}
 declare module '*.scss' {
     // const content: any;
 

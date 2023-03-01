@@ -3,7 +3,6 @@
     "whitelist": [
         "androidx.appcompat.app:AppCompatDelegate",
         "android.widget:Toast",
-        "androidx.core.widget:NestedScrollView",
         "androidx.core.os:LocaleListCompat",
 
         "com.google.android.material.datepicker.MaterialDatePicker:Builder",
@@ -11,9 +10,12 @@
         "android.text.format:DateFormat"
     ],
     "blacklist": [
+        "org.nativescript.widgets:TabItemSpec*",
+        "org.nativescript.widgets:TabsBar*",
+        "org.nativescript.widgets:SegmentedBar*",
+        "org.nativescript.widgets:TabViewPager*",
         "org.nativescript.widgets:TabLayout*",
         "org.nativescript.widgets:BottomNavigationBar*",
-        "org.ow2.asmdex*:*",
         "com.google.android.material.chip*:*",
         "com.google.android.material.appbar*:*",
         "com.google.android.material.floatingactionbutton*:*",
@@ -25,5 +27,20 @@
         "*:R.*",
         "*:R",
         "*:R$*"
+    ],
+    "proguard_blacklist": [
+        "org.nativescript.widgets:TabItemSpec*",
+        "org.nativescript.widgets:TabsBar*",
+        "org.nativescript.widgets:SegmentedBar*",
+        "org.nativescript.widgets:TabViewPager*",
+        "org.nativescript.widgets:TabLayout*",
+        "org.nativescript.widgets:BottomNavigationBar*",
+        "com.google.android.material.chip*:*",
+        "com.google.android.material.appbar*:*",
+        "com.google.android.material.floatingactionbutton*:*",
+        "com.google.android.material.bottomappbar*:*",
+        "com.google.android.material.internal*:*",
+        "com.google.android.material.transformation*:*",
+        "com.google.android.material.theme*:*"
     ]
 }

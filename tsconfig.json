@@ -21,7 +21,7 @@
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "es2017", "dom"],
-        "types": ["node", "svelte", "svelte-native"],  
+        "types": ["node", "svelte-native"],  
         "baseUrl": ".",
         "paths": {
             "~/*": ["app/*"]

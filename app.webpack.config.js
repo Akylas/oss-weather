@@ -572,6 +572,14 @@ module.exports = (env, params = {}) => {
         );
     }
 
+    if (!!production) {
+        config.plugins.push(
+            new ForkTsCheckerWebpackPlugin({
+                async: false
+            })
+        );
+    }
+
     if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
             config.devtool = false;

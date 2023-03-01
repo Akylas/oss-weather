@@ -5,6 +5,17 @@ const whitelist = fs.readFileSync(path.join(buildToolsPath, 'whitelist.mdg'), { 
 const whitelistfilteredLines = [...new Set(whitelist.split('\n'))].filter((l) => l.length > 0 && !l.startsWith('//'));
 const blacklist = fs.readFileSync(path.join(buildToolsPath, 'blacklist.mdg'), { encoding: 'utf-8' });
 const blacklistfilteredLines = [...new Set(blacklist.split('\n'))].filter((l) => l.length > 0 && !l.startsWith('//'));
+const proguard_blacklist = require(path.join('../App_Resources','Android', 'native-api-usage.json')).proguard_blacklist;
+
+function getIdentifier(l) {
+    let identifier = l;
+    let suffix = '';
+        if (identifier.endsWith('*:*')) {
+            suffix =  '.**'
+            identifier = identifier.slice(0, -3);
+        }
+        return identifier.replace(':', '.').replace(/\*/g, '**') + suffix;
+    }
 
 // const KEEP_PARAMS = '-keep,includedescriptorclasses,allowoptimization public class';
 const KEEP_PARAMS = '-keep,allowoptimization public class';
@@ -18,14 +29,24 @@ let data = `#-dontobfuscate
 
 ${whitelistfilteredLines
     .map((l) => {
-        if (l.endsWith('*:*')) {
-            // const toBlacklist = blacklistfilteredLines.filter((l2) => l2.startsWith(l));
-            // if (toBlacklist.length) {
-            //     return `${KEEP_PARAMS} ${toBlacklist.map((l) => '!' + l.replace('*:*', '.**')).join(',')},${l.slice(0, -3).replace(':', '.')}.** { public protected *; }`;
-            // }
-            return `${KEEP_PARAMS} ${l.slice(0, -3).replace(':', '.')}.** { public protected *; }`;
+        let identifier = l;
+        if (identifier.endsWith('*:*')) {
+            identifier = identifier.slice(0, -3).replace(':', '.');
+            const toBlacklist = proguard_blacklist.filter((l2) => l2.startsWith(identifier));
+            // console.log('test', identifier, toBlacklist.length)
+            if (toBlacklist.length) {
+                return `${KEEP_PARAMS} ${toBlacklist.map((l2) => '!' + getIdentifier(l2).replace(':', '.')).join(',')},${identifier}.** { public protected *; }`;
+            }
+            return `${KEEP_PARAMS} ${identifier}.** { public protected *; }`;
         }
-        return `${KEEP_PARAMS} ${l.slice(0, -1).replace(':', '.')}** { public  *; }`;
+        if (identifier.endsWith('*')) {
+            identifier = identifier.slice(0, -1).replace(':', '.');
+
+        } else {
+            identifier = identifier.replace(':', '.');
+
+        }
+        return `${KEEP_PARAMS} ${identifier}** { public  *; }`;
     })
     .join('\n')}
 `;

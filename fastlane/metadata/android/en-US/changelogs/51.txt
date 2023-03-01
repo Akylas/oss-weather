@@ -1,0 +1,8 @@
+*Bug fixes*
+- testing api key fix
+- wrongly reporting missing GPS permission
+- time locale fix with 24 hour clock option
+- git ignore rule fix
+- missing import
+- crash on opening of app (not first opening)
+- *android:* improvements with proguard

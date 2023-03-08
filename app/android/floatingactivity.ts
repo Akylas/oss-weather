@@ -13,7 +13,7 @@ import {
     View
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
-import { showBottomSheet } from '~/bottomsheet';
+import { showBottomSheet } from '~/utils/svelte/bottomsheet';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';

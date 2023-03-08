@@ -1,6 +1,6 @@
 <script lang="ts">
     import { getString } from '@nativescript/core/application-settings';
-    import { closeBottomSheet } from '~/bottomsheet';
+    import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import { l } from '~/helpers/locale';
     import { setOWMApiKey } from '~/services/owm';
     import { openLink } from '~/utils/ui';

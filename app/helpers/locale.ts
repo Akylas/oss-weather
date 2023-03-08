@@ -1,13 +1,12 @@
 import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale } from '@nativescript-community/l';
-import { getString, setString } from '@nativescript/core/application-settings';
-import { Application, ApplicationSettings, Device } from '@nativescript/core';
+import { ApplicationSettings, Device, Utils } from '@nativescript/core';
+import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { createGlobalEventListener, globalObservable } from '~/variables';
 import { titlecase } from './formatter';
-import { ad } from '@nativescript/core/utils';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 
@@ -15,7 +14,7 @@ export let lang;
 export const $lang = writable(null);
 let default24Clock = false;
 if (__ANDROID__) {
-    default24Clock = android.text.format.DateFormat.is24HourFormat(ad.getApplicationContext());
+    default24Clock = android.text.format.DateFormat.is24HourFormat(Utils.ad.getApplicationContext());
 }
 export let clock_24 = ApplicationSettings.getBoolean('clock_24', default24Clock);
 export const clock_24Store = writable(null);

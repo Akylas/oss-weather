@@ -1,21 +1,11 @@
 <script context="module" lang="ts">
     import { getBoolean } from '@nativescript/core/application-settings';
-    import { knownFolders } from '@nativescript/core/file-system';
+    import { createEventDispatcher } from 'svelte';
     import { prefs } from '~/services/preferences';
-    // const appPath = knownFolders.currentApp().path;
-    // const cache = new Map();
-    // function loadLottieJSON(iconSrc) {
-    //     if (!cache.has(iconSrc)) {
-    //         const file = File.fromPath(`${path.join(appPath, 'assets/lottie', iconSrc + '.json')}`);
-    //         const value = file.readTextSync();
-    //         cache.set(iconSrc, value);
-    //         return value;
-    //     }
-    //     return cache.get(iconSrc);
-    // }
 </script>
 
 <script lang="ts">
+    const dispatch = createEventDispatcher();
     export let icon: string;
     export let fontSize: string | number = 40;
     // export let autoPlay = true;
@@ -99,8 +89,8 @@
             case '11d':
             case '11n':
                 realIcon = '4805-weather-thunder';
-                break
-                // not available through OWM 
+                break;
+            // not available through OWM
             case '12d':
             case '12n':
                 realIcon = '4792-weather-stormshowersday';
@@ -123,7 +113,7 @@
 </script>
 
 {#if autoPlay}
-    <lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop={true} {autoPlay} progress={0.5} />
+    <lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop={true} {autoPlay} progress={0.5} on:tap={(event) => dispatch('tap', event)} />
 {:else}
-    <image {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} />
+    <image {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} on:tap={(event) => dispatch('tap', event)} />
 {/if}

@@ -1,19 +1,20 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Application } from '@nativescript/core';
+    import { createEventDispatcher } from 'svelte';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';
-    import { prefs } from '~/services/preferences';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
+    import { prefs } from '~/services/preferences';
     import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
-    import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { onThemeChanged } from '~/helpers/theme';
 
     export let items: any[];
 
+    const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
-    const topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - navigationBarHeight - statusBarHeight - 100, 500), 400);
+    let topHeight = 0;
+    $: topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - $navigationBarHeight - $statusBarHeight - 100, 500), 400);
 
     function itemTemplateSelector(item, index, items) {
         // return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
@@ -30,13 +31,17 @@
     }
 
     prefs.on('key:animations', () => {
-        collectionView.nativeView.refresh();
+        collectionView?.nativeView?.refresh();
     });
 
     // onThemeChanged(() => {
     //     console.log('onThemeChanged');
     //     collectionView.nativeView.refreshVisibleItems();
     // });
+
+    function onTap(item) {
+        dispatch('tap', item)
+    }
 </script>
 
 <collectionview
@@ -49,15 +54,9 @@
     on:layoutCompleted={onCollectionViewLayoutCompleted}
 >
     <Template key="topView" let:item>
-        <TopWeatherView {item} height={topHeight} />
-    </Template>
-    <Template key="info" let:item>
-        <gridLayout rows="auto" columns="auto,*" class="alertView" verticalAlignment="center" paddingLeft={20}>
-            <WeatherIcon col={0} verticalAlignment="middle" fontSize={50} icon={item.icon} />
-            <label col={1} fontSize={16} paddingLeft={4} verticalAlignment="middle" text={item.summary} maxLines={2} />
-        </gridLayout>
+        <TopWeatherView {item} height={topHeight} on:tap={()=>onTap(item)}/>
     </Template>
     <Template key="daily" let:item>
-        <DailyView {item} />
+        <DailyView {item}  on:tap={()=>onTap(item)}/>
     </Template>
 </collectionview>

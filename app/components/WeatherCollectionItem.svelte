@@ -211,7 +211,7 @@
 </script>
 
 <gridlayout on:tap={onTap}>
-    <canvas id="hourlyView" bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
+    <canvas bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
     <!-- <linechart bind:this={lineChart} height="100%" backgroundColor="red" rowSpan={3}  {width} left={marginLeft}/> -->
     <WeatherIcon icon={item.icon} verticalAlignment="top" marginTop={27} />
 </gridlayout>

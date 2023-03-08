@@ -1,0 +1,2 @@
+*Features*
+- astronomy view on daily / top icon click

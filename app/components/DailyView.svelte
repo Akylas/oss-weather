@@ -2,6 +2,7 @@
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
+    import { createEventDispatcher } from 'svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
@@ -21,6 +22,7 @@
     let canvasView;
     let color: string | Color;
     let precipIcon: string;
+    const dispatch = createEventDispatcher();
 
     if (!textPaint) {
         textPaint = new Paint();
@@ -195,7 +197,7 @@
     }
 </script>
 
-<gridLayout height={100}>
-    <canvas id="dailyView" bind:this={canvasView} on:draw={drawOnCanvas} />
+<gridLayout height={100}  on:tap={(event) => dispatch('tap', event)}>
+    <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
     <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
 </gridLayout>

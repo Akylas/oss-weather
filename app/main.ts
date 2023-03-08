@@ -1,23 +1,22 @@
 // (com as any).tns.Runtime.getCurrentRuntime().enableVerboseLogging();
 // we need to use lat lon
+import { install as installGestures } from '@nativescript-community/gesturehandler';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
-import { install as installGestures } from '@nativescript-community/gesturehandler';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { ScrollView, Trace } from '@nativescript/core';
+import { ScrollView } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
-import { FrameElement, NativeElementPropType, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
+import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
-// import { Application } from '@nativescript/core';
 import { start as startThemeHelper } from '~/helpers/theme';
-// import { startSentry } from '~/utils/sentry';
+import { startSentry } from '~/utils/sentry';
 import './app.scss';
 
-// startSentry();
-// installGestures(true);
+startSentry();
+installGestures(true);
 overrideSpanAndFormattedString();
 installMixins();
 installUIMixins();
@@ -65,7 +64,7 @@ registerNativeViewElement('lottie', () => require('@nativescript-community/ui-lo
 registerNativeViewElement('pullrefresh', () => require('@nativescript-community/ui-pulltorefresh').PullToRefresh);
 registerNativeViewElement('canvas', () => require('@nativescript-community/ui-canvas').CanvasView);
 // registerNativeViewElement('line', () => require('@nativescript-community/ui-canvas/shapes/line').default);
-// registerNativeViewElement('rectangle', () => require('@nativescript-community/ui-canvas/shapes/rectangle').default);
+registerNativeViewElement('rectangle', () => require('@nativescript-community/ui-canvas/shapes/rectangle').default);
 // registerNativeViewElement('image', () => require('@nativescript-community/ui-image').Img, null, {}, { override: true });
 registerNativeViewElement('canvaslabel', () => require('@nativescript-community/ui-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);

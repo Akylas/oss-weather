@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Utils } from '@nativescript/core';
     import { getString } from '@nativescript/core/application-settings';
-    import { closeBottomSheet } from '~/bottomsheet';
+    import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { geocodeAddress, networkService, prepareItems } from '~/services/api';

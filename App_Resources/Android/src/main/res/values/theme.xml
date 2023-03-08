@@ -20,7 +20,8 @@
     </style>
     <style name="FloatingActivityTheme" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowTranslucentStatus">true</item>
+        <!-- <item name="android:windowTranslucentStatus">true</item> -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>

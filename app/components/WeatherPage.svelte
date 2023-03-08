@@ -3,13 +3,13 @@
     import { request as requestPerm } from '@nativescript-community/perms';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Color, CoreTypes, Page } from '@nativescript/core';
+    import { Color, CoreTypes, Frame, Page } from '@nativescript/core';
     import { alert as mdAlert, confirm } from '@nativescript-community/ui-material-dialogs';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { showBottomSheet } from '~/bottomsheet';
+    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
     import { sl, slc, l, lc, onLanguageChanged } from '~/helpers/locale';
     import { geocodeAddress, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
@@ -19,6 +19,8 @@
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
     import { hasOWMApiKey } from '~/services/owm';
+    import { getRootView } from '@nativescript/core/application';
+    import dayjs from 'dayjs';
 
     setGeoLocationKeys('lat', 'lon', 'altitude');
 
@@ -169,7 +171,7 @@
     async function getLocationAndWeather() {
         try {
             const result = await requestPerm('location');
-            if ((Array.isArray(result) && result[0] !== 'authorized')) {
+            if (Array.isArray(result) && result[0] !== 'authorized') {
                 return alert(l('missing_location_perm'));
             }
             if (!gps) {
@@ -279,9 +281,27 @@
         provider = getString('provider') as any;
         refresh();
     });
+
+    async function onTap(item) {
+        try {
+            const AstronomyView = (await import('~/components/AstronomyView.svelte')).default;
+            const parent = Frame.topmost() || getRootView();
+            await showBottomSheet({
+                parent,
+                view: AstronomyView,
+                // peekHeight: 300,
+                props: {
+                    location: weatherLocation,
+                    startTime: dayjs(item.detail.time)
+                }
+            });
+        } catch (err) {
+            showError(err);
+        }
+    }
 </script>
 
-<page bind:this={page} actionBarHidden={true} id="home">
+<page bind:this={page} actionBarHidden={true}>
     <gridlayout rows="auto,*">
         <CActionBar title={weatherLocation && weatherLocation.name}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
@@ -305,7 +325,7 @@
             <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
         {:else if weatherLocation}
             <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
-                <WeatherComponent {items} />
+                <WeatherComponent {items} on:tap={onTap} />
             </pullrefresh>
             <label
                 row="1"

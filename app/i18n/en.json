@@ -89,5 +89,21 @@
   "third_parties": "third party libraries",
   "third_parties_desc": "the software we love and use",
   "version": "version",
-  "weather_map": "weather map"
+  "weather_map": "weather map",
+  "E": "E",
+  "N": "N",
+  "NE": "NE",
+  "NNE": "NNE",
+  "NNW": "NNW",
+  "NSE": "NSE",
+  "NSW": "NSW",
+  "NW": "NW",
+  "S": "S",
+  "SE": "SE",
+  "SW": "SW",
+  "W": "W",
+  "WNE": "WNE",
+  "WNW": "WNW",
+  "WSE": "WSE",
+  "WSW": "WSW"
 }

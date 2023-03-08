@@ -89,5 +89,11 @@
   "third_parties": "bibliothèques tierces",
   "third_parties_desc": "les logiciels que nous aimons et utilisons",
   "version": "version",
-  "weather_map": "carte météo"
+  "weather_map": "carte météo",
+  "NNW": "NNO",
+  "NW": "NO",
+  "SW": "SO",
+  "W": "O",
+  "WNW": "ONO",
+  "WSW": "OSO"
 }

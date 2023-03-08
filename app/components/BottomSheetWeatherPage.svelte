@@ -48,7 +48,7 @@
     $: refresh(weatherLocation);
 </script>
 
-<gridlayout rows="auto,*" class="weatherpage">
+<gridlayout rows="auto,*" class="weatherpage" height="100%">
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
     </CActionBar>

@@ -59,7 +59,7 @@
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
-            return formatDate(date, 'dddd LT');
+            return formatDate(date, 'ddd LT');
         } else {
             return formatTime(date, 'LT');
         }

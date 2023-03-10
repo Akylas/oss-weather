@@ -10,8 +10,8 @@
     let collectionView: NativeViewElementNode<CollectionView>;
 
     function onDataPopulated() {
-        showLeftShadow = true;
-        showRightShadow = false;
+        showLeftShadow = false;
+        showRightShadow = true;
     }
 
     let showLeftShadow = false;

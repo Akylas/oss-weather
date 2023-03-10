@@ -1,4 +1,10 @@
 {
+  "NNW": "NNO",
+  "NW": "NO",
+  "SW": "SO",
+  "W": "O",
+  "WNW": "ONO",
+  "WSW": "OSO",
   "about": "à propos",
   "about_to_quit": "l'application est sur le point de se fermer car elle ne possède pas de clé API",
   "animations": "animations",
@@ -9,7 +15,7 @@
     "name": "OSS Météo"
   },
   "authorize": "autoriser",
-  "auto_black":"utiliser noir pour le thème auto sombre",
+  "auto_black": "utiliser noir pour le thème auto sombre",
   "bug_report_sent": "rapport de bug envoyé",
   "cancel": "annuler",
   "close": "fermer",
@@ -37,7 +43,7 @@
     }
   },
   "language": "langue",
-  "last_updated": "dernière mise à jour",
+  "last_updated": "mise à jour",
   "light": "lumière",
   "loading": "chargement",
   "medium": "modérément modéré",
@@ -89,11 +95,5 @@
   "third_parties": "bibliothèques tierces",
   "third_parties_desc": "les logiciels que nous aimons et utilisons",
   "version": "version",
-  "weather_map": "carte météo",
-  "NNW": "NNO",
-  "NW": "NO",
-  "SW": "SO",
-  "W": "O",
-  "WNW": "ONO",
-  "WSW": "OSO"
+  "weather_map": "carte météo"
 }

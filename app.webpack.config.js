@@ -206,7 +206,7 @@ module.exports = (env, params = {}) => {
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
         DEFAULT_LOCALE: `"${locale}"`,
         DEFAULT_THEME: `"${theme}"`,
-        'SENTRY_ENABLED': !!sentry,
+        SENTRY_ENABLED: !!sentry,
         NO_CONSOLE: noconsole,
         SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
         SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,

@@ -112,7 +112,7 @@
                 if (precipProbability > 0) {
                     canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM), w2, h - 12, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial), w2, h - 12, textPaint);
             }
         }
         canvas.save();

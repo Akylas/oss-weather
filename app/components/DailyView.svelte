@@ -103,7 +103,7 @@
                 color: color,
                 iconFontSize: 20,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
             });
         } else if (item.cloudCover > 20) {

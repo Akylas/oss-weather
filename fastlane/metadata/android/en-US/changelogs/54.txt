@@ -1,0 +1,2 @@
+*Bug fixes*
+- correctly show imperial values for rain/snow falls

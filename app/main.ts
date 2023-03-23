@@ -1,9 +1,11 @@
 // (com as any).tns.Runtime.getCurrentRuntime().enableVerboseLogging();
 // we need to use lat lon
 import { install as installGestures } from '@nativescript-community/gesturehandler';
+import { setGeoLocationKeys } from '@nativescript-community/gps';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
+import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
@@ -16,6 +18,7 @@ import { startSentry } from '~/utils/sentry';
 import './app.scss';
 
 startSentry();
+setGeoLocationKeys('lat', 'lon', 'altitude');
 installGestures(true);
 overrideSpanAndFormattedString();
 installMixins();
@@ -69,7 +72,7 @@ registerNativeViewElement('rectangle', () => require('@nativescript-community/ui
 registerNativeViewElement('canvaslabel', () => require('@nativescript-community/ui-canvaslabel').CanvasLabel);
 registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);
 registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
-
+DrawerElement.register();
 CollectionViewElement.register();
 
 // Trace.addCategories(DomTraceCategory);

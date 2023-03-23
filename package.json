@@ -42,6 +42,7 @@
         "@nativescript-community/ui-canvaslabel": "1.1.10",
         "@nativescript-community/ui-chart": "1.2.26",
         "@nativescript-community/ui-collectionview": "4.0.70",
+        "@nativescript-community/ui-drawer": "^0.1.5",
         "@nativescript-community/ui-label": "1.2.23",
         "@nativescript-community/ui-lottie": "5.0.5",
         "@nativescript-community/ui-material-activityindicator": "7.0.42",

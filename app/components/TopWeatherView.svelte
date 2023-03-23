@@ -12,8 +12,10 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
+    import { favoriteIcon, favoriteIconColor, FavoriteLocation, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
+    import { WeatherLocation } from '~/services/api';
     import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
     const dispatch = createEventDispatcher();
 
@@ -55,7 +57,10 @@
         hourly?;
     }
     export let item: Item;
+    export let weatherLocation: FavoriteLocation;
     export let height;
+
+    $: weatherLocation.isFavorite = isFavorite(weatherLocation);
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
@@ -99,7 +104,6 @@
                 }
                 return;
             }
-            lastChartData = data;
             if (!chartInitialized) {
                 const limitColor = new Color($textColor).setAlpha(0.5).hex;
                 chartInitialized = true;
@@ -308,11 +312,15 @@
             }
         });
     }
+
+    function toggleItemFavorite(item: FavoriteLocation) {
+        weatherLocation = toggleFavorite(item);
+    }
 </script>
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
-        <cspan paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
+        <cspan paddingRight={40} fontSize={20} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
         {#if item.temperature !== undefined}
             <cgroup paddingLeft={10} fontSize={12} verticalAlignment="top">
                 <cspan fontSize={26} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
@@ -331,7 +339,21 @@
         </cgroup>
         <cspan paddingRight={10} fontSize={14} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
     </canvaslabel>
-    <linechart bind:this={lineChart} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon}  on:tap={(event) => dispatch('tap', event)}/>
+    <mdbutton
+        col={1}
+        variant="text"
+        class="icon-btn"
+        marginRight={4}
+        width={30}
+        height={30}
+        color={favoriteIconColor(weatherLocation)}
+        rippleColor="#EFB644"
+        on:tap={() => toggleItemFavorite(weatherLocation)}
+        text={favoriteIcon(weatherLocation)}
+        verticalAlignment="top"
+        horizontalAlignment="right"
+    />
+    <linechart bind:this={lineChart} visibility={hasPrecip ?  'visible' : 'hidden'} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} backgroundColor="red"/>
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

@@ -6,10 +6,13 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
+    import { FavoriteLocation } from '~/helpers/favorites';
+    import { WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
 
     export let items: any[];
+    export let weatherLocation: WeatherLocation;
 
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -40,7 +43,7 @@
     // });
 
     function onTap(item) {
-        dispatch('tap', item)
+        dispatch('tap', item);
     }
 </script>
 
@@ -54,9 +57,9 @@
     on:layoutCompleted={onCollectionViewLayoutCompleted}
 >
     <Template key="topView" let:item>
-        <TopWeatherView {item} height={topHeight} on:tap={()=>onTap(item)}/>
+        <TopWeatherView {weatherLocation} {item} height={topHeight} on:tap={() => onTap(item)} />
     </Template>
     <Template key="daily" let:item>
-        <DailyView {item}  on:tap={()=>onTap(item)}/>
+        <DailyView {item} on:tap={() => onTap(item)} />
     </Template>
 </collectionview>

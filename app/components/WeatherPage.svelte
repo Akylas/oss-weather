@@ -14,15 +14,16 @@
     import { geocodeAddress, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
-    import { backgroundColor, mdiFontFamily } from '~/variables';
+    import { backgroundColor, mdiFontFamily, textLightColor } from '~/variables';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
     import { hasOWMApiKey } from '~/services/owm';
     import { getRootView } from '@nativescript/core/application';
     import dayjs from 'dayjs';
-
-    setGeoLocationKeys('lat', 'lon', 'altitude');
+    import { Template } from 'svelte-native/components';
+    import { Drawer } from '@nativescript-community/ui-drawer';
+    import { favorites } from '~/helpers/favorites';
 
     let gps: GPS;
     let loading = false;
@@ -148,6 +149,7 @@
             setString('weatherLocation', JSON.stringify(weatherLocation));
             refreshWeather();
         }
+        drawer?.close();
     }
 
     async function searchCity() {
@@ -299,54 +301,75 @@
             showError(err);
         }
     }
+
+    let drawer: Drawer;
+    function toggleDrawer() {
+        drawer.toggle();
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <gridlayout rows="auto,*">
-        <CActionBar title={weatherLocation && weatherLocation.name}>
-            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
-            <mdbutton
-                visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
-                variant="text"
-                class="icon-btn"
-                color="#EFB644"
-                rippleColor="#EFB644"
-                horizontalAlignment="left"
-                on:tap={() => showAlerts()}
-                text="mdi-alert"
-            />
-            {#if weatherLocation}
-                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
+    <drawer bind:this={drawer}>
+        <gridlayout rows="auto,*" prop:mainContent>
+            <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name} onMenuIcon={toggleDrawer}>
+                <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
+                <mdbutton
+                    visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
+                    variant="text"
+                    class="icon-btn"
+                    color="#EFB644"
+                    rippleColor="#EFB644"
+                    horizontalAlignment="left"
+                    on:tap={() => showAlerts()}
+                    text="mdi-alert"
+                />
+                {#if weatherLocation}
+                    <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
+                {/if}
+                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
+                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
+            </CActionBar>
+            {#if !networkConnected && !weatherData}
+                <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
+            {:else if weatherLocation}
+                <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
+                    <WeatherComponent {weatherLocation} {items} on:tap={onTap}/>
+                </pullrefresh>
+                <label
+                    row="1"
+                    fontSize={10}
+                    backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
+                    text={lc('powered_by', l(`provider.${provider}`))}
+                    verticalAlignment="bottom"
+                    horizontalAlignment="right"
+                />
+            {:else}
+                <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
+                    <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
+                    <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
+                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />
+                        <span text={$sl('my_location').toUpperCase()} verticalAlignment="center" />
+                    </mdbutton>
+                    <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" android:paddingTop={6} verticalTextAlignment="center">
+                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="center" />
+                        <span text={$sl('search_location').toUpperCase()} verticalAlignment="center" />
+                    </mdbutton>
+                </gridlayout>
             {/if}
-            <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
-            <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
-        </CActionBar>
-        {#if !networkConnected && !weatherData}
-            <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
-        {:else if weatherLocation}
-            <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
-                <WeatherComponent {items} on:tap={onTap} />
-            </pullrefresh>
-            <label
-                row="1"
-                fontSize={10}
-                backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
-                text={lc('powered_by', l(`provider.${provider}`))}
-                verticalAlignment="bottom"
-                horizontalAlignment="right"
-            />
-        {:else}
-            <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
-                <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
-                <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
-                    <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />
-                    <span text={$sl('my_location').toUpperCase()} verticalAlignment="center" />
-                </mdbutton>
-                <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" android:paddingTop={6} verticalTextAlignment="center">
-                    <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="center" />
-                    <span text={$sl('search_location').toUpperCase()} verticalAlignment="center" />
-                </mdbutton>
-            </gridlayout>
-        {/if}
-    </gridlayout>
+        </gridlayout>
+        <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
+            <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
+            <collectionview row={2} rowHeight={80} items={favorites}>
+                <Template let:item>
+                    <gridLayout col={1} verticalAlignment="center" rows="auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30">
+                        <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
+                        <label row={1} fontSize={14} color={$textLightColor}>
+                            <span text={item.sys.state || item.sys.country} />
+                            <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
+                        </label>
+                    </gridLayout>
+                </Template>
+            </collectionview>
+        </gridlayout>
+    </drawer>
 </page>

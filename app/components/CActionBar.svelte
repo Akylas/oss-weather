@@ -8,7 +8,7 @@
     export let canGoBack: boolean = false;
     export let modalWindow: boolean = false;
     export let disableBackButton: boolean = false;
-    export let onClose: Function = null;
+    export let onMenuIcon: Function = null;
     let menuIcon: string;
     let menuIconVisible: boolean;
     let menuIconVisibility: string;
@@ -18,9 +18,11 @@
             canGoBack = Frame.topmost() && Frame.topmost().canGoBack();
         }, 0);
     });
-    function onMenuIcon() {
-        if (modalWindow) {
-            onClose ? onClose() : closeModal(undefined);
+    function onMenuIconBtn() {
+        if (onMenuIcon) {
+            onMenuIcon();
+        } else if (modalWindow) {
+            closeModal(undefined);
         } else {
             goBack();
         }
@@ -37,10 +39,21 @@
 </script>
 
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
-    <label col={1} colSpan={3} class="actionBarTitle" textAlignment="left" visibility={!!title ? 'visible' : 'hidden'} text={title || ''} verticalTextAlignment="center" />
+    <label
+        col={1}
+        colSpan={3}
+        class="actionBarTitle"
+        textAlignment="left"
+        visibility={!!title ? 'visible' : 'hidden'}
+        text={title || ''}
+        verticalTextAlignment="center"
+        maxLines={2}
+        autoFontSize
+        minFontSize={12}
+    />
     <stackLayout col={0} orientation="horizontal">
         <slot name="left" />
-        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
+        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIconBtn} />
     </stackLayout>
     <stackLayout col={2} orientation="horizontal">
         <slot />

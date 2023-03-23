@@ -76,6 +76,7 @@
 
     let color: string | Color;
     let precipIcon: string;
+    let hasPrecip = false;
 
     function updateLineChart(item: Item) {
         const chart = lineChart.nativeView;
@@ -88,6 +89,7 @@
             if (lastChartData === data) {
                 return;
             }
+            lastChartData = data;
             if (!data) {
                 if (precipChartSet) {
                     precipChartSet.clear();
@@ -154,7 +156,7 @@
 
             let needsToSetData = false;
             let needsUpdate = false;
-            const hasPrecip = data.some((d) => d.intensity > 0);
+            hasPrecip = data.some((d) => d.intensity > 0);
 
             const leftAxis = chart.getAxisLeft();
             leftAxis.setAxisMinimum(0);

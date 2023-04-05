@@ -1,4 +1,3 @@
-import { sun } from '@modern-dev/daylight';
 import { Color } from '@nativescript/core';
 import { cloudyColor, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate } from './locale';
@@ -342,8 +341,6 @@ export enum WeatherDataType {
     CURRENT
 }
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain?, snow?) {
-    const dateTimes = sun.getTimes(new Date(d.time), coord.lat, coord.lon);
-    // const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
     if (type !== WeatherDataType.CURRENT) {
         d.precipColor = rainColor;
         // d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;

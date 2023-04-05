@@ -1,6 +1,5 @@
 <script lang="ts" context="module">
     import { getMoonIllumination, GetMoonIlluminationResult, getMoonPosition, getPosition, getTimes, GetTimesResult } from 'suncalc';
-    // import { moon, MoonPhase, MoonPosition, sun, SunPosition, SunTimes } from '@modern-dev/daylight/lib/es6';
     import { Align, Canvas, DashPathEffect, Paint } from '@nativescript-community/ui-canvas';
     import { CanvasLabel } from '@nativescript-community/ui-canvaslabel/canvaslabel.common';
     import { LineChart } from '@nativescript-community/ui-chart/charts';

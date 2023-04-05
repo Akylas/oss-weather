@@ -15,6 +15,7 @@
     import { favoriteIcon, favoriteIconColor, FavoriteLocation, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
+    import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
     import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
     const dispatch = createEventDispatcher();
@@ -83,13 +84,21 @@
     let precipIcon: string;
     let hasPrecip = false;
 
+    // we need a factor cause using timestamp means
+    // using 64bit data which canvas does not support (android Matrix specifically)
+    const timeFactor = 1 / (1000 * 60 * 10);
     function updateLineChart(item: Item) {
-        const chart = lineChart.nativeView;
+        const chart = lineChart?.nativeView;
         if (chart) {
             let data = item.minutely;
-            const now = Date.now();
+            let now = Math.floor(Date.now() * timeFactor);
             const index = data.findIndex((v) => v.time >= now);
-            data = data.slice(index);
+            const delta = now;
+            now -= delta;
+            data = data
+                .slice(index)
+                .map((d) => ({ ...d, time: Math.floor(d.time * timeFactor) - delta }))
+                .filter((item, pos, arr) => arr.findIndex((d) => d.time === item.time) === pos);
 
             if (lastChartData === data) {
                 return;
@@ -104,65 +113,68 @@
                 }
                 return;
             }
+            // if (data[0]?.time) console.log('data', JSON.stringify(data));
+            const xAxis = chart.getXAxis();
+            const leftAxis = chart.getAxisLeft();
             if (!chartInitialized) {
-                const limitColor = new Color($textColor).setAlpha(0.5).hex;
                 chartInitialized = true;
                 chart.setNoDataText(null);
                 chart.setAutoScaleMinMaxEnabled(true);
                 chart.setDoubleTapToZoomEnabled(true);
                 chart.getLegend().setEnabled(false);
-                const xAxis = chart.getXAxis();
                 xAxis.setEnabled(true);
-                xAxis.setTextColor($textColor);
                 xAxis.setLabelTextAlign(Align.CENTER);
                 xAxis.setDrawGridLines(false);
+                // xAxis.setCenterAxisLabels(true);
+                xAxis.ensureLastLabel = true;
+                // xAxis.setGranularity(10 * 60 * 1000)
+                // xAxis.setGranularityEnabled(true)
                 xAxis.setDrawMarkTicks(true);
                 xAxis.setValueFormatter({
-                    getAxisLabel: (value, axis) => Math.round(dayjs(value).diff(now, 'm') / 10) * 10 + 'm'
+                    getAxisLabel: (value, axis) => dayjs(value / timeFactor + delta).diff(now / timeFactor + delta, 'm') + 'm'
                 });
-                xAxis.setLabelCount(7, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
 
-                const rightAxis = chart.getAxisRight();
-                rightAxis.setEnabled(false);
+                // const rightAxis = char   t.getAxisRight();
+                // rightAxis.setEnabled(false);
 
-                const leftAxis = chart.getAxisLeft();
                 leftAxis.setAxisMinimum(0);
                 leftAxis.setDrawGridLines(false);
                 leftAxis.setDrawLabels(false);
+                leftAxis.setDrawMarkTicks(false);
                 leftAxis.setDrawAxisLine(false);
-                leftAxis.removeAllLimitLines();
-
-                let limitLine = new LimitLine(1, l('light').toUpperCase());
-                limitLine.setLineWidth(0);
-                limitLine.setXOffset(0);
-                limitLine.setTextColor(limitColor);
-                limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
-                leftAxis.addLimitLine(limitLine);
-
-                limitLine = new LimitLine(2, l('medium').toUpperCase());
-                limitLine.setLineWidth(1);
-                limitLine.setLineColor(limitColor);
-                limitLine.enableDashedLine(2, 2, 0);
-                limitLine.setXOffset(0);
-                limitLine.setTextColor(limitColor);
-                limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
-                leftAxis.addLimitLine(limitLine);
-                limitLine = new LimitLine(3, l('heavy').toUpperCase());
-                limitLine.setLineWidth(1);
-                limitLine.setLineColor(limitColor);
-                limitLine.enableDashedLine(2, 2, 0);
-                limitLine.setXOffset(0);
-                limitLine.setTextColor(limitColor);
-                limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
-                leftAxis.addLimitLine(limitLine);
+                // leftAxis.removeAllLimitLines();
+                [
+                    { limit: 1, label: l('light') },
+                    { limit: 2, label: l('medium') },
+                    { limit: 3, label: l('heavy') }
+                ].forEach((l) => {
+                    const limitLine = new LimitLine(l.limit, l.label.toUpperCase());
+                    limitLine.setLineWidth(1);
+                    limitLine.setXOffset(0);
+                    limitLine.setTextSize(8);
+                    limitLine.setYOffset(1);
+                    limitLine.enableDashedLine(2, 2, 0);
+                    // limitLine.setLineColor('red');
+                    limitLine.setLabelPosition(LimitLabelPosition.RIGHT_TOP);
+                    leftAxis.addLimitLine(limitLine);
+                });
             }
+            const limitColor = new Color($textColor).setAlpha(100).hex;
+            leftAxis.getLimitLines().forEach((l) => {
+                l.setTextColor(limitColor);
+                l.setLineColor(limitColor);
+            });
+            xAxis.setTextColor($textColor);
+            xAxis.setAxisMinValue(0);
+            const labelCount = data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0;
+            // console.log('labelCount1', labelCount, now, data);
+            xAxis.setLabelCount(labelCount, true);
 
             let needsToSetData = false;
             let needsUpdate = false;
             hasPrecip = data.some((d) => d.intensity > 0);
 
-            const leftAxis = chart.getAxisLeft();
             leftAxis.setAxisMinimum(0);
             leftAxis.setAxisMaximum(4);
             leftAxis.setDrawLimitLines(hasPrecip);
@@ -237,9 +249,23 @@
         }
     }
 
-    function drawOnCanvas({ canvas }: { canvas: Canvas }) {
-        const w = canvas.getWidth();
+    onThemeChanged(() => {
+        const chart = lineChart?.nativeView;
+        if (chart) {
+            chart.getXAxis().setTextColor($textColor);
+            chart.invalidate();
+            const limitColor = new Color($textColor).setAlpha(0.5).hex;
+            chart
+                .getAxisLeft()
+                .getLimitLines()
+                .forEach((l) => {
+                    l.setTextColor(limitColor);
+                    l.setLineColor(limitColor);
+                });
+        }
+    });
 
+    function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         let centeredItemsToDraw: {
             color?: string | Color;
             paint?: Paint;
@@ -353,7 +379,7 @@
         verticalAlignment="top"
         horizontalAlignment="right"
     />
-    <linechart bind:this={lineChart} visibility={hasPrecip ?  'visible' : 'hidden'} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} backgroundColor="red"/>
+    <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
     <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

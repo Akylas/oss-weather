@@ -46,6 +46,7 @@
     let lastGradient: { min; max; gradient: LinearGradient };
 
     function generateGradient(nbColor, min, max, h, posOffset) {
+        // console.log('generateGradient', min, max)
         const tmin = -20;
         const tmax = 30;
         // const tmin = Math.min(min, -30);
@@ -122,9 +123,10 @@
         canvas.translate(0, lineOffset);
         if (item.curveTempPoints) {
             if (!lastGradient || lastGradient.min !== item.min || lastGradient.max !== item.max) {
-                lastGradient = generateGradient(5, item.min, item.max, pHeight, lineOffset / h);
+                lastGradient = generateGradient(5, item.min, item.max, pHeight + 33, 0);
             }
             pathPaint.setShader(lastGradient.gradient);
+            // pathPaint.setStyle(Style.FILL_AND_STROKE)
             // canvas.drawRect(0, 0, w , pHeight, pathPaint);
             const points: number[] = item.curveTempPoints.slice();
             if (item.index === 0) {

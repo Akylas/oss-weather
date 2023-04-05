@@ -279,9 +279,9 @@ export async function getMFWeather(weatherLocation: WeatherLocation) {
         d.feelTemperature = Math.round(data.T.windchill);
 
         d.windBearing = data.wind.direction === 'Variable' ? -1 : data.wind.direction;
-        d.precipAccumulation = d.precipAccumulation = (data.snow['1h'] || 0) + (data.rain['1h'] || 0);
+        d.precipAccumulation = d.precipAccumulation = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
 
-        const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast, data.dt);
+        const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast || [], data.dt);
         d.precipProbability = Math.max(probabilities.rain, probabilities.snow, probabilities.ice) / 100;
         if (d.precipAccumulation && d.precipProbability === 0) {
             d.precipProbability = -1;

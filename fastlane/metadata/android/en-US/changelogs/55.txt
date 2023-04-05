@@ -1,0 +1,8 @@
+*Features*
+- basic favorites functionality
+
+*Bug fixes*
+- prevent error on clicking on top view
+- prevent errors with meteofrance
+- multiple rain chart fixes and improvements
+- better temperature line colors

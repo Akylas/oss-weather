@@ -197,7 +197,7 @@
     }
 </script>
 
-<gridLayout height={100}  on:tap={(event) => dispatch('tap', event)}>
+<gridLayout height={100}>
     <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
-    <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
+    <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
 </gridLayout>

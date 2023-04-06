@@ -24,6 +24,7 @@
     import { Template } from 'svelte-native/components';
     import { Drawer } from '@nativescript-community/ui-drawer';
     import { favorites } from '~/helpers/favorites';
+    import { throttle } from '@nativescript/core/utils';
 
     let gps: GPS;
     let loading = false;
@@ -284,7 +285,7 @@
         refresh();
     });
 
-    async function onTap(item) {
+    const onTap = throttle(async function (item) {
         try {
             const AstronomyView = (await import('~/components/AstronomyView.svelte')).default;
             const parent = Frame.topmost() || getRootView();
@@ -300,7 +301,7 @@
         } catch (err) {
             showError(err);
         }
-    }
+    });
 
     let drawer: Drawer;
     function toggleDrawer() {
@@ -315,7 +316,7 @@
                 <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
             {:else if weatherLocation}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
-                    <WeatherComponent {weatherLocation} {items} on:tap={onTap}/>
+                    <WeatherComponent {weatherLocation} {items} on:tap={onTap} />
                 </pullrefresh>
                 <label
                     row="1"

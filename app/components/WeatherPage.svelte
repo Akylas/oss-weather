@@ -311,24 +311,6 @@
 <page bind:this={page} actionBarHidden={true}>
     <drawer bind:this={drawer}>
         <gridlayout rows="auto,*" prop:mainContent>
-            <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name} onMenuIcon={toggleDrawer}>
-                <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
-                <mdbutton
-                    visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
-                    variant="text"
-                    class="icon-btn"
-                    color="#EFB644"
-                    rippleColor="#EFB644"
-                    horizontalAlignment="left"
-                    on:tap={() => showAlerts()}
-                    text="mdi-alert"
-                />
-                {#if weatherLocation}
-                    <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
-                {/if}
-                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
-                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
-            </CActionBar>
             {#if !networkConnected && !weatherData}
                 <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
             {:else if weatherLocation}
@@ -356,6 +338,24 @@
                     </mdbutton>
                 </gridlayout>
             {/if}
+            <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name} onMenuIcon={toggleDrawer}>
+                <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
+                <mdbutton
+                    visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
+                    variant="text"
+                    class="icon-btn"
+                    color="#EFB644"
+                    rippleColor="#EFB644"
+                    horizontalAlignment="left"
+                    on:tap={() => showAlerts()}
+                    text="mdi-alert"
+                />
+                {#if weatherLocation}
+                    <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
+                {/if}
+                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
+                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
+            </CActionBar>
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />

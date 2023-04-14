@@ -8,12 +8,17 @@
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
+    import { createEventDispatcher } from 'svelte';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
+    import { favoriteIcon, favoriteIconColor, FavoriteLocation, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
+    import { onThemeChanged } from '~/helpers/theme';
+    import { WeatherLocation } from '~/services/api';
     import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
+    const dispatch = createEventDispatcher();
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
@@ -53,11 +58,14 @@
         hourly?;
     }
     export let item: Item;
+    export let weatherLocation: FavoriteLocation;
     export let height;
+
+    $: weatherLocation.isFavorite = isFavorite(weatherLocation);
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
-            return formatDate(date, 'dddd LT');
+            return formatDate(date, 'ddd LT');
         } else {
             return formatTime(date, 'LT');
         }
@@ -74,18 +82,28 @@
 
     let color: string | Color;
     let precipIcon: string;
+    let hasPrecip = false;
 
+    // we need a factor cause using timestamp means
+    // using 64bit data which canvas does not support (android Matrix specifically)
+    const timeFactor = 1 / (1000 * 60 * 10);
     function updateLineChart(item: Item) {
-        const chart = lineChart.nativeView;
+        const chart = lineChart?.nativeView;
         if (chart) {
             let data = item.minutely;
-            const now = Date.now();
+            let now = Math.floor(Date.now() * timeFactor);
             const index = data.findIndex((v) => v.time >= now);
-            data = data.slice(index);
+            const delta = now;
+            now -= delta;
+            data = data
+                .slice(index)
+                .map((d) => ({ ...d, time: Math.floor(d.time * timeFactor) - delta }))
+                .filter((item, pos, arr) => arr.findIndex((d) => d.time === item.time) === pos);
 
             if (lastChartData === data) {
                 return;
             }
+            lastChartData = data;
             if (!data) {
                 if (precipChartSet) {
                     precipChartSet.clear();
@@ -95,66 +113,68 @@
                 }
                 return;
             }
-            lastChartData = data;
+            // if (data[0]?.time) console.log('data', JSON.stringify(data));
+            const xAxis = chart.getXAxis();
+            const leftAxis = chart.getAxisLeft();
             if (!chartInitialized) {
-                const limitColor = new Color($textColor).setAlpha(0.5).hex;
                 chartInitialized = true;
                 chart.setNoDataText(null);
                 chart.setAutoScaleMinMaxEnabled(true);
                 chart.setDoubleTapToZoomEnabled(true);
                 chart.getLegend().setEnabled(false);
-                const xAxis = chart.getXAxis();
                 xAxis.setEnabled(true);
-                xAxis.setTextColor($textColor);
                 xAxis.setLabelTextAlign(Align.CENTER);
                 xAxis.setDrawGridLines(false);
+                // xAxis.setCenterAxisLabels(true);
+                xAxis.ensureLastLabel = true;
+                // xAxis.setGranularity(10 * 60 * 1000)
+                // xAxis.setGranularityEnabled(true)
                 xAxis.setDrawMarkTicks(true);
                 xAxis.setValueFormatter({
-                    getAxisLabel: (value, axis) => Math.round(dayjs(value).diff(now, 'm') / 10) * 10 + 'm'
+                    getAxisLabel: (value, axis) => dayjs(value / timeFactor + delta).diff(now / timeFactor + delta, 'm') + 'm'
                 });
-                xAxis.setLabelCount(7, true);
                 xAxis.setPosition(XAxisPosition.BOTTOM);
 
-                const rightAxis = chart.getAxisRight();
-                rightAxis.setEnabled(false);
+                // const rightAxis = char   t.getAxisRight();
+                // rightAxis.setEnabled(false);
 
-                const leftAxis = chart.getAxisLeft();
                 leftAxis.setAxisMinimum(0);
                 leftAxis.setDrawGridLines(false);
                 leftAxis.setDrawLabels(false);
+                leftAxis.setDrawMarkTicks(false);
                 leftAxis.setDrawAxisLine(false);
-                leftAxis.removeAllLimitLines();
-
-                let limitLine = new LimitLine(1, l('light').toUpperCase());
-                limitLine.setLineWidth(0);
-                limitLine.setXOffset(0);
-                limitLine.setTextColor(limitColor);
-                limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
-                leftAxis.addLimitLine(limitLine);
-
-                limitLine = new LimitLine(2, l('medium').toUpperCase());
-                limitLine.setLineWidth(1);
-                limitLine.setLineColor(limitColor);
-                limitLine.enableDashedLine(2, 2, 0);
-                limitLine.setXOffset(0);
-                limitLine.setTextColor(limitColor);
-                limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
-                leftAxis.addLimitLine(limitLine);
-                limitLine = new LimitLine(3, l('heavy').toUpperCase());
-                limitLine.setLineWidth(1);
-                limitLine.setLineColor(limitColor);
-                limitLine.enableDashedLine(2, 2, 0);
-                limitLine.setXOffset(0);
-                limitLine.setTextColor(limitColor);
-                limitLine.setLabelPosition(LimitLabelPosition.LEFT_TOP);
-                leftAxis.addLimitLine(limitLine);
+                // leftAxis.removeAllLimitLines();
+                [
+                    { limit: 1, label: l('light') },
+                    { limit: 2, label: l('medium') },
+                    { limit: 3, label: l('heavy') }
+                ].forEach((l) => {
+                    const limitLine = new LimitLine(l.limit, l.label.toUpperCase());
+                    limitLine.setLineWidth(1);
+                    limitLine.setXOffset(0);
+                    limitLine.setTextSize(8);
+                    limitLine.setYOffset(1);
+                    limitLine.enableDashedLine(2, 2, 0);
+                    // limitLine.setLineColor('red');
+                    limitLine.setLabelPosition(LimitLabelPosition.RIGHT_TOP);
+                    leftAxis.addLimitLine(limitLine);
+                });
             }
+            const limitColor = new Color($textColor).setAlpha(100).hex;
+            leftAxis.getLimitLines().forEach((l) => {
+                l.setTextColor(limitColor);
+                l.setLineColor(limitColor);
+            });
+            xAxis.setTextColor($textColor);
+            xAxis.setAxisMinValue(0);
+            const labelCount = data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0;
+            // console.log('labelCount1', labelCount, now, data);
+            xAxis.setLabelCount(labelCount, true);
 
             let needsToSetData = false;
             let needsUpdate = false;
-            const hasPrecip = data.some((d) => d.intensity > 0);
+            hasPrecip = data.some((d) => d.intensity > 0);
 
-            const leftAxis = chart.getAxisLeft();
             leftAxis.setAxisMinimum(0);
             leftAxis.setAxisMaximum(4);
             leftAxis.setDrawLimitLines(hasPrecip);
@@ -229,9 +249,23 @@
         }
     }
 
-    function drawOnCanvas({ canvas }: { canvas: Canvas }) {
-        const w = canvas.getWidth();
+    onThemeChanged(() => {
+        const chart = lineChart?.nativeView;
+        if (chart) {
+            chart.getXAxis().setTextColor($textColor);
+            chart.invalidate();
+            const limitColor = new Color($textColor).setAlpha(0.5).hex;
+            chart
+                .getAxisLeft()
+                .getLimitLines()
+                .forEach((l) => {
+                    l.setTextColor(limitColor);
+                    l.setLineColor(limitColor);
+                });
+        }
+    });
 
+    function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         let centeredItemsToDraw: {
             color?: string | Color;
             paint?: Paint;
@@ -262,7 +296,7 @@
                 color: color,
                 iconFontSize: 20,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
             });
         } else if (item.cloudCover > 20) {
@@ -304,56 +338,25 @@
             }
         });
     }
+
+    function toggleItemFavorite(item: FavoriteLocation) {
+        weatherLocation = toggleFavorite(item);
+    }
 </script>
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
-    <!-- htmllabel 10 more views -->
-    <!-- label 25 more views !!! -->
-    <canvaslabel id="top-label" colSpan={2} on:draw={drawOnCanvas}>
-        <cspan id="first" paddingRight={10} fontSize={20} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
-
+    <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
+        <cspan paddingRight={40} fontSize={20} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
         {#if item.temperature !== undefined}
-            <cgroup id="test" paddingLeft={10} fontSize={12} verticalAlignment="top">
+            <cgroup paddingLeft={10} fontSize={12} verticalAlignment="top">
                 <cspan fontSize={26} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
-                <!-- <cspan color={$textLightColor} text={item.temperature !== item.apparentTemperature ? ' ' + formatValueToUnit(item.apparentTemperature, UNITS.Celcius, $imperial) : null} /> -->
             </cgroup>
         {/if}
-        <cgroup id="test" paddingLeft={70} paddingTop={13} fontSize={14} verticalAlignment="top">
+        <cgroup paddingLeft={70} paddingTop={13} fontSize={14} verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
         </cgroup>
-
-        <!-- <cgroup paddingLeft={0} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
-            <cspan fontSize={24} lineHeight={32} text={item.windIcon} fontFamily={appFontFamily} />
-            <cspan text={'\n' + convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0]}/>
-            <cspan fontSize={9} text={'\n' + toImperialUnit(UNITS.Speed, $imperial)} fontFamily={wiFontFamily}/>
-        </cgroup> -->
-        <!-- <cgroup paddingLeft={55} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={nightColor}>
-            <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text={item.moonIcon} />
-            <cspan text={'\n' + l('moon')} />
-        </cgroup> -->
-        <!-- {#if item.cloudCover > 0}
-            <cgroup paddingLeft={110} paddingTop={40} fontSize={14} verticalAlignment="top" textAlignment="center" width={60} color={item.cloudColor}>
-                <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-cloud" />
-                <cspan text={'\n' + Math.round(item.cloudCover) + '%'} />
-                <cspan fontSize={9} text={item.cloudCeiling ? '\n' + formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial) : null} />
-            </cgroup>
-        {/if} -->
-        <!-- {#if (item.precipProbability === -1 || item.precipAccumulation >= 0.1) && item.precipProbability > 0.1}
-            <cgroup color={rainColor} paddingLeft={item.cloudCover > 0 ? 165 : 110} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center">
-                <cspan fontSize={24} lineHeight={32} fontFamily={wiFontFamily} text="wi-raindrop" />
-                <cspan text={item.precipAccumulation >= 0.1 ? '\n' + formatValueToUnit(item.precipAccumulation, UNITS.MM) : null} />
-                <cspan fontSize={9} text={item.precipProbability > 0 ? '\n' + Math.round(item.precipProbability * 100) + '%' : null} />
-            </cgroup>
-        {/if} -->
-        <!-- {#if item.uvIndex > 0}
-            <cgroup paddingLeft={item.cloudCover > 0 ? 220 : 165} paddingTop={40} fontSize={14} verticalAlignment="top" width={60} textAlignment="center" color={item.uvIndexColor}>
-                <cspan fontSize={30} lineHeight={32} fontFamily={mdiFontFamily} text="mdi-weather-sunny-alert" color={item.uvIndexColor} />
-                <cspan paddingTop={14} text={'\n' + Math.round(item.uvIndex)} />
-            </cgroup>
-        {/if} -->
-
         <cgroup paddingLeft={10} paddingBottom={10} fontSize={14} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />
@@ -362,7 +365,21 @@
         </cgroup>
         <cspan paddingRight={10} fontSize={14} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
     </canvaslabel>
-    <linechart bind:this={lineChart} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} />
+    <mdbutton
+        col={1}
+        variant="text"
+        class="icon-btn"
+        marginRight={4}
+        width={30}
+        height={30}
+        color={favoriteIconColor(weatherLocation)}
+        rippleColor="#EFB644"
+        on:tap={() => toggleItemFavorite(weatherLocation)}
+        text={favoriteIcon(weatherLocation)}
+        verticalAlignment="top"
+        horizontalAlignment="right"
+    />
+    <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

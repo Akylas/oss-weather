@@ -1,14 +1,13 @@
-import { sun } from '@modern-dev/daylight';
 import { Color } from '@nativescript/core';
 import { cloudyColor, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate } from './locale';
 
 export enum UNITS {
-    InchHg = 'InchHg',
-    MMHg = 'MMHg',
-    kPa = 'kPa',
-    hPa = 'hPa',
-    Inch = 'inch',
+    // InchHg = 'InchHg',
+    // MMHg = 'MMHg',
+    // kPa = 'kPa',
+    // hPa = 'hPa',
+    // Inch = 'inch',
     MM = 'mm',
     Celcius = 'celcius',
     Duration = 'duration',
@@ -31,6 +30,8 @@ export function toImperialUnit(unit: UNITS, imperial = false) {
         return unit;
     }
     switch (unit) {
+        case UNITS.MM:
+            return 'in';
         case UNITS.Distance:
             return 'ft';
         case UNITS.DistanceKm:
@@ -45,16 +46,21 @@ export function toImperialUnit(unit: UNITS, imperial = false) {
 }
 export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, options: { roundedTo05?: boolean } = {}): [string | number, string] {
     switch (unit) {
-        case UNITS.kPa:
-            return [(value / 10).toFixed(), 'kPa'];
-        case UNITS.hPa:
-            return [value.toFixed(), 'hPa'];
-        case UNITS.MMHg:
-            return [(value * 0.750061561303).toFixed(), 'mm Hg'];
-        case UNITS.InchHg:
-            return [(value * 0.0295299830714).toFixed(), 'in Hg'];
+        // case UNITS.kPa:
+        //     return [(value / 10).toFixed(), 'kPa'];
+        // case UNITS.hPa:
+        //     return [value.toFixed(), 'hPa'];
+        // case UNITS.MMHg:
+        //     return [(value * 0.750061561303).toFixed(), 'mm Hg'];
+        // case UNITS.InchHg:
+        //     return [(value * 0.0295299830714).toFixed(), 'in Hg'];
         case UNITS.MM:
-            return [value.toFixed(1), 'mm'];
+            let digits = 1;
+            if (imperial) {
+                digits = 2;
+                value *= 0.03937008; // to in
+            }
+            return [value.toFixed(digits), toImperialUnit(unit, imperial)];
         case UNITS.Celcius:
             if (imperial) {
                 return [celciusToFahrenheit(value).toFixed(1), '°'];
@@ -335,13 +341,11 @@ export enum WeatherDataType {
     CURRENT
 }
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain?, snow?) {
-    const dateTimes = sun.getTimes(new Date(d.time), coord.lat, coord.lon);
-    // const color = colorForIcon(d.icon, d.time, dateTimes.sunrise.start.valueOf(), dateTimes.sunset.end.valueOf());
     if (type !== WeatherDataType.CURRENT) {
         d.precipColor = rainColor;
         // d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
         const dd = d as DailyData;
-        const cloudCover = Math.max(dd.cloudCover, 0)
+        const cloudCover = Math.max(dd.cloudCover, 0);
         if (rain) {
             dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         } else if (snow) {

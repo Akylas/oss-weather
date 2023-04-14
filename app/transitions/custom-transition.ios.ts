@@ -22,14 +22,18 @@ export class CustomTransition extends Transition {
 
         const duration = this.getDuration();
         const curve = this.getCurve();
-        UIView.animateWithDurationAnimationsCompletion(duration, () => {
-            UIView.setAnimationCurve(curve);
-            toView.transform = CGAffineTransformIdentity;
-            fromView.transform = scaleTransform;
-        }, (finished: boolean) => {
-            toView.transform = originalToViewTransform;
-            fromView.transform = originalFromViewTransform;
-            completion(finished);
-        });
+        UIView.animateWithDurationAnimationsCompletion(
+            duration,
+            () => {
+                UIView.setAnimationCurve(curve);
+                toView.transform = CGAffineTransformIdentity;
+                fromView.transform = scaleTransform;
+            },
+            (finished: boolean) => {
+                toView.transform = originalToViewTransform;
+                fromView.transform = originalFromViewTransform;
+                completion(finished);
+            }
+        );
     }
 }

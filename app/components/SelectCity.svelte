@@ -1,17 +1,23 @@
 <script lang="ts">
-    import { Page,TextField } from '@nativescript/core';
+    import { Observable } from '@akylas/nativescript/data/observable';
+    import { ApplicationSettings, ObservableArray, Page, TextField } from '@nativescript/core';
+    import { onMount } from 'svelte';
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/CActionBar.svelte';
+    import { favoriteIcon, favoriteIconColor, FavoriteLocation, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { lc } from '~/helpers/locale';
     import { photonSearch, WeatherLocation } from '~/services/api';
     import { showError } from '~/utils/error';
-    import { textColor,textLightColor } from '~/variables';
+    import { iconColor, textColor, textLightColor } from '~/variables';
+    import WeatherCollectionItem from './WeatherCollectionItem.svelte';
+
+
 
     let textField: NativeViewElementNode<TextField>;
     let loading = false;
-    let searchResults: WeatherLocation[] = [];
+    let searchResults: ObservableArray<FavoriteLocation> = new ObservableArray();
     let searchAsTypeTimer: NodeJS.Timeout;
     let currentSearchText: string;
 
@@ -40,7 +46,7 @@
     async function searchCity(query) {
         try {
             loading = true;
-            searchResults = await photonSearch(query);
+            searchResults = new ObservableArray((await photonSearch(query)).map((s) => ({ ...s, isFavorite: isFavorite(s) })));
         } catch (err) {
             showError(err);
         } finally {
@@ -55,37 +61,51 @@
         }
     }
 
-    function close(item) {
+    function close(item: FavoriteLocation) {
         clearSearchTimeout();
         closeModal(item);
     }
-    // onMount(() => {
-    //     focus();
-    // });
+
     function onNavigatingTo(e) {
         // console.log('onNavigatingTo', page && page.nativeView, e.object);
+    }
+    function toggleItemFavorite(item: FavoriteLocation) {
+        item = toggleFavorite(item);
+        const index = searchResults.findIndex((s) => s.coord.lat === item.coord.lat && s.coord.lon === item.coord.lon);
+        if (index > -1) {
+            searchResults.setItem(index, item);
+        }
     }
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
-    <page id="selectCity" actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
-        <gridLayout rows="auto,auto,*">
-            <CActionBar title={lc('search_city')} modalWindow>
-                <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />
-            </CActionBar>
-            <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
-            <collectionview row={2} rowHeight={80} items={searchResults}>
-                <Template let:item>
-                    <gridLayout rippleColor="#aaa" on:tap={() => close(item)} columns="*" padding="10">
-                        <gridLayout col={1} paddingLeft={10} verticalAlignment="center" rows="auto,auto,auto">
-                            <label fontSize={18} text={item.name} />
-                            <label row={1} color={$textLightColor} fontSize={14} text={item.sys.state || item.sys.country} />
-                            <label row={2} color={$textLightColor} fontSize={14} text={item.sys.state ? item.sys.country : ''} />
-                        </gridLayout>
-                        <!-- <label fontSize={10} verticalAlignment="center" text={JSON.stringify(item.sys)} /> -->
-                    </gridLayout>
-                </Template>
-            </collectionview>
-        </gridLayout>
-    </page>
+<page actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
+    <gridLayout rows="auto,auto,*">
+        <CActionBar title={lc('search_city')} modalWindow>
+            <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />
+        </CActionBar>
+        <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
+        <collectionview row={2} rowHeight={80} items={searchResults}>
+            <Template let:item>
+                <gridLayout col={1} paddingLeft={10} verticalAlignment="center" rows="auto,*" rippleColor="#aaa" on:tap={() => close(item)} columns="*,auto" padding="10">
+                    <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
+                    <label row={1} fontSize={14} color={$textLightColor}>
+                        <span text={item.sys.state || item.sys.country} />
+                        <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
+                    </label>
+                    <mdbutton
+                        col={1}
+                        rowSpan={2}
+                        variant="text"
+                        class="icon-btn"
+                        color={favoriteIconColor(item)}
+                        rippleColor="#EFB644"
+                        on:tap={() => toggleItemFavorite(item)}
+                        text={favoriteIcon(item)}
+                    />
+                </gridLayout>
+            </Template>
+        </collectionview>
+    </gridLayout>
+</page>
 <!-- </frame> -->

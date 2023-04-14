@@ -5,7 +5,7 @@
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatValueToUnit, UNITS } from '~/helpers/formatter';
-    import { formatTime } from '~/helpers/locale';
+    import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { appFontFamily, imperial, subtitleColor, textColor } from '~/variables';
 
@@ -46,6 +46,7 @@
     let lastGradient: { min; max; gradient: LinearGradient };
 
     function generateGradient(nbColor, min, max, h, posOffset) {
+        // console.log('generateGradient', min, max)
         const tmin = -20;
         const tmax = 30;
         // const tmin = Math.min(min, -30);
@@ -112,7 +113,7 @@
                 if (precipProbability > 0) {
                     canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM), w2, h - 12, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial), w2, h - 12, textPaint);
             }
         }
         canvas.save();
@@ -122,9 +123,10 @@
         canvas.translate(0, lineOffset);
         if (item.curveTempPoints) {
             if (!lastGradient || lastGradient.min !== item.min || lastGradient.max !== item.max) {
-                lastGradient = generateGradient(5, item.min, item.max, pHeight, lineOffset / h);
+                lastGradient = generateGradient(5, item.min, item.max, pHeight + 33, 0);
             }
             pathPaint.setShader(lastGradient.gradient);
+            // pathPaint.setStyle(Style.FILL_AND_STROKE)
             // canvas.drawRect(0, 0, w , pHeight, pathPaint);
             const points: number[] = item.curveTempPoints.slice();
             if (item.index === 0) {
@@ -211,7 +213,7 @@
 </script>
 
 <gridlayout on:tap={onTap}>
-    <canvas id="hourlyView" bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
+    <canvas bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
     <!-- <linechart bind:this={lineChart} height="100%" backgroundColor="red" rowSpan={3}  {width} left={marginLeft}/> -->
     <WeatherIcon icon={item.icon} verticalAlignment="top" marginTop={27} />
 </gridlayout>

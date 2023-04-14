@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Utils } from '@nativescript/core';
     import { getString } from '@nativescript/core/application-settings';
-    import { closeBottomSheet } from '~/bottomsheet';
+    import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { geocodeAddress, networkService, prepareItems } from '~/services/api';
@@ -48,9 +48,9 @@
     $: refresh(weatherLocation);
 </script>
 
-<gridlayout rows="auto,*" class="weatherpage">
+<gridlayout rows="auto,*" class="weatherpage" height="100%">
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
     </CActionBar>
-    <WeatherComponent row={1} {items} customComp />
+    <WeatherComponent row={1} {items} />
 </gridlayout>

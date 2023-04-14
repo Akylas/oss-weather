@@ -34,21 +34,34 @@ export const appFontFamily: string = locals.appFontFamily;
 export const mdiFontFamily: string = locals.mdiFontFamily;
 // export const forecastFontFamily: string = locals.forecastFontFamily;
 export const actionBarHeight: number = parseFloat(locals.actionBarHeight);
-export const statusBarHeight: number = parseFloat(locals.statusBarHeight);
+
+let innerStatusBarHeight = 20;
+export const statusBarHeight = writable(innerStatusBarHeight);
+
 export const actionBarButtonHeight: number = parseFloat(locals.actionBarButtonHeight);
 export const screenHeightDips = Screen.mainScreen.heightDIPs;
 export const screenWidthDips = Screen.mainScreen.widthDIPs;
 export const screenScale = Screen.mainScreen.scale;
-export let navigationBarHeight: number = parseFloat(locals.navigationBarHeight);
+export const navigationBarHeight = writable(0);
 
 if (__ANDROID__) {
-    const context: android.content.Context = Utils.android.getApplicationContext();
-    const hasPermanentMenuKey = android.view.ViewConfiguration.get(context).hasPermanentMenuKey();
-    if (hasPermanentMenuKey) {
-        navigationBarHeight = 0;
+    const resources = (Utils.android.getApplicationContext() as android.content.Context).getResources();
+    const id = resources.getIdentifier('config_showNavigationBar', 'bool', 'android');
+    let resourceId = resources.getIdentifier('navigation_bar_height', 'dimen', 'android');
+    if (id > 0 && resourceId > 0) {
+        navigationBarHeight.set(Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId)));
+    }
+    resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
+    if (id > 0 && resourceId > 0) {
+        innerStatusBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
+        statusBarHeight.set(innerStatusBarHeight);
     }
 } else {
-    navigationBarHeight = 0;
+    const onAppLaunch = function () {
+        navigationBarHeight.set(Application.ios.window.safeAreaInsets.bottom);
+        Application.off(Application.launchEvent, onAppLaunch);
+    };
+    Application.on(Application.launchEvent, onAppLaunch);
 }
 
 export const sunnyColor = new Color('#FFC930');

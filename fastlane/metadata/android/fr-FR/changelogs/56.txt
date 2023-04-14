@@ -1,0 +1,3 @@
+*Bug fixes*
+- prevent list clicks to triger on action bar
+- show sun/moon only on weather icon click

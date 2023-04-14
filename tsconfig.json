@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es2019",
+        "target": "es2020",
         "module": "esnext",
         "moduleResolution": "node",
         "declaration": false,
@@ -21,7 +21,7 @@
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "es2017", "dom"],
-        "types": ["node", "svelte", "svelte-native"],  
+        "types": ["node", "svelte-native"],  
         "baseUrl": ".",
         "paths": {
             "~/*": ["app/*"]

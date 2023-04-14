@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const { readFileSync, readdirSync } = require('fs');
 const { dirname, join, relative, resolve } = require('path');
 const nsWebpack = require('@nativescript/webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -66,6 +66,7 @@ module.exports = (env, params = {}) => {
                 noconsole: false,
                 uploadSentry: false,
                 buildweathermap: true,
+                keep_classnames_functionnames: true,
                 sourceMap: false,
                 uglify: true
             },
@@ -95,14 +96,16 @@ module.exports = (env, params = {}) => {
         timeline, // --env.timeline
         locale = 'auto', // --env.locale
         theme = 'auto', // --env.theme
+        keep_classnames_functionnames = false,
         buildweathermap, // --env.buildweathermap
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
         includeDefaultLocation // --env.includeDefaultLocation
     } = env;
-    env.appPath = nconfig.appPath;
-    env.appResourcesPath = nconfig.appResourcesPath;
+    console.log('env', env);
+    env.appPath = appPath;
+    env.appResourcesPath = appResourcesPath;
     env.appComponents = env.appComponents || [];
     env.appComponents.push('~/android/floatingactivity');
 
@@ -124,17 +127,27 @@ module.exports = (env, params = {}) => {
         return config;
     });
     const config = webpackConfig(env, params);
-
-    if (profile) {
-        config.profile = true;
-        config.stats = { preset: 'minimal', chunkModules: true, modules: true };
-    }
-
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
     const projectRoot = params.projectRoot || __dirname;
     const dist = nsWebpack.Utils.platform.getDistPath();
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
+
+    if (profile) {
+        const StatsPlugin = require('stats-webpack-plugin');
+
+        config.plugins.unshift(
+            new StatsPlugin(resolve(join(projectRoot, 'webpack.stats.json')), {
+                preset: 'normal',
+                chunkModules: true,
+                modules: true,
+                usedExports: true
+            })
+        );
+        // config.profile = true;
+        // config.parallelism = 1;
+        // config.stats = { preset: 'minimal', chunkModules: true, modules: true, usedExports: true };
+    }
 
     config.externals.push('~/licenses.json');
     config.externals.push(function ({ context, request }, cb) {
@@ -152,7 +165,6 @@ module.exports = (env, params = {}) => {
             'tns-core-modules': `${coreModulesPackageName}`
         });
     }
-
     let appVersion;
     let buildNumber;
     if (platform === 'android') {
@@ -168,7 +180,6 @@ module.exports = (env, params = {}) => {
     }
 
     const package = require('./package.json');
-    const nsconfig = require('./nativescript.config.js');
     const isIOS = platform === 'ios';
     const isAndroid = platform === 'android';
     const APP_STORE_ID = process.env.IOS_APP_ID;
@@ -195,18 +206,18 @@ module.exports = (env, params = {}) => {
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
         DEFAULT_LOCALE: `"${locale}"`,
         DEFAULT_THEME: `"${theme}"`,
-        'gVars.sentry': !!sentry,
+        SENTRY_ENABLED: !!sentry,
         NO_CONSOLE: noconsole,
         SENTRY_DSN: `"${process.env.SENTRY_DSN}"`,
         SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
         GIT_URL: `"${package.repository}"`,
         SUPPORT_URL: `"${package.bugs.url}"`,
         CUSTOM_URL_SCHEME: `"${CUSTOM_URL_SCHEME}"`,
-        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nsconfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
+        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nconfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
         STORE_REVIEW_LINK: `"${
             isIOS
                 ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
-                : `market://details?id=${nsconfig.id}`
+                : `market://details?id=${nconfig.id}`
         }"`,
         DEV_LOG: !!devlog,
         TEST_LOG: !!devlog || !!testlog,
@@ -260,31 +271,39 @@ module.exports = (env, params = {}) => {
                 {
                     loader: 'css2json-loader',
                     options: { useForImports: true }
-                },
-                {
-                    loader: 'postcss-loader',
-                    options: {
-                        postcssOptions: {
-                            plugins: [
-                                [
-                                    'cssnano',
-                                    {
-                                        preset: 'advanced'
-                                    }
-                                ],
-                                ['postcss-combine-duplicated-selectors', { removeDuplicatedProperties: true }]
-                            ]
-                        }
-                    }
-                },
-                {
-                    loader: 'sass-loader',
-                    options: {
-                        sourceMap: false,
-                        additionalData: scssPrepend
-                    }
                 }
             ]
+                .concat(
+                    !!production
+                        ? [
+                              {
+                                  loader: 'postcss-loader',
+                                  options: {
+                                      postcssOptions: {
+                                          plugins: [
+                                              [
+                                                  'cssnano',
+                                                  {
+                                                      preset: 'advanced'
+                                                  }
+                                              ],
+                                              ['postcss-combine-duplicated-selectors', { removeDuplicatedProperties: true }]
+                                          ]
+                                      }
+                                  }
+                              }
+                          ]
+                        : []
+                )
+                .concat([
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            sourceMap: false,
+                            additionalData: scssPrepend
+                        }
+                    }
+                ])
         },
         {
             test: /\.module\.scss$/,
@@ -311,7 +330,7 @@ module.exports = (env, params = {}) => {
             {
                 loader: 'string-replace-loader',
                 options: {
-                    search: 'mdi-([a-z-]+)',
+                    search: 'mdi-([a-z0-9-_]+)',
                     replace: (match, p1, offset, str) => {
                         if (mdiIcons[p1]) {
                             const unicodeHex = mdiIcons[p1];
@@ -322,6 +341,14 @@ module.exports = (env, params = {}) => {
                         }
                         return match;
                     },
+                    flags: 'g'
+                }
+            },
+            {
+                loader: 'string-replace-loader',
+                options: {
+                    search: '__PACKAGE__',
+                    replace: nconfig.id,
                     flags: 'g'
                 }
             },
@@ -426,7 +453,7 @@ module.exports = (env, params = {}) => {
                 : undefined
         }
     ];
-    config.plugins.unshift(new CopyWebpackPlugin({ patterns: copyPatterns }));
+    config.plugins.unshift(new CopyPlugin({ patterns: copyPatterns }));
 
     config.plugins.unshift(
         new webpack.ProvidePlugin({
@@ -448,14 +475,13 @@ module.exports = (env, params = {}) => {
     );
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')}).\js`)));
 
-    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|nativescript-carto|nativescript-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
-
+    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|ui-carto|ui-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
     config.plugins.push(new IgnoreNotFoundExportPlugin());
 
     const nativescriptReplace = '(NativeScript[\\/]dist[\\/]packages[\\/]core|@nativescript/core)';
     config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(/http$/, (resource) => {
-            if (resource.context.match(nativescriptReplace)) {
+            if (resource.context.match(nativescriptReplace) || resource.request === '@nativescript/core/http') {
                 resource.request = '@nativescript-community/https';
             }
         })
@@ -476,7 +502,6 @@ module.exports = (env, params = {}) => {
             })
         );
     }
-
     // save as long as we dont use calc in css
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /punnycode$/ }));
@@ -489,13 +514,17 @@ module.exports = (env, params = {}) => {
                 if (resource.context.match(nativescriptReplace)) {
                     resource.request = '~/shims/profile';
                 }
-            }),
-            new webpack.NormalModuleReplacementPlugin(/trace$/, (resource) => {
-                if (resource.context.match(nativescriptReplace)) {
-                    resource.request = '~/shims/trace';
-                }
             })
         );
+        if (!sentry) {
+            config.plugins.push(
+                new webpack.NormalModuleReplacementPlugin(/trace$/, (resource) => {
+                    if (resource.context.match(nativescriptReplace)) {
+                        resource.request = '~/shims/trace';
+                    }
+                })
+            );
+        }
         config.module.rules.push(
             {
                 // rules to replace mdi icons and not use nativescript-font-icon
@@ -543,6 +572,14 @@ module.exports = (env, params = {}) => {
         );
     }
 
+    if (!!production) {
+        config.plugins.push(
+            new ForkTsCheckerWebpackPlugin({
+                async: false
+            })
+        );
+    }
+
     if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
             config.devtool = false;
@@ -569,19 +606,12 @@ module.exports = (env, params = {}) => {
     } else {
         config.devtool = false;
     }
-
-    // if (!!production) {
-    //     config.plugins.push(
-    //         new ForkTsCheckerWebpackPlugin({
-    //             async: false,
-    //             typescript: {
-    //                 configFile: resolve(tsconfig)
-    //             }
-    //         })
-    //     );
-    // }
-    config.optimization.minimize = uglify !== undefined ? uglify : production;
+    config.externalsPresets = { node: false };
+    config.resolve.fallback = config.resolve.fallback || {};
+    config.optimization.minimize = uglify !== undefined ? !!uglify : production;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
+    const actual_keep_classnames_functionnames = keep_classnames_functionnames || platform !== 'android';
+    config.optimization.usedExports = true;
     config.optimization.minimizer = [
         new TerserPlugin({
             parallel: true,
@@ -589,8 +619,8 @@ module.exports = (env, params = {}) => {
                 ecma: isAndroid ? 2020 : 2020,
                 module: true,
                 toplevel: false,
-                keep_classnames: platform !== 'android',
-                keep_fnames: platform !== 'android',
+                keep_classnames: actual_keep_classnames_functionnames,
+                keep_fnames: actual_keep_classnames_functionnames,
                 output: {
                     comments: false,
                     semicolons: !isAnySourceMapEnabled

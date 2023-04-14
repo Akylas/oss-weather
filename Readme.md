@@ -7,11 +7,17 @@
 <p align="center">
 <br>You can get the <a href="https://github.com/farfromrefug/oss-weather/releases/latest">latest release on GitHub</a>
 </p>
+<div align="center">
+<a href="https://apt.izzysoft.de/packages/com.akylas.weather/"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80"></a>
+</div>
+</div>
 <h2 align="center">Enjoying oss-weather?</h2>
 <p align="center">Please consider making a small donation to help fund the project. Developing an application, especially one that is open source and completely free, takes a lot of time and effort.
 <br>
 <br>
-<p align="center">[:heart: Sponsor](https://github.com/sponsors/farfromrefug)</p>
+<div align="center">
+<a href="https://github.com/sponsors/farfromrefug">:heart: Sponsor</a>
+</div>
 <hr>
 
 Open Source app to access detailed weather data from OpenWeatherMap.

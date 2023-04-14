@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { showBottomSheet } from '~/bottomsheet';
+    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
     import { lc } from '~/helpers/locale';
     import { share } from '~/utils/share';
     import { openLink } from '~/utils/ui';

@@ -2,6 +2,7 @@
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
+    import { createEventDispatcher } from 'svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
@@ -21,6 +22,7 @@
     let canvasView;
     let color: string | Color;
     let precipIcon: string;
+    const dispatch = createEventDispatcher();
 
     if (!textPaint) {
         textPaint = new Paint();
@@ -73,7 +75,7 @@
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22);
         textPaint.setColor($textColor);
-        canvas.drawText(formatDate(item.time, 'ddd '), 10, 26, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd'), 10, 26, textPaint);
         textPaint.setColor($textLightColor);
         textPaint.setTextSize(15);
         canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46, textPaint);
@@ -101,7 +103,7 @@
                 color: color,
                 iconFontSize: 20,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
             });
         } else if (item.cloudCover > 20) {
@@ -196,6 +198,6 @@
 </script>
 
 <gridLayout height={100}>
-    <canvas id="dailyView" bind:this={canvasView} on:draw={drawOnCanvas} />
-    <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} />
+    <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
+    <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
 </gridLayout>

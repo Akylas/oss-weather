@@ -1,4 +1,7 @@
 /// <reference path="./node_modules/@nativescript/types-android/lib/android-32.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-ios/lib/ios/objc-x86_64/objc!ObjectiveC.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-ios/lib/ios/objc-x86_64/objc!CoreGraphics.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-ios/lib/ios/objc-x86_64/objc!UIKit.d.ts" />
 /// <reference path="./node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="./node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
 
@@ -10,6 +13,7 @@ declare const DEV_LOG: boolean;
 declare const TEST_LOG: boolean;
 declare const NO_CONSOLE: boolean;
 declare const PRODUCTION: boolean;
+declare const SENTRY_ENABLED: boolean;
 declare const SENTRY_DSN: string;
 declare const SENTRY_PREFIX: string;
 declare const OWM_DEFAULT_KEY: string;
@@ -41,9 +45,9 @@ interface LatLonKeys {
     lon: number;
     altitude?: number;
 }
-// declare module '*.svelte' {
-//     export default SvelteComponent;
-// }
+declare module '*.svelte' {
+    export { SvelteComponent as default };
+}
 declare module '*.scss' {
     // const content: any;
 

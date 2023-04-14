@@ -2,14 +2,13 @@
     import { Frame } from '@nativescript/core/ui/frame';
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
-    import { textColor } from '~/variables';
 
     export let title: string;
     export let showMenuIcon: boolean = false;
     export let canGoBack: boolean = false;
     export let modalWindow: boolean = false;
     export let disableBackButton: boolean = false;
-    export let onClose: Function = null;
+    export let onMenuIcon: Function = null;
     let menuIcon: string;
     let menuIconVisible: boolean;
     let menuIconVisibility: string;
@@ -19,9 +18,11 @@
             canGoBack = Frame.topmost() && Frame.topmost().canGoBack();
         }, 0);
     });
-    function onMenuIcon() {
-        if (modalWindow) {
-            onClose ? onClose() : closeModal(undefined);
+    function onMenuIconBtn() {
+        if (onMenuIcon) {
+            onMenuIcon();
+        } else if (modalWindow) {
+            closeModal(undefined);
         } else {
             goBack();
         }
@@ -39,7 +40,6 @@
 
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
     <label
-        id="actionbar-title"
         col={1}
         colSpan={3}
         class="actionBarTitle"
@@ -47,13 +47,13 @@
         visibility={!!title ? 'visible' : 'hidden'}
         text={title || ''}
         verticalTextAlignment="center"
+        maxLines={2}
+        autoFontSize
+        minFontSize={12}
     />
-    <!-- {#if showLogo && !title}
-        <label col={1} class="activelook" fontSize={28} color="white" text="logo" verticalAlignment="center" marginLeft={6} />
-    {/if} -->
     <stackLayout col={0} orientation="horizontal">
         <slot name="left" />
-        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIcon} />
+        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIconBtn} />
     </stackLayout>
     <stackLayout col={2} orientation="horizontal">
         <slot />

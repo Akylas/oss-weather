@@ -1,0 +1,3 @@
+*Bug fixes*
+- fix for time locales and text overlapping
+- hourly view shadows fix

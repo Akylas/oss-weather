@@ -13,7 +13,7 @@ function readOwmApiKeySetting() {
         remove('owmApiKey');
         key = OWM_MY_KEY || OWM_DEFAULT_KEY;
     }
-    return key;
+    return key?.trim();
 }
 
 let owmApiKey = readOwmApiKeySetting();

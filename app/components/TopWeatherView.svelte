@@ -91,15 +91,15 @@
         const chart = lineChart?.nativeView;
         if (chart) {
             let data = item.minutely;
-            let now = Math.floor(Date.now() * timeFactor);
+            let now = Date.now();
             const index = data.findIndex((v) => v.time >= now);
+            now = Math.floor(now * timeFactor);
             const delta = now;
             now -= delta;
             data = data
                 .slice(index)
-                .map((d) => ({ ...d, time: Math.floor(d.time * timeFactor) - delta }))
+                .map((d) => ({ ...d, time: Math.floor((d.time * timeFactor) - delta) }))
                 .filter((item, pos, arr) => arr.findIndex((d) => d.time === item.time) === pos);
-
             if (lastChartData === data) {
                 return;
             }
@@ -113,6 +113,9 @@
                 }
                 return;
             }
+            // if(data[0].time !== 0) {
+            //     data.unshift({time: 0, intensity:})
+            // }
             // if (data[0]?.time) console.log('data', JSON.stringify(data));
             const xAxis = chart.getXAxis();
             const leftAxis = chart.getAxisLeft();
@@ -167,8 +170,9 @@
             });
             xAxis.setTextColor($textColor);
             xAxis.setAxisMinValue(0);
+
+            // we want exactly one label per 10 min
             const labelCount = data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0;
-            // console.log('labelCount1', labelCount, now, data);
             xAxis.setLabelCount(labelCount, true);
 
             let needsToSetData = false;

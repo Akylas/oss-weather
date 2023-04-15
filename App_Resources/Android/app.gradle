@@ -8,8 +8,8 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 21
-    versionCode 56
-    versionName "1.4.1"
+    versionCode 57
+    versionName "1.4.2"
 
     if (project.hasProperty('resConfigs')) {
       def resConfigs = project.findProperty('resConfigs')

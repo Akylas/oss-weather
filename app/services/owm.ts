@@ -22,9 +22,9 @@ prefs.on('key:owmApiKey', (event) => {
 });
 
 export function setOWMApiKey(apiKey) {
-    owmApiKey = apiKey;
-    if (apiKey && apiKey.length) {
-        setString('owmApiKey', apiKey);
+    owmApiKey = apiKey?.trim();
+    if (owmApiKey?.length) {
+        setString('owmApiKey', owmApiKey);
     } else {
         remove('owmApiKey');
     }

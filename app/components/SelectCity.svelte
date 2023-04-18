@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { Observable } from '@akylas/nativescript/data/observable';
-    import { ApplicationSettings, ObservableArray, Page, TextField } from '@nativescript/core';
-    import { onMount } from 'svelte';
+    import { ObservableArray, TextField } from '@nativescript/core';
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/CActionBar.svelte';
-    import { favoriteIcon, favoriteIconColor, FavoriteLocation, isFavorite, toggleFavorite } from '~/helpers/favorites';
+    import type { FavoriteLocation } from '~/helpers/favorites';
+    import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { lc } from '~/helpers/locale';
-    import { photonSearch, WeatherLocation } from '~/services/api';
+    import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';
-    import { iconColor, textColor, textLightColor } from '~/variables';
-    import WeatherCollectionItem from './WeatherCollectionItem.svelte';
+    import { textLightColor } from '~/variables';
 
     let textField: NativeViewElementNode<TextField>;
     let loading = false;
@@ -73,10 +71,14 @@
         }
     }
     function toggleItemFavorite(item: FavoriteLocation) {
-        item = toggleFavorite(item);
-        const index = searchResults.findIndex((s) => s.coord.lat === item.coord.lat && s.coord.lon === item.coord.lon);
-        if (index > -1) {
-            searchResults.setItem(index, item);
+        try {
+            item = toggleFavorite(item);
+            const index = searchResults.findIndex((s) => s.coord.lat === item.coord.lat && s.coord.lon === item.coord.lon);
+            if (index > -1) {
+                searchResults.setItem(index, item);
+            }
+        } catch (error) {
+            showError(error);
         }
     }
 </script>

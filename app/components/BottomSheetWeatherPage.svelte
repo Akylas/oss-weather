@@ -12,7 +12,7 @@
     export let name;
     networkService.start(); // ensure it is started
 
-    async function refresh(weatherLocation) {
+    async function refresh(weatherLocation: WeatherLocation) {
         loading = true;
         try {
             const provider: 'meteofrance' | 'openweathermap' = getString('provider', 'openweathermap') as any;
@@ -25,11 +25,22 @@
                 data = await providerModule.getMFWeather(weatherLocation);
             }
             DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
+            if (!name || !weatherLocation.sys.city) {
+                try {
+                    const r = await geocodeAddress(weatherLocation.coord);
+                    if (!weatherLocation.sys) {
+                        weatherLocation.sys = r.sys;
+                    }
+                    if (!name) {
+                        name = weatherLocation.name = weatherLocation.sys.name = r.name;
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
             if (!name) {
                 name = weatherLocation.coord.lat.toFixed(2) + ',' + weatherLocation.coord.lon.toFixed(2);
-                geocodeAddress(weatherLocation.coord).then((r) => {
-                    name = r.name;
-                });
             }
             items = prepareItems(data, Date.now());
         } catch (err) {
@@ -46,5 +57,5 @@
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
     </CActionBar>
-    <WeatherComponent row={1} {items} {weatherLocation}/>
+    <WeatherComponent row={1} {items} {weatherLocation} />
 </gridlayout>

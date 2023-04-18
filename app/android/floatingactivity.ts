@@ -13,6 +13,7 @@ import {
     View
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
+import { WeatherLocation } from '~/services/api';
 import { showBottomSheet } from '~/utils/svelte/bottomsheet';
 
 const CALLBACKS = '_callbacks';
@@ -298,6 +299,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 return;
             }
             const name = uri.getQueryParameter('name');
+            const address = JSON.parse(uri.getQueryParameter('address') || '{}');
             const BottomSheetWeatherPage = (await import('~/components/BottomSheetWeatherPage.svelte')).default;
             await showBottomSheet({
                 parent: rootView,
@@ -306,9 +308,11 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 dismissOnDraggingDownSheet: true,
                 props: {
                     weatherLocation: {
-                        coord: { lat, lon }
-                    },
-                    name: name && name !== 'undefined' ? name : undefined
+                        name,
+                        coord: { lat, lon },
+                        sys: { ...address, name }
+                    } as WeatherLocation,
+                    name
                 }
             });
         } catch (err) {

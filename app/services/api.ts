@@ -397,8 +397,9 @@ export async function geocodeAddress(coord: { lat: number; lon: number }) {
         } else {
             return {
                 coord,
+                sys: {},
                 name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
-            };
+            } as WeatherLocation;
         }
     } catch (error) {
         console.error('geocodeAddress error:', error);

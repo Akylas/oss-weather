@@ -14,7 +14,7 @@
     import { geocodeAddress, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
-    import { backgroundColor, mdiFontFamily, textLightColor } from '~/variables';
+    import { actionBarButtonHeight, backgroundColor, mdiFontFamily, textLightColor } from '~/variables';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
@@ -310,7 +310,7 @@
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <drawer bind:this={drawer}>
+    <drawer bind:this={drawer} leftSwipeDistance={20}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
@@ -340,9 +340,9 @@
                 </gridlayout>
             {/if}
             <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name} onMenuIcon={toggleDrawer}>
-                <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
+                <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={actionBarButtonHeight} height={actionBarButtonHeight} />
                 <mdbutton
-                    visibility={weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
+                    visibility={!loading && weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
                     variant="text"
                     class="icon-btn"
                     color="#EFB644"

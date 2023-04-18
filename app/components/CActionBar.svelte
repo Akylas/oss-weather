@@ -41,14 +41,13 @@
 <gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
     <label
         col={1}
-        colSpan={3}
         class="actionBarTitle"
         textAlignment="left"
         visibility={!!title ? 'visible' : 'hidden'}
         text={title || ''}
         verticalTextAlignment="center"
         maxLines={2}
-        autoFontSize
+        autoFontSize={true}
         minFontSize={12}
     />
     <stackLayout col={0} orientation="horizontal">

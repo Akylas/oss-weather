@@ -8,8 +8,8 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 21
-    versionCode 57
-    versionName "1.4.2"
+    versionCode 58
+    versionName "1.4.3"
 
     if (project.hasProperty('resConfigs')) {
       def resConfigs = project.findProperty('resConfigs')
@@ -121,7 +121,7 @@ configurations {
 }
 
 dependencies {
-    implementation "com.github.skydoves:colorpickerview:2.2.4"
+    implementation 'androidx.core:core-splashscreen:1.0.0'
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10") {
             because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")

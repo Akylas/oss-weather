@@ -1,0 +1,3 @@
+*Bug fixes*
+- *android:* error fixed while weather data queried from another app
+- *android:* support android 13 per app language

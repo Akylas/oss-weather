@@ -49,6 +49,7 @@
         maxLines={2}
         autoFontSize={true}
         minFontSize={12}
+        maxFontSize={20}
     />
     <stackLayout col={0} orientation="horizontal">
         <slot name="left" />

@@ -25,6 +25,7 @@
     import { Drawer } from '@nativescript-community/ui-drawer';
     import { favorites } from '~/helpers/favorites';
     import { throttle } from '@nativescript/core/utils';
+    import SelectCity from '~/components/SelectCity.svelte';
 
     let gps: GPS;
     let loading = false;
@@ -155,7 +156,8 @@
 
     async function searchCity() {
         try {
-            const SelectCity = (await import('~/components/SelectCity.svelte')).default;
+            // TODO: for now we dont lazy load SelectCity
+            // it would crash in production because imported toggleFavorite would be undefined ...
             const result = await showModal<WeatherLocation>({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {
                 saveLocation(result);

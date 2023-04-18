@@ -2,12 +2,12 @@
 <resources
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <style name="LaunchScreenTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="LaunchScreenTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">@mipmap/splash_screen</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="android:windowTranslucentStatus">true</item>
     </style>
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor">@color/background</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -37,7 +37,7 @@
         <!-- specify enter and exit transitions -->
         <item name="android:windowAnimationStyle">@null</item>
     </style>
-    <style name="SettingsTheme" parent="Theme.MaterialComponents.DayNight">
+    <style name="SettingsTheme" parent="Theme.Material3.Preference">
         <item name="android:statusBarColor">@color/background</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -48,5 +48,5 @@
         <!-- Window decor -->
         <item name="android:windowLightStatusBar" tools:targetApi="m">@bool/use_light_status</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">@bool/use_light_navigation</item>
-    </style>
+     </style>
 </resources>

@@ -24,11 +24,11 @@
         app:entryValues="@array/themesValues"
         app:key="theme"
         app:title="@string/theme.title" />
-        <SwitchPreference
+        <SwitchPreferenceCompat
         app:defaultValue="false"
         app:key="animations"
         app:title="@string/animations" />
-        <SwitchPreference
+        <SwitchPreferenceCompat
         app:defaultValue="false"
         app:key="imperial"
         app:title="@string/imperial_units" />

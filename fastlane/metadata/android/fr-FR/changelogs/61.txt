@@ -1,0 +1,2 @@
+*Bug fixes*
+- prevent crash on setting favorite from search window

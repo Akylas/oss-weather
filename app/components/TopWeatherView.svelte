@@ -12,7 +12,8 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { favoriteIcon, favoriteIconColor, FavoriteLocation, isFavorite, toggleFavorite } from '~/helpers/favorites';
+    import type { FavoriteLocation } from '~/helpers/favorites';
+    import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
@@ -98,7 +99,7 @@
             now -= delta;
             data = data
                 .slice(index)
-                .map((d) => ({ ...d, time: Math.floor((d.time * timeFactor) - delta) }))
+                .map((d) => ({ ...d, time: Math.floor(d.time * timeFactor - delta) }))
                 .filter((item, pos, arr) => arr.findIndex((d) => d.time === item.time) === pos);
             if (lastChartData === data) {
                 return;

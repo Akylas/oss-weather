@@ -13,8 +13,6 @@
     import { iconColor, textColor, textLightColor } from '~/variables';
     import WeatherCollectionItem from './WeatherCollectionItem.svelte';
 
-
-
     let textField: NativeViewElementNode<TextField>;
     let loading = false;
     let searchResults: ObservableArray<FavoriteLocation> = new ObservableArray();
@@ -23,7 +21,6 @@
 
     function focus() {
         textField && textField.nativeView.requestFocus();
-        // alert('test')
     }
     function unfocus() {
         clearSearchTimeout();
@@ -65,9 +62,15 @@
         clearSearchTimeout();
         closeModal(item);
     }
-
-    function onNavigatingTo(e) {
-        // console.log('onNavigatingTo', page && page.nativeView, e.object);
+    let firstLayout = true;
+    function onLayoutChange(e) {
+        if (firstLayout) {
+            firstLayout = false;
+            // we need to wait a bit before requesting focus or the keyboard wont show on android
+            setTimeout(() => {
+                focus();
+            }, 100);
+        }
     }
     function toggleItemFavorite(item: FavoriteLocation) {
         item = toggleFavorite(item);
@@ -79,12 +82,12 @@
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
-<page actionBarHidden={true} on:navigatingTo={onNavigatingTo}>
+<page actionBarHidden={true} on:layoutChanged={onLayoutChange}>
     <gridLayout rows="auto,auto,*">
         <CActionBar title={lc('search_city')} modalWindow>
             <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
-        <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} on:loaded={focus} />
+        <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} />
         <collectionview row={2} rowHeight={80} items={searchResults}>
             <Template let:item>
                 <gridLayout col={1} paddingLeft={10} verticalAlignment="center" rows="auto,*" rippleColor="#aaa" on:tap={() => close(item)} columns="*,auto" padding="10">

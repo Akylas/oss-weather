@@ -4,17 +4,11 @@
     import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
-    import { geocodeAddress, networkService, prepareItems } from '~/services/api';
+    import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
 
     let items = [];
     let loading = false;
-    export let weatherLocation: {
-        coord: {
-            lat: number;
-            lon: number;
-        };
-        name?: string;
-    };
+    export let weatherLocation: WeatherLocation;
     export let name;
     networkService.start(); // ensure it is started
 
@@ -52,5 +46,5 @@
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
     </CActionBar>
-    <WeatherComponent row={1} {items} />
+    <WeatherComponent row={1} {items} {weatherLocation}/>
 </gridlayout>

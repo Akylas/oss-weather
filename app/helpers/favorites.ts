@@ -9,7 +9,6 @@ export interface FavoriteLocation extends WeatherLocation {
 }
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')));
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
-console.log('favorites', favorites.length, favoritesKeys);
 
 prefs.on('key:favorites', () => {
     favorites.splice(0, favorites.length, ...JSON.parse(ApplicationSettings.getString('favorites', '[]')));

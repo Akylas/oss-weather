@@ -1,0 +1,4 @@
+*Bug fixes*
+- *android:* Material 3 style in settings
+- *android:* support address when getting weather query from external app
+- layout fix for long location names

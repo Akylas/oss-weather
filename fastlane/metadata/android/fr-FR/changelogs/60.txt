@@ -1,0 +1,3 @@
+*Bug fixes*
+- regression for actionbar text size
+- *android:* show the keyboard on open search city window

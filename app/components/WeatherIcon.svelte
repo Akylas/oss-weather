@@ -7,7 +7,7 @@
 <script lang="ts">
     const dispatch = createEventDispatcher();
     export let icon: string;
-    export let fontSize: string | number = 40;
+    export let size: string | number = 40;
     // export let autoPlay = true;
     export let autoPlay = getBoolean('animations', false);
     let iconSrc: string;
@@ -113,7 +113,7 @@
 </script>
 
 {#if autoPlay}
-    <lottie {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} loop={true} {autoPlay} progress={0.5} on:tap={(event) => dispatch('tap', event)} />
+    <lottie {...$$restProps} src={iconSrc} width={size} height={size} loop={true} {autoPlay} progress={0.5} on:tap={(event) => dispatch('tap', event)} />
 {:else}
-    <image {...$$restProps} src={iconSrc} width={fontSize} height={fontSize} on:tap={(event) => dispatch('tap', event)} />
+    <image {...$$restProps} src={iconSrc} width={size} height={size} on:tap={(event) => dispatch('tap', event)} />
 {/if}

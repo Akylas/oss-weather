@@ -1,4 +1,4 @@
-import { Application, Color, Observable, Utils } from '@nativescript/core';
+import { Application, ApplicationSettings, Color, Observable, Utils } from '@nativescript/core';
 import { getBoolean } from '@nativescript/core/application-settings';
 import { Screen } from '@nativescript/core/platform';
 import { get_current_component } from 'svelte/internal';
@@ -78,7 +78,8 @@ export const backgroundColor = writable('');
 export const subtitleColor = writable('');
 export const iconColor = writable('');
 
-export const imperial = writable(getBoolean('imperial', false));
+export const imperial = writable(ApplicationSettings.getBoolean('imperial', false));
+export const fontScale = writable(ApplicationSettings.getNumber('fontscale', 1));
 
 export function onImperialChanged(callback: (imperial) => void) {
     const eventCallack = (event) => callback(event.data);
@@ -92,9 +93,13 @@ export function onImperialChanged(callback: (imperial) => void) {
 }
 
 prefs.on('key:imperial', () => {
-    const newImperial = getBoolean('imperial');
-    imperial.set(newImperial);
-    globalObservable.notify({ eventName: 'imperial', data: newImperial });
+    const newValue = ApplicationSettings.getBoolean('imperial');
+    imperial.set(newValue);
+    globalObservable.notify({ eventName: 'imperial', data: newValue });
+});
+prefs.on('key:fontscale', () => {
+    const newValue = ApplicationSettings.getNumber('fontscale');
+    fontScale.set(newValue);
 });
 
 export function updateThemeColors(theme: string) {

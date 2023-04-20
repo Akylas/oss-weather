@@ -13,6 +13,8 @@
 
     export let items: any[];
     export let weatherLocation: WeatherLocation;
+    export let fakeNow = null;
+    export let fontScale = 1;
 
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -45,6 +47,7 @@
     function onTap(item) {
         dispatch('tap', item);
     }
+
 </script>
 
 <collectionview
@@ -57,9 +60,9 @@
     on:layoutCompleted={onCollectionViewLayoutCompleted}
 >
     <Template key="topView" let:item>
-        <TopWeatherView {weatherLocation} {item} height={topHeight} on:tap={() => onTap(item)} />
+        <TopWeatherView {weatherLocation} {item} height={topHeight} on:tap={() => onTap(item)} {fakeNow}/>
     </Template>
     <Template key="daily" let:item>
-        <DailyView {item} on:tap={() => onTap(item)} />
+        <DailyView {item} on:tap={() => onTap(item)}/>
     </Template>
 </collectionview>

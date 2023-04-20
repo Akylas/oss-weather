@@ -1,12 +1,12 @@
 <script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
-    import { Color } from '@nativescript/core';
+    import { ApplicationSettings, Color } from '@nativescript/core';
     import { createEventDispatcher } from 'svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
-    import { appFontFamily, borderColor, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import { appFontFamily, borderColor, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily, fontScale } from '~/variables';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
@@ -56,6 +56,7 @@
         canvasView && canvasView.nativeView.invalidate();
     }
     textColor.subscribe(redraw);
+    fontScale.subscribe(redraw);
 
     $: {
         if (item) {
@@ -73,11 +74,11 @@
         canvas.drawLine(0, h, w, h - 1, paint);
 
         // textPaint.setTextAlign(Align.LEFT);
-        textPaint.setTextSize(22);
+        textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor($textColor);
         canvas.drawText(formatDate(item.time, 'ddd'), 10, 26, textPaint);
         textPaint.setColor($textLightColor);
-        textPaint.setTextSize(15);
+        textPaint.setTextSize(15 * $fontScale);
         canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46, textPaint);
 
         let centeredItemsToDraw: {
@@ -88,9 +89,10 @@
             value: string | number;
             subvalue?: string;
         }[] = [];
+        const iconFontSize = 20 * $fontScale;
         if (item.windSpeed) {
             centeredItemsToDraw.push({
-                iconFontSize: 20,
+                iconFontSize,
                 paint: appPaint,
                 icon: item.windIcon,
                 value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
@@ -101,7 +103,7 @@
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: color,
-                iconFontSize: 20,
+                iconFontSize,
                 icon: precipIcon,
                 value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
@@ -110,7 +112,7 @@
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: item.cloudColor,
-                iconFontSize: 20,
+                iconFontSize,
                 icon: 'wi-cloud',
                 value: Math.round(item.cloudCover) + '%',
                 subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial)
@@ -120,7 +122,7 @@
             centeredItemsToDraw.push({
                 paint: mdiPaint,
                 color: item.uvIndexColor,
-                iconFontSize: 24,
+                iconFontSize: 24  * $fontScale,
                 icon: 'mdi-weather-sunny-alert',
                 value: Math.round(item.uvIndex)
             });
@@ -134,35 +136,36 @@
         // });
         const count = centeredItemsToDraw.length;
 
+        const iconsTop = 10 * $fontScale
         centeredItemsToDraw.forEach((c, index) => {
             let x = w / 2 - ((count - 1) / 2 - index) * 50;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || $textColor);
             if (c.icon) {
-                canvas.drawText(c.icon, x, 10 + 20, paint);
+                canvas.drawText(c.icon, x, iconsTop + 20, paint);
             }
             if (c.value) {
-                textIconSubPaint.setTextSize(12);
+                textIconSubPaint.setTextSize(12 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.value + '', x, 10 + 39, textIconSubPaint);
+                canvas.drawText(c.value + '', x, iconsTop + 39, textIconSubPaint);
             }
             if (c.subvalue) {
-                textIconSubPaint.setTextSize(9);
+                textIconSubPaint.setTextSize(9 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.subvalue + '', x, 10 + 50, textIconSubPaint);
+                canvas.drawText(c.subvalue + '', x, iconsTop + 39 + 11 * $fontScale, textIconSubPaint);
             }
         });
         const nString = createNativeAttributedString(
             {
                 spans: [
                     {
-                        fontSize: 17,
+                        fontSize: 17 * $fontScale,
                         color: $textLightColor,
                         text: formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)
                     },
                     {
-                        fontSize: 20,
+                        fontSize: 20 * $fontScale,
                         color: $textColor,
                         text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)
                     }
@@ -186,12 +189,12 @@
             canvas.drawText(item.windBeaufortIcon, 40, h - 28, wiPaint);
         }
 
-        textPaint.setTextSize(13);
+        textPaint.setTextSize(13 * $fontScale);
         textPaint.setColor($textLightColor);
         canvas.drawText(item.description, 10, h - 13, textPaint);
 
         wiPaint.setColor(nightColor);
-        wiPaint.setTextSize(20);
+        wiPaint.setTextSize(20 * $fontScale);
         canvas.drawText(item.moonIcon, 18, h - 28, wiPaint);
         // textPaint.setTextAlign(Align.RIGHT);
     }

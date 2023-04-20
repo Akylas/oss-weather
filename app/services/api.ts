@@ -258,20 +258,11 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
 }
 
-export function prepareItems(weatherData: WeatherData, lastUpdate) {
+export function prepareItems(weatherData: WeatherData, lastUpdate, now = dayjs()) {
     const newItems = [];
-    // const endOfHour = dayjs()
-    //     // .add(46, 'h')
-    //     .endOf('h')
-    //     .valueOf();
-    const startOfHour = dayjs()
-        // .add(46, 'h')
-        .startOf('h')
-        .valueOf();
-    const endOfMinute = dayjs()
-        // .add(46, 'h')
-        .endOf('m')
-        .valueOf();
+
+    const startOfHour = now.startOf('h').valueOf();
+    const endOfMinute = now.endOf('m').valueOf();
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
             let currentDaily = weatherData.daily.data[index];
@@ -323,12 +314,12 @@ export function prepareItems(weatherData: WeatherData, lastUpdate) {
                 })
             );
         } else {
-            const items = d.hourly;
-            const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
+            // const items = d.hourly;
+            // const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
             newItems.push(
                 Object.assign(d, {
-                    index: newItems.length,
-                    scrollIndex: items.findIndex((h) => h.time >= sunriseTime)
+                    index: newItems.length
+                    // scrollIndex: items.findIndex((h) => h.time >= sunriseTime)
                 })
             );
         }

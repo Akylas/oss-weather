@@ -3,7 +3,7 @@
     import { Color } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { backgroundColor, onImperialChanged } from '~/variables';
+    import { backgroundColor, fontScale, onImperialChanged } from '~/variables';
     import WeatherCollectionItem from '~/components/WeatherCollectionItem.svelte';
 
     export let items: any[];
@@ -32,7 +32,7 @@
         bind:this={collectionView}
         itemIdGenerator={(_item, index) => index}
         orientation="horizontal"
-        colWidth={62}
+        colWidth={62 * $fontScale}
         rowHeight="100%"
         height="100%"
         isBounceEnabled="false"

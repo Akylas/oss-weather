@@ -18,7 +18,7 @@
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
-    import { appFontFamily, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
+    import { appFontFamily, fontScale, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
     const dispatch = createEventDispatcher();
 
     const textIconPaint = new Paint();
@@ -61,6 +61,7 @@
     export let item: Item;
     export let weatherLocation: FavoriteLocation;
     export let height;
+    export let fakeNow;
 
     $: weatherLocation.isFavorite = isFavorite(weatherLocation);
 
@@ -92,7 +93,7 @@
         const chart = lineChart?.nativeView;
         if (chart) {
             let data = item.minutely;
-            let now = Date.now();
+            let now = fakeNow || Date.now();
             const index = data.findIndex((v) => v.time >= now);
             now = Math.floor(now * timeFactor);
             const delta = now;
@@ -127,6 +128,7 @@
                 chart.setDoubleTapToZoomEnabled(true);
                 chart.getLegend().setEnabled(false);
                 xAxis.setEnabled(true);
+                xAxis.setTextSize(10 * $fontScale);
                 xAxis.setLabelTextAlign(Align.CENTER);
                 xAxis.setDrawGridLines(false);
                 // xAxis.setCenterAxisLabels(true);
@@ -156,7 +158,7 @@
                     const limitLine = new LimitLine(l.limit, l.label.toUpperCase());
                     limitLine.setLineWidth(1);
                     limitLine.setXOffset(0);
-                    limitLine.setTextSize(8);
+                    limitLine.setTextSize(8 * $fontScale);
                     limitLine.setYOffset(1);
                     limitLine.enableDashedLine(2, 2, 0);
                     // limitLine.setLineColor('red');
@@ -270,6 +272,21 @@
         }
     });
 
+    function redraw() {
+        if (chartInitialized) {
+        const chart = lineChart?.nativeView;
+            const xAxis = chart.getXAxis();
+            const leftAxis = chart.getAxisLeft();
+            leftAxis.getLimitLines().forEach((l) => {
+                l.setTextSize(8 * $fontScale);
+
+            });
+            xAxis.setTextSize(10 * $fontScale);
+        }
+        lineChart?.nativeView.invalidate();
+    }
+    fontScale.subscribe(redraw);
+
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         let centeredItemsToDraw: {
             color?: string | Color;
@@ -279,9 +296,10 @@
             value: string | number;
             subvalue?: string;
         }[] = [];
+        const iconFontSize = 20 * $fontScale;
         if (item.windSpeed) {
             centeredItemsToDraw.push({
-                iconFontSize: 20,
+                iconFontSize,
                 paint: appPaint,
                 icon: item.windIcon,
                 value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
@@ -291,7 +309,7 @@
         centeredItemsToDraw.push({
             paint: wiPaint,
             color: nightColor,
-            iconFontSize: 20,
+            iconFontSize,
             icon: item.moonIcon,
             value: l('moon')
         });
@@ -299,7 +317,7 @@
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: color,
-                iconFontSize: 20,
+                iconFontSize,
                 icon: precipIcon,
                 value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
@@ -308,7 +326,7 @@
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: item.cloudColor,
-                iconFontSize: 20,
+                iconFontSize,
                 icon: 'wi-cloud',
                 value: Math.round(item.cloudCover) + '%',
                 subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial)
@@ -318,28 +336,29 @@
             centeredItemsToDraw.push({
                 paint: mdiPaint,
                 color: item.uvIndexColor,
-                iconFontSize: 24,
+                iconFontSize: 24 * $fontScale,
                 icon: 'mdi-weather-sunny-alert',
                 value: Math.round(item.uvIndex)
             });
         }
+        const iconsTop = 40 * $fontScale
         centeredItemsToDraw.forEach((c, index) => {
             let x = index * 55 + 26;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || $textColor);
             if (c.icon) {
-                canvas.drawText(c.icon, x, 40 + 20, paint);
+                canvas.drawText(c.icon, x, iconsTop + 20, paint);
             }
             if (c.value) {
-                textIconSubPaint.setTextSize(12);
+                textIconSubPaint.setTextSize(12 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.value + '', x, 40 + 39, textIconSubPaint);
+                canvas.drawText(c.value + '', x, iconsTop + 39, textIconSubPaint);
             }
             if (c.subvalue) {
-                textIconSubPaint.setTextSize(9);
+                textIconSubPaint.setTextSize(9 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.subvalue + '', x, 40 + 50, textIconSubPaint);
+                canvas.drawText(c.subvalue + '', x, iconsTop + 39 + 11 * $fontScale, textIconSubPaint);
             }
         });
     }
@@ -351,24 +370,24 @@
 
 <gridLayout rows="auto,*" {height} columns="*,auto">
     <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
-        <cspan paddingRight={40} fontSize={20} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
+        <cspan paddingRight={40} fontSize={20 * $fontScale} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
         {#if item.temperature !== undefined}
-            <cgroup paddingLeft={10} fontSize={12} verticalAlignment="top">
-                <cspan fontSize={26} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
+            <cgroup paddingLeft={10} fontSize={12 * $fontScale} verticalAlignment="top">
+                <cspan fontSize={26 * $fontScale} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
             </cgroup>
         {/if}
-        <cgroup paddingLeft={70} paddingTop={13} fontSize={14} verticalAlignment="top">
+        <cgroup paddingLeft={10 + 45 * $fontScale } paddingTop={13 * $fontScale} fontSize={14 * $fontScale} verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
         </cgroup>
-        <cgroup paddingLeft={10} paddingBottom={10} fontSize={14} verticalAlignment="bottom">
+        <cgroup paddingLeft={10} paddingBottom={10} fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />
             <cspan color="#ff7200" fontFamily={wiFontFamily} text="  wi-sunset " />
             <cspan text={formatTime(item.sunsetTime)} />
         </cgroup>
-        <cspan paddingRight={10} fontSize={14} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
+        <cspan paddingRight={10} fontSize={14 * $fontScale} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
     </canvaslabel>
     <mdbutton
         col={1}
@@ -385,6 +404,6 @@
         horizontalAlignment="right"
     />
     <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" fontSize={140} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={140} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

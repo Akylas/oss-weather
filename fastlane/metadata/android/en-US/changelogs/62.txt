@@ -1,0 +1,12 @@
+*Features*
+- basic font scale support
+
+*Bug fixes*
+- *android:* error fixed while weather data queried from another app
+- *android:* support android 13 per app language
+- *android:* Material 3 style in settings
+- *android:* support address when getting weather query from external app
+- layout fix for long location names
+- regression for actionbar text size
+- *android:* show the keyboard on open search city window
+- prevent crash on setting favorite from search window

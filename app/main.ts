@@ -43,6 +43,7 @@ registerNativeViewElement('StackLayout', () => require('@nativescript/core').Sta
 // registerNativeViewElement('FlexboxLayout', () => require('@nativescript/core').FlexboxLayout);
 // registerNativeViewElement('Switch', () => require('@nativescript/core').Switch);
 registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
+registerNativeViewElement('slider', () => require('@nativescript-community/ui-material-slider').Slider, null, {}, { override: true });
 registerNativeViewElement('WebView', () => require('@nativescript/core').WebView);
 
 // registerNativeViewElement('mdtextfield', () => TextField, null, {}, { override: true });

@@ -103,16 +103,20 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
         temperatureMin: Math.round(dailyForecast.T.min),
         humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
         uvIndex: dailyForecast.uv,
-        windGust: windGust * 3.6,
+        windGust: Math.round(windGust * 3.6),
         windSpeed: windSpeed.count > 1 ? Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6) : 0,
         windBearing: windDegree.count > 1 ? Math.round((windDegree.total / windDegree.count) * 3.6) : -1,
         cloudCover: cloudCover.count > 1 ? Math.round(cloudCover.total / (cloudCover.count || 1)) : -1,
-        precipAccumulation: Math.max(precipitationTotal, dailyForecast.precipitation['24h']),
-        precipProbability,
-        // precipProbability: Math.round(probPrecipitationTotal.total / (probPrecipitationTotal.count || 1)),
         sunriseTime: dailyForecast.sun.rise * 1000,
         sunsetTime: dailyForecast.sun.set * 1000
     } as DailyData;
+    if (precipProbability > 0 ) {
+        d.precipProbability = precipProbability;
+    }
+    const precipAccumulation = Math.max(precipitationTotal, dailyForecast.precipitation['24h']);
+    if (precipAccumulation > 0 ) {
+        d.precipAccumulation = precipAccumulation;
+    }
 
     if (rainSnowLimitTotal.count > 0) {
         d.rainSnowLimit = Math.round(rainSnowLimitTotal.total / rainSnowLimitTotal.count);
@@ -279,14 +283,21 @@ export async function getMFWeather(weatherLocation: WeatherLocation) {
         d.feelTemperature = Math.round(data.T.windchill);
 
         d.windBearing = data.wind.direction === 'Variable' ? -1 : data.wind.direction;
-        d.precipAccumulation = d.precipAccumulation = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
+        const acc = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
+        if (acc > 0) {
+            d.precipAccumulation = acc;
+        }
 
         const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast || [], data.dt);
+        const prob = Math.max(probabilities.rain, probabilities.snow, probabilities.ice) / 100;
         d.precipProbability = Math.max(probabilities.rain, probabilities.snow, probabilities.ice) / 100;
-        if (d.precipAccumulation && d.precipProbability === 0) {
+        if (d.precipAccumulation && prob === 0) {
             d.precipProbability = -1;
         }
-        d.precipProbabilities = probabilities;
+        if (prob >= 0) {
+            d.precipProbability = prob;
+        }
+        // d.precipProbabilities = probabilities;
         d.cloudCover = data.clouds;
         d.humidity = data.humidity;
         d.windGust = data.wind.gust * 3.6;

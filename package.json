@@ -48,6 +48,7 @@
         "@nativescript-community/ui-material-bottomsheet": "7.0.42",
         "@nativescript-community/ui-material-button": "7.0.42",
         "@nativescript-community/ui-material-dialogs": "7.0.42",
+        "@nativescript-community/ui-material-slider": "^7.1.1",
         "@nativescript-community/ui-material-snackbar": "7.0.42",
         "@nativescript-community/ui-material-textfield": "7.0.42",
         "@nativescript-community/ui-popover": "0.1.8",

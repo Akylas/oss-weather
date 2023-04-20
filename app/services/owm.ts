@@ -91,8 +91,8 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
                 d.time = data.dt * 1000;
                 d.icon = data.weather[0]?.icon;
                 d.description = titlecase(data.weather[0]?.description);
-                d.windSpeed = data.wind_speed * 3.6;
-                d.windGust = data.wind_gust * 3.6;
+                d.windSpeed = Math.round(data.wind_speed * 3.6);
+                d.windGust = Math.round(data.wind_gust * 3.6);
                 d.temperatureMin = Math.round(data.temp.min);
                 d.temperatureMax = Math.round(data.temp.max);
                 d.temperatureNight = Math.round(data.temp.night);
@@ -108,7 +108,7 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
                 d.uvIndex = data.uvi;
 
                 weatherDataIconColors(d, WeatherDataType.DAILY, coords, data.rain, data.snow);
-                d.hourly = [];
+                // d.hourly = [];
                 return d;
             })
         },
@@ -128,7 +128,8 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
         d.time = data.dt * 1000;
         d.icon = data.weather[0]?.icon;
         d.description = titlecase(data.weather[0]?.description);
-        d.windSpeed = data.wind_speed * 3.6; // max value
+        d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
+        d.windGust =  Math.round(data.wind_gust * 3.6);
         d.temperature = Math.round(data.temp);
 
         d.windBearing = data.wind_deg;
@@ -136,7 +137,6 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
         d.precipProbability = data.pop;
         d.cloudCover = data.clouds;
         d.humidity = data.humidity;
-        d.windGust = data.wind_gust * 3.6;
         d.pressure = data.pressure;
         weatherDataIconColors(d, WeatherDataType.HOURLY, coords, data.rain?.['1h'], data.snow?.['1h']);
 

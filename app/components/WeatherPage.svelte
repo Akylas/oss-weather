@@ -65,6 +65,11 @@
                             text: l('preferences')
                         },
                         {
+                            icon: 'mdi-format-size',
+                            id: 'font-scale',
+                            text: l('font-scale')
+                        },
+                        {
                             icon: 'mdi-crosshairs-gps',
                             id: 'gps_location',
                             text: l('gps_location')
@@ -93,6 +98,10 @@
                         const About = require('~/components/About.svelte').default;
                         navigate({ page: About });
                         break;
+                    case 'font-scale':
+                        const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
+                        navigate({ page: FontSizeSettingScreen });
+                        break;
                 }
             }
         } catch (error) {
@@ -120,6 +129,7 @@
                 weatherData = await providerModule.getMFWeather(weatherLocation);
             }
             if (weatherData) {
+                console.log(JSON.stringify(weatherData))
                 lastUpdate = Date.now();
                 await updateView();
             }

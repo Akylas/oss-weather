@@ -7,7 +7,7 @@
     import { formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { appFontFamily, imperial, subtitleColor, textColor } from '~/variables';
+    import { appFontFamily, fontScale, imperial, subtitleColor, textColor } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
@@ -15,7 +15,6 @@
     appTextPaint.fontFamily = appFontFamily;
     appTextPaint.setTextAlign(Align.CENTER);
     appTextPaint.setFontWeight('normal');
-    appTextPaint.setTextSize(11);
     appTextPaint.setAlpha(180);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
@@ -87,14 +86,16 @@
         redraw();
     }
     textColor.subscribe(redraw);
-
+    // fontScale.subscribe(redraw);
+    let weatherIconSize = 40;
     function drawOnCanvas(event) {
         const endDay = dayjs().endOf('d').valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
         const w = canvas.getWidth();
         const w2 = w / 2;
         const h = canvas.getHeight();
-        textPaint.setTextSize(14);
+        // textPaint.setTextSize(14 * $fontScale);
+        textPaint.setFontWeight('normal');
 
         if (item.odd) {
             canvas.drawColor(oddColor);
@@ -107,19 +108,19 @@
             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 255);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
             if ((precipProbability === -1 || precipProbability > 0.1) && item.precipAccumulation >= 0.1) {
-                textPaint.setTextSize(10);
+                textPaint.setTextSize(10 * $fontScale);
                 textPaint.setColor($textColor);
                 textPaint.setAlpha(150);
                 if (precipProbability > 0) {
-                    canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22, textPaint);
+                    canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22 * $fontScale, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial), w2, h - 12, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial), w2, h - 12 * $fontScale, textPaint);
             }
         }
         canvas.save();
-        const pHeight = h - (w + 65);
+        const lineOffset = 27 * $fontScale + weatherIconSize + (11 * $fontScale)  *2 + 13 * $fontScale;
+        const pHeight = h - lineOffset - (22 * $fontScale + 10 * $fontScale);
 
-        const lineOffset = w + 33;
         canvas.translate(0, lineOffset);
         if (item.curveTempPoints) {
             if (!lastGradient || lastGradient.min !== item.min || lastGradient.max !== item.max) {
@@ -167,8 +168,8 @@
             canvas.drawPath(curvePath, pathPaint);
         }
         textPaint.setColor($subtitleColor);
-        textPaint.setTextSize(13);
-        canvas.drawText(`${formatValueToUnit(Math.round(item.temperature), UNITS.Celcius, $imperial)}`, w2, pHeight * (1 - item.tempDelta) - 6, textPaint);
+        textPaint.setTextSize(13 * $fontScale);
+        canvas.drawText(`${formatValueToUnit(Math.round(item.temperature), UNITS.Celcius, $imperial)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
         canvas.restore();
 
         if (item.cloudCeiling > 0) {
@@ -178,9 +179,9 @@
             paint.setAlpha((item.cloudCover / 100) * heightProb * 150);
             canvas.drawRect(0, 0, w, top, paint);
             textPaint.setColor(color);
-            textPaint.setTextSize(10);
+            textPaint.setTextSize(10 * $fontScale);
             textPaint.setAlpha((item.cloudCover / 100) * heightProb * 255);
-            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial), w2, top + 20, textPaint);
+            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial), w2, top + 20 * $fontScale, textPaint);
         }
         // paint.setAlpha(255);
         // textPaint.setAlpha(255);
@@ -189,19 +190,20 @@
 
         textPaint.setFontWeight('bold');
         textPaint.setColor($textColor);
-        textPaint.setTextSize(14);
-        canvas.drawText(formatTime(item.time), w2, 16, textPaint);
+        textPaint.setTextSize(14 * $fontScale);
+        canvas.drawText(formatTime(item.time), w2, 16 * $fontScale, textPaint);
         if (item.time > endDay) {
-            textPaint.setTextSize(12);
-            canvas.drawText(formatDate(item.time, 'ddd'), w2, 28, textPaint);
+            textPaint.setTextSize(12 * $fontScale);
+            canvas.drawText(formatDate(item.time, 'ddd'), w2, 28 * $fontScale, textPaint);
             // decale += 10;
         }
         textPaint.setFontWeight('normal');
-        textPaint.setTextSize(11);
-        textPaint.setAlpha(180);
+        // textPaint.setTextSize(11 * $fontScale);
+        // textPaint.setAlpha(180);
         if (item.windSpeed) {
+            appTextPaint.setTextSize(11 * $fontScale);
             appTextPaint.setColor($textColor);
-            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, w + 15, appTextPaint);
+            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, 27 * $fontScale + weatherIconSize + 11 * $fontScale, appTextPaint);
         }
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }
@@ -214,6 +216,5 @@
 
 <gridlayout on:tap={onTap}>
     <canvas bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
-    <!-- <linechart bind:this={lineChart} height="100%" backgroundColor="red" rowSpan={3}  {width} left={marginLeft}/> -->
-    <WeatherIcon icon={item.icon} verticalAlignment="top" marginTop={27} />
+    <WeatherIcon icon={item.icon} verticalAlignment="top" marginTop={27 * $fontScale} size={weatherIconSize} />
 </gridlayout>

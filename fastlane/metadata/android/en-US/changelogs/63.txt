@@ -1,0 +1,8 @@
+*Features*
+- force 24 hour clock format preference
+
+*Bug fixes*
+- easier to see colors for uv index and clouds
+- show clouds and precipitation at the same time
+- draw top icons vertically “centered” when no rain data
+- locale fix

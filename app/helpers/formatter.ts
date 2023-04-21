@@ -154,15 +154,15 @@ export function titlecase(value) {
 // }
 export function colorForUV(uvIndex) {
     if (uvIndex >= 11) {
-        return '#B567A4';
+        return '#9E47CC';
     } else if (uvIndex >= 8) {
-        return '#E53210';
+        return '#F55023';
     } else if (uvIndex >= 6) {
-        return '#F18B00';
+        return '#FE8F00';
     } else if (uvIndex >= 3) {
-        return '#FFF300';
+        return '#FFBC03';
     } else {
-        return '#3EA72D';
+        return '#9BC600';
     }
 }
 
@@ -363,7 +363,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         d['moonIcon'] = moonIcon(getMoonPhase(new Date(d.time)));
     }
 
-    d.cloudColor = cloudyColor.setAlpha(d.cloudCover).hex;
+    d.cloudColor = cloudyColor.setAlpha(d.cloudCover * 2).hex;
 
     const wBIcon = windBeaufortIcon(d.windSpeed);
     if (wBIcon) {

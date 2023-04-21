@@ -74,6 +74,8 @@
     }
     //@ts-ignore
     let lineChart: NativeViewElementNode<LineChart>;
+    let weatherIconSize = 140;
+    let topViewHeight = 240;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -274,12 +276,11 @@
 
     function redraw() {
         if (chartInitialized) {
-        const chart = lineChart?.nativeView;
+            const chart = lineChart?.nativeView;
             const xAxis = chart.getXAxis();
             const leftAxis = chart.getAxisLeft();
             leftAxis.getLimitLines().forEach((l) => {
                 l.setTextSize(8 * $fontScale);
-
             });
             xAxis.setTextSize(10 * $fontScale);
         }
@@ -341,9 +342,10 @@
                 value: Math.round(item.uvIndex)
             });
         }
-        const iconsTop = 40 * $fontScale
+        const iconsTop = hasPrecip ? 40 * $fontScale : topViewHeight / 2 - 20 * $fontScale;
+        const iconsLeft = 26;
         centeredItemsToDraw.forEach((c, index) => {
-            let x = index * 55 + 26;
+            let x = index * 45 * $fontScale + iconsLeft;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || $textColor);
@@ -353,12 +355,12 @@
             if (c.value) {
                 textIconSubPaint.setTextSize(12 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.value + '', x, iconsTop + 39, textIconSubPaint);
+                canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
             }
             if (c.subvalue) {
                 textIconSubPaint.setTextSize(9 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.subvalue + '', x, iconsTop + 39 + 11 * $fontScale, textIconSubPaint);
+                canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
             }
         });
     }
@@ -368,7 +370,7 @@
     }
 </script>
 
-<gridLayout rows="auto,*" {height} columns="*,auto">
+<gridLayout rows={`${topViewHeight},*`} {height} columns="*,auto">
     <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
         <cspan paddingRight={40} fontSize={20 * $fontScale} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
         {#if item.temperature !== undefined}
@@ -376,7 +378,7 @@
                 <cspan fontSize={26 * $fontScale} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
             </cgroup>
         {/if}
-        <cgroup paddingLeft={10 + 45 * $fontScale } paddingTop={13 * $fontScale} fontSize={14 * $fontScale} verticalAlignment="top">
+        <cgroup paddingLeft={10 + 45 * $fontScale} paddingTop={13 * $fontScale} fontSize={14 * $fontScale} verticalAlignment="top">
             <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
             <cspan color="#777" text=" | " />
             <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
@@ -403,7 +405,7 @@
         verticalAlignment="top"
         horizontalAlignment="right"
     />
-    <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} marginTop={110} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={140} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+    <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} verticalAlignment="bottom" height={90} marginBottom={40} />
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={weatherIconSize} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

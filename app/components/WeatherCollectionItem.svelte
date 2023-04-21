@@ -118,7 +118,8 @@
             }
         }
         canvas.save();
-        const lineOffset = 27 * $fontScale + weatherIconSize + (11 * $fontScale)  *2 + 13 * $fontScale;
+        const iconDecale = 27 * $fontScale + weatherIconSize + (11 * $fontScale);
+        const lineOffset = iconDecale + (11 * $fontScale) + 13 * $fontScale;
         const pHeight = h - lineOffset - (22 * $fontScale + 10 * $fontScale);
 
         canvas.translate(0, lineOffset);
@@ -190,7 +191,7 @@
 
         textPaint.setFontWeight('bold');
         textPaint.setColor($textColor);
-        textPaint.setTextSize(14 * $fontScale);
+        textPaint.setTextSize(13 * $fontScale);
         canvas.drawText(formatTime(item.time), w2, 16 * $fontScale, textPaint);
         if (item.time > endDay) {
             textPaint.setTextSize(12 * $fontScale);
@@ -203,7 +204,7 @@
         if (item.windSpeed) {
             appTextPaint.setTextSize(11 * $fontScale);
             appTextPaint.setColor($textColor);
-            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, 27 * $fontScale + weatherIconSize + 11 * $fontScale, appTextPaint);
+            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, iconDecale, appTextPaint);
         }
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }

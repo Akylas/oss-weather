@@ -29,6 +29,7 @@
   "bug_report_sent": "bug report sent",
   "cancel": "cancel",
   "close": "close",
+  "clock_24": "use 24-hour format",
   "description": "description",
   "description_required": "a description is required",
   "email": "email",

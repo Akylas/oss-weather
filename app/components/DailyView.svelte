@@ -139,7 +139,7 @@
 
         const iconsTop = 10 * $fontScale
         centeredItemsToDraw.forEach((c, index) => {
-            let x = w / 2 - ((count - 1) / 2 - index) * 50;
+            let x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || $textColor);

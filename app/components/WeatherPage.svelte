@@ -67,7 +67,7 @@
                         {
                             icon: 'mdi-format-size',
                             id: 'font-scale',
-                            text: l('font-scale')
+                            text: lc('font_scale')
                         },
                         {
                             icon: 'mdi-crosshairs-gps',

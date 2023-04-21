@@ -16,7 +16,7 @@ let default24Clock = false;
 if (__ANDROID__) {
     default24Clock = android.text.format.DateFormat.is24HourFormat(Utils.ad.getApplicationContext());
 }
-export let clock_24 = ApplicationSettings.getBoolean('clock_24', default24Clock);
+export let clock_24 = ApplicationSettings.getBoolean('clock_24', default24Clock) || default24Clock;
 export const clock_24Store = writable(null);
 
 export const onLanguageChanged = createGlobalEventListener('language');
@@ -124,6 +124,8 @@ prefs.on('key:clock_24', () => {
     DEV_LOG && console.log('clock_24 changed', newValue);
     clock_24 = newValue;
     clock_24Store.set(newValue);
+    // we fake a language change to update the UI
+    globalObservable.notify({ eventName: 'language', data: lang });
 });
 
 let currentLocale = null;

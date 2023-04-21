@@ -129,7 +129,7 @@
                 weatherData = await providerModule.getMFWeather(weatherLocation);
             }
             if (weatherData) {
-                console.log(JSON.stringify(weatherData))
+                // console.log(JSON.stringify(weatherData))
                 lastUpdate = Date.now();
                 await updateView();
             }

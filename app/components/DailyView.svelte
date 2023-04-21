@@ -108,7 +108,8 @@
                 value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
                 subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
             });
-        } else if (item.cloudCover > 20) {
+        }
+         if (item.cloudCover > 20) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: item.cloudColor,

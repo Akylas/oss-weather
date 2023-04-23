@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { Align, Canvas, Paint } from '@nativescript-community/ui-canvas';
+    import { createNativeAttributedString } from '@nativescript-community/text';
+    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
@@ -18,13 +19,14 @@
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
-    import { appFontFamily, fontScale, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, wiFontFamily } from '~/variables';
+    import { appFontFamily, borderColor, fontScale, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
     const dispatch = createEventDispatcher();
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
-    const textIconSubPaint = new Paint();
-    textIconSubPaint.setTextAlign(Align.CENTER);
+    const textPaint = new Paint();
+    // const textIconSubPaint = new Paint();
+    // textIconSubPaint.setTextAlign(Align.CENTER);
     const wiPaint = new Paint();
     wiPaint.setFontFamily(wiFontFamily);
     wiPaint.setTextAlign(Align.CENTER);
@@ -273,7 +275,7 @@
                 });
         }
     });
-
+    let canvasView;
     function redraw() {
         if (chartInitialized) {
             const chart = lineChart?.nativeView;
@@ -285,10 +287,13 @@
             xAxis.setTextSize(10 * $fontScale);
         }
         lineChart?.nativeView.invalidate();
+        canvasView && canvasView.nativeView.invalidate();
     }
     fontScale.subscribe(redraw);
 
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
+        const w = canvas.getWidth();
+        const h = canvas.getHeight();
         let centeredItemsToDraw: {
             color?: string | Color;
             paint?: Paint;
@@ -342,7 +347,7 @@
                 value: Math.round(item.uvIndex)
             });
         }
-        const iconsTop = hasPrecip ? 40 * $fontScale : topViewHeight / 2 - 20 * $fontScale;
+        const iconsTop = hasPrecip ? 60 : topViewHeight / 2 - 20 * $fontScale;
         const iconsLeft = 26;
         centeredItemsToDraw.forEach((c, index) => {
             let x = index * 45 * $fontScale + iconsLeft;
@@ -353,16 +358,83 @@
                 canvas.drawText(c.icon, x, iconsTop + 20, paint);
             }
             if (c.value) {
-                textIconSubPaint.setTextSize(12 * $fontScale);
-                textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
+                textIconPaint.setTextSize(12 * $fontScale);
+                textIconPaint.setColor(c.color || $textColor);
+                canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
             }
             if (c.subvalue) {
-                textIconSubPaint.setTextSize(9 * $fontScale);
-                textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
+                textIconPaint.setTextSize(9 * $fontScale);
+                textIconPaint.setColor(c.color || $textColor);
+                canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
             }
         });
+
+        if (item.temperature) {
+            textPaint.setTextAlign(Align.LEFT);
+            textPaint.setTextSize(36 * $fontScale);
+            canvas.drawText(formatValueToUnit(item.temperature, UNITS.Celcius, $imperial), 10, 36 * $fontScale, textPaint);
+        }
+        const nString = createNativeAttributedString({
+            spans: [
+                {
+                    fontSize: 17 * $fontScale,
+                    color: $textLightColor,
+                    text: formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)
+                },
+                {
+                    fontSize: 20 * $fontScale,
+                    color: $textColor,
+                    text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)
+                }
+            ]
+        });
+        canvas.save();
+        const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+        canvas.translate(0, 30);
+        staticLayout.draw(canvas);
+        canvas.restore();
+
+        canvas.save();
+        canvas.translate(10, h - 16 - 14 * $fontScale);
+        textPaint.setTextSize(14 * $fontScale);
+        new StaticLayout(
+            createNativeAttributedString({
+                spans: [
+                    {
+                        color: '#ffa500',
+                        fontFamily: wiFontFamily,
+                        text: 'wi-sunrise '
+                    },
+                    {
+                        text: formatTime(item.sunriseTime)
+                    },
+                    {
+                        color: '#ff7200',
+                        fontFamily: wiFontFamily,
+                        text: '  wi-sunset '
+                    },
+                    {
+                        text: formatTime(item.sunsetTime)
+                    }
+                ]
+            }),
+            textPaint,
+            w - 10,
+            LayoutAlignment.ALIGN_NORMAL,
+            1,
+            0,
+            false
+        ).draw(canvas);
+        canvas.restore();
+
+        textPaint.setTextAlign(Align.RIGHT);
+        textPaint.setTextSize(20 * $fontScale);
+        canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22, textPaint);
+        textPaint.setTextSize(14 * $fontScale);
+        canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 14, textPaint);
+
+        textPaint.setColor($borderColor);
+        canvas.drawLine(0, h, w, h - 1, textPaint);
     }
 
     function toggleItemFavorite(item: FavoriteLocation) {
@@ -371,27 +443,15 @@
 </script>
 
 <gridLayout rows={`${topViewHeight},*`} {height} columns="*,auto">
-    <canvaslabel colSpan={2} on:draw={drawOnCanvas}>
-        <cspan paddingRight={40} fontSize={20 * $fontScale} textAlignment="right" verticalAlignment="top" text={formatDate(item.time, 'dddd')} textTransform="capitalize" />
-        {#if item.temperature !== undefined}
-            <cgroup paddingLeft={10} fontSize={12 * $fontScale} verticalAlignment="top">
-                <cspan fontSize={26 * $fontScale} text={formatValueToUnit(item.temperature, UNITS.Celcius, $imperial)} />
-            </cgroup>
-        {/if}
-        <cgroup paddingLeft={10 + 45 * $fontScale} paddingTop={13 * $fontScale} fontSize={14 * $fontScale} verticalAlignment="top">
-            <cspan text={formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)} />
-            <cspan color="#777" text=" | " />
-            <cspan text={formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)} />
-        </cgroup>
-        <cgroup paddingLeft={10} paddingBottom={10} fontSize={14 * $fontScale} verticalAlignment="bottom">
+    <canvas  bind:this={canvasView} colSpan={2} on:draw={drawOnCanvas} paddingLeft={10} paddingBottom={10} paddingRight={10}>
+        <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />
             <cspan color="#ff7200" fontFamily={wiFontFamily} text="  wi-sunset " />
             <cspan text={formatTime(item.sunsetTime)} />
-        </cgroup>
-        <cspan paddingRight={10} fontSize={14 * $fontScale} textAlignment="right" verticalAlignment="bottom" text="{lc('last_updated')}: {formatLastUpdate(item.lastUpdate)}" paddingBottom={10} />
-    </canvaslabel>
-    <mdbutton
+        </cgroup> -->
+    </canvas>
+    <!-- <mdbutton
         col={1}
         variant="text"
         class="icon-btn"
@@ -403,8 +463,8 @@
         on:tap={() => toggleItemFavorite(weatherLocation)}
         text={favoriteIcon(weatherLocation)}
         verticalAlignment="top"
-        horizontalAlignment="right"
-    />
+        horizontalAlignment="left"
+    /> -->
     <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} verticalAlignment="bottom" height={90} marginBottom={40} />
     <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={weatherIconSize} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />

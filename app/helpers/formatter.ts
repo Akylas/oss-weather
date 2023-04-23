@@ -63,9 +63,11 @@ export function convertValueToUnit(value: any, unit: UNITS, imperial?: boolean, 
             return [value.toFixed(digits), toImperialUnit(unit, imperial)];
         case UNITS.Celcius:
             if (imperial) {
-                return [celciusToFahrenheit(value).toFixed(1), '°'];
+                value = celciusToFahrenheit(value);
+                // return [celciusToFahrenheit(value).toFixed(1), '°'];
             }
-            return [Math.round(value * 10) / 10, '°'];
+            return [Math.round(value), '°'];
+        // return [Math.round(value * 10) / 10, '°'];
         case UNITS.Date:
             return [formatDate(value, 'L LT'), ''];
 

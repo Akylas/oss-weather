@@ -149,12 +149,12 @@
             if (c.value) {
                 textIconSubPaint.setTextSize(12 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.value + '', x, iconsTop + 39, textIconSubPaint);
+                canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
             }
             if (c.subvalue) {
                 textIconSubPaint.setTextSize(9 * $fontScale);
                 textIconSubPaint.setColor(c.color || $textColor);
-                canvas.drawText(c.subvalue + '', x, iconsTop + 39 + 11 * $fontScale, textIconSubPaint);
+                canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
             }
         });
         const nString = createNativeAttributedString(
@@ -187,7 +187,7 @@
         if (item.windBeaufortIcon) {
             wiPaint.setColor($textColor);
             wiPaint.setTextSize(20);
-            canvas.drawText(item.windBeaufortIcon, 40, h - 28, wiPaint);
+            canvas.drawText(item.windBeaufortIcon, 50, h - 28, wiPaint);
         }
 
         textPaint.setTextSize(13 * $fontScale);

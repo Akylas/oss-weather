@@ -52,8 +52,8 @@
         maxFontSize={20}
     />
     <stackLayout col={0} orientation="horizontal">
-        <slot name="left" />
         <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIconBtn} />
+        <slot name="left" />
     </stackLayout>
     <stackLayout col={2} orientation="horizontal">
         <slot />

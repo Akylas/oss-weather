@@ -23,7 +23,7 @@
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import { Drawer } from '@nativescript-community/ui-drawer';
-    import { favorites } from '~/helpers/favorites';
+    import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, toggleFavorite } from '~/helpers/favorites';
     import { throttle } from '@nativescript/core/utils';
     import SelectCity from '~/components/SelectCity.svelte';
 
@@ -49,50 +49,62 @@
     async function showOptions() {
         try {
             const ActionSheet = (await import('~/components/ActionSheet.svelte')).default;
+            const options = [
+                {
+                    icon: 'mdi-crosshairs-gps',
+                    id: 'gps_location',
+                    text: l('gps_location')
+                },
+                {
+                    icon: 'mdi-cogs',
+                    id: 'preferences',
+                    text: l('preferences')
+                },
+                {
+                    icon: 'mdi-format-size',
+                    id: 'font-scale',
+                    text: lc('font_scale')
+                },
+                {
+                    icon: 'mdi-information-outline',
+                    id: 'about',
+                    text: l('about')
+                }
+            ];
+            if (weatherLocation) {
+                options.push(
+                    {
+                        icon: 'mdi-refresh',
+                        id: 'refresh',
+                        text: l('refresh')
+                    },
+                    {
+                        icon: 'mdi-map',
+                        id: 'map',
+                        text: l('map')
+                    }
+                );
+            }
             const result: { icon: string; id: string; text: string } = await showBottomSheet({
                 parent: page,
                 view: ActionSheet,
                 props: {
-                    options: [
-                        {
-                            icon: 'mdi-refresh',
-                            id: 'refresh',
-                            text: l('refresh')
-                        },
-                        {
-                            icon: 'mdi-cogs',
-                            id: 'preferences',
-                            text: l('preferences')
-                        },
-                        {
-                            icon: 'mdi-format-size',
-                            id: 'font-scale',
-                            text: lc('font_scale')
-                        },
-                        {
-                            icon: 'mdi-crosshairs-gps',
-                            id: 'gps_location',
-                            text: l('gps_location')
-                        },
-                        {
-                            icon: 'mdi-information-outline',
-                            id: 'about',
-                            text: l('about')
-                        }
-                    ]
+                    options
                 }
             });
             if (result) {
                 switch (result.id) {
                     case 'preferences':
                         prefs.openSettings();
-                        // toggleTheme();
+                        break;
+                    case 'map':
+                        await openWeatherMap();
                         break;
                     case 'refresh':
                         refreshWeather();
                         break;
                     case 'gps_location':
-                        getLocationAndWeather();
+                        await getLocationAndWeather();
                         break;
                     case 'about':
                         const About = require('~/components/About.svelte').default;
@@ -319,6 +331,10 @@
     function toggleDrawer() {
         drawer.toggle();
     }
+
+    function toggleItemFavorite(item: FavoriteLocation) {
+        weatherLocation = toggleFavorite(item);
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
@@ -337,6 +353,7 @@
                     text={lc('powered_by', l(`provider.${provider}`))}
                     verticalAlignment="bottom"
                     horizontalAlignment="right"
+                    marginRight={6}
                 />
             {:else}
                 <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
@@ -352,6 +369,21 @@
                 </gridlayout>
             {/if}
             <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name} onMenuIcon={toggleDrawer}>
+                <mdbutton
+                    slot="left"
+                    visibility={weatherLocation ? 'visible' : 'collapsed'}
+                    col={1}
+                    variant="text"
+                    class="icon-btn"
+                    marginRight={4}
+                    width={30}
+                    height={30}
+                    color={favoriteIconColor(weatherLocation)}
+                    rippleColor="#EFB644"
+                    on:tap={() => toggleItemFavorite(weatherLocation)}
+                    text={favoriteIcon(weatherLocation)}
+                    verticalAlignment="middle"
+                />
                 <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={actionBarButtonHeight} height={actionBarButtonHeight} />
                 <mdbutton
                     visibility={!loading && weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
@@ -359,14 +391,12 @@
                     class="icon-btn"
                     color="#EFB644"
                     rippleColor="#EFB644"
-                    horizontalAlignment="left"
+                    verticalAlignment="middle"
                     on:tap={() => showAlerts()}
                     text="mdi-alert"
                 />
-                {#if weatherLocation}
-                    <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-map" on:tap={openWeatherMap} />
-                {/if}
                 <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
+
                 <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
             </CActionBar>
         </gridlayout>

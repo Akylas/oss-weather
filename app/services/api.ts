@@ -287,8 +287,9 @@ export function prepareItems(weatherData: WeatherData, lastUpdate, now = dayjs()
                 }
             });
             const delta = max - min;
+            // current weather is a mix of actual current weather, hourly and daily
             newItems.push(
-                Object.assign(currentDaily, {
+                Object.assign(currentDaily, currentDaily.hourly[firstHourIndex], firstHourIndex === 0 ? weatherData.currently : {}, {
                     lastUpdate,
                     hourly: hours.map((h, i) => ({
                         ...h,

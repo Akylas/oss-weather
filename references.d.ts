@@ -70,6 +70,7 @@ namespace svelteNative.JSX {
     export interface SpanAttributes {
         verticalAlignment?: string;
         verticalTextAlignment?: string;
+        visibility?: 'visible' | 'hidden' | 'collapse' | 'collapsed';
     }
     export interface SliderAttributes {
         stepSize?: number;

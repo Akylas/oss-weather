@@ -1,6 +1,7 @@
 {
     "whitelist-plugins-usages": true,
     "whitelist": [
+        "androidx.core.widget:NestedScrollView",
         "androidx.appcompat.app:AppCompatDelegate",
         "android.widget:Toast",
         "androidx.core.os:LocaleListCompat",

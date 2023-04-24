@@ -370,7 +370,7 @@
                 canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
             }
         });
-
+        textPaint.setColor($textColor);
         if (item.temperature) {
             textPaint.setTextAlign(Align.LEFT);
             textPaint.setTextSize(36 * $fontScale);
@@ -445,7 +445,7 @@
 </script>
 
 <gridLayout rows={`${topViewHeight},*`} {height} columns="*,auto">
-    <canvas  bind:this={canvasView} colSpan={2} on:draw={drawOnCanvas} paddingLeft={10} paddingBottom={10} paddingRight={10}>
+    <canvas bind:this={canvasView} colSpan={2} on:draw={drawOnCanvas} paddingLeft={10} paddingBottom={10} paddingRight={10}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />

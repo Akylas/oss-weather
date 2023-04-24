@@ -16,19 +16,28 @@ prefs.on('key:favorites', () => {
 });
 
 export function isFavorite(item: WeatherLocation) {
-    const key = getFavoriteKey(item);
-    return favoritesKeys.indexOf(key) !== -1;
+    if (item) {
+        const key = getFavoriteKey(item);
+        return favoritesKeys.indexOf(key) !== -1;
+    }
+    return false;
 }
 export function favoriteIconColor(item: FavoriteLocation) {
-    return item.isFavorite ? '#EFB644' : get(iconColor);
+    if (item) {
+        return item.isFavorite ? '#EFB644' : get(iconColor);
+    }
 }
 
 export function favoriteIcon(item: FavoriteLocation) {
-    return item.isFavorite ? 'mdi-star' : 'mdi-star-outline';
+    if (item) {
+        return item.isFavorite ? 'mdi-star' : 'mdi-star-outline';
+    }
 }
 
 function getFavoriteKey(item: WeatherLocation) {
-    return `${item.coord.lat};${item.coord.lon}`;
+    if (item) {
+        return `${item.coord.lat};${item.coord.lon}`;
+    }
 }
 
 export function toggleFavorite(item: FavoriteLocation) {

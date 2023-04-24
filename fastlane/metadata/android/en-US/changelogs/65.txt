@@ -1,0 +1,4 @@
+*Bug fixes*
+- changed layout to improve readability
+- *android:* crash on about window
+- still improved clouds color

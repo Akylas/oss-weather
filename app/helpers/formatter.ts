@@ -365,7 +365,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         d['moonIcon'] = moonIcon(getMoonPhase(new Date(d.time)));
     }
 
-    d.cloudColor = cloudyColor.setAlpha(d.cloudCover * 2).hex;
+    d.cloudColor = cloudyColor.setAlpha(d.cloudCover * 2.55).hex;
 
     const wBIcon = windBeaufortIcon(d.windSpeed);
     if (wBIcon) {

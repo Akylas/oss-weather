@@ -65,7 +65,9 @@
     export let height;
     export let fakeNow;
 
-    $: weatherLocation.isFavorite = isFavorite(weatherLocation);
+    $: if (weatherLocation) {
+        weatherLocation.isFavorite = isFavorite(weatherLocation);
+    }
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {

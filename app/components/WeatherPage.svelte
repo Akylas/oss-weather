@@ -1,31 +1,32 @@
 <script lang="ts">
-    import { GPS, setGeoLocationKeys } from '@nativescript-community/gps';
+    import { GPS } from '@nativescript-community/gps';
     import { request as requestPerm } from '@nativescript-community/perms';
+    import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
+    import DrawerElement from '@nativescript-community/ui-drawer/svelte';
+    import { confirm } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Color, CoreTypes, Frame, Page } from '@nativescript/core';
-    import { alert as mdAlert, confirm } from '@nativescript-community/ui-material-dialogs';
+    import { Color, CoreTypes, EventData, Frame, Page } from '@nativescript/core';
+    import { getRootView } from '@nativescript/core/application';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
+    import { throttle } from '@nativescript/core/utils';
+    import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
-    import { sl, slc, l, lc, onLanguageChanged } from '~/helpers/locale';
-    import { geocodeAddress, NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems, WeatherLocation } from '~/services/api';
-    import { prefs } from '~/services/preferences';
-    import { alert, showError } from '~/utils/error';
-    import { actionBarButtonHeight, backgroundColor, mdiFontFamily, textLightColor } from '~/variables';
+    import { Template } from 'svelte-native/components';
+    import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/CActionBar.svelte';
+    import SelectCity from '~/components/SelectCity.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
+    import { l, lc, onLanguageChanged, sl } from '~/helpers/locale';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { hasOWMApiKey } from '~/services/owm';
-    import { getRootView } from '@nativescript/core/application';
-    import dayjs from 'dayjs';
-    import { Template } from 'svelte-native/components';
-    import { Drawer } from '@nativescript-community/ui-drawer';
-    import { throttle } from '@nativescript/core/utils';
-    import SelectCity from '~/components/SelectCity.svelte';
+    import { prefs } from '~/services/preferences';
+    import { alert, showError } from '~/utils/error';
+    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
+    import { actionBarButtonHeight, backgroundColor, globalObservable, mdiFontFamily, textLightColor } from '~/variables';
 
     let gps: GPS;
     let loading = false;
@@ -327,9 +328,10 @@
         }
     });
 
-    let drawer: Drawer;
+    let drawer: DrawerElement;
+    let favoriteCollectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
     function toggleDrawer() {
-        drawer.toggle();
+        drawer?.toggle();
     }
 
     function toggleItemFavorite(item: FavoriteLocation) {
@@ -342,11 +344,26 @@
             setString('weatherLocation', JSON.stringify(weatherLocation));
         }
     });
+    function drawerTranslationFunction(side, width, value, delta, progress) {
+        const result = {
+            mainContent: {
+                translateX: side === 'right' ? -delta : delta
+            },
+            backDrop: {
+                translateX: side === 'right' ? -delta : delta,
+                opacity: progress * 0.5
+            }
+        } as any;
+
+        return result;
+    }
+    function onDrawerClose() {
+        favoriteCollectionView.nativeElement?.closeCurrentMenu();
     }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <drawer bind:this={drawer} leftSwipeDistance={20}>
+    <drawer bind:this={drawer} leftSwipeDistance={20} on:close={onDrawerClose}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
@@ -410,15 +427,31 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
-            <collectionview row={2} rowHeight={80} items={favorites}>
+            <collectionview bind:this={favoriteCollectionView} row={2} rowHeight={80} items={favorites}>
                 <Template let:item>
-                    <gridLayout col={1} verticalAlignment="center" rows="auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30">
-                        <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
-                        <label row={1} fontSize={14} color={$textLightColor}>
-                            <span text={item.sys.state || item.sys.country} />
-                            <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
-                        </label>
-                    </gridLayout>
+                    <swipemenu id={item.name} leftSwipeDistance="300" startingSide={item.startingSide} translationFunction={drawerTranslationFunction} openAnimationDuration={100} closeAnimationDuration={100}>
+                        <gridLayout rows="auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer" prop:mainContent>
+                            <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
+                            <label row={1} fontSize={14} color={$textLightColor}>
+                                <span text={item.sys.state || item.sys.country} />
+                                <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
+                            </label>
+                        </gridLayout>
+                        <stacklayout prop:leftDrawer orientation="horizontal" width="100">
+                            <mdbutton
+                                variant="text"
+                                class="icon-btn"
+                                width="100"
+                                height="100%"
+                                text="mdi-trash-can"
+                                backgroundColor="red"
+                                textAlignment="center"
+                                shape="none"
+                                verticalTextAlignment="middle"
+                                on:tap={toggleFavorite(item)}
+                            />
+                        </stacklayout>
+                    </swipemenu>
                 </Template>
             </collectionview>
         </gridlayout>

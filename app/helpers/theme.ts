@@ -1,6 +1,6 @@
 import { getRootView } from '@akylas/nativescript/application';
 import Theme from '@nativescript-community/css-theme';
-import { Application, Utils } from '@nativescript/core';
+import { Application, EventData, Utils } from '@nativescript/core';
 import { getBoolean, getString, setString } from '@nativescript/core/application-settings';
 import { iOSNativeHelper } from '@nativescript/core/utils';
 import { prefs } from '~/services/preferences';
@@ -15,7 +15,7 @@ let started = false;
 let autoDarkToBlack = getBoolean('auto_black', false);
 const ThemeBlack = 'ns-black';
 
-Application.on(Application.systemAppearanceChangedEvent, (event) => {
+Application.on(Application.systemAppearanceChangedEvent, (event: EventData & { newValue }) => {
     DEV_LOG && console.log('systemAppearanceChangedEvent', theme, event.newValue, autoDarkToBlack);
     if (theme === 'auto') {
         let theme = event.newValue;

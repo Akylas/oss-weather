@@ -5,6 +5,7 @@ import { setGeoLocationKeys } from '@nativescript-community/gps';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
+import SwipeMenuElement from '@nativescript-community/ui-collectionview-swipemenu/svelte';
 import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
@@ -75,6 +76,7 @@ registerNativeViewElement('cspan', () => require('@nativescript-community/ui-can
 registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
 DrawerElement.register();
 CollectionViewElement.register();
+SwipeMenuElement.register();
 
 // Trace.addCategories(DomTraceCategory);
 // Trace.addCategories(Trace.categories.NativeLifecycle);
@@ -96,6 +98,13 @@ themer.createShape('round', {
     cornerFamily: 'rounded' as any,
     cornerSize: {
         value: 0.5,
+        unit: '%'
+    }
+});
+themer.createShape('none', {
+    cornerFamily: 'rounded' as any,
+    cornerSize: {
+        value: 0,
         unit: '%'
     }
 });

@@ -6,8 +6,9 @@ import { get } from 'svelte/store';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
+    startingSide?: string;
 }
-export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')));
+export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 
 prefs.on('key:favorites', () => {
@@ -34,26 +35,28 @@ export function favoriteIcon(item: FavoriteLocation) {
     }
 }
 
-function getFavoriteKey(item: WeatherLocation) {
+export function getFavoriteKey(item: WeatherLocation) {
     if (item) {
         return `${item.coord.lat};${item.coord.lon}`;
     }
 }
 
 export function toggleFavorite(item: FavoriteLocation) {
-    if (item.isFavorite) {
+    if (isFavorite(item)) {
         const key = getFavoriteKey(item);
+        item.isFavorite = false;
         const index = favoritesKeys.indexOf(key);
         if (index > -1) {
             favorites.splice(index, 1);
             favoritesKeys.splice(index, 1);
         }
     } else {
-        const { isFavorite, ...toSave } = item;
+        const { isFavorite, startingSide, ...toSave } = item;
+        item.isFavorite = true;
         favorites.push(toSave);
         favoritesKeys.push(getFavoriteKey(item));
     }
-    item.isFavorite = !item.isFavorite;
+    delete item.startingSide; //for swipemenu
     ApplicationSettings.setString('favorites', JSON.stringify(favorites));
     globalObservable.notify({ eventName: 'favorite', data: item });
     return item;

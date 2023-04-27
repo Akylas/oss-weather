@@ -18,12 +18,12 @@
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
+    import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { hasOWMApiKey } from '~/services/owm';
     import { getRootView } from '@nativescript/core/application';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import { Drawer } from '@nativescript-community/ui-drawer';
-    import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, toggleFavorite } from '~/helpers/favorites';
     import { throttle } from '@nativescript/core/utils';
     import SelectCity from '~/components/SelectCity.svelte';
 
@@ -34,7 +34,7 @@
     if (!provider || provider.length === 0) {
         provider = 'openweathermap';
     }
-    let weatherLocation: WeatherLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
+    let weatherLocation: FavoriteLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(getString('lastWeatherData', 'null'));
 
     let items = [];
@@ -334,6 +334,14 @@
 
     function toggleItemFavorite(item: FavoriteLocation) {
         weatherLocation = toggleFavorite(item);
+    }
+    globalObservable.on('favorite', (item: EventData & {data: FavoriteLocation}) => {
+        if (weatherLocation && getFavoriteKey(item.data) === getFavoriteKey(weatherLocation)) {
+            weatherLocation.isFavorite = item.data.isFavorite;
+            weatherLocation = weatherLocation;
+            setString('weatherLocation', JSON.stringify(weatherLocation));
+        }
+    });
     }
 </script>
 

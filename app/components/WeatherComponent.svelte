@@ -14,7 +14,6 @@
     export let items: any[];
     export let weatherLocation: WeatherLocation;
     export let fakeNow = null;
-    export let fontScale = 1;
 
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;

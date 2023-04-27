@@ -392,7 +392,7 @@
         });
         canvas.save();
         const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-        canvas.translate(0, 30);
+        canvas.translate(0, 30 * $fontScale);
         staticLayout.draw(canvas);
         canvas.restore();
 
@@ -431,7 +431,7 @@
 
         textPaint.setTextAlign(Align.RIGHT);
         textPaint.setTextSize(20 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22, textPaint);
+        canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22 * $fontScale, textPaint);
         textPaint.setTextSize(14 * $fontScale);
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 14, textPaint);
 
@@ -468,6 +468,6 @@
         horizontalAlignment="left"
     /> -->
     <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={weatherIconSize} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={weatherIconSize * (2-$fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

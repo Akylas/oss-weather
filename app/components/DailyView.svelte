@@ -76,10 +76,11 @@
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor($textColor);
-        canvas.drawText(formatDate(item.time, 'ddd'), 10, 26, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd'), 10, 26 * $fontScale, textPaint);
         textPaint.setColor($textLightColor);
         textPaint.setTextSize(15 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46, textPaint);
+        canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46 * $fontScale, textPaint);
+        textPaint.setColor($textColor);
 
         let centeredItemsToDraw: {
             color?: string | Color;
@@ -187,21 +188,21 @@
         if (item.windBeaufortIcon) {
             wiPaint.setColor($textColor);
             wiPaint.setTextSize(20);
-            canvas.drawText(item.windBeaufortIcon, 50, h - 28, wiPaint);
+            canvas.drawText(item.windBeaufortIcon, 50, h - 28 * $fontScale, wiPaint);
         }
 
         textPaint.setTextSize(13 * $fontScale);
         textPaint.setColor($textLightColor);
-        canvas.drawText(item.description, 10, h - 13, textPaint);
+        canvas.drawText(item.description, 10, h - 10, textPaint);
 
         wiPaint.setColor(nightColor);
         wiPaint.setTextSize(20 * $fontScale);
-        canvas.drawText(item.moonIcon, 18, h - 28, wiPaint);
+        canvas.drawText(item.moonIcon, 18, h - 28 * $fontScale, wiPaint);
         // textPaint.setTextAlign(Align.RIGHT);
     }
 </script>
 
-<gridLayout height={100}>
+<gridLayout height={100 * $fontScale}>
     <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
-    <WeatherIcon marginRight="10" marginTop={16} horizontalAlignment="right" fontSize={60} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon marginRight="10" marginTop={16 * ($fontScale)} horizontalAlignment="right" size={60 * ($fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
 </gridLayout>

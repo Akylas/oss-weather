@@ -4,6 +4,13 @@ import { Frame, View } from '@nativescript/core';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import type { PageSpec } from 'svelte-native/dom/navigation';
 
+declare module '@nativescript/core/ui/core/view' {
+    interface View {
+        closeBottomSheet(...args: any): void;
+        showBottomSheet(options: BottomSheetOptions): View;
+    }
+}
+
 export interface ShowBottomSheetOptions extends Omit<BottomSheetOptions, 'view'> {
     view: PageSpec;
     parent?: NativeViewElementNode<View> | View;

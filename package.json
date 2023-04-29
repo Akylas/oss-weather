@@ -124,8 +124,6 @@
         ]
     },
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "@nativescript-community/gesturehandler": "portal:/home/mguillon/dev/nativescript/gesturehandler/packages/gesturehandler",
-        "@nativescript-community/ui-drawer": "portal:/home/mguillon/dev/nativescript/ui-drawer/packages/ui-drawer"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     }
 }

@@ -75,6 +75,7 @@ export const textColor = writable('');
 export const borderColor = writable('');
 export const textLightColor = writable('');
 export const backgroundColor = writable('');
+export const lightBackgroundColor = writable('');
 export const subtitleColor = writable('');
 export const iconColor = writable('');
 
@@ -112,11 +113,14 @@ export function updateThemeColors(theme: string) {
         iconColor.set('#aaaaaa');
         if (theme === 'black') {
             backgroundColor.set('#000000');
+            lightBackgroundColor.set('#1c1c1e');
         } else {
             backgroundColor.set('#1c1c1e');
+            lightBackgroundColor.set('#313135');
         }
     } else {
         backgroundColor.set('#ffffff');
+        lightBackgroundColor.set('#E0E0E0');
         textColor.set('#000000');
         textLightColor.set('#444444');
         borderColor.set('#cccccc99');

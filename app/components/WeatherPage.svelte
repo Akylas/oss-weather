@@ -26,7 +26,7 @@
     import { prefs } from '~/services/preferences';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '~/utils/svelte/bottomsheet';
-    import { actionBarButtonHeight, backgroundColor, globalObservable, mdiFontFamily, textLightColor } from '~/variables';
+    import { actionBarButtonHeight, lightBackgroundColor, globalObservable, mdiFontFamily, textLightColor, backgroundColor } from '~/variables';
 
     let gps: GPS;
     let loading = false;
@@ -337,7 +337,7 @@
     function toggleItemFavorite(item: FavoriteLocation) {
         weatherLocation = toggleFavorite(item);
     }
-    globalObservable.on('favorite', (item: EventData & {data: FavoriteLocation}) => {
+    globalObservable.on('favorite', (item: EventData & { data: FavoriteLocation }) => {
         if (weatherLocation && getFavoriteKey(item.data) === getFavoriteKey(weatherLocation)) {
             weatherLocation.isFavorite = item.data.isFavorite;
             weatherLocation = weatherLocation;
@@ -351,7 +351,11 @@
             },
             backDrop: {
                 translateX: side === 'right' ? -delta : delta,
-                opacity: progress * 0.5
+                opacity: progress * 0.1
+            }, 
+            deleteBtn:{
+                backgroundColor: progress >= 0.6 ? 'red' : $lightBackgroundColor,
+                color: progress >= 0.6 ? 'white' : 'red'
             }
         } as any;
 
@@ -429,7 +433,22 @@
             <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
             <collectionview bind:this={favoriteCollectionView} row={2} rowHeight={80} items={favorites}>
                 <Template let:item>
-                    <swipemenu id={item.name} leftSwipeDistance="300" startingSide={item.startingSide} translationFunction={drawerTranslationFunction} openAnimationDuration={100} closeAnimationDuration={100}>
+                    <swipemenu
+                        id={item.name}
+                        leftSwipeDistance="300"
+                        startingSide={item.startingSide}
+                        translationFunction={drawerTranslationFunction}
+                        openAnimationDuration={100}
+                        closeAnimationDuration={100}
+                        gestureHandlerOptions={{
+                            activeOffsetXStart: item.startingSide ? -10 : Number.MAX_SAFE_INTEGER,
+                            failOffsetXStart: item.startingSide ? Number.MIN_SAFE_INTEGER : 0,
+                            activeOffsetXEnd: 10,
+                            failOffsetYStart: -10,
+                            failOffsetYEnd: 10,
+                            minDist: 15
+                        }}
+                    >
                         <gridLayout rows="auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer" prop:mainContent>
                             <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
                             <label row={1} fontSize={14} color={$textLightColor}>
@@ -439,11 +458,13 @@
                         </gridLayout>
                         <stacklayout prop:leftDrawer orientation="horizontal" width="100">
                             <mdbutton
+                                id="deleteBtn"
                                 variant="text"
                                 class="icon-btn"
                                 width="100"
                                 height="100%"
                                 text="mdi-trash-can"
+                                color="white"
                                 backgroundColor="red"
                                 textAlignment="center"
                                 shape="none"

@@ -165,9 +165,9 @@ module.exports = (env, params = {}) => {
             'tns-core-modules': `${coreModulesPackageName}`
         });
     }
-    Object.assign(config.resolve.alias, {
-        'svelte-native': '@akylas/svelte-native'
-    });
+    // Object.assign(config.resolve.alias, {
+    //     'svelte-native': '@akylas/svelte-native'
+    // });
     let appVersion;
     let buildNumber;
     if (platform === 'android') {

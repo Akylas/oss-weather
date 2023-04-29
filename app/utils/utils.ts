@@ -35,11 +35,18 @@ export function getDataFolder() {
     }
     return dataFolder;
 }
-
+declare module '@nativescript/core' {
+    interface Frame {
+        _getRootFragmentManager(): androidx.fragment.app.FragmentManager;
+    }
+}
 export async function pickDate(currentDate: Dayjs) {
     if (__ANDROID__) {
         return new Promise<number>((resolve, reject) => {
-            const datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker().setTitleText(lc('pick_date')).setSelection(new java.lang.Long(currentDate.valueOf())).build();
+            const datePicker = com.google.android.material.datepicker.MaterialDatePicker.Builder.datePicker()
+                .setTitleText(lc('pick_date'))
+                .setSelection(new java.lang.Long(currentDate.valueOf()))
+                .build();
             datePicker.addOnDismissListener(
                 new android.content.DialogInterface.OnDismissListener({
                     onDismiss: () => {
@@ -51,5 +58,4 @@ export async function pickDate(currentDate: Dayjs) {
             datePicker.show(parentView._getRootFragmentManager(), 'datepicker');
         });
     }
-    
 }

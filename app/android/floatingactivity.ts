@@ -21,18 +21,15 @@ const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
 const activityRootViewsMap = new Map<number, WeakRef<View>>();
 const INTENT_EXTRA = 'com.tns.activity';
 
-declare module '@nativescript/core/ui/core/view' {
-    interface View {
+declare module '@nativescript/core' {
+    interface Frame {
         _saveFragmentsState();
         _getFragmentManager();
     }
-}
-declare module '@nativescript/core/ui/frame' {
     interface AndroidFrame {
         frameId: number;
     }
 }
-
 export function setActivityCallbacks(activity: androidx.appcompat.app.AppCompatActivity): void {
     activity[CALLBACKS] = new CustomActivityCallbacksImplementation();
 }
@@ -86,7 +83,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         superFunc.call(activity, outState);
         const rootView = this._rootView;
         if (rootView instanceof Frame) {
-            outState.putInt(INTENT_EXTRA, rootView.android.frameId);
+            outState.putInt(INTENT_EXTRA, rootView.android['frameId']);
             rootView._saveFragmentsState();
         }
 

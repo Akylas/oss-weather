@@ -21,7 +21,7 @@ const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
 const activityRootViewsMap = new Map<number, WeakRef<View>>();
 const INTENT_EXTRA = 'com.tns.activity';
 
-declare module '@nativescript/core' {
+declare module '@nativescript/core/ui/frame' {
     interface Frame {
         _saveFragmentsState();
         _getFragmentManager();

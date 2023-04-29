@@ -35,7 +35,7 @@ export function getDataFolder() {
     }
     return dataFolder;
 }
-declare module '@nativescript/core' {
+declare module '@nativescript/core/ui/frame' {
     interface Frame {
         _getRootFragmentManager(): androidx.fragment.app.FragmentManager;
     }

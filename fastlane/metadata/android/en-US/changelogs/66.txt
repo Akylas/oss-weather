@@ -1,0 +1,7 @@
+*Features*
+- swipe menu on favorite item to delete
+
+*Bug fixes*
+- more fontscale improvements
+- favorite toggling fix
+- nicer favorite swipe menu

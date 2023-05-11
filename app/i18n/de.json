@@ -51,7 +51,7 @@
   "ios": {
     "info": {
       "plist": {
-        "NSLocationWhenInUseUsageDescription": "'NS Wetter' verwendet deinen GPS Standort um dir das Wetter an zuzeigen"
+        "NSLocationWhenInUseUsageDescription": "'NS Wetter' verwendet deinen GPS Standort um dir das Wetter anzuzeigen"
       }
     }
   },
@@ -68,7 +68,7 @@
   "no_location_desc": "Du hast noch keinen Standort ausgewählt. \nDu kannst einen suchen oder deinen GPS Standort verwenden",
   "no_location_set": "Kein Standort ausgewählt",
   "no_network": "Keine Verbindung",
-  "non_valid_email": "Keine gültige Email-Adresse
+  "non_valid_email": "Keine gültige Email-Adresse",
   "ok": "OK",
   "open_website": "Webseite öffnen",
   "owm_api_key": "OpenWeatherMap API-Schlüssel",

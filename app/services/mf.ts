@@ -110,11 +110,11 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
         sunriseTime: dailyForecast.sun.rise * 1000,
         sunsetTime: dailyForecast.sun.set * 1000
     } as DailyData;
-    if (precipProbability > 0 ) {
-        d.precipProbability = precipProbability;
+    if (precipProbability > 0) {
+        d.precipProbability = Math.round(precipProbability * 100);
     }
     const precipAccumulation = Math.max(precipitationTotal, dailyForecast.precipitation['24h']);
-    if (precipAccumulation > 0 ) {
+    if (precipAccumulation > 0) {
         d.precipAccumulation = precipAccumulation;
     }
 
@@ -237,7 +237,7 @@ function getHourlyPrecipitationProbability(probabilityForecastResult: Probabilit
     };
 }
 
-export async function fetchMF<T = any>(apiName: string, queryParams: MFParams = {}) {
+export async function fetch<T = any>(apiName: string, queryParams: MFParams = {}) {
     return request<T>({
         url: `https://webservice.meteofrance.com/${apiName}`,
         method: 'GET',
@@ -249,18 +249,18 @@ export async function fetchMF<T = any>(apiName: string, queryParams: MFParams = 
     });
 }
 
-export async function getMFWeather(weatherLocation: WeatherLocation) {
+export async function getWeather(weatherLocation: WeatherLocation) {
     const coords = weatherLocation.coord;
-    const forecast = await fetchMF<MFForecastResult>('forecast', coords);
+    const forecast = await fetch<MFForecastResult>('forecast', coords);
     let rain: MFMinutely;
     let current: MFCurrent;
     let warnings: MFWarnings;
     if (forecast.position.dept) {
         // we are in france we can get more
         const result = await Promise.all([
-            fetchMF<MFMinutely>('rain', coords).catch((err) => null),
-            fetchMF<MFCurrent>('observation/gridded', coords).catch((err) => null),
-            fetchMF<MFWarnings>('warning/full', {
+            fetch<MFMinutely>('rain', coords).catch((err) => null),
+            fetch<MFCurrent>('observation/gridded', coords).catch((err) => null),
+            fetch<MFWarnings>('warning/full', {
                 ...coords,
                 domain: forecast.position.dept
             }).catch((err) => null)
@@ -269,46 +269,48 @@ export async function getMFWeather(weatherLocation: WeatherLocation) {
         current = result[1];
         warnings = result[2];
     }
-    // console.log('forecast', JSON.stringify(forecast));
+    // console.log('forecast', JSON.stringify(forecast.forecast));
     // console.log('rain', JSON.stringify(rain));
     // console.log('current', JSON.stringify(current));
     // console.log('warnings', JSON.stringify(warnings));
 
-    const hourlyData = forecast.forecast?.map((data) => {
-        const d = {} as Hourly;
-        d.time = data.dt * 1000;
-        d.icon = convertMFICon(data.weather.icon);
-        d.description = titlecase(data.weather.desc);
-        d.temperature = Math.round(data.T.value);
-        d.feelTemperature = Math.round(data.T.windchill);
+    const hourlyData = forecast.forecast
+        ?.filter((d) => d.weather.icon !== null && d.T.value !== null)
+        .map((data) => {
+            const d = {} as Hourly;
+            d.time = data.dt * 1000;
+            d.icon = convertMFICon(data.weather.icon);
+            d.description = titlecase(data.weather.desc);
+            d.temperature = Math.round(data.T.value);
+            d.feelTemperature = Math.round(data.T.windchill);
 
-        d.windBearing = data.wind.direction === 'Variable' ? -1 : data.wind.direction;
-        const acc = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
-        if (acc > 0) {
-            d.precipAccumulation = acc;
-        }
+            d.windBearing = data.wind.direction === 'Variable' ? -1 : data.wind.direction;
+            const acc = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
+            if (acc > 0) {
+                d.precipAccumulation = acc;
+            }
 
-        const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast || [], data.dt);
-        const prob = Math.max(probabilities.rain, probabilities.snow, probabilities.ice) / 100;
-        d.precipProbability = Math.max(probabilities.rain, probabilities.snow, probabilities.ice) / 100;
-        if (d.precipAccumulation && prob === 0) {
-            d.precipProbability = -1;
-        }
-        if (prob >= 0) {
-            d.precipProbability = prob;
-        }
-        // d.precipProbabilities = probabilities;
-        d.cloudCover = data.clouds;
-        d.humidity = data.humidity;
-        d.windGust = data.wind.gust * 3.6;
-        d.windSpeed = data.wind.speed * 3.6;
-        d.iso = data.iso0;
-        if (typeof data['rain snow limit'] === 'number') {
-            d.rainSnowLimit = data['rain snow limit'];
-        }
-        // d.pressure = data.pressure;
-        return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain?.['1h'], data.snow?.['1h']);
-    });
+            const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast || [], data.dt);
+            const prob = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
+            d.precipProbability = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
+            if (d.precipAccumulation && prob === 0) {
+                d.precipProbability = -1;
+            }
+            if (prob >= 0) {
+                d.precipProbability = prob;
+            }
+            // d.precipProbabilities = probabilities;
+            d.cloudCover = data.clouds;
+            d.humidity = data.humidity;
+            d.windGust = data.wind.gust * 3.6;
+            d.windSpeed = data.wind.speed * 3.6;
+            d.iso = data.iso0;
+            if (typeof data['rain snow limit'] === 'number') {
+                d.rainSnowLimit = data['rain snow limit'];
+            }
+            // d.pressure = data.pressure;
+            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain?.['1h'], data.snow?.['1h']);
+        });
     const r = {
         currently: current
             ? weatherDataIconColors(
@@ -326,7 +328,7 @@ export async function getMFWeather(weatherLocation: WeatherLocation) {
               )
             : {},
         daily: {
-            data: forecast.daily_forecast.map((data) => getDaily(weatherLocation, hourlyData, forecast.forecast, data))
+            data: forecast.daily_forecast.slice(0, 14).map((data) => getDaily(weatherLocation, hourlyData, forecast.forecast, data))
         },
         minutely: {
             data:

@@ -134,11 +134,6 @@ export function formatValueToUnit(value: any, unit: UNITS, imperial?: boolean, o
     }
     return result;
 }
-export function titlecase(value) {
-    return value.replace(/\w\S*/g, function (txt) {
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-}
 
 // export function colorFromTempC(tempC) {
 //     let a = (tempC + 0) / 60;
@@ -290,7 +285,6 @@ export function getMoonPhase(date: Date) {
     return phase;
 }
 export function moonIcon(moonPhase: number) {
-    // console.log('moonIcon', moonPhase, moonPhase % 30, moonIcons[moonPhase % 30]);
     return moonIcons[moonPhase % 29];
 }
 export function ccMoonIcon(moonPhase: string) {

@@ -15,10 +15,12 @@
     <string-array name="providers">
         <item name="meteofrance">@string/provider.meteofrance</item>
         <item name="openweathermap">@string/provider.openweathermap</item>
+        <item name="openmeteo">@string/provider.openmeteo</item>
     </string-array>
     <string-array name="providersValues">
         <item name="meteofrance">meteofrance</item>
         <item name="openweathermap">openweathermap</item>
+        <item name="openmeteo">openmeteo</item>
     </string-array>
     <string-array name="langs">
         <item name="auto">@string/theme.auto</item>

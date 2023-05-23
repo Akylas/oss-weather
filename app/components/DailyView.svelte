@@ -100,14 +100,14 @@
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)
             });
         }
-        if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1) {
+        if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: color,
                 iconFontSize,
                 icon: precipIcon,
                 value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
-                subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
+                subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         }
          if (item.cloudCover > 20) {

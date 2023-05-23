@@ -40,7 +40,7 @@ export interface OWMParams extends Partial<Coord> {
     id?: number; // cityId
     q?: string; // search query
 }
-export async function fetchOWM<T = any>(apiName: string, queryParams: OWMParams = {}) {
+export async function fetch<T = any>(apiName: string, queryParams: OWMParams = {}) {
     return request<T>({
         url: `https://api.openweathermap.org/data/2.5/${apiName}`,
         method: 'GET',
@@ -54,16 +54,16 @@ export async function fetchOWM<T = any>(apiName: string, queryParams: OWMParams 
 }
 
 export async function getCityName(pos: Coord) {
-    const result = await fetchOWM<CityWeather>('weather', {
+    const result = await fetch<CityWeather>('weather', {
         lat: pos.lat,
         lon: pos.lon
     });
     return result;
 }
 
-export async function getOWMWeather(weatherLocation: WeatherLocation) {
+export async function getWeather(weatherLocation: WeatherLocation) {
     const coords = weatherLocation.coord;
-    const result = await fetchOWM<OneCallResult>('onecall', coords);
+    const result = await fetch<OneCallResult>('onecall', coords);
     // console.log('test', JSON.stringify(result.daily));
     const r = {
         currently: weatherDataIconColors(
@@ -97,7 +97,7 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
                 d.temperatureMax = Math.round(data.temp.max);
                 d.temperatureNight = Math.round(data.temp.night);
 
-                d.precipProbability = data.pop;
+                d.precipProbability = Math.round(data.pop * 100);
                 d.cloudCover = data.clouds;
                 d.windBearing = data.wind_deg;
                 d.humidity = data.humidity;
@@ -129,12 +129,12 @@ export async function getOWMWeather(weatherLocation: WeatherLocation) {
         d.icon = data.weather[0]?.icon;
         d.description = titlecase(data.weather[0]?.description);
         d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
-        d.windGust =  Math.round(data.wind_gust * 3.6);
+        d.windGust = Math.round(data.wind_gust * 3.6);
         d.temperature = Math.round(data.temp);
 
         d.windBearing = data.wind_deg;
         d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
-        d.precipProbability = data.pop;
+        d.precipProbability = Math.round(data.pop * 100);
         d.cloudCover = data.clouds;
         d.humidity = data.humidity;
         d.pressure = data.pressure;

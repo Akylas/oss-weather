@@ -5,6 +5,7 @@ import Observable, { EventData } from '@nativescript-community/observable';
 import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent } from '@nativescript/core/application';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import dayjs from 'dayjs';
+import { getTimes } from 'suncalc';
 import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/variables';
@@ -204,7 +205,7 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
         content = (await response.content.toStringAsync()) as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    // DEV_LOG && console.log('handleRequestResponse', statusCode, content);
+    DEV_LOG && console.log('handleRequestResponse', statusCode, content);
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -258,7 +259,7 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
 }
 
-export function prepareItems(weatherData: WeatherData, lastUpdate, now = dayjs()) {
+export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs()) {
     const newItems = [];
 
     const startOfHour = now.startOf('h').valueOf();
@@ -287,10 +288,14 @@ export function prepareItems(weatherData: WeatherData, lastUpdate, now = dayjs()
                 }
             });
             const delta = max - min;
+
+            const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
             // current weather is a mix of actual current weather, hourly and daily
             newItems.push(
                 Object.assign(currentDaily, currentDaily.hourly[firstHourIndex], firstHourIndex === 0 ? weatherData.currently : {}, {
                     lastUpdate,
+                    sunriseTime: times.sunriseEnd,
+                    sunsetTime: times.sunsetStart,
                     hourly: hours.map((h, i) => ({
                         ...h,
                         index: i,

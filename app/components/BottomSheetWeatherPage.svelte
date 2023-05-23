@@ -15,14 +15,17 @@
     async function refresh(weatherLocation: WeatherLocation) {
         loading = true;
         try {
-            const provider: 'meteofrance' | 'openweathermap' = getString('provider', 'openweathermap') as any;
+            const provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
             let data: WeatherData;
-            if (provider === 'openweathermap') {
+            if (provider === 'openmeteo') {
+                const providerModule = await import('~/services/om');
+                data = await providerModule.getWeather(weatherLocation);
+            } else if (provider === 'openweathermap') {
                 const providerModule = await import('~/services/owm');
-                data = await providerModule.getOWMWeather(weatherLocation);
+                data = await providerModule.getWeather(weatherLocation);
             } else if (provider === 'meteofrance') {
                 const providerModule = await import('~/services/mf');
-                data = await providerModule.getMFWeather(weatherLocation);
+                data = await providerModule.getWeather(weatherLocation);
             }
             DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
             if (!name || !weatherLocation.sys.city) {
@@ -42,7 +45,7 @@
             if (!name) {
                 name = weatherLocation.coord.lat.toFixed(2) + ',' + weatherLocation.coord.lon.toFixed(2);
             }
-            items = prepareItems(data, Date.now());
+            items = prepareItems(weatherLocation, data, Date.now());
         } catch (err) {
             android.widget.Toast.makeText(Utils.android.getApplicationContext(), err.toString(), android.widget.Toast.LENGTH_LONG);
             closeBottomSheet();

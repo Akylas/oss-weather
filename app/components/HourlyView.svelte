@@ -5,9 +5,20 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { backgroundColor, fontScale, onImperialChanged } from '~/variables';
     import WeatherCollectionItem from '~/components/WeatherCollectionItem.svelte';
+    import { HandlerType, Manager, NativeViewGestureHandler } from '@nativescript-community/gesturehandler';
 
     export let items: any[];
     let collectionView: NativeViewElementNode<CollectionView>;
+    // let gestureHandler;
+    // $: {
+    //     if (collectionView) {
+    //         const manager = Manager.getInstance();
+    //         gestureHandler = manager.createGestureHandler(HandlerType.NATIVE_VIEW, 15644, {
+    //             disallowInterruption: true
+    //         });
+    //         gestureHandler.attachToView(collectionView.nativeView);
+    //     }
+    // }
 
     function onDataPopulated() {
         showLeftShadow = false;

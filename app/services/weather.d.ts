@@ -35,7 +35,7 @@ interface DailyData {
     windGust: number;
     temperatureMin: number;
     temperatureMax: number;
-    temperatureNight: number;
+    temperatureNight?: number;
     precipProbability: number;
     cloudCover: number;
     precipColor: string | Color;
@@ -43,12 +43,12 @@ interface DailyData {
     humidity: number;
     pressure: number;
     moonIcon: string;
-    sunriseTime: number;
-    sunsetTime: number;
+    sunriseTime?: number;
+    sunsetTime?: number;
     precipAccumulation: number;
     precipAccumulation: number;
     color: string | Color;
-    cloudColor: string | Color;
+    cloudColor?: string | Color;
     uvIndexColor: string | Color;
     uvIndex: number;
     windBeaufortIcon?: any;
@@ -87,6 +87,7 @@ interface Hourly {
     windIcon: string;
     rainSnowLimit?: number;
     iso?: number;
+    snowDepth?: number;
 }
 interface Currently {
     time: number;

@@ -15,18 +15,21 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             const receivingPackage = intent.getStringExtra('package');
             networkService.start(); // ensure it is started
             const weatherLocation = await geocodeAddress({ lat, lon });
-            const provider: 'meteofrance' | 'openweathermap' = getString('provider', 'openweathermap') as any;
+            const provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'openmeteo') as any;
             let data: WeatherData;
-            if (provider === 'openweathermap') {
+            if (provider === 'openmeteo') {
+                const providerModule = await import('~/services/om');
+                data = await providerModule.getWeather(weatherLocation);
+            } else if (provider === 'openweathermap') {
                 const providerModule = await import('~/services/owm');
-                data = await providerModule.getOWMWeather(weatherLocation);
+                data = await providerModule.getWeather(weatherLocation);
             } else if (provider === 'meteofrance') {
                 const providerModule = await import('~/services/mf');
-                data = await providerModule.getMFWeather(weatherLocation);
+                data = await providerModule.getWeather(weatherLocation);
             }
             const responseIntent = new android.content.Intent('com.akylas.weather.QUERY_WEATHER_RESULT');
             responseIntent.putExtra('id', id);
-            responseIntent.putExtra('weather', JSON.stringify(prepareItems(data, undefined)));
+            responseIntent.putExtra('weather', JSON.stringify(prepareItems(weatherLocation, data)));
             responseIntent.setPackage(receivingPackage);
             context.sendBroadcast(responseIntent);
         } catch (err) {

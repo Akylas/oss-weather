@@ -43,7 +43,7 @@
         "@nativescript-community/ui-chart": "1.2.28",
         "@nativescript-community/ui-collectionview": "5.1.4",
         "@nativescript-community/ui-collectionview-swipemenu": "5.1.4",
-        "@nativescript-community/ui-drawer": "0.1.14",
+        "@nativescript-community/ui-drawer": "0.1.16",
         "@nativescript-community/ui-label": "1.2.27",
         "@nativescript-community/ui-lottie": "5.0.6",
         "@nativescript-community/ui-material-activityindicator": "7.1.1",
@@ -77,6 +77,7 @@
         "@sentry/cli": "2.17.5",
         "@sentry/webpack-plugin": "^1.20.1",
         "@types/jest": "^29.5.1",
+        "@types/suncalc": "^1.9.0",
         "@typescript-eslint/eslint-plugin": "5.59.1",
         "@typescript-eslint/parser": "5.59.1",
         "babel-loader": "^9.1.2",
@@ -124,6 +125,7 @@
         ]
     },
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
+        "@nativescript-community/ui-drawer": "portal:/home/mguillon/dev/nativescript/ui-drawer/packages/ui-drawer"
     }
 }

@@ -1,4 +1,4 @@
-import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale } from '@nativescript-community/l';
+import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale, titlecase } from '@nativescript-community/l';
 import { ApplicationSettings, Device, Utils } from '@nativescript/core';
 import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
@@ -6,7 +6,6 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { createGlobalEventListener, globalObservable } from '~/variables';
-import { titlecase } from './formatter';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 

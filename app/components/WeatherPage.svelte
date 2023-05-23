@@ -31,7 +31,7 @@
     let gps: GPS;
     let loading = false;
     let lastUpdate = getNumber('lastUpdate', -1);
-    let provider: 'meteofrance' | 'openweathermap' = getString('provider', 'openweathermap') as any;
+    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
     if (!provider || provider.length === 0) {
         provider = 'openweathermap';
     }
@@ -134,12 +134,15 @@
         loading = true;
 
         try {
-            if (provider === 'openweathermap') {
+            if (provider === 'openmeteo') {
+                const providerModule = await import('~/services/om');
+                weatherData = await providerModule.getWeather(weatherLocation);
+            } else if (provider === 'openweathermap') {
                 const providerModule = await import('~/services/owm');
-                weatherData = await providerModule.getOWMWeather(weatherLocation);
+                weatherData = await providerModule.getWeather(weatherLocation);
             } else if (provider === 'meteofrance') {
                 const providerModule = await import('~/services/mf');
-                weatherData = await providerModule.getMFWeather(weatherLocation);
+                weatherData = await providerModule.getWeather(weatherLocation);
             }
             if (weatherData) {
                 // console.log(JSON.stringify(weatherData))
@@ -162,7 +165,7 @@
     }
 
     async function updateView() {
-        items = prepareItems(weatherData, lastUpdate);
+        items = prepareItems(weatherLocation, weatherData, lastUpdate);
         setNumber('lastUpdate', lastUpdate);
         setString('lastWeatherData', JSON.stringify(weatherData));
     }
@@ -277,7 +280,7 @@
         networkService.start(); // should send connection event and then refresh
 
         if (weatherData) {
-            items = prepareItems(weatherData, lastUpdate);
+            items = prepareItems(weatherLocation, weatherData, lastUpdate);
         }
     });
 
@@ -352,8 +355,8 @@
             backDrop: {
                 translateX: side === 'right' ? -delta : delta,
                 opacity: progress * 0.1
-            }, 
-            deleteBtn:{
+            },
+            deleteBtn: {
                 backgroundColor: progress >= 0.6 ? 'red' : $lightBackgroundColor,
                 color: progress >= 0.6 ? 'white' : 'red'
             }
@@ -361,13 +364,26 @@
 
         return result;
     }
-    function onDrawerClose() {
+    function onDrawerStartClose() {
         favoriteCollectionView.nativeElement?.closeCurrentMenu();
     }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <drawer bind:this={drawer} leftSwipeDistance={20} on:close={onDrawerClose}>
+    <drawer
+        bind:this={drawer}
+        leftSwipeDistance={20}
+        gestureHandlerOptions={{
+            activeOffsetXStart: -10,
+            activeOffsetXEnd: 10,
+            failOffsetYStart: -10,
+            failOffsetYEnd: 10,
+            minDist: 10
+        }}
+        waitFor={[15644]}
+        on:close={onDrawerStartClose}
+        on:start={onDrawerStartClose}
+    >
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />

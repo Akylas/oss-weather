@@ -1,6 +1,6 @@
 <script lang="ts">
+    import { titlecase } from '@nativescript-community/l';
     import { Template } from 'svelte-native/components';
-    import { titlecase } from '~/helpers/formatter';
     import { formatDate, l } from '~/helpers/locale';
     import type { Alert } from '~/services/openweathermap';
 

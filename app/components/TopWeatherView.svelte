@@ -124,7 +124,8 @@
             // if(data[0].time !== 0) {
             //     data.unshift({time: 0, intensity:})
             // }
-            // if (data[0]?.time) console.log('data', JSON.stringify(data));
+            // if (data[0]?.time) 
+            DEV_LOG && console.log('data', JSON.stringify(data));
             const xAxis = chart.getXAxis();
             const leftAxis = chart.getAxisLeft();
             if (!chartInitialized) {
@@ -321,14 +322,14 @@
             icon: item.moonIcon,
             value: l('moon')
         });
-        if ((item.precipProbability === -1 || item.precipProbability > 0.1) && item.precipAccumulation >= 1) {
+        if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: color,
                 iconFontSize,
                 icon: precipIcon,
                 value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
-                subvalue: item.precipProbability > 0 && Math.round(item.precipProbability * 100) + '%'
+                subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         } else if (item.cloudCover > 20) {
             centeredItemsToDraw.push({

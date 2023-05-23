@@ -105,14 +105,14 @@
         if ((precipProbability === -1 || precipProbability > 0) && precipitationHeight > 0) {
             const precipTop = (1 - precipitationHeight / 120) * h - 10;
             paint.setColor(item.precipColor);
-            paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 255);
+            paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
-            if ((precipProbability === -1 || precipProbability > 0.1) && item.precipAccumulation >= 0.1) {
+            if ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1) {
                 textPaint.setTextSize(10 * $fontScale);
                 textPaint.setColor($textColor);
                 textPaint.setAlpha(150);
                 if (precipProbability > 0) {
-                    canvas.drawText(Math.round(precipProbability * 100) + '%', w2, h - 22 * $fontScale, textPaint);
+                    canvas.drawText(precipProbability + '%', w2, h - 22 * $fontScale, textPaint);
                 }
                 canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial), w2, h - 12 * $fontScale, textPaint);
             }

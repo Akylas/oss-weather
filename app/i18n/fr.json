@@ -66,6 +66,7 @@
   "powered_by": "Alimenté par %1$s",
   "preferences": "Préférences",
   "provider": {
+    "openmeteo": "Open-Meteo",
     "meteofrance": "MéteoFrance",
     "openweathermap": "OpenWeatherMap",
     "title": "Fournisseur"

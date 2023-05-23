@@ -1,0 +1,8 @@
+*Features*
+- swipe menu on favorite item to delete
+- added German translation
+
+*Bug fixes*
+- more fontscale improvements
+- favorite toggling fix
+- nicer favorite swipe menu

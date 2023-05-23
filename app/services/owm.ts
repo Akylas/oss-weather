@@ -123,7 +123,9 @@ export async function getWeather(weatherLocation: WeatherLocation) {
         },
         alerts: result.alerts
     } as WeatherData;
-    r.daily.data[0].hourly = result.hourly?.map((data) => {
+    const hourlyLastIndex = result.hourly.length - 1;
+    r.daily.data[0].hourly = result.hourly?.map((data, index) => {
+        const hasNext = index < hourlyLastIndex;
         const d = {} as Hourly;
         d.time = data.dt * 1000;
         d.icon = data.weather[0]?.icon;
@@ -133,7 +135,11 @@ export async function getWeather(weatherLocation: WeatherLocation) {
         d.temperature = Math.round(data.temp);
 
         d.windBearing = data.wind_deg;
-        d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
+        if (hasNext) {
+            const nextData = result.hourly[index + 1];
+            d.precipAccumulation = nextData.snow ? nextData.snow['1h'] : nextData.rain ? nextData.rain['1h'] : 0;
+        }
+        // d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
         d.precipProbability = Math.round(data.pop * 100);
         d.cloudCover = data.clouds;
         d.humidity = data.humidity;

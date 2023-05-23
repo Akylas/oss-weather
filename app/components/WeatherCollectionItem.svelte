@@ -82,7 +82,7 @@
         canvasView && canvasView.nativeView.invalidate();
     }
     $: {
-        precipitationHeight = item.precipAccumulation * 10;
+        precipitationHeight = item.precipAccumulation > 1 ? Math.sqrt(item.precipAccumulation) : item.precipAccumulation;
         redraw();
     }
     textColor.subscribe(redraw);
@@ -103,7 +103,7 @@
         let color;
         const precipProbability = item.precipProbability;
         if ((precipProbability === -1 || precipProbability > 0) && precipitationHeight > 0) {
-            const precipTop = (1 - precipitationHeight / 120) * h - 10;
+            const precipTop = (0.5 + (1 - precipitationHeight / 5)/2) * (h - 10);
             paint.setColor(item.precipColor);
             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
             canvas.drawRect(0, precipTop, w, h - 10, paint);

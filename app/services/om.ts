@@ -249,8 +249,11 @@ export async function getWeather(weatherLocation: WeatherLocation) {
     // console.log('current', JSON.stringify(current));
     // console.log('warnings', JSON.stringify(warnings));
     const hourly = forecast.hourly;
-    const hourlyIndex = hourly.weathercode.findIndex((d) => d === null);
-    const hourlyData = hourly.time.slice(0, hourlyIndex).map((time, index) => {
+    let hourlyLastIndex = hourly.weathercode.findIndex((d) => d === null);
+    if (hourlyLastIndex === -1) {
+        hourlyLastIndex = hourly.weathercode.length -1;
+    }
+    const hourlyData = hourly.time.slice(0, hourlyLastIndex).map((time, index) => {
         const d = {} as Hourly;
         d.time = time * 1000;
         const code = hourly.weathercode[index];
@@ -260,16 +263,24 @@ export async function getWeather(weatherLocation: WeatherLocation) {
         d.feelTemperature = Math.round(hourly.apparent_temperature[index]);
 
         d.windBearing = hourly.winddirection_10m[index];
-        d.precipAccumulation = hourly.precipitation[index];
 
-        if (hourly.precipitation_probability) {
-            d.precipProbability = hourly.precipitation_probability[index] || -1;
+        const hasNext = index < hourlyLastIndex;
+
+        if (hourly.precipitation_probability && hasNext) {
+            d.precipProbability = hourly.precipitation_probability[index + 1] || -1;
+        }
+        if (hasNext && hourly.snowfall) {
+            d.snowfall = hourly.snowfall[index + 1] || -1;
         }
 
-        // d.precipProbabilities= probabilities;
+        if (hasNext && hourly.precipitation) {
+            d.precipAccumulation = hourly.precipitation[index + 1] || -1;
+        }
+
         d.cloudCover = hourly.cloudcover[index];
-        // d.humidity = data.humidity;
-        d.windGust = hourly.windgusts_10m[index];
+        if (hasNext && hourly.windgusts_10m) {
+            d.windGust = hourly.windgusts_10m[index + 1];
+        }
         d.windSpeed = hourly.windspeed_10m[index];
         if (hourly.snow_depth) {
             d.snowDepth = hourly.snow_depth[index];
@@ -311,7 +322,7 @@ export async function getWeather(weatherLocation: WeatherLocation) {
                     temperatureMax: daily.temperature_2m_max[index],
                     temperatureMin: daily.temperature_2m_min[index],
                     // humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
-                    uvIndex: daily.uv_index_max?.[index],
+                    uvIndex: Math.ceil(daily.uv_index_max?.[index]),
                     windGust: Math.round(daily.windgusts_10m_max[index]),
                     windSpeed: Math.round(daily.windspeed_10m_max[index]),
                     windBearing: Math.round(daily.winddirection_10m_dominant[index]),

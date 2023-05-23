@@ -111,7 +111,7 @@ function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyFore
         sunsetTime: dailyForecast.sun.set * 1000
     } as DailyData;
     if (precipProbability > 0) {
-        d.precipProbability = Math.round(precipProbability * 100);
+        d.precipProbability = Math.round(precipProbability);
     }
     const precipAccumulation = Math.max(precipitationTotal, dailyForecast.precipitation['24h']);
     if (precipAccumulation > 0) {
@@ -273,44 +273,46 @@ export async function getWeather(weatherLocation: WeatherLocation) {
     // console.log('rain', JSON.stringify(rain));
     // console.log('current', JSON.stringify(current));
     // console.log('warnings', JSON.stringify(warnings));
+    let hourlyLastIndex = forecast.forecast.findIndex((d) => d.weather.icon === null || d.T.value === null);
+    if (hourlyLastIndex === -1) {
+        hourlyLastIndex = forecast.forecast.length - 1;
+    }
+    const hourlyData = forecast.forecast?.slice(0, hourlyLastIndex).map((data, index) => {
+        const hasNext = index < hourlyLastIndex;
+        const d = {} as Hourly;
+        d.time = data.dt * 1000;
+        d.icon = convertMFICon(data.weather.icon);
+        d.description = titlecase(data.weather.desc);
+        d.temperature = Math.round(data.T.value);
+        d.feelTemperature = Math.round(data.T.windchill);
 
-    const hourlyData = forecast.forecast
-        ?.filter((d) => d.weather.icon !== null && d.T.value !== null)
-        .map((data) => {
-            const d = {} as Hourly;
-            d.time = data.dt * 1000;
-            d.icon = convertMFICon(data.weather.icon);
-            d.description = titlecase(data.weather.desc);
-            d.temperature = Math.round(data.T.value);
-            d.feelTemperature = Math.round(data.T.windchill);
+        d.windBearing = data.wind.direction === 'Variable' ? -1 : data.wind.direction;
+        const acc = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
+        if (acc > 0) {
+            d.precipAccumulation = acc;
+        }
 
-            d.windBearing = data.wind.direction === 'Variable' ? -1 : data.wind.direction;
-            const acc = (data.snow?.['1h'] || 0) + (data.rain?.['1h'] || 0);
-            if (acc > 0) {
-                d.precipAccumulation = acc;
-            }
-
-            const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast || [], data.dt);
-            const prob = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
-            d.precipProbability = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
-            if (d.precipAccumulation && prob === 0) {
-                d.precipProbability = -1;
-            }
-            if (prob >= 0) {
-                d.precipProbability = prob;
-            }
-            // d.precipProbabilities = probabilities;
-            d.cloudCover = data.clouds;
-            d.humidity = data.humidity;
-            d.windGust = data.wind.gust * 3.6;
-            d.windSpeed = data.wind.speed * 3.6;
-            d.iso = data.iso0;
-            if (typeof data['rain snow limit'] === 'number') {
-                d.rainSnowLimit = data['rain snow limit'];
-            }
-            // d.pressure = data.pressure;
-            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain?.['1h'], data.snow?.['1h']);
-        });
+        const probabilities = getHourlyPrecipitationProbability(forecast.probability_forecast || [], data.dt);
+        const prob = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
+        d.precipProbability = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
+        if (d.precipAccumulation && prob === 0) {
+            d.precipProbability = -1;
+        }
+        if (prob >= 0) {
+            d.precipProbability = prob;
+        }
+        // d.precipProbabilities = probabilities;
+        d.cloudCover = data.clouds;
+        d.humidity = data.humidity;
+        d.windGust = data.wind.gust * 3.6;
+        d.windSpeed = data.wind.speed * 3.6;
+        d.iso = data.iso0;
+        if (typeof data['rain snow limit'] === 'number') {
+            d.rainSnowLimit = data['rain snow limit'];
+        }
+        // d.pressure = data.pressure;
+        return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain?.['1h'], data.snow?.['1h']);
+    });
     const r = {
         currently: current
             ? weatherDataIconColors(

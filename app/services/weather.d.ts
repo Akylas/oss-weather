@@ -69,7 +69,7 @@ interface Hourly {
     feelTemperature?: number;
     windBearing: number;
     precipAccumulation: number;
-    precipAccumulation: number;
+    snowfall: number;
     precipProbability: number;
     precipProbabilities?: {
         rain: number;

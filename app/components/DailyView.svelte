@@ -126,7 +126,7 @@
                 color: item.uvIndexColor,
                 iconFontSize: 24  * $fontScale,
                 icon: 'mdi-weather-sunny-alert',
-                value: Math.round(item.uvIndex)
+                value: Math.round(item.uvIndex) + ''
             });
         }
         // centeredItemsToDraw.push({

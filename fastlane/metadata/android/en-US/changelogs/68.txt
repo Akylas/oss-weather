@@ -1,0 +1,5 @@
+*Features*
+- openmeteo provider
+
+*Bug fixes*
+- hourly forecast fixes

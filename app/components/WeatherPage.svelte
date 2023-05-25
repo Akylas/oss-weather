@@ -372,14 +372,11 @@
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
-        leftSwipeDistance={20}
+        leftSwipeDistance={30}
         gestureHandlerOptions={{
-            activeOffsetXStart: -10,
-            activeOffsetXEnd: 10,
-            failOffsetYStart: -10,
-            failOffsetYEnd: 10,
-            minDist: 10
+            minDist: 60
         }}
+        gestureEnabled={true}
         waitFor={[15644]}
         on:close={onDrawerStartClose}
         on:start={onDrawerStartClose}
@@ -456,13 +453,14 @@
                         translationFunction={drawerTranslationFunction}
                         openAnimationDuration={100}
                         closeAnimationDuration={100}
+                        gestureTag={15644}
                         gestureHandlerOptions={{
-                            activeOffsetXStart: item.startingSide ? -10 : Number.MAX_SAFE_INTEGER,
+                            activeOffsetXStart: item.startingSide ? -10 : -Number.MAX_SAFE_INTEGER,
                             failOffsetXStart: item.startingSide ? Number.MIN_SAFE_INTEGER : 0,
-                            activeOffsetXEnd: 10,
-                            failOffsetYStart: -10,
-                            failOffsetYEnd: 10,
-                            minDist: 15
+                            // activeOffsetXEnd: 10,
+                            failOffsetYStart: -40,
+                            failOffsetYEnd: 40,
+                            minDist: 50
                         }}
                     >
                         <gridLayout rows="auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer" prop:mainContent>

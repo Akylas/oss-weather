@@ -1,0 +1,3 @@
+*Bug fixes*
+- better sensitivity for favorites menu and swipe gestures
+- open-meteo condition translations (not great in all languages yet)

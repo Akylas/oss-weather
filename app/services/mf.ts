@@ -269,10 +269,10 @@ export async function getWeather(weatherLocation: WeatherLocation) {
         current = result[1];
         warnings = result[2];
     }
-    // console.log('forecast', JSON.stringify(forecast.forecast));
-    // console.log('rain', JSON.stringify(rain));
-    // console.log('current', JSON.stringify(current));
-    // console.log('warnings', JSON.stringify(warnings));
+    console.log('forecast', JSON.stringify(forecast.forecast));
+    console.log('rain', JSON.stringify(rain));
+    console.log('current', JSON.stringify(current));
+    console.log('warnings', JSON.stringify(warnings));
     let hourlyLastIndex = forecast.forecast.findIndex((d) => d.weather.icon === null || d.T.value === null);
     if (hourlyLastIndex === -1) {
         hourlyLastIndex = forecast.forecast.length - 1;
@@ -337,7 +337,7 @@ export async function getWeather(weatherLocation: WeatherLocation) {
                 rain?.forecast.map(
                     (h) =>
                         ({
-                            intensity: h.rain - 1,
+                            intensity: Math.max(h.rain - 1, 0),
                             time: h.dt * 1000
                         } as MinutelyData)
                 ) || []

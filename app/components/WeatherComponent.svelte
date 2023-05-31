@@ -39,7 +39,6 @@
     });
 
     // onThemeChanged(() => {
-    //     console.log('onThemeChanged');
     //     collectionView.nativeView.refreshVisibleItems();
     // });
 

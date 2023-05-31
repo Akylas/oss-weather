@@ -65,10 +65,6 @@
     export let height;
     export let fakeNow;
 
-    $: if (weatherLocation) {
-        weatherLocation.isFavorite = isFavorite(weatherLocation);
-    }
-
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
             return formatDate(date, 'ddd LT');
@@ -112,7 +108,8 @@
                 return;
             }
             lastChartData = data;
-            if (!data) {
+            if (!data || data.length === 0) {
+                hasPrecip = false;
                 if (precipChartSet) {
                     precipChartSet.clear();
                 }
@@ -121,10 +118,10 @@
                 }
                 return;
             }
-            // if(data[0].time !== 0) {
-            //     data.unshift({time: 0, intensity:})
-            // }
-            // if (data[0]?.time) 
+            if (data[0].time !== 0) {
+                data.unshift({ time: 0, intensity: 0 });
+            }
+            // if (data[0]?.time)
             DEV_LOG && console.log('data', JSON.stringify(data));
             const xAxis = chart.getXAxis();
             const leftAxis = chart.getAxisLeft();
@@ -247,20 +244,21 @@
             }
         }
     }
-    $: {
-        if (lineChart) {
-            updateLineChart(item);
-        }
+    $: hasPrecip && canvasView?.nativeView.invalidate();
+    $: if (lineChart) {
+        updateLineChart(item);
     }
 
-    $: {
-        if (item && item.icon.startsWith('13')) {
-            color = snowColor;
-            precipIcon = 'wi-snowflake-cold';
-        } else {
-            color = rainColor;
-            precipIcon = 'wi-raindrop';
-        }
+    $: if (weatherLocation) {
+        weatherLocation.isFavorite = isFavorite(weatherLocation);
+    }
+
+    $: if (item && item.icon.startsWith('13')) {
+        color = snowColor;
+        precipIcon = 'wi-snowflake-cold';
+    } else {
+        color = rainColor;
+        precipIcon = 'wi-raindrop';
     }
 
     onThemeChanged(() => {
@@ -290,10 +288,9 @@
             xAxis.setTextSize(10 * $fontScale);
         }
         lineChart?.nativeView.invalidate();
-        canvasView && canvasView.nativeView.invalidate();
+        canvasView?.nativeView.invalidate();
     }
     fontScale.subscribe(redraw);
-
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
@@ -469,6 +466,6 @@
         horizontalAlignment="left"
     /> -->
     <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={weatherIconSize * (2-$fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="center" size={weatherIconSize * (2 - $fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridLayout>

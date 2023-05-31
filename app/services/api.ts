@@ -205,7 +205,7 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
         content = (await response.content.toStringAsync()) as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    DEV_LOG && console.log('handleRequestResponse', statusCode, JSON.stringify(content));
+    // DEV_LOG && console.log('handleRequestResponse', statusCode, JSON.stringify(content));
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {

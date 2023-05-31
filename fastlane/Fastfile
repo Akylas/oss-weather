@@ -17,6 +17,7 @@ end
 fastlane_version '2.135.2'
 opt_out_usage
 $ios_scheme = File.basename(File.expand_path('..')).gsub(/[^a-zA-Z0-9]/, "")
+sentry_cli_path = './node_modules/.bin/sentry-cli'
 
 packageJSON = JSON.parse(File.read('../package.json'))
 fastlaneOptions = packageJSON['fastlane'] || Hash.new
@@ -61,7 +62,9 @@ lane :checkGitStatus do
 end
 desc 'Check Sentry Cli Status'
 lane :checkSentryClitatus do
-    if sentry_check_cli_installed()
+    if sentry_check_cli_installed(
+      sentry_cli_path: sentry_cli_path
+    )
       UI.success('Sentry cli installed, all good! 💪')
     else
       error_message = "We cant find sentry cli"
@@ -98,7 +101,6 @@ lane :build_flavor do |params|
   # and so to map errors correctly we use different dist for ios and android
   sentryDist =  versionCode + '.' + platform # optional distribution of the release usually the buildnumber
 
-  sentry_cli_path = './node_modules/.bin/sentry-cli'
   sentry_version = "#{app_identifier}@#{version}+#{versionCode}"
   puts "platform:"  + platform
   puts "flavor:"  + flavor

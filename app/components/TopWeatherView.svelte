@@ -118,10 +118,9 @@
                 }
                 return;
             }
-            if (data[0].time !== 0) {
-                data.unshift({ time: 0, intensity: 0 });
+            if (data[0].time > 0) {
+                data.unshift({ time: data[0].time - 1, intensity: 0 });
             }
-            // if (data[0]?.time)
             DEV_LOG && console.log('data', JSON.stringify(data));
             const xAxis = chart.getXAxis();
             const leftAxis = chart.getAxisLeft();
@@ -245,6 +244,7 @@
         }
     }
     $: hasPrecip && canvasView?.nativeView.invalidate();
+    $: item && canvasView?.nativeView.invalidate();
     $: if (lineChart) {
         updateLineChart(item);
     }

@@ -1,0 +1,8 @@
+*Bug fixes*
+- top info layout issue after refresh (if minutely appeared or disappeared)
+- meteofrance fix for negative minutely precipitation
+- open-meteo fixes (preparing custom model)
+- show provider on bottomsheet weather (opened from other apps)
+- allow favorites scrolling #45
+- auto theme handling fix
+- update current weather data on location change #46

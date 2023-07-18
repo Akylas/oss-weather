@@ -10,7 +10,7 @@ import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { ScrollView } from '@nativescript/core';
+import { Application, ScrollView, Trace } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
@@ -86,7 +86,10 @@ SwipeMenuElement.register();
 // Trace.enable();
 // on startup we need to ensure theme is loaded because of a mixin
 // on startup we need to say what we are using
-startThemeHelper();
+
+Application.on(Application.launchEvent, () => {
+    startThemeHelper();
+});
 if (__IOS__) {
     const variables = require('~/variables');
     const primaryColor = variables.primaryColor;

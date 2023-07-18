@@ -140,21 +140,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         if (Trace.isEnabled()) {
             Trace.write('NativeScriptActivity.onPostResume();', Trace.categories.NativeLifecycle);
         }
-
-        // NOTE: activity.onPostResume() is called when activity resume is complete and we can
-        // safely raise the Application resume event;
-        // onActivityResumed(...) lifecycle callback registered in Application is called too early
-        // and raising the Application resume event there causes issues like
-        // https://github.com/NativeScript/NativeScript/issues/6708
-        if (activity.isNativeScriptActivity) {
-            const args = {
-                eventName: Application.resumeEvent,
-                object: Application.android,
-                android: activity
-            } as ApplicationEventData;
-            Application.notify(args);
-            Application.android.paused = false;
-        }
     }
 
     public onDestroy(activity: any, superFunc: Function): void {
@@ -300,7 +285,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const BottomSheetWeatherPage = (await import('~/components/BottomSheetWeatherPage.svelte')).default;
             await showBottomSheet({
                 parent: rootView,
-                view: BottomSheetWeatherPage,
+                view: BottomSheetWeatherPage as any,
                 dismissOnBackgroundTap: true,
                 dismissOnDraggingDownSheet: true,
                 props: {

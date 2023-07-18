@@ -374,7 +374,9 @@
         bind:this={drawer}
         leftSwipeDistance={30}
         gestureHandlerOptions={{
-            minDist: 60
+            minDist: 60,
+            failOffsetYStart: -10,
+            failOffsetYEnd: 10
         }}
         gestureEnabled={true}
         waitFor={[15644]}
@@ -444,7 +446,7 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
-            <collectionview bind:this={favoriteCollectionView} row={2} rowHeight={80} items={favorites}>
+            <collectionview bind:this={favoriteCollectionView} row={1} rowHeight={80} items={favorites}>
                 <Template let:item>
                     <swipemenu
                         id={item.name}
@@ -463,9 +465,9 @@
                             minDist: 50
                         }}
                     >
-                        <gridLayout rows="auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer" prop:mainContent>
-                            <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
-                            <label row={1} fontSize={14} color={$textLightColor}>
+                        <gridLayout rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer" prop:mainContent>
+                            <label row={1} fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
+                            <label row={2} fontSize={14} color={$textLightColor}>
                                 <span text={item.sys.state || item.sys.country} />
                                 <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
                             </label>

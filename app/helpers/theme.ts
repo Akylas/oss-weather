@@ -82,16 +82,24 @@ export function applyTheme(theme: Themes) {
     }
 }
 
+function getSystemAppearance() {
+    if (typeof Application.systemAppearance === 'function') {
+        return Application.systemAppearance();
+    }
+    return Application.systemAppearance;
+}
+
 function getRealTheme(theme) {
     DEV_LOG && console.log('getRealTheme', theme);
     if (theme === 'auto') {
         try {
-            theme = Application.systemAppearance();
+            theme = getSystemAppearance();
+            DEV_LOG && console.log('getSystemAppearance', theme);
             if (autoDarkToBlack && theme === 'dark') {
                 theme = 'black';
             }
         } catch (err) {
-            console.error('getRealTheme', err);
+            console.error('getRealTheme', err, err.stack);
         }
     }
     return theme;

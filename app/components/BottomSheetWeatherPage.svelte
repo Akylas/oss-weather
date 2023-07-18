@@ -1,10 +1,12 @@
 <script lang="ts">
-    import { Utils } from '@nativescript/core';
+    import { Color, Utils } from '@nativescript/core';
     import { getString } from '@nativescript/core/application-settings';
     import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
+    import { backgroundColor } from '~/variables';
+    import { l, lc } from '~/helpers/locale';
 
     let items = [];
     let loading = false;
@@ -54,11 +56,21 @@
         }
     }
     $: refresh(weatherLocation);
+    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
 </script>
 
 <gridlayout rows="auto,*" class="weatherpage" height="100%">
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
     </CActionBar>
+    <label
+                    row={0}
+                    fontSize={10}
+                    backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
+                    text={lc('powered_by', l(`provider.${provider}`))}
+                    verticalAlignment="top"
+                    horizontalAlignment="right"
+                    marginRight={6}
+                />
     <WeatherComponent row={1} {items} {weatherLocation} />
 </gridlayout>

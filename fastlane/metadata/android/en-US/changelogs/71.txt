@@ -1,0 +1,2 @@
+*Bug fixes*
+- weather request from other apps fix when app is killed

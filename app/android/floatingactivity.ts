@@ -15,6 +15,7 @@ import {
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { WeatherLocation } from '~/services/api';
 import { showBottomSheet } from '~/utils/svelte/bottomsheet';
+import { start as startThemeHelper } from '~/helpers/theme';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -250,6 +251,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     // 4. _resetRootView method. this._rootView should have been cleared upfront. Launch event should not fired
     private async setActivityContent(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, fireLaunchEvent: boolean, intent: android.content.Intent) {
         let rootView = this._rootView;
+        DEV_LOG && console.log('setActivityContent')
         if (!rootView) {
             rootView = new GridLayout();
             this._rootView = rootView;
@@ -272,6 +274,8 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         activity.setContentView(rootView.nativeViewProtected, new org.nativescript.widgets.CommonLayoutParams());
 
         try {
+            //ensure theme is started
+            startThemeHelper();
             const uri = intent.getData();
             const lat = parseFloat(uri.getQueryParameter('lat'));
             const lon = parseFloat(uri.getQueryParameter('lon'));
@@ -298,7 +302,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 }
             });
         } catch (err) {
-            console.error('error retreiving data', err);
+            console.error('error retreiving data', err, err.stack);
         } finally {
             activity.finish();
         }

@@ -44,15 +44,22 @@ $lang.subscribe((newLang: string) => {
 function setLang(newLang) {
     newLang = getActualLanguage(newLang);
     if (supportedLanguages.indexOf(newLang) === -1) {
-        newLang = 'en';
+        newLang = newLang.split('-')[0].toLowerCase();
+        if (supportedLanguages.indexOf(newLang) === -1) {
+            newLang = 'en';
+        }
     }
     if (__IOS__) {
         overrideNativeLocale(newLang);
     } else {
         // Application.android.foregroundActivity?.recreate();
-        const appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(newLang);
-        // Call this on the main thread as it may require Activity.restart()
-        androidx.appcompat.app.AppCompatDelegate['setApplicationLocales'](appLocale);
+        try {
+            const appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(newLang);
+            // Call this on the main thread as it may require Activity.restart()
+            androidx.appcompat.app.AppCompatDelegate['setApplicationLocales'](appLocale);
+        } catch (error) {
+            console.error(error);
+        }
     }
     $lang.set(newLang);
 }
@@ -62,7 +69,6 @@ function getActualLanguage(language) {
     if (language === 'auto') {
         language = Device.language;
     }
-    language = language.split('-')[0].toLowerCase();
     switch (language) {
         case 'cs':
             return 'cz';

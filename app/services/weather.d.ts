@@ -6,12 +6,12 @@ interface WeatherData {
 }
 
 interface Alert {
-    sender_name: string;
+    sender_name?: string;
     event: string;
     start: number;
     end: number;
     description: string;
-    tags: string[];
+    tags?: string[];
 }
 
 interface Minutely {

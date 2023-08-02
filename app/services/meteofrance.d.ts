@@ -1,135 +1,134 @@
-export interface MFForecastResult {
-    position: Position;
-    updated_on: number;
-    daily_forecast: Dailyforecast[];
-    forecast: Forecast[];
-    probability_forecast: Probabilityforecast[];
-}
-
-export interface Probabilityforecast {
-    dt: number;
-    rain: Rain;
-    snow: Rain;
-    freezing: number;
-}
-
-export interface Forecast {
-    dt: number;
-    T: T2;
-    humidity: number;
-    sea_level: number;
-    wind: Wind;
-    rain: Rain;
-    snow: Rain;
-    iso0: number;
-    'rain snow limit': number | string;
-    clouds: number;
-    weather: Weather12H;
-}
-
-export interface Rain {
-    '1h'?: number;
-    '3h'?: number;
-    '6h'?: number;
-    '12h'?: number;
-    '24h'?: number;
-}
-
-export interface Wind {
-    speed: number;
-    gust: number;
-    direction: number | 'Variable';
-    icon: string;
-}
-
-export interface T2 {
-    value: number;
-    windchill: number;
-}
-
-export interface Dailyforecast {
-    dt: number;
-    T: T;
-    humidity: Humidity;
-    precipitation: Precipitation;
-    uv?: number;
-    weather12H: Weather12H;
-    sun: Sun;
-}
-
-export interface Sun {
-    rise: number;
-    set: number;
-}
-
-export interface Weather12H {
-    icon: string;
-    desc: string;
-}
-
-export interface Precipitation {
-    '24h': number;
-}
-
-export interface Humidity {
-    min: number;
-    max: number;
-}
-
-export interface T {
-    min: number;
-    max: number;
-    sea?: any;
-}
-
 export interface Coord {
     lon: number;
     lat: number;
 }
-export interface Position {
-    lat: number;
-    lon: number;
-    alti: number;
-    name: string;
-    country: string;
-    dept: string;
-    rain_product_available: number;
-    timezone: string;
-    insee?: string;
-    bulletin_cote: number;
+
+interface MFForecastResult {
+    update_time: number;
+    type: string;
+    geometry: Geometry;
+    properties: ForecastProperties;
 }
 
-export interface MFMinutely {
-    position: Position;
-    updated_on: number;
-    quality: number;
+interface ForecastProperties {
+    altitude: number;
+    name: string;
+    country: string;
+    french_department: string;
+    rain_product_available: number;
+    timezone: string;
+    insee: string;
+    bulletin_cote: number;
+    daily_forecast: Dailyforecast[];
+    forecast: ForecastForecast[];
+    probability_forecast: Probabilityforecast[];
+}
+
+interface Probabilityforecast {
+    time: number;
+    rain_hazard_3h?: number;
+    rain_hazard_6h?: number;
+    snow_hazard_3h?: number;
+    snow_hazard_6h?: number;
+    freezing_hazard?: number;
+    storm_hazard?: number;
+}
+
+interface ForecastForecast {
+    time: number;
+    T?: number;
+    T_windchill?: number;
+    relative_humidity?: number;
+    P_sea?: number;
+    wind_speed?: number;
+    wind_speed_gust?: number;
+    wind_direction?: number;
+    wind_icon?: string;
+    rain_1h?: number;
+    rain_3h?: number;
+    rain_6h?: number;
+    rain_12h?: any;
+    rain_24h?: any;
+    snow_1h?: number;
+    snow_3h?: number;
+    snow_6h?: number;
+    snow_12h?: any;
+    snow_24h?: any;
+    iso0?: number;
+    rain_snow_limit?: number | string;
+    total_cloud_cover: number;
+    weather_icon: string;
+    weather_description: string;
+    weather_confidence_index?: number;
+}
+
+interface Dailyforecast {
+    time: number;
+    T_min: number;
+    T_max: number;
+    T_sea?: any;
+    relative_humidity_min: number;
+    relative_humidity_max: number;
+    total_precipitation_24h: number;
+    uv_index?: number;
+    daily_weather_icon: string;
+    daily_weather_description: string;
+    sunrise_time: number;
+    sunset_time: number;
+}
+
+interface Geometry {
+    type: string;
+    coordinates: number[];
+}
+
+interface MFMinutely {
+    update_time: number;
+    type: string;
+    geometry: Geometry;
+    properties: RainProperties;
+}
+
+interface RainProperties {
+    altitude: number;
+    name: string;
+    country: string;
+    french_department: string;
+    rain_product_available: number;
+    timezone: string;
+    confidence: number;
     forecast: RainForecast[];
 }
 
-export interface RainForecast {
-    dt: number;
-    rain: number;
-    desc: string;
+interface RainForecast {
+    time: number;
+    rain_intensity: number;
+    rain_intensity_description: string;
 }
 
-export interface MFCurrent {
-    position: Position;
-    updated_on: number;
-    observation: Observation;
+interface MFCurrent {
+    update_time: number;
+    type: string;
+    geometry: Geometry;
+    properties: CurrentProperties;
 }
 
-export interface Observation {
+interface CurrentProperties {
+    timezone: string;
+    gridded: Gridded;
+}
+
+interface Gridded {
+    time: number;
     T: number;
-    wind: Wind;
-    weather: Weather;
+    wind_speed: number;
+    wind_direction: number;
+    wind_icon: string;
+    weather_icon: string;
+    weather_description: string;
 }
 
-export interface Weather {
-    icon: string;
-    desc: string;
-}
-
-export interface MFWarnings {
+interface MFWarnings {
     update_time: number;
     end_validity_time: number;
     domain_id: string;
@@ -144,30 +143,23 @@ export interface MFWarnings {
     text_avalanche?: any;
 }
 
-export interface Comments {
-    begin_time: number;
-    end_time: number;
-    text_bloc_item: Textblocitem[];
-}
-
-export interface Textblocitem {
+interface Comments {
     title: string;
-    title_html: string;
-    text_html: any[];
     text: any[];
 }
 
-export interface Phenomenonsitem {
-    phenomenon_id: number;
+interface Phenomenonsitem {
+    phenomenon_id: string;
     phenomenon_max_color_id: number;
 }
 
-export interface Timelap {
-    phenomenon_id: number;
+interface Timelap {
+    phenomenon_id: string;
     timelaps_items: Timelapsitem[];
 }
 
-export interface Timelapsitem {
+interface Timelapsitem {
     begin_time: number;
+    end_time: number;
     color_id: number;
 }

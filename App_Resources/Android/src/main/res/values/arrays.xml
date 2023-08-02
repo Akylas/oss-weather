@@ -24,14 +24,22 @@
     </string-array>
     <string-array name="langs">
         <item name="auto">@string/theme.auto</item>
-        <item name="fr">@string/english</item>
-        <item name="en">@string/french</item>
-        <item name="en">@string/spanish</item>
+        <item name="en">@string/english</item>
+        <item name="fr">@string/french</item>
+        <item name="de">@string/german</item>
+        <item name="es">@string/spanish</item>
+        <item name="it">@string/italian</item>
+        <item name="pt">@string/portuguese</item>
+        <item name="ru">@string/russian</item>
     </string-array>
     <string-array name="langsValues">
         <item name="auto">auto</item>
-        <item name="french">en</item>
-        <item name="en">fr</item>
-        <item name="en">es</item>
+        <item name="en">en</item>
+        <item name="fr">fr</item>
+        <item name="de">de</item>
+        <item name="es">es</item>
+        <item name="it">it</item>
+        <item name="pt">pt</item>
+        <item name="ru">ru</item>
     </string-array>
 </resources>

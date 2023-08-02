@@ -1,0 +1,7 @@
+*Features*
+- fully support new languages
+
+*Bug fixes*
+- moon phase fix and new way to show moon/sun azimuth
+- correctly set theme
+- better meteofrance data

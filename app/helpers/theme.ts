@@ -2,8 +2,8 @@ import { getRootView } from '@akylas/nativescript/application';
 import Theme from '@nativescript-community/css-theme';
 import { Application, EventData, Utils } from '@nativescript/core';
 import { getBoolean, getString, setString } from '@nativescript/core/application-settings';
-import { iOSNativeHelper } from '@nativescript/core/utils';
 import { prefs } from '~/services/preferences';
+import { sdkVersion } from '~/utils/utils';
 import { createGlobalEventListener, globalObservable, updateThemeColors } from '~/variables';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
@@ -39,7 +39,7 @@ export function applyTheme(theme: Themes) {
                 } else {
                     if (Application.ios.window) {
                         //@ts-ignore
-                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
+                        Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
                     }
                 }
                 break;
@@ -50,7 +50,7 @@ export function applyTheme(theme: Themes) {
                 } else {
                     if (Application.ios.window) {
                         //@ts-ignore
-                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
+                        Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
                     }
                 }
                 break;
@@ -61,7 +61,7 @@ export function applyTheme(theme: Themes) {
                 } else {
                     if (Application.ios.window) {
                         //@ts-ignore
-                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                        Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
                     }
                 }
                 break;
@@ -72,7 +72,7 @@ export function applyTheme(theme: Themes) {
                 } else {
                     if (Application.ios.window) {
                         //@ts-ignore
-                        (Application.ios.window as UIWindow).overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
+                        Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
                     }
                 }
                 break;
@@ -110,7 +110,7 @@ export function start() {
         return;
     }
     started = true;
-    if (__IOS__ && iOSNativeHelper.MajorVersion < 13) {
+    if (__IOS__ && sdkVersion < 13) {
         theme = 'light';
     } else {
         theme = getString('theme', DEFAULT_THEME) as Themes;
@@ -132,7 +132,7 @@ export function start() {
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;
         DEV_LOG && console.log('key:theme', theme, newTheme, autoDarkToBlack);
-        if (__IOS__ && iOSNativeHelper.MajorVersion < 13) {
+        if (__IOS__ && sdkVersion < 13) {
             newTheme = 'light';
         }
         // on pref change we are updating
@@ -145,18 +145,20 @@ export function start() {
         const realTheme = getRealTheme(newTheme);
         updateThemeColors(realTheme);
         globalObservable.notify({ eventName: 'theme', data: realTheme });
-        // if (__ANDROID__) {
-        //     // we recreate the activity to get the change
-        //     const activity = Application.android.startActivity as androidx.appcompat.app.AppCompatActivity;
-        //     activity.recreate();
-        //     if (Application.android.foregroundActivity !== activity) {
-        //         (Application.android.foregroundActivity as androidx.appcompat.app.AppCompatActivity).recreate();
-        //     }
-        // }
+        if (__ANDROID__) {
+            // we recreate the activity to get the change
+            const activity = Application.android.startActivity;
+            //TODO: fix N/css-theme so that we dont need to recreate the activity
+            activity.recreate();
+            if (Application.android.foregroundActivity !== activity) {
+                Application.android.foregroundActivity.recreate();
+            }
+        }
     });
     const realTheme = getRealTheme(theme);
     if (__ANDROID__) {
-        const context = Utils.ad.getApplicationContext();
+        const context = Utils.android.getApplicationContext();
+        // setTimeout(() => {
         if (context) {
             applyTheme(theme);
         } else {
@@ -165,6 +167,16 @@ export function start() {
                 updateThemeColors(realTheme);
             });
         }
+        updateThemeColors(realTheme);
+        // }, 0);
+        // if (context) {
+        //     applyTheme(theme);
+        // } else {
+        //     Application.on(Application.launchEvent, () => {
+        //         applyTheme(theme);
+        //         updateThemeColors(realTheme);
+        //     });
+        // }
         updateThemeColors(realTheme);
     } else {
         if (Application.ios && Application.ios.window) {

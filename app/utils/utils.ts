@@ -1,8 +1,9 @@
-import { Frame } from '@nativescript/core';
+import { Device, Frame } from '@nativescript/core';
 import * as app from '@nativescript/core/application';
 import { knownFolders } from '@nativescript/core/file-system';
 import { Dayjs } from 'dayjs';
 import { lc } from '~/helpers/locale';
+export const sdkVersion = parseInt(Device.sdkVersion, 10);
 
 export function getDataFolder() {
     let dataFolder;

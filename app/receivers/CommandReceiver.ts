@@ -18,13 +18,13 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             const provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'openmeteo') as any;
             let data: WeatherData;
             if (provider === 'openmeteo') {
-                const providerModule = await import('~/services/om');
+                const providerModule = await import('~/services/om.js');
                 data = await providerModule.getWeather(weatherLocation);
             } else if (provider === 'openweathermap') {
-                const providerModule = await import('~/services/owm');
+                const providerModule = await import('~/services/owm.js');
                 data = await providerModule.getWeather(weatherLocation);
             } else if (provider === 'meteofrance') {
-                const providerModule = await import('~/services/mf');
+                const providerModule = await import('~/services/mf.js');
                 data = await providerModule.getWeather(weatherLocation);
             }
             const responseIntent = new android.content.Intent('com.akylas.weather.QUERY_WEATHER_RESULT');

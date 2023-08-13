@@ -1,5 +1,6 @@
 <script context="module" lang="ts">
-    import { Align, LinearGradient, Paint, Path, Style, TileMode } from '@nativescript-community/ui-canvas';
+    import { createNativeAttributedString } from '@nativescript-community/text';
+    import { Align, LayoutAlignment, LinearGradient, Paint, Path, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
@@ -7,15 +8,18 @@
     import { formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { appFontFamily, fontScale, imperial, subtitleColor, textColor } from '~/variables';
+    import { appFontFamily, fontScale, imperial, subtitleColor, textColor, wiFontFamily } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
     const appTextPaint = new Paint();
     appTextPaint.fontFamily = appFontFamily;
     appTextPaint.setTextAlign(Align.CENTER);
-    appTextPaint.setFontWeight('normal');
-    appTextPaint.setAlpha(180);
+    const iconPaint = new Paint();
+    iconPaint.fontFamily = wiFontFamily;
+    iconPaint.setTextAlign(Align.CENTER);
+    // appTextPaint.setFontWeight('normal');
+    // appTextPaint.setAlpha(80);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
     const pathPaint = new Paint();
@@ -201,10 +205,36 @@
         textPaint.setFontWeight('normal');
         // textPaint.setTextSize(11 * $fontScale);
         // textPaint.setAlpha(180);
+        const subTextSize = 11 * $fontScale;
         if (item.windSpeed) {
-            appTextPaint.setTextSize(11 * $fontScale);
+            appTextPaint.setTextSize(subTextSize);
             appTextPaint.setColor($textColor);
             canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, iconDecale, appTextPaint);
+        }
+        if (item.windGust && (item.windSpeed || item.windGust > 2* item.windSpeed)) {
+            textPaint.setTextSize(subTextSize);
+            // iconPaint.setTextSize(subTextSize);
+            // appTextPaint.setColor('#ff0353');
+            textPaint.setColor('#ff0353');
+
+        //     const nString = createNativeAttributedString({
+        //     spans: [
+        //         // {
+        //         //     fontFamily:wiFontFamily,
+        //         //     text: 'wi-strong-wind'
+        //         // },
+        //         {
+        //             text: formatValueToUnit(item.windGust, UNITS.Speed, $imperial)
+        //         }
+        //     ]
+        // });
+        // canvas.save();
+        // const staticLayout = new StaticLayout(nString, textPaint, w, LayoutAlignment.ALIGN_CENTER, 1, 0, false);
+        // canvas.translate(0, iconDecale);
+        // staticLayout.draw(canvas);
+        // canvas.restore();
+            // canvas.drawText('wi-strong-wind', w2, iconDecale + subTextSize + 2, iconPaint);
+            canvas.drawText(formatValueToUnit(item.windGust, UNITS.Speed, $imperial), w2, iconDecale + subTextSize + 2, textPaint);
         }
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }

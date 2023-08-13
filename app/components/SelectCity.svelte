@@ -96,6 +96,7 @@
                     <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
                     <label row={1} fontSize={14} color={$textLightColor}>
                         <span text={item.sys.state || item.sys.country} />
+                        <span visibility={item.sys.postcode ? 'visible' : 'hidden'} text={' (' + item.sys.postcode + ')'} />
                         <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
                     </label>
                     <mdbutton

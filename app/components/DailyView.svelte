@@ -84,6 +84,7 @@
 
         let centeredItemsToDraw: {
             color?: string | Color;
+            iconColor?: string | Color;
             paint?: Paint;
             iconFontSize: number;
             icon: string;
@@ -100,6 +101,16 @@
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)
             });
         }
+        if (item.windGust && (!item.windSpeed || item.windGust > 2* item.windSpeed)) {
+            centeredItemsToDraw.push({
+                iconFontSize,
+                paint: wiPaint,
+                color: '#ff0353',
+                icon: 'wi-strong-wind',
+                value: convertValueToUnit(item.windGust, UNITS.Speed, $imperial)[0],
+                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+            });
+        }
         if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
@@ -110,7 +121,7 @@
                 subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         }
-         if (item.cloudCover > 20) {
+        if (item.cloudCover > 20) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
                 color: item.cloudColor,
@@ -124,7 +135,7 @@
             centeredItemsToDraw.push({
                 paint: mdiPaint,
                 color: item.uvIndexColor,
-                iconFontSize: 24  * $fontScale,
+                iconFontSize: 24 * $fontScale,
                 icon: 'mdi-weather-sunny-alert',
                 value: Math.round(item.uvIndex) + ''
             });
@@ -138,13 +149,16 @@
         // });
         const count = centeredItemsToDraw.length;
 
-        const iconsTop = 10 * $fontScale
+        const iconsTop = 10 * $fontScale;
         centeredItemsToDraw.forEach((c, index) => {
             let x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || $textColor);
             if (c.icon) {
+                if (c.iconColor) {
+                    paint.setColor(c.iconColor);
+                }
                 canvas.drawText(c.icon, x, iconsTop + 20, paint);
             }
             if (c.value) {
@@ -204,5 +218,5 @@
 
 <gridLayout height={100 * $fontScale}>
     <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
-    <WeatherIcon marginRight="10" marginTop={16 * ($fontScale)} horizontalAlignment="right" size={60 * ($fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon marginRight="10" marginTop={16 * $fontScale} horizontalAlignment="right" size={60 * $fontScale} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
 </gridLayout>

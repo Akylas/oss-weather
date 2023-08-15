@@ -46,7 +46,7 @@
   "email_required": "a valid email is required",
   "english": "英語",
   "error": "error",
-  "espagnol": "spanish",
+  "espagnol": "スペイン語",
   "expires": "expires",
   "extreme_cold": "extreme cold",
   "favorites": "favorites",
@@ -136,7 +136,7 @@
   "send_bug_report": "send bug report",
   "send_bug_report_desc": "enter a mail and a description for the encountered error",
   "settings": {
-    "title": "settings"
+    "title": "設定"
   },
   "share_application": "share application",
   "snow": "snow",
@@ -147,11 +147,11 @@
   "source_code_desc": "get the source code of the application on github",
   "spanish": "spanish",
   "theme": {
-    "auto": "auto",
-    "black": "black",
-    "dark": "dark",
-    "light": "light",
-    "title": "theme"
+    "auto": "自動",
+    "black": "ブラック",
+    "dark": "ダーク",
+    "light": "ライト",
+    "title": "テーマ"
   },
   "third_parties": "third party libraries",
   "third_parties_desc": "the software we love and use",

@@ -1,0 +1,5 @@
+*Features*
+- testing showing wind gust speed. the design is not final. Please share any idea!
+
+*Bug fixes*
+- show postcode in select city

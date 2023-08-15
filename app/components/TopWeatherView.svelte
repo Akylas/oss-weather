@@ -46,7 +46,8 @@
         icon: string;
         windIcon: string;
         moonIcon: string;
-        windSpeed?: string;
+        windSpeed?: number;
+        windGust?: number;
         cloudCover?: number;
         cloudCeiling?: number;
         uvIndex?: number;
@@ -309,6 +310,16 @@
                 paint: appPaint,
                 icon: item.windIcon,
                 value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
+                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+            });
+        }
+        if (item.windGust && (!item.windSpeed || item.windGust > 2* item.windSpeed)) {
+            centeredItemsToDraw.push({
+                iconFontSize,
+                paint: wiPaint,
+                color: '#ff0353',
+                icon: 'wi-strong-wind',
+                value: convertValueToUnit(item.windGust, UNITS.Speed, $imperial)[0],
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)
             });
         }

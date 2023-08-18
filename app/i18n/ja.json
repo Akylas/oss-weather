@@ -81,6 +81,7 @@
     }
   },
   "italian": "イタリア語",
+  "japanese": "日本語",
   "language": "言語",
   "last_updated": "更新",
   "light": "軽い",
@@ -157,6 +158,7 @@
   "third_parties_desc": "私たちが気に入って使用しているソフトウェア",
   "thunderstorm": "雷雨",
   "thunderstorms": "雷雨",
+  "uchinaguchi": "うちなーぐち",
   "version": "バージョン",
   "weather_map": "天気図",
   "wind": "風"

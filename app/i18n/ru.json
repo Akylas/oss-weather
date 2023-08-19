@@ -81,6 +81,7 @@
     }
   },
   "italian": "итальянский",
+  "japanese": "Японский язык",
   "language": "Язык",
   "last_updated": "Обновлено последний раз",
   "light": "Светлый",
@@ -157,6 +158,7 @@
   "third_parties_desc": "Софт который мы любим и используем",
   "thunderstorm": "гроза",
   "thunderstorms": "грозы",
+  "uchinaguchi": "Окинавский язык",
   "version": "Версия",
   "weather_map": "Погодная карта",
   "wind": "ветер"

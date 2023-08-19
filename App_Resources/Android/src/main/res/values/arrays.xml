@@ -31,6 +31,8 @@
         <item name="it">@string/italian</item>
         <item name="pt">@string/portuguese</item>
         <item name="ru">@string/russian</item>
+        <item name="ja">@string/japanese</item>
+        <item name="ru">@string/uchinaguchi</item>
     </string-array>
     <string-array name="langsValues">
         <item name="auto">auto</item>
@@ -41,5 +43,7 @@
         <item name="it">it</item>
         <item name="pt">pt</item>
         <item name="ru">ru</item>
+        <item name="ja">ja</item>
+        <item name="ryu">ryu</item>
     </string-array>
 </resources>

@@ -81,6 +81,7 @@
     }
   },
   "italian": "italien",
+  "japanese": "Japonais",
   "language": "Langue",
   "last_updated": "Mise à jour",
   "light": "Lumière",
@@ -157,6 +158,7 @@
   "third_parties_desc": "Les logiciels que nous aimons et utilisons",
   "thunderstorm": "orage",
   "thunderstorms": "orages",
+  "uchinaguchi": "Okinawaïen",
   "version": "Version",
   "weather_map": "Carte météo",
   "wind": "vent"

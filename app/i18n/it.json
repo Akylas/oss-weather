@@ -81,6 +81,7 @@
     }
   },
   "italian": "italiano",
+  "japanese": "Giapponese",
   "language": "lingua",
   "last_updated": "aggiornato",
   "light": "leggero",
@@ -157,6 +158,7 @@
   "third_parties_desc": "il programma che amiamo e usiamo",
   "thunderstorm": "temporale",
   "thunderstorms": "temporali",
+  "uchinaguchi": "lingua di Okinawa",
   "version": "versione",
   "weather_map": "mappa del meteo",
   "wind": "vento"

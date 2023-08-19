@@ -16,7 +16,7 @@ android {
       reset()
       include resConfigs.split(',')
     } else {
-      resConfigs "en", "fr", "es", "it", "ru", "pt", "de"
+      resConfigs "en", "fr", "es", "it", "ru", "pt", "de", "ja", "ryu", 
     }
     ndk {
       if (splitEnabled || project.hasProperty('abiFilters')) {

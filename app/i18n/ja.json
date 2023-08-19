@@ -111,7 +111,7 @@
   "please_describe_error": "エラーについての説明",
   "portuguese": "ポルトガル語",
   "possible_consequences": "考えられる結果",
-  "powered_by": "%1$s によって提供されました",
+  "powered_by": "%1$sによって提供されました",
   "preferences": "環境設定",
   "provider": {
     "meteofrance": "MéteoFrance",

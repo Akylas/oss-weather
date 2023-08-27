@@ -211,7 +211,7 @@
             appTextPaint.setColor($textColor);
             canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, iconDecale, appTextPaint);
         }
-        if (item.windGust && (item.windSpeed || item.windGust > 2* item.windSpeed)) {
+        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
             textPaint.setTextSize(subTextSize);
             // iconPaint.setTextSize(subTextSize);
             // appTextPaint.setColor('#ff0353');

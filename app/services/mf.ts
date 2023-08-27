@@ -328,7 +328,7 @@ export async function getWeather(weatherLocation: WeatherLocation) {
             d.precipAccumulation = acc;
         }
 
-        const probabilities = getHourlyPrecipitationProbability(forecast.properties.forecast || [], data.time);
+        const probabilities = getHourlyPrecipitationProbability(forecast.properties.probability_forecast || [], data.time);
         const prob = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
         d.precipProbability = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
         if (d.precipAccumulation && prob === 0) {
@@ -395,7 +395,6 @@ export async function getWeather(weatherLocation: WeatherLocation) {
             : []
     } as WeatherData;
     r.daily.data[0].hourly = hourlyData;
-    // console.log(' r.daily', JSON.stringify(r.daily));
     return r;
 }
 

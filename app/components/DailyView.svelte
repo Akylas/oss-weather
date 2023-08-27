@@ -105,7 +105,7 @@
             centeredItemsToDraw.push({
                 iconFontSize,
                 paint: wiPaint,
-                color: '#ff0353',
+                color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
                 icon: 'wi-strong-wind',
                 value: convertValueToUnit(item.windGust, UNITS.Speed, $imperial)[0],
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)

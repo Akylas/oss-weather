@@ -107,7 +107,7 @@
         let color;
         const precipProbability = item.precipProbability;
         if ((precipProbability === -1 || precipProbability > 0) && precipitationHeight > 0) {
-            const precipTop = (0.5 + (1 - precipitationHeight / 5)/2) * (h - 10);
+            const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - 10);
             paint.setColor(item.precipColor);
             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
@@ -122,8 +122,8 @@
             }
         }
         canvas.save();
-        const iconDecale = 27 * $fontScale + weatherIconSize + (11 * $fontScale);
-        const lineOffset = iconDecale + (11 * $fontScale) + 13 * $fontScale;
+        const iconDecale = 27 * $fontScale + weatherIconSize + 11 * $fontScale;
+        const lineOffset = iconDecale + 11 * $fontScale + 13 * $fontScale;
         const pHeight = h - lineOffset - (22 * $fontScale + 10 * $fontScale);
 
         canvas.translate(0, lineOffset);
@@ -207,34 +207,42 @@
         // textPaint.setAlpha(180);
         const subTextSize = 11 * $fontScale;
         if (item.windSpeed) {
-            appTextPaint.setTextSize(subTextSize);
+            appTextPaint.setTextSize(11 * $fontScale);
             appTextPaint.setColor($textColor);
             canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, iconDecale, appTextPaint);
         }
         if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-            textPaint.setTextSize(subTextSize);
-            // iconPaint.setTextSize(subTextSize);
-            // appTextPaint.setColor('#ff0353');
-            textPaint.setColor('#ff0353');
+            textPaint.setTextSize(11 * $fontScale);
+            if (item.windGust <= 80) {
+                // textPaint.setTextSize(subTextSize);
+                textPaint.setColor('#FFBC03');
+            }
+            const staticLayout = new StaticLayout(formatValueToUnit(item.windGust, UNITS.Speed, $imperial), textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
 
-        //     const nString = createNativeAttributedString({
-        //     spans: [
-        //         // {
-        //         //     fontFamily:wiFontFamily,
-        //         //     text: 'wi-strong-wind'
-        //         // },
-        //         {
-        //             text: formatValueToUnit(item.windGust, UNITS.Speed, $imperial)
-        //         }
-        //     ]
-        // });
-        // canvas.save();
-        // const staticLayout = new StaticLayout(nString, textPaint, w, LayoutAlignment.ALIGN_CENTER, 1, 0, false);
-        // canvas.translate(0, iconDecale);
-        // staticLayout.draw(canvas);
-        // canvas.restore();
+            canvas.save();
+            canvas.translate(w2, iconDecale + 3);
+            if (item.windGust > 80) {
+                const width = staticLayout.getWidth();
+                textPaint.setColor('#ff0353');
+                canvas.drawRoundRect(-width / 2 + 8, 0, width / 2 - 8, staticLayout.getHeight() - 0, 4, 4, textPaint);
+                textPaint.setColor('#ffffff');
+            }
+
+            //     const nString = createNativeAttributedString({
+            //     spans: [
+            //         // {
+            //         //     fontFamily:wiFontFamily,
+            //         //     text: 'wi-strong-wind'
+            //         // },
+            //         {
+            //             text: formatValueToUnit(item.windGust, UNITS.Speed, $imperial)
+            //         }
+            //     ]
+            // });
+            staticLayout.draw(canvas);
+            canvas.restore();
             // canvas.drawText('wi-strong-wind', w2, iconDecale + subTextSize + 2, iconPaint);
-            canvas.drawText(formatValueToUnit(item.windGust, UNITS.Speed, $imperial), w2, iconDecale + subTextSize + 2, textPaint);
+            // canvas.drawText(formatValueToUnit(item.windGust, UNITS.Speed, $imperial), w2, iconDecale + subTextSize + 2, textPaint);
         }
         // console.log('drawn in ', Date.now() - startTime, item.index);
     }

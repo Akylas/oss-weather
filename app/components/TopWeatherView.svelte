@@ -313,7 +313,7 @@
                 subvalue: toImperialUnit(UNITS.Speed, $imperial)
             });
         }
-        if (item.windGust && (!item.windSpeed || item.windGust > 2* item.windSpeed)) {
+        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
             centeredItemsToDraw.push({
                 iconFontSize,
                 paint: wiPaint,

@@ -43,7 +43,7 @@
         bind:this={collectionView}
         itemIdGenerator={(_item, index) => index}
         orientation="horizontal"
-        colWidth={62 * $fontScale}
+        colWidth={68 * $fontScale}
         rowHeight="100%"
         height="100%"
         isBounceEnabled="false"

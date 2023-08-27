@@ -1,0 +1,5 @@
+*Bug fixes*
+- MeteoFrance not giving precipitation anymore
+- ukrainian local fix
+- show wind gust only if >= 30 km/h
+- trying to improve display of wind gust

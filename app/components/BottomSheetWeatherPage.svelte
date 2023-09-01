@@ -7,6 +7,7 @@
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { backgroundColor } from '~/variables';
     import { l, lc } from '~/helpers/locale';
+    import { getProvider } from '~/services/weatherproviderfactory';
 
     let items = [];
     let loading = false;
@@ -17,18 +18,7 @@
     async function refresh(weatherLocation: WeatherLocation) {
         loading = true;
         try {
-            const provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
-            let data: WeatherData;
-            if (provider === 'openmeteo') {
-                const providerModule = await import('~/services/om');
-                data = await providerModule.getWeather(weatherLocation);
-            } else if (provider === 'openweathermap') {
-                const providerModule = await import('~/services/owm');
-                data = await providerModule.getWeather(weatherLocation);
-            } else if (provider === 'meteofrance') {
-                const providerModule = await import('~/services/mf');
-                data = await providerModule.getWeather(weatherLocation);
-            }
+            const data = await getProvider().getWeather(weatherLocation);
             DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
             if (!name || !weatherLocation.sys.city) {
                 try {

@@ -6,9 +6,17 @@ import { getString } from '@nativescript/core/application-settings';
 
 
 export function getProvider(): WeatherProvider {
-    const providerString: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
+    const requestedProviderType: ProviderType = getString('provider', 'meteofrance') as any;
+    let [ provider, providerType ] = WeatherProvider.getInstance();
+    if (requestedProviderType != providerType) {
+        provider = setProvider(requestedProviderType);
+    }
+    return provider;
+}
+
+function setProvider(newType: ProviderType): WeatherProvider {
     let provider: WeatherProvider;
-    switch(providerString) {
+    switch(newType) {
         case 'openmeteo':
             provider = new OMProvider(); 
             break;
@@ -21,5 +29,6 @@ export function getProvider(): WeatherProvider {
             provider = new MFProvider(); 
             break;
     }
+    WeatherProvider.setInstance(provider, newType);
     return provider;
 }

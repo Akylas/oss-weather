@@ -1,3 +1,5 @@
+type ProviderType = 'meteofrance' | 'openweathermap' | 'openmeteo';
+
 interface WeatherData {
     currently: Currently;
     daily: Daily;

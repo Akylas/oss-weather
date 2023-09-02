@@ -96,7 +96,7 @@ export class MFProvider extends WeatherProvider {
         const d = {
             time: dayStartTime,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
-            icon: dailyForecast.daily_weather_icon == null ? '01d' : convertMFICon(dailyForecast.daily_weather_icon),
+            icon: dailyForecast.daily_weather_icon == null ? '01d' : this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: Math.round(dailyForecast.T_max),
             temperatureMin: Math.round(dailyForecast.T_min),
             humidity: (dailyForecast.relative_humidity_max + dailyForecast.relative_humidity_min) / 2,

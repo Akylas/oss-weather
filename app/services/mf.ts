@@ -140,6 +140,8 @@ export class MFProvider extends WeatherProvider {
     }
 
     private convertMFICon(icon: string) {
+        if (!icon)
+            return '01d'
         const dayOrNight = icon.slice(-1) === 'n' ? 'n' : 'd';
         switch (parseInt(icon.replace(/^\D+/g, ''), 10)) {
             case 1:
@@ -324,7 +326,7 @@ export class MFProvider extends WeatherProvider {
                           //   windGust: current.properties.gridded.wind,
                           windBearing: current.properties.gridded.wind_direction,
                           icon: this.convertMFICon(current.properties.gridded.weather_icon),
-                          description: titlecase(current.properties.gridded.weather_description)
+                          description: current.properties.gridded.weather_description ? titlecase(current.properties.gridded.weather_description) : ''
                       } as Currently,
                       WeatherDataType.CURRENT,
                       coords
@@ -335,7 +337,7 @@ export class MFProvider extends WeatherProvider {
             },
             minutely: {
                 data:
-                    rain?.properties.forecast.map(
+                    rain?.properties?.forecast.map(
                         (h) =>
                             ({
                                 intensity: Math.max(h.rain_intensity - 1, 0),

@@ -326,7 +326,7 @@ export class MFProvider extends WeatherProvider {
                           //   windGust: current.properties.gridded.wind,
                           windBearing: current.properties.gridded.wind_direction,
                           icon: this.convertMFICon(current.properties.gridded.weather_icon),
-                          description: current.properties.gridded.weather_description ? titlecase(current.properties.gridded.weather_description) : ''
+                          description: titlecase(current.properties.gridded.weather_description)
                       } as Currently,
                       WeatherDataType.CURRENT,
                       coords

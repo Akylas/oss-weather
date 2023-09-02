@@ -1,5 +1,5 @@
-import { getString } from '@nativescript/core/application-settings';
 import { geocodeAddress, networkService, prepareItems } from '~/services/api';
+import { getProvider } from '~/services/weatherproviderfactory';
 
 @JavaProxy('com.akylas.weather.CommandReceiver')
 @NativeClass
@@ -15,18 +15,7 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             const receivingPackage = intent.getStringExtra('package');
             networkService.start(); // ensure it is started
             const weatherLocation = await geocodeAddress({ lat, lon });
-            const provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'openmeteo') as any;
-            let data: WeatherData;
-            if (provider === 'openmeteo') {
-                const providerModule = await import('~/services/om.js');
-                data = await providerModule.getWeather(weatherLocation);
-            } else if (provider === 'openweathermap') {
-                const providerModule = await import('~/services/owm.js');
-                data = await providerModule.getWeather(weatherLocation);
-            } else if (provider === 'meteofrance') {
-                const providerModule = await import('~/services/mf.js');
-                data = await providerModule.getWeather(weatherLocation);
-            }
+            const data = await getProvider().getWeather(weatherLocation);
             const responseIntent = new android.content.Intent('com.akylas.weather.QUERY_WEATHER_RESULT');
             responseIntent.putExtra('id', id);
             responseIntent.putExtra('weather', JSON.stringify(prepareItems(weatherLocation, data)));

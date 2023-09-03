@@ -32,7 +32,7 @@
         <item name="pt">@string/portuguese</item>
         <item name="ru">@string/russian</item>
         <item name="ja">@string/japanese</item>
-        <item name="ru">@string/uchinaguchi</item>
+        <item name="ryu">@string/uchinaguchi</item>
         <item name="uk">@string/ukrainian</item>
     </string-array>
     <string-array name="langsValues">

@@ -2,7 +2,7 @@
     import { getString } from '@nativescript/core/application-settings';
     import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import { l } from '~/helpers/locale';
-    import { setOWMApiKey } from '~/services/owm';
+    import { OWMProvider } from '~/services/owm';
     import { openLink } from '~/utils/ui';
 
     let owmApiKey = getString('owmApiKey');
@@ -13,7 +13,7 @@
     }
 
     function start() {
-        setOWMApiKey(owmApiKey);
+        OWMProvider.setOWMApiKey(owmApiKey);
         closeBottomSheet(true);
     }
 

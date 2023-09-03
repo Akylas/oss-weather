@@ -96,7 +96,7 @@ export class MFProvider extends WeatherProvider {
         const d = {
             time: dayStartTime,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
-            icon: dailyForecast.daily_weather_icon == null ? '01d' : this.convertMFICon(dailyForecast.daily_weather_icon),
+            icon: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: Math.round(dailyForecast.T_max),
             temperatureMin: Math.round(dailyForecast.T_min),
             humidity: (dailyForecast.relative_humidity_max + dailyForecast.relative_humidity_min) / 2,
@@ -140,6 +140,8 @@ export class MFProvider extends WeatherProvider {
     }
 
     private convertMFICon(icon: string) {
+        if (!icon)
+            return '01d'
         const dayOrNight = icon.slice(-1) === 'n' ? 'n' : 'd';
         switch (parseInt(icon.replace(/^\D+/g, ''), 10)) {
             case 1:
@@ -335,7 +337,7 @@ export class MFProvider extends WeatherProvider {
             },
             minutely: {
                 data:
-                    rain?.properties.forecast.map(
+                    rain?.properties?.forecast.map(
                         (h) =>
                             ({
                                 intensity: Math.max(h.rain_intensity - 1, 0),

@@ -216,7 +216,7 @@
     }
 </script>
 
-<gridLayout height={100 * $fontScale}>
+<gridlayout height={100 * $fontScale}>
     <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
     <WeatherIcon marginRight="10" marginTop={16 * $fontScale} horizontalAlignment="right" size={60 * $fontScale} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
-</gridLayout>
+</gridlayout>

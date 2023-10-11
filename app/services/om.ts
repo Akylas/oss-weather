@@ -229,17 +229,17 @@ export async function fetch<T = any>(apiName: string = 'forecast', queryParams: 
     if (preferedModel) {
         models += ',' + preferedModel;
     }
-    console.log('models', models);
     return request<T>({
         url: `https://api.open-meteo.com/v1/${apiName}`,
         method: 'GET',
         queryParams: {
             hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weathercode,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,windspeed_10m,winddirection_10m,windgusts_10m,uv_index,uv_index_clear_sky,is_day,freezinglevel_height,snow_depth',
-            models,
-
+            current: 'temperature_2m,apparent_temperature,precipitation,rain,showers,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m',
+            minutely_15: 'precipitation',
             // models: 'best_match',
             // models: 'meteofrance_seamless',
             daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant',
+            models,
             timeformat: 'unixtime',
             forecast_days: 14,
             current_weather: true,
@@ -317,7 +317,23 @@ export async function getWeather(weatherLocation: WeatherLocation) {
         // d.pressure = data.pressure;
         return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, hourly.rain?.[index], hourly.snowfall?.[index]);
     });
-    const current = forecast.current_weather;
+
+    const minutely_15 = forecast.minutely_15;
+    const minutelyLastIndex = 12;
+    // for now we take only 3 hours of minutely data
+    const minutelyData = minutely_15.time.slice(0, minutelyLastIndex).map((time, index) => {
+        const hasNext = index < minutelyLastIndex;
+        const d = {} as MinutelyData;
+        d.time = time * 1000;
+        // for now we only handle precipitation
+        const precipitation = getDataArray(hourly, 'precipitation', preferedModel);
+        if (hasNext && precipitation) {
+            const precipitation = minutely_15.precipitation[index + 1] || -1;
+            d.intensity = precipitation >= 0.76 ? 3 : precipitation >= 0.11 ? 2 : precipitation > 0 ? 1 : 0;
+        }
+        return d;
+    });
+    const current = forecast.current;
     const daily = forecast.daily;
     const daily_weathercodes = getDataArray(daily, 'weathercode', preferedModel);
     const dailyLastIndex = daily_weathercodes.findIndex((d) => d === null);
@@ -326,9 +342,9 @@ export async function getWeather(weatherLocation: WeatherLocation) {
             ? weatherDataIconColors(
                   {
                       time: current.time * 1000,
-                      temperature: Math.round(current.temperature),
-                      windSpeed: current.windspeed,
-                      windBearing: current.winddirection,
+                      temperature: Math.round(current.temperature_2m),
+                      windSpeed: current.windspeed_10m,
+                      windBearing: current.winddirection_10m,
                       icon: convertWeatherCodeToIcon(current.weathercode, isDay(current.time * 1000, coords.lat, coords.lon)),
                       description: weatherCodeDescription[current.weathercode]
                   } as Currently,

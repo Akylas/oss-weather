@@ -10,15 +10,42 @@ export interface Forecast {
     hourly: Hourly;
     daily_units: Dailyunits;
     daily: Daily;
-    current_weather: Current;
+    current_units: Currentunits;
+    current: Current;
+    minutely_15_units: Minutely15units;
+    minutely_15: Minutely15;
 }
 
-export interface Current {
+interface Current {
     time: number;
-    temperature: number;
-    windspeed: number;
-    winddirection: number;
+    interval: number;
+    temperature_2m: number;
+    apparent_temperature: number;
+    precipitation: number;
+    rain: number;
+    showers: number;
+    snowfall: number;
     weathercode: number;
+    cloudcover: number;
+    windspeed_10m: number;
+    winddirection_10m: number;
+    windgusts_10m: number;
+}
+
+interface Currentunits {
+    time: string;
+    interval: string;
+    temperature_2m: string;
+    apparent_temperature: string;
+    precipitation: string;
+    rain: string;
+    showers: string;
+    snowfall: string;
+    weathercode: string;
+    cloudcover: string;
+    windspeed_10m: string;
+    winddirection_10m: string;
+    windgusts_10m: string;
 }
 
 export interface Daily {
@@ -106,4 +133,34 @@ export interface Hourlyunits {
     windgusts_10m: string;
     uv_index: string;
     uv_index_clear_sky: string;
+}
+
+interface Minutely15 {
+    time: number[];
+    temperature_2m: number[];
+    apparent_temperature: number[];
+    precipitation: number[];
+    rain: number[];
+    snowfall: number[];
+    snowfall_height: number[];
+    freezinglevel_height: number[];
+    weathercode: number[];
+    windspeed_10m: number[];
+    winddirection_10m: number[];
+    windgusts_10m: number[];
+}
+
+interface Minutely15units {
+    time: string;
+    temperature_2m: string;
+    apparent_temperature: string;
+    precipitation: string;
+    rain: string;
+    snowfall: string;
+    snowfall_height: string;
+    freezinglevel_height: string;
+    weathercode: string;
+    windspeed_10m: string;
+    winddirection_10m: string;
+    windgusts_10m: string;
 }

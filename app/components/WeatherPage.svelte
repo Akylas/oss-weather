@@ -22,8 +22,9 @@
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { l, lc, onLanguageChanged, sl } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
-    import { hasOWMApiKey } from '~/services/owm';
+    import { OWMProvider } from '~/services/owm';
     import { prefs } from '~/services/preferences';
+    import { getProvider } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '~/utils/svelte/bottomsheet';
     import { actionBarButtonHeight, lightBackgroundColor, globalObservable, mdiFontFamily, textLightColor, backgroundColor } from '~/variables';
@@ -134,16 +135,7 @@
         loading = true;
 
         try {
-            if (provider === 'openmeteo') {
-                const providerModule = await import('~/services/om');
-                weatherData = await providerModule.getWeather(weatherLocation);
-            } else if (provider === 'openweathermap') {
-                const providerModule = await import('~/services/owm');
-                weatherData = await providerModule.getWeather(weatherLocation);
-            } else if (provider === 'meteofrance') {
-                const providerModule = await import('~/services/mf');
-                weatherData = await providerModule.getWeather(weatherLocation);
-            }
+            weatherData = await getProvider().getWeather(weatherLocation);
             if (weatherData) {
                 // console.log(JSON.stringify(weatherData))
                 lastUpdate = Date.now();
@@ -152,8 +144,8 @@
         } catch (err) {
             if (err.statusCode === 403) {
                 if (provider === 'openweathermap') {
-                    const providerModule = await import('~/services/owm');
-                    providerModule.setOWMApiKey(null);
+                    await import('~/services/owm');
+                    OWMProvider.setOWMApiKey(null);
                     askForApiKey();
                 }
             } else {
@@ -262,7 +254,7 @@
     }
     onMount(async () => {
         if (provider === 'openweathermap') {
-            if (!hasOWMApiKey() && weatherLocation) {
+            if (!OWMProvider.hasOWMApiKey() && weatherLocation) {
                 // wait a bit
                 setTimeout(() => askForApiKey(), 1000);
             }

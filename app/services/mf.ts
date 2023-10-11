@@ -350,7 +350,7 @@ export async function getWeather(weatherLocation: WeatherLocation) {
         return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain_1h, data.snow_1h);
     });
     const r = {
-        currently: current
+        currently: current?.properties
             ? weatherDataIconColors(
                   {
                       time: current.update_time * 1000,

@@ -7,7 +7,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { Color, CoreTypes, EventData, Frame, Page } from '@nativescript/core';
-    import { getRootView } from '@nativescript/core/application';
+    import { Application, getRootView } from '@nativescript/core/application';
     import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
     import { throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
@@ -184,7 +184,7 @@
         try {
             // TODO: for now we dont lazy load SelectCity
             // it would crash in production because imported toggleFavorite would be undefined ...
-            const result = await showModal<WeatherLocation>({ page: SelectCity, animated: true, fullscreen: true });
+            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {
                 saveLocation(result);
             }
@@ -250,7 +250,7 @@
 
     async function askForApiKey() {
         const ApiKeysBottomSheet = (await import('~/components/APIKeysBottomSheet.svelte')).default;
-        const result = await showBottomSheet({
+        const result: boolean = await showBottomSheet({
             parent: page,
             view: ApiKeysBottomSheet,
             dismissOnBackgroundTap: true,
@@ -296,7 +296,7 @@
         DEV_LOG && console.log('showAlerts', weatherData.alerts);
         try {
             const AlertView = (await import('~/components/AlertView.svelte')).default;
-            showBottomSheet({
+            await showBottomSheet({
                 parent: page,
                 view: AlertView,
                 trackingScrollView: 'scrollView',
@@ -316,7 +316,7 @@
     const onTap = throttle(async function (item) {
         try {
             const AstronomyView = (await import('~/components/AstronomyView.svelte')).default;
-            const parent = Frame.topmost() || getRootView();
+            const parent = Frame.topmost() || Application.getRootView();
             await showBottomSheet({
                 parent,
                 view: AstronomyView,
@@ -385,7 +385,7 @@
     >
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
-                <label row={1} horizontalAlignment="center" verticalAlignment="center" text={l('no_network').toUpperCase()} />
+                <label row={1} horizontalAlignment="center" verticalAlignment="middle" text={l('no_network').toUpperCase()} />
             {:else if weatherLocation}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
                     <WeatherComponent {weatherLocation} {items} on:tap={onTap} />
@@ -400,15 +400,15 @@
                     marginRight={6}
                 />
             {:else}
-                <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="center" columns="auto">
+                <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="middle" columns="auto">
                     <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
                     <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
-                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="center" />
-                        <span text={$sl('my_location').toUpperCase()} verticalAlignment="center" />
+                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="middle" />
+                        <span text={$sl('my_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                     <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" android:paddingTop={6} verticalTextAlignment="center">
-                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="center" />
-                        <span text={$sl('search_location').toUpperCase()} verticalAlignment="center" />
+                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="middle" />
+                        <span text={$sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                 </gridlayout>
             {/if}
@@ -465,14 +465,14 @@
                             minDist: 50
                         }}
                     >
-                        <gridLayout rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer" prop:mainContent>
+                        <gridlayout  prop:mainContent rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer">
                             <label row={1} fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
                             <label row={2} fontSize={14} color={$textLightColor}>
                                 <span text={item.sys.state || item.sys.country} />
                                 <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
                             </label>
-                        </gridLayout>
-                        <stacklayout prop:leftDrawer orientation="horizontal" width="100">
+                        </gridlayout>
+                        <stacklayout prop:leftDrawer orientation="horizontal" width={100}>
                             <mdbutton
                                 id="deleteBtn"
                                 variant="text"

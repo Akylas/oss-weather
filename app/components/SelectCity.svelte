@@ -85,14 +85,14 @@
 
 <!-- <frame backgroundColor="transparent"> -->
 <page actionBarHidden={true} on:layoutChanged={onLayoutChange}>
-    <gridLayout rows="auto,auto,*">
+    <gridlayout rows="auto,auto,*">
         <CActionBar title={lc('search_city')} modalWindow>
-            <activityIndicator busy={loading} verticalAlignment="center" visibility={loading ? 'visible' : 'collapsed'} />
+            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
         <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} />
         <collectionview row={2} rowHeight={80} items={searchResults}>
             <Template let:item>
-                <gridLayout col={1} paddingLeft={10} verticalAlignment="center" rows="auto,*" rippleColor="#aaa" on:tap={() => close(item)} columns="*,auto" padding="10">
+                <gridlayout col={1} paddingLeft={10} verticalAlignment="middle" rows="auto,*" rippleColor="#aaa" on:tap={() => close(item)} columns="*,auto" padding="10">
                     <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
                     <label row={1} fontSize={14} color={$textLightColor}>
                         <span text={item.sys.state || item.sys.country} />
@@ -109,9 +109,9 @@
                         on:tap={() => toggleItemFavorite(item)}
                         text={favoriteIcon(item)}
                     />
-                </gridLayout>
+                </gridlayout>
             </Template>
         </collectionview>
-    </gridLayout>
+    </gridlayout>
 </page>
 <!-- </frame> -->

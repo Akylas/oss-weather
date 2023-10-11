@@ -1,7 +1,7 @@
 import { Application, ApplicationSettings, Color, Observable, Utils } from '@nativescript/core';
 import { getBoolean } from '@nativescript/core/application-settings';
 import { Screen } from '@nativescript/core/platform';
-import { get_current_component } from 'svelte/internal';
+import { onDestroy } from 'svelte';
 import { writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import CSSLoader from '~/variables.module.scss';
@@ -10,16 +10,36 @@ const locals = CSSLoader.locals;
 
 export const globalObservable = new Observable();
 
+const callbacks = {};
 export function createGlobalEventListener(eventName: string) {
-    return function (callback) {
-        const eventCallack = (event) => callback(event.data);
-        globalObservable.on(eventName, eventCallack);
-        const component = get_current_component();
-        if (component) {
-            component.$$.on_destroy.push(() => {
+    return function (callback: Function, once = false) {
+        callbacks[eventName] = callbacks[eventName] || {};
+        let cleaned = false;
+
+        function clean() {
+            if (cleaned) {
+                cleaned = true;
+                delete callbacks[eventName][callback];
                 globalObservable.off(eventName, eventCallack);
-            });
+            }
         }
+        const eventCallack = (event) => {
+            if (once) {
+                clean();
+            }
+            if (Array.isArray(event.data)) {
+                event.result = callback(...event.data);
+            } else {
+                event.result = callback(event.data);
+            }
+        };
+        callbacks[eventName][callback] = eventCallack;
+        globalObservable.on(eventName, eventCallack);
+
+        onDestroy(() => {
+            clean();
+        });
+        return clean;
     };
 }
 
@@ -45,7 +65,7 @@ export const screenScale = Screen.mainScreen.scale;
 export const navigationBarHeight = writable(0);
 
 if (__ANDROID__) {
-    const resources = (Utils.android.getApplicationContext() as android.content.Context).getResources();
+    const resources = Utils.android.getApplicationContext().getResources();
     const id = resources.getIdentifier('config_showNavigationBar', 'bool', 'android');
     let resourceId = resources.getIdentifier('navigation_bar_height', 'dimen', 'android');
     if (id > 0 && resourceId > 0) {
@@ -82,16 +102,17 @@ export const iconColor = writable('');
 export const imperial = writable(ApplicationSettings.getBoolean('imperial', false));
 export const fontScale = writable(ApplicationSettings.getNumber('fontscale', 1));
 
-export function onImperialChanged(callback: (imperial) => void) {
-    const eventCallack = (event) => callback(event.data);
-    globalObservable.on('imperial', eventCallack);
-    const component = get_current_component();
-    if (component) {
-        component.$$.on_destroy.push(() => {
-            globalObservable.off('imperial', eventCallack);
-        });
-    }
-}
+export const onImperialChanged = createGlobalEventListener('imperial');
+// export function onImperialChanged(callback: (imperial) => void) {
+//     const eventCallack = (event) => callback(event.data);
+//     globalObservable.on('imperial', eventCallack);
+//     const component = get_current_component();
+//     if (component) {
+//         component.$$.on_destroy.push(() => {
+//             globalObservable.off('imperial', eventCallack);
+//         });
+//     }
+// }
 
 prefs.on('key:imperial', () => {
     const newValue = ApplicationSettings.getBoolean('imperial');

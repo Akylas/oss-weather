@@ -38,7 +38,7 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
 </script>
 
-<gridLayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
+<gridlayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
     <label
         col={1}
         class="actionBarTitle"
@@ -51,11 +51,11 @@
         minFontSize={12}
         maxFontSize={20}
     />
-    <stackLayout col={0} orientation="horizontal">
+    <stacklayout col={0} orientation="horizontal">
         <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIconBtn} />
         <slot name="left" />
-    </stackLayout>
-    <stackLayout col={2} orientation="horizontal">
+    </stacklayout>
+    <stacklayout col={2} orientation="horizontal">
         <slot />
-    </stackLayout>
-</gridLayout>
+    </stacklayout>
+</gridlayout>

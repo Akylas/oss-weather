@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es2020",
         "module": "esnext",
-        "moduleResolution": "nodenext",
+        "moduleResolution": "node",
         "declaration": false,
         "removeComments": false,
         "emitDecoratorMetadata": false,
@@ -21,13 +21,13 @@
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
         "lib": ["esnext", "es2017", "dom"],
-        "types": ["node", "svelte-native"],  
+        "types": ["node", "svelte-native", "svelte"],  
         "baseUrl": ".",
         "paths": {
             "~/*": ["app/*"]
         },
         "plugins": [{ "transform": "@nativescript/webpack/dist/transformers/NativeClass", "type": "raw" }]
     },
-    "include": ["app/**/*", "references.d.ts"],
+    "include": ["app/**/*", "typings"],
     "exclude": ["node_modules", "platforms", "**/angular"]
 }

@@ -255,7 +255,6 @@ export class OMProvider extends WeatherProvider {
                     // const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
                     weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, daily.rain_sum?.[index], daily.snowfall_sum?.[index]);
                     d.hourly = [];
-                    // console.log('daily', d);
                     return d;
                 })
             },

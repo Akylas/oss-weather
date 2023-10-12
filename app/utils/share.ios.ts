@@ -1,5 +1,4 @@
-import { Color, View } from '@nativescript/core';
-import { ios as iosApp } from '@nativescript/core/application';
+import { Application, Color, View } from '@nativescript/core';
 
 export async function share(
     content: {
@@ -26,11 +25,9 @@ export async function share(
             items.push(content.message);
         }
         if (content.url) {
-            //@ts-ignore
             const url = NSURL.URLWithString(content.url);
             if (url.scheme.toLowerCase() === 'data') {
-                //@ts-ignore
-                const data = NSData.dataWithContentsOfURLOptionsError(url, 0);
+                const data = NSData.dataWithContentsOfURLOptionsError(url, 0 as any);
                 if (!data) {
                     throw new Error('cant_share_url');
                 }
@@ -40,35 +37,28 @@ export async function share(
             }
             items.push(content.message);
         }
-        //@ts-ignore
         const shareController = UIActivityViewController.alloc().initWithActivityItemsApplicationActivities(items, null);
         if (options.subject) {
             shareController.setValueForKey(options.subject, 'subject');
         }
         if (options.excludedActivityTypes) {
-            //@ts-ignore
             shareController.excludedActivityTypes = NSArray.arrayWithArray(options.excludedActivityTypes);
         }
-        //@ts-ignore
-        const presentingController = iosApp.rootController as UIViewController;
+        const presentingController = Application.ios.rootController;
         shareController.completionWithItemsHandler = (activityType, completed, error) => {
             if (error) {
                 reject(error);
             } else if (completed || activityType == null) {
-                //@ts-ignore
                 resolve(kCFBooleanTrue);
             }
         };
 
-        //@ts-ignore
         shareController.modalPresentationStyle = UIModalPresentationStyle.Popover;
 
-        const appearance = options.appearance || iosApp.systemAppearance;
+        const appearance = options.appearance || Application.ios.systemAppearance;
         if (appearance === 'dark') {
-            //@ts-ignore
             shareController.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
         } else if (appearance === 'light') {
-            //@ts-ignore
             shareController.overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
         }
 
@@ -77,7 +67,7 @@ export async function share(
         if (options.anchor) {
             sourceView = options.anchor.nativeViewProtected;
         } else {
-            shareController.popoverPresentationController.permittedArrowDirections = 0;
+            shareController.popoverPresentationController.permittedArrowDirections = 0 as any;
         }
         shareController.popoverPresentationController.sourceView = sourceView;
         shareController.popoverPresentationController.sourceRect = sourceView.bounds;

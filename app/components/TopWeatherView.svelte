@@ -73,7 +73,6 @@
             return formatTime(date, 'LT');
         }
     }
-    //@ts-ignore
     let lineChart: NativeViewElementNode<LineChart>;
     let weatherIconSize = 140;
     let topViewHeight = 240;

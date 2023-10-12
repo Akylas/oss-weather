@@ -38,7 +38,6 @@ export function applyTheme(theme: Themes) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                 } else {
                     if (Application.ios.window) {
-                        //@ts-ignore
                         Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Unspecified;
                     }
                 }
@@ -49,7 +48,6 @@ export function applyTheme(theme: Themes) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 } else {
                     if (Application.ios.window) {
-                        //@ts-ignore
                         Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Light;
                     }
                 }
@@ -60,7 +58,6 @@ export function applyTheme(theme: Themes) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 } else {
                     if (Application.ios.window) {
-                        //@ts-ignore
                         Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
                     }
                 }
@@ -71,7 +68,6 @@ export function applyTheme(theme: Themes) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 } else {
                     if (Application.ios.window) {
-                        //@ts-ignore
                         Application.ios.window.overrideUserInterfaceStyle = UIUserInterfaceStyle.Dark;
                     }
                 }

@@ -137,7 +137,6 @@ let currentLocale = null;
 export function getLocaleDisplayName(locale?) {
     if (__IOS__) {
         if (!currentLocale) {
-            //@ts-ignore
             currentLocale = NSLocale.alloc().initWithLocaleIdentifier(lang);
         }
         return titlecase(currentLocale.localizedStringForLanguageCode(locale || lang));

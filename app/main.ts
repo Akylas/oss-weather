@@ -112,5 +112,4 @@ themer.createShape('none', {
     }
 });
 
-//@ts-ignore
 svelteNative(WeatherPage, {});

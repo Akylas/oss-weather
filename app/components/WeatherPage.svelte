@@ -40,7 +40,6 @@
 
     let items = [];
 
-    //@ts-ignore
     let desiredAccuracy = __ANDROID__ ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
     let timeout = 20000;
     let minimumUpdateTime = 1000; // Should update every 1 second according ;

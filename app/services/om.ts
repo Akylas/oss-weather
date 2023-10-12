@@ -98,12 +98,13 @@ export class OMProvider extends WeatherProvider {
             url: `https://api.open-meteo.com/v1/${apiName}`,
             method: 'GET',
             queryParams: {
-                hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weathercode,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,windspeed_10m,winddirection_10m,windgusts_10m,uv_index,uv_index_clear_sky,is_day,freezinglevel_height,snow_depth',
-                models,
-
+                hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth',
+                current: 'temperature_2m,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m',
+                minutely_15: 'precipitation',
                 // models: 'best_match',
                 // models: 'meteofrance_seamless',
-                daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant',
+                daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant',
+                models,
                 timeformat: 'unixtime',
                 forecast_days: 14,
                 current_weather: true,
@@ -209,6 +210,7 @@ export class OMProvider extends WeatherProvider {
                           time: current.time * 1000,
                           temperature: Math.round(current.temperature_2m),
                           windSpeed: current.windspeed_10m,
+                          cloudCover: current.cloudcover,
                           windBearing: current.winddirection_10m,
                           icon: this.convertWeatherCodeToIcon(current.weathercode, this.isDay(current.time * 1000, coords.lat, coords.lon)),
                           description: OMProvider.weatherCodeDescription[current.weathercode]

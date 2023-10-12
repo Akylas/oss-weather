@@ -13,7 +13,7 @@
         app:key="clock_24"
         app:title="@string/clock_24" />
         <ListPreference
-        app:defaultValue="openweathermap"
+        app:defaultValue="openmeteo"
         app:entries="@array/providers"
         app:entryValues="@array/providersValues"
         app:key="provider"

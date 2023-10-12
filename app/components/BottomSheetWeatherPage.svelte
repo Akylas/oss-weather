@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { Color, Utils } from '@nativescript/core';
-    import { getString } from '@nativescript/core/application-settings';
+    import { ApplicationSettings, Color, Utils } from '@nativescript/core';
     import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
     import CActionBar from '~/components/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
@@ -46,7 +45,7 @@
         }
     }
     $: refresh(weatherLocation);
-    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
+    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = ApplicationSettings.getString('provider', DEFAULT_PROVIDER) as any;
 </script>
 
 <gridlayout rows="auto,*" class="weatherpage" height="100%">

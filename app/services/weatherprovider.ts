@@ -1,4 +1,4 @@
-import { WeatherLocation } from "./api";
+import { WeatherLocation } from './api';
 
 export abstract class WeatherProvider {
     private static _singleton: WeatherProvider;
@@ -15,4 +15,3 @@ export abstract class WeatherProvider {
         return [WeatherProvider._singleton, WeatherProvider._singletonProviderType];
     }
 }
-

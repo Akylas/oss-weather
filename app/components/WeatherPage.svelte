@@ -7,8 +7,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { Color, CoreTypes, EventData, Frame, Page } from '@nativescript/core';
-    import { Application, getRootView } from '@nativescript/core/application';
-    import { getNumber, getString, setNumber, setString } from '@nativescript/core/application-settings';
+    import { Application, ApplicationSettings } from '@nativescript/core';
     import { throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
@@ -31,13 +30,13 @@
 
     let gps: GPS;
     let loading = false;
-    let lastUpdate = getNumber('lastUpdate', -1);
-    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = getString('provider', 'meteofrance') as any;
+    let lastUpdate = ApplicationSettings.getNumber('lastUpdate', -1);
+    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = ApplicationSettings.getString('provider', 'meteofrance') as any;
     if (!provider || provider.length === 0) {
         provider = 'openweathermap';
     }
-    let weatherLocation: FavoriteLocation = JSON.parse(getString('weatherLocation', DEFAULT_LOCATION || 'null'));
-    let weatherData: WeatherData = JSON.parse(getString('lastWeatherData', 'null'));
+    let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
+    let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
 
     let items = [];
 
@@ -158,15 +157,15 @@
 
     async function updateView() {
         items = prepareItems(weatherLocation, weatherData, lastUpdate);
-        setNumber('lastUpdate', lastUpdate);
-        setString('lastWeatherData', JSON.stringify(weatherData));
+        ApplicationSettings.setNumber('lastUpdate', lastUpdate);
+        ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
     }
 
     function saveLocation(result: WeatherLocation) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
         if (cityChanged) {
             weatherLocation = result;
-            setString('weatherLocation', JSON.stringify(weatherLocation));
+            ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             refreshWeather();
         }
         drawer?.close();
@@ -301,7 +300,7 @@
         }
     }
     prefs.on('key:provider', (event) => {
-        provider = getString('provider') as any;
+        provider = ApplicationSettings.getString('provider', DEFAULT_PROVIDER) as any;
         refresh();
     });
 
@@ -336,7 +335,7 @@
         if (weatherLocation && getFavoriteKey(item.data) === getFavoriteKey(weatherLocation)) {
             weatherLocation.isFavorite = item.data.isFavorite;
             weatherLocation = weatherLocation;
-            setString('weatherLocation', JSON.stringify(weatherLocation));
+            ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
         }
     });
     function drawerTranslationFunction(side, width, value, delta, progress) {

@@ -109,7 +109,18 @@ module.exports = (env, params = {}) => {
     env.appComponents = env.appComponents || [];
     env.appComponents.push('~/android/floatingactivity');
 
+    const ignoredSvelteWarnings = new Set(['a11y-no-onchange', 'a11y-label-has-associated-control', 'illegal-attribute-character']);
+
     nsWebpack.chainWebpack((config, env) => {
+        config.module
+            .rule('svelte')
+            .use('svelte-loader')
+            .tap((options) => {
+                options.onwarn = function (warning, onwarn) {
+                    return ignoredSvelteWarnings.has(warning.code) || onwarn(warning);
+                };
+                return options;
+            });
         config.when(env.production, (config) => {
             config.module
                 .rule('svelte')
@@ -127,6 +138,8 @@ module.exports = (env, params = {}) => {
         return config;
     });
     const config = webpackConfig(env, params);
+    config.resolve.conditionNames = config.resolve.conditionNames || [];
+    config.resolve.conditionNames.push('svelte');
     const mode = production ? 'production' : 'development';
     const platform = env && ((env.android && 'android') || (env.ios && 'ios'));
     const projectRoot = params.projectRoot || __dirname;
@@ -224,6 +237,7 @@ module.exports = (env, params = {}) => {
         }"`,
         DEV_LOG: !!devlog,
         TEST_LOG: !!devlog || !!testlog,
+        DEFAULT_PROVIDER: '"openmeteo"',
         OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
         MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',
         OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',

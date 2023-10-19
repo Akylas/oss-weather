@@ -6,7 +6,8 @@
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { backgroundColor } from '~/variables';
     import { l, lc } from '~/helpers/locale';
-    import { getProvider } from '~/services/weatherproviderfactory';
+    import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
+    import { prefs } from '~/services/preferences';
 
     let items = [];
     let loading = false;
@@ -14,19 +15,19 @@
     export let name;
     networkService.start(); // ensure it is started
 
-    async function refresh(weatherLocation: WeatherLocation) {
+    async function refresh(location: WeatherLocation = weatherLocation) {
         loading = true;
         try {
-            const data = await getProvider().getWeather(weatherLocation);
-            DEV_LOG && console.log('refresh', name, typeof name, weatherLocation);
-            if (!name || !weatherLocation.sys.city) {
+            const data = await getProvider().getWeather(location);
+            DEV_LOG && console.log('refresh', name, typeof name, location);
+            if (!name || !location.sys.city) {
                 try {
-                    const r = await geocodeAddress(weatherLocation.coord);
-                    if (!weatherLocation.sys) {
-                        weatherLocation.sys = r.sys;
+                    const r = await geocodeAddress(location.coord);
+                    if (!location.sys) {
+                        location.sys = r.sys;
                     }
                     if (!name) {
-                        name = weatherLocation.name = weatherLocation.sys.name = r.name;
+                        name = location.name = location.sys.name = r.name;
                     }
                 } catch (error) {
                     console.error(error);
@@ -34,9 +35,9 @@
             }
 
             if (!name) {
-                name = weatherLocation.coord.lat.toFixed(2) + ',' + weatherLocation.coord.lon.toFixed(2);
+                name = location.coord.lat.toFixed(2) + ',' + location.coord.lon.toFixed(2);
             }
-            items = prepareItems(weatherLocation, data, Date.now());
+            items = prepareItems(location, data, Date.now());
         } catch (err) {
             android.widget.Toast.makeText(Utils.android.getApplicationContext(), err.toString(), android.widget.Toast.LENGTH_LONG);
             closeBottomSheet();
@@ -45,7 +46,12 @@
         }
     }
     $: refresh(weatherLocation);
-    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = ApplicationSettings.getString('provider', DEFAULT_PROVIDER) as any;
+    let provider = getProviderType();
+
+    prefs.on('key:provider', (event) => {
+        provider = getProviderType();
+        refresh();
+    });
 </script>
 
 <gridlayout rows="auto,*" class="weatherpage" height="100%">

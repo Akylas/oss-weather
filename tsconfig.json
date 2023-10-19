@@ -24,7 +24,9 @@
         "types": ["node", "svelte-native", "svelte"],  
         "baseUrl": ".",
         "paths": {
-            "~/*": ["app/*"]
+            "~/*": ["app/*"],
+            "@nativescript/core": ["node_modules/@akylas/nativescript"],
+            "@nativescript/core/*": ["node_modules/@akylas/nativescript/*"]
         },
         "plugins": [{ "transform": "@nativescript/webpack/dist/transformers/NativeClass", "type": "raw" }]
     },

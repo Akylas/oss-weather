@@ -3,7 +3,8 @@ import { confirm, alert as mdAlert } from '@nativescript-community/ui-material-d
 import { showSnack } from '@nativescript-community/ui-material-snackbar';
 import { BaseError } from 'make-error';
 import { l } from '~/helpers/locale';
-import { NoNetworkError } from '~/services/api';
+import { HTTPError, NoNetworkError, TimeoutError } from '~/services/api';
+import { Sentry, isSentryEnabled } from '~/utils/sentry';
 
 function evalTemplateString(resource: string, obj: {}) {
     if (!obj) {
@@ -77,36 +78,38 @@ export class CustomError extends BaseError {
     getMessage() {}
 }
 
-export async function showError(err: Error | string) {
-    if (!err) {
-        return;
-    }
+export async function showError(err: Error | string, showAsSnack = false) {
+    try {
+        if (!err) {
+            return;
+        }
+        DEV_LOG && console.error('showError', err, err && err['stack']);
+        const reporterEnabled = isSentryEnabled;
+        const realError = typeof err === 'string' ? null : err;
 
-    if (err['customErrorConstructorName'] === 'NoNetworkError') {
-        showSnack({ message: l('no_network') });
-        return;
+        const isString = realError === null || realError === undefined;
+        const message = isString ? (err as string) : realError.message || realError.toString();
+        if (showAsSnack || realError instanceof NoNetworkError || realError instanceof TimeoutError) {
+            showSnack({ message });
+            return;
+        }
+        const title = lc('error');
+        const showSendBugReport = reporterEnabled && !isString && !(realError instanceof HTTPError) && !!realError.stack;
+        // if (!PRODUCTION) {
+        // }
+        const result = await confirm({
+            title,
+            okButtonText: showSendBugReport ? lc('send_bug_report') : undefined,
+            cancelButtonText: showSendBugReport ? lc('cancel') : lc('ok'),
+            message
+        });
+        if (SENTRY_ENABLED && result && isSentryEnabled) {
+            Sentry.captureException(err);
+            this.$alert(l('bug_report_sent'));
+        }
+    } catch (error) {
+        console.error('showError', error);
     }
-    const realError = typeof err === 'string' ? null : err;
-    const isString = realError === null;
-    const message = isString ? (err as string) : realError.message || realError.toString();
-    const title = lc('error');
-    // const reporterEnabled = isSentryEnabled;
-    const reporterEnabled = false;
-    let showSendBugReport = reporterEnabled && !isString && !!realError.stack;
-    if (realError instanceof NoNetworkError) {
-        showSendBugReport = false;
-    }
-    console.error('showError', message, err, err['stack']);
-    const result = await confirm({
-        title,
-        okButtonText: showSendBugReport ? lc('send_bug_report') : undefined,
-        cancelButtonText: showSendBugReport ? lc('cancel') : lc('ok'),
-        message
-    });
-    // if (result && isSentryEnabled) {
-    //     Sentry.captureException(err);
-    //     this.$alert(l('bug_report_sent'));
-    // }
 }
 
 export function alert(message: string) {

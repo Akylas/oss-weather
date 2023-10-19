@@ -1,5 +1,4 @@
 import * as SentryType from '@nativescript-community/sentry';
-import { Device } from '@nativescript/core/platform';
 import { install } from '~/utils/logging';
 
 export let Sentry: typeof SentryType;
@@ -20,6 +19,6 @@ export async function startSentry() {
             isSentryEnabled = true;
         }
     } catch (err) {
-        console.error(err);
+        console.error('startSentry', err, err['stack']);
     }
 }

@@ -1,0 +1,8 @@
+*Features*
+- support for Open-Meteo 15min data
+
+*Bug fixes*
+- trying to prevent error with Meteo France
+- default provider to Open-Meteo.
+- Open-Meteo minutly fix
+- click on hourly view correcly shows condition description

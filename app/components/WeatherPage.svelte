@@ -23,7 +23,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { OWMProvider } from '~/services/owm';
     import { prefs } from '~/services/preferences';
-    import { getProvider } from '~/services/weatherproviderfactory';
+    import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '~/utils/svelte/bottomsheet';
     import { actionBarButtonHeight, lightBackgroundColor, globalObservable, mdiFontFamily, textLightColor, backgroundColor } from '~/variables';
@@ -31,10 +31,7 @@
     let gps: GPS;
     let loading = false;
     let lastUpdate = ApplicationSettings.getNumber('lastUpdate', -1);
-    let provider: 'meteofrance' | 'openweathermap' | 'openmeteo' = ApplicationSettings.getString('provider', 'meteofrance') as any;
-    if (!provider || provider.length === 0) {
-        provider = 'openweathermap';
-    }
+    let provider = getProviderType();
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
 
@@ -95,13 +92,13 @@
             if (result) {
                 switch (result.id) {
                     case 'preferences':
-                        prefs.openSettings();
+                        await prefs.openSettings();
                         break;
                     case 'map':
                         await openWeatherMap();
                         break;
                     case 'refresh':
-                        refreshWeather();
+                        await refreshWeather();
                         break;
                     case 'gps_location':
                         await getLocationAndWeather();
@@ -110,12 +107,14 @@
                         const About = require('~/components/About.svelte').default;
                         navigate({ page: About });
                         break;
+
                     case 'font-scale':
                         const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
                         navigate({ page: FontSizeSettingScreen });
                         break;
                 }
             }
+            console.log('action done');
         } catch (error) {
             showError(error);
         }
@@ -299,8 +298,12 @@
         }
     }
     prefs.on('key:provider', (event) => {
-        provider = ApplicationSettings.getString('provider', DEFAULT_PROVIDER) as any;
-        refresh();
+        try {
+            provider = getProviderType();
+            refresh();
+        } catch (error) {
+            showError(error);
+        }
     });
 
     const onTap = throttle(async function (item) {
@@ -420,7 +423,7 @@
                 />
                 <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={actionBarButtonHeight} height={actionBarButtonHeight} />
                 <mdbutton
-                    visibility={!loading && weatherData && weatherData.alerts && weatherData.alerts.length > 0 ? 'visible' : 'collapsed'}
+                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
                     variant="text"
                     class="icon-btn"
                     color="#EFB644"
@@ -431,15 +434,14 @@
                 />
                 <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
 
-                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
+                <mdbutton id="menu_button" variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
             </CActionBar>
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
-            <collectionview bind:this={favoriteCollectionView} row={1} rowHeight={80} items={favorites}>
+            <collectionview id="favorite" bind:this={favoriteCollectionView} row={1} rowHeight={80} items={favorites} itemIdGenerator={(_item, index) => index}>
                 <Template let:item>
                     <swipemenu
-                        id={item.name}
                         leftSwipeDistance="300"
                         startingSide={item.startingSide}
                         translationFunction={drawerTranslationFunction}
@@ -455,7 +457,7 @@
                             minDist: 50
                         }}
                     >
-                        <gridlayout  prop:mainContent rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer">
+                        <gridlayout prop:mainContent rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer">
                             <label row={1} fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
                             <label row={2} fontSize={14} color={$textLightColor}>
                                 <span text={item.sys.state || item.sys.country} />

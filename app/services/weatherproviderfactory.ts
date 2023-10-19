@@ -5,13 +5,17 @@ import { OWMProvider } from './owm';
 import { getString } from '@nativescript/core/application-settings';
 
 export function getProvider(): WeatherProvider {
-    const requestedProviderType: ProviderType = getString('provider', DEFAULT_PROVIDER) as ProviderType;
+    const requestedProviderType = getProviderType();
     // eslint-disable-next-line prefer-const
     let [provider, providerType] = WeatherProvider.getInstance();
     if (requestedProviderType !== providerType) {
         provider = setProvider(requestedProviderType);
     }
     return provider;
+}
+export function getProviderType(): ProviderType {
+    const requestedProviderType: ProviderType = getString('provider', DEFAULT_PROVIDER) as ProviderType;
+    return requestedProviderType;
 }
 
 function setProvider(newType: ProviderType): WeatherProvider {

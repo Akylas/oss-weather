@@ -42,15 +42,6 @@
         mdiPaint.setTextAlign(Align.CENTER);
     }
 
-    $: {
-        if (item && item.icon.startsWith('13')) {
-            color = snowColor;
-            precipIcon = 'wi-snowflake-cold';
-        } else {
-            color = rainColor;
-            precipIcon = 'wi-raindrop';
-        }
-    }
 
     function redraw() {
         canvasView && canvasView.nativeView.invalidate();
@@ -61,6 +52,15 @@
     $: {
         if (item) {
             redraw();
+        }
+    }
+    $: {
+        if (item && item.icon.startsWith('13')) {
+            color = snowColor;
+            precipIcon = 'wi-snowflake-cold';
+        } else {
+            color = rainColor;
+            precipIcon = 'wi-raindrop';
         }
     }
 
@@ -216,7 +216,6 @@
     }
 </script>
 
-<gridlayout height={100 * $fontScale}>
-    <canvas bind:this={canvasView} on:draw={drawOnCanvas} />
+<canvas bind:this={canvasView} on:draw={drawOnCanvas} height={100 * $fontScale}>
     <WeatherIcon marginRight="10" marginTop={16 * $fontScale} horizontalAlignment="right" size={60 * $fontScale} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
-</gridlayout>
+</canvas>

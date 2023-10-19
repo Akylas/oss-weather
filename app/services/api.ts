@@ -315,7 +315,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
                             .map((s) => (s - min) / delta),
                         odd: i % 2 === 0
                     })),
-                    minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex) : [],
+                    minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex, firstMinuteIndex + 8) : [],
                     alerts: weatherData.alerts
                 })
             );

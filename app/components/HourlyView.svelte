@@ -39,6 +39,7 @@
 
 <gridlayout {...$$restProps}>
     <collectionview
+        id="hourly"
         nestedScrollingEnabled={false}
         bind:this={collectionView}
         itemIdGenerator={(_item, index) => index}

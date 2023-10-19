@@ -10,7 +10,7 @@ import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, ScrollView, Trace } from '@nativescript/core';
+import { Application, ScrollView, Trace, TraceErrorHandler } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
@@ -111,5 +111,18 @@ themer.createShape('none', {
         unit: '%'
     }
 });
+
+const errorHandler: TraceErrorHandler = {
+    handlerError(err) {
+        console.error('handlerError', err, err.stack);
+        // Option 1 (development) - throw the error
+        throw err;
+
+        // Option 2 (development) - logging the error via write method provided from trace module
+
+        // (production) - custom functionality for error handling
+        // reportToAnalytics(err)
+    }
+};
 
 svelteNative(WeatherPage, {});

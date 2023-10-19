@@ -97,6 +97,7 @@ module.exports = (env, params = {}) => {
         locale = 'auto', // --env.locale
         theme = 'auto', // --env.theme
         keep_classnames_functionnames = false,
+        accessibility = false,
         buildweathermap, // --env.buildweathermap
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
@@ -162,12 +163,13 @@ module.exports = (env, params = {}) => {
         // config.stats = { preset: 'minimal', chunkModules: true, modules: true, usedExports: true };
     }
 
+    const supportedLocales = readdirSync(join(projectRoot, appPath, 'i18n'))
+        .filter((s) => s.endsWith('.json'))
+        .map((s) => s.replace('.json', ''));
     config.externals.push('~/licenses.json');
-    config.externals.push(function ({ context, request }, cb) {
-        if (/i18n$/i.test(context)) {
-            return cb(null, './i18n/' + request);
-        }
-        cb();
+
+    supportedLocales.forEach((l) => {
+        config.externals.push(`~/i18n/${l}.json`);
     });
 
     const coreModulesPackageName = fork ? '@akylas/nativescript' : '@nativescript/core';
@@ -178,9 +180,6 @@ module.exports = (env, params = {}) => {
             'tns-core-modules': `${coreModulesPackageName}`
         });
     }
-    // Object.assign(config.resolve.alias, {
-    //     'svelte-native': '@akylas/svelte-native'
-    // });
     let appVersion;
     let buildNumber;
     if (platform === 'android') {
@@ -199,15 +198,12 @@ module.exports = (env, params = {}) => {
     const isIOS = platform === 'ios';
     const isAndroid = platform === 'android';
     const APP_STORE_ID = process.env.IOS_APP_ID;
-    const CUSTOM_URL_SCHEME = 'alpimaps';
-    const supportedLocales = readdirSync(join(projectRoot, appPath, 'i18n'))
-        .filter((s) => s.endsWith('.json'))
-        .map((s) => s.replace('.json', ''));
     const defines = {
         PRODUCTION: !!production,
         process: 'global.process',
         'global.TNS_WEBPACK': 'true',
         'gVars.platform': `"${platform}"`,
+        __UI_LABEL_USE_LIGHT_FORMATTEDSTRING__: true,
         __UI_USE_EXTERNAL_RENDERER__: true,
         __UI_USE_XML_PARSER__: false,
         'global.__AUTO_REGISTER_UI_MODULES__': false,
@@ -228,7 +224,6 @@ module.exports = (env, params = {}) => {
         SENTRY_PREFIX: `"${!!sentry ? process.env.SENTRY_PREFIX : ''}"`,
         GIT_URL: `"${package.repository}"`,
         SUPPORT_URL: `"${package.bugs.url}"`,
-        CUSTOM_URL_SCHEME: `"${CUSTOM_URL_SCHEME}"`,
         STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nconfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
         STORE_REVIEW_LINK: `"${
             isIOS
@@ -504,13 +499,15 @@ module.exports = (env, params = {}) => {
         })
     );
     if (fork) {
-        config.plugins.push(
-            new webpack.NormalModuleReplacementPlugin(/accessibility$/, (resource) => {
-                if (resource.context.match(nativescriptReplace)) {
-                    resource.request = '~/shims/accessibility';
-                }
-            })
-        );
+        if (!accessibility) {
+            config.plugins.push(
+                new webpack.NormalModuleReplacementPlugin(/accessibility$/, (resource) => {
+                    if (resource.context.match(nativescriptReplace)) {
+                        resource.request = '~/shims/accessibility';
+                    }
+                })
+            );
+        }
         config.plugins.push(
             new webpack.NormalModuleReplacementPlugin(/action-bar$/, (resource) => {
                 if (resource.context.match(nativescriptReplace)) {

@@ -74,13 +74,16 @@
                         icon: 'mdi-refresh',
                         id: 'refresh',
                         text: l('refresh')
-                    },
+                    }
+                );
+                if (OWMProvider.hasOWMApiKey()) {
+                    options.push(
                     {
                         icon: 'mdi-map',
                         id: 'map',
                         text: l('map')
-                    }
-                );
+                    })
+                }
             }
             const result: { icon: string; id: string; text: string } = await showBottomSheet({
                 parent: page,

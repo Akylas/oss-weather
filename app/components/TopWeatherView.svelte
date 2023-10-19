@@ -477,5 +477,6 @@
     /> -->
     <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} verticalAlignment="bottom" height={90} marginBottom={40} />
     <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="middle" size={weatherIconSize * (2 - $fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+        
     <HourlyView row={1} colSpan={2} items={item.hourly} />
 </gridlayout>

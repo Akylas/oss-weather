@@ -21,7 +21,6 @@
     $: topHeight = Math.max(Math.min(screenHeightDips - actionBarHeight - $navigationBarHeight - $statusBarHeight - 100, 500), 400);
 
     function itemTemplateSelector(item, index, items) {
-        // return index === 0 ? 'topView' : index === 1 ? 'info' : 'daily';
         return index === 0 ? 'topView' : 'daily';
     }
     let isLayedout = false;
@@ -45,10 +44,10 @@
     function onTap(item) {
         dispatch('tap', item);
     }
-
 </script>
 
 <collectionview
+    id="main"
     bind:this={collectionView}
     {...$$restProps}
     {items}
@@ -58,9 +57,9 @@
     on:layoutCompleted={onCollectionViewLayoutCompleted}
 >
     <Template key="topView" let:item>
-        <TopWeatherView {weatherLocation} {item} height={topHeight} on:tap={() => onTap(item)} {fakeNow}/>
+        <TopWeatherView {weatherLocation} {item} height={topHeight} on:tap={() => onTap(item)} {fakeNow} />
     </Template>
     <Template key="daily" let:item>
-        <DailyView {item} on:tap={() => onTap(item)}/>
+        <DailyView {item} on:tap={() => onTap(item)} />
     </Template>
 </collectionview>

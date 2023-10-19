@@ -1,8 +1,7 @@
-import { foregroundEvent } from '@akylas/nativescript/application';
 import { getFromLocation } from '@nativescript-community/geocoding';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
-import { ApplicationEventData, off as applicationOff, on as applicationOn, resumeEvent } from '@nativescript/core/application';
+import { Application, ApplicationEventData } from '@nativescript/core';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
@@ -171,7 +170,7 @@ class NetworkService extends Observable {
             return;
         }
         this.monitoring = true;
-        applicationOn(foregroundEvent, this.onAppResume, this);
+        Application.on(Application.foregroundEvent, this.onAppResume, this);
         startMonitoring(this.onConnectionStateChange.bind(this));
         this.connectionType = getConnectionType();
     }
@@ -179,7 +178,7 @@ class NetworkService extends Observable {
         if (!this.monitoring) {
             return;
         }
-        applicationOff(foregroundEvent, this.onAppResume, this);
+        Application.off(Application.foregroundEvent, this.onAppResume, this);
         this.monitoring = false;
         stopMonitoring();
     }
@@ -222,9 +221,9 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
             if (Array.isArray(jsonReturn)) {
                 jsonReturn = jsonReturn[0];
             }
-            if (statusCode === 401 && jsonReturn.error === 'invalid_grant') {
-                return this.handleRequestRetry(requestParams, retry);
-            }
+            // if (statusCode === 401 && jsonReturn.error === 'invalid_grant') {
+            //     return this.handleRequestRetry(requestParams, retry);
+            // }
             const error = jsonReturn.error_description || jsonReturn.error || jsonReturn;
             throw new HTTPError({
                 statusCode: error.code || statusCode,

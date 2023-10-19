@@ -93,7 +93,6 @@ export class OMProvider extends WeatherProvider {
         if (preferedModel) {
             models += ',' + preferedModel;
         }
-        console.log('models', models);
         return request<T>({
             url: `https://api.open-meteo.com/v1/${apiName}`,
             method: 'GET',
@@ -160,7 +159,7 @@ export class OMProvider extends WeatherProvider {
 
             const precipitation = this.getDataArray(hourly, 'precipitation', preferedModel);
             if (hasNext && precipitation) {
-                d.precipAccumulation = precipitation[index + 1] || -1;
+                d.precipAccumulation = precipitation[index + 1] ?? -1;
             }
 
             d.cloudCover = this.getDataArray(hourly, 'cloudcover', preferedModel)[index];
@@ -186,10 +185,9 @@ export class OMProvider extends WeatherProvider {
         });
 
         const minutely_15 = forecast.minutely_15;
-        const minutelyLastIndex = 12;
-        // for now we take only 3 hours of minutely data
-        const minutelyData = minutely_15.time.slice(0, minutelyLastIndex).map((time, index) => {
-            const hasNext = index < minutelyLastIndex;
+        // minutely data starts at the start of the day!
+        const minutelyData = minutely_15.time.map((time, index) => {
+            const hasNext = index < minutely_15.time.length;
             const d = {} as MinutelyData;
             d.time = time * 1000;
             // for now we only handle precipitation

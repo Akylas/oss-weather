@@ -5,6 +5,7 @@ module.exports = {
     webpackConfigPath: 'app.webpack.config.js',
     appPath: 'app',
     android: {
+        gradleVersion: '8.3',
         markingMode: 'none',
         codeCache: true,
         enableMultithreadedJavascript: false

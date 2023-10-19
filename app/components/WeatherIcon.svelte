@@ -6,6 +6,7 @@
 
 <script lang="ts">
     const dispatch = createEventDispatcher();
+    export let isUserInteractionEnabled = true;
     export let icon: string;
     export let size: string | number = 40;
     // export let autoPlay = true;
@@ -110,10 +111,38 @@
     prefs.on('key:animations', () => {
         autoPlay = getBoolean('animations');
     });
+
+    function conditionalEvent(node, { condition, event, callback }) {
+        let toRemove;
+        if (condition) {
+            toRemove = callback;
+            node.addEventListener(event, callback);
+        }
+
+        return {
+            destroy() {
+                if (toRemove) {
+                    node.removeEventListener(event, toRemove);
+                }
+            }
+        };
+    }
 </script>
 
 {#if autoPlay}
-    <lottie {...$$restProps} src={iconSrc} width={size} height={size} loop={true} {autoPlay} progress={0.5} on:tap={(event) => dispatch('tap', event)} />
+    <lottie
+        {...$$restProps}
+        src={iconSrc}
+        width={size}
+        height={size}
+        loop={true}
+        {autoPlay}
+        progress={0.5}
+        use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }}
+        {isUserInteractionEnabled}
+    />
 {:else}
-    <image {...$$restProps} src={iconSrc} width={size} height={size} on:tap={(event) => dispatch('tap', event)} />
+    <image {...$$restProps} src={iconSrc} width={size} height={size} 
+    use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }}
+    {isUserInteractionEnabled} />
 {/if}

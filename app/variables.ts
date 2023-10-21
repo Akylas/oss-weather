@@ -17,7 +17,7 @@ export function createGlobalEventListener(eventName: string) {
         let cleaned = false;
 
         function clean() {
-            if (cleaned) {
+            if (!cleaned) {
                 cleaned = true;
                 delete callbacks[eventName][callback];
                 globalObservable.off(eventName, eventCallack);

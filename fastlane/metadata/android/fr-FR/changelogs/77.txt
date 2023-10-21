@@ -1,0 +1,2 @@
+*Bug fixes*
+- prevent infinite loop

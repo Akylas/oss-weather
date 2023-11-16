@@ -34,8 +34,8 @@ $lang.subscribe((newLang: string) => {
     }
     dayjs.locale(lang); // switch back to default English locale globally
     try {
-        const localeData = require(`~/i18n/${lang}.json`);
-        loadLocaleJSON(localeData);
+        // const localeData = require(`~/i18n/${lang}.json`);
+        loadLocaleJSON(`~/i18n/${lang}.json`);
     } catch (err) {
         console.error('failed to load lang json', lang, `~/i18n/${lang}.json`, err);
     }

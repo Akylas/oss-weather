@@ -368,11 +368,11 @@
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
-        leftSwipeDistance={30}
+        leftSwipeDistance={50}
         gestureHandlerOptions={{
             minDist: 60,
-            failOffsetYStart: -10,
-            failOffsetYEnd: 10
+            failOffsetYStart: -20,
+            failOffsetYEnd: 20
         }}
         gestureEnabled={true}
         waitFor={[15644]}

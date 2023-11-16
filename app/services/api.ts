@@ -365,7 +365,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
                     name: f.properties.name,
                     sys: f.properties,
                     coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
-                } as WeatherLocation)
+                }) as WeatherLocation
         );
 }
 

@@ -3,13 +3,13 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleShortVersionString</key>
-    <string>1.3.2</string>
+    <string>1.7.5</string>
     <key>CFBundleVersion</key>
-    <string>51</string>
+    <string>77</string>
     <key>CFBundleDevelopmentRegion</key>
-    <string>en</string>
+    <string>de</string>
     <key>CFBundleDisplayName</key>
-    <string>OSS Weather</string>
+    <string>OSS Wetter</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleInfoDictionaryVersion</key>
@@ -44,7 +44,7 @@
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>'NS Weather' uses your GPS location to display your weather</string>
+    <string>'NS Wetter' verwendet deinen GPS Standort um dir das Wetter anzuzeigen</string>
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>

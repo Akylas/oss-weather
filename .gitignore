@@ -53,7 +53,7 @@ tmp/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-/.sentryclirc
+.sentryclirc
 pnpm-lock.yaml
 yarn.lock
 /fastlane/report.xml
@@ -63,3 +63,4 @@ dist
 /webpack.stats.json
 App_Resources/iOS/Settings.bundle/**/Root.strings
 App_Resources/iOS/Settings.bundle/*.lproj/Root.strings
+/.sentryclirc

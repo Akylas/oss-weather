@@ -44,7 +44,6 @@ yarn-error.log*
 .project
 .yarn
 tmp/
-typings/
 ._.DS_Store
 
 

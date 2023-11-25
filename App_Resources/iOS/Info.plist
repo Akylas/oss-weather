@@ -44,7 +44,7 @@
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>'NS Wetter' verwendet deinen GPS Standort um dir das Wetter anzuzeigen</string>
+    <string>'NS Weather' uses your GPS location to display your weather</string>
     <key>NSAppTransportSecurity</key>
     <dict>
       <key>NSAllowsArbitraryLoads</key>

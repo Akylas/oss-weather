@@ -1,0 +1,16 @@
+*Features*
+- big update
+- bring back alerts
+- allow external app weather request (only Akylas apps for now)
+- Spanish translation
+- imperial units support
+- meteofrance support
+- astronomy view on daily / top icon click
+- basic favorites functionality
+- basic font scale support
+- force 24 hour clock format preference
+- swipe menu on favorite item to delete
+- added German translation
+- openmeteo provider
+- fully support new languages
+- testing showing wind gust speed. the design is not final. Ple

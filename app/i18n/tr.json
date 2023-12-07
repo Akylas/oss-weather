@@ -21,7 +21,7 @@
   "animations": "animasyonlar",
   "api_key": "API anahtarı",
   "api_key_required": "API anahtarı gerekli",
-  "api_key_required_description": "OpenWeatherMap\'ten hava durumu verilerini almak için ücretsiz bir API anahtarı gereklidir. \nUygulama varsayılan olarak bir tane sağlar, ancak ücretsiz planda kalabilmek için her kullanıcının kendi API anahtarını oluşturması gerekir.\n\nBunu web sitesinde bir hesap oluşturarak yapabilirsiniz.",
+  "api_key_required_description": "OpenWeatherMap'ten hava durumu verilerini almak için ücretsiz bir API anahtarı gereklidir. \nUygulama varsayılan olarak bir tane sağlar, ancak ücretsiz planda kalabilmek için her kullanıcının kendi API anahtarını oluşturması gerekir.\n\nBunu web sitesinde bir hesap oluşturarak yapabilirsiniz.",
   "app": {
     "name": "OSS Hava Durumu"
   },
@@ -60,8 +60,8 @@
   "french": "fransızca",
   "german": "almanca",
   "gps_location": "GPS konumunu bul",
-  "gps_not_authorized": "lütfen GPS\'i etkinleştirin ve OSS Hava Durumu\'nun konumunuzu belirlemesi için kullanmasına izin verin",
-  "gps_not_enabled": "OSS Hava Durumu\'nun konumunuzu belirlemesine izin vermek için lütfen GPS'i etkinleştirin",
+  "gps_not_authorized": "lütfen GPS'i etkinleştirin ve OSS Hava Durumu'nun konumunuzu belirlemesi için kullanmasına izin verin",
+  "gps_not_enabled": "OSS Hava Durumu'nun konumunuzu belirlemesine izin vermek için lütfen GPS'i etkinleştirin",
   "gps_off": "konum devre dışı bırakıldı",
   "hailstorm": "dolu fırtınası",
   "heat_wave": "sıcak hava dalgası",
@@ -159,6 +159,7 @@
   "third_parties_desc": "sevdiğimiz ve kullandığımız yazılım(lar)",
   "thunderstorm": "gök gürültülü sağanak yağışlar",
   "thunderstorms": "gök gürültülü sağanak yağışlar",
+  "turkish": "Türkçe",
   "uchinaguchi": "okinawaca",
   "ukrainian": "ukraynaca",
   "version": "sürüm",

@@ -33,6 +33,7 @@
         <item name="ru">@string/russian</item>
         <item name="ja">@string/japanese</item>
         <item name="ryu">@string/uchinaguchi</item>
+        <item name="tr">@string/turkish</item>
         <item name="uk">@string/ukrainian</item>
     </string-array>
     <string-array name="langsValues">
@@ -46,6 +47,7 @@
         <item name="ru">ru</item>
         <item name="ja">ja</item>
         <item name="ryu">ryu</item>
+        <item name="tr">tr</item>
         <item name="uk">uk</item>
     </string-array>
 </resources>

@@ -61,6 +61,14 @@ Prepare the application.
 
 
 
+### svelteCheck
+
+```sh
+[bundle exec] fastlane svelteCheck
+```
+
+
+
 ### get_changelog
 
 ```sh

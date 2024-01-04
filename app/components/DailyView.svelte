@@ -2,7 +2,7 @@
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { ApplicationSettings, Color } from '@nativescript/core';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';

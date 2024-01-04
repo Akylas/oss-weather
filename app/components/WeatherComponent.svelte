@@ -1,7 +1,7 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Application } from '@nativescript/core';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';

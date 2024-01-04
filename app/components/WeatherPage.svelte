@@ -309,7 +309,7 @@
         }
     });
 
-    const onTap = throttle(async function (item) {
+    const onTap = throttle(async function (event) {
         try {
             const AstronomyView = (await import('~/components/AstronomyView.svelte')).default;
             const parent = Frame.topmost() || Application.getRootView();
@@ -319,7 +319,7 @@
                 // peekHeight: 300,
                 props: {
                     location: weatherLocation,
-                    startTime: dayjs(item.detail.time)
+                    startTime: dayjs(event.time)
                 }
             });
         } catch (err) {
@@ -442,7 +442,7 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
-            <collectionview id="favorite" bind:this={favoriteCollectionView} row={1} rowHeight={80} items={favorites} itemIdGenerator={(_item, index) => index}>
+            <collectionview id="favorite" bind:this={favoriteCollectionView} row={1} items={favorites} itemIdGenerator={(_item, index) => index} rowHeight={80}>
                 <Template let:item>
                     <swipemenu
                         leftSwipeDistance="300"
@@ -461,14 +461,15 @@
                         }}
                     >
                         <gridlayout prop:mainContent rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer">
-                            <label row={1} fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
-                            <label row={2} fontSize={14} color={$textLightColor}>
+                            <label row={1} fontSize={17} text={item.name} maxLines={1} lineBreak="end" />
+                            <label row={2} fontSize={13} color={$textLightColor}>
                                 <span text={item.sys.state || item.sys.country} />
                                 <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
                             </label>
                         </gridlayout>
-                        <stacklayout prop:leftDrawer orientation="horizontal" width={100}>
+                        <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->
                             <mdbutton
+                            prop:leftDrawer
                                 id="deleteBtn"
                                 variant="text"
                                 class="icon-btn"
@@ -482,7 +483,7 @@
                                 verticalTextAlignment="middle"
                                 on:tap={toggleFavorite(item)}
                             />
-                        </stacklayout>
+                        <!-- </stacklayout> -->
                     </swipemenu>
                 </Template>
             </collectionview>

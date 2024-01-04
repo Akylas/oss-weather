@@ -1,10 +1,12 @@
 import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale, titlecase } from '@nativescript-community/l';
-import { ApplicationSettings, Device, Utils } from '@nativescript/core';
+import { ApplicationSettings, Device, File, Utils } from '@nativescript/core';
 import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
+import { showError } from '~/utils/error';
+import { showAlertOptionSelect } from '~/utils/ui';
 import { createGlobalEventListener, globalObservable } from '~/variables';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
@@ -37,37 +39,60 @@ $lang.subscribe((newLang: string) => {
         // const localeData = require(`~/i18n/${lang}.json`);
         loadLocaleJSON(`~/i18n/${lang}.json`);
     } catch (err) {
-        console.error('failed to load lang json', lang, `~/i18n/${lang}.json`, err);
+        console.error('failed to load lang json', lang, `~/i18n/${lang}.json`, File.exists(`~/i18n/${lang}.json`), err, err.stack);
     }
     globalObservable.notify({ eventName: 'language', data: lang });
 });
 function setLang(newLang) {
-    newLang = getActualLanguage(newLang);
-    if (supportedLanguages.indexOf(newLang) === -1) {
-        newLang = newLang.split('-')[0].toLowerCase();
-        if (supportedLanguages.indexOf(newLang) === -1) {
-            newLang = 'en';
+    let actualNewLang = getActualLanguage(newLang);
+    DEV_LOG && console.log('setLang', newLang, actualNewLang);
+    if (supportedLanguages.indexOf(actualNewLang) === -1) {
+        actualNewLang = actualNewLang.split('-')[0].toLowerCase();
+        if (supportedLanguages.indexOf(actualNewLang) === -1) {
+            actualNewLang = 'en';
         }
     }
     if (__IOS__) {
-        overrideNativeLocale(newLang);
+        overrideNativeLocale(actualNewLang);
     } else {
         // Application.android.foregroundActivity?.recreate();
         try {
-            const appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(newLang);
+            let appLocale;
+            if (newLang === 'auto') {
+                appLocale = androidx.core.os.LocaleListCompat.getEmptyLocaleList();
+            } else {
+                appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(actualNewLang);
+            }
+            DEV_LOG && console.log('appLocale', appLocale);
             // Call this on the main thread as it may require Activity.restart()
             androidx.appcompat.app.AppCompatDelegate['setApplicationLocales'](appLocale);
+            currentLocale = null;
+            // TODO: check why getEmptyLocaleList does not reset the locale to system
+            actualNewLang = getActualLanguage(newLang);
         } catch (error) {
             console.error(error);
         }
     }
-    $lang.set(newLang);
+    $lang.set(actualNewLang);
 }
 
 const deviceLanguage = getString('language', DEFAULT_LOCALE);
 function getActualLanguage(language) {
     if (language === 'auto') {
-        language = Device.language;
+        if (__ANDROID__) {
+            // N Device.language reads app config which thus does return locale app language and not device language
+            DEV_LOG &&
+                console.log(
+                    'getActualLanguage',
+                    language,
+                    java.util.Locale.getDefault().getLanguage(),
+                    Device.language,
+                    androidx.appcompat.app.AppCompatDelegate['getApplicationLocales']()
+                );
+            language = java.util.Locale.getDefault().getLanguage();
+        } else {
+            language = Device.language;
+        }
     }
     switch (language) {
         case 'cs':
@@ -80,6 +105,7 @@ function getActualLanguage(language) {
             return language;
     }
 }
+
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
@@ -147,6 +173,40 @@ export function getLocaleDisplayName(locale?) {
         return titlecase(java.util.Locale.forLanguageTag(locale || lang).getDisplayLanguage(currentLocale));
     }
 }
+
+// async function internalSelectLanguage() {
+//     // try {
+//     const actions = SUPPORTED_LOCALES;
+//     const currentLanguage = getString('language', DEFAULT_LOCALE);
+//     const component = (await import('~/components/OptionSelect.svelte')).default;
+//     return showAlertOptionSelect(
+//         component,
+//         {
+//             height: actions.length * 56,
+//             rowHeight: 56,
+//             options: [{ name: lc('auto'), data: 'auto' }].concat(actions.map((k) => ({ name: getLocaleDisplayName(k.replace('_', '-')), data: k }))).map((d) => ({
+//                 ...d,
+//                 boxType: 'circle',
+//                 type: 'checkbox',
+//                 value: currentLanguage === d.data
+//             }))
+//         },
+//         {
+//             title: lc('select_language')
+//         }
+//     );
+// }
+// export async function selectLanguage() {
+//     try {
+//         const result = await internalSelectLanguage();
+//         DEV_LOG && console.log('selectLanguage', result);
+//         if (result?.data) {
+//             ApplicationSettings.setString('language', result.data);
+//         }
+//     } catch (err) {
+//         showError(err);
+//     }
+// }
 
 setLang(deviceLanguage);
 

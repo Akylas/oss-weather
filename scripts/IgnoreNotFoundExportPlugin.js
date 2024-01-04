@@ -2,7 +2,7 @@
 const ModuleDependencyWarning = require('webpack/lib/ModuleDependencyWarning');
 
 // ↓ Based on https://github.com/sindresorhus/escape-string-regexp
-const escapeStringForRegExp = (str) => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+const escapeStringForRegExp = (string) => string.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 
 module.exports = class IgnoreNotFoundExportPlugin {
     constructor(exportsToIgnore) {

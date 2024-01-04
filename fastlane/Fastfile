@@ -109,12 +109,14 @@ lane :build_flavor do |params|
   puts "sentry_version:"  + sentry_version
   puts "options:"  + JSON.generate(options.to_json)
 
-  if (options[:sentry])
-    sentry_create_release(
-      sentry_cli_path: sentry_cli_path,
-      version: sentry_version
-    )
-  end
+  # if (options[:sentry])
+  #   sentry_create_release(
+  #     sentry_cli_path: sentry_cli_path,
+  #     version: sentry_version
+  #   )
+  # end
+
+  svelteCheck
   build(flavor: flavor, options: options)
   push_to_git_remote(tags:false)
 
@@ -171,6 +173,9 @@ lane :build_flavor do |params|
   push_to_git_remote(tags:false)
 end
 
+lane :svelteCheck do |params|
+sh("npm", "run", "svelte-check")
+end
 
 lane :get_changelog  do |params| 
   platform = params[:platform]

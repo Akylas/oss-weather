@@ -4,6 +4,9 @@ module.exports = {
     appResourcesPath: 'App_Resources',
     webpackConfigPath: 'app.webpack.config.js',
     appPath: 'app',
+    i18n: {
+        defaultLanguage: 'en'
+    },
     android: {
         gradleVersion: '8.3',
         markingMode: 'none',

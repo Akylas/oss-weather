@@ -15,13 +15,13 @@ android {
     versionCode 78
     versionName "1.7.6"
 
-    if (project.hasProperty('resConfigs')) {
-      def resConfigs = project.findProperty('resConfigs')
-      reset()
-      include resConfigs.split(',')
-    } else {
-      resConfigs "en", "fr", "es", "it", "ru", "pt", "de", "uk", "ja", "ryu", "tr"
-    }
+    // if (project.hasProperty('resConfigs')) {
+    //   def resConfigs = project.findProperty('resConfigs')
+    //   reset()
+    //   include resConfigs.split(',')
+    // } else {
+    //   resConfigs "en", "fr", "es", "it", "ru", "pt", "de", "uk", "ja", "ryu", "tr"
+    // }
     ndk {
       if (splitEnabled || project.hasProperty('abiFilters')) {
         abiFilters.clear()
@@ -30,6 +30,9 @@ android {
         }
       }
 
+    }
+    androidResources {
+      generateLocaleConfig = true
     }
   }
   kotlin {
@@ -44,6 +47,14 @@ android {
       // Or, if you prefer, you can continue to check for errors in release builds,
       // but continue the build even when errors are found:
       abortOnError false
+  }
+  bundle {
+      language {
+          // We disable language split because we do not use
+          // runtime Google Play Service APIs and thus cannot dynamically
+          // request to download the language resources for a specific locale.
+          enableSplit = false
+      }
   }
   splits {
       abi {
@@ -99,6 +110,16 @@ android {
         matchingFallbacks = ['release']
         debuggable false
     }
+  }  
+  packagingOptions {
+    pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+    pickFirst 'lib/arm64-v8a/libc++_shared.so'
+    pickFirst 'lib/x86_64/libc++_shared.so'
+    pickFirst 'lib/x86/libc++_shared.so'
+    exclude "org/bouncycastle/**"
+    exclude "license/**"
+    // resources.excludes += "assets/com/tom_roush/fontbox/resources/cmap/*"
+
   }
   experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
   experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
@@ -109,7 +130,8 @@ task createProguard {
     doLast {
         exec {
             workingDir "$USER_PROJECT_ROOT"
-            commandLine 'node', 'scripts/createProguard.js'
+            println("node scripts/createProguard.js ${rootDir} ${getAppResourcesPath()}")
+            commandLine 'node', "scripts/createProguard.js", "${rootDir}", "${getAppResourcesPath()}"
         }
     }
 }

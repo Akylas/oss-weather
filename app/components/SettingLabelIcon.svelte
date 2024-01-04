@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
     import { borderColor, iconColor, mdiFontFamily, primaryColor, subtitleColor as defaultSubtitleColor } from '~/variables';
 
     const dispatch = createEventDispatcher();

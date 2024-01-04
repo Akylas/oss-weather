@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { getBoolean } from '@nativescript/core/application-settings';
-    import { createEventDispatcher } from 'svelte';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
     import { prefs } from '~/services/preferences';
 </script>
 

@@ -1,6 +1,22 @@
 import { InAppBrowser } from '@akylas/nativescript-inappbrowser';
-import { Utils } from '@nativescript/core';
+import { MDCAlertControlerOptions } from '@nativescript-community/ui-material-dialogs';
+import { AlertOptions, Utils, View } from '@nativescript/core';
+import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import { primaryColor } from '~/variables';
+import { l, lc } from '~/helpers/locale';
+
+export interface ComponentInstanceInfo {
+    element: NativeViewElementNode<View>;
+    viewInstance: SvelteComponent;
+}
+
+export function resolveComponentElement<T>(viewSpec: typeof SvelteComponent<T>, props?: T): ComponentInstanceInfo {
+    const dummy = createElement('fragment', window.document as any);
+    const viewInstance = new viewSpec({ target: dummy, props });
+    const element = dummy.firstElement() as NativeViewElementNode<View>;
+    return { element, viewInstance };
+}
+
 
 export async function openLink(url) {
     try {
@@ -31,5 +47,35 @@ export async function openLink(url) {
             message: error.message,
             okButtonText: 'Ok'
         });
+    }
+}
+
+
+export async function showAlertOptionSelect<T>(viewSpec: typeof SvelteComponent<T>, props?: T, options?: Partial<AlertOptions & MDCAlertControlerOptions>) {
+    let componentInstanceInfo: ComponentInstanceInfo;
+    try {
+        componentInstanceInfo = resolveComponentElement(viewSpec, {
+            onClose: (result) => {
+                view.bindingContext.closeCallback(result);
+            },
+            onCheckBox(item, value, e) {
+                view.bindingContext.closeCallback(item);
+            },
+            trackingScrollView: 'collectionView',
+            ...props
+        });
+        const view: View = componentInstanceInfo.element.nativeView;
+        const result = await alert({
+            view,
+            okButtonText: lc('cancel'),
+            ...(options ? options : {})
+        });
+        return result;
+    } catch (err) {
+        throw err;
+    } finally {
+        componentInstanceInfo.element.nativeElement._tearDownUI();
+        componentInstanceInfo.viewInstance.$destroy();
+        componentInstanceInfo = null;
     }
 }

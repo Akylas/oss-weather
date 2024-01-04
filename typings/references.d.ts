@@ -7,6 +7,10 @@
 /// <reference path="../node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="../node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
 
+declare module 'svelte/internal' {
+    export function get_current_component();
+}
+
 declare const SUPPORTED_LOCALES: string[];
 declare const DEFAULT_LOCALE: string;
 declare const DEFAULT_THEME: string;

@@ -83,9 +83,9 @@ export async function showError(err: Error | string, showAsSnack = false) {
         if (!err) {
             return;
         }
-        DEV_LOG && console.error('showError', err, err && err['stack']);
         const reporterEnabled = isSentryEnabled;
         const realError = typeof err === 'string' ? null : err;
+        DEV_LOG && console.error('showError', reporterEnabled, err['message'] || err, err?.['stack'], err?.['stackTrace']);
 
         const isString = realError === null || realError === undefined;
         const message = isString ? (err as string) : realError.message || realError.toString();

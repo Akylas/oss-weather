@@ -46,14 +46,16 @@
                 <key>Key</key>
                 <string>provider</string>
                 <key>DefaultValue</key>
-                <string>openweathermap</string>
+                <string>openmeteo</string>
                 <key>Values</key>
                 <array>
+                    <string>openmeteo</string>
                     <string>openweathermap</string>
                     <string>meteofrance</string>
                 </array>
                 <key>Titles</key>
                 <array>
+                    <string>provider.openmeteo</string>
                     <string>provider.openweathermap</string>
                     <string>provider.meteofrance</string>
                 </array>
@@ -87,6 +89,14 @@
                     <string>en</string>
                     <string>fr</string>
                     <string>es</string>
+                    <string>de</string>
+                    <string>it</string>
+                    <string>ja</string>
+                    <string>pt</string>
+                    <string>ru</string>
+                    <string>ryu</string>
+                    <string>tr</string>
+                    <string>uk</string>
                 </array>
                 <key>Titles</key>
                 <array>
@@ -94,6 +104,14 @@
                     <string>english</string>
                     <string>french</string>
                     <string>spanish</string>
+                    <string>german</string>
+                    <string>italian</string>
+                    <string>japanese</string>
+                    <string>portuguese</string>
+                    <string>russian</string>
+                    <string>uchinaguchi</string>
+                    <string>turkish</string>
+                    <string>ukrainian</string>
                 </array>
             </dict>
         </array>

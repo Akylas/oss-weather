@@ -7,9 +7,9 @@
     <key>CFBundleVersion</key>
     <string>77</string>
     <key>CFBundleDevelopmentRegion</key>
-    <string>de</string>
+    <string>en</string>
     <key>CFBundleDisplayName</key>
-    <string>OSS Wetter</string>
+    <string>OSS Weather</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleInfoDictionaryVersion</key>

@@ -84,8 +84,8 @@
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
-<page actionBarHidden={true} on:layoutChanged={onLayoutChange}>
-    <gridlayout rows="auto,auto,*">
+<page actionBarHidden={true}>
+    <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
         <CActionBar title={lc('search_city')} modalWindow>
             <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
         </CActionBar>

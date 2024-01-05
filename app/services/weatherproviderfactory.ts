@@ -14,7 +14,7 @@ export function getProvider(): WeatherProvider {
     return provider;
 }
 export function getProviderType(): ProviderType {
-    const requestedProviderType: ProviderType = getString('provider', DEFAULT_PROVIDER) as ProviderType;
+    const requestedProviderType: ProviderType = (getString('provider', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
     return requestedProviderType;
 }
 

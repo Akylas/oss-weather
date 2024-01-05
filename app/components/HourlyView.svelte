@@ -19,8 +19,11 @@
     //         gestureHandler.attachToView(collectionView.nativeView);
     //     }
     // }
+    let needsScrollToStart = false;
+    $: if(items) needsScrollToStart = true
 
     function onDataPopulated() {
+        collectionView?.nativeView?.scrollToOffset(0);
         showLeftShadow = false;
         showRightShadow = true;
     }
@@ -33,7 +36,7 @@
     }
 
     onImperialChanged(() => {
-        collectionView.nativeView.refreshVisibleItems();
+        collectionView?.nativeView?.refreshVisibleItems();
     });
 </script>
 

@@ -5,19 +5,17 @@ import { lang } from '~/helpers/locale';
 import { WeatherLocation, request } from './api';
 import { CityWeather, Coord, OneCallResult } from './openweathermap';
 import { prefs } from './preferences';
-import { WeatherProvider } from './weatherprovider'
+import { WeatherProvider } from './weatherprovider';
 
 export class OWMProvider extends WeatherProvider {
-
     private static owmApiKey;
 
     constructor() {
-        super()
+        super();
         OWMProvider.owmApiKey = OWMProvider.readOwmApiKeySetting();
         prefs.on('key:owmApiKey', (event) => {
             OWMProvider.owmApiKey = OWMProvider.readOwmApiKeySetting();
         });
-
     }
 
     private static async fetch<T = any>(apiName: string, queryParams: OWMParams = {}) {

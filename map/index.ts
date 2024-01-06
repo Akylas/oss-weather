@@ -243,7 +243,7 @@ L.TileLayer.wmsHeader(
     {
         maxZoom: 19,
         pmIgnore: false,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></br><a href="https://www.rainviewer.com/copyright">RainViewer</a>'
     },
     [
         {
@@ -252,8 +252,7 @@ L.TileLayer.wmsHeader(
         }
     ]
 ).addTo(map);
-L.tileLayer(`https://{s}.sat.owm.io/vane/2.0/weather/PA0/{z}/{x}/{y}?appid=${OWM_KEY}&palette=0:00000000;0.1:C8969620;0.2:9696AA30;0.5:7878BE40;1:6E6ECD70;10:5050E1B2;140:1414FFE5&opacity=0.8`, {
+L.tileLayer('https://tilecache.rainviewer.com/v2/radar/1704537600/512/{z}/{x}/{y}/4/1_1.png', {
     maxZoom: 18,
-    pmIgnore: false,
-    subdomains: ['a', 'b', 'c']
+    pmIgnore: false
 }).addTo(map);

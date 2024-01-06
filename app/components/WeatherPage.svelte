@@ -76,14 +76,14 @@
                         text: l('refresh')
                     }
                 );
-                if (OWMProvider.hasOWMApiKey()) {
+                // if (OWMProvider.hasOWMApiKey()) {
                     options.push(
                     {
                         icon: 'mdi-map',
                         id: 'map',
                         text: l('map')
                     });
-                }
+                // }
             }
             const result: { icon: string; id: string; text: string } = await showBottomSheet({
                 parent: page,
@@ -259,6 +259,7 @@
                 setTimeout(() => askForApiKey(), 1000);
             }
         }
+        
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {
                 networkConnected = event.data.connected;

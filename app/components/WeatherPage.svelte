@@ -1,6 +1,6 @@
 <script lang="ts">
     import { GPS } from '@nativescript-community/gps';
-    import { request as requestPerm } from '@nativescript-community/perms';
+    import { request } from '@nativescript-community/perms';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { confirm } from '@nativescript-community/ui-material-dialogs';
@@ -26,7 +26,7 @@
     import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '~/utils/svelte/bottomsheet';
-    import { actionBarButtonHeight, lightBackgroundColor, globalObservable, mdiFontFamily, textLightColor, backgroundColor } from '~/variables';
+    import { actionBarButtonHeight, backgroundColor, globalObservable, lightBackgroundColor, mdiFontFamily, textLightColor } from '~/variables';
 
     let gps: GPS;
     let loading = false;
@@ -37,9 +37,9 @@
 
     let items = [];
 
-    let desiredAccuracy = __ANDROID__ ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
-    let timeout = 20000;
-    let minimumUpdateTime = 1000; // Should update every 1 second according ;
+    const desiredAccuracy = __ANDROID__ ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
+    const timeout = 20000;
+    const minimumUpdateTime = 1000; // Should update every 1 second according ;
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
     let page: NativeViewElementNode<Page>;
@@ -82,7 +82,7 @@
                         icon: 'mdi-map',
                         id: 'map',
                         text: l('map')
-                    })
+                    });
                 }
             }
             const result: { icon: string; id: string; text: string } = await showBottomSheet({
@@ -186,14 +186,14 @@
     }
     async function openWeatherMap() {
         try {
-            await navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+            navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
         } catch (error) {
             showError(error);
         }
     }
     async function getLocationAndWeather() {
         try {
-            const result = await requestPerm('location');
+            const result = await request('location');
             if (Array.isArray(result) && result[0] !== 'authorized') {
                 return alert(l('missing_location_perm'));
             }
@@ -349,7 +349,7 @@
                 translateX: side === 'right' ? -delta : delta
             },
             backDrop: {
-                translateX: side === 'right' ? -delta : delta,
+                // translateX: side === 'right' ? -delta : delta,
                 opacity: progress * 0.1
             },
             deleteBtn: {
@@ -368,119 +368,118 @@
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
-        leftSwipeDistance={50}
+        gestureEnabled={true}
         gestureHandlerOptions={{
             minDist: 60,
             failOffsetYStart: -20,
             failOffsetYEnd: 20
         }}
-        gestureEnabled={true}
+        leftSwipeDistance={50}
         waitFor={[15644]}
         on:close={onDrawerStartClose}
         on:start={onDrawerStartClose}
     >
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
-                <label row={1} horizontalAlignment="center" verticalAlignment="middle" text={l('no_network').toUpperCase()} />
+                <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if weatherLocation}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
-                    <WeatherComponent {weatherLocation} {items} on:tap={onTap} />
+                    <WeatherComponent {items} {weatherLocation} on:tap={onTap} />
                 </pullrefresh>
                 <label
-                    row="1"
-                    fontSize={10}
                     backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
-                    text={lc('powered_by', l(`provider.${provider}`))}
-                    verticalAlignment="bottom"
+                    fontSize={10}
                     horizontalAlignment="right"
                     marginRight={6}
+                    row="1"
+                    text={lc('powered_by', l(`provider.${provider}`))}
+                    verticalAlignment="bottom"
                 />
             {:else}
-                <gridlayout row={1} rows="auto,auto,auto,auto,60" horizontalAlignment="center" verticalAlignment="middle" columns="auto">
-                    <label text={$sl('no_location_desc')} textAlignment="center" marginBottom={20} />
-                    <mdbutton row={1} margin="4 0 4 0" variant="outline" on:tap={getLocationAndWeather} textAlignment="center" verticalTextAlignment="center" android:paddingTop={6}>
-                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-crosshairs-gps" verticalAlignment="middle" />
-                        <span text={$sl('my_location').toUpperCase()} verticalAlignment="middle" />
+                <gridlayout columns="auto" horizontalAlignment="center" row={1} rows="auto,auto,auto,auto,60" verticalAlignment="middle">
+                    <label marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" />
+                    <mdbutton margin="4 0 4 0" row={1} textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
+                        <cspan fontFamily={mdiFontFamily} fontSize={20} text="mdi-crosshairs-gps" verticalAlignment="middle" />
+                        <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                    <mdbutton row={2} margin="4 0 4 0" variant="outline" on:tap={searchCity} textAlignment="center" android:paddingTop={6} verticalTextAlignment="center">
-                        <span fontSize={20} fontFamily={mdiFontFamily} text="mdi-magnify" verticalAlignment="middle" />
-                        <span text={$sl('search_location').toUpperCase()} verticalAlignment="middle" />
+                    <mdbutton margin="4 0 4 0" row={2} textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
+                        <cspan fontFamily={mdiFontFamily} fontSize={20} text="mdi-magnify" verticalAlignment="middle" />
+                        <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                 </gridlayout>
             {/if}
-            <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name} onMenuIcon={toggleDrawer}>
+            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name}>
                 <mdbutton
                     slot="left"
-                    visibility={weatherLocation ? 'visible' : 'collapsed'}
-                    col={1}
-                    variant="text"
                     class="icon-btn"
-                    marginRight={4}
-                    width={30}
-                    height={30}
+                    col={1}
                     color={favoriteIconColor(weatherLocation)}
+                    height={30}
+                    marginRight={4}
                     rippleColor="#EFB644"
-                    on:tap={() => toggleItemFavorite(weatherLocation)}
                     text={favoriteIcon(weatherLocation)}
-                    verticalAlignment="middle"
-                />
-                <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={actionBarButtonHeight} height={actionBarButtonHeight} />
-                <mdbutton
-                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
                     variant="text"
+                    verticalAlignment="middle"
+                    visibility={weatherLocation ? 'visible' : 'collapsed'}
+                    width={30}
+                    on:tap={() => toggleItemFavorite(weatherLocation)}
+                />
+                <activityIndicator busy={loading} height={actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={actionBarButtonHeight} />
+                <mdbutton
                     class="icon-btn"
                     color="#EFB644"
                     rippleColor="#EFB644"
-                    verticalAlignment="middle"
-                    on:tap={() => showAlerts()}
                     text="mdi-alert"
+                    variant="text"
+                    verticalAlignment="middle"
+                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
+                    on:tap={() => showAlerts()}
                 />
-                <mdbutton variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-magnify" on:tap={searchCity} />
+                <mdbutton class="icon-btn" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
 
-                <mdbutton id="menu_button" variant="text" class="icon-btn" verticalAlignment="middle" text="mdi-dots-vertical" on:tap={showOptions} />
+                <mdbutton id="menu_button" class="icon-btn" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
-            <label text={lc('favorites')} margin="20 20 20 20" class="actionBarTitle" />
-            <collectionview id="favorite" bind:this={favoriteCollectionView} row={1} items={favorites} itemIdGenerator={(_item, index) => index} rowHeight={80}>
+            <label class="actionBarTitle" margin="20 20 20 20" text={lc('favorites')} />
+            <collectionview bind:this={favoriteCollectionView} id="favorite" itemIdGenerator={(_item, index) => index} items={favorites} row={1} rowHeight={80}>
                 <Template let:item>
                     <swipemenu
-                        leftSwipeDistance="300"
-                        startingSide={item.startingSide}
-                        translationFunction={drawerTranslationFunction}
-                        openAnimationDuration={100}
                         closeAnimationDuration={100}
-                        gestureTag={15644}
                         gestureHandlerOptions={{
                             activeOffsetXStart: item.startingSide ? -10 : -Number.MAX_SAFE_INTEGER,
                             failOffsetXStart: item.startingSide ? Number.MIN_SAFE_INTEGER : 0,
-                            // activeOffsetXEnd: 10,
                             failOffsetYStart: -40,
                             failOffsetYEnd: 40,
                             minDist: 50
                         }}
+                        gestureTag={15644}
+                        leftSwipeDistance="300"
+                        openAnimationDuration={100}
+                        startingSide={item.startingSide}
+                        translationFunction={drawerTranslationFunction}
                     >
-                        <gridlayout prop:mainContent rows="*,auto,auto,*" rippleColor="#aaa" on:tap={() => saveLocation(item)} columns="*,auto" padding="10 10 10 30" class="drawer">
-                            <label row={1} fontSize={17} text={item.name} maxLines={1} lineBreak="end" />
-                            <label row={2} fontSize={13} color={$textLightColor}>
+                        <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
+                            <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />
+                            <label color={$textLightColor} fontSize={13} row={2}>
                                 <span text={item.sys.state || item.sys.country} />
-                                <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
+                                <span text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
                             </label>
                         </gridlayout>
                         <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->
                             <mdbutton
                             prop:leftDrawer
                                 id="deleteBtn"
-                                variant="text"
                                 class="icon-btn"
-                                width="100"
-                                height="100%"
-                                text="mdi-trash-can"
-                                color="white"
                                 backgroundColor="red"
-                                textAlignment="center"
+                                color="white"
+                                height="100%"
                                 shape="none"
+                                text="mdi-trash-can"
+                                textAlignment="center"
+                                variant="text"
                                 verticalTextAlignment="middle"
+                                width="100"
                                 on:tap={toggleFavorite(item)}
                             />
                         <!-- </stacklayout> -->

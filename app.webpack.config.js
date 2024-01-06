@@ -98,7 +98,7 @@ module.exports = (env, params = {}) => {
         theme = 'auto', // --env.theme
         keep_classnames_functionnames = false,
         accessibility = false,
-        buildweathermap, // --env.buildweathermap
+        buildweathermap = true, // --env.buildweathermap
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey

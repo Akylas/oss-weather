@@ -128,7 +128,6 @@
         ]
     },
     "resolutions": {
-        "@nativescript-community/gesturehandler": "portal:/Volumes/dev/nativescript/nativescript-gesturehandler/packages/gesturehandler",
         "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     }
 }

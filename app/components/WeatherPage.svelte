@@ -117,7 +117,6 @@
                         break;
                 }
             }
-            console.log('action done');
         } catch (error) {
             showError(error);
         }

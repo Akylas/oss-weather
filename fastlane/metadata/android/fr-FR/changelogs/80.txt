@@ -1,0 +1,7 @@
+*Bug fixes*
+- correctly focus textfield while opening select location
+- reset hourly scroll position on data update
+- default provider fix
+- main page layout improvements
+- map radar now available without OWM key
+- OWM key saving fix

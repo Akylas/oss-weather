@@ -7,7 +7,7 @@ import { derived, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { showError } from '~/utils/error';
 import { showAlertOptionSelect } from '~/utils/ui';
-import { createGlobalEventListener, globalObservable } from '~/variables';
+import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 
@@ -86,6 +86,7 @@ function getActualLanguage(language) {
                     'getActualLanguage',
                     language,
                     java.util.Locale.getDefault().getLanguage(),
+                    com.akylas.weather.Utils.getSystemLocale().getLanguage(),
                     Device.language,
                     androidx.appcompat.app.AppCompatDelegate['getApplicationLocales']()
                 );
@@ -105,7 +106,6 @@ function getActualLanguage(language) {
             return language;
     }
 }
-
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
@@ -152,7 +152,7 @@ prefs.on('key:language', () => {
 
 prefs.on('key:clock_24', () => {
     const newValue = ApplicationSettings.getBoolean('clock_24', default24Clock);
-    DEV_LOG && console.log('clock_24 changed', newValue);
+    // DEV_LOG && console.log('clock_24 changed', newValue);
     clock_24 = newValue;
     clock_24Store.set(newValue);
     // we fake a language change to update the UI
@@ -173,41 +173,49 @@ export function getLocaleDisplayName(locale?) {
         return titlecase(java.util.Locale.forLanguageTag(locale || lang).getDisplayLanguage(currentLocale));
     }
 }
+export function getCurrentISO3Language() {
+    if (__IOS__) {
+        return NSLocale.alloc().initWithLocaleIdentifier(lang)['ISO639_2LanguageCode']();
+    } else {
+        const locale = java.util.Locale.forLanguageTag(lang);
+        return locale.getISO3Language();
+    }
+}
+async function internalSelectLanguage() {
+    // try {
+    const actions = SUPPORTED_LOCALES;
+    const currentLanguage = getString('language', DEFAULT_LOCALE);
+    const component = (await import('~/components/common/OptionSelect.svelte')).default;
+    return showAlertOptionSelect(
+        component,
+        {
+            height: actions.length * 56,
+            rowHeight: 56,
+            options: [{ name: lc('auto'), data: 'auto' }].concat(actions.map((k) => ({ name: getLocaleDisplayName(k.replace('_', '-')), data: k }))).map((d) => ({
+                ...d,
+                boxType: 'circle',
+                type: 'checkbox',
+                value: currentLanguage === d.data
+            }))
+        },
+        {
+            title: lc('select_language')
+        }
+    );
+}
+export async function selectLanguage() {
+    try {
+        const result = await internalSelectLanguage();
+        DEV_LOG && console.log('selectLanguage', result);
+        if (result?.data) {
+            ApplicationSettings.setString('language', result.data);
+        }
+    } catch (err) {
+        showError(err);
+    }
+}
 
-// async function internalSelectLanguage() {
-//     // try {
-//     const actions = SUPPORTED_LOCALES;
-//     const currentLanguage = getString('language', DEFAULT_LOCALE);
-//     const component = (await import('~/components/OptionSelect.svelte')).default;
-//     return showAlertOptionSelect(
-//         component,
-//         {
-//             height: actions.length * 56,
-//             rowHeight: 56,
-//             options: [{ name: lc('auto'), data: 'auto' }].concat(actions.map((k) => ({ name: getLocaleDisplayName(k.replace('_', '-')), data: k }))).map((d) => ({
-//                 ...d,
-//                 boxType: 'circle',
-//                 type: 'checkbox',
-//                 value: currentLanguage === d.data
-//             }))
-//         },
-//         {
-//             title: lc('select_language')
-//         }
-//     );
-// }
-// export async function selectLanguage() {
-//     try {
-//         const result = await internalSelectLanguage();
-//         DEV_LOG && console.log('selectLanguage', result);
-//         if (result?.data) {
-//             ApplicationSettings.setString('language', result.data);
-//         }
-//     } catch (err) {
-//         showError(err);
-//     }
-// }
-
+// TODO: on android 13 check for per app language, we dont need to store it
 setLang(deviceLanguage);
 
 export { l, lc, lt, lu };

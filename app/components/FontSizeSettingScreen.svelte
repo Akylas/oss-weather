@@ -8,6 +8,7 @@
     import { colors } from '~/variables';
     import CActionBar from './common/CActionBar.svelte';
     import dayjs from 'dayjs';
+    import { WeatherData } from '~/services/weather';
 
     $: ({ colorOutline } = $colors);
 

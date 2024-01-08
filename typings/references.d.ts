@@ -11,6 +11,22 @@ declare module 'svelte/internal' {
     export function get_current_component();
 }
 
+declare namespace com {
+    export namespace akylas {
+        export namespace weather {
+            class Utils {
+                static applyDayNight(context: android.content.Context, applyDynamicColors: boolean);
+                static applyDynamicColors(context: android.content.Context);
+                static getDimensionFromInt(context: android.content.Context, intToGet);
+                static getColorFromInt(context: android.content.Context, intToGet);
+                static getColorFromName(context: android.content.Context, intToGet);
+                static restartApp(context: android.content.Context, activity: android.app.Activity);
+                static getSystemLocale(): java.util.Locale;
+            }
+        }
+    }
+}
+
 declare const SUPPORTED_LOCALES: string[];
 declare const DEFAULT_LOCALE: string;
 declare const DEFAULT_THEME: string;
@@ -31,21 +47,13 @@ declare const CLIMA_CELL_MY_KEY: string;
 declare const DEFAULT_LOCATION: string;
 declare const GIT_URL: string;
 declare const STORE_LINK: string;
+declare const PLAY_STORE_BUILD: boolean;
 declare const STORE_REVIEW_LINK: string;
+declare const SPONSOR_URL: string;
 declare const __APP_ID__: string;
 declare const __APP_VERSION__: string;
 declare const __APP_BUILD_NUMBER__: string;
 declare const DEFAULT_PROVIDER: string;
-// declare const process: { env: any };
-
-// Augment the NodeJS global type with our own extensions
-
-declare const gVars: {
-    sentry: boolean;
-    isIOS: boolean;
-    isAndroid: boolean;
-    platform: string;
-};
 
 interface LatLonKeys {
     lat: number;
@@ -53,19 +61,12 @@ interface LatLonKeys {
     altitude?: number;
 }
 
-declare module '*.scss' {
-    // const content: any;
-
-    // export default content;
-    // export function toString(): string
-    export const locals;
-    // export const i
-}
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-qualifier
 declare namespace svelteNative.JSX {
-    export interface ViewAttributes {
+    interface ViewAttributes {
         rippleColor?: string;
-        verticalAlignment?: 'top' | 'bottom' | 'stretch' | 'middle' | undefined;
+        sharedTransitionTag?: string;
+        verticalAlignment?: string;
         dynamicElevationOffset?: string | number;
         elevation?: string | number;
     }
@@ -73,13 +74,16 @@ declare namespace svelteNative.JSX {
         variant?: string;
         shape?: string;
     }
-    export interface SpanAttributes {
-        visibility?: 'hidden' | 'visible' | 'collapse' | 'collapsed';
-        verticalAlignment?: string;
-        verticalTextAlignment?: string;
-    }
     export interface SliderAttributes {
         stepSize?: number;
+    }
+    export interface ImageAttributes {
+        noCache?: boolean;
+        imageRotation?: number;
+        colorMatrix?: number[];
+        blurRadius?: number;
+        fadeDuration?: number;
+        'on:rotateAnimated'?: (args: EventData) => void;
     }
     export interface LabelAttributes {
         autoFontSize?: boolean;
@@ -89,5 +93,14 @@ declare namespace svelteNative.JSX {
         maxFontSize?: number;
         lineBreak?: string;
         html?: string;
+    }
+    interface PageAttributes {
+        statusBarColor?: string;
+        screenOrientation?: string;
+        keepScreenAwake?: boolean;
+        screenBrightness?: number;
+
+        'on:closingModally'?: (args: ShownModallyData) => void;
+        // "on:shownModally"?: (args: ShownModallyData) => void;
     }
 }

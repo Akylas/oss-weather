@@ -41,6 +41,7 @@
     "description": "Description",
     "description_required": "A description is required",
     "divers": "Divers",
+    "donate": "Please consider making a small donation to help fund the project",
     "drizzle": "Drizzle",
     "email": "E-mail",
     "email_required": "A valid e-mail address is required",
@@ -76,7 +77,7 @@
     "ios": {
         "info": {
             "plist": {
-                "NSLocationWhenInUseUsageDescription": "'NS Weather' uses your GPS position to display your weather"
+                "NSLocationWhenInUseUsageDescription": "'OSS Weather' uses your GPS position to display your weather"
             }
         }
     },
@@ -91,9 +92,11 @@
     "light_rain": "Light rain",
     "light_rain_shower": "Light rain shower",
     "light_snow": "Light snow",
+    "list_used_third_parties": "list used third parties",
     "loading": "Loading",
     "map": "Map",
     "medium": "Moderate",
+    "metric_temp_decimal": "use decimal for metric temperature",
     "missing_location_perm": "Location permission missing",
     "moon": "Moon",
     "mostly_clear": "Mostly clear",
@@ -135,6 +138,7 @@
     "select": "Select",
     "select_location": "Select a location",
     "select_on_map": "Select on a map",
+    "select_theme": "select theme",
     "send": "Send",
     "send_bug_report": "Send bug report",
     "send_bug_report_desc": "Enter an e-mail address and a description for the encountered error",

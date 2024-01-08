@@ -41,6 +41,7 @@
     "description": "Beschreibung",
     "description_required": "Eine Beschreibung wird benötigt",
     "divers": "Sonstige",
+    "donate": "Bitte erwägen Sie eine kleine Spende, um das Projekt zu finanzieren",
     "drizzle": "Nieselregen",
     "email": "E-mail-Adresse",
     "email_required": "Es wird eine gültige E-mail-Adresse benötigt",
@@ -128,6 +129,7 @@
     "reset": "Zurücksetzen",
     "review_application": "App bewerten",
     "russian": "Russisch",
+    "save": "Speichern",
     "search": "Suche",
     "search_city": "Stadt suchen",
     "search_location": "Standort suchen",
@@ -164,6 +166,5 @@
     "ukrainian": "Ukrainisch",
     "version": "Version",
     "weather_map": "Wetterkarte",
-    "wind": "Wind",
-    "save": "Speichern"
+    "wind": "Wind"
 }

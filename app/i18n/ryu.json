@@ -76,7 +76,7 @@
     "ios": {
         "info": {
             "plist": {
-                "NSLocationWhenInUseUsageDescription": "「NS Weather」ー、GPSさしてぃてぃんきひょうじさびーん"
+                "NSLocationWhenInUseUsageDescription": "「OSS Weather」ー、GPSさしてぃてぃんきひょうじさびーん"
             }
         }
     },

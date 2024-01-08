@@ -41,6 +41,7 @@
     "description": "descrição",
     "description_required": "uma descrição é obrigatória",
     "divers": "mergulhadores",
+    "donate": "Por favor, considere fazer uma pequena doação para ajudar a financiar o projeto",
     "drizzle": "chuvisco",
     "email": "e-mail",
     "email_required": "um e-mail válido é obrigatório",
@@ -76,7 +77,7 @@
     "ios": {
         "info": {
             "plist": {
-                "NSLocationWhenInUseUsageDescription": "'NS Weather' usa sua localização GPS para exibir o clima"
+                "NSLocationWhenInUseUsageDescription": "'OSS Weather' usa sua localização GPS para exibir o clima"
             }
         }
     },

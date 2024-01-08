@@ -20,6 +20,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
     import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
+    import { MinutelyData } from '~/services/weather';
     const dispatch = createEventDispatcher();
 
     $: ({ colorOnSurface, colorOnSurfaceVariant , colorOutline } = $colors);

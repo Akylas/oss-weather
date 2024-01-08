@@ -1,8 +1,9 @@
 import { ApplicationSettings, Observable, ObservableArray } from '@nativescript/core';
 import { WeatherLocation } from '~/services/api';
 import { prefs } from '~/services/preferences';
-import { globalObservable, iconColor } from '~/variables';
+import { colors } from '~/variables';
 import { get } from 'svelte/store';
+import { globalObservable } from '~/utils/svelte/ui';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
@@ -25,7 +26,7 @@ export function isFavorite(item: WeatherLocation) {
 }
 export function favoriteIconColor(item: FavoriteLocation) {
     if (item) {
-        return item.isFavorite ? '#EFB644' : get(iconColor);
+        return item.isFavorite ? '#EFB644' : get(colors).colorOnSurfaceVariant;
     }
 }
 

@@ -142,8 +142,8 @@ export class OMProvider extends WeatherProvider {
             const code = hourly_weathercodes[index];
             d.icon = this.convertWeatherCodeToIcon(code, this.getDataArray(hourly, 'is_day', preferedModel)[index]);
             d.description = OMProvider.weatherCodeDescription[code];
-            d.temperature = Math.round(this.getDataArray(hourly, 'temperature_2m', preferedModel)[index]);
-            d.feelTemperature = Math.round(this.getDataArray(hourly, 'apparent_temperature', preferedModel)[index]);
+            d.temperature = this.getDataArray(hourly, 'temperature_2m', preferedModel)[index];
+            d.feelTemperature = this.getDataArray(hourly, 'apparent_temperature', preferedModel)[index];
 
             d.windBearing = this.getDataArray(hourly, 'winddirection_10m', preferedModel)[index];
 

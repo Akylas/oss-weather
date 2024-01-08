@@ -9,14 +9,10 @@ import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
 
 export class OWMProvider extends WeatherProvider {
-    private static owmApiKey;
+    static owmApiKey = OWMProvider.readOwmApiKeySetting();
 
     constructor() {
         super();
-        OWMProvider.owmApiKey = OWMProvider.readOwmApiKeySetting();
-        prefs.on('key:owmApiKey', (event) => {
-            OWMProvider.owmApiKey = OWMProvider.readOwmApiKeySetting();
-        });
     }
 
     private static async fetch<T = any>(apiName: string, queryParams: OWMParams = {}) {
@@ -103,7 +99,7 @@ export class OWMProvider extends WeatherProvider {
             d.description = titlecase(data.weather[0]?.description);
             d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
             d.windGust = Math.round(data.wind_gust * 3.6);
-            d.temperature = Math.round(data.temp);
+            d.temperature = data.temp;
 
             d.windBearing = data.wind_deg;
             if (hasNext) {
@@ -122,7 +118,7 @@ export class OWMProvider extends WeatherProvider {
         return r;
     }
 
-    private static readOwmApiKeySetting() {
+    static readOwmApiKeySetting() {
         let key = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
         DEV_LOG && console.log('readOwmApiKeySetting', key);
         if (key?.length === 0) {
@@ -150,6 +146,7 @@ export class OWMProvider extends WeatherProvider {
     }
 
     public static hasOWMApiKey() {
+        DEV_LOG && console.log('hasOWMApiKey', OWMProvider.owmApiKey, OWM_DEFAULT_KEY);
         return OWMProvider.owmApiKey && OWMProvider.owmApiKey.length && OWMProvider.owmApiKey !== OWM_DEFAULT_KEY;
     }
 
@@ -157,6 +154,9 @@ export class OWMProvider extends WeatherProvider {
         return OWMProvider.owmApiKey;
     }
 }
+prefs.on('key:owmApiKey', (event) => {
+    OWMProvider.owmApiKey = OWMProvider.readOwmApiKeySetting();
+});
 
 interface OWMParams extends Partial<Coord> {
     id?: number; // cityId

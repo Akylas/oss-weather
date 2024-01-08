@@ -287,8 +287,8 @@ export class MFProvider extends WeatherProvider {
             d.time = data.time * 1000;
             d.icon = this.convertMFICon(data.weather_icon);
             d.description = titlecase(data.weather_description);
-            d.temperature = Math.round(data.T);
-            d.feelTemperature = Math.round(data.T_windchill);
+            d.temperature = data.T;
+            d.feelTemperature = data.T_windchill;
 
             d.windBearing = data.wind_direction;
             const acc = (data.snow_1h || 0) + (data.rain_1h || 0);

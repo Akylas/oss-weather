@@ -4,7 +4,7 @@
     import { ApplicationSettings, Color } from '@nativescript/core';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
+    import { UNITS, convertValueToUnit, formatValueToUnit, toImperialUnit } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
     import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
 
@@ -81,9 +81,8 @@
         textPaint.setTextSize(15 * $fontScale);
         canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
-        textPaint.setColor($textColor);
 
-        let centeredItemsToDraw: {
+        const centeredItemsToDraw: {
             color?: string | Color;
             iconColor?: string | Color;
             paint?: Paint;
@@ -98,8 +97,8 @@
                 iconFontSize,
                 paint: appPaint,
                 icon: item.windIcon,
-                value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
-                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+                value: convertValueToUnit(item.windSpeed, UNITS.Speed)[0],
+                subvalue: toImperialUnit(UNITS.Speed)
             });
         }
         if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
@@ -108,17 +107,17 @@
                 paint: wiPaint,
                 color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
                 icon: 'wi-strong-wind',
-                value: convertValueToUnit(item.windGust, UNITS.Speed, $imperial)[0],
-                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+                value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
+                subvalue: toImperialUnit(UNITS.Speed)
             });
         }
         if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
-                color: color,
+                color,
                 iconFontSize,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
                 subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         }
@@ -129,7 +128,7 @@
                 iconFontSize,
                 icon: 'wi-cloud',
                 value: Math.round(item.cloudCover) + '%',
-                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial)
+                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
             });
         }
         if (item.uvIndex > 0) {
@@ -152,7 +151,7 @@
 
         const iconsTop = 10 * $fontScale;
         centeredItemsToDraw.forEach((c, index) => {
-            let x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
+            const x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || colorOnSurface);
@@ -179,14 +178,12 @@
                     {
                         fontSize: 17 * $fontScale,
                         color: colorOnSurfaceVariant,
-                        color: $textLightColor,
-                        text: formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)
+                        text: formatValueToUnit(item.temperatureMin, UNITS.Celcius)
                     },
                     {
                         fontSize: 20 * $fontScale,
                         color: colorOnSurface,
-                        color: $textColor,
-                        text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)
+                        text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)
                     }
                 ]
             },
@@ -195,7 +192,7 @@
         canvas.save();
         // textPaint.setTextSize(20);
         // textPaint.setTextAlign(Align.LEFT);
-        let staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, true);
+        const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, true);
         // console.log('getDesiredWidth', StaticLayout.getDesiredWidth);
         // const width = StaticLayout.getDesiredWidth(nString, textPaint);
         canvas.translate(0, 5);
@@ -219,6 +216,6 @@
     }
 </script>
 
-<canvas bind:this={canvasView} on:draw={drawOnCanvas} height={100 * $fontScale}>
-    <WeatherIcon marginRight="10" marginTop={16 * $fontScale} horizontalAlignment="right" size={60 * $fontScale} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
+<canvas bind:this={canvasView} height={100 * $fontScale} on:draw={drawOnCanvas}>
+    <WeatherIcon horizontalAlignment="right" icon={item.icon} marginRight="10" marginTop={16 * $fontScale} size={60 * $fontScale} on:tap={(event) => dispatch('tap', event)} />
 </canvas>

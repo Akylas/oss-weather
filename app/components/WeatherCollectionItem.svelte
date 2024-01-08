@@ -5,7 +5,7 @@
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { formatValueToUnit, UNITS } from '~/helpers/formatter';
+    import { UNITS, formatValueToUnit } from '~/helpers/formatter';
     import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/weather';
@@ -31,17 +31,17 @@
 
     function tempColor(t, min, max) {
         // Map the temperature to a 0-1 range
-        var a = (t - min) / (max - min);
+        let a = (t - min) / (max - min);
         a = a < 0 ? 0 : a > 1 ? 1 : a;
 
         // Scrunch the green/cyan range in the middle
-        var sign = a < 0.5 ? -1 : 1;
+        const sign = a < 0.5 ? -1 : 1;
         a = (sign * Math.pow(2 * Math.abs(a - 0.5), 0.35)) / 2 + 0.5;
 
         // Linear interpolation between the cold and hot
-        var h0 = 259;
-        var h1 = 12;
-        var h = h0 * (1 - a) + h1 * a;
+        const h0 = 259;
+        const h1 = 12;
+        const h = h0 * (1 - a) + h1 * a;
         return new Color(255, h, 75, 90, 'hsv');
     }
 
@@ -53,8 +53,8 @@
         const tmax = 30;
         // const tmin = Math.min(min, -30);
         // const tmax = Math.max(max, 30);
-        let colors = [];
-        let positions = [];
+        const colors = [];
+        const positions = [];
         const posDelta = 1 / nbColor;
         const tempDelta = (max - min) / nbColor;
         for (let index = 0; index < nbColor; index++) {
@@ -62,8 +62,8 @@
             positions.push(posOffset + posDelta * index);
         }
         return {
-            min: min,
-            max: max,
+            min,
+            max,
             gradient: new LinearGradient(0, 0, 0, h, colors, positions, TileMode.CLAMP)
         };
     }
@@ -92,7 +92,7 @@
         redraw();
     }
     // fontScale.subscribe(redraw);
-    let weatherIconSize = 40;
+    const weatherIconSize = 40;
     function drawOnCanvas(event) {
         const endDay = dayjs().endOf('d').valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
@@ -114,12 +114,12 @@
             canvas.drawRect(0, precipTop, w, h - 10, paint);
             if ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1) {
                 textPaint.setTextSize(10 * $fontScale);
-                textPaint.setColor($textColor);
+                textPaint.setColor(colorOnSurface);
                 textPaint.setAlpha(150);
                 if (precipProbability > 0) {
                     canvas.drawText(precipProbability + '%', w2, h - 22 * $fontScale, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial), w2, h - 12 * $fontScale, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM,), w2, h - 12 * $fontScale, textPaint);
             }
         }
         canvas.save();
@@ -150,15 +150,15 @@
                 points.push(points[points.length - 1], points[points.length - 1], points[points.length - 1]);
             }
             curvePath.reset();
-            let pWidth = w;
-            let startX = (-5 * w) / 2;
+            const pWidth = w;
+            const startX = (-5 * w) / 2;
             let lastPoint;
             const intensity = 0.2;
             points.forEach((p, i) => {
-                let curXVal = startX + pWidth * i;
-                let prevXVal = startX + pWidth * Math.max(i - 1, 0);
-                let nextXVal = startX + pWidth * Math.min(i + 1, points.length - 1);
-                let prevPrevXVal = startX + pWidth * Math.max(i - 2, 0);
+                const curXVal = startX + pWidth * i;
+                const prevXVal = startX + pWidth * Math.max(i - 1, 0);
+                const nextXVal = startX + pWidth * Math.min(i + 1, points.length - 1);
+                const prevPrevXVal = startX + pWidth * Math.max(i - 2, 0);
                 if (i === 0) {
                     curvePath.moveTo(startX, pHeight * (1 - p));
                 } else {
@@ -175,7 +175,7 @@
         }
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(13 * $fontScale);
-        canvas.drawText(`${formatValueToUnit(Math.round(item.temperature), UNITS.Celcius, $imperial)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
+        canvas.drawText(`${formatValueToUnit((item.temperature), UNITS.Celcius)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
         canvas.restore();
 
         if (item.cloudCeiling > 0) {
@@ -187,7 +187,7 @@
             textPaint.setColor(color);
             textPaint.setTextSize(10 * $fontScale);
             textPaint.setAlpha((item.cloudCover / 100) * heightProb * 255);
-            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial), w2, top + 20 * $fontScale, textPaint);
+            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance), w2, top + 20 * $fontScale, textPaint);
         }
         // paint.setAlpha(255);
         // textPaint.setAlpha(255);
@@ -210,8 +210,7 @@
         if (item.windSpeed) {
             appTextPaint.setTextSize(11 * $fontScale);
             appTextPaint.setColor(colorOnSurface);
-            appTextPaint.setColor($textColor);
-            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, iconDecale, appTextPaint);
+            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, iconDecale, appTextPaint);
         }
         if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
             textPaint.setTextSize(11 * $fontScale);
@@ -219,7 +218,7 @@
                 // textPaint.setTextSize(subTextSize);
                 textPaint.setColor('#FFBC03');
             }
-            const staticLayout = new StaticLayout(formatValueToUnit(item.windGust, UNITS.Speed, $imperial), textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
+            const staticLayout = new StaticLayout(formatValueToUnit(item.windGust, UNITS.Speed), textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
 
             canvas.save();
             canvas.translate(w2, iconDecale + 3);
@@ -257,5 +256,5 @@
 
 <gridlayout on:tap={onTap}>
     <canvas bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
-    <WeatherIcon icon={item.icon} verticalAlignment="top" marginTop={27 * $fontScale} size={weatherIconSize} isUserInteractionEnabled={false}/>
+    <WeatherIcon icon={item.icon} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top"/>
 </gridlayout>

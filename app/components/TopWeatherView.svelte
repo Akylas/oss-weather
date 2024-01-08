@@ -15,7 +15,7 @@
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
-    import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
+    import { UNITS, convertValueToUnit, formatValueToUnit, toImperialUnit } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
@@ -76,8 +76,8 @@
         }
     }
     let lineChart: NativeViewElementNode<LineChart>;
-    let weatherIconSize = 140;
-    let topViewHeight = 240;
+    const weatherIconSize = 140;
+    const topViewHeight = 240;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -280,8 +280,8 @@
     });
     let canvasView;
     function redraw() {
-        if (chartInitialized) {
-            const chart = lineChart?.nativeView;
+        const chart = lineChart?.nativeView;
+        if (chartInitialized && chart) {
             const xAxis = chart.getXAxis();
             const leftAxis = chart.getAxisLeft();
             leftAxis.getLimitLines().forEach((l) => {
@@ -296,7 +296,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        let centeredItemsToDraw: {
+        const centeredItemsToDraw: {
             color?: string | Color;
             paint?: Paint;
             iconFontSize: number;
@@ -310,8 +310,8 @@
                 iconFontSize,
                 paint: appPaint,
                 icon: item.windIcon,
-                value: convertValueToUnit(item.windSpeed, UNITS.Speed, $imperial)[0],
-                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+                value: convertValueToUnit(item.windSpeed, UNITS.Speed)[0],
+                subvalue: toImperialUnit(UNITS.Speed)
             });
         }
         if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
@@ -320,8 +320,8 @@
                 paint: wiPaint,
                 color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
                 icon: 'wi-strong-wind',
-                value: convertValueToUnit(item.windGust, UNITS.Speed, $imperial)[0],
-                subvalue: toImperialUnit(UNITS.Speed, $imperial)
+                value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
+                subvalue: toImperialUnit(UNITS.Speed)
             });
         }
         centeredItemsToDraw.push({
@@ -334,10 +334,10 @@
         if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
                 paint: wiPaint,
-                color: color,
+                color,
                 iconFontSize,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM, $imperial),
+                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
                 subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         } else if (item.cloudCover > 20) {
@@ -347,7 +347,7 @@
                 iconFontSize,
                 icon: 'wi-cloud',
                 value: Math.round(item.cloudCover) + '%',
-                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance, $imperial)
+                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
             });
         }
         if (item.uvIndex > 0) {
@@ -362,7 +362,7 @@
         const iconsTop = hasPrecip ? 60 : topViewHeight / 2 - 20 * $fontScale;
         const iconsLeft = 26;
         centeredItemsToDraw.forEach((c, index) => {
-            let x = index * 45 * $fontScale + iconsLeft;
+            const x = index * 45 * $fontScale + iconsLeft;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || colorOnSurface);
@@ -384,21 +384,19 @@
         if (item.temperature) {
             textPaint.setTextAlign(Align.LEFT);
             textPaint.setTextSize(36 * $fontScale);
-            canvas.drawText(formatValueToUnit(item.temperature, UNITS.Celcius, $imperial), 10, 36 * $fontScale, textPaint);
+            canvas.drawText(formatValueToUnit(item.temperature, UNITS.Celcius), 10, 36 * $fontScale, textPaint);
         }
         const nString = createNativeAttributedString({
             spans: [
                 {
                     fontSize: 17 * $fontScale,
                     color: colorOnSurfaceVariant,
-                    color: $textLightColor,
-                    text: formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)
+                    text: formatValueToUnit(item.temperatureMin, UNITS.Celcius)
                 },
                 {
                     fontSize: 20 * $fontScale,
                     color: colorOnSurface,
-                    color: $textColor,
-                    text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)
+                    text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)
                 }
             ]
         });
@@ -456,8 +454,8 @@
     }
 </script>
 
-<gridlayout rows={`${topViewHeight},*`} {height} columns="*,auto">
-    <canvas bind:this={canvasView} colSpan={2} on:draw={drawOnCanvas} paddingLeft={10} paddingBottom={10} paddingRight={10}>
+<gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
+    <canvas bind:this={canvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={$fonts.wi} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />
@@ -479,8 +477,8 @@
         verticalAlignment="top"
         horizontalAlignment="left"
     /> -->
-    <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} verticalAlignment="bottom" height={90} marginBottom={40} />
-    <WeatherIcon col={1} horizontalAlignment="right" verticalAlignment="middle" size={weatherIconSize * (2 - $fontScale)} icon={item.icon} on:tap={(event) => dispatch('tap', event)} />
-        
-    <HourlyView row={1} colSpan={2} items={item.hourly} />
+    <linechart bind:this={lineChart} height={90} marginBottom={40} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
+    <WeatherIcon col={1} horizontalAlignment="right" icon={item.icon} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap={(event) => dispatch('tap', event)} />
+
+    <HourlyView colSpan={2} items={item.hourly} row={1} />
 </gridlayout>

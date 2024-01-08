@@ -180,7 +180,7 @@
             xAxis.setAxisMinValue(0);
 
             // we want exactly one label per 10 min
-            const labelCount = data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0;
+            const labelCount = Math.min(data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0, 7);
             xAxis.setLabelCount(labelCount, true);
 
             let needsToSetData = false;

@@ -8,6 +8,7 @@ import { Forecast } from './openmeteo';
 import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
+import { Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);

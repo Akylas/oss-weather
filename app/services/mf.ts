@@ -6,6 +6,7 @@ import { lang, lc } from '~/helpers/locale';
 import { WeatherLocation, request } from './api';
 import { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 import { WeatherProvider } from './weatherprovider';
+import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 
 const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 

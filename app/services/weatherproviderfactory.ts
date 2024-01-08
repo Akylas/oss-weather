@@ -3,6 +3,9 @@ import { MFProvider } from './mf';
 import { OMProvider } from './om';
 import { OWMProvider } from './owm';
 import { getString } from '@nativescript/core/application-settings';
+import { ProviderType } from './weather';
+
+export const providers = ['meteofrance', 'openweathermap', 'openmeteo'] as const;
 
 export function getProvider(): WeatherProvider {
     const requestedProviderType = getProviderType();

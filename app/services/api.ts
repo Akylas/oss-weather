@@ -9,6 +9,7 @@ import { lang } from '~/helpers/locale';
 import { CustomError } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/variables';
 import { Photon, PhotonProperties } from './photon';
+import { WeatherData } from './weather';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 

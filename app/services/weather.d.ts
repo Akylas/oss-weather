@@ -1,13 +1,16 @@
-type ProviderType = 'meteofrance' | 'openweathermap' | 'openmeteo';
+import { Color } from '@nativescript/core';
+import { providers } from './weatherproviderfactory';
 
-interface WeatherData {
+export type ProviderType = (typeof providers)[number];
+
+export interface WeatherData {
     currently: Currently;
     daily: Daily;
     minutely: Minutely;
     alerts: Alert[];
 }
 
-interface Alert {
+export interface Alert {
     sender_name?: string;
     event: string;
     start: number;
@@ -16,20 +19,20 @@ interface Alert {
     tags?: string[];
 }
 
-interface Minutely {
+export interface Minutely {
     data: MinutelyData[];
 }
 
-interface MinutelyData {
+export interface MinutelyData {
     intensity: number;
     time: number;
 }
 
-interface Daily {
+export interface Daily {
     data: DailyData[];
 }
 
-interface DailyData {
+export interface DailyData {
     time: number;
     icon: string;
     description: string;
@@ -61,7 +64,7 @@ interface DailyData {
     iso?: number;
 }
 
-interface Hourly {
+export interface Hourly {
     time: number;
     icon: string;
     description: string;
@@ -91,7 +94,7 @@ interface Hourly {
     iso?: number;
     snowDepth?: number;
 }
-interface Currently {
+export interface Currently {
     time: number;
     temperature: number;
     pressure: number;

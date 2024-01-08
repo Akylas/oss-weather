@@ -6,6 +6,7 @@ import { WeatherLocation, request } from './api';
 import { CityWeather, Coord, OneCallResult } from './openweathermap';
 import { prefs } from './preferences';
 import { WeatherProvider } from './weatherprovider';
+import { Currently, DailyData, Hourly, WeatherData } from './weather';
 
 export class OWMProvider extends WeatherProvider {
     private static owmApiKey;

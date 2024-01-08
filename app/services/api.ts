@@ -6,8 +6,8 @@ import { connectionType, getConnectionType, startMonitoring, stopMonitoring } fr
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
 import { lang } from '~/helpers/locale';
-import { CustomError } from '~/utils/error';
-import { createGlobalEventListener, globalObservable } from '~/variables';
+import { CustomError, HTTPError, NoNetworkError } from '~/utils/error';
+import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { Photon, PhotonProperties } from './photon';
 import { WeatherData } from './weather';
 
@@ -81,54 +81,6 @@ export function queryString(params, location) {
     }
 
     return parts.splice(0, 2).join('?') + (parts.length > 0 ? '&' + parts.join('&') : '');
-}
-
-export class TimeoutError extends CustomError {
-    constructor(props?) {
-        super(
-            Object.assign(
-                {
-                    message: 'timeout_error'
-                },
-                props
-            ),
-            'TimeoutError'
-        );
-    }
-}
-
-export class NoNetworkError extends CustomError {
-    constructor(props?) {
-        super(
-            Object.assign(
-                {
-                    message: 'no_network'
-                },
-                props
-            ),
-            'NoNetworkError'
-        );
-    }
-}
-export interface HTTPErrorProps {
-    statusCode: number;
-    message: string;
-    requestParams: HTTPSOptions;
-}
-export class HTTPError extends CustomError {
-    statusCode: number;
-    requestParams: HTTPSOptions;
-    constructor(props: HTTPErrorProps | HTTPError) {
-        super(
-            Object.assign(
-                {
-                    message: 'httpError'
-                },
-                props
-            ),
-            'HTTPError'
-        );
-    }
 }
 
 interface NetworkService extends Observable {

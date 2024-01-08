@@ -11,12 +11,12 @@
     <Template let:item>
         <gridlayout>
             <gridlayout class="alertView" columns="auto,*" rows="auto">
-                <label verticalAlignment="top" marginLeft={10} color="#EFB644" fontSize={36} class="icon-btn" text="mdi-alert" />
+                <label class="icon-btn" color="#EFB644" fontSize={36} marginLeft={10} text="mdi-alert" verticalAlignment="top" />
                 <label col={1} fontSize={14} padding="0 4 4 0" textWrap={true}>
-                    <span fontSize={17} text="{item.event}{'\n'}" visibility={item.event ? 'visible' : 'hidden'} />
-                    <span fontSize={17} text="{item.sender_name}{'\n'}" visibility={item.sender_name ? 'visible' : 'hidden'} />
-                    <span text="{titlecase(l('expires'))}: {formatDate(item.end, 'dddd LT')}{'\n'}" />
-                    <span color="#aaa" text={item.description} />
+                    <cspan fontSize={17} text="{item.event}{'\n'}" visibility={item.event ? 'visible' : 'hidden'} />
+                    <cspan fontSize={17} text="{item.sender_name}{'\n'}" visibility={item.sender_name ? 'visible' : 'hidden'} />
+                    <cspan text="{titlecase(l('expires'))}: {formatDate(item.end, 'dddd LT')}{'\n'}" />
+                    <cspan color="#aaa" text={item.description} />
                 </label>
             </gridlayout>
         </gridlayout>

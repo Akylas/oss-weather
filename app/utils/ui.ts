@@ -1,38 +1,29 @@
 import { InAppBrowser } from '@akylas/nativescript-inappbrowser';
-import { MDCAlertControlerOptions } from '@nativescript-community/ui-material-dialogs';
+import { MDCAlertControlerOptions, alert } from '@nativescript-community/ui-material-dialogs';
+import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
+import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
 import { AlertOptions, Utils, View } from '@nativescript/core';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
-import { primaryColor } from '~/variables';
-import { l, lc } from '~/helpers/locale';
-
-export interface ComponentInstanceInfo {
-    element: NativeViewElementNode<View>;
-    viewInstance: SvelteComponent;
-}
-
-export function resolveComponentElement<T>(viewSpec: typeof SvelteComponent<T>, props?: T): ComponentInstanceInfo {
-    const dummy = createElement('fragment', window.document as any);
-    const viewInstance = new viewSpec({ target: dummy, props });
-    const element = dummy.firstElement() as NativeViewElementNode<View>;
-    return { element, viewInstance };
-}
-
+import { get } from 'svelte/store';
+import { lc } from '~/helpers/locale';
+import { colors, systemFontScale } from '~/variables';
 
 export async function openLink(url) {
     try {
+        const { colorPrimary } = get(colors);
         const available = await InAppBrowser.isAvailable();
         if (available) {
             return InAppBrowser.open(url, {
                 // iOS Properties
                 dismissButtonStyle: 'close',
-                preferredBarTintColor: primaryColor,
+                preferredBarTintColor: colorPrimary,
                 preferredControlTintColor: 'white',
                 readerMode: false,
                 animated: true,
                 enableBarCollapsing: true,
                 // Android Properties
                 showTitle: true,
-                toolbarColor: primaryColor,
+                toolbarColor: colorPrimary,
                 secondaryToolbarColor: 'white',
                 enableUrlBarHiding: true,
                 enableDefaultShare: true,
@@ -50,7 +41,17 @@ export async function openLink(url) {
     }
 }
 
+export interface ComponentInstanceInfo {
+    element: NativeViewElementNode<View>;
+    viewInstance: SvelteComponent;
+}
 
+export function resolveComponentElement<T>(viewSpec: typeof SvelteComponent<T>, props?: T): ComponentInstanceInfo {
+    const dummy = createElement('fragment', window.document as any);
+    const viewInstance = new viewSpec({ target: dummy, props });
+    const element = dummy.firstElement() as NativeViewElementNode<View>;
+    return { element, viewInstance };
+}
 export async function showAlertOptionSelect<T>(viewSpec: typeof SvelteComponent<T>, props?: T, options?: Partial<AlertOptions & MDCAlertControlerOptions>) {
     let componentInstanceInfo: ComponentInstanceInfo;
     try {
@@ -78,4 +79,34 @@ export async function showAlertOptionSelect<T>(viewSpec: typeof SvelteComponent<
         componentInstanceInfo.viewInstance.$destroy();
         componentInstanceInfo = null;
     }
+}
+
+export async function showPopoverMenu<T = any>({ options, anchor, onClose, props, horizPos, vertPos }: { options; anchor; onClose?; props? } & Partial<PopoverOptions>) {
+    const { colorSurfaceContainer } = get(colors);
+    const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
+    const rowHeight = (props?.rowHeight || 58) * get(systemFontScale);
+    const result: T = await showPopover({
+        backgroundColor: colorSurfaceContainer,
+        view: OptionSelect,
+        anchor,
+        horizPos: horizPos ?? HorizontalPosition.ALIGN_LEFT,
+        vertPos: vertPos ?? VerticalPosition.CENTER,
+        props: {
+            borderRadius: 10,
+            elevation: 4,
+            margin: 4,
+            backgroundColor: colorSurfaceContainer,
+            containerColumns: 'auto',
+            rowHeight,
+            height: Math.min(rowHeight * options.length, 400),
+            width: 150,
+            options,
+            onClose: (item) => {
+                closePopover();
+                onClose?.(item);
+            },
+            ...(props || {})
+        }
+    });
+    return result;
 }

@@ -1,9 +1,34 @@
-<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
-    <color name="ic_launcher_background">#ffffff</color>
-    <color name="colorPrimary">#FFC82F</color>
-    <color name="background">#ffffff</color>
-	<color name="colorPrimaryDark">#FFC82F</color>
-	<color name="colorAccent">#FFC82F</color>
-	<color name="colorSecondary">#FFC82F</color>
+    <color name="seed">#FFC82F</color>
+    <color name="primary">#FFC82F</color>
+    <color name="onPrimary">#3F2E00</color>
+    <color name="primaryContainer">#FFDF98</color>
+    <color name="onPrimaryContainer">#251A00</color>
+    <color name="secondary">#6A5D3F</color>
+    <color name="onSecondary">#FFFFFF</color>
+    <color name="secondaryContainer">#F4E0BB</color>
+    <color name="onSecondaryContainer">#241A04</color>
+    <color name="tertiary">#496548</color>
+    <color name="onTertiary">#FFFFFF</color>
+    <color name="tertiaryContainer">#CBEBC6</color>
+    <color name="onTertiaryContainer">#06210A</color>
+    <color name="error">#BA1A1A</color>
+    <color name="errorContainer">#FFDAD6</color>
+    <color name="onError">#FFFFFF</color>
+    <color name="onErrorContainer">#410002</color>
+    <color name="background">#FFFBFF</color>
+    <color name="onBackground">#1E1B16</color>
+    <color name="surface">#FFFBFF</color>
+    <color name="onSurface">#1E1B16</color>
+    <color name="surfaceVariant">#ECE1CF</color>
+    <color name="onSurfaceVariant">#4D4639</color>
+    <color name="outline">#7E7667</color>
+    <color name="inverseOnSurface">#F7F0E7</color>
+    <color name="inverseSurface">#33302A</color>
+    <color name="inversePrimary">#F5BF24</color>
+    <color name="shadow">#000000</color>
+    <color name="surfaceTint">#775A00</color>
+    <color name="outlineVariant">#D0C5B4</color>
+    <color name="scrim">#000000</color>
 </resources>

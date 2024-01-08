@@ -1,14 +1,14 @@
 <layer-list
     xmlns:android="http://schemas.android.com/apk/res/android" android:gravity="fill">
     <!-- <item><bitmap android:gravity="fill" android:src="@drawable/background" /></item> -->
-    <item>
+    <!-- <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/background" />
+            <solid android:color="@color/android:colorBackground" />
         </shape>
-    </item>
+    </item> -->
     <item android:gravity="center" >
         <shape android:shape="oval">
-            <solid android:color="@color/colorPrimary"/>
+            <solid android:color="@color/seed"/>
             <size  android:width="120dp" android:height="120dp"/>
         </shape>
     </item>

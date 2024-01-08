@@ -132,17 +132,17 @@
 {#if autoPlay}
     <lottie
         {...$$restProps}
+        {autoPlay}
+        height={size}
+        {isUserInteractionEnabled}
+        loop={true}
+        progress={0.5}
         src={iconSrc}
         width={size}
-        height={size}
-        loop={true}
-        {autoPlay}
-        progress={0.5}
         use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }}
-        {isUserInteractionEnabled}
     />
 {:else}
-    <image {...$$restProps} src={iconSrc} width={size} height={size} 
-    use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }}
-    {isUserInteractionEnabled} />
+    <image {...$$restProps} height={size} {isUserInteractionEnabled} src={iconSrc}
+    width={size}
+    use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }} />
 {/if}

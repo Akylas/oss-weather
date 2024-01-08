@@ -6,7 +6,7 @@
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { convertValueToUnit, formatValueToUnit, toImperialUnit, UNITS } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
-    import { appFontFamily, borderColor, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily, fontScale } from '~/variables';
+    import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
@@ -18,6 +18,8 @@
 </script>
 
 <script lang="ts">
+    $: ({ colorOnSurface, colorOnSurfaceVariant , colorOutline } = $colors);
+
     export let item: any;
     let canvasView;
     let color: string | Color;
@@ -32,13 +34,13 @@
         textIconSubPaint.setTextAlign(Align.CENTER);
         paint = new Paint();
         wiPaint = new Paint();
-        wiPaint.setFontFamily(wiFontFamily);
+        wiPaint.setFontFamily($fonts.wi);
         wiPaint.setTextAlign(Align.CENTER);
         appPaint = new Paint();
-        appPaint.setFontFamily(appFontFamily);
+        appPaint.setFontFamily($fonts.app);
         appPaint.setTextAlign(Align.CENTER);
         mdiPaint = new Paint();
-        mdiPaint.setFontFamily(mdiFontFamily);
+        mdiPaint.setFontFamily($fonts.mdi);
         mdiPaint.setTextAlign(Align.CENTER);
     }
 
@@ -46,8 +48,6 @@
     function redraw() {
         canvasView && canvasView.nativeView.invalidate();
     }
-    textColor.subscribe(redraw);
-    fontScale.subscribe(redraw);
 
     $: {
         if (item) {
@@ -70,16 +70,17 @@
         const h = canvas.getHeight();
         paint.setColor(item.color);
         canvas.drawRect(w - 5, 0, w, h, paint);
-        paint.setColor($borderColor);
+        paint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, paint);
 
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
-        textPaint.setColor($textColor);
+        textPaint.setColor(colorOnSurface);
         canvas.drawText(formatDate(item.time, 'ddd'), 10, 26 * $fontScale, textPaint);
-        textPaint.setColor($textLightColor);
+        textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(15 * $fontScale);
         canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46 * $fontScale, textPaint);
+        textPaint.setColor(colorOnSurface);
         textPaint.setColor($textColor);
 
         let centeredItemsToDraw: {
@@ -154,7 +155,7 @@
             let x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
-            paint.setColor(c.color || $textColor);
+            paint.setColor(c.color || colorOnSurface);
             if (c.icon) {
                 if (c.iconColor) {
                     paint.setColor(c.iconColor);
@@ -163,12 +164,12 @@
             }
             if (c.value) {
                 textIconSubPaint.setTextSize(12 * $fontScale);
-                textIconSubPaint.setColor(c.color || $textColor);
+                textIconSubPaint.setColor(c.color || colorOnSurface);
                 canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
             }
             if (c.subvalue) {
                 textIconSubPaint.setTextSize(9 * $fontScale);
-                textIconSubPaint.setColor(c.color || $textColor);
+                textIconSubPaint.setColor(c.color || colorOnSurface);
                 canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
             }
         });
@@ -177,11 +178,13 @@
                 spans: [
                     {
                         fontSize: 17 * $fontScale,
+                        color: colorOnSurfaceVariant,
                         color: $textLightColor,
                         text: formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)
                     },
                     {
                         fontSize: 20 * $fontScale,
+                        color: colorOnSurface,
                         color: $textColor,
                         text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)
                     }
@@ -200,13 +203,13 @@
         canvas.restore();
 
         if (item.windBeaufortIcon) {
-            wiPaint.setColor($textColor);
+            wiPaint.setColor(colorOnSurface);
             wiPaint.setTextSize(20);
             canvas.drawText(item.windBeaufortIcon, 50, h - 28 * $fontScale, wiPaint);
         }
 
         textPaint.setTextSize(13 * $fontScale);
-        textPaint.setColor($textLightColor);
+        textPaint.setColor(colorOnSurfaceVariant);
         canvas.drawText(item.description, 10, h - 10, textPaint);
 
         wiPaint.setColor(nightColor);

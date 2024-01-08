@@ -1,5 +1,5 @@
-<script lang="ts" context="module">
-    import { getMoonIllumination, GetMoonIlluminationResult, getMoonPosition, getPosition, getTimes, GetTimesResult } from 'suncalc';
+<script context="module" lang="ts">
+    import { GetMoonIlluminationResult, GetTimesResult, getMoonIllumination, getMoonPosition, getPosition, getTimes } from 'suncalc';
     import { Align, Canvas, DashPathEffect, Paint, Style } from '@nativescript-community/ui-canvas';
     import { CanvasLabel } from '@nativescript-community/ui-canvaslabel/canvaslabel.common';
     import { LineChart } from '@nativescript-community/ui-chart/charts';
@@ -16,7 +16,7 @@
     import { formatTime, l, lc, lu } from '~/helpers/locale';
     import { showError } from '~/utils/error';
     import { pickDate } from '~/utils/utils';
-    import { mdiFontFamily, textColor } from '~/variables';
+    import { colors, fonts } from '~/variables';
     import { WeatherLocation } from '~/services/api';
     const PI = Math.PI;
     const PI_DIV2 = PI / 2;
@@ -137,7 +137,8 @@
 </script>
 
 <script lang="ts">
-    let chart: NativeViewElementNode<LineChart>;
+       $: ({ colorOnSurface } = $colors);
+ let chart: NativeViewElementNode<LineChart>;
 
     let chartInitialized = false;
     export let location: WeatherLocation;
@@ -365,7 +366,7 @@
         const w = canvas.getWidth();
         const h = canvas.getHeight();
 
-        moonPaint.setColor($textColor);
+        moonPaint.setColor(colorOnSurface);
 
         const cx = w - 60;
         const cy = h / 2;
@@ -391,26 +392,26 @@
     }
 </script>
 
-<gridlayout rows="50,200,50,auto" columns="*,*">
-    <mdbutton variant="text" class="icon-btn" text="mdi-chevron-left" horizontalAlignment="left" on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
-    <label colSpan={2} text={startTime.format('LL')} textAlignment="center" verticalTextAlignment="center" on:tap={selectDate} fontSize={17} marginLeft={50} marginRight={50} />
-    <mdbutton col={1} variant="text" class="icon-btn" text="mdi-chevron-right" horizontalAlignment="right" on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
-    <linechart row={1} colSpan={3} bind:this={chart} backgroundColor="#222222">
+<gesturerootview columns="*,*" rows="50,200,50,auto">
+    <mdbutton class="icon-btn" horizontalAlignment="left" text="mdi-chevron-left" variant="text" on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
+    <label colSpan={2} fontSize={17} marginLeft={50} marginRight={50} text={startTime.format('LL')} textAlignment="center" verticalTextAlignment="center" on:tap={selectDate} />
+    <mdbutton class="icon-btn" col={1} horizontalAlignment="right" text="mdi-chevron-right" variant="text" on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
+    <linechart bind:this={chart} backgroundColor="#222222" colSpan={3} row={1}>
         <rectangle fillColor="#a0caff" height="50%" width="100%" />
     </linechart>
     {#if sunTimes}
-        <canvaslabel bind:this={bottomLabel} row={2} colSpan={3} fontSize={18} padding="0 10 0 10" on:draw={drawMoonPosition}>
+        <canvaslabel bind:this={bottomLabel} colSpan={3} fontSize={18} padding="0 10 0 10" row={2} on:draw={drawMoonPosition}>
             <cgroup color="#ffa500" verticalAlignment="middle">
-                <cspan fontFamily={mdiFontFamily} text="mdi-weather-sunset-up" />
+                <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-up" />
                 <cspan text={' ' + formatTime(sunTimes.sunriseEnd)} />
             </cgroup>
             <cgroup color="#ff7200" textAlignment="center" verticalAlignment="middle">
-                <cspan fontFamily={mdiFontFamily} text="mdi-weather-sunset-down" />
+                <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-down" />
                 <cspan text={' ' + formatTime(sunTimes.sunsetStart)} />
             </cgroup>
             <cgroup textAlignment="right" verticalAlignment="middle">
                 <!-- <cspan text={moonAzimuth.exact + '(' + Math.round(illumination.fraction * 100) + '%) '} /> -->
-                <cspan fontFamily={mdiFontFamily} text={getMoonPhaseIcon(illumination)} />
+                <cspan fontFamily={$fonts.mdi} text={getMoonPhaseIcon(illumination)} />
             </cgroup>
         </canvaslabel>
     {/if}
@@ -418,14 +419,14 @@
     <!-- <CompassView row={3} {location} updateWithSensor={false} date={startTime} /> -->
     <!-- <canvaslabel row={3} col={1} fontSize={13} padding={10} height={200}>
         <cgroup paddingTop={10}>
-            <cspan fontFamily={mdiFontFamily} text="mdi-weather-sunset-up" color="#ffa500" />
+            <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-up" color="#ffa500" />
             <cspan text={lc('sunrise')} />
         </cgroup>
         <cspan text={formatTime(sunTimes.sunriseEnd) + ' ' + sunriseEndAzimuth.exact} textAlignment="right" paddingTop={10} />
         <cgroup paddingTop={40}>
-            <cspan fontFamily={mdiFontFamily} text="mdi-weather-sunset-down" color="#ff7200" />
+            <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-down" color="#ff7200" />
             <cspan text={lc('sunset')} />
         </cgroup>
         <cspan text={formatTime(sunTimes.sunsetStart) + ' ' + sunsetStartAzimuth.exact} textAlignment="right" paddingTop={40} />
     </canvaslabel> -->
-</gridlayout>
+</gesturerootview>

@@ -3,13 +3,20 @@
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import CActionBar from '~/components/CActionBar.svelte';
+    import CActionBar from '~/components/common/CActionBar.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';
-    import { textLightColor } from '~/variables';
+    import { colors } from '~/variables';
+    import ListItem from './common/ListItem.svelte';
+
+    $: ({
+        colorBackground,
+        colorOnSurfaceVariant,
+        colorSurface
+    } = $colors);
 
     let textField: NativeViewElementNode<TextField>;
     let loading = false;
@@ -81,35 +88,41 @@
             showError(error);
         }
     }
+
+    function getItemSubtitle(item) {
+        return (item.sys.state || item.sys.country) + (item.sys.postcode ? ` (${item.sys.postcode})`:'') + (item.sys.state? '\n' + item.sys.country :'');
+    }
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
 <page actionBarHidden={true}>
     <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
-        <CActionBar title={lc('search_city')} modalWindow>
+        <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
-        <textfield bind:this={textField} row={1} hint={lc('search')} floating="false" returnKeyType="search" on:textChange={onTextChange} />
-        <collectionview row={2} rowHeight={80} items={searchResults}>
+        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} />
+        <collectionview items={searchResults} row={2} rowHeight={80}>
             <Template let:item>
-                <gridlayout col={1} paddingLeft={10} verticalAlignment="middle" rows="auto,*" rippleColor="#aaa" on:tap={() => close(item)} columns="*,auto" padding="10">
-                    <label fontSize={18} text={item.name} maxLines={1} lineBreak="end" />
-                    <label row={1} fontSize={14} color={$textLightColor}>
-                        <span text={item.sys.state || item.sys.country} />
-                        <span visibility={item.sys.postcode ? 'visible' : 'hidden'} text={' (' + item.sys.postcode + ')'} />
-                        <span visibility={item.sys.state ? 'visible' : 'hidden'} text={'\n' + item.sys.country} />
-                    </label>
+                <ListItem columns="*,auto" subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)} >
                     <mdbutton
-                        col={1}
-                        rowSpan={2}
-                        variant="text"
                         class="icon-btn"
+                        col={1}
                         color={favoriteIconColor(item)}
                         rippleColor="#EFB644"
-                        on:tap={() => toggleItemFavorite(item)}
+                        rowSpan={2}
                         text={favoriteIcon(item)}
+                        variant="text"
+                        on:tap={() => toggleItemFavorite(item)}
                     />
-                </gridlayout>
+                </ListItem>
+                <!-- <gridlayout col={1} columns="*,auto" padding="10" paddingLeft={10} rippleColor="#aaa" rows="auto,*" verticalAlignment="middle" on:tap={() => close(item)}>
+                    <label fontSize={18} lineBreak="end" maxLines={1} text={item.name} />
+                    <label color={colorOnSurfaceVariant} fontSize={14} row={1}>
+                        <cspan text={item.sys.state || item.sys.country} />
+                        <cspan text={' (' + item.sys.postcode + ')'} visibility={item.sys.postcode ? 'visible' : 'hidden'} />
+                        <cspan text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
+                    </label>
+                </gridlayout> -->
             </Template>
         </collectionview>
     </gridlayout>

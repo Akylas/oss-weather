@@ -8,15 +8,14 @@
     import { formatValueToUnit, UNITS } from '~/helpers/formatter';
     import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { appFontFamily, fontScale, imperial, subtitleColor, textColor, wiFontFamily } from '~/variables';
+    import { Hourly } from '~/services/weather';
+    import {colors, fontScale, fonts } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
     const appTextPaint = new Paint();
-    appTextPaint.fontFamily = appFontFamily;
     appTextPaint.setTextAlign(Align.CENTER);
     const iconPaint = new Paint();
-    iconPaint.fontFamily = wiFontFamily;
     iconPaint.setTextAlign(Align.CENTER);
     // appTextPaint.setFontWeight('normal');
     // appTextPaint.setAlpha(80);
@@ -71,6 +70,9 @@
 </script>
 
 <script lang="ts">
+    $: ({ colorOnSurface, colorOnSurfaceVariant } = $colors);
+    $: appTextPaint.fontFamily = $fonts.app;
+    $: iconPaint.fontFamily = $fonts.wi;
     export let item: Hourly & {
         index: number;
         min: number;
@@ -89,7 +91,6 @@
         precipitationHeight = item.precipAccumulation > 1 ? Math.sqrt(item.precipAccumulation) : item.precipAccumulation;
         redraw();
     }
-    textColor.subscribe(redraw);
     // fontScale.subscribe(redraw);
     let weatherIconSize = 40;
     function drawOnCanvas(event) {
@@ -172,7 +173,7 @@
             });
             canvas.drawPath(curvePath, pathPaint);
         }
-        textPaint.setColor($subtitleColor);
+        textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(13 * $fontScale);
         canvas.drawText(`${formatValueToUnit(Math.round(item.temperature), UNITS.Celcius, $imperial)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
         canvas.restore();
@@ -194,7 +195,7 @@
         canvas.drawRect(0, h - 10, w, h, paint);
 
         textPaint.setFontWeight('bold');
-        textPaint.setColor($textColor);
+        textPaint.setColor(colorOnSurface);
         textPaint.setTextSize(13 * $fontScale);
         canvas.drawText(formatTime(item.time), w2, 16 * $fontScale, textPaint);
         if (item.time > endDay) {
@@ -208,6 +209,7 @@
         const subTextSize = 11 * $fontScale;
         if (item.windSpeed) {
             appTextPaint.setTextSize(11 * $fontScale);
+            appTextPaint.setColor(colorOnSurface);
             appTextPaint.setColor($textColor);
             canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed, $imperial)}`, w2, iconDecale, appTextPaint);
         }
@@ -231,7 +233,7 @@
             //     const nString = createNativeAttributedString({
             //     spans: [
             //         // {
-            //         //     fontFamily:wiFontFamily,
+            //         //     fontFamily:$fonts.wi,
             //         //     text: 'wi-strong-wind'
             //         // },
             //         {

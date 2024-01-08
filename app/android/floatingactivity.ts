@@ -14,7 +14,7 @@ import {
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { WeatherLocation } from '~/services/api';
-import { showBottomSheet } from '~/utils/svelte/bottomsheet';
+import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 
 const CALLBACKS = '_callbacks';
@@ -251,7 +251,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     // 4. _resetRootView method. this._rootView should have been cleared upfront. Launch event should not fired
     private async setActivityContent(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, fireLaunchEvent: boolean, intent: android.content.Intent) {
         let rootView = this._rootView;
-        DEV_LOG && console.log('setActivityContent')
+        DEV_LOG && console.log('setActivityContent');
         if (!rootView) {
             rootView = new GridLayout();
             this._rootView = rootView;
@@ -259,7 +259,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             activityRootViewsMap.set(rootView._domId, new WeakRef(rootView));
 
             // const deviceType = Device.deviceType.toLowerCase();
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${gVars.platform}`);
             // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
             // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.orientation}`);
             // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.systemAppearance}`);

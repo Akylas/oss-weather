@@ -3,7 +3,7 @@
     import { debounce } from '@nativescript/core/utils';
     import { l } from '~/helpers/locale';
     import { OWMProvider } from '~/services/owm';
-    import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
+    import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { openLink } from '~/utils/ui';
 
     const owmApiKey = getString('owmApiKey');
@@ -28,6 +28,7 @@
     }
 </script>
 
+<gesturerootview rows="auto">
 <stacklayout iosIgnoreSafeArea={true} padding="10">
     <label text={l('api_key_required_description')} textWrap={true}/>
     <gridlayout columns="auto,*, auto" marginTop={5} rows="auto">
@@ -39,3 +40,4 @@
         <mdbutton text={l('save')} variant="text" visibility={canClose ? 'visible' : 'collapsed'} on:tap={save} />
     </stacklayout>
 </stacklayout>
+</gesturerootview>

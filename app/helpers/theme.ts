@@ -1,15 +1,22 @@
-import { getRootView } from '@akylas/nativescript/application';
 import Theme from '@nativescript-community/css-theme';
-import { Application, EventData, Utils } from '@nativescript/core';
+import { Application, Device, EventData, Utils } from '@nativescript/core';
 import { getBoolean, getString, setString } from '@nativescript/core/application-settings';
 import { prefs } from '~/services/preferences';
-import { sdkVersion } from '~/utils/utils';
-import { createGlobalEventListener, globalObservable, updateThemeColors } from '~/variables';
+import { showError } from '~/utils/error';
+import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { updateThemeColors } from '~/variables';
+import { lc } from '~/helpers/locale';
+import { writable } from 'svelte/store';
+import { SDK_VERSION } from '@nativescript/core/utils';
+import { showAlertOptionSelect } from '~/utils/ui';
+import { closePopover } from '@nativescript-community/ui-popover/svelte';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
 export const onThemeChanged = createGlobalEventListener('theme');
 export let theme: Themes;
+export const sTheme = writable('auto');
+export const currentTheme = writable('auto');
 
 let started = false;
 let autoDarkToBlack = getBoolean('auto_black', false);
@@ -22,10 +29,63 @@ Application.on(Application.systemAppearanceChangedEvent, (event: EventData & { n
         if (autoDarkToBlack && theme === 'dark') {
             theme = 'black';
         }
+        if (__ANDROID__) {
+            com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
+        }
+        applyTheme(theme);
         updateThemeColors(theme);
+        //close any popover as they are not updating with theme yet
+        closePopover();
         globalObservable.notify({ eventName: 'theme', data: theme });
     }
 });
+
+export function getThemeDisplayName(toDisplay = theme) {
+    switch (toDisplay) {
+        case 'auto':
+            return lc('theme.auto');
+        case 'dark':
+            return lc('theme.dark');
+        case 'black':
+            return lc('theme.black');
+        case 'light':
+            return lc('theme.light');
+    }
+}
+
+export function toggleTheme(autoDark = false) {
+    const newTheme = theme === 'dark' ? (autoDark ? 'auto' : 'light') : 'dark';
+    setString('theme', newTheme);
+}
+export async function selectTheme() {
+    try {
+        const actions: Themes[] = ['auto', 'light', 'dark', 'black'];
+        const component = (await import('~/components/common/OptionSelect.svelte')).default;
+        const result = await showAlertOptionSelect(
+            component,
+            {
+                height: actions.length * 56,
+                rowHeight: 56,
+                options: actions
+                    .map((k) => ({ name: getThemeDisplayName(k), data: k }))
+                    .map((d) => ({
+                        ...d,
+                        boxType: 'circle',
+                        type: 'checkbox',
+                        value: theme === d.data
+                    }))
+            },
+            {
+                title: lc('select_theme')
+            }
+        );
+        if (result && actions.indexOf(result.data) !== -1) {
+            setString('theme', result.data);
+        }
+    } catch (err) {
+        showError(err);
+    }
+}
 
 const AppCompatDelegate = __ANDROID__ ? androidx.appcompat.app.AppCompatDelegate : undefined;
 export function applyTheme(theme: Themes) {
@@ -82,15 +142,15 @@ function getSystemAppearance() {
     if (typeof Application.systemAppearance === 'function') {
         return Application.systemAppearance();
     }
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     return Application.systemAppearance;
 }
 
-function getRealTheme(theme) {
+export function getRealTheme(theme) {
     DEV_LOG && console.log('getRealTheme', theme);
     if (theme === 'auto') {
         try {
             theme = getSystemAppearance();
-            DEV_LOG && console.log('getSystemAppearance', theme);
             if (autoDarkToBlack && theme === 'dark') {
                 theme = 'black';
             }
@@ -101,12 +161,17 @@ function getRealTheme(theme) {
     return theme;
 }
 
+export function getRealThemeAndUpdateColors() {
+    const realTheme = getRealTheme(theme);
+    updateThemeColors(realTheme);
+}
+
 export function start() {
     if (started) {
         return;
     }
     started = true;
-    if (__IOS__ && sdkVersion < 13) {
+    if (__IOS__ && SDK_VERSION < 13) {
         theme = 'light';
     } else {
         theme = getString('theme', DEFAULT_THEME) as Themes;
@@ -120,6 +185,7 @@ export function start() {
         DEV_LOG && console.log('key:auto_black', theme, autoDarkToBlack);
         if (theme === 'auto') {
             const realTheme = getRealTheme(theme);
+            currentTheme.set(realTheme);
             updateThemeColors(realTheme);
             globalObservable.notify({ eventName: 'theme', data: realTheme });
         }
@@ -128,7 +194,7 @@ export function start() {
     prefs.on('key:theme', () => {
         let newTheme = getString('theme') as Themes;
         DEV_LOG && console.log('key:theme', theme, newTheme, autoDarkToBlack);
-        if (__IOS__ && sdkVersion < 13) {
+        if (__IOS__ && SDK_VERSION < 13) {
             newTheme = 'light';
         }
         // on pref change we are updating
@@ -137,24 +203,22 @@ export function start() {
         }
 
         theme = newTheme;
+        sTheme.set(newTheme);
         applyTheme(newTheme);
         const realTheme = getRealTheme(newTheme);
-        updateThemeColors(realTheme);
-        globalObservable.notify({ eventName: 'theme', data: realTheme });
+        currentTheme.set(realTheme);
         if (__ANDROID__) {
-            // we recreate the activity to get the change
-            const activity = Application.android.startActivity;
-            //TODO: fix N/css-theme so that we dont need to recreate the activity
-            activity.recreate();
-            if (Application.android.foregroundActivity !== activity) {
-                Application.android.foregroundActivity.recreate();
-            }
+            com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
         }
+        updateThemeColors(realTheme);
+        setTimeout(() => {
+            globalObservable.notify({ eventName: 'theme', data: realTheme });
+        }, 0);
     });
     const realTheme = getRealTheme(theme);
+    currentTheme.set(realTheme);
     if (__ANDROID__) {
         const context = Utils.android.getApplicationContext();
-        // setTimeout(() => {
         if (context) {
             applyTheme(theme);
         } else {
@@ -163,17 +227,15 @@ export function start() {
                 updateThemeColors(realTheme);
             });
         }
-        updateThemeColors(realTheme);
-        // }, 0);
-        // if (context) {
-        //     applyTheme(theme);
-        // } else {
-        //     Application.on(Application.launchEvent, () => {
-        //         applyTheme(theme);
-        //         updateThemeColors(realTheme);
-        //     });
-        // }
-        updateThemeColors(realTheme);
+
+        // we need to update the theme on every activity start
+        // to get dynamic colors
+        Application.on('activity_started', () => {
+            DEV_LOG && console.log('activity_started');
+            if (Application.getRootView()) {
+                getRealThemeAndUpdateColors();
+            }
+        });
     } else {
         if (Application.ios && Application.ios.window) {
             applyTheme(theme);

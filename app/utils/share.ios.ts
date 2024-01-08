@@ -1,29 +1,14 @@
-import { Application, Color, View } from '@nativescript/core';
+import { Application, Color } from '@nativescript/core';
+import { Content, Options } from './share';
+export * from './share.common';
 
-export async function share(
-    content: {
-        title?: string;
-        message?: string;
-        url?: string;
-    },
-    options: {
-        dialogTitle?: string;
-        excludedActivityTypes?: string[];
-        tintColor?: string | Color;
-        subject?: string;
-        anchor?: View;
-        appearance?: 'light' | 'dark';
-    } = {}
-) {
+export async function share(content: Content, options: Options = {}) {
     if (content == null) {
         throw new Error('missing_content');
     }
 
     return new Promise((resolve, reject) => {
         const items = [];
-        if (content.message) {
-            items.push(content.message);
-        }
         if (content.url) {
             const url = NSURL.URLWithString(content.url);
             if (url.scheme.toLowerCase() === 'data') {
@@ -35,7 +20,21 @@ export async function share(
             } else {
                 items.push(url);
             }
+        }
+        if (content.message) {
             items.push(content.message);
+        }
+        if (content.image) {
+            items.push(content.image.ios);
+        }
+        if (content.images) {
+            content.images.forEach((image) => items.push(image.ios));
+        }
+        if (content.file) {
+            items.push(content.file);
+        }
+        if (content.files) {
+            content.files.forEach((file) => items.push(file));
         }
         const shareController = UIActivityViewController.alloc().initWithActivityItemsApplicationActivities(items, null);
         if (options.subject) {
@@ -49,7 +48,7 @@ export async function share(
             if (error) {
                 reject(error);
             } else if (completed || activityType == null) {
-                resolve(kCFBooleanTrue);
+                resolve(true);
             }
         };
 

@@ -38,21 +38,21 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
 </script>
 
-<gridlayout class="actionBar" columns="auto,*, auto" rows="*" paddingLeft={5} paddingRight={5}>
+<gridlayout class="actionBar" columns="auto,*, auto" paddingLeft={5} paddingRight={5} rows="*">
     <label
-        col={1}
         class="actionBarTitle"
-        textAlignment="left"
-        visibility={!!title ? 'visible' : 'hidden'}
-        text={title || ''}
-        verticalTextAlignment="center"
-        maxLines={2}
         autoFontSize={true}
-        minFontSize={12}
+        col={1}
         maxFontSize={20}
+        maxLines={2}
+        minFontSize={12}
+        text={title || ''}
+        textAlignment="left"
+        verticalTextAlignment="center"
+        visibility={!!title ? 'visible' : 'hidden'}
     />
     <stacklayout col={0} orientation="horizontal">
-        <mdbutton variant="text" visibility={menuIconVisibility} class="icon-btn" text={menuIcon} on:tap={onMenuIconBtn} />
+        <mdbutton class="actionBarButton" text={menuIcon} variant="text" visibility={menuIconVisibility} on:tap={onMenuIconBtn} />
         <slot name="left" />
     </stacklayout>
     <stacklayout col={2} orientation="horizontal">

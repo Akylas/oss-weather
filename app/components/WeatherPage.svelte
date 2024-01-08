@@ -14,7 +14,7 @@
     import { navigate, showModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
-    import CActionBar from '~/components/CActionBar.svelte';
+    import CActionBar from '~/components/common/CActionBar.svelte';
     import SelectCity from '~/components/SelectCity.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
@@ -25,8 +25,18 @@
     import { prefs } from '~/services/preferences';
     import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
-    import { showBottomSheet } from '~/utils/svelte/bottomsheet';
-    import { actionBarButtonHeight, backgroundColor, globalObservable, lightBackgroundColor, mdiFontFamily, textLightColor } from '~/variables';
+    import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import { actionBarButtonHeight, colors, fonts } from '~/variables';
+    import { globalObservable } from '~/utils/svelte/ui';
+    import { showPopoverMenu } from '~/utils/ui';
+    import { VerticalPosition } from '@nativescript-community/ui-popover';
+    import { WeatherData } from '~/services/weather';
+
+    $: ({
+        colorBackground,
+        colorOnSurfaceVariant,
+        colorSurface
+    } = $colors);
 
     let gps: GPS;
     let loading = false;
@@ -43,37 +53,36 @@
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
     let page: NativeViewElementNode<Page>;
-    async function showOptions() {
+    async function showOptions(event) {
         try {
-            const ActionSheet = (await import('~/components/ActionSheet.svelte')).default;
             const options = [
                 {
                     icon: 'mdi-crosshairs-gps',
                     id: 'gps_location',
-                    text: l('gps_location')
+                    name: l('gps_location')
                 },
                 {
                     icon: 'mdi-cogs',
                     id: 'preferences',
-                    text: l('preferences')
+                    name: l('preferences')
                 },
                 {
                     icon: 'mdi-format-size',
                     id: 'font-scale',
-                    text: lc('font_scale')
+                    name: lc('font_scale')
                 },
-                {
-                    icon: 'mdi-information-outline',
-                    id: 'about',
-                    text: l('about')
-                }
+                // {
+                //     icon: 'mdi-information-outline',
+                //     id: 'about',
+                //     text: l('about')
+                // }
             ];
             if (weatherLocation) {
                 options.push(
                     {
                         icon: 'mdi-refresh',
                         id: 'refresh',
-                        text: l('refresh')
+                        name: l('refresh')
                     }
                 );
                 // if (OWMProvider.hasOWMApiKey()) {
@@ -81,21 +90,24 @@
                     {
                         icon: 'mdi-map',
                         id: 'map',
-                        text: l('map')
+                        name: l('map')
                     });
                 // }
             }
-            const result: { icon: string; id: string; text: string } = await showBottomSheet({
-                parent: page,
-                view: ActionSheet,
+            await showPopoverMenu({
+                options,
+                anchor: event.object,
+                vertPos: VerticalPosition.BELOW,
                 props: {
-                    options
-                }
-            });
-            if (result) {
-                switch (result.id) {
+                    width:250,
+                },
+                onClose: async (item) => {
+                    try {
+                    if (item) {
+                switch (item.id) {
                     case 'preferences':
-                        await prefs.openSettings();
+                    const Settings = (await import('~/components/settings/Settings.svelte')).default;
+            navigate({ page: Settings });
                         break;
                     case 'map':
                         await openWeatherMap();
@@ -106,10 +118,10 @@
                     case 'gps_location':
                         await getLocationAndWeather();
                         break;
-                    case 'about':
-                        const About = require('~/components/About.svelte').default;
-                        navigate({ page: About });
-                        break;
+                    // case 'about':
+                    //     const About = require('~/components/About.svelte').default;
+                    //     navigate({ page: About });
+                    //     break;
 
                     case 'font-scale':
                         const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
@@ -117,6 +129,11 @@
                         break;
                 }
             }
+        } catch (error) {
+            showError(error);
+        }
+                }
+            });
         } catch (error) {
             showError(error);
         }
@@ -258,7 +275,7 @@
                 setTimeout(() => askForApiKey(), 1000);
             }
         }
-        
+
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             if (networkConnected !== event.data.connected) {
                 networkConnected = event.data.connected;
@@ -287,7 +304,7 @@
         }
         DEV_LOG && console.log('showAlerts', weatherData.alerts);
         try {
-            const AlertView = (await import('~/components/AlertView.svelte')).default;
+            const AlertView = (await import('~/components/common/AlertView.svelte')).default;
             await showBottomSheet({
                 parent: page,
                 view: AlertView,
@@ -311,7 +328,7 @@
 
     const onTap = throttle(async function (event) {
         try {
-            const AstronomyView = (await import('~/components/AstronomyView.svelte')).default;
+            const AstronomyView = (await import('~/components/astronomy/AstronomyView.svelte')).default;
             const parent = Frame.topmost() || Application.getRootView();
             await showBottomSheet({
                 parent,
@@ -353,7 +370,7 @@
                 opacity: progress * 0.1
             },
             deleteBtn: {
-                backgroundColor: progress >= 0.6 ? 'red' : $lightBackgroundColor,
+                backgroundColor: progress >= 0.6 ? 'red' : colorSurface,
                 color: progress >= 0.6 ? 'white' : 'red'
             }
         } as any;
@@ -387,7 +404,7 @@
                     <WeatherComponent {items} {weatherLocation} on:tap={onTap} />
                 </pullrefresh>
                 <label
-                    backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
+                    backgroundColor={new Color(colorBackground).setAlpha(100).hex}
                     fontSize={10}
                     horizontalAlignment="right"
                     marginRight={6}
@@ -396,17 +413,17 @@
                     verticalAlignment="bottom"
                 />
             {:else}
-                <gridlayout columns="auto" horizontalAlignment="center" row={1} rows="auto,auto,auto,auto,60" verticalAlignment="middle">
+                <stacklayout columns="auto" horizontalAlignment="center" row={1} verticalAlignment="middle">
                     <label marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" />
-                    <mdbutton margin="4 0 4 0" row={1} textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
-                        <cspan fontFamily={mdiFontFamily} fontSize={20} text="mdi-crosshairs-gps" verticalAlignment="middle" />
+                    <mdbutton margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
+                        <cspan fontFamily={$fonts.mdi} fontSize={20} text="mdi-crosshairs-gps" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                    <mdbutton margin="4 0 4 0" row={2} textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
-                        <cspan fontFamily={mdiFontFamily} fontSize={20} text="mdi-magnify" verticalAlignment="middle" />
+                    <mdbutton margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
+                        <cspan fontFamily={$fonts.mdi} fontSize={20} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                </gridlayout>
+                </stacklayout>
             {/if}
             <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name}>
                 <mdbutton
@@ -424,9 +441,9 @@
                     width={30}
                     on:tap={() => toggleItemFavorite(weatherLocation)}
                 />
-                <activityIndicator busy={loading} height={actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={actionBarButtonHeight} />
+                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={$actionBarButtonHeight} />
                 <mdbutton
-                    class="icon-btn"
+                    class="actionBarButton"
                     color="#EFB644"
                     rippleColor="#EFB644"
                     text="mdi-alert"
@@ -435,9 +452,9 @@
                     visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
                     on:tap={() => showAlerts()}
                 />
-                <mdbutton class="icon-btn" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
+                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
 
-                <mdbutton id="menu_button" class="icon-btn" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
+                <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
@@ -461,9 +478,9 @@
                     >
                         <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
                             <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />
-                            <label color={$textLightColor} fontSize={13} row={2}>
-                                <span text={item.sys.state || item.sys.country} />
-                                <span text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
+                            <label color={colorOnSurfaceVariant} fontSize={13} row={2}>
+                                <cspan text={item.sys.state || item.sys.country} />
+                                <cspan text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
                             </label>
                         </gridlayout>
                         <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->

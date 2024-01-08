@@ -19,8 +19,10 @@
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
-    import { appFontFamily, borderColor, fontScale, imperial, mdiFontFamily, nightColor, rainColor, snowColor, textColor, textLightColor, wiFontFamily } from '~/variables';
+    import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
     const dispatch = createEventDispatcher();
+
+    $: ({ colorOnSurface, colorOnSurfaceVariant , colorOutline } = $colors);
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
@@ -28,13 +30,13 @@
     // const textIconSubPaint = new Paint();
     // textIconSubPaint.setTextAlign(Align.CENTER);
     const wiPaint = new Paint();
-    wiPaint.setFontFamily(wiFontFamily);
+    wiPaint.setFontFamily($fonts.wi);
     wiPaint.setTextAlign(Align.CENTER);
     const mdiPaint = new Paint();
-    mdiPaint.setFontFamily(mdiFontFamily);
+    mdiPaint.setFontFamily($fonts.mdi);
     mdiPaint.setTextAlign(Align.CENTER);
     const appPaint = new Paint();
-    appPaint.setFontFamily(appFontFamily);
+    appPaint.setFontFamily($fonts.app);
     appPaint.setTextAlign(Align.CENTER);
     interface Item {
         alerts?: any;
@@ -169,12 +171,12 @@
                     leftAxis.addLimitLine(limitLine);
                 });
             }
-            const limitColor = new Color($textColor).setAlpha(100).hex;
+            const limitColor = new Color(colorOnSurface).setAlpha(100).hex;
             leftAxis.getLimitLines().forEach((l) => {
                 l.setTextColor(limitColor);
                 l.setLineColor(limitColor);
             });
-            xAxis.setTextColor($textColor);
+            xAxis.setTextColor(colorOnSurface);
             xAxis.setAxisMinValue(0);
 
             // we want exactly one label per 10 min
@@ -264,9 +266,9 @@
     onThemeChanged(() => {
         const chart = lineChart?.nativeView;
         if (chart) {
-            chart.getXAxis().setTextColor($textColor);
+            chart.getXAxis().setTextColor(colorOnSurface);
             chart.invalidate();
-            const limitColor = new Color($textColor).setAlpha(0.5).hex;
+            const limitColor = new Color(colorOnSurface).setAlpha(0.5).hex;
             chart
                 .getAxisLeft()
                 .getLimitLines()
@@ -363,22 +365,22 @@
             let x = index * 45 * $fontScale + iconsLeft;
             const paint = c.paint || textIconPaint;
             paint.setTextSize(c.iconFontSize);
-            paint.setColor(c.color || $textColor);
+            paint.setColor(c.color || colorOnSurface);
             if (c.icon) {
                 canvas.drawText(c.icon, x, iconsTop + 20, paint);
             }
             if (c.value) {
                 textIconPaint.setTextSize(12 * $fontScale);
-                textIconPaint.setColor(c.color || $textColor);
+                textIconPaint.setColor(c.color || colorOnSurface);
                 canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
             }
             if (c.subvalue) {
                 textIconPaint.setTextSize(9 * $fontScale);
-                textIconPaint.setColor(c.color || $textColor);
+                textIconPaint.setColor(c.color || colorOnSurface);
                 canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
             }
         });
-        textPaint.setColor($textColor);
+        textPaint.setColor(colorOnSurface);
         if (item.temperature) {
             textPaint.setTextAlign(Align.LEFT);
             textPaint.setTextSize(36 * $fontScale);
@@ -388,11 +390,13 @@
             spans: [
                 {
                     fontSize: 17 * $fontScale,
+                    color: colorOnSurfaceVariant,
                     color: $textLightColor,
                     text: formatValueToUnit(item.temperatureMin, UNITS.Celcius, $imperial)
                 },
                 {
                     fontSize: 20 * $fontScale,
+                    color: colorOnSurface,
                     color: $textColor,
                     text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius, $imperial)
                 }
@@ -412,7 +416,7 @@
                 spans: [
                     {
                         color: '#ffa500',
-                        fontFamily: wiFontFamily,
+                        fontFamily: $fonts.wi,
                         text: 'wi-sunrise '
                     },
                     {
@@ -420,7 +424,7 @@
                     },
                     {
                         color: '#ff7200',
-                        fontFamily: wiFontFamily,
+                        fontFamily: $fonts.wi,
                         text: '  wi-sunset '
                     },
                     {
@@ -443,7 +447,7 @@
         textPaint.setTextSize(14 * $fontScale);
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 14, textPaint);
 
-        textPaint.setColor($borderColor);
+        textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
     }
 
@@ -455,9 +459,9 @@
 <gridlayout rows={`${topViewHeight},*`} {height} columns="*,auto">
     <canvas bind:this={canvasView} colSpan={2} on:draw={drawOnCanvas} paddingLeft={10} paddingBottom={10} paddingRight={10}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
-            <cspan color="#ffa500" fontFamily={wiFontFamily} text="wi-sunrise " />
+            <cspan color="#ffa500" fontFamily={$fonts.wi} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />
-            <cspan color="#ff7200" fontFamily={wiFontFamily} text="  wi-sunset " />
+            <cspan color="#ff7200" fontFamily={$fonts.wi} text="  wi-sunset " />
             <cspan text={formatTime(item.sunsetTime)} />
         </cgroup> -->
     </canvas>

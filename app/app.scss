@@ -1,58 +1,101 @@
 ﻿@use "sass:color";
-@import './variables';
+@use "sass:math";
+
+.ns-root {
+    // --systemFontScale: 1;
+    --colorPrimary: #FFC82F;
+    --colorOnPrimary: #3F2E00;
+    --colorPrimaryContainer: #FFDF98;
+    --colorOnPrimaryContainer: #251A00;
+    --colorSecondary: #6A5D3F;
+    --colorOnSecondary: #FFFFFF;
+    --colorSecondaryContainer: #F4E0BB;
+    --colorOnSecondaryContainer: #241A04;
+    --colorTertiary: #62597C;
+    --colorOnTertiary: #FFFFFF;
+    --colorTertiaryContainer: #E8DEFF;
+    --colorOnTertiaryContainer: #1E1735;
+    --colorBackground: #FFFBFF;
+    --colorOnBackground: #1E1B16;
+    --colorError: #BA1A1A;
+    --colorOnError: #FFFFFF;
+    --colorErrorContainer: #FFDAD6;
+    --colorOutline: #7E7667;
+    --colorOutlineVariant: #D0C5B4;
+    --colorOnSurfaceDisabled: #00000055;
+    --colorSurfaceVariant: #4D4639;
+    --colorOnSurfaceVariant: #ECE1CF;
+    --colorSurface: #FFFBFF;
+    --colorOnSurface: #1E1B16;
+    --colorOnSurfaceInverse: #FFFBFF;
+    --colorSurfaceContainer: #FFFBFF;
+
+    --mdiFontFamily: #{$mdiFontFamily};
+    --appFontFamily: #{$appFontFamily};
+    --wiFontFamily: #{$wiFontFamily};
+
+    --navigationBarHeight: 0;
+    --actionBarButtonHeight: 50;
+    --actionBarHeight: 60;
+}
 
 // .forecastfont {
 //     font-family: $forecastfont-fontFamily;
 // }
 .app {
-    font-family: $app-fontFamily;
+    font-family: $appFontFamily;
 }
+
 .wi {
-    font-family: $wi-fontFamily;
+    font-family: $wiFontFamily;
 }
+
 .mdi {
-    font-family: $mdi-fontFamily;
+    font-family: $mdiFontFamily;
 }
+
 
 htmllabel,
 canvaslabel,
 label {
-    color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-    }
+    color: var(--colorOnBackground);
 }
 
 mdbutton {
     shape: round;
     padding: 0;
-    ripple-color: gray;
-    color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-        ripple-color: white;
-    }
+    color: var(--colorOnSurface);
+    ripple-color: var(--colorOnSurface);
+
+    // ripple-color: var(--colorOnBackground);
+    // color: var(--colorOnBackground);
+    // ripple-color: gray;
+    // color: black;
+    // .ns-dark &,
+    // .ns-black & {
+    //     color: white;
+    //     ripple-color: white;
+    // }
 }
 
-mdtextfield {
-    color: black;
-    placeholder-color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-        placeholder-color: white;
-    }
-}
+// mdtextfield {
+    // color: black;
+    // placeholder-color: black;
+    // .ns-dark &,
+    // .ns-black & {
+    //     color: white;
+    //     placeholder-color: white;
+    // }
+// }
 
 .dailyViewBorder {
     height: 1;
-    background-color: #ccc;
-    .ns-dark &,
-    .ns-black & {
-        background-color: #333;
-    }
+    background-color: var(--colorOutline);
+    // background-color: #ccc;
+    // .ns-dark &,
+    // .ns-black & {
+    //     background-color: #333;
+    // }
 }
 
 .alertView {
@@ -60,61 +103,78 @@ mdtextfield {
     padding-top: 10;
     padding-bottom: 10;
     border-radius: 4;
-    background-color: #eee;
-    .ns-dark & {
-        background-color: #444;
-    }
-    .ns-black & {
-        background-color: #222;
-    }
+    background-color: var(--colorSurface);
+    // background-color: #eee;
+    // .ns-dark & {
+    //     background-color: #444;
+    // }
+    // .ns-black & {
+    //     background-color: #222;
+    // }
 }
+
 page,
 .weatherpage,
 .drawer {
     status-bar-style: light;
-    navigation-bar-color: black;
-    status-bar-color: #ddd;
-    background-color: white;
+
+    // navigation-bar-color: var(--colorBackground);
+    background-color: var(--colorBackground);
+    status-bar-color: var(--colorBackground);
+    // navigation-bar-color: yellow;
+    // navigation-bar-color: black;
+    // background-color: white;
 
     .ns-dark &, .ns-dark &,
     &.ns-dark,  &.ns-dark  {
         status-bar-style: dark;
-        // navigation-bar-color: black;
-        status-bar-color: black;
-        background-color: #1c1c1e;
+        // navigation-bar-color: red;
+        // status-bar-color: black;
+        // background-color: #1c1c1e;
     }
-    
+
     .ns-black &, .ns-black &,
     &.ns-black,  &.ns-black   {
         status-bar-style: dark;
         // navigation-bar-color: black;
-        status-bar-color: black;
+        // status-bar-color: black;
         background-color: black;
     }
 }
+
 .actionBar {
-    background-color: scale-color(white, $alpha: -30%);
-    .ns-black & {
-        background-color: scale-color(black, $alpha: -30%);
-    }
-    .ns-dark & {
-        background-color: scale-color(#1c1c1e, $alpha: -30%);
-    }
-    height: $actionbar-height;
+    // background-color: var(--colorBackground);
+    background-color: var(--colorBackground) + 'aa';
+    // .ns-black & {
+    //     background-color: scale-color(black, $alpha: -30%);
+    // }
+    // .ns-dark & {
+    //     background-color: scale-color(#1c1c1e, $alpha: -30%);
+    // }
+    height: var(--actionBarHeight);
 }
 
+.icon-btn,
 .actionBarButton {
     @extend .mdi;
-    width: $actionbar-height;
-    height: $actionbar-height;
-    color: black;
-    .ns-dark &,
-    .ns-black & {
-        color: white;
-    }
     margin: 0;
     padding: 0;
-    font-size: 32;
+    shape: round;
+    background-color: transparent;
+    width: var(--actionBarButtonHeight);
+    height: var(--actionBarButtonHeight);
+    
+    color: var(--colorOnSurface);
+    ripple-color: var(--colorOnSurface);
+
+    font-size: 24;
+
+    &:disabled {
+        color: var(--colorOutlineVariant);
+        ripple-color: var(--colorOutlineVariant);
+    }
+
+
 }
 
 .actionBarTitle {
@@ -124,12 +184,6 @@ page,
 
 .actionBarSubtitle {
     font-size: 13;
-    color: #ffffff88;
-}
-
-.icon-btn {
-    @extend .mdi;
-    width: $actionbar-button-height;
-    height: $actionbar-button-height;
-    font-size: 24;
+    color: var(--colorOnBackground);
+    // color: #ffffff88;
 }

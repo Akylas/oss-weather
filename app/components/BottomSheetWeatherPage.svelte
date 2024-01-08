@@ -1,13 +1,17 @@
 <script lang="ts">
     import { ApplicationSettings, Color, Utils } from '@nativescript/core';
-    import { closeBottomSheet } from '~/utils/svelte/bottomsheet';
-    import CActionBar from '~/components/CActionBar.svelte';
+    import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import CActionBar from '~/components/common/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
-    import { backgroundColor } from '~/variables';
+    import { colors } from '~/variables';
     import { l, lc } from '~/helpers/locale';
     import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
+
+    $: ({
+        colorBackground,
+    } = $colors);
 
     let items = [];
     let loading = false;
@@ -54,18 +58,18 @@
     });
 </script>
 
-<gridlayout rows="auto,*" class="weatherpage" height="100%">
+<gridlayout class="weatherpage" height="100%" rows="auto,*">
     <CActionBar title={name}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
     </CActionBar>
     <label
-                    row={0}
+                    backgroundColor={new Color(colorBackground).setAlpha(100).hex}
                     fontSize={10}
-                    backgroundColor={new Color($backgroundColor).setAlpha(100).hex}
-                    text={lc('powered_by', l(`provider.${provider}`))}
-                    verticalAlignment="top"
                     horizontalAlignment="right"
                     marginRight={6}
+                    row={0}
+                    text={lc('powered_by', l(`provider.${provider}`))}
+                    verticalAlignment="top"
                 />
-    <WeatherComponent row={1} {items} {weatherLocation} />
+    <WeatherComponent {items} row={1} {weatherLocation} />
 </gridlayout>

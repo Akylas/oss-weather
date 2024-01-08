@@ -1,0 +1,12 @@
+*Features*
+- Material You theme theme support
+- new decimal temp settings fro metric unit
+
+*Bug fixes*
+- Translated using Weblate (German)
+- Translated using Weblate (Ukrainian)
+- Translated using Weblate (English)
+- Translated using Weblate (Norwegian Bokmål)
+- new Settings view
+- *android:* prevent crash on android 7
+- better minutely rain layout when using OpenMeteo

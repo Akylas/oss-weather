@@ -11,9 +11,11 @@ export async function startSentry() {
             Sentry.init({
                 debug: DEV_LOG,
                 dsn: SENTRY_DSN,
-                appPrefix: SENTRY_PREFIX,
+                appPrefix: '~/',
+                // appPrefix: SENTRY_PREFIX,
                 release: `${__APP_ID__}@${__APP_VERSION__}+${__APP_BUILD_NUMBER__}`,
-                dist: `${__APP_BUILD_NUMBER__}.${__ANDROID__ ? 'android' : 'ios'}`
+                dist: `${__APP_BUILD_NUMBER__}.${__ANDROID__ ? 'android' : 'ios'}`,
+                colnoOffset: 4
             });
             install();
             isSentryEnabled = true;

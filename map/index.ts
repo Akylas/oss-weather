@@ -16,7 +16,6 @@ function GetURLParameter(sParam) {
 
 const position = (GetURLParameter('position') || '45.18453,5.75').split(',').map(parseFloat);
 const zoom = parseFloat(GetURLParameter('zoom') || '8');
-const OWM_KEY = GetURLParameter('owm_key');
 
 const map = L.map('map', { zoomControl: false }).setView(position, zoom);
 
@@ -243,7 +242,7 @@ L.TileLayer.wmsHeader(
     {
         maxZoom: 19,
         pmIgnore: false,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></br><a href="https://www.rainviewer.com/copyright">RainViewer</a>'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></br><a href="https://www.rainviewer.com">RainViewer</a>'
     },
     [
         {
@@ -252,7 +251,13 @@ L.TileLayer.wmsHeader(
         }
     ]
 ).addTo(map);
-L.tileLayer('https://tilecache.rainviewer.com/v2/radar/1704537600/512/{z}/{x}/{y}/4/1_1.png', {
-    maxZoom: 18,
-    pmIgnore: false
-}).addTo(map);
+
+fetch('https://tilecache.rainviewer.com/api/maps.json')
+    .then((response) => response.text())
+    .then((response) => {
+        const timestamps = JSON.parse(response);
+        L.tileLayer(`https://tilecache.rainviewer.com/v2/radar/${timestamps[timestamps.length - 1]}/512/{z}/{x}/{y}/4/1_1.png`, {
+            maxZoom: 18,
+            pmIgnore: false
+        }).addTo(map);
+    });

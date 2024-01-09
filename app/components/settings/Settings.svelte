@@ -173,7 +173,9 @@
                     break;
                 case 'dark_mode':
                     await selectTheme();
-                    // (collectionView.nativeView as CollectionView).refreshVisibleItems();
+                    if (__IOS__) {
+                        refresh();
+                    }
                     break;
                 case 'share':
                     share({

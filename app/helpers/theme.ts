@@ -32,8 +32,8 @@ Application.on(Application.systemAppearanceChangedEvent, (event: EventData & { n
         if (__ANDROID__) {
             com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
         }
-        applyTheme(theme);
         updateThemeColors(theme);
+        applyTheme(theme);
         //close any popover as they are not updating with theme yet
         closePopover();
         globalObservable.notify({ eventName: 'theme', data: theme });
@@ -64,7 +64,7 @@ export async function selectTheme() {
         const result = await showAlertOptionSelect(
             component,
             {
-                height: actions.length * 56,
+                height: Math.min(actions.length * 56, 400),
                 rowHeight: 56,
                 options: actions
                     .map((k) => ({ name: getThemeDisplayName(k), data: k }))
@@ -90,7 +90,7 @@ export async function selectTheme() {
 const AppCompatDelegate = __ANDROID__ ? androidx.appcompat.app.AppCompatDelegate : undefined;
 export function applyTheme(theme: Themes) {
     try {
-        DEV_LOG && console.log('applyTheme', theme);
+        DEV_LOG && console.log('applyTheme1', theme);
         switch (theme) {
             case 'auto':
                 Theme.setMode(Theme.Auto);
@@ -203,14 +203,16 @@ export function start() {
         }
 
         theme = newTheme;
-        sTheme.set(newTheme);
-        applyTheme(newTheme);
+
         const realTheme = getRealTheme(newTheme);
         currentTheme.set(realTheme);
+
+        updateThemeColors(realTheme);
+        sTheme.set(newTheme);
+        applyTheme(newTheme);
         if (__ANDROID__) {
             com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
         }
-        updateThemeColors(realTheme);
         setTimeout(() => {
             globalObservable.notify({ eventName: 'theme', data: realTheme });
         }, 0);
@@ -223,8 +225,8 @@ export function start() {
             applyTheme(theme);
         } else {
             Application.on(Application.launchEvent, () => {
-                applyTheme(theme);
                 updateThemeColors(realTheme);
+                applyTheme(theme);
             });
         }
 
@@ -238,13 +240,13 @@ export function start() {
         });
     } else {
         if (Application.ios && Application.ios.window) {
-            applyTheme(theme);
             updateThemeColors(realTheme);
+            applyTheme(theme);
         } else {
             updateThemeColors(realTheme);
             Application.on(Application.displayedEvent, () => {
-                applyTheme(theme);
                 updateThemeColors(realTheme);
+                applyTheme(theme);
             });
         }
     }

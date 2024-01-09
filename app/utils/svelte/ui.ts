@@ -23,9 +23,9 @@ export function createGlobalEventListener(eventName: string) {
                 clean();
             }
             if (Array.isArray(event.data)) {
-                event.result = callback(...event.data);
+                event.result = callback(...event.data, event);
             } else {
-                event.result = callback(event.data);
+                event.result = callback(event.data, event);
             }
         };
         callbacks[eventName][callback] = eventCallack;

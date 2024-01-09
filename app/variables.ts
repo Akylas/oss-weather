@@ -147,26 +147,19 @@ const onInitRootView = function () {
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
         navigationBarHeight.set(Application.ios.window.safeAreaInsets.bottom);
     }
-    updateThemeColors(getRealTheme(theme));
+    updateThemeColors(theme);
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));
     Application.off('initRootView', onInitRootView);
     // getRealThemeAndUpdateColors();
 };
 Application.on('initRootView', onInitRootView);
 
-export function updateThemeColors(theme: string, force = false) {
-    // DEV_LOG && console.log('updateThemeColors', theme, force);
-    try {
-        if (!force) {
-            theme = Application.systemAppearance();
-            // console.log('systemAppearance', theme);
-        }
-    } catch (err) {
-        console.error('updateThemeColors', err);
-    }
-
+export function updateThemeColors(theme: string) {
     const currentColors = get(colors);
-    const rootView = Application.getRootView();
+    let rootView = Application.getRootView();
+    if (rootView?.parent) {
+        rootView = rootView.parent as any;
+    }
     const rootViewStyle = rootView?.style;
     if (!rootViewStyle) {
         return;
@@ -194,7 +187,7 @@ export function updateThemeColors(theme: string, force = false) {
         Object.keys(currentColors).forEach((c) => {
             currentColors[c] = rootViewStyle.getCssVariable('--' + c);
         });
-        if (theme === 'dark') {
+        if (theme === 'dark' || theme === 'black') {
             currentColors.colorPrimary = '#FFC82F';
             currentColors.colorOnPrimary = '#3F2E00';
             currentColors.colorPrimaryContainer = '#5A4300';
@@ -227,8 +220,8 @@ export function updateThemeColors(theme: string, force = false) {
             currentColors.colorOnSurface = '#1E1B16';
             currentColors.colorOutline = '#7E7667';
             currentColors.colorOutlineVariant = '#D0C5B4';
-            currentColors.colorSurfaceVariant = '#4D4639';
-            currentColors.colorOnSurfaceVariant = '#ECE1CF';
+            currentColors.colorSurfaceVariant = '#ECE1CF';
+            currentColors.colorOnSurfaceVariant = '#4D4639';
             currentColors.colorSurfaceContainer = '#FFFBFF';
         }
         themer.setPrimaryColor(currentColors.colorPrimary);

@@ -1,0 +1,13 @@
+*Bug fixes*
+- Translated using Weblate (English)
+- Translated using Weblate (German)
+- Translated using Weblate (French)
+- Translated using Weblate (French)
+- Translated using Weblate (English)
+- Translated using Weblate (German)
+- Translated using Weblate (French)
+- Translated using Weblate (French)
+- settings layout fix
+- *android:* disable clear text
+- Translated using Weblate (German)
+- Translated using Weblate (French)

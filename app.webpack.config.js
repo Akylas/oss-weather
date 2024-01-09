@@ -420,7 +420,16 @@ module.exports = (env, params = {}) => {
         { context, from: '**/*.jpg', noErrorOnMissing: true, globOptions },
         { context, from: '**/*.png', noErrorOnMissing: true, globOptions },
         { context, from: 'assets/**/*', noErrorOnMissing: true, globOptions },
-        { context, from: 'i18n/**/*', globOptions },
+        {
+            context,
+            from: 'i18n/**/*',
+            globOptions,
+            transform: !!production
+                ? {
+                      transformer: (content, path) => Promise.resolve(Buffer.from(JSON.stringify(JSON.parse(content.toString())), 'utf8'))
+                  }
+                : undefined
+        },
         {
             from: 'node_modules/@mdi/font/fonts/materialdesignicons-webfont.ttf',
             to: 'fonts',

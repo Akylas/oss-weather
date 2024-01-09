@@ -77,7 +77,7 @@
     "ios": {
         "info": {
             "plist": {
-                "NSLocationWhenInUseUsageDescription": "'NS Wetter' verwendet deinen GPS-Standort, um dir das Wetter anzuzeigen"
+                "NSLocationWhenInUseUsageDescription": "'OSS Wetter' verwendet deinen GPS-Standort, um dir das Wetter anzuzeigen"
             }
         }
     },
@@ -166,5 +166,8 @@
     "ukrainian": "Ukrainisch",
     "version": "Version",
     "weather_map": "Wetterkarte",
-    "wind": "Wind"
+    "wind": "Wind",
+    "metric_temp_decimal": "Dezimalzahlen für metrische Temperaturen benutzen",
+    "select_theme": "Design auswählen",
+    "list_used_third_parties": "Drittanbieter anzeigen"
 }

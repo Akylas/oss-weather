@@ -1,4 +1,8 @@
 {
     "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "esNext",
+        "moduleResolution": "node"
+    },
     "include": ["**/*", ".eslintrc.js", "*webpack.config.js"]
 }

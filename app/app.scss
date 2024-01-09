@@ -85,13 +85,13 @@ mdbutton {
 }
 
 // mdtextfield {
-    // color: black;
-    // placeholder-color: black;
-    // .ns-dark &,
-    // .ns-black & {
-    //     color: white;
-    //     placeholder-color: white;
-    // }
+// color: black;
+// placeholder-color: black;
+// .ns-dark &,
+// .ns-black & {
+//     color: white;
+//     placeholder-color: white;
+// }
 // }
 
 .dailyViewBorder {
@@ -131,16 +131,14 @@ page,
     // navigation-bar-color: black;
     // background-color: white;
 
-    .ns-dark &, .ns-dark &,
-    &.ns-dark,  &.ns-dark  {
+    .ns-dark & {
         status-bar-style: dark;
         // navigation-bar-color: red;
         // status-bar-color: black;
         // background-color: #1c1c1e;
     }
 
-    .ns-black &, .ns-black &,
-    &.ns-black,  &.ns-black   {
+    .ns-black & {
         status-bar-style: dark;
         // navigation-bar-color: black;
         status-bar-color: black;
@@ -151,9 +149,11 @@ page,
 .actionBar {
     // background-color: var(--colorBackground);
     background-color: var(--colorBackground) + 'aa';
+
     .ns-black & {
         background-color: scale-color(black, $alpha: -30%);
     }
+
     // .ns-dark & {
     //     background-color: scale-color(#1c1c1e, $alpha: -30%);
     // }
@@ -169,7 +169,7 @@ page,
     background-color: transparent;
     width: var(--actionBarButtonHeight);
     height: var(--actionBarButtonHeight);
-    
+
     color: var(--colorOnSurface);
     ripple-color: var(--colorOnSurface);
 

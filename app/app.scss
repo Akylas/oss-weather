@@ -54,6 +54,12 @@
     font-family: $mdiFontFamily;
 }
 
+checkbox {
+    color: var(--colorOnSurface);
+    fill-color: var(--colorPrimary);
+    on-check-color: var(--colorOnPrimary);
+    on-tint-color: var(--colorPrimary);
+}
 
 htmllabel,
 canvaslabel,
@@ -137,7 +143,7 @@ page,
     &.ns-black,  &.ns-black   {
         status-bar-style: dark;
         // navigation-bar-color: black;
-        // status-bar-color: black;
+        status-bar-color: black;
         background-color: black;
     }
 }
@@ -145,9 +151,9 @@ page,
 .actionBar {
     // background-color: var(--colorBackground);
     background-color: var(--colorBackground) + 'aa';
-    // .ns-black & {
-    //     background-color: scale-color(black, $alpha: -30%);
-    // }
+    .ns-black & {
+        background-color: scale-color(black, $alpha: -30%);
+    }
     // .ns-dark & {
     //     background-color: scale-color(#1c1c1e, $alpha: -30%);
     // }

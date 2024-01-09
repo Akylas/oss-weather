@@ -360,7 +360,7 @@
             ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
         }
     });
-    function drawerTranslationFunction(side, width, value, delta, progress) {
+    function swipeMenuTranslationFunction(side, width, value, delta, progress) {
         const result = {
             mainContent: {
                 translateX: side === 'right' ? -delta : delta
@@ -474,7 +474,7 @@
                         leftSwipeDistance="300"
                         openAnimationDuration={100}
                         startingSide={item.startingSide}
-                        translationFunction={drawerTranslationFunction}
+                        translationFunction={swipeMenuTranslationFunction}
                     >
                         <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
                             <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />

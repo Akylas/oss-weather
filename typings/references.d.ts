@@ -63,21 +63,38 @@ interface LatLonKeys {
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-qualifier
 declare namespace svelteNative.JSX {
-    interface ViewAttributes {
-        rippleColor?: string;
-        sharedTransitionTag?: string;
-        verticalAlignment?: string;
-        dynamicElevationOffset?: string | number;
-        elevation?: string | number;
-    }
-    export interface ButtonAttributes {
+    type Override<What, With> = Omit<What, keyof With> & With;
+    type ViewKeys = keyof TViewAttributes;
+    type TViewAugmentedAttributes = Override<
+        TViewAttributes,
+        {
+            rippleColor?: string;
+            sharedTransitionTag?: string;
+            verticalAlignment?: string;
+            dynamicElevationOffset?: string | number;
+            elevation?: string | number;
+        }
+    >;
+    type ViewAndroidAttributes = {
+        [K in keyof TViewAugmentedAttributes as `android:${K}`]: TViewAugmentedAttributes[k];
+    };
+    type ViewIOSAttributes = {
+        [K in keyof TViewAugmentedAttributes as `ios:${K}`]: TViewAugmentedAttributes[k];
+    };
+    type ViewAttributes = TViewAugmentedAttributes & ViewAndroidAttributes & ViewIOSAttributes;
+
+    interface ButtonAttributes {
         variant?: string;
         shape?: string;
     }
-    export interface SliderAttributes {
+    interface SwitchAttributes {
+        variant?: string;
+        shape?: string;
+    }
+    interface SliderAttributes {
         stepSize?: number;
     }
-    export interface ImageAttributes {
+    interface ImageAttributes {
         noCache?: boolean;
         imageRotation?: number;
         colorMatrix?: number[];
@@ -85,7 +102,7 @@ declare namespace svelteNative.JSX {
         fadeDuration?: number;
         'on:rotateAnimated'?: (args: EventData) => void;
     }
-    export interface LabelAttributes {
+    interface LabelAttributes {
         autoFontSize?: boolean;
         verticalTextAlignment?: string;
         maxLines?: number;

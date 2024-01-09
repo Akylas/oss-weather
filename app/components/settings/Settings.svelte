@@ -42,7 +42,8 @@
     function refresh() {
         const newItems: any[] = [
             {
-                type: 'header'
+                type: 'header',
+                title: lc('donate')
             },
             {
                 id: 'language',
@@ -130,7 +131,6 @@
                     description: lc('list_used_third_parties')
                 }
             ] as any);
-
         items = new ObservableArray(newItems);
     }
     refresh();
@@ -173,10 +173,12 @@
                     break;
                 case 'dark_mode':
                     await selectTheme();
-                    // (collectionView.nativeView as CollectionView).refreshVisibleItems();
+                    if (__IOS__) {
+                        refresh();
+                    }
                     break;
                 case 'share':
-                    share({
+                    await share({
                         message: GIT_URL
                     });
                     break;
@@ -225,7 +227,7 @@
                         const result = await showAlertOptionSelect(
                             component,
                             {
-                                height: item.values.length * 56,
+                                height: Math.min(item.values.length * 56, 400),
                                 rowHeight: 56,
                                 options: item.values.map((k) => ({ name: k.title, data: k.value,  boxType: 'circle',
                         type: 'checkbox', value: (item.currentValue?.() ??item.currentValue ) === k.value}))
@@ -257,7 +259,6 @@
             showError(err);
         }
     }
-    onLanguageChanged(refresh);
 
     function selectTemplate(item, index, items) {
         if (item.type === 'prompt') {
@@ -267,6 +268,9 @@
     }
 
     async function onCheckBox(item, event) {
+        if (item.value === event.value) {
+            return;
+        }
         const value = event.value;
         if (checkboxTapTimer) {
             clearTimeout(checkboxTapTimer);
@@ -282,9 +286,10 @@
             showError(error);
         }
     }
-    // function refreshCollectionView() {
+    function refreshCollectionView() {
+        collectionView?.nativeView.refresh();
     //     console.log('refreshCollectionView');
-    //     const nativeView = collectionView?.nativeView;
+        // const nativeView = collectionView?.nativeView;
     //     if (nativeView) {
     //         items.forEach((item, index)=>{
     //         if (item.type === 'switch') {
@@ -292,8 +297,13 @@
     //         }
     //     });
     //     }
-    // }
+    }
     // onThemeChanged(refreshCollectionView);
+    onLanguageChanged((value, event)=>{
+        if (event.clock_24 !== true) {
+            refresh();
+        }
+    });
 </script>
 
 <page actionBarHidden={true}>
@@ -312,18 +322,18 @@
                         verticalAlignment="center"
                         on:tap={(event) => onTap({ id: 'sponsor' }, event)}>
                         <label color="white" fontFamily={$fonts.mdi} fontSize={26} marginRight={10} text="mdi-heart" verticalAlignment="center" />
-                        <label color="white" fontSize={12} text={lc('donate')} verticalAlignment="center" />
+                        <label color="white" fontSize={14} text={item.title} textWrap={true} verticalAlignment="center"/>
                     </stacklayout>
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
-                        <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} width={50} />
+                        <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50}/>
                         <label fontSize={13} marginTop={4} text={version} />
                     </stacklayout>
                 </gridlayout>
             </Template>
             <Template key="switch" let:item>
                 <ListItemAutoSize leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <switch id="checkbox" checked={item.value} col={2} on:checkedChange={(e) => onCheckBox(item, e)} />
+                    <switch id="checkbox" checked={item.value} col={2} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary}/>
                 </ListItemAutoSize>
             </Template>
             <Template key="checkbox" let:item>
@@ -389,7 +399,7 @@
                 </gridlayout>
             </Template> -->
         </collectionview>
-        <CActionBar canGoBack title={lc('settings.title')}>
+        <CActionBar canGoBack title={$slc('settings.title')}>
             <mdbutton class="actionBarButton" text="mdi-share-variant" variant="text" on:tap={(event) => onTap({ id: 'share' }, event)}/>
             <mdbutton class="actionBarButton" text="mdi-github" variant="text" on:tap={(event) => onTap({ id: 'github' }, event)}/>
         </CActionBar>

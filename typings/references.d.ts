@@ -68,6 +68,7 @@ declare namespace svelteNative.JSX {
     type TViewAugmentedAttributes = Override<
         TViewAttributes,
         {
+            disableCss?: boolean;
             rippleColor?: string;
             sharedTransitionTag?: string;
             verticalAlignment?: string;
@@ -87,13 +88,6 @@ declare namespace svelteNative.JSX {
         variant?: string;
         shape?: string;
     }
-    interface SwitchAttributes {
-        variant?: string;
-        shape?: string;
-    }
-    interface SliderAttributes {
-        stepSize?: number;
-    }
     interface ImageAttributes {
         noCache?: boolean;
         imageRotation?: number;
@@ -101,6 +95,22 @@ declare namespace svelteNative.JSX {
         blurRadius?: number;
         fadeDuration?: number;
         'on:rotateAnimated'?: (args: EventData) => void;
+    }
+    interface SpanAttributes {
+        verticalAlignment?: string;
+        verticalTextAlignment?: string;
+    }
+    interface SliderAttributes {
+        stepSize?: number;
+        trackBackgroundColor?: string;
+    }
+    interface PageAttributes {
+        statusBarColor?: string;
+        screenOrientation?: string;
+        keepScreenAwake?: boolean;
+        screenBrightness?: number;
+        'on:closingModally'?: (args: ShownModallyData) => void;
+        // "on:shownModally"?: (args: ShownModallyData) => void;
     }
     interface LabelAttributes {
         autoFontSize?: boolean;
@@ -110,14 +120,8 @@ declare namespace svelteNative.JSX {
         maxFontSize?: number;
         lineBreak?: string;
         html?: string;
-    }
-    interface PageAttributes {
-        statusBarColor?: string;
-        screenOrientation?: string;
-        keepScreenAwake?: boolean;
-        screenBrightness?: number;
-
-        'on:closingModally'?: (args: ShownModallyData) => void;
-        // "on:shownModally"?: (args: ShownModallyData) => void;
+        selectable?: boolean;
+        onlinkTap?;
+        'on:linkTap'?;
     }
 }

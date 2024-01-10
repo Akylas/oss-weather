@@ -1,5 +1,5 @@
 module.exports = {
-    ignoredNativeDependencies: ['@nativescript-community/sentry'],
+    ignoredNativeDependencies: ['@nativescript-community/sentry', '@nativescript/detox'],
     id: 'com.akylas.weather',
     appResourcesPath: 'App_Resources',
     webpackConfigPath: 'app.webpack.config.js',

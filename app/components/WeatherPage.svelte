@@ -98,9 +98,6 @@
                 options,
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
-                props: {
-                    width:250,
-                },
                 onClose: async (item) => {
                     try {
                     if (item) {

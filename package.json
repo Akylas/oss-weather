@@ -134,8 +134,6 @@
         ]
     },
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "@nativescript-community/ui-canvas": "portal:/Volumes/dev/nativescript/ui-canvas/packages/ui-canvas",
-        "@nativescript-community/text": "portal:/Volumes/dev/nativescript/nativescript-text/packages/text"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     }
 }

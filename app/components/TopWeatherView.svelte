@@ -456,14 +456,14 @@
 </script>
 
 <gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
-    <canvas bind:this={canvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
+    <canvasview id="topweather" bind:this={canvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={$fonts.wi} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />
             <cspan color="#ff7200" fontFamily={$fonts.wi} text="  wi-sunset " />
             <cspan text={formatTime(item.sunsetTime)} />
         </cgroup> -->
-    </canvas>
+    </canvasview>
     <!-- <mdbutton
         col={1}
         variant="text"

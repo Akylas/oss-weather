@@ -56,6 +56,12 @@
                 title: lc('theme.title')
             },
             {
+                type: 'switch',
+                id: 'auto_black',
+                title: lc('auto_black'),
+                value: ApplicationSettings.getBoolean('auto_black', false)
+            },
+            {
                 key: 'provider',
                 id:'setting',
                 description: () => lc('provider.' + getProviderType()),
@@ -246,7 +252,8 @@
                         //     },
                         //     trackingScrollView: 'collectionView'
                         // });
-                        if (result) {
+                        console.log('showAlertOptionSelect  result', result);
+                        if (result?.data) {
                             ApplicationSettings.setString(item.key, result.data);
                             updateItem(item);
                         }

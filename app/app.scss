@@ -66,6 +66,16 @@ canvaslabel,
 label {
     color: var(--colorOnBackground);
 }
+htmllabel,
+canvasview,
+label,
+button,
+textfield,
+checkbox,
+mdtextfield,
+mdbutton {
+    ios-a11y-adjusts-font-size: true;
+}
 
 mdbutton {
     shape: round;

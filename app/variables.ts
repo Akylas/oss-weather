@@ -6,6 +6,7 @@ import { onDestroy } from 'svelte';
 import { getRealTheme, theme } from './helpers/theme';
 import { prefs } from './services/preferences';
 import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
+import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
 
 export const colors = writable({
     colorPrimary: '',
@@ -74,7 +75,7 @@ export const snowColor = new Color('#43b4e0');
 export let imperialUnits = ApplicationSettings.getBoolean('imperial', false);
 export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', false);
 export const imperial = writable(imperialUnits);
-let storedFontScale = ApplicationSettings.getNumber('fontscale', 0);
+let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale || get(systemFontScale));
 
 export const onImperialChanged = createGlobalEventListener('imperial');
@@ -100,6 +101,7 @@ prefs.on('key:fontscale', () => {
 
 function updateSystemFontScale(value) {
     systemFontScale.set(value);
+    console.log('updateSystemFontScale', value, storedFontScale);
     if (storedFontScale === 1) {
         fontScale.set(value);
     }
@@ -143,18 +145,22 @@ const onInitRootView = function () {
         DEV_LOG && console.log('initRootView', rootView);
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
         // DEV_LOG && console.log('fonts', get(fonts));
+        updateSystemFontScale(getCurrentFontScale());
+        Application.on(Application.fontScaleChangedEvent, (event) => updateSystemFontScale(event.newValue));
+        DEV_LOG && console.log('getCurrentFontScale', getCurrentFontScale());
         actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
         navigationBarHeight.set(Application.ios.window.safeAreaInsets.bottom);
     }
-    updateThemeColors(theme);
+    updateThemeColors(getRealTheme());
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));
-    Application.off('initRootView', onInitRootView);
+    Application.off(Application.initRootViewEvent, onInitRootView);
     // getRealThemeAndUpdateColors();
 };
-Application.on('initRootView', onInitRootView);
+Application.on(Application.initRootViewEvent, onInitRootView);
 
 export function updateThemeColors(theme: string) {
+    DEV_LOG && console.log('updateThemeColors', theme);
     const currentColors = get(colors);
     let rootView = Application.getRootView();
     if (rootView?.parent) {
@@ -196,7 +202,7 @@ export function updateThemeColors(theme: string) {
             currentColors.colorOnSecondary = '#3A2F15';
             currentColors.colorSecondaryContainer = '#52452A';
             currentColors.colorOnSecondaryContainer = '#F4E0BB';
-            currentColors.colorBackground = '#1E1B16';
+            currentColors.colorBackground = theme === 'black' ? '#000000' : '#1E1B16';
             currentColors.colorOnBackground = '#E9E1D9';
             currentColors.colorSurface = '#1E1B16';
             currentColors.colorOnSurface = '#E9E1D9';
@@ -204,7 +210,7 @@ export function updateThemeColors(theme: string) {
             currentColors.colorOutlineVariant = '#4D4639';
             currentColors.colorSurfaceVariant = '#4D4639';
             currentColors.colorOnSurfaceVariant = '#D0C5B4';
-            currentColors.colorSurfaceContainer = '#1E1B16';
+            currentColors.colorSurfaceContainer = theme === 'black' ? '#000000' : '#1E1B16';
         } else {
             currentColors.colorPrimary = '#FFC82F';
             currentColors.colorOnPrimary = '#3F2E00';

@@ -11,6 +11,7 @@
     import { showError } from '~/utils/error';
     import { colors } from '~/variables';
     import ListItem from './common/ListItem.svelte';
+    import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
     $: ({
         colorBackground,
@@ -101,20 +102,20 @@
             <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
         </CActionBar>
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} />
-        <collectionview items={searchResults} row={2} rowHeight={80}>
+        <collectionview items={searchResults} row={2}>
             <Template let:item>
-                <ListItem columns="*,auto" subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)} >
+                <ListItemAutoSize subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)} >
                     <mdbutton
                         class="icon-btn"
-                        col={1}
+                        col={2}
                         color={favoriteIconColor(item)}
                         rippleColor="#EFB644"
-                        rowSpan={2}
                         text={favoriteIcon(item)}
                         variant="text"
+                        verticalAlignment="top"
                         on:tap={() => toggleItemFavorite(item)}
                     />
-                </ListItem>
+                </ListItemAutoSize>
                 <!-- <gridlayout col={1} columns="*,auto" padding="10" paddingLeft={10} rippleColor="#aaa" rows="auto,*" verticalAlignment="middle" on:tap={() => close(item)}>
                     <label fontSize={18} lineBreak="end" maxLines={1} text={item.name} />
                     <label color={colorOnSurfaceVariant} fontSize={14} row={1}>

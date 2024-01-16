@@ -93,13 +93,14 @@ export async function showPopoverMenu<T = any>({ options, anchor, onClose, props
         vertPos: vertPos ?? VerticalPosition.CENTER,
         props: {
             borderRadius: 10,
-            elevation: 4,
+            elevation: 3,
             margin: 4,
+            fontWeight: 500,
             backgroundColor: colorSurfaceContainer,
             containerColumns: 'auto',
-            rowHeight,
-            height: Math.min(rowHeight * options.length, 400),
-            width: 150,
+            rowHeight: !!props?.autoSizeListItem ? null : rowHeight,
+            height: props?.height || Math.min(rowHeight * options.length, 400),
+            width: 200,
             options,
             onClose: (item) => {
                 closePopover();

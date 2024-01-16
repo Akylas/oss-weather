@@ -26,7 +26,7 @@
     import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { actionBarButtonHeight, colors, fontScale, fonts } from '~/variables';
+    import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
     import { globalObservable } from '~/utils/svelte/ui';
     import { showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
@@ -100,7 +100,7 @@
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
                 props: {
-                    width:220,
+                    width:220 * $systemFontScale,
                     autoSizeListItem:true,
                 },
                 onClose: async (item) => {
@@ -417,11 +417,11 @@
             {:else}
                 <stacklayout columns="auto" horizontalAlignment="center" row={1} verticalAlignment="middle">
                     <label marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true}/>
-                    <mdbutton margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
+                    <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                    <mdbutton margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
+                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>

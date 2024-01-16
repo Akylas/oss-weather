@@ -100,7 +100,7 @@ export async function showPopoverMenu<T = any>({ options, anchor, onClose, props
             containerColumns: 'auto',
             rowHeight: !!props?.autoSizeListItem ? null : rowHeight,
             height: props?.height || Math.min(rowHeight * options.length, 400),
-            width: 200,
+            width: 200 * get(systemFontScale),
             options,
             onClose: (item) => {
                 closePopover();

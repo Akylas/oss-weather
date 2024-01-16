@@ -255,6 +255,6 @@
 </script>
 
 <gridlayout on:tap={onTap}>
-    <canvas bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
+    <canvasview bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
     <WeatherIcon icon={item.icon} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top"/>
 </gridlayout>

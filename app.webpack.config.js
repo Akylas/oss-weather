@@ -97,7 +97,7 @@ module.exports = (env, params = {}) => {
         locale = 'auto', // --env.locale
         theme = 'auto', // --env.theme
         keep_classnames_functionnames = false,
-        accessibility = false,
+        accessibility = true,
         playStoreBuild = true, // --env.playStoreBuild
         buildweathermap = true, // --env.buildweathermap
         includeDarkSkyKey, // --env.includeDarkSkyKey

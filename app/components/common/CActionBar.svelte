@@ -2,6 +2,7 @@
     import { Frame } from '@nativescript/core/ui/frame';
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
+    import { fontScale } from '~/variables';
 
     export let title: string;
     export let showMenuIcon: boolean = false;
@@ -40,12 +41,13 @@
 
 <gridlayout class="actionBar" columns="auto,*, auto" paddingLeft={5} paddingRight={5} rows="*">
     <label
+    id="actionBarTitle"
         class="actionBarTitle"
         autoFontSize={true}
         col={1}
-        maxFontSize={20}
+        maxFontSize={20 * $fontScale}
         maxLines={2}
-        minFontSize={12}
+        minFontSize={12 * $fontScale}
         text={title || ''}
         textAlignment="left"
         verticalTextAlignment="center"

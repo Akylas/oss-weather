@@ -26,17 +26,14 @@
     import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { actionBarButtonHeight, colors, fonts } from '~/variables';
+    import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
     import { globalObservable } from '~/utils/svelte/ui';
     import { showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { WeatherData } from '~/services/weather';
+    import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
-    $: ({
-        colorBackground,
-        colorOnSurfaceVariant,
-        colorSurface
-    } = $colors);
+    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface } = $colors);
 
     let gps: GPS;
     let loading = false;
@@ -70,7 +67,7 @@
                     icon: 'mdi-format-size',
                     id: 'font-scale',
                     name: lc('font_scale')
-                },
+                }
                 // {
                 //     icon: 'mdi-information-outline',
                 //     id: 'about',
@@ -78,57 +75,58 @@
                 // }
             ];
             if (weatherLocation) {
-                options.push(
-                    {
-                        icon: 'mdi-refresh',
-                        id: 'refresh',
-                        name: l('refresh')
-                    }
-                );
+                options.push({
+                    icon: 'mdi-refresh',
+                    id: 'refresh',
+                    name: l('refresh')
+                });
                 // if (OWMProvider.hasOWMApiKey()) {
-                    options.push(
-                    {
-                        icon: 'mdi-map',
-                        id: 'map',
-                        name: l('map')
-                    });
+                options.push({
+                    icon: 'mdi-map',
+                    id: 'map',
+                    name: l('map')
+                });
                 // }
             }
             await showPopoverMenu({
                 options,
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
+                props: {
+                    width: 220 * $systemFontScale,
+                    autoSizeListItem: true
+                },
                 onClose: async (item) => {
                     try {
-                    if (item) {
-                switch (item.id) {
-                    case 'preferences':
-                    const Settings = (await import('~/components/settings/Settings.svelte')).default;
-            navigate({ page: Settings });
-                        break;
-                    case 'map':
-                        await openWeatherMap();
-                        break;
-                    case 'refresh':
-                        await refreshWeather();
-                        break;
-                    case 'gps_location':
-                        await getLocationAndWeather();
-                        break;
-                    // case 'about':
-                    //     const About = require('~/components/About.svelte').default;
-                    //     navigate({ page: About });
-                    //     break;
+                        if (item) {
+                            switch (item.id) {
+                                case 'preferences':
+                                    const Settings = (await import('~/components/settings/Settings.svelte')).default;
+                                    navigate({ page: Settings });
+                                    break;
+                                case 'map':
+                                    await openWeatherMap();
+                                    break;
+                                case 'refresh':
+                                    await refreshWeather();
+                                    break;
+                                case 'gps_location':
+                                    await getLocationAndWeather();
+                                    break;
+                                // case 'about':
+                                //     const About = require('~/components/About.svelte').default;
+                                //     navigate({ page: About });
+                                //     break;
 
-                    case 'font-scale':
-                        const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
-                        navigate({ page: FontSizeSettingScreen });
-                        break;
-                }
-            }
-        } catch (error) {
-            showError(error);
-        }
+                                case 'font-scale':
+                                    const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
+                                    navigate({ page: FontSizeSettingScreen });
+                                    break;
+                            }
+                        }
+                    } catch (error) {
+                        showError(error);
+                    }
                 }
             });
         } catch (error) {
@@ -391,8 +389,7 @@
         leftSwipeDistance={50}
         waitFor={[15644]}
         on:close={onDrawerStartClose}
-        on:start={onDrawerStartClose}
-    >
+        on:start={onDrawerStartClose}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
@@ -407,17 +404,16 @@
                     marginRight={6}
                     row="1"
                     text={lc('powered_by', l(`provider.${provider}`))}
-                    verticalAlignment="bottom"
-                />
+                    verticalAlignment="bottom" />
             {:else}
                 <stacklayout columns="auto" horizontalAlignment="center" row={1} verticalAlignment="middle">
-                    <label marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" />
-                    <mdbutton margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
-                        <cspan fontFamily={$fonts.mdi} fontSize={20} text="mdi-crosshairs-gps" verticalAlignment="middle" />
+                    <label marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
+                    <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
+                        <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                    <mdbutton margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
-                        <cspan fontFamily={$fonts.mdi} fontSize={20} text="mdi-magnify" verticalAlignment="middle" />
+                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
+                        <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                 </stacklayout>
@@ -425,19 +421,15 @@
             <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name}>
                 <mdbutton
                     slot="left"
-                    class="icon-btn"
+                    class="actionBarButton"
                     col={1}
                     color={favoriteIconColor(weatherLocation)}
-                    height={30}
-                    marginRight={4}
                     rippleColor="#EFB644"
                     text={favoriteIcon(weatherLocation)}
                     variant="text"
                     verticalAlignment="middle"
                     visibility={weatherLocation ? 'visible' : 'collapsed'}
-                    width={30}
-                    on:tap={() => toggleItemFavorite(weatherLocation)}
-                />
+                    on:tap={() => toggleItemFavorite(weatherLocation)} />
                 <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={$actionBarButtonHeight} />
                 <mdbutton
                     class="actionBarButton"
@@ -447,8 +439,7 @@
                     variant="text"
                     verticalAlignment="middle"
                     visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
-                    on:tap={() => showAlerts()}
-                />
+                    on:tap={() => showAlerts()} />
                 <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
 
                 <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
@@ -456,7 +447,7 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label class="actionBarTitle" margin="20 20 20 20" text={lc('favorites')} />
-            <collectionview bind:this={favoriteCollectionView} id="favorite" itemIdGenerator={(_item, index) => index} items={favorites} row={1} rowHeight={80}>
+            <collectionview bind:this={favoriteCollectionView} id="favorite" itemIdGenerator={(_item, index) => index} items={favorites} row={1}>
                 <Template let:item>
                     <swipemenu
                         closeAnimationDuration={100}
@@ -471,31 +462,36 @@
                         leftSwipeDistance="300"
                         openAnimationDuration={100}
                         startingSide={item.startingSide}
-                        translationFunction={swipeMenuTranslationFunction}
-                    >
-                        <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
+                        translationFunction={swipeMenuTranslationFunction}>
+                        <ListItemAutoSize
+                            prop:mainContent
+                            backgroundColor={colorBackground}
+                            subtitle={(item.sys.state || item.sys.country) + (item.sys.state ? '\n' + item.sys.country : '')}
+                            title={item.name}
+                            on:tap={() => saveLocation(item)} />
+                        <!-- <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
+
                             <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />
                             <label color={colorOnSurfaceVariant} fontSize={13} row={2}>
                                 <cspan text={item.sys.state || item.sys.country} />
                                 <cspan text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
                             </label>
-                        </gridlayout>
+                        </gridlayout> -->
                         <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->
-                            <mdbutton
+                        <mdbutton
                             prop:leftDrawer
-                                id="deleteBtn"
-                                class="icon-btn"
-                                backgroundColor="red"
-                                color="white"
-                                height="100%"
-                                shape="none"
-                                text="mdi-trash-can"
-                                textAlignment="center"
-                                variant="text"
-                                verticalTextAlignment="middle"
-                                width="100"
-                                on:tap={toggleFavorite(item)}
-                            />
+                            id="deleteBtn"
+                            class="icon-btn"
+                            backgroundColor="red"
+                            color="white"
+                            height="100%"
+                            shape="none"
+                            text="mdi-trash-can"
+                            textAlignment="center"
+                            variant="text"
+                            verticalTextAlignment="middle"
+                            width="100"
+                            on:tap={toggleFavorite(item)} />
                         <!-- </stacklayout> -->
                     </swipemenu>
                 </Template>

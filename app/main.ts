@@ -42,25 +42,10 @@ try {
     registerNativeViewElement('image', () => require('@nativescript/core').Image);
     registerNativeViewElement('ScrollView', () => NestedScrollView);
     registerNativeViewElement('StackLayout', () => require('@nativescript/core').StackLayout);
-    // registerNativeViewElement('FlexboxLayout', () => require('@nativescript/core').FlexboxLayout);
-    // registerNativeViewElement('Switch', () => require('@nativescript/core').Switch);
-    registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
     registerNativeViewElement('slider', () => require('@nativescript-community/ui-material-slider').Slider, null, {}, { override: true });
     registerNativeViewElement('WebView', () => require('@nativescript/core').WebView);
     registerNativeViewElement('gesturerootview', () => require('@nativescript-community/gesturehandler').GestureRootView);
 
-    // registerNativeViewElement('mdtextfield', () => TextField, null, {}, { override: true });
-    // registerNativeViewElement(
-    //     'formattedstring',
-    //     () => require('@nativescript-community/text').LightFormattedString,
-    //     'formattedText',
-    //     {
-    //         spans: NativeElementPropType.ObservableArray
-    //     },
-    //     { override: true }
-    // );
-
-    //using 'spans' property breaks span(not cspan!) added without formattedstring
     registerNativeViewElement('span', () => require('@nativescript/core').Span);
     registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
     registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
@@ -70,11 +55,9 @@ try {
     registerNativeViewElement('lineChart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
     registerNativeViewElement('lottie', () => require('@nativescript-community/ui-lottie').LottieView);
     registerNativeViewElement('pullrefresh', () => require('@nativescript-community/ui-pulltorefresh').PullToRefresh);
-    registerNativeViewElement('canvas', () => require('@nativescript-community/ui-canvas').CanvasView);
+    registerNativeViewElement('canvasview', () => require('@nativescript-community/ui-canvas').CanvasView);
     registerNativeViewElement('line', () => require('@nativescript-community/ui-canvas/shapes/line').default);
-    // registerNativeViewElement('line', () => require('@nativescript-community/ui-canvas/shapes/line').default);
     registerNativeViewElement('rectangle', () => require('@nativescript-community/ui-canvas/shapes/rectangle').default);
-    // registerNativeViewElement('image', () => require('@nativescript-community/ui-image').Img, null, {}, { override: true });
     registerNativeViewElement('canvaslabel', () => require('@nativescript-community/ui-canvaslabel').CanvasLabel);
     registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);
     registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);

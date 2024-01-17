@@ -1,0 +1,7 @@
+*Bug fixes*
+- *android:* ensure we disable clear text traffic
+- Translated using Weblate (Spanish)
+- Translated using Weblate (German)
+- Translated using Weblate (Turkish)
+- accessibility improvements (text/display size)
+- *android:* splash screen fix on android < 13

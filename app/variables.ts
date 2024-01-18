@@ -101,7 +101,7 @@ prefs.on('key:fontscale', () => {
 
 function updateSystemFontScale(value) {
     systemFontScale.set(value);
-    console.log('updateSystemFontScale', value, storedFontScale);
+    // console.log('updateSystemFontScale', value, storedFontScale);
     if (storedFontScale === 1) {
         fontScale.set(value);
     }

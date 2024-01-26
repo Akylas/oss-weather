@@ -129,6 +129,10 @@ mdbutton {
     // }
 }
 
+frame {
+    background-color: var(--colorBackground);
+}
+
 page,
 .weatherpage,
 .drawer {

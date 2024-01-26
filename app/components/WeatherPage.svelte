@@ -428,9 +428,9 @@
                     text={favoriteIcon(weatherLocation)}
                     variant="text"
                     verticalAlignment="middle"
-                    visibility={weatherLocation ? 'visible' : 'collapsed'}
+                    visibility={weatherLocation ? 'visible' : 'collapse'}
                     on:tap={() => toggleItemFavorite(weatherLocation)} />
-                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={$actionBarButtonHeight} />
+                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"
@@ -438,7 +438,7 @@
                     text="mdi-alert"
                     variant="text"
                     verticalAlignment="middle"
-                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
+                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapse'}
                     on:tap={() => showAlerts()} />
                 <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
 

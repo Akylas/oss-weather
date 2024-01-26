@@ -99,7 +99,7 @@
 <page actionBarHidden={true}>
     <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
         <CActionBar modalWindow title={lc('search_city')}>
-            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
+            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
         </CActionBar>
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} />
         <collectionview items={searchResults} row={2}>

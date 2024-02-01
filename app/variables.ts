@@ -174,7 +174,6 @@ export function updateThemeColors(theme: string) {
     if (__ANDROID__) {
         const nUtils = com.akylas.weather.Utils;
         const activity = Application.android.startActivity;
-        Utils.android.getApplicationContext().getResources();
         // we also update system font scale so that our UI updates correcly
         updateSystemFontScale(Utils.android.getApplicationContext().getResources().getConfiguration().fontScale);
         Object.keys(currentColors).forEach((c) => {
@@ -244,6 +243,11 @@ export function updateThemeColors(theme: string) {
 
     currentColors.colorWidgetBackground = new Color(currentColors.colorSurfaceContainer).setAlpha(230).hex;
     currentColors.colorOnSurfaceDisabled = new Color(currentColors.colorOnSurface).setAlpha(50).hex;
+
+    if (theme === 'black') {
+        currentColors.colorBackground = '#000000';
+    }
+
     if (theme === 'dark') {
         currentColors.colorSurfaceContainerHigh = new Color(currentColors.colorSurfaceContainer).lighten(3).hex;
         currentColors.colorSurfaceContainerHighest = new Color(currentColors.colorSurfaceContainer).lighten(6).hex;
@@ -260,4 +264,6 @@ export function updateThemeColors(theme: string) {
     Application.notify({ eventName: 'colorsChange', colors: currentColors });
     DEV_LOG && console.log('changed colors', rootView, JSON.stringify(currentColors));
     rootView?._onCssStateChange();
+    const rootModalViews = rootView?._getRootModalViews();
+    rootModalViews.forEach((rootModalView) => rootModalView._onCssStateChange());
 }

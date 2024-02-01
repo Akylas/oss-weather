@@ -63,11 +63,11 @@
             },
             {
                 key: 'provider',
-                id:'setting',
+                id: 'setting',
                 description: () => lc('provider.' + getProviderType()),
                 title: lc('provider.title'),
                 currentValue: getProviderType,
-                values:providers.map(t=>({value:t, title:lc(t)}))
+                values: providers.map((t) => ({ value: t, title: lc(t) }))
             },
             {
                 type: 'switch',
@@ -95,8 +95,8 @@
             },
             {
                 type: 'prompt',
-                valueType:'string',
-                id:'setting',
+                valueType: 'string',
+                id: 'setting',
                 key: 'owmApiKey',
                 description: lc('api_key_required_description'),
                 title: lc('owm_api_key')
@@ -179,9 +179,6 @@
                     break;
                 case 'dark_mode':
                     await selectTheme();
-                    if (__IOS__) {
-                        refresh();
-                    }
                     break;
                 case 'share':
                     await share({
@@ -212,31 +209,35 @@
                             okButtonText: l('save'),
                             cancelButtonText: l('cancel'),
                             autoFocus: true,
-                            defaultText: item.valueType === 'string' ? ApplicationSettings.getString(item.key, item.default) : (ApplicationSettings.getNumber(item.key, item.default) + '')
+                            defaultText: item.valueType === 'string' ? ApplicationSettings.getString(item.key, item.default) : ApplicationSettings.getNumber(item.key, item.default) + ''
                         });
                         Utils.dismissSoftInput();
                         if (result) {
                             if (result.result && result.text.length > 0) {
-
                                 if (item.valueType === 'string') {
-                                ApplicationSettings.setString(item.key, result.text);
-                            } else {
-                                ApplicationSettings.setNumber(item.key, parseInt(result.text, 10));
-                            }
+                                    ApplicationSettings.setString(item.key, result.text);
+                                } else {
+                                    ApplicationSettings.setNumber(item.key, parseInt(result.text, 10));
+                                }
                             } else {
                                 ApplicationSettings.remove(item.key);
                             }
                             updateItem(item);
                         }
                     } else {
-                         const component = (await import('~/components/common/OptionSelect.svelte')).default;
+                        const component = (await import('~/components/common/OptionSelect.svelte')).default;
                         const result = await showAlertOptionSelect(
                             component,
                             {
                                 height: Math.min(item.values.length * 56, 400),
                                 rowHeight: 56,
-                                options: item.values.map((k) => ({ name: k.title, data: k.value,  boxType: 'circle',
-                        type: 'checkbox', value: (item.currentValue?.() ??item.currentValue ) === k.value}))
+                                options: item.values.map((k) => ({
+                                    name: k.title,
+                                    data: k.value,
+                                    boxType: 'circle',
+                                    type: 'checkbox',
+                                    value: (item.currentValue?.() ?? item.currentValue) === k.value
+                                }))
                             },
                             {
                                 title: item.title,
@@ -279,6 +280,7 @@
             return;
         }
         const value = event.value;
+        item.value = value;
         if (checkboxTapTimer) {
             clearTimeout(checkboxTapTimer);
             checkboxTapTimer = null;
@@ -295,18 +297,18 @@
     }
     function refreshCollectionView() {
         collectionView?.nativeView.refresh();
-    //     console.log('refreshCollectionView');
+        //     console.log('refreshCollectionView');
         // const nativeView = collectionView?.nativeView;
-    //     if (nativeView) {
-    //         items.forEach((item, index)=>{
-    //         if (item.type === 'switch') {
-    //             nativeView.getViewForItemAtIndex(index).getViewById('checkbox')?.updateTheme?.();
-    //         }
-    //     });
-    //     }
+        //     if (nativeView) {
+        //         items.forEach((item, index)=>{
+        //         if (item.type === 'switch') {
+        //             nativeView.getViewForItemAtIndex(index).getViewById('checkbox')?.updateTheme?.();
+        //         }
+        //     });
+        //     }
     }
-    // onThemeChanged(refreshCollectionView);
-    onLanguageChanged((value, event)=>{
+    onThemeChanged(refreshCollectionView);
+    onLanguageChanged((value, event) => {
         if (event.clock_24 !== true) {
             refresh();
         }
@@ -329,18 +331,18 @@
                         verticalAlignment="center"
                         on:tap={(event) => onTap({ id: 'sponsor' }, event)}>
                         <label color="white" fontFamily={$fonts.mdi} fontSize={26} marginRight={10} text="mdi-heart" verticalAlignment="center" />
-                        <label color="white" fontSize={14} text={item.title} textWrap={true} verticalAlignment="center"/>
+                        <label color="white" fontSize={14} text={item.title} textWrap={true} verticalAlignment="center" />
                     </stacklayout>
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
-                        <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50}/>
+                        <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50} />
                         <label fontSize={13} marginTop={4} text={version} />
                     </stacklayout>
                 </gridlayout>
             </Template>
             <Template key="switch" let:item>
                 <ListItemAutoSize leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <switch id="checkbox" checked={item.value} col={2} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary}/>
+                    <switch id="checkbox" checked={item.value} col={2} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
                 </ListItemAutoSize>
             </Template>
             <Template key="checkbox" let:item>
@@ -407,8 +409,8 @@
             </Template> -->
         </collectionview>
         <CActionBar canGoBack title={$slc('settings.title')}>
-            <mdbutton class="actionBarButton" text="mdi-share-variant" variant="text" on:tap={(event) => onTap({ id: 'share' }, event)}/>
-            <mdbutton class="actionBarButton" text="mdi-github" variant="text" on:tap={(event) => onTap({ id: 'github' }, event)}/>
+            <mdbutton class="actionBarButton" text="mdi-share-variant" variant="text" on:tap={(event) => onTap({ id: 'share' }, event)} />
+            <mdbutton class="actionBarButton" text="mdi-github" variant="text" on:tap={(event) => onTap({ id: 'github' }, event)} />
         </CActionBar>
     </gridlayout>
 </page>

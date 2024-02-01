@@ -478,7 +478,7 @@
                             </label>
                         </gridlayout> -->
                         <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->
-                        <label
+                        <mdbutton
                             prop:leftDrawer
                             id="deleteBtn"
                             backgroundColor={colorError}
@@ -486,8 +486,10 @@
                             fontFamily={$fonts.mdi}
                             fontSize={24}
                             rippleColor={colorOnError}
+                            shape="none"
                             text="mdi-trash-can"
                             textAlignment="center"
+                            variant="text"
                             verticalTextAlignment="middle"
                             width="100"
                             on:tap={toggleFavorite(item)} />

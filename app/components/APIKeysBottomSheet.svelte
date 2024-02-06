@@ -37,7 +37,7 @@
         <mdbutton class="icon-btn" col={2} text="mdi-open-in-app" variant="text" on:tap={openWeatherMap} />
     </gridlayout>
     <stacklayout horizontalAlignment="right" marginTop={15} orientation="horizontal">
-        <mdbutton text={l('save')} variant="text" visibility={canClose ? 'visible' : 'collapsed'} on:tap={save} />
+        <mdbutton text={l('save')} variant="text" visibility={canClose ? 'visible' : 'collapse'} on:tap={save} />
     </stacklayout>
 </stacklayout>
 </gesturerootview>

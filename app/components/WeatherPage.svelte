@@ -33,7 +33,7 @@
     import { WeatherData } from '~/services/weather';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
-    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface } = $colors);
+    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
     let gps: GPS;
     let loading = false;
@@ -365,8 +365,8 @@
                 opacity: progress * 0.1
             },
             deleteBtn: {
-                backgroundColor: progress >= 0.6 ? 'red' : colorSurface,
-                color: progress >= 0.6 ? 'white' : 'red'
+                backgroundColor: progress >= 0.6 ? colorError : colorSurface,
+                color: progress >= 0.6 ? colorOnError : colorError
             }
         } as any;
 
@@ -407,7 +407,7 @@
                     verticalAlignment="bottom" />
             {:else}
                 <stacklayout columns="auto" horizontalAlignment="center" row={1} verticalAlignment="middle">
-                    <label marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
+                    <label fontSize={16} marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
                     <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
@@ -428,9 +428,9 @@
                     text={favoriteIcon(weatherLocation)}
                     variant="text"
                     verticalAlignment="middle"
-                    visibility={weatherLocation ? 'visible' : 'collapsed'}
+                    visibility={weatherLocation ? 'visible' : 'collapse'}
                     on:tap={() => toggleItemFavorite(weatherLocation)} />
-                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} width={$actionBarButtonHeight} />
+                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"
@@ -438,7 +438,7 @@
                     text="mdi-alert"
                     variant="text"
                     verticalAlignment="middle"
-                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapsed'}
+                    visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapse'}
                     on:tap={() => showAlerts()} />
                 <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
 
@@ -481,10 +481,11 @@
                         <mdbutton
                             prop:leftDrawer
                             id="deleteBtn"
-                            class="icon-btn"
-                            backgroundColor="red"
-                            color="white"
-                            height="100%"
+                            backgroundColor={colorError}
+                            color={colorOnError}
+                            fontFamily={$fonts.mdi}
+                            fontSize={24}
+                            rippleColor={colorOnError}
                             shape="none"
                             text="mdi-trash-can"
                             textAlignment="center"

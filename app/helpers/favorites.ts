@@ -43,6 +43,7 @@ export function getFavoriteKey(item: WeatherLocation) {
 }
 
 export function toggleFavorite(item: FavoriteLocation) {
+    DEV_LOG && console.log('toggleFavorite',isFavorite(item), item);
     if (isFavorite(item)) {
         const key = getFavoriteKey(item);
         item.isFavorite = false;

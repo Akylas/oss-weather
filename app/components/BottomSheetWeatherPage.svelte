@@ -60,7 +60,7 @@
 
 <gridlayout class="weatherpage" height="100%" rows="auto,*">
     <CActionBar title={name}>
-        <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapsed'} />
+        <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
     </CActionBar>
     <label
                     backgroundColor={new Color(colorBackground).setAlpha(100).hex}

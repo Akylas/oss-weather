@@ -36,7 +36,7 @@
         }
     }
     $: menuIconVisible = ((canGoBack || modalWindow) && !disableBackButton) || showMenuIcon;
-    $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapsed';
+    $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapse';
 </script>
 
 <gridlayout class="actionBar" columns="auto,*, auto" paddingLeft={5} paddingRight={5} rows="*">

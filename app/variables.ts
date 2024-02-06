@@ -89,6 +89,8 @@ prefs.on('key:imperial', () => {
 prefs.on('key:metric_temp_decimal', () => {
     DEV_LOG && console.log('key:metric_temp_decimal', imperialUnits);
     metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal');
+    // we notify imperial to update ui
+    globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
 });
 prefs.on('key:fontscale', () => {
     storedFontScale = ApplicationSettings.getNumber('fontscale');

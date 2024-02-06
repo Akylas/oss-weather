@@ -9,7 +9,7 @@
     import { FavoriteLocation } from '~/helpers/favorites';
     import { WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
-    import { actionBarHeight, navigationBarHeight, screenHeightDips, statusBarHeight } from '~/variables';
+    import { actionBarHeight, navigationBarHeight, onImperialChanged, screenHeightDips, statusBarHeight } from '~/variables';
     import { onThemeChanged } from '~/helpers/theme';
 
     export let items: any[];
@@ -40,6 +40,9 @@
 
     onThemeChanged(() => {
         collectionView.nativeView.refreshVisibleItems();
+    });
+    onImperialChanged(() => {
+        collectionView?.nativeView?.refreshVisibleItems();
     });
 
     function onTap(item) {

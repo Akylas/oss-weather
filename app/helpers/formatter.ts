@@ -27,7 +27,7 @@ function celciusToFahrenheit(kelvinTemp) {
     return (9 * kelvinTemp) / 5 + 32;
 }
 
-export function toImperialUnit(unit: UNITS, imperial = false) {
+export function toImperialUnit(unit: UNITS, imperial = imperialUnits) {
     if (imperial === false) {
         return unit;
     }

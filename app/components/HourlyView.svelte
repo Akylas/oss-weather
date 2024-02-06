@@ -38,9 +38,9 @@
         showRightShadow = event.scrollOffsetPercentage < 1;
     }
 
-    // onImperialChanged(() => {
-    //     collectionView?.nativeView?.refreshVisibleItems();
-    // });
+    onImperialChanged(() => {
+        collectionView?.nativeView?.refreshVisibleItems();
+    });
     onThemeChanged(() => {
         collectionView.nativeView.refreshVisibleItems();
     });

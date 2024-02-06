@@ -361,7 +361,7 @@
                 translateX: side === 'right' ? -delta : delta
             },
             backDrop: {
-                // translateX: side === 'right' ? -delta : delta,
+                translateX: side === 'right' ? -delta : delta,
                 opacity: progress * 0.1
             },
             deleteBtn: {

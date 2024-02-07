@@ -72,6 +72,7 @@
     "devDependencies": {
         "@akylas/fontmin": "^0.9.9",
         "@babel/core": "^7.23.2",
+        "@nativescript-community/set-version": "1.0.0",
         "@nativescript/android": "8.6.2",
         "@nativescript/core": "8.6.2",
         "@nativescript/ios": "8.6.3",
@@ -105,7 +106,6 @@
         "merge-options": "^3.0.4",
         "merge-properties-files": "^1.1.6",
         "mini-css-extract-plugin": "^2.7.7",
-        "nativescript-set-version": "0.3.1",
         "postcss": "^8.4.33",
         "postcss-combine-duplicated-selectors": "^10.0.3",
         "postcss-loader": "^8.0.0",

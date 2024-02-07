@@ -406,13 +406,13 @@
                     text={lc('powered_by', l(`provider.${provider}`))}
                     verticalAlignment="bottom" />
             {:else}
-                <stacklayout columns="auto" horizontalAlignment="center" row={1} verticalAlignment="middle">
+                <stacklayout columns="auto" horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle">
                     <label fontSize={16} marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
-                    <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={6}>
+                    <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={6}>
+                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>

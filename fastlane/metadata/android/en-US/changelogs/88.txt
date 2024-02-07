@@ -1,0 +1,10 @@
+*Bug fixes*
+- Translated using Weblate (Galician)
+- Translated using Weblate (Turkish)
+- some layout fixes
+- Translated using Weblate (Polish)
+- some theme fixes
+- favorite delete button fix
+- imperial unit not rendering correcly
+- favorite delete button not working anymore
+- *android:* correctly set language when auto is selected

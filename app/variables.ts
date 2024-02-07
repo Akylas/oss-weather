@@ -77,6 +77,7 @@ export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decim
 export const imperial = writable(imperialUnits);
 let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale || get(systemFontScale));
+export const isRTL = writable(false);
 
 export const onImperialChanged = createGlobalEventListener('imperial');
 
@@ -132,6 +133,7 @@ const onInitRootView = function () {
         if (id > 0 && resourceId > 0 && (resources.getBoolean(id) || (!PRODUCTION && isSimulator()))) {
             navigationBarHeight.set(Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId)));
         }
+        isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
         resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
         if (id > 0 && resourceId > 0) {
             innerStatusBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
@@ -160,6 +162,13 @@ const onInitRootView = function () {
     // getRealThemeAndUpdateColors();
 };
 Application.on(Application.initRootViewEvent, onInitRootView);
+Application.on('activity_started', () => {
+    if (__ANDROID__) {
+        const resources = Utils.android.getApplicationContext().getResources();
+        isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
+    }
+});
+
 
 export function updateThemeColors(theme: string) {
     DEV_LOG && console.log('updateThemeColors', theme);

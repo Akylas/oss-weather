@@ -1,9 +1,9 @@
 import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale, titlecase } from '@nativescript-community/l';
-import { ApplicationSettings, Device, File, Utils } from '@nativescript/core';
+import { Application, ApplicationSettings, Device, File, Utils } from '@nativescript/core';
 import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { showError } from '~/utils/error';
 import { showAlertOptionSelect } from '~/utils/ui';
@@ -219,6 +219,20 @@ export async function selectLanguage() {
 
 // TODO: on android 13 check for per app language, we dont need to store it
 setLang(deviceLanguage);
+
+Application.on('activity_started', () => {
+    // on android after switching to auto we dont get the actual language
+    // before an activity restart
+    if (__ANDROID__) {
+        const lang = ApplicationSettings.getString('language');
+        if (lang === 'auto') {
+            const actualNewLang = getActualLanguage(lang);
+            if (actualNewLang !== get($lang)) {
+                $lang.set(actualNewLang);
+            }
+        }
+    }
+});
 
 export { l, lc, lt, lu };
 export const sl = derived([$lang], () => l);

@@ -12,8 +12,8 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 21
-    versionCode 88
-    versionName "1.8.7"
+    versionCode 89
+    versionName "1.8.8"
 
     // if (project.hasProperty('resConfigs')) {
     //   def resConfigs = project.findProperty('resConfigs')
@@ -118,7 +118,6 @@ android {
     pickFirst 'lib/x86/libc++_shared.so'
     exclude "org/bouncycastle/**"
     exclude "license/**"
-    // resources.excludes += "assets/com/tom_roush/fontbox/resources/cmap/*"
 
   }
   dependenciesInfo {

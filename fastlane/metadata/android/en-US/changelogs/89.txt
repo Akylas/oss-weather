@@ -1,0 +1,3 @@
+*Bug fixes*
+- *android:* remove unneeded permission
+- language not set to english when device locale is not supported

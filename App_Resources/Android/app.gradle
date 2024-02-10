@@ -121,6 +121,10 @@ android {
     // resources.excludes += "assets/com/tom_roush/fontbox/resources/cmap/*"
 
   }
+  dependenciesInfo {
+    // Disables dependency metadata when building APKs.
+    includeInApk = false
+  }
   experimentalProperties["android.experimental.art-profile-r8-rewriting"] = true
   experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 }

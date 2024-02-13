@@ -179,15 +179,12 @@ page,
 
     color: var(--colorOnSurface);
     ripple-color: var(--colorOnSurface);
-
     font-size: 24;
 
     &:disabled {
         color: var(--colorOutlineVariant);
         ripple-color: var(--colorOutlineVariant);
     }
-
-
 }
 
 .actionBarTitle {

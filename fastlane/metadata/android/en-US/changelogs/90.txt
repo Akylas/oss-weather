@@ -1,0 +1,3 @@
+*Bug fixes*
+- Translated using Weblate (French)
+- city search was not working when the device/app language was one not supported by photon

@@ -16,6 +16,7 @@ import { FrameElement, PageElement, registerElement, registerNativeViewElement }
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { startSentry } from '~/utils/sentry';
+import { CollectionViewTraceCategory } from '@nativescript-community/ui-collectionview';
 // import './app.scss';
 
 try {
@@ -70,7 +71,7 @@ try {
     // Trace.addCategories(Trace.categories.NativeLifecycle);
     // Trace.addCategories(Trace.categories.Transition);
     // Trace.addCategories(Trace.categories.Animation);
-    // Trace.addCategories(Trace.categories.All);
+    // Trace.addCategories(CollectionViewTraceCategory);
     // Trace.enable();
     // on startup we need to ensure theme is loaded because of a mixin
     // on startup we need to say what we are using

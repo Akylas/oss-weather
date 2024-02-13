@@ -297,7 +297,12 @@ export interface WeatherLocation {
         lon: number;
     };
 }
+const PHOTON_SUPPORTED_LANGUAGES = ['en', 'de', 'fr'];
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
+    let actualLang = lang.split('-')[0];
+    if (PHOTON_SUPPORTED_LANGUAGES.indexOf(actualLang) === -1) {
+        actualLang = 'en';
+    }
     const results = await request<Photon>({
         url: 'https://photon.komoot.io/api',
 
@@ -306,7 +311,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
             q,
             lat,
             lon,
-            lang,
+            lang: actualLang,
             limit: 40
         }
     });

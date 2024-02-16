@@ -357,5 +357,10 @@ export async function geocodeAddress(coord: { lat: number; lon: number }) {
         }
     } catch (error) {
         console.error('geocodeAddress error:', error);
+        return {
+            coord,
+            sys: {},
+            name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
+        } as WeatherLocation;
     }
 }

@@ -19,6 +19,7 @@ opt_out_usage
 $ios_scheme = File.basename(File.expand_path('..')).gsub(/[^a-zA-Z0-9]/, "")
 sentry_cli_path = './node_modules/.bin/sentry-cli'
 
+i18nEnJSON = JSON.parse(File.read('../app/i18n/en.json'))
 packageJSON = JSON.parse(File.read('../package.json'))
 fastlaneOptions = packageJSON['fastlane'] || Hash.new
 # puts "packageJSON:"  + JSON.generate(packageJSON)
@@ -26,7 +27,7 @@ puts "fastlaneOptions:"  + JSON.generate(fastlaneOptions)
 
 app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
 app_identifier = ENV["APP_ID"] || CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-app_name = i18nEnJSON['$'+app_identifier]['app']['name']
+app_name = i18nEnJSON['app']['name']
 sentry_project_slug = ENV["SENTRY_PROJECT_SLUG"]
 app_build_path = ENV["APP_BUILD_PATH"] || "platforms" # based on nativescript.config.js !!!
 

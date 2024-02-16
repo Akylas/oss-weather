@@ -458,7 +458,7 @@
                             failOffsetYEnd: 40,
                             minDist: 50
                         }}
-                        gestureTag={15644}
+                        android:gestureTag={15644}
                         leftSwipeDistance="300"
                         openAnimationDuration={100}
                         startingSide={item.startingSide}

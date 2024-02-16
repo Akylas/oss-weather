@@ -13,11 +13,7 @@
     import ListItem from './common/ListItem.svelte';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
-    $: ({
-        colorBackground,
-        colorOnSurfaceVariant,
-        colorSurface
-    } = $colors);
+    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface } = $colors);
 
     let textField: NativeViewElementNode<TextField>;
     let loading = false;
@@ -91,7 +87,7 @@
     }
 
     function getItemSubtitle(item) {
-        return (item.sys.state || item.sys.country) + (item.sys.postcode ? ` (${item.sys.postcode})`:'') + (item.sys.state? '\n' + item.sys.country :'');
+        return (item.sys.state || item.sys.country) + (item.sys.postcode ? ` (${item.sys.postcode})` : '') + (item.sys.state ? '\n' + item.sys.country : '');
     }
 </script>
 
@@ -104,7 +100,7 @@
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} />
         <collectionview items={searchResults} row={2}>
             <Template let:item>
-                <ListItemAutoSize subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)} >
+                <ListItemAutoSize subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)}>
                     <mdbutton
                         class="icon-btn"
                         col={2}
@@ -113,8 +109,7 @@
                         text={favoriteIcon(item)}
                         variant="text"
                         verticalAlignment="top"
-                        on:tap={() => toggleItemFavorite(item)}
-                    />
+                        on:tap={() => toggleItemFavorite(item)} />
                 </ListItemAutoSize>
                 <!-- <gridlayout col={1} columns="*,auto" padding="10" paddingLeft={10} rippleColor="#aaa" rows="auto,*" verticalAlignment="middle" on:tap={() => close(item)}>
                     <label fontSize={18} lineBreak="end" maxLines={1} text={item.name} />

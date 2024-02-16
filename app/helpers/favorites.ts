@@ -47,7 +47,7 @@ export function toggleFavorite(item: FavoriteLocation) {
         const key = getFavoriteKey(item);
         item.isFavorite = false;
         const index = favoritesKeys.indexOf(key);
-        if (index > -1) {
+        if (index !== -1) {
             favorites.splice(index, 1);
             favoritesKeys.splice(index, 1);
         }

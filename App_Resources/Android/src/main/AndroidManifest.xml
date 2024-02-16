@@ -31,6 +31,11 @@
         </activity>
         <meta-data android:name="android.webkit.WebView.MetricsOptOut" android:value="true" />
         <meta-data android:name="io.sentry.anr.enable" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.activity-lifecycle" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.app-lifecycle" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.system-events" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.app-components" android:value="false" />
+        <meta-data android:name="io.sentry.breadcrumbs.user-interaction" android:value="false" />
         <receiver android:name=".CommandReceiver" android:enabled="true" android:exported="true" android:permission="com.akylas.weather.broadcast">
             <intent-filter>
                 <action android:name="com.akylas.weather.QUERY_WEATHER" />

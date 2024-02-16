@@ -5,7 +5,7 @@ const { dirname, join, relative, resolve } = require('path');
 const nsWebpack = require('@nativescript/webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const SentryCliPlugin = require('@sentry/webpack-plugin');
+const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./scripts/IgnoreNotFoundExportPlugin');
 const Fontmin = require('@akylas/fontmin');
@@ -35,6 +35,7 @@ module.exports = (env, params = {}) => {
                 sentry: true,
                 uploadSentry: true,
                 testlog: true,
+                devlog: true,
                 noconsole: false,
                 sourceMap: true,
                 uglify: true
@@ -73,10 +74,10 @@ module.exports = (env, params = {}) => {
             env
         );
     }
-    const nconfig = require('./nativescript.config');
     const {
-        appPath = nconfig.appPath,
-        appResourcesPath = nconfig.appResourcesPath,
+        appId,
+        appPath ,
+        appResourcesPath,
         hmr, // --env.hmr
         production, // --env.production
         sourceMap, // --env.sourceMap
@@ -219,7 +220,7 @@ module.exports = (env, params = {}) => {
         __ANDROID__: isAndroid,
         'global.autoLoadPolyfills': false,
         TNS_ENV: JSON.stringify(mode),
-        __APP_ID__: `"${nconfig.id}"`,
+        __APP_ID__: `"${appId}"`,
         __APP_VERSION__: `"${appVersion}"`,
         __APP_BUILD_NUMBER__: `"${buildNumber}"`,
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
@@ -232,11 +233,11 @@ module.exports = (env, params = {}) => {
         GIT_URL: `"${package.repository}"`,
         SUPPORT_URL: `"${package.bugs.url}"`,
         PLAY_STORE_BUILD: playStoreBuild,
-        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${nconfig.id}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
+        STORE_LINK: `"${isAndroid ? `https://play.google.com/store/apps/details?id=${appId}` : `https://itunes.apple.com/app/id${APP_STORE_ID}`}"`,
         STORE_REVIEW_LINK: `"${
             isIOS
                 ? ` itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=${APP_STORE_ID}&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software`
-                : `market://details?id=${nconfig.id}`
+                : `market://details?id=${appId}`
         }"`,
         SPONSOR_URL: '"https://github.com/sponsors/farfromrefug"',
         DEV_LOG: !!devlog,
@@ -365,7 +366,7 @@ module.exports = (env, params = {}) => {
                 loader: 'string-replace-loader',
                 options: {
                     search: '__PACKAGE__',
-                    replace: nconfig.id,
+                    replace: appId,
                     flags: 'g'
                 }
             },
@@ -611,21 +612,41 @@ module.exports = (env, params = {}) => {
     if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
             config.devtool = false;
+            config.devtool = 'source-map';
+            // config.plugins.push(
+            //     new webpack.SourceMapDevToolPlugin({
+            //         // moduleFilenameTemplate:  'webpack://[namespace]/[resource-path]?[loaders]',
+            //         append: `\n//# sourceMappingURL=${process.env.SOURCEMAP_REL_DIR}/[name].js.map`,
+            //         filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
+            //     })
+            // );
+            console.log(dist + '/**/*.js', join(dist, process.env.SOURCEMAP_REL_DIR) + '/*.map');
             config.plugins.push(
-                new webpack.SourceMapDevToolPlugin({
-                    append: `\n//# sourceMappingURL=${process.env.SENTRY_PREFIX}[name].js.map`,
-                    filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
-                })
-            );
-            config.plugins.push(
-                new SentryCliPlugin({
-                    release: appVersion,
-                    urlPrefix: 'app:///',
-                    rewrite: true,
-                    release: `${nconfig.id}@${appVersion}+${buildNumber}`,
-                    dist: `${buildNumber}.${platform}`,
-                    ignoreFile: '.sentrycliignore',
-                    include: [dist, join(dist, process.env.SOURCEMAP_REL_DIR)]
+                sentryWebpackPlugin({
+                    org: process.env.SENTRY_ORG,
+                    url: process.env.SENTRY_URL,
+                    project: process.env.SENTRY_PROJECT,
+                    authToken: process.env.SENTRY_AUTH_TOKEN,
+                    release: {
+                        name: `${appId}@${appVersion}+${buildNumber}`,
+                        dist: `${buildNumber}.${platform}`,
+                        setCommits: {
+                            auto: true,
+                            ignoreEmpty: true,
+                            ignoreMissing: true
+                        },
+                        create: true,
+                        cleanArtifacts: true
+                    },
+                    // debug: true,
+                    sourcemaps: {
+                        // assets: './**/*.nonexistent'
+                        // rewriteSources: (source, map) => {
+                        //     return source.replace('webpack:///', '');
+                        // },
+                        ignore: ['tns-java-classes', 'hot-update'],
+                        assets: [dist + '/**/*.js', join(dist, process.env.SOURCEMAP_REL_DIR) + '/*.map']
+                    }
                 })
             );
         } else {

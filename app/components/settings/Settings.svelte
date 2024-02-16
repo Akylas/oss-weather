@@ -336,7 +336,7 @@
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
                         <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50} />
-                        <label fontSize={13} marginTop={4} text={version} />
+                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress({ id: 'version' }, event)} />
                     </stacklayout>
                 </gridlayout>
             </Template>

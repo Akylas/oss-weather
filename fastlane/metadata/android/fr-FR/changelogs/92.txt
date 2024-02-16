@@ -1,0 +1,3 @@
+*Bug fixes*
+- if geocoding fail for gps location, add location anyway instead of failing
+- *android:* crash on astronomy date selection

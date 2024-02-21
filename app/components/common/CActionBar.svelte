@@ -2,6 +2,7 @@
     import { Frame } from '@nativescript/core/ui/frame';
     import { onMount } from 'svelte';
     import { closeModal, goBack } from 'svelte-native';
+    import { conditionalEvent } from '~/utils/svelte/ui';
     import { fontScale } from '~/variables';
 
     export let title: string;
@@ -39,9 +40,9 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapse';
 </script>
 
-<gridlayout class="actionBar" columns="auto,*, auto" paddingLeft={5} paddingRight={5} rows="*">
+<gridlayout class="actionBar" columns="auto,*,auto" paddingLeft={5} paddingRight={5} rows="*" on:swipe {...$$restProps}>
     <label
-    id="actionBarTitle"
+        id="actionBarTitle"
         class="actionBarTitle"
         autoFontSize={true}
         col={1}
@@ -51,8 +52,7 @@
         text={title || ''}
         textAlignment="left"
         verticalTextAlignment="center"
-        visibility={!!title ? 'visible' : 'hidden'}
-    />
+        visibility={!!title ? 'visible' : 'hidden'} />
     <stacklayout col={0} orientation="horizontal">
         <mdbutton class="actionBarButton" text={menuIcon} variant="text" visibility={menuIconVisibility} on:tap={onMenuIconBtn} />
         <slot name="left" />

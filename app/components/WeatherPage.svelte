@@ -23,7 +23,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { OWMProvider } from '~/services/owm';
     import { prefs } from '~/services/preferences';
-    import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
+    import { getProvider, getProviderType, providers } from '~/services/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
@@ -375,6 +375,16 @@
     function onDrawerStartClose() {
         favoriteCollectionView.nativeElement?.closeCurrentMenu();
     }
+
+    function onSwipe(e) {
+        const currentProviderIndex = providers.indexOf(provider);
+        let newIndex = currentProviderIndex + (e.direction === 1 ? -1 : 1);
+        if (newIndex < 0) {
+            newIndex += providers.length;
+        }
+        const newProvider = providers[newIndex % providers.length];
+        ApplicationSettings.setString('provider', newProvider);
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
@@ -418,7 +428,7 @@
                     </mdbutton>
                 </stacklayout>
             {/if}
-            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name}>
+            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name} on:swipe={onSwipe}>
                 <mdbutton
                     slot="left"
                     class="actionBarButton"
@@ -447,7 +457,7 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label class="actionBarTitle" margin="20 20 20 20" text={lc('favorites')} />
-            <collectionview bind:this={favoriteCollectionView} id="favorite" itemIdGenerator={(_item, index) => index} items={favorites} row={1}>
+            <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1}>
                 <Template let:item>
                     <swipemenu
                         closeAnimationDuration={100}

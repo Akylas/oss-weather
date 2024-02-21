@@ -6,12 +6,10 @@
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { colors } from '~/variables';
     import { l, lc } from '~/helpers/locale';
-    import { getProvider, getProviderType } from '~/services/weatherproviderfactory';
+    import { getProvider, getProviderType, providers } from '~/services/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
 
-    $: ({
-        colorBackground,
-    } = $colors);
+    $: ({ colorBackground } = $colors);
 
     let items = [];
     let loading = false;
@@ -56,20 +54,29 @@
         provider = getProviderType();
         refresh();
     });
+
+    function onSwipe(e) {
+        const currentProviderIndex = providers.indexOf(provider);
+        let newIndex = currentProviderIndex + (e.direction === 1 ? -1 : 1);
+        if (newIndex < 0) {
+            newIndex += providers.length;
+        }
+        const newProvider = providers[newIndex % providers.length];
+        ApplicationSettings.setString('provider', newProvider);
+    }
 </script>
 
 <gridlayout class="weatherpage" height="100%" rows="auto,*">
-    <CActionBar title={name}>
+    <CActionBar title={name} on:swipe={onSwipe}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
     </CActionBar>
     <label
-                    backgroundColor={new Color(colorBackground).setAlpha(100).hex}
-                    fontSize={10}
-                    horizontalAlignment="right"
-                    marginRight={6}
-                    row={0}
-                    text={lc('powered_by', l(`provider.${provider}`))}
-                    verticalAlignment="top"
-                />
+        backgroundColor={new Color(colorBackground).setAlpha(100).hex}
+        fontSize={10}
+        horizontalAlignment="right"
+        marginRight={6}
+        row={0}
+        text={lc('powered_by', l(`provider.${provider}`))}
+        verticalAlignment="top" />
     <WeatherComponent {items} row={1} {weatherLocation} />
 </gridlayout>

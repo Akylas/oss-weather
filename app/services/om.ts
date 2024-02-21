@@ -98,6 +98,9 @@ export class OMProvider extends WeatherProvider {
             url: `https://api.open-meteo.com/v1/${apiName}`,
             method: 'GET',
             queryParams: {
+                forecast_days: 14,
+                forecast_hours: 72,
+                forecast_minutely_15: 60,
                 hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth',
                 current: 'temperature_2m,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m',
                 minutely_15: 'precipitation',
@@ -106,7 +109,6 @@ export class OMProvider extends WeatherProvider {
                 daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant',
                 models,
                 timeformat: 'unixtime',
-                forecast_days: 14,
                 current_weather: true,
                 timezone: 'Africa/Accra', // we force UTC to get utc timestamps
                 ...queryParams

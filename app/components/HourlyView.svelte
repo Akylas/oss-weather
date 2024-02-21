@@ -34,7 +34,6 @@
     let showLeftShadowOpacity = 0;
     let showRightShadowOpacity = 1;
     function onScrollEvent(event) {
-        DEV_LOG && console.log('onScrollEvent', event.scrollSize, event.scrollOffset);
         showLeftShadowOpacity = Math.min(event.scrollOffset, 60) / 60;
         showRightShadowOpacity = Math.min(event.scrollSize - event.scrollOffset, 60) / 60;
     }

@@ -1,0 +1,10 @@
+*Features*
+- experimental feature: you can change the weather provider by swiping left or right on the location name at the top
+
+*Bug fixes*
+- some texts drawing incorrectly after an update
+- *android:* prevent crash while refreshing the weather
+- limit hours and minutely data from Open-Meteo
+- Open-Meteo try to show daily color when possible (we miss cloud cover data)
+- better error handling with Open-Meteo requests
+- OpenWeatherMap/OpenMeteo try to get more uniform minutely data

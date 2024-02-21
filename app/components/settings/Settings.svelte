@@ -253,7 +253,6 @@
                         //     },
                         //     trackingScrollView: 'collectionView'
                         // });
-                        console.log('showAlertOptionSelect  result', result);
                         if (result?.data) {
                             ApplicationSettings.setString(item.key, result.data);
                             updateItem(item);

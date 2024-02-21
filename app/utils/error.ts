@@ -146,7 +146,7 @@ export async function showError(err: Error | string, showAsSnack = false) {
                 realError = new Error(message);
             }
         }
-        DEV_LOG && console.error('showError', reporterEnabled, message, err?.['stack'], err?.['stackTrace'], err?.['nativeException']);
+        DEV_LOG && console.error('showError', reporterEnabled, realError && Object.keys(realError),  message, err?.['stack'], err?.['stackTrace'], err?.['nativeException']);
         if (showAsSnack || realError instanceof NoNetworkError || realError instanceof TimeoutError) {
             showSnack({ message });
             return;

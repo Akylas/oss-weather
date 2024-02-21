@@ -139,10 +139,13 @@
         progress={0.5}
         src={iconSrc}
         width={size}
-        use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }}
-    />
+        use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }} />
 {:else}
-    <image {...$$restProps} height={size} {isUserInteractionEnabled} src={iconSrc}
-    width={size}
-    use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }} />
+    <image
+        {...$$restProps}
+        height={size}
+        {isUserInteractionEnabled}
+        src={iconSrc}
+        width={size}
+        use:conditionalEvent={{ condition: !!isUserInteractionEnabled, event: 'tap', callback: (event) => dispatch('tap', event) }} />
 {/if}

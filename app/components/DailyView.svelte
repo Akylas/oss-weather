@@ -7,6 +7,7 @@
     import { UNITS, convertValueToUnit, formatValueToUnit, toImperialUnit } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
     import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
+    import { DailyData } from '~/services/weather';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
@@ -20,7 +21,7 @@
 <script lang="ts">
     $: ({ colorOnSurface, colorOnSurfaceVariant , colorOutline } = $colors);
 
-    export let item: any;
+    export let item: DailyData;
     let canvasView;
     let color: string | Color;
     let precipIcon: string;

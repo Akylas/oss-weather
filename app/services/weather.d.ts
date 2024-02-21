@@ -43,6 +43,7 @@ export interface DailyData {
     temperatureNight?: number;
     precipProbability: number;
     cloudCover: number;
+    cloudCeiling?: number;
     precipColor: string | Color;
     windBearing: number;
     humidity: number;

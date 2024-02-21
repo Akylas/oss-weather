@@ -106,7 +106,7 @@ export class OMProvider extends WeatherProvider {
                 minutely_15: 'precipitation',
                 // models: 'best_match',
                 // models: 'meteofrance_seamless',
-                daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant',
+                daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum',
                 models,
                 timeformat: 'unixtime',
                 current_weather: true,
@@ -196,7 +196,7 @@ export class OMProvider extends WeatherProvider {
             // for now we only handle precipitation
             if (hasNext && minutely_15.precipitation) {
                 const precipitation = minutely_15.precipitation[index + 1] || -1;
-                d.intensity = precipitation >= 0.76 ? 3 : precipitation >= 0.11 ? 2 : precipitation > 0 ? 1 : 0;
+                d.intensity = precipitation >= 1.5 ? 3 : precipitation >= 0.7 ? 2 : precipitation > 0 ? 1 : 0;
             }
             return d;
         });
@@ -256,7 +256,13 @@ export class OMProvider extends WeatherProvider {
 
                     // const propRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
                     // const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-                    weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, daily.rain_sum?.[index], daily.snowfall_sum?.[index]);
+                    weatherDataIconColors(
+                        d,
+                        WeatherDataType.DAILY,
+                        weatherLocation.coord,
+                        this.getDataArray(daily, 'rain_sum', preferedModel)?.[index],
+                        this.getDataArray(daily, 'snowfall_sum', preferedModel)?.[index]
+                    );
                     d.hourly = [];
                     return d;
                 })

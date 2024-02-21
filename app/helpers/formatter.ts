@@ -347,7 +347,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         const dd = d as DailyData;
         const cloudCover = Math.max(dd.cloudCover, 0);
         if (rain) {
-            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+            dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         } else if (snow) {
             d.precipColor = snowColor.hex;
             dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;

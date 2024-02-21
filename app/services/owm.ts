@@ -83,7 +83,7 @@ export class OWMProvider extends WeatherProvider {
                 data:
                     result.minutely
                         ?.map((h) => ({
-                            intensity: h.precipitation >= 0.76 ? 3 : h.precipitation >= 0.11 ? 2 : h.precipitation > 0 ? 1 : 0,
+                            intensity: h.precipitation >= 1.5 ? 3 : h.precipitation >= 0.7 ? 2 : h.precipitation > 0 ? 1 : 0,
                             time: h.dt * 1000
                         }))
                         .filter((d, i) => i % 5 === 0) || []

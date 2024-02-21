@@ -27,15 +27,16 @@
 
     function onDataPopulated() {
         collectionView?.nativeView?.scrollToOffset(0);
-        showLeftShadow = false;
-        showRightShadow = true;
+        showLeftShadowOpacity = 0;
+        showRightShadowOpacity = 1;
     }
 
-    let showLeftShadow = false;
-    let showRightShadow = true;
+    let showLeftShadowOpacity = 0;
+    let showRightShadowOpacity = 1;
     function onScrollEvent(event) {
-        showLeftShadow = event.scrollOffsetPercentage > 0;
-        showRightShadow = event.scrollOffsetPercentage < 1;
+        DEV_LOG && console.log('onScrollEvent', event.scrollSize, event.scrollOffset);
+        showLeftShadowOpacity = Math.min(event.scrollOffset, 60) / 60;
+        showRightShadowOpacity = Math.min(event.scrollSize - event.scrollOffset, 60) / 60;
     }
 
     onImperialChanged(() => {
@@ -60,8 +61,7 @@
         orientation="horizontal"
         rowHeight="100%"
         on:dataPopulated={onDataPopulated}
-        on:scroll={onScrollEvent}
-    >
+        on:scroll={onScrollEvent}>
         <Template let:item>
             <WeatherCollectionItem {item} />
         </Template>
@@ -70,14 +70,12 @@
         background={`linear-gradient(to right, ${colorBackground}, ${new Color(colorBackground).setAlpha(0)})`}
         height="100%"
         horizontalAlignment="left"
-        visibility={showLeftShadow ? 'visible' : 'hidden'}
-        width={40}
-    />
+        opacity={showLeftShadowOpacity}
+        width={40} />
     <absolutelayout
         background={`linear-gradient(to right, ${new Color(colorBackground).setAlpha(0)}, ${colorBackground})`}
         height="100%"
         horizontalAlignment="right"
-        visibility={showRightShadow ? 'visible' : 'hidden'}
-        width={40}
-    />
+        opacity={showRightShadowOpacity}
+        width={40} />
 </gridlayout>

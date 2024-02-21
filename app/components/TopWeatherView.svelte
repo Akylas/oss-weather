@@ -23,7 +23,7 @@
     import { MinutelyData } from '~/services/weather';
     const dispatch = createEventDispatcher();
 
-    $: ({ colorOnSurface, colorOnSurfaceVariant , colorOutline } = $colors);
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
@@ -381,9 +381,9 @@
                 canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
             }
         });
+        textPaint.setTextAlign(Align.LEFT);
         textPaint.setColor(colorOnSurface);
         if (item.temperature) {
-            textPaint.setTextAlign(Align.LEFT);
             textPaint.setTextSize(36 * $fontScale);
             canvas.drawText(formatValueToUnit(item.temperature, UNITS.Celcius), 10, 36 * $fontScale, textPaint);
         }
@@ -402,7 +402,7 @@
             ]
         });
         canvas.save();
-        const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+        let staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
         canvas.translate(0, 30 * $fontScale);
         staticLayout.draw(canvas);
         canvas.restore();
@@ -410,7 +410,7 @@
         canvas.save();
         canvas.translate(10, h - 16 - 14 * $fontScale);
         textPaint.setTextSize(14 * $fontScale);
-        new StaticLayout(
+        staticLayout = new StaticLayout(
             createNativeAttributedString({
                 spans: [
                     {
@@ -437,7 +437,8 @@
             1,
             0,
             false
-        ).draw(canvas);
+        );
+        staticLayout.draw(canvas);
         canvas.restore();
 
         textPaint.setTextAlign(Align.RIGHT);
@@ -456,7 +457,7 @@
 </script>
 
 <gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
-    <canvasview id="topweather" bind:this={canvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
+    <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={$fonts.wi} text="wi-sunrise " />
             <cspan text={formatTime(item.sunriseTime)} />

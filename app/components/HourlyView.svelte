@@ -12,27 +12,15 @@
 
     export let items: any[];
     let collectionView: NativeViewElementNode<CollectionView>;
-    // let gestureHandler;
-    // $: {
-    //     if (collectionView) {
-    //         const manager = Manager.getInstance();
-    //         gestureHandler = manager.createGestureHandler(HandlerType.NATIVE_VIEW, 15644, {
-    //             disallowInterruption: true
-    //         });
-    //         gestureHandler.attachToView(collectionView.nativeView);
-    //     }
-    // }
-    // let needsScrollToStart = false;
-    // $: if(items) needsScrollToStart = true;
-
-    function onDataPopulated() {
-        collectionView?.nativeView?.scrollToOffset(0);
-        showLeftShadowOpacity = 0;
-        showRightShadowOpacity = 1;
-    }
-
     let showLeftShadowOpacity = 0;
     let showRightShadowOpacity = 1;
+
+    function onDataPopulated() {
+        showLeftShadowOpacity = 0;
+        showRightShadowOpacity = 1;
+        collectionView?.nativeView?.scrollToIndex(0, false);
+    }
+
     function onScrollEvent(event) {
         showLeftShadowOpacity = Math.min(event.scrollOffset, 60) / 60;
         showRightShadowOpacity = Math.min(event.scrollSize - event.scrollOffset, 60) / 60;

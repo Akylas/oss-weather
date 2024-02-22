@@ -243,7 +243,6 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
 
             const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
             // current weather is a mix of actual current weather, hourly and daily
-            DEV_LOG && console.log('currently', firstHourIndex, currentDaily, currentDaily.hourly[firstHourIndex], weatherData.currently);
             newItems.push(
                 Object.assign(currentDaily, currentDaily.hourly[firstHourIndex], firstHourIndex === 0 ? weatherData.currently : {}, {
                     lastUpdate,

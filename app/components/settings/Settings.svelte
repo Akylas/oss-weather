@@ -12,6 +12,7 @@
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
+    import { OM_MODELS } from '~/services/om';
     import { getProvider, getProviderType, providers } from '~/services/weatherproviderfactory';
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
@@ -68,6 +69,14 @@
                 title: lc('provider.title'),
                 currentValue: getProviderType,
                 values: providers.map((t) => ({ value: t, title: lc(t) }))
+            },
+            {
+                key: 'open_meteo_prefered_model',
+                id: 'setting',
+                description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
+                title: lc('open_meteo_prefered_model'),
+                currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
+                values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
             },
             {
                 type: 'switch',

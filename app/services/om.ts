@@ -13,6 +13,35 @@ import { Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weath
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 
+export const OM_MODELS = {
+    best_match: 'Best match',
+    ecmwf_ifs04: 'ECMWF IFS 0.4°',
+    ecmwf_ifs025: 'ECMWF IFS 0.25°',
+    cma_grapes_global: 'CMA GRAPES Global',
+    bom_access_global: 'BOM Access Global',
+    metno_nordic: 'MET Norway Nordic',
+    gfs_seamless: 'GFS Seamless',
+    gfs_global: 'GFS Global',
+    gfs_hrrr: 'GFS HRRR',
+    icon_seamless: 'DWD Icon Seamless',
+    icon_global: 'DWD Icon Global',
+    icon_eu: 'DWD Icon EU',
+    icon_d2: 'DWD Icon D2',
+    gem_seamless: 'GEM Seamless',
+    gem_global: 'GEM Global',
+    gem_regional: 'GEM Regional',
+    gem_hrdps_continental: 'GEM HRDPS Continental',
+    meteofrance_seamless: 'MeteoFrance Seamless',
+    meteofrance_arpege_world: 'MeteoFrance Arpege World',
+    meteofrance_arpege_europe: 'MeteoFrance Arpege Europe',
+    meteofrance_arome_france: ' MeteoFrance Arome France',
+    meteofrance_arome_france_hd: 'MeteoFrance Arome France HD',
+    arpae_cosmo_seamless: 'ARPAE Seamless',
+    arpae_cosmo_2i: 'ARPAE COSMO 2I',
+    arpae_cosmo_2i_ruc: 'ARPAE COSMO 2I RUC',
+    arpae_cosmo_5m: 'ARPAE COSMO 5M'
+};
+
 export class OMProvider extends WeatherProvider {
     private static readonly weatherCodeDescription = {
         0: l('clear'),
@@ -89,9 +118,9 @@ export class OMProvider extends WeatherProvider {
     }
 
     // https://api.open-meteo.com/v1/forecast?latitude=45.18&longitude=5.71&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weathercode,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,windspeed_10m,winddirection_10m,windgusts_10m,uv_index,uv_index_clear_sky&models=best_match&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant&timeformat=unixtime&forecast_days=14&timezone=auto
-    private async fetch<T = any>(apiName: string = 'forecast', queryParams: OMParams = {}, preferedModel?) {
+    private async fetch<T = any>(apiName: string = 'forecast', queryParams: OMParams = {}, preferedModel = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')) {
         let models = 'best_match';
-        if (preferedModel) {
+        if (preferedModel !== 'best_match') {
             models += ',' + preferedModel;
         }
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
@@ -114,32 +143,45 @@ export class OMProvider extends WeatherProvider {
                     (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min'),
                 models,
                 timeformat: 'unixtime',
-                current_weather: true,
                 timezone: 'Africa/Accra', // we force UTC to get utc timestamps
                 ...queryParams
             }
         });
     }
 
-    private getDataArray(object: any, key: string, model?: string) {
-        if (model) {
-            return object[key + '_' + model] || object[key + '_best_match'];
+    private getDataArray(object: any, key: string, model: string = 'best_match') {
+        if (model !== 'best_match') {
+            return object[key + '_' + model] || object[key + '_best_match'] || object[key];
         } else {
             return object[key];
         }
     }
 
+    private getMixedDataArray(object: any, key: string, model: string = 'best_match') {
+        const result = (object[key + '_best_match'] || object[key]).slice();
+        const modelObj = object[key + '_' + model];
+        if (modelObj) {
+            for (let index = 0; index < Math.min(modelObj.length, result.length); index++) {
+                const element = modelObj[index];
+                if (element) {
+                    result[index] = element;
+                }
+            }
+        }
+        return result;
+    }
+
     public override async getWeather(weatherLocation: WeatherLocation) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
-        const preferedModel = ApplicationSettings.getString('open_meteo_prefered_model');
+        const preferedModel = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match');
         const forecast = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon }, preferedModel);
         // console.log('forecast', Object.keys(forecast), Object.keys(forecast.hourly));
         // console.log('rain', JSON.stringify(rain));
         // console.log('current', JSON.stringify(current));
         // console.log('warnings', JSON.stringify(warnings));
         const hourly = forecast.hourly;
-        const hourly_weathercodes = this.getDataArray(hourly, 'weathercode', preferedModel);
+        const hourly_weathercodes = this.getMixedDataArray(hourly, 'weathercode', preferedModel);
         let hourlyLastIndex = hourly_weathercodes.findIndex((d) => d === null);
         if (hourlyLastIndex === -1) {
             hourlyLastIndex = hourly_weathercodes.length - 1;
@@ -194,20 +236,23 @@ export class OMProvider extends WeatherProvider {
 
         const minutely_15 = forecast.minutely_15;
         // minutely data starts at the start of the day!
-        const minutelyData = minutely_15.time.map((time, index) => {
-            const hasNext = index < minutely_15.time.length;
-            const d = {} as MinutelyData;
-            d.time = time * 1000;
-            // for now we only handle precipitation
-            if (hasNext && minutely_15.precipitation) {
-                const precipitation = minutely_15.precipitation[index + 1] || -1;
-                d.intensity = precipitation >= 1.5 ? 3 : precipitation >= 0.7 ? 2 : precipitation > 0 ? 1 : 0;
-            }
-            return d;
-        });
+        const minutelyPrecipitation = this.getDataArray(minutely_15, 'precipitation', preferedModel);
+        const minutelyData = minutelyPrecipitation
+            ? minutely_15.time.map((time, index) => {
+                  const hasNext = index < minutely_15.time.length;
+                  const d = {} as MinutelyData;
+                  d.time = time * 1000;
+                  // for now we only handle precipitation
+                  if (hasNext) {
+                      const precipitation = minutelyPrecipitation[index + 1] || -1;
+                      d.intensity = precipitation >= 1.5 ? 3 : precipitation >= 0.7 ? 2 : precipitation > 0 ? 1 : 0;
+                  }
+                  return d;
+              })
+            : undefined;
         const current = forecast.current;
         const daily = forecast.daily;
-        const daily_weathercodes = this.getDataArray(daily, 'weathercode', preferedModel);
+        const daily_weathercodes = this.getMixedDataArray(daily, 'weathercode', preferedModel);
         const dailyLastIndex = daily_weathercodes.findIndex((d) => d === null);
         const r = {
             currently: current

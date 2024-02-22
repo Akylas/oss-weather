@@ -6,10 +6,10 @@
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { UNITS, formatValueToUnit } from '~/helpers/formatter';
-    import { formatDate, formatTime } from '~/helpers/locale';
+    import { formatDate, formatTime, lc } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/weather';
-    import { colors, fontScale, fonts } from '~/variables';
+    import { colors, fontScale, fonts, snowColor } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
@@ -91,7 +91,6 @@
         precipitationHeight = item.precipAccumulation > 1 ? Math.sqrt(item.precipAccumulation) : item.precipAccumulation;
         redraw();
     }
-    // fontScale.subscribe(redraw);
     const weatherIconSize = 40;
     function drawOnCanvas(event) {
         const endDay = dayjs().endOf('d').valueOf();
@@ -99,7 +98,6 @@
         const w = canvas.getWidth();
         const w2 = w / 2;
         const h = canvas.getHeight();
-        // textPaint.setTextSize(14 * $fontScale);
         textPaint.setFontWeight('normal');
 
         if (item.odd) {
@@ -124,7 +122,7 @@
         }
         canvas.save();
         const iconDecale = 27 * $fontScale + weatherIconSize + 11 * $fontScale;
-        const lineOffset = iconDecale + 11 * $fontScale + 13 * $fontScale;
+        const lineOffset = iconDecale + 11 * $fontScale + 13 * $fontScale + (11 * $fontScale + 4);
         const pHeight = h - lineOffset - (22 * $fontScale + 10 * $fontScale);
 
         canvas.translate(0, lineOffset);
@@ -133,8 +131,6 @@
                 lastGradient = generateGradient(5, item.min, item.max, pHeight + 33, 0);
             }
             pathPaint.setShader(lastGradient.gradient);
-            // pathPaint.setStyle(Style.FILL_AND_STROKE)
-            // canvas.drawRect(0, 0, w , pHeight, pathPaint);
             const points: number[] = item.curveTempPoints.slice();
             if (item.index === 0) {
                 points.unshift(points[0], points[0], points[0]);
@@ -188,9 +184,25 @@
             textPaint.setTextSize(10 * $fontScale);
             textPaint.setAlpha((item.cloudCover / 100) * heightProb * 255);
             canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance), w2, top + 20 * $fontScale, textPaint);
+            textPaint.setAlpha(255);
+            paint.setAlpha(255);
         }
-        // paint.setAlpha(255);
-        // textPaint.setAlpha(255);
+        // if (item.iso > 0) {
+        //     const heightProb = 1 - item.iso / 8000;
+        //     const top = 0.8 * (h - 30) * heightProb + 13;
+        //     paint.setAlpha(128);
+        //     paint.setColor(snowColor);
+        //     paint.setStrokeWidth(2);
+        //     canvas.drawLine(0, top, 5, top, paint);
+        //     textPaint.setColor(snowColor);
+        //     textPaint.setAlpha(128);
+        //     textPaint.setTextSize(10 * $fontScale);
+        //     textPaint.setTextAlign(Align.LEFT);
+        //     canvas.drawText(formatValueToUnit(item.iso, UNITS.Distance), 10, top + 2 * $fontScale, textPaint);
+        //     textPaint.setTextAlign(Align.CENTER);
+        //     textPaint.setAlpha(255);
+        //     paint.setAlpha(255);
+        // }
         paint.setColor(item.color);
         canvas.drawRect(0, h - 10, w, h, paint);
 
@@ -201,12 +213,9 @@
         if (item.time > endDay) {
             textPaint.setTextSize(12 * $fontScale);
             canvas.drawText(formatDate(item.time, 'ddd'), w2, 28 * $fontScale, textPaint);
-            // decale += 10;
         }
         textPaint.setFontWeight('normal');
-        // textPaint.setTextSize(11 * $fontScale);
-        // textPaint.setAlpha(180);
-        const subTextSize = 11 * $fontScale;
+
         if (item.windSpeed) {
             appTextPaint.setTextSize(11 * $fontScale);
             appTextPaint.setColor(colorOnSurface);
@@ -215,41 +224,31 @@
         if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
             textPaint.setTextSize(11 * $fontScale);
             if (item.windGust <= 80) {
-                // textPaint.setTextSize(subTextSize);
                 textPaint.setColor('#FFBC03');
+            } else {
+                textPaint.setColor('#ffffff');
             }
             const staticLayout = new StaticLayout(formatValueToUnit(item.windGust, UNITS.Speed), textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
 
             canvas.save();
-            canvas.translate(w2, iconDecale + 3);
+            canvas.translate(w2, iconDecale + 4);
             if (item.windGust > 80) {
                 const width = staticLayout.getWidth();
                 textPaint.setColor('#ff0353');
-                canvas.drawRoundRect(-width / 2 + 8, 0, width / 2 - 8, staticLayout.getHeight() - 0, 4, 4, textPaint);
-                textPaint.setColor('#ffffff');
+                canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, staticLayout.getHeight() - 0, 4, 4, textPaint);
             }
 
-            //     const nString = createNativeAttributedString({
-            //     spans: [
-            //         // {
-            //         //     fontFamily:$fonts.wi,
-            //         //     text: 'wi-strong-wind'
-            //         // },
-            //         {
-            //             text: formatValueToUnit(item.windGust, UNITS.Speed, $imperial)
-            //         }
-            //     ]
-            // });
             staticLayout.draw(canvas);
             canvas.restore();
-            // canvas.drawText('wi-strong-wind', w2, iconDecale + subTextSize + 2, iconPaint);
-            // canvas.drawText(formatValueToUnit(item.windGust, UNITS.Speed, $imperial), w2, iconDecale + subTextSize + 2, textPaint);
         }
-        // console.log('drawn in ', Date.now() - startTime, item.index);
     }
     function onTap() {
-        if (item.description) {
-            showSnack({ message: item.description });
+        let message = item.description;
+        if (item.iso > 0) {
+            message = (message ? message + '\n ' : '') + `${lc('freezing_level')}: ${formatValueToUnit(item.iso, UNITS.Distance)}`;
+        }
+        if (message) {
+            showSnack({ message });
         }
     }
 </script>

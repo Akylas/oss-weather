@@ -7,6 +7,7 @@ import { CityWeather, Coord, OneCallResult } from './openweathermap';
 import { prefs } from './preferences';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
+import { ApplicationSettings } from '@akylas/nativescript';
 
 export class OWMProvider extends WeatherProvider {
     static owmApiKey = OWMProvider.readOwmApiKeySetting();
@@ -30,13 +31,14 @@ export class OWMProvider extends WeatherProvider {
 
     public override async getWeather(weatherLocation: WeatherLocation) {
         const coords = weatherLocation.coord;
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const result = await OWMProvider.fetch<OneCallResult>('onecall', coords);
         // console.log('test', JSON.stringify(result.daily));
         const r = {
             currently: weatherDataIconColors(
                 {
                     time: result.current.dt * 1000,
-                    temperature: Math.round(result.current.temp),
+                    temperature: feelsLikeTemperatures ? result.current.feels_like : result.current.temp,
                     pressure: result.current.pressure,
                     humidity: result.current.humidity,
                     cloudCover: result.current.clouds,
@@ -60,9 +62,9 @@ export class OWMProvider extends WeatherProvider {
                     d.description = titlecase(data.weather[0]?.description);
                     d.windSpeed = Math.round(data.wind_speed * 3.6);
                     d.windGust = Math.round(data.wind_gust * 3.6);
-                    d.temperatureMin = Math.round(data.temp.min);
-                    d.temperatureMax = Math.round(data.temp.max);
-                    d.temperatureNight = Math.round(data.temp.night);
+                    d.temperatureMin = data.temp.min;
+                    d.temperatureMax = data.temp.max;
+                    d.temperatureNight = data.temp.night;
 
                     d.precipProbability = Math.round(data.pop * 100);
                     d.cloudCover = data.clouds;
@@ -99,7 +101,7 @@ export class OWMProvider extends WeatherProvider {
             d.description = titlecase(data.weather[0]?.description);
             d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
             d.windGust = Math.round(data.wind_gust * 3.6);
-            d.temperature = data.temp;
+            d.temperature = feelsLikeTemperatures ? data.feels_like : data.temp;
 
             d.windBearing = data.wind_deg;
             if (hasNext) {

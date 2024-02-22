@@ -7,6 +7,7 @@ import { WeatherLocation, request } from './api';
 import { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 import { WeatherProvider } from './weatherprovider';
 import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
+import { ApplicationSettings } from '@akylas/nativescript';
 
 const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 
@@ -97,8 +98,8 @@ export class MFProvider extends WeatherProvider {
             time: dayStartTime,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
             icon: this.convertMFICon(dailyForecast.daily_weather_icon),
-            temperatureMax: Math.round(dailyForecast.T_max),
-            temperatureMin: Math.round(dailyForecast.T_min),
+            temperatureMax: dailyForecast.T_max,
+            temperatureMin: dailyForecast.T_min,
             humidity: (dailyForecast.relative_humidity_max + dailyForecast.relative_humidity_min) / 2,
             uvIndex: dailyForecast.uv_index,
             windGust: Math.round(windGust * 3.6),
@@ -257,6 +258,7 @@ export class MFProvider extends WeatherProvider {
     }
 
     public override async getWeather(weatherLocation: WeatherLocation) {
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
         const result = await Promise.all([this.fetch<MFForecastResult>('v2/forecast', coords), this.fetch<MFMinutely>('v3/nowcast/rain', coords), this.fetch<MFCurrent>('v2/observation', coords)]);
         // if (forecast.position.dept) {
@@ -288,7 +290,6 @@ export class MFProvider extends WeatherProvider {
             d.icon = this.convertMFICon(data.weather_icon);
             d.description = titlecase(data.weather_description);
             d.temperature = data.T;
-            d.feelTemperature = data.T_windchill;
 
             d.windBearing = data.wind_direction;
             const acc = (data.snow_1h || 0) + (data.rain_1h || 0);
@@ -322,7 +323,7 @@ export class MFProvider extends WeatherProvider {
                 ? weatherDataIconColors(
                       {
                           time: current.update_time * 1000,
-                          temperature: Math.round(current.properties.gridded.T),
+                          temperature: current.properties.gridded.T,
                           windSpeed: current.properties.gridded.wind_speed,
                           //   windGust: current.properties.gridded.wind,
                           windBearing: current.properties.gridded.wind_direction,

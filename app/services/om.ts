@@ -94,6 +94,7 @@ export class OMProvider extends WeatherProvider {
         if (preferedModel) {
             models += ',' + preferedModel;
         }
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         return request<T>({
             url: `https://api.open-meteo.com/v1/${apiName}`,
             method: 'GET',
@@ -101,12 +102,16 @@ export class OMProvider extends WeatherProvider {
                 forecast_days: 14,
                 forecast_hours: 72,
                 forecast_minutely_15: 60,
-                hourly: 'temperature_2m,apparent_temperature,precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth',
-                current: 'temperature_2m,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m',
+                hourly:
+                    'precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
+                    (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
+                current: 'cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
                 minutely_15: 'precipitation',
                 // models: 'best_match',
                 // models: 'meteofrance_seamless',
-                daily: 'weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum',
+                daily:
+                    'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum' +
+                    (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min'),
                 models,
                 timeformat: 'unixtime',
                 current_weather: true,
@@ -125,6 +130,7 @@ export class OMProvider extends WeatherProvider {
     }
 
     public override async getWeather(weatherLocation: WeatherLocation) {
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
         const preferedModel = ApplicationSettings.getString('open_meteo_prefered_model');
         const forecast = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon }, preferedModel);
@@ -144,8 +150,7 @@ export class OMProvider extends WeatherProvider {
             const code = hourly_weathercodes[index];
             d.icon = this.convertWeatherCodeToIcon(code, this.getDataArray(hourly, 'is_day', preferedModel)[index]);
             d.description = OMProvider.weatherCodeDescription[code];
-            d.temperature = this.getDataArray(hourly, 'temperature_2m', preferedModel)[index];
-            d.feelTemperature = this.getDataArray(hourly, 'apparent_temperature', preferedModel)[index];
+            d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', preferedModel)[index];
 
             d.windBearing = this.getDataArray(hourly, 'winddirection_10m', preferedModel)[index];
 
@@ -209,7 +214,7 @@ export class OMProvider extends WeatherProvider {
                 ? weatherDataIconColors(
                       {
                           time: current.time * 1000,
-                          temperature: Math.round(current.temperature_2m),
+                          temperature: feelsLikeTemperatures ? current.apparent_temperature : current.temperature_2m,
                           windSpeed: current.windspeed_10m,
                           cloudCover: current.cloudcover,
                           windBearing: current.winddirection_10m,
@@ -227,8 +232,8 @@ export class OMProvider extends WeatherProvider {
                         time: time * 1000,
                         description: OMProvider.weatherCodeDescription[code],
                         icon: this.convertWeatherCodeToIcon(code, true),
-                        temperatureMax: this.getDataArray(daily, 'temperature_2m_max', preferedModel)[index],
-                        temperatureMin: this.getDataArray(daily, 'temperature_2m_min', preferedModel)[index],
+                        temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', preferedModel)[index],
+                        temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', preferedModel)[index],
                         // humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
                         uvIndex: Math.ceil(this.getDataArray(daily, 'uv_index_max', preferedModel)?.[index]),
                         windGust: Math.round(this.getDataArray(daily, 'windgusts_10m_max', preferedModel)[index]),

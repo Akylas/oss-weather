@@ -51,6 +51,7 @@
     "expires": "Expires",
     "extreme_cold": "Extreme cold",
     "favorites": "Favorites",
+    "feels_like_temperatures": "show feels like temperature when available",
     "file": "File",
     "flood": "Flood",
     "fog": "Fog",

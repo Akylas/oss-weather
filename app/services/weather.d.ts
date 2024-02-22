@@ -73,7 +73,6 @@ export interface Hourly {
     cloudCeiling?: number;
     windSpeed: number;
     temperature: number;
-    feelTemperature?: number;
     windBearing: number;
     precipAccumulation: number;
     snowfall: number;

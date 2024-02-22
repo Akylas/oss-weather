@@ -3,7 +3,7 @@ export interface OneCallResult {
     lon: number;
     timezone: string;
     timezone_offset: number;
-    current: Current;
+    current: OWMCurrent;
     minutely: OWMMinutely[];
     hourly: OWMHourly[];
     daily: OWMDaily[];

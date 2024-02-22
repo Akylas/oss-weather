@@ -83,6 +83,12 @@
             },
             {
                 type: 'switch',
+                id: 'feels_like_temperatures',
+                title: lc('feels_like_temperatures'),
+                value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
+            },
+            {
+                type: 'switch',
                 id: 'animations',
                 title: lc('animations'),
                 value: ApplicationSettings.getBoolean('animations', false)

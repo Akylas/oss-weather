@@ -134,7 +134,7 @@ export class OMProvider extends WeatherProvider {
                 hourly:
                     'precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
                     (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
-                current: 'cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
+                current: 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
                 minutely_15: 'precipitation',
                 // models: 'best_match',
                 // models: 'meteofrance_seamless',
@@ -263,7 +263,7 @@ export class OMProvider extends WeatherProvider {
                           windSpeed: current.windspeed_10m,
                           cloudCover: current.cloudcover,
                           windBearing: current.winddirection_10m,
-                          icon: this.convertWeatherCodeToIcon(current.weathercode, this.isDay(current.time * 1000, coords.lat, coords.lon)),
+                          icon: this.convertWeatherCodeToIcon(current.weathercode, current.is_day),
                           description: OMProvider.weatherCodeDescription[current.weathercode]
                       } as Currently,
                       WeatherDataType.CURRENT,
@@ -323,7 +323,6 @@ export class OMProvider extends WeatherProvider {
             alerts: []
         } as WeatherData;
         r.daily.data[0].hourly = hourlyData;
-        // console.log(' r.daily', JSON.stringify(r.daily));
         return r;
     }
 

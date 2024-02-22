@@ -26,6 +26,7 @@ interface Current {
     showers: number;
     snowfall: number;
     weathercode: number;
+    is_day: number;
     cloudcover: number;
     windspeed_10m: number;
     winddirection_10m: number;

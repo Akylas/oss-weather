@@ -104,6 +104,7 @@
             now = Math.floor(now * timeFactor);
             const delta = now;
             now -= delta;
+
             data = data
                 .slice(index)
                 .map((d) => ({ ...d, time: Math.floor(d.time * timeFactor - delta) }))

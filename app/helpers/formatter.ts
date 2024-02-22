@@ -345,7 +345,13 @@ export enum WeatherDataType {
     HOURLY,
     CURRENT
 }
-export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain?, snow: any = d.icon.startsWith('13')) {
+export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
+    d: T,
+    type: WeatherDataType,
+    coord: { lat: number; lon: number },
+    rain?,
+    snow: any = d.icon?.startsWith('13') || false
+) {
     // if (type !== WeatherDataType.CURRENT) {
     d.precipColor = rainColor.hex;
     d.precipUnit = UNITS.MM;

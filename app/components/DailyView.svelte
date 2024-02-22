@@ -19,7 +19,7 @@
 </script>
 
 <script lang="ts">
-    $: ({ colorOnSurface, colorOnSurfaceVariant , colorOutline } = $colors);
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
     export let item: DailyData;
     let canvasView;
@@ -44,7 +44,6 @@
         mdiPaint.setFontFamily($fonts.mdi);
         mdiPaint.setTextAlign(Align.CENTER);
     }
-
 
     function redraw() {
         canvasView && canvasView.nativeView.invalidate();
@@ -118,7 +117,7 @@
                 color,
                 iconFontSize,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
+                value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
                 subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         }

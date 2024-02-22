@@ -11,6 +11,7 @@ export enum UNITS {
     // hPa = 'hPa',
     // Inch = 'inch',
     MM = 'mm',
+    CM = 'cm',
     Celcius = 'celcius',
     Duration = 'duration',
     Date = 'date',
@@ -33,6 +34,7 @@ export function toImperialUnit(unit: UNITS, imperial = imperialUnits) {
     }
     switch (unit) {
         case UNITS.MM:
+        case UNITS.CM:
             return 'in';
         case UNITS.Distance:
             return 'ft';
@@ -56,11 +58,14 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo
         //     return [(value * 0.750061561303).toFixed(), 'mm Hg'];
         // case UNITS.InchHg:
         //     return [(value * 0.0295299830714).toFixed(), 'in Hg'];
+        case UNITS.CM:
         case UNITS.MM:
             let digits = 1;
             if (imperialUnits) {
                 digits = 2;
                 value *= 0.03937008; // to in
+            } else if (unit === UNITS.CM) {
+                value /= 10;
             }
             return [value.toFixed(digits), toImperialUnit(unit, imperialUnits)];
         case UNITS.Celcius:
@@ -343,6 +348,7 @@ export enum WeatherDataType {
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain?, snow?) {
     if (type !== WeatherDataType.CURRENT) {
         d.precipColor = rainColor.hex;
+        d.precipUnit = UNITS.MM;
         // d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
         const dd = d as DailyData;
         const cloudCover = Math.max(dd.cloudCover, 0);
@@ -350,6 +356,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
             dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         } else if (snow) {
             d.precipColor = snowColor.hex;
+            d.precipUnit = UNITS.CM;
             dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         } else {
             dd.color = Color.mix(sunnyColor, cloudyColor, cloudCover).hex;

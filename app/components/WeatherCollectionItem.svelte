@@ -9,7 +9,7 @@
     import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/weather';
-    import {colors, fontScale, fonts } from '~/variables';
+    import { colors, fontScale, fonts } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
@@ -119,7 +119,7 @@
                 if (precipProbability > 0) {
                     canvas.drawText(precipProbability + '%', w2, h - 22 * $fontScale, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipAccumulation, UNITS.MM,), w2, h - 12 * $fontScale, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipAccumulation, item.precipUnit), w2, h - 12 * $fontScale, textPaint);
             }
         }
         canvas.save();
@@ -175,7 +175,7 @@
         }
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(13 * $fontScale);
-        canvas.drawText(`${formatValueToUnit((item.temperature), UNITS.Celcius)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
+        canvas.drawText(`${formatValueToUnit(item.temperature, UNITS.Celcius)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
         canvas.restore();
 
         if (item.cloudCeiling > 0) {
@@ -256,5 +256,5 @@
 
 <gridlayout on:tap={onTap}>
     <canvasview bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
-    <WeatherIcon icon={item.icon} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top"/>
+    <WeatherIcon icon={item.icon} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top" />
 </gridlayout>

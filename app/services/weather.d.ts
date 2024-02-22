@@ -45,6 +45,7 @@ export interface DailyData {
     cloudCover: number;
     cloudCeiling?: number;
     precipColor: string | Color;
+    precipUnit: UNITS;
     windBearing: number;
     humidity: number;
     pressure: number;
@@ -87,6 +88,7 @@ export interface Hourly {
     windGust: number;
     pressure: number;
     precipColor: string | Color;
+    precipUnit: UNITS;
     color: string | Color;
     windBeaufortIcon?: any;
     cloudColor: string | Color;
@@ -107,6 +109,7 @@ export interface Currently {
     cloudColor: string | Color;
     uvIndexColor: string | Color;
     precipColor: string | Color;
+    precipUnit: UNITS;
     color: string | Color;
     uvIndex: number;
     moonIcon: string;

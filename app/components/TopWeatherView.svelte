@@ -56,6 +56,7 @@
         uvIndex?: number;
         precipProbability?: number;
         precipAccumulation?: number;
+        precipUnit?: UNITS;
         cloudColor?: string;
         uvIndexColor?: string;
         temperatureMin?: number;
@@ -338,7 +339,7 @@
                 color,
                 iconFontSize,
                 icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, UNITS.MM),
+                value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
                 subvalue: item.precipProbability > 0 && item.precipProbability + '%'
             });
         } else if (item.cloudCover > 20) {

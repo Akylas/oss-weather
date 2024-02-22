@@ -1,0 +1,4 @@
+*Features*
+- snow falls are now shown in cm instead of mm
+- feels like temperature setting (not all providers support it)
+- Open-Meteo model setting

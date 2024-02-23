@@ -372,7 +372,13 @@
 
         return result;
     }
-    function onDrawerStartClose() {
+    let drawerOpened = false;
+    function onDrawerStart() {
+        drawerOpened = true;
+    }
+
+    function onDrawerClose() {
+        drawerOpened = false;
         favoriteCollectionView.nativeElement?.closeCurrentMenu();
     }
 
@@ -386,20 +392,17 @@
         ApplicationSettings.setString('provider', newProvider);
     }
 </script>
-
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
-        gestureEnabled={true}
         gestureHandlerOptions={{
-            minDist: 60,
-            failOffsetYStart: -20,
-            failOffsetYEnd: 20
+            minDist: 50,
+            failOffsetYStart: -40,
+            failOffsetYEnd: 40
         }}
         leftSwipeDistance={50}
-        waitFor={[15644]}
-        on:close={onDrawerStartClose}
-        on:start={onDrawerStartClose}>
+        on:close={onDrawerClose}
+        on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
@@ -468,7 +471,6 @@
                             failOffsetYEnd: 40,
                             minDist: 50
                         }}
-                        android:gestureTag={15644}
                         leftSwipeDistance="300"
                         openAnimationDuration={100}
                         startingSide={item.startingSide}

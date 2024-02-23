@@ -47,13 +47,23 @@
 </div>
 <hr>
 
-Open Source app to access detailed weather data from OpenWeatherMap.
-You can create a free OWM key to access weather data.
-There is a default key included in the app but the access is limited and you could get errors related to rate limit.
+Open Source app to access detailed weather data from OpenWeatherMap, Open-Meteo and Meteo France.
+You can create a free OWM key to access OpenWeatherMap weather data.
+There is a default key included in the app but the access is limited and you could get errors related to rate limits.
 
 ## Screenshots
 
-| <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width=276> | <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width=276> | <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width=276> |
+<p align="left">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_en-US.png" width=30%/>
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_en-US.png" width=30%/>
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_en-US.png" width=30%/>
+</p>
+
+<p align="left">
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/4_en-US.png" width=30%/>
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/5_en-US.png" width=30%/>
+    <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6_en-US.png" width=30%/>
+</p>
 
 ### Having issues, suggestions and feedback?
 

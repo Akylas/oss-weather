@@ -1,1 +1,1 @@
-Access weather data from the public OpenWeatherMap data
+Access weather data from the public OpenWeatherMap, Open-Meteo and Meteo France data

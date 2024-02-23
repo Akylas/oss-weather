@@ -1,1 +1,1 @@
-Accédez aux données publiques météorologiques d'OpenWeatherMap
+Accédez aux données publiques météorologiques d'OpenWeatherMap, Open-Meteo et Meteo France

@@ -56,6 +56,7 @@
     "flood": "Inundación",
     "fog": "Niebla",
     "font_scale": "Escala de caracteres",
+    "forecast_nb_days": "número de días de la previsión",
     "freezing_drizzle": "Llovizna helada",
     "freezing_fog": "Niebla gélida",
     "freezing_level": "nivel de congelación",

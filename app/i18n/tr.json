@@ -56,6 +56,7 @@
     "flood": "Sel",
     "fog": "Sis",
     "font_scale": "Yazı ölçeği",
+    "forecast_nb_days": "tahmin yapılacak gün sayısı",
     "freezing_drizzle": "Dondurucu çiseleme",
     "freezing_fog": "Dondurucu sis",
     "freezing_level": "donma seviyesi",
@@ -173,5 +174,6 @@
     "ukrainian": "Ukraynaca",
     "version": "Sürüm",
     "weather_map": "Hava haritası",
+    "weather_map_colors": "hava durumu haritası renk düzeni",
     "wind": "Rüzgar"
 }

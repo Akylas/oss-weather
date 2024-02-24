@@ -11,7 +11,7 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
-    import { NB_DAYS_FORECAST } from '~/helpers/constants';
+    import { NB_DAYS_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
     import { OM_MODELS } from '~/services/om';
@@ -98,7 +98,6 @@
                 title: lc('imperial_units'),
                 value: $imperial
             },
-
             {
                 key: 'forecast_nb_days',
                 id: 'setting',
@@ -106,6 +105,13 @@
                 values: Array.from(Array(16), (_, index) => ({ value: index + 1, title: index + 1 })),
                 currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
                 rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
+            },
+            {
+                key: 'weather_map_colors',
+                id: 'setting',
+                title: lc('weather_map_colors'),
+                values: WEATHER_MAP_COLOR_SCHEMES,
+                description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
             },
             {
                 type: 'switch',
@@ -280,7 +286,7 @@
                         //     },
                         //     trackingScrollView: 'collectionView'
                         // });
-                        if (result?.data) {
+                        if (result?.data !== undefined) {
                             if (item.valueType === 'string') {
                                 ApplicationSettings.setString(item.key, result.data);
                             } else {

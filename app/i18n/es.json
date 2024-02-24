@@ -110,6 +110,7 @@
     "no_particular_vigilance": "Sin vigilancia especial",
     "non_valid_email": "Correo electrónico no válido",
     "ok": "OK",
+    "open_meteo_prefered_model": "Modelo preferido para Open-Meteo",
     "open_website": "Abrir la página web",
     "owm_api_key": "Clave API de OpenWeatherMap",
     "partly_cloudy": "Parcialmente nublado",

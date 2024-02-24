@@ -9,6 +9,7 @@ import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
+import { NB_DAYS_FORECAST } from '~/helpers/constants';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
@@ -124,11 +125,12 @@ export class OMProvider extends WeatherProvider {
             models += ',' + preferedModel;
         }
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
+        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         return request<T>({
             url: `https://api.open-meteo.com/v1/${apiName}`,
             method: 'GET',
             queryParams: {
-                forecast_days: 14,
+                forecast_days,
                 forecast_hours: 72,
                 forecast_minutely_15: 60,
                 hourly:

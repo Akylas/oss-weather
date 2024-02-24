@@ -4,12 +4,14 @@
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
+    import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
     import { ApplicationSettings, File, ObservableArray, Utils, View } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
+    import { NB_DAYS_FORECAST } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
     import { OM_MODELS } from '~/services/om';
@@ -63,6 +65,18 @@
                 value: ApplicationSettings.getBoolean('auto_black', false)
             },
             {
+                type: 'switch',
+                id: 'animations',
+                title: lc('animations'),
+                value: ApplicationSettings.getBoolean('animations', false)
+            },
+            {
+                type: 'switch',
+                id: 'clock_24',
+                title: lc('clock_24'),
+                value: clock_24
+            },
+            {
                 key: 'provider',
                 id: 'setting',
                 description: () => lc('provider.' + getProviderType()),
@@ -84,6 +98,15 @@
                 title: lc('imperial_units'),
                 value: $imperial
             },
+
+            {
+                key: 'forecast_nb_days',
+                id: 'setting',
+                title: lc('forecast_nb_days'),
+                values: Array.from(Array(16), (_, index) => ({ value: index + 1, title: index + 1 })),
+                currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
+                rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
+            },
             {
                 type: 'switch',
                 id: 'metric_temp_decimal',
@@ -95,18 +118,6 @@
                 id: 'feels_like_temperatures',
                 title: lc('feels_like_temperatures'),
                 value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
-            },
-            {
-                type: 'switch',
-                id: 'animations',
-                title: lc('animations'),
-                value: ApplicationSettings.getBoolean('animations', false)
-            },
-            {
-                type: 'switch',
-                id: 'clock_24',
-                title: lc('clock_24'),
-                value: clock_24
             },
             {
                 type: 'prompt',
@@ -223,8 +234,9 @@
                             message: item.full_description || item.description,
                             okButtonText: l('save'),
                             cancelButtonText: l('cancel'),
+                            textFieldProperties: item.textFieldProperties,
                             autoFocus: true,
-                            defaultText: item.valueType === 'string' ? ApplicationSettings.getString(item.key, item.default) : ApplicationSettings.getNumber(item.key, item.default) + ''
+                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : item.default
                         });
                         Utils.dismissSoftInput();
                         if (result) {
@@ -269,7 +281,11 @@
                         //     trackingScrollView: 'collectionView'
                         // });
                         if (result?.data) {
-                            ApplicationSettings.setString(item.key, result.data);
+                            if (item.valueType === 'string') {
+                                ApplicationSettings.setString(item.key, result.data);
+                            } else {
+                                ApplicationSettings.setNumber(item.key, parseInt(result.data, 10));
+                            }
                             updateItem(item);
                         }
                     }

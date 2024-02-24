@@ -8,6 +8,7 @@ import { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MF
 import { WeatherProvider } from './weatherprovider';
 import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { ApplicationSettings } from '@akylas/nativescript';
+import { NB_DAYS_FORECAST } from '~/helpers/constants';
 
 const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 
@@ -318,6 +319,8 @@ export class MFProvider extends WeatherProvider {
             // d.pressure = data.pressure;
             return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain_1h, data.snow_1h);
         });
+        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
+
         const r = {
             currently: current?.properties
                 ? weatherDataIconColors(
@@ -335,7 +338,7 @@ export class MFProvider extends WeatherProvider {
                   )
                 : {},
             daily: {
-                data: forecast.properties.daily_forecast.slice(0, 14).map((data) => this.getDaily(weatherLocation, hourlyData, forecast.properties.forecast, data))
+                data: forecast.properties.daily_forecast.slice(0, forecast_days).map((data) => this.getDaily(weatherLocation, hourlyData, forecast.properties.forecast, data))
             },
             minutely: {
                 data:

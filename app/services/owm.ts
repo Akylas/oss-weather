@@ -8,6 +8,7 @@ import { prefs } from './preferences';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
 import { ApplicationSettings } from '@akylas/nativescript';
+import { NB_DAYS_FORECAST } from '~/helpers/constants';
 
 export class OWMProvider extends WeatherProvider {
     static owmApiKey = OWMProvider.readOwmApiKeySetting();
@@ -33,6 +34,7 @@ export class OWMProvider extends WeatherProvider {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const result = await OWMProvider.fetch<OneCallResult>('onecall', coords);
+        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
         // console.log('test', JSON.stringify(result.daily));
         const r = {
             currently: weatherDataIconColors(
@@ -55,7 +57,7 @@ export class OWMProvider extends WeatherProvider {
                 coords
             ),
             daily: {
-                data: result.daily.map((data) => {
+                data: result.daily.slice(0, forecast_days).map((data) => {
                     const d = {} as DailyData;
                     d.time = data.dt * 1000;
                     d.icon = data.weather[0]?.icon;

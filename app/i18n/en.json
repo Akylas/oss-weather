@@ -56,6 +56,7 @@
     "flood": "Flood",
     "fog": "Fog",
     "font_scale": "Font scale",
+    "forecast_nb_days": "number of days to forcast (includes Current)",
     "freezing_drizzle": "Freezing drizzle",
     "freezing_fog": "Freezing fog",
     "freezing_level": "freezing level",
@@ -173,5 +174,6 @@
     "ukrainian": "Ukrainian",
     "version": "Version",
     "weather_map": "Weather map",
+    "weather_map_colors": "weather map color scheme",
     "wind": "Wind"
 }

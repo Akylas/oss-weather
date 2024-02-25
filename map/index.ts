@@ -16,8 +16,10 @@ function GetURLParameter(sParam) {
 
 const position = (GetURLParameter('position') || '45.18453,5.75').split(',').map(parseFloat);
 const zoom = parseFloat(GetURLParameter('zoom') || '8');
+const colors = GetURLParameter('colors') || '4';
 
 const map = L.map('map', { zoomControl: false }).setView(position, zoom);
+const circle = L.circleMarker(position, { radius: 8, fillColor: '#3388ff', color: 'white', weight: 2, fillOpacity: 1 }).addTo(map);
 
 // @class TileLayer
 
@@ -256,8 +258,9 @@ fetch('https://tilecache.rainviewer.com/api/maps.json')
     .then((response) => response.text())
     .then((response) => {
         const timestamps = JSON.parse(response);
-        L.tileLayer(`https://tilecache.rainviewer.com/v2/radar/${timestamps[timestamps.length - 1]}/512/{z}/{x}/{y}/4/1_1.png`, {
+        L.tileLayer(`https://tilecache.rainviewer.com/v2/radar/${timestamps[timestamps.length - 1]}/512/{z}/{x}/{y}/${colors}/1_1.png`, {
             maxZoom: 18,
-            pmIgnore: false
+            pmIgnore: false,
+            opacity: 0.6
         }).addTo(map);
     });

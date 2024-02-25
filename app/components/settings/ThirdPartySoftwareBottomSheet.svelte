@@ -6,7 +6,16 @@
 
     const licences = require('~/licenses.json');
 
-    const items = licences.dependencies;
+    const items = [
+        {
+            moduleName: 'Material Design Icons',
+            moduleUrl: 'https://pictogrammers.com/library/mdi/'
+        },
+        {
+            moduleName: 'Weather Icons',
+            moduleUrl: 'https://erikflowers.github.io/weather-icons/'
+        }
+    ].concat(licences.dependencies);
 
     function onTap(item) {
         if (item.moduleUrl) {

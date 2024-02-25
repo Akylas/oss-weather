@@ -1,0 +1,10 @@
+*Features*
+- allow so set the number of days to forecast
+- allow so set the number of days to forecast #95
+- weather map color scheme #96
+
+*Bug fixes*
+- Translated using Weblate (Turkish)
+- show location on weather map #94
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Spanish)

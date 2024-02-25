@@ -1,1 +1,62 @@
-{}
+{
+    "about": "Ɣef",
+    "api_key": "Tasarutt API",
+    "app": {
+        "name": "Tignewt OSS"
+    },
+    "authorize": "Ssireg",
+    "cancel": "Sefsex",
+    "close": "Mdel",
+    "email": "Imayl",
+    "english": "Taglizit",
+    "error": "Tuccḍa",
+    "espagnol": "Taspenyulit",
+    "file": "Afaylu",
+    "flood": "Tiḥemmalin",
+    "french": "Tafṛansist",
+    "german": "Talmanit",
+    "italian": "Taṭelyanit",
+    "japanese": "Tajapunit",
+    "language": "Tutlayt",
+    "moon": "Ayyur",
+    "name": "Isem",
+    "ok": "IH",
+    "open_website": "Ldi asmel Web",
+    "pick_date": "Fren azemz",
+    "portuguese": "Tapurtugit",
+    "preferences": "Imenyafen",
+    "provider": {
+        "openmeteo": "Open-Meteo",
+        "openweathermap": "OpenWeatherMap"
+    },
+    "quit": "Tuffɣa",
+    "rain": "Lehwa",
+    "rain_flood": "Lehwa/Tiḥemmalin",
+    "russian": "Tarusit",
+    "save": "Sekles",
+    "search": "Nadi",
+    "search_city": "Nadi",
+    "search_location": "Nadi adig",
+    "select": "Fren",
+    "select_language": "Fren tutlayt",
+    "select_location": "Fren adig",
+    "send": "Azen",
+    "settings": {
+        "title": "Iɣewwaṛen"
+    },
+    "share_application": "Bḍu asnas",
+    "snow": "Adfel",
+    "snow_grains": "Imeččimen n wedfel",
+    "snow_ice": "Adfel/Agris",
+    "source_code": "Tangalt taɣbalut",
+    "spanish": "Taspenyulit",
+    "theme": {
+        "auto": "Amurman",
+        "black": "Aberkan",
+        "light": "Aceɛlal"
+    },
+    "turkish": "Taturkit",
+    "ukrainian": "Tukrinit",
+    "version": "Lqem",
+    "wind": "Aveḥri"
+}

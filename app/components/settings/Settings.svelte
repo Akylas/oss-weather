@@ -102,7 +102,7 @@
                 key: 'forecast_nb_days',
                 id: 'setting',
                 title: lc('forecast_nb_days'),
-                values: Array.from(Array(16), (_, index) => ({ value: index + 1, title: index + 1 })),
+                values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
                 currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
                 rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
             },

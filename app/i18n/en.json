@@ -56,7 +56,7 @@
     "flood": "Flood",
     "fog": "Fog",
     "font_scale": "Font scale",
-    "forecast_nb_days": "number of days to forcast",
+    "forecast_nb_days": "number of days to forcast (includes Current)",
     "freezing_drizzle": "Freezing drizzle",
     "freezing_fog": "Freezing fog",
     "freezing_level": "freezing level",

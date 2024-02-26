@@ -100,6 +100,7 @@
     "map": "Map",
     "medium": "Moderate",
     "metric_temp_decimal": "use decimal for metric temperature",
+    "min_uv_index": "UV index below won't be shown",
     "missing_location_perm": "Location permission missing",
     "moon": "Moon",
     "mostly_clear": "Mostly clear",

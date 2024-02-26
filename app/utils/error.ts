@@ -160,8 +160,9 @@ export async function showError(
         // if (!PRODUCTION) {
         // }
         const label = new Label();
-        label.style.padding = '10 20 0 20';
-        label.style.color = new Color(255, 138, 138, 138);
+        label.padding = '10 20 0 20';
+        label.textWrap = true;
+        label.color = new Color(255, 138, 138, 138);
         label.html = message.trim();
 
         if (realError && reporterEnabled) {

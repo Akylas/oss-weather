@@ -19,7 +19,7 @@
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import WeatherMapPage from '~/components/WeatherMapPage.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
-    import { l, lc, onLanguageChanged, sl } from '~/helpers/locale';
+    import { l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { OWMProvider } from '~/services/owm';
     import { prefs } from '~/services/preferences';
@@ -416,7 +416,7 @@
                     horizontalAlignment="right"
                     marginRight={6}
                     row="1"
-                    text={lc('powered_by', l(`provider.${provider}`))}
+                    text={$slc('powered_by', l(`provider.${provider}`))}
                     verticalAlignment="bottom" />
             {:else}
                 <stacklayout columns="auto" horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle">
@@ -459,7 +459,7 @@
             </CActionBar>
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
-            <label class="actionBarTitle" margin="20 20 20 20" text={lc('favorites')} />
+            <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />
             <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1}>
                 <Template let:item>
                     <swipemenu

@@ -1,0 +1,7 @@
+*Bug fixes*
+- some nb days to forecast fixes
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Kabyle)
+- *android:* crash on opening settings
+- wrong local display in settings #81

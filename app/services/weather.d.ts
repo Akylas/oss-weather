@@ -53,7 +53,6 @@ export interface DailyData {
     sunriseTime?: number;
     sunsetTime?: number;
     precipAccumulation: number;
-    precipAccumulation: number;
     color: string | Color;
     cloudColor?: string | Color;
     uvIndexColor: string | Color;

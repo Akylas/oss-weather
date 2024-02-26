@@ -56,7 +56,7 @@
     "flood": "Sel",
     "fog": "Sis",
     "font_scale": "Yazı ölçeği",
-    "forecast_nb_days": "tahmin yapılacak gün sayısı",
+    "forecast_nb_days": "tahmin yapılacak gün sayısı (şu anki dahil)",
     "freezing_drizzle": "Dondurucu çiseleme",
     "freezing_fog": "Dondurucu sis",
     "freezing_level": "donma seviyesi",

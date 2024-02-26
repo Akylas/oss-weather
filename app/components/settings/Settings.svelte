@@ -79,6 +79,7 @@
             {
                 key: 'provider',
                 id: 'setting',
+                valueType: 'string',
                 description: () => lc('provider.' + getProviderType()),
                 title: lc('provider.title'),
                 currentValue: getProviderType,
@@ -87,6 +88,7 @@
             {
                 key: 'open_meteo_prefered_model',
                 id: 'setting',
+                valueType: 'string',
                 description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
                 title: lc('open_meteo_prefered_model'),
                 currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),

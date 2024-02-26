@@ -150,7 +150,6 @@ export class OWMProvider extends WeatherProvider {
     }
 
     public static hasOWMApiKey() {
-        DEV_LOG && console.log('hasOWMApiKey', OWMProvider.owmApiKey, OWM_DEFAULT_KEY);
         return OWMProvider.owmApiKey && OWMProvider.owmApiKey.length && OWMProvider.owmApiKey !== OWM_DEFAULT_KEY;
     }
 

@@ -2,8 +2,8 @@ import { WeatherProvider } from './weatherprovider';
 import { MFProvider } from './mf';
 import { OMProvider } from './om';
 import { OWMProvider } from './owm';
-import { getString } from '@nativescript/core/application-settings';
 import { ProviderType } from './weather';
+import { ApplicationSettings } from '@akylas/nativescript';
 
 export const providers = ['meteofrance', 'openweathermap', 'openmeteo'] as const;
 
@@ -17,7 +17,7 @@ export function getProvider(): WeatherProvider {
     return provider;
 }
 export function getProviderType(): ProviderType {
-    const requestedProviderType: ProviderType = (getString('provider', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
+    const requestedProviderType: ProviderType = (ApplicationSettings.getString('provider', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
     return requestedProviderType;
 }
 

@@ -212,12 +212,23 @@ platform :ios do
     )
   end
   lane :upload_store  do |params| 
-    upload_to_testflight(
-        changelog:params[:changelog],
-        distribute_external: true,
-        groups: [params[:flavor]],
-        notify_external_testers: true
+    if (params[:flavor] == "production")
+      upload_to_app_store(
+        force: true,
+        automatic_release: true,
+        reject_if_possible: true,
+        submit_for_review: true,
+        skip_app_version_update: true,
+        release_notes: params[:changelog]
       )
+    else
+      upload_to_testflight(
+          changelog:params[:changelog],
+          distribute_external: true,
+          groups: [params[:flavor]],
+          notify_external_testers: true
+        )
+    end
     
   end
   desc 'Fetch certificates and provisioning profiles'

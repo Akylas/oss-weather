@@ -244,7 +244,7 @@ L.TileLayer.wmsHeader(
     {
         maxZoom: 19,
         pmIgnore: false,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></br><a href="https://www.rainviewer.com">RainViewer</a>'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></br><a href="https://www.rainviewer.com/api.html">RainViewer</a>'
     },
     [
         {

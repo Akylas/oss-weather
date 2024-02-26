@@ -138,17 +138,11 @@ export async function showError(
             return;
         }
         const reporterEnabled = SENTRY_ENABLED && isSentryEnabled;
-        let realError = typeof err === 'string' ? null : err;
+        const realError = typeof err === 'string' ? null : err;
 
         const isString = realError === null || realError === undefined;
         let message = isString ? (err as string) : realError.message || realError.toString();
-        if (__ANDROID__ && message && /java.*Exception/.test(message)) {
-            if (message.indexOf('SocketTimeoutException') !== -1) {
-                realError = new TimeoutError();
-            } else {
-                realError = new Error(message);
-            }
-        }
+
         DEV_LOG && console.error('showError', reporterEnabled, realError && Object.keys(realError), message, err?.['stack'], err?.['stackTrace'], err?.['nativeException']);
         message = forcedMessage || message;
         if (showAsSnack || realError instanceof NoNetworkError || realError instanceof TimeoutError) {

@@ -218,14 +218,16 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
     const endOfMinute = now.endOf('m').valueOf();
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
-            let currentDaily = weatherData.daily.data[index];
+            const { precipAccumulation, cloudCover, cloudCeiling, iso, ...currentDaily } = weatherData.daily.data[index];
             const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
             const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-            Object.assign(currentDaily, weatherData.currently);
+            if (firstHourIndex === 0) {
+                Object.assign(currentDaily, weatherData.currently);
+            }
             if (firstHourIndex > 1) {
-                currentDaily = Object.assign({}, currentDaily, currentDaily.hourly[firstHourIndex - 1]);
+                Object.assign(currentDaily, currentDaily.hourly[firstHourIndex - 1]);
             } else if (firstMinuteIndex > 10) {
-                currentDaily = Object.assign({}, currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
+                Object.assign(currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
             }
             const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
             let min = 10000;
@@ -243,8 +245,9 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
 
             const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
             // current weather is a mix of actual current weather, hourly and daily
+            const dailyForCurrent = currentDaily;
             newItems.push(
-                Object.assign(currentDaily, currentDaily.hourly[firstHourIndex], firstHourIndex === 0 ? weatherData.currently : {}, {
+                Object.assign(currentDaily, {
                     lastUpdate,
                     sunriseTime: times.sunriseEnd,
                     sunsetTime: times.sunsetStart,

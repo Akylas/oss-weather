@@ -84,6 +84,7 @@
         textPaint.setColor(colorOnSurface);
 
         const centeredItemsToDraw: {
+            index: number;
             color?: string | Color;
             iconColor?: string | Color;
             paint?: Paint;
@@ -95,6 +96,7 @@
         const iconFontSize = 20 * $fontScale;
         if (item.windSpeed) {
             centeredItemsToDraw.push({
+                index: 0,
                 iconFontSize,
                 paint: appPaint,
                 icon: item.windIcon,
@@ -102,18 +104,9 @@
                 subvalue: toImperialUnit(UNITS.Speed)
             });
         }
-        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-            centeredItemsToDraw.push({
-                iconFontSize,
-                paint: wiPaint,
-                color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
-                icon: 'wi-strong-wind',
-                value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
-                subvalue: toImperialUnit(UNITS.Speed)
-            });
-        }
         if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
             centeredItemsToDraw.push({
+                index: 1,
                 paint: wiPaint,
                 color,
                 iconFontSize,
@@ -124,6 +117,7 @@
         }
         if (item.cloudCover > 20) {
             centeredItemsToDraw.push({
+                index: 2,
                 paint: wiPaint,
                 color: item.cloudColor,
                 iconFontSize,
@@ -135,11 +129,23 @@
         const minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
         if (item.uvIndex >= minUVIndexToShow) {
             centeredItemsToDraw.push({
+                index: 3,
                 paint: mdiPaint,
                 color: item.uvIndexColor,
                 iconFontSize: 24 * $fontScale,
                 icon: 'mdi-weather-sunny-alert',
                 value: Math.round(item.uvIndex) + ''
+            });
+        }
+        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
+            centeredItemsToDraw.push({
+                index: 4,
+                iconFontSize,
+                paint: wiPaint,
+                color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
+                icon: 'wi-strong-wind',
+                value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
+                subvalue: toImperialUnit(UNITS.Speed)
             });
         }
         // centeredItemsToDraw.push({
@@ -149,7 +155,8 @@
         //     icon: item.moonIcon,
         //     value: l('moon')
         // });
-        const count = centeredItemsToDraw.length;
+        // const count = centeredItemsToDraw.length;
+        const count = Math.max(4, centeredItemsToDraw.length);
 
         const iconsTop = 10 * $fontScale;
         centeredItemsToDraw.forEach((c, index) => {

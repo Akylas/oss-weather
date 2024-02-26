@@ -8,6 +8,7 @@
     import { formatDate } from '~/helpers/locale';
     import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
     import { DailyData } from '~/services/weather';
+    import { MIN_UV_INDEX } from '~/helpers/constants';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
@@ -131,7 +132,8 @@
                 subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
             });
         }
-        if (item.uvIndex > 0) {
+        const minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
+        if (item.uvIndex >= minUVIndexToShow) {
             centeredItemsToDraw.push({
                 paint: mdiPaint,
                 color: item.uvIndexColor,

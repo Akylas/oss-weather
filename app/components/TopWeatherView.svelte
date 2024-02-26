@@ -7,7 +7,7 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { Color } from '@nativescript/core';
+    import { ApplicationSettings, Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { NativeViewElementNode } from 'svelte-native/dom';
@@ -21,6 +21,7 @@
     import { WeatherLocation } from '~/services/api';
     import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
     import { MinutelyData } from '~/services/weather';
+    import { MIN_UV_INDEX } from '~/helpers/constants';
     const dispatch = createEventDispatcher();
 
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -353,7 +354,8 @@
                 subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
             });
         }
-        if (item.uvIndex > 0) {
+        const minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
+        if (item.uvIndex >= minUVIndexToShow) {
             centeredItemsToDraw.push({
                 paint: mdiPaint,
                 color: item.uvIndexColor,

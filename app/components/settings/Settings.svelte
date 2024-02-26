@@ -11,7 +11,7 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
-    import { NB_DAYS_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
+    import { MIN_UV_INDEX, NB_DAYS_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
     import { OM_MODELS } from '~/services/om';
@@ -107,6 +107,14 @@
                 values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
                 currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
                 rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
+            },
+            {
+                key: 'min_uv_index',
+                id: 'setting',
+                title: lc('min_uv_index'),
+                values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
+                currentValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX),
+                rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
             },
             {
                 key: 'weather_map_colors',

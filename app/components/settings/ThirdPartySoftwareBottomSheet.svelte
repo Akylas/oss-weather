@@ -14,6 +14,18 @@
         {
             moduleName: 'Weather Icons',
             moduleUrl: 'https://erikflowers.github.io/weather-icons/'
+        },
+        {
+            moduleName: 'RainViewer',
+            moduleUrl: 'https://www.rainviewer.com/api.html'
+        },
+        {
+            moduleName: 'OpenStreetMap',
+            moduleUrl: 'https://www.openstreetmap.org/copyright'
+        },
+        {
+            moduleName: 'NativeScript',
+            moduleUrl: 'https://github.com/NativeScript/NativeScript'
         }
     ].concat(licences.dependencies);
 

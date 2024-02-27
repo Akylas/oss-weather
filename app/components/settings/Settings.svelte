@@ -237,9 +237,7 @@
                     const ThirdPartySoftwareBottomSheet = (await import('~/components/settings/ThirdPartySoftwareBottomSheet.svelte')).default;
                     showBottomSheet({
                         parent: this,
-                        view: ThirdPartySoftwareBottomSheet,
-                        ignoreTopSafeArea: true,
-                        trackingScrollView: 'trackingScrollView'
+                        view: ThirdPartySoftwareBottomSheet
                     });
                     break;
 

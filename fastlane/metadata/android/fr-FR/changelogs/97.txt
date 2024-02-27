@@ -1,0 +1,13 @@
+*Features*
+- min UV index setting
+
+*Bug fixes*
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Kabyle)
+- FR locale fix
+- Translated using Weblate (Turkish)
+- prevent current weather from showing daily precipitation
+- text change on language change
+- testing new layout for daily forecast
+- locale fix #95

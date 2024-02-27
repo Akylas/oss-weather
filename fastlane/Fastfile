@@ -214,12 +214,16 @@ platform :ios do
   lane :upload_store  do |params| 
     if (params[:flavor] == "production")
       upload_to_app_store(
+        metadata_path:File.join(".", "fastlane/metadata", "ios"),
+        screenshots_path:File.join(".", "fastlane/metadata", "ios", "screenshots"),
         force: true,
         automatic_release: true,
         reject_if_possible: true,
-        submit_for_review: true,
+        submit_for_review: false,
         skip_app_version_update: true,
-        release_notes: params[:changelog]
+        release_notes: {
+          'default' => params[:changelog]
+        }
       )
     else
       upload_to_testflight(

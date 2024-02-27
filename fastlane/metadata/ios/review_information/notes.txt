@@ -1,0 +1,1 @@
+I attached a video showing the app starting (on device) and asking for gps to provide weather.

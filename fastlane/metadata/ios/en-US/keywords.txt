@@ -1,0 +1,1 @@
+weather, openweathermap,open-meteo,openmeteo,opensource,open-source,forecast

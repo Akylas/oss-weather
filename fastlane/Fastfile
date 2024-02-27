@@ -173,7 +173,7 @@ lane :build_flavor do |params|
   #       file_paths: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk")),
   #     )
   #   end
-  when 'alpha','beta'
+  when 'alpha','beta','production'
     upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
   end
   
@@ -214,16 +214,20 @@ platform :ios do
   lane :upload_store  do |params| 
     if (params[:flavor] == "production")
       upload_to_app_store(
-        metadata_path:File.join(".", "fastlane/metadata", "ios"),
-        screenshots_path:File.join(".", "fastlane/metadata", "ios", "screenshots"),
+        ignore_language_directory_validation: true,
+        metadata_path:File.join(".", "fastlane/metadata", app_identifier, "ios"),
+        screenshots_path:File.join(".", "fastlane/metadata", app_identifier, "ios", "screenshots"),
         force: true,
         automatic_release: true,
         reject_if_possible: true,
         submit_for_review: false,
-        skip_app_version_update: true,
+        skip_metadata: true,
+        skip_screenshots: true,
         release_notes: {
           'default' => params[:changelog]
-        }
+        },
+        submission_information: { export_compliance_uses_encryption: false,
+                              add_id_info_uses_idfa: false }
       )
     else
       upload_to_testflight(
@@ -270,6 +274,14 @@ platform :ios do
     checkGitStatus
     npm_installl(platform:'ios')
     build_flavor(platform:'ios', flavor:'alpha', options:options)
+  end
+
+  desc 'Ship iOS build to AppStore.'
+  lane :production do |options|
+    checkSentryClitatus
+    # checkGitStatus
+    npm_installl(platform:'ios')
+    build_flavor(platform:'ios', flavor:'production', options:options)
   end
 end
 

@@ -1,12 +1,14 @@
 import { InAppBrowser } from '@akylas/nativescript-inappbrowser';
-import { MDCAlertControlerOptions, alert } from '@nativescript-community/ui-material-dialogs';
+import { AlertDialog, MDCAlertControlerOptions, alert } from '@nativescript-community/ui-material-dialogs';
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
-import { AlertOptions, Utils, View } from '@nativescript/core';
+import { ActivityIndicator, AlertOptions, StackLayout, Utils, View } from '@nativescript/core';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import { get } from 'svelte/store';
 import { lc } from '~/helpers/locale';
-import { colors, systemFontScale } from '~/variables';
+import { colors, fontScale, systemFontScale } from '~/variables';
+import { showError } from './error';
+import { Label } from '@nativescript-community/ui-label';
 
 export async function openLink(url) {
     try {
@@ -38,6 +40,53 @@ export async function openLink(url) {
             message: error.message,
             okButtonText: 'Ok'
         });
+    }
+}
+
+let loadingIndicator: AlertDialog & { label?: Label };
+let showLoadingStartTime: number = null;
+function getLoadingIndicator() {
+    if (!loadingIndicator) {
+        const stack = new StackLayout();
+        stack.padding = 10;
+        stack.orientation = 'horizontal';
+        const activityIndicator = new ActivityIndicator();
+        activityIndicator.className = 'activity-indicator';
+        activityIndicator.busy = true;
+        stack.addChild(activityIndicator);
+        const label = new Label();
+        label.paddingLeft = 15;
+        label.textWrap = true;
+        label.verticalAlignment = 'middle';
+        label.fontSize = 16;
+        stack.addChild(label);
+        loadingIndicator = new AlertDialog({
+            view: stack,
+            cancelable: false
+        });
+        loadingIndicator.label = label;
+    }
+    return loadingIndicator;
+}
+export function showLoading(msg: string = lc('loading')) {
+    const loadingIndicator = getLoadingIndicator();
+    // console.log('showLoading', msg, !!loadingIndicator);
+    loadingIndicator.label.text = msg + '...';
+    showLoadingStartTime = Date.now();
+    loadingIndicator.show();
+}
+export function hideLoading() {
+    if (!loadingIndicator) {
+        return;
+    }
+    const delta = showLoadingStartTime ? Date.now() - showLoadingStartTime : -1;
+    if (delta >= 0 && delta < 1000) {
+        setTimeout(() => hideLoading(), 1000 - delta);
+        return;
+    }
+    // log('hideLoading', !!loadingIndicator);
+    if (loadingIndicator) {
+        loadingIndicator.hide();
     }
 }
 
@@ -81,10 +130,18 @@ export async function showAlertOptionSelect<T>(viewSpec: typeof SvelteComponent<
     }
 }
 
-export async function showPopoverMenu<T = any>({ options, anchor, onClose, props, horizPos, vertPos }: { options; anchor; onClose?; props? } & Partial<PopoverOptions>) {
+export async function showPopoverMenu<T = any>({
+    options,
+    anchor,
+    onClose,
+    props,
+    horizPos,
+    vertPos,
+    closeOnClose = true
+}: { options; anchor; onClose?; props?; closeOnClose? } & Partial<PopoverOptions>) {
     const { colorSurfaceContainer } = get(colors);
     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
-    const rowHeight = (props?.rowHeight || 58) * get(systemFontScale);
+    const rowHeight = (props?.rowHeight || 58) * get(fontScale);
     const result: T = await showPopover({
         backgroundColor: colorSurfaceContainer,
         view: OptionSelect,
@@ -99,12 +156,25 @@ export async function showPopoverMenu<T = any>({ options, anchor, onClose, props
             backgroundColor: colorSurfaceContainer,
             containerColumns: 'auto',
             rowHeight: !!props?.autoSizeListItem ? null : rowHeight,
-            height: props?.height || Math.min(rowHeight * options.length, 400),
-            width: 200 * get(systemFontScale),
+            height: Math.min(rowHeight * options.length, props?.maxHeight || 400),
+            width: 200 * get(fontScale),
             options,
-            onClose: (item) => {
-                closePopover();
-                onClose?.(item);
+            onClose: async (item) => {
+                if (closeOnClose) {
+                    if (__IOS__) {
+                        // on iOS we need to wait or if onClose shows an alert dialog it wont work
+                        await closePopover();
+                    } else {
+                        closePopover();
+                    }
+                }
+                try {
+                    await onClose?.(item);
+                } catch (error) {
+                    showError(error);
+                } finally {
+                    hideLoading();
+                }
             },
             ...(props || {})
         }

@@ -18,9 +18,8 @@
         closeBottomSheet(true);
     }
 
-    const  onKeyChange = debounce((e) =>{
+    const onKeyChange = debounce((e) => {
         OWMProvider.setOWMApiKey(e.value);
-
     }, 1000);
 
     $: {
@@ -29,15 +28,15 @@
 </script>
 
 <gesturerootview rows="auto">
-<stacklayout iosIgnoreSafeArea={true} padding="10">
-    <label text={l('api_key_required_description')} textWrap={true}/>
-    <gridlayout columns="auto,*, auto" marginTop={5} rows="auto">
-        <!-- <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10"/> -->
-        <textfield col={1} hint={l('api_key')} placeholder={l('api_key')} text={owmApiKey} on:textChange={onKeyChange} />
-        <mdbutton class="icon-btn" col={2} text="mdi-open-in-app" variant="text" on:tap={openWeatherMap} />
-    </gridlayout>
-    <stacklayout horizontalAlignment="right" marginTop={15} orientation="horizontal">
-        <mdbutton text={l('save')} variant="text" visibility={canClose ? 'visible' : 'collapse'} on:tap={save} />
+    <stacklayout iosIgnoreSafeArea={true} padding="10">
+        <label text={l('api_key_required_description')} textWrap={true} />
+        <gridlayout columns="auto,*, auto" marginTop={5} rows="auto">
+            <!-- <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10"/> -->
+            <textfield col={1} hint={l('api_key')} placeholder={l('api_key')} text={owmApiKey} on:textChange={onKeyChange} />
+            <mdbutton class="icon-btn" col={2} text="mdi-open-in-app" variant="text" on:tap={openWeatherMap} />
+        </gridlayout>
+        <stacklayout horizontalAlignment="right" marginTop={15} orientation="horizontal">
+            <mdbutton text={l('save')} variant="text" visibility={canClose ? 'visible' : 'collapse'} on:tap={save} />
+        </stacklayout>
     </stacklayout>
-</stacklayout>
 </gesturerootview>

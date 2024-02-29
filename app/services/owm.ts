@@ -1,5 +1,4 @@
 import { titlecase } from '@nativescript-community/l';
-import { getString, remove, setString } from '@nativescript/core/application-settings';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { lang } from '~/helpers/locale';
 import { WeatherLocation, request } from './api';
@@ -7,8 +6,8 @@ import { CityWeather, Coord, OneCallResult } from './openweathermap';
 import { prefs } from './preferences';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
-import { ApplicationSettings } from '@akylas/nativescript';
 import { NB_DAYS_FORECAST } from '~/helpers/constants';
+import { ApplicationSettings } from '@nativescript/core';
 
 export class OWMProvider extends WeatherProvider {
     static owmApiKey = OWMProvider.readOwmApiKeySetting();
@@ -123,10 +122,10 @@ export class OWMProvider extends WeatherProvider {
     }
 
     static readOwmApiKeySetting() {
-        let key = getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+        let key = ApplicationSettings.getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
         DEV_LOG && console.log('readOwmApiKeySetting', key);
         if (key?.length === 0) {
-            remove('owmApiKey');
+            ApplicationSettings.remove('owmApiKey');
             key = OWM_MY_KEY || OWM_DEFAULT_KEY;
         }
         return key?.trim();
@@ -143,9 +142,9 @@ export class OWMProvider extends WeatherProvider {
     public static setOWMApiKey(apiKey) {
         OWMProvider.owmApiKey = apiKey?.trim();
         if (OWMProvider.owmApiKey?.length) {
-            setString('owmApiKey', OWMProvider.owmApiKey);
+            ApplicationSettings.setString('owmApiKey', OWMProvider.owmApiKey);
         } else {
-            remove('owmApiKey');
+            ApplicationSettings.remove('owmApiKey');
         }
     }
 

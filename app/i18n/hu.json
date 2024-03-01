@@ -1,0 +1,23 @@
+{
+    "E": "K",
+    "N": "É",
+    "NE": "ÉK",
+    "NNE": "ÉÉK",
+    "NNW": "ÉÉNY",
+    "NSE": "ÉDK",
+    "NSW": "ÉDNY",
+    "NW": "ÉNY",
+    "S": "D",
+    "SE": "DK",
+    "SW": "DNY",
+    "W": "NY",
+    "WNE": "NYÉK",
+    "WNW": "NYÉNY",
+    "WSE": "NYDK",
+    "WSW": "NYDNY",
+    "about": "Névjegy",
+    "about_to_quit": "Az app bezárul, mert hiányzik belőle egy API kulcs",
+    "absolute_vigilance": "Teljes éberség",
+    "animations": "Animációk",
+    "api_key": "API kulcs"
+}

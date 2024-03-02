@@ -95,6 +95,20 @@ export class TimeoutError extends CustomError {
     }
 }
 
+export class PermissionError extends CustomError {
+    constructor(props?) {
+        super(
+            Object.assign(
+                {
+                    message: 'permission_error'
+                },
+                props
+            ),
+            'PermissionError'
+        );
+    }
+}
+
 export class NoNetworkError extends CustomError {
     constructor(props?) {
         super(

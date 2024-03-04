@@ -47,6 +47,7 @@ export interface CommonWeatherData {
     cloudCeiling?: number;
     precipColor?: string | Color;
     precipIcon?: string;
+    mixedRainSnow?: boolean;
     precipUnit: UNITS;
     windBearing?: number;
     humidity?: number;

@@ -125,9 +125,9 @@ export class MFProvider extends WeatherProvider {
             d.iso = Math.round(isoTotal.total / isoTotal.count);
         }
 
-        const propRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-        const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-        weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, propRain > propSnow ? d.precipAccumulation : 0, propRain < propSnow ? d.precipAccumulation : 0);
+        const probRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
+        const probSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
+        weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, probRain, probSnow);
         d.hourly = [];
         return d;
         // return new HalfDay(

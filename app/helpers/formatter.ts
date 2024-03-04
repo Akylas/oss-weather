@@ -2,7 +2,7 @@ import { Color } from '@nativescript/core';
 import { getMoonIllumination } from 'suncalc';
 import { cloudyColor, imperialUnits, metricDecimalTemp, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate } from './locale';
-import { Currently, DailyData, Hourly } from '~/services/weather';
+import { Currently, DailyData, Hourly } from '~/services/providers/weather';
 
 export enum UNITS {
     // InchHg = 'InchHg',
@@ -358,7 +358,10 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
     // d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
     const dd = d as DailyData;
     const cloudCover = Math.max(dd.cloudCover, 0);
-    if (rain) {
+    if (snow && rain) {
+        dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+        dd.mixedRainSnow = true;
+    } else if (rain) {
         dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
     } else if (snow) {
         d.precipColor = snowColor.hex;

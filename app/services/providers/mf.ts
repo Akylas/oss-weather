@@ -284,11 +284,13 @@ export class MFProvider extends WeatherProvider {
         // DEV_LOG && console.log('rain', JSON.stringify(rain));
         // DEV_LOG && console.log('current', JSON.stringify(current));
         // DEV_LOG && console.log('warnings', JSON.stringify(warnings));
-        let hourlyLastIndex = forecast.properties.forecast.findIndex((d) => d.weather_icon === null || d.T === null);
+        const now = Date.now();
+        const forecastData = forecast.properties.forecast;
+        let hourlyLastIndex = forecastData.findIndex((d) => d.weather_icon === null || d.T === null || (d.time - now / 1000) / 3600 > forecast_hours);
         if (hourlyLastIndex === -1) {
-            hourlyLastIndex = forecast.properties.forecast.length - 1;
+            hourlyLastIndex = forecastData.length - 1;
         }
-        const hourlyData = forecast.properties.forecast?.slice(0, Math.min(hourlyLastIndex, forecast_hours)).map((data, index) => {
+        const hourlyData = forecastData?.slice(0, hourlyLastIndex).map((data, index) => {
             const hasNext = index < hourlyLastIndex;
             const d = {} as Hourly;
             d.time = data.time * 1000;

@@ -6,7 +6,7 @@
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { colors } from '~/variables';
     import { l, lc } from '~/helpers/locale';
-    import { getProvider, getProviderType, providers } from '~/services/weatherproviderfactory';
+    import { getProvider, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
 
     $: ({ colorBackground } = $colors);

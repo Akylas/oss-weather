@@ -9,7 +9,7 @@
     import { FavoriteLocation } from '~/helpers/favorites';
     import { WeatherLocation } from '~/services/api';
     import { prefs } from '~/services/preferences';
-    import { actionBarHeight, navigationBarHeight, onImperialChanged, screenHeightDips, statusBarHeight } from '~/variables';
+    import { actionBarHeight, fontScale, navigationBarHeight, onImperialChanged, screenHeightDips, statusBarHeight } from '~/variables';
     import { onThemeChanged } from '~/helpers/theme';
 
     export let items: any[];
@@ -19,7 +19,7 @@
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
     let topHeight = 0;
-    $: topHeight = Math.max(Math.min(screenHeightDips - $actionBarHeight - $navigationBarHeight - $statusBarHeight - 100, 500), 400);
+    $: topHeight = Math.max(Math.min(screenHeightDips - $actionBarHeight - $navigationBarHeight - $statusBarHeight - 100 * $fontScale, 470 * $fontScale), 370 * $fontScale);
 
     function itemTemplateSelector(item, index, items) {
         return index === 0 ? 'topView' : 'daily';
@@ -44,7 +44,6 @@
     onImperialChanged(() => {
         collectionView?.nativeView?.refreshVisibleItems();
     });
-
     function onTap(item) {
         dispatch('tap', item);
     }
@@ -58,8 +57,7 @@
     itemIdGenerator={(_item, index) => index}
     {itemTemplateSelector}
     {items}
-    on:layoutCompleted={onCollectionViewLayoutCompleted}
->
+    on:layoutCompleted={onCollectionViewLayoutCompleted}>
     <Template key="topView" let:item>
         <TopWeatherView {fakeNow} height={topHeight} {item} {weatherLocation} on:tap={() => onTap(item)} />
     </Template>

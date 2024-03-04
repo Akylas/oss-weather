@@ -3,10 +3,9 @@
     import { Color } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { colors, fontScale, onImperialChanged } from '~/variables';
-    import WeatherCollectionItem from '~/components/WeatherCollectionItem.svelte';
-    import { HandlerType, Manager, NativeViewGestureHandler } from '@nativescript-community/gesturehandler';
+    import HourlyItem from '~/components/HourlyItem.svelte';
     import { onThemeChanged } from '~/helpers/theme';
+    import { colors, fontScale, onImperialChanged } from '~/variables';
 
     $: ({ colorBackground } = $colors);
 
@@ -50,7 +49,7 @@
         on:dataPopulated={onDataPopulated}
         on:scroll={onScrollEvent}>
         <Template let:item>
-            <WeatherCollectionItem {item} />
+            <HourlyItem {item} />
         </Template>
     </collectionview>
     <absolutelayout

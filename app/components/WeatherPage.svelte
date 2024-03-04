@@ -21,17 +21,18 @@
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
-    import { OWMProvider } from '~/services/owm';
+    import { OWMProvider } from '~/services/providers/owm';
     import { prefs } from '~/services/preferences';
-    import { getProvider, getProviderType, providers } from '~/services/weatherproviderfactory';
+    import { getProvider, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
     import { globalObservable } from '~/utils/svelte/ui';
     import { showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
-    import { WeatherData } from '~/services/weather';
+    import { WeatherData } from '~/services/providers/weather';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
+    import { onWeatherDataChanged } from '~/services/weatherData';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -93,8 +94,8 @@
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
                 props: {
-                    width: 220 * $systemFontScale,
-                    autoSizeListItem: true
+                    width: 220 * $systemFontScale
+                    // autoSizeListItem: true
                 },
                 onClose: async (item) => {
                     try {
@@ -155,7 +156,7 @@
         } catch (err) {
             if (err.statusCode === 403) {
                 if (provider === 'openweathermap') {
-                    await import('~/services/owm');
+                    await import('~/services/providers/owm');
                     OWMProvider.setOWMApiKey(null);
                     askForApiKey();
                 }
@@ -172,6 +173,8 @@
         ApplicationSettings.setNumber('lastUpdate', lastUpdate);
         ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
     }
+
+    onWeatherDataChanged(updateView);
 
     function saveLocation(result: WeatherLocation) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;

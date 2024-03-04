@@ -2,7 +2,7 @@
     import { getString } from '@nativescript/core/application-settings';
     import { debounce } from '@nativescript/core/utils';
     import { l } from '~/helpers/locale';
-    import { OWMProvider } from '~/services/owm';
+    import { OWMProvider } from '~/services/providers/owm';
     import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { openLink } from '~/utils/ui';
 

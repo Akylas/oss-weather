@@ -1,22 +1,18 @@
 <script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
-    import { ApplicationSettings, Color } from '@nativescript/core';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { UNITS, convertValueToUnit, formatValueToUnit, toImperialUnit } from '~/helpers/formatter';
+    import { UNITS, formatValueToUnit } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
-    import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
-    import { DailyData } from '~/services/weather';
-    import { MIN_UV_INDEX } from '~/helpers/constants';
+    import { weatherDataService } from '~/services/weatherData';
+    import { DailyData } from '~/services/providers/weather';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { colors, fontScale } from '~/variables';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
     let textIconSubPaint: Paint;
     let paint: Paint;
-    let wiPaint: Paint;
-    let mdiPaint: Paint;
-    let appPaint: Paint;
 </script>
 
 <script lang="ts">
@@ -24,8 +20,6 @@
 
     export let item: DailyData;
     let canvasView;
-    let color: string | Color;
-    let precipIcon: string;
     const dispatch = createEventDispatcher();
 
     if (!textPaint) {
@@ -35,15 +29,6 @@
         textIconSubPaint = new Paint();
         textIconSubPaint.setTextAlign(Align.CENTER);
         paint = new Paint();
-        wiPaint = new Paint();
-        wiPaint.setFontFamily($fonts.wi);
-        wiPaint.setTextAlign(Align.CENTER);
-        appPaint = new Paint();
-        appPaint.setFontFamily($fonts.app);
-        appPaint.setTextAlign(Align.CENTER);
-        mdiPaint = new Paint();
-        mdiPaint.setFontFamily($fonts.mdi);
-        mdiPaint.setTextAlign(Align.CENTER);
     }
 
     function redraw() {
@@ -55,16 +40,6 @@
             redraw();
         }
     }
-    $: {
-        if (item && item.icon.startsWith('13')) {
-            color = snowColor;
-            precipIcon = 'wi-snowflake-cold';
-        } else {
-            color = rainColor;
-            precipIcon = 'wi-raindrop';
-        }
-    }
-
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const w2 = w / 2;
@@ -83,71 +58,7 @@
         canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
-        const centeredItemsToDraw: {
-            index: number;
-            color?: string | Color;
-            iconColor?: string | Color;
-            paint?: Paint;
-            iconFontSize: number;
-            icon: string;
-            value: string | number;
-            subvalue?: string;
-        }[] = [];
-        const iconFontSize = 20 * $fontScale;
-        if (item.windSpeed) {
-            centeredItemsToDraw.push({
-                index: 0,
-                iconFontSize,
-                paint: appPaint,
-                icon: item.windIcon,
-                value: convertValueToUnit(item.windSpeed, UNITS.Speed)[0],
-                subvalue: toImperialUnit(UNITS.Speed)
-            });
-        }
-        if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
-            centeredItemsToDraw.push({
-                index: 1,
-                paint: wiPaint,
-                color,
-                iconFontSize,
-                icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
-                subvalue: item.precipProbability > 0 && item.precipProbability + '%'
-            });
-        }
-        if (item.cloudCover > 20) {
-            centeredItemsToDraw.push({
-                index: 2,
-                paint: wiPaint,
-                color: item.cloudColor,
-                iconFontSize,
-                icon: 'wi-cloud',
-                value: Math.round(item.cloudCover) + '%',
-                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
-            });
-        }
-        const minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
-        if (item.uvIndex >= minUVIndexToShow) {
-            centeredItemsToDraw.push({
-                index: 3,
-                paint: mdiPaint,
-                color: item.uvIndexColor,
-                iconFontSize: 24 * $fontScale,
-                icon: 'mdi-weather-sunny-alert',
-                value: Math.round(item.uvIndex) + ''
-            });
-        }
-        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-            centeredItemsToDraw.push({
-                index: 4,
-                iconFontSize,
-                paint: wiPaint,
-                color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
-                icon: 'wi-strong-wind',
-                value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
-                subvalue: toImperialUnit(UNITS.Speed)
-            });
-        }
+        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['moon', 'windBeaufort']);
         // centeredItemsToDraw.push({
         //     paint: wiPaint,
         //     color: nightColor,
@@ -165,9 +76,6 @@
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || colorOnSurface);
             if (c.icon) {
-                if (c.iconColor) {
-                    paint.setColor(c.iconColor);
-                }
                 canvas.drawText(c.icon, x, iconsTop + 20, paint);
             }
             if (c.value) {
@@ -208,20 +116,23 @@
         staticLayout.draw(canvas);
         canvas.restore();
 
-        if (item.windBeaufortIcon) {
-            wiPaint.setColor(colorOnSurface);
-            wiPaint.setTextSize(20);
-            canvas.drawText(item.windBeaufortIcon, 50, h - 28 * $fontScale, wiPaint);
+        const windBeaufortData = weatherDataService.getItemData('windBeaufort', item);
+        if (windBeaufortData) {
+            windBeaufortData.paint.setColor(windBeaufortData.color || colorOnSurface);
+            windBeaufortData.paint.setTextSize(windBeaufortData.iconFontSize);
+            canvas.drawText(item.windBeaufortIcon, 50, h - 1.4 * windBeaufortData.iconFontSize, windBeaufortData.paint);
         }
 
         textPaint.setTextSize(13 * $fontScale);
         textPaint.setColor(colorOnSurfaceVariant);
         canvas.drawText(item.description, 10, h - 10, textPaint);
 
-        wiPaint.setColor(nightColor);
-        wiPaint.setTextSize(20 * $fontScale);
-        canvas.drawText(item.moonIcon, 18, h - 28 * $fontScale, wiPaint);
-        // textPaint.setTextAlign(Align.RIGHT);
+        const moonData = weatherDataService.getItemData('moon', item);
+        if (moonData) {
+            moonData.paint.setColor(moonData.color);
+            moonData.paint.setTextSize(moonData.iconFontSize);
+            canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
+        }
     }
 </script>
 

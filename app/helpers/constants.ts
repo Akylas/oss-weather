@@ -1,4 +1,6 @@
 export const NB_DAYS_FORECAST = 12;
+export const NB_HOURS_FORECAST = 72;
+export const NB_MINUTES_FORECAST = 60;
 export const MIN_UV_INDEX = 1;
 export const WEATHER_MAP_COLORS = 4;
 export const WEATHER_MAP_COLOR_SCHEMES = [

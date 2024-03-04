@@ -3,13 +3,13 @@ import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { l, lang } from '~/helpers/locale';
-import { WeatherLocation, request } from './api';
+import { WeatherLocation, request } from '../api';
 import { Forecast } from './openmeteo';
 import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
-import { NB_DAYS_FORECAST } from '~/helpers/constants';
+import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
@@ -126,13 +126,15 @@ export class OMProvider extends WeatherProvider {
         }
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
+        const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
+        const forecast_minutely_15 = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15;
         return request<T>({
             url: `https://api.open-meteo.com/v1/${apiName}`,
             method: 'GET',
             queryParams: {
                 forecast_days,
-                forecast_hours: 72,
-                forecast_minutely_15: 60,
+                forecast_hours,
+                forecast_minutely_15,
                 hourly:
                     'precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
                     (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),

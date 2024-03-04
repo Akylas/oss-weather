@@ -3,12 +3,12 @@ import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { lang, lc } from '~/helpers/locale';
-import { WeatherLocation, request } from './api';
+import { WeatherLocation, request } from '../api';
 import { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 import { WeatherProvider } from './weatherprovider';
 import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
-import { ApplicationSettings } from '@akylas/nativescript';
-import { NB_DAYS_FORECAST } from '~/helpers/constants';
+import { ApplicationSettings } from '@nativescript/core';
+import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 
 const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 
@@ -265,6 +265,10 @@ export class MFProvider extends WeatherProvider {
         // if (forecast.position.dept) {
         // we are in france we can get more
 
+        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
+        const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
+        const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
+
         const forecast = result[0];
         const rain = result[1];
         const current = result[2];
@@ -284,7 +288,7 @@ export class MFProvider extends WeatherProvider {
         if (hourlyLastIndex === -1) {
             hourlyLastIndex = forecast.properties.forecast.length - 1;
         }
-        const hourlyData = forecast.properties.forecast?.slice(0, hourlyLastIndex).map((data, index) => {
+        const hourlyData = forecast.properties.forecast?.slice(0, Math.min(hourlyLastIndex, forecast_hours)).map((data, index) => {
             const hasNext = index < hourlyLastIndex;
             const d = {} as Hourly;
             d.time = data.time * 1000;
@@ -313,14 +317,13 @@ export class MFProvider extends WeatherProvider {
             d.windGust = data.wind_speed_gust * 3.6;
             d.windSpeed = data.wind_speed * 3.6;
             d.iso = data.iso0;
+            // TODO: difference between iso0 and 'rain snow limit'
             if (typeof data['rain snow limit'] === 'number') {
-                d.rainSnowLimit = data['rain snow limit'];
+                d.iso = data['rain snow limit'];
             }
             // d.pressure = data.pressure;
             return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain_1h, data.snow_1h);
         });
-        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
-
         const r = {
             currently: current?.properties
                 ? weatherDataIconColors(

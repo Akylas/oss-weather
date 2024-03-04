@@ -100,7 +100,7 @@
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} />
         <collectionview items={searchResults} row={2}>
             <Template let:item>
-                <ListItemAutoSize subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)}>
+                <ListItemAutoSize disableCss={false} subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)}>
                     <mdbutton
                         class="icon-btn"
                         col={2}

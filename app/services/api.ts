@@ -8,8 +8,8 @@ import { getTimes } from 'suncalc';
 import { lang } from '~/helpers/locale';
 import { CustomError, HTTPError, NoNetworkError } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { Photon, PhotonProperties } from './photon';
-import { WeatherData } from './weather';
+import { Photon, PhotonProperties } from '../../typings/photon';
+import { WeatherData } from './providers/weather';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -221,7 +221,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             const { precipAccumulation, cloudCover, cloudCeiling, iso, ...currentDaily } = weatherData.daily.data[index];
             const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
             const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-            if (firstHourIndex === 0) {
+            if (firstHourIndex <= 1) {
                 Object.assign(currentDaily, weatherData.currently);
             }
             if (firstHourIndex > 1) {

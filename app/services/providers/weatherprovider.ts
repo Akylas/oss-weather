@@ -1,4 +1,4 @@
-import { WeatherLocation } from './api';
+import { WeatherLocation } from '../api';
 import { ProviderType } from './weather';
 
 export abstract class WeatherProvider {

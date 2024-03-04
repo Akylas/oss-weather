@@ -8,7 +8,7 @@
     import { colors } from '~/variables';
     import CActionBar from './common/CActionBar.svelte';
     import dayjs from 'dayjs';
-    import { WeatherData } from '~/services/weather';
+    import { WeatherData } from '~/services/providers/weather';
 
     $: ({ colorOutline } = $colors);
 
@@ -39,8 +39,8 @@
         </gridlayout>
         <gridlayout columns="*,auto,auto" orientation="horizontal" row={2}>
             <slider maxValue={2} minValue={0.5} value={fontScale} on:valueChange={(e) => setFontScale(e.value)} />
-            <label col={1} text={fontScale.toFixed(1)} verticalTextAlignment="middle"/>
-            <mdbutton col={2} text={lc('reset')} variant="text" verticalAlignment="middle" on:tap={() => setFontScale(1)}/>
+            <label col={1} text={fontScale.toFixed(1)} verticalTextAlignment="middle" />
+            <mdbutton col={2} text={lc('reset')} variant="text" verticalAlignment="middle" on:tap={() => setFontScale(1)} />
         </gridlayout>
         <CActionBar title={lc('font_scale')} />
     </gridlayout>

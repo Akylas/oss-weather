@@ -7,21 +7,20 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { ApplicationSettings, Color } from '@nativescript/core';
+    import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
-    import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
-    import { UNITS, convertValueToUnit, formatValueToUnit, toImperialUnit } from '~/helpers/formatter';
+    import { isFavorite, toggleFavorite } from '~/helpers/favorites';
+    import { UNITS, formatValueToUnit } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { WeatherLocation } from '~/services/api';
-    import { colors, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
-    import { MinutelyData } from '~/services/weather';
-    import { MIN_UV_INDEX } from '~/helpers/constants';
+    import { weatherDataService } from '~/services/weatherData';
+    import { Currently, MinutelyData } from '~/services/providers/weather';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { colors, fontScale, fonts, rainColor, snowColor } from '~/variables';
     const dispatch = createEventDispatcher();
 
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -29,41 +28,10 @@
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
     const textPaint = new Paint();
-    // const textIconSubPaint = new Paint();
-    // textIconSubPaint.setTextAlign(Align.CENTER);
-    const wiPaint = new Paint();
-    wiPaint.setFontFamily($fonts.wi);
-    wiPaint.setTextAlign(Align.CENTER);
-    const mdiPaint = new Paint();
-    mdiPaint.setFontFamily($fonts.mdi);
-    mdiPaint.setTextAlign(Align.CENTER);
-    const appPaint = new Paint();
-    appPaint.setFontFamily($fonts.app);
-    appPaint.setTextAlign(Align.CENTER);
-    interface Item {
-        alerts?: any;
+
+    interface Item extends Currently {
         minutely?: MinutelyData[];
-        time: number;
         lastUpdate: number;
-        sunsetTime: number;
-        sunriseTime: number;
-        icon: string;
-        windIcon: string;
-        moonIcon: string;
-        windSpeed?: number;
-        windGust?: number;
-        cloudCover?: number;
-        cloudCeiling?: number;
-        uvIndex?: number;
-        precipProbability?: number;
-        precipAccumulation?: number;
-        precipUnit?: UNITS;
-        cloudColor?: string;
-        uvIndexColor?: string;
-        temperatureMin?: number;
-        temperatureMax?: number;
-        temperature?: number;
-        apparentTemperature?: number;
         hourly?;
     }
     export let item: Item;
@@ -80,7 +48,7 @@
     }
     let lineChart: NativeViewElementNode<LineChart>;
     const weatherIconSize = 140;
-    const topViewHeight = 240;
+    const topViewHeight = 210;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -134,7 +102,7 @@
                 chartInitialized = true;
                 chart.setNoDataText(null);
                 chart.setAutoScaleMinMaxEnabled(true);
-                chart.setDoubleTapToZoomEnabled(true);
+                chart.setDoubleTapToZoomEnabled(false);
                 chart.getLegend().setEnabled(false);
                 xAxis.setEnabled(true);
                 xAxis.setTextSize(10 * $fontScale);
@@ -300,71 +268,9 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw: {
-            color?: string | Color;
-            paint?: Paint;
-            iconFontSize: number;
-            icon: string;
-            value: string | number;
-            subvalue?: string;
-        }[] = [];
-        const iconFontSize = 20 * $fontScale;
-        if (item.windSpeed) {
-            centeredItemsToDraw.push({
-                iconFontSize,
-                paint: appPaint,
-                icon: item.windIcon,
-                value: convertValueToUnit(item.windSpeed, UNITS.Speed)[0],
-                subvalue: toImperialUnit(UNITS.Speed)
-            });
-        }
-        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-            centeredItemsToDraw.push({
-                iconFontSize,
-                paint: wiPaint,
-                color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
-                icon: 'wi-strong-wind',
-                value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
-                subvalue: toImperialUnit(UNITS.Speed)
-            });
-        }
-        centeredItemsToDraw.push({
-            paint: wiPaint,
-            color: nightColor,
-            iconFontSize,
-            icon: item.moonIcon,
-            value: l('moon')
-        });
-        if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
-            centeredItemsToDraw.push({
-                paint: wiPaint,
-                color,
-                iconFontSize,
-                icon: precipIcon,
-                value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
-                subvalue: item.precipProbability > 0 && item.precipProbability + '%'
-            });
-        } else if (item.cloudCover > 20) {
-            centeredItemsToDraw.push({
-                paint: wiPaint,
-                color: item.cloudColor,
-                iconFontSize,
-                icon: 'wi-cloud',
-                value: Math.round(item.cloudCover) + '%',
-                subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
-            });
-        }
-        const minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
-        if (item.uvIndex >= minUVIndexToShow) {
-            centeredItemsToDraw.push({
-                paint: mdiPaint,
-                color: item.uvIndexColor,
-                iconFontSize: 24 * $fontScale,
-                icon: 'mdi-weather-sunny-alert',
-                value: Math.round(item.uvIndex)
-            });
-        }
-        const iconsTop = hasPrecip ? 60 : topViewHeight / 2 - 20 * $fontScale;
+        const centeredItemsToDraw = weatherDataService.getIconsData(item);
+
+        const iconsTop = hasPrecip ? 45 : topViewHeight / 2 - 20 * $fontScale;
         const iconsLeft = 26;
         centeredItemsToDraw.forEach((c, index) => {
             const x = index * 45 * $fontScale + iconsLeft;
@@ -412,7 +318,7 @@
         canvas.restore();
 
         canvas.save();
-        canvas.translate(10, h - 16 - 14 * $fontScale);
+        canvas.translate(10, h - 8 - 14 * $fontScale);
         textPaint.setTextSize(14 * $fontScale);
         staticLayout = new StaticLayout(
             createNativeAttributedString({
@@ -449,7 +355,7 @@
         textPaint.setTextSize(20 * $fontScale);
         canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22 * $fontScale, textPaint);
         textPaint.setTextSize(14 * $fontScale);
-        canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 14, textPaint);
+        canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
 
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
@@ -483,8 +389,8 @@
         verticalAlignment="top"
         horizontalAlignment="left"
     /> -->
-    <linechart bind:this={lineChart} height={90} marginBottom={40} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
-    <WeatherIcon col={1} horizontalAlignment="right" icon={item.icon} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap={(event) => dispatch('tap', event)} />
+    <linechart bind:this={lineChart} height={90} marginBottom={30} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
+    <WeatherIcon col={1} horizontalAlignment="right" icon={item.icon} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap={(event) => dispatch('tap', event)} />
 
     <HourlyView colSpan={2} items={item.hourly} row={1} />
 </gridlayout>

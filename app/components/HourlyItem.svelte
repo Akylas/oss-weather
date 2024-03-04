@@ -8,17 +8,12 @@
     import { UNITS, formatValueToUnit } from '~/helpers/formatter';
     import { formatDate, formatTime, lc } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { Hourly } from '~/services/weather';
+    import { weatherDataService } from '~/services/weatherData';
+    import { Hourly } from '~/services/providers/weather';
     import { colors, fontScale, fonts, snowColor } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
-    const appTextPaint = new Paint();
-    appTextPaint.setTextAlign(Align.CENTER);
-    const iconPaint = new Paint();
-    iconPaint.setTextAlign(Align.CENTER);
-    // appTextPaint.setFontWeight('normal');
-    // appTextPaint.setAlpha(80);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
     const pathPaint = new Paint();
@@ -71,8 +66,6 @@
 
 <script lang="ts">
     $: ({ colorOnSurface, colorOnSurfaceVariant } = $colors);
-    $: appTextPaint.fontFamily = $fonts.app;
-    $: iconPaint.fontFamily = $fonts.wi;
     export let item: Hourly & {
         index: number;
         min: number;
@@ -216,25 +209,28 @@
         }
         textPaint.setFontWeight('normal');
 
-        if (item.windSpeed) {
-            appTextPaint.setTextSize(11 * $fontScale);
-            appTextPaint.setColor(colorOnSurface);
-            canvas.drawText(`${item.windIcon} ${formatValueToUnit(item.windSpeed, UNITS.Speed)}`, w2, iconDecale, appTextPaint);
+        const windSpeedData = weatherDataService.getItemData('windSpeed', item);
+
+        if (windSpeedData) {
+            windSpeedData.paint.setTextSize(11 * $fontScale);
+            windSpeedData.paint.setColor(windSpeedData.color || colorOnSurface);
+            canvas.drawText(`${windSpeedData.icon} ${windSpeedData.value} ${windSpeedData.subvalue}`, w2, iconDecale, windSpeedData.paint);
         }
-        if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-            textPaint.setTextSize(11 * $fontScale);
+        const windGustData = weatherDataService.getItemData('windGust', item);
+        if (windGustData) {
+            windGustData.paint.setTextSize(11 * $fontScale);
             if (item.windGust <= 80) {
-                textPaint.setColor('#FFBC03');
+                textPaint.setColor(windGustData.color);
             } else {
                 textPaint.setColor('#ffffff');
             }
-            const staticLayout = new StaticLayout(formatValueToUnit(item.windGust, UNITS.Speed), textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
+            const staticLayout = new StaticLayout(`${windGustData.value} ${windGustData.subvalue}`, textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
 
             canvas.save();
             canvas.translate(w2, iconDecale + 4);
             if (item.windGust > 80) {
                 const width = staticLayout.getWidth();
-                textPaint.setColor('#ff0353');
+                textPaint.setColor(windGustData.color);
                 canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, staticLayout.getHeight() - 0, 4, 4, textPaint);
             }
 

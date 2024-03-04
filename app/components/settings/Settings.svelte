@@ -1,28 +1,31 @@
-<script lang="ts">
+<script context="module" lang="ts">
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
-    import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
+    import { pickFolder } from '@nativescript-community/ui-document-picker';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
+    import { prompt } from '@nativescript-community/ui-material-dialogs';
     import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
-    import { ApplicationSettings, File, ObservableArray, Utils, View } from '@nativescript/core';
-    import dayjs from 'dayjs';
+    import { ApplicationSettings, ContentView, ObservableArray, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { NativeViewElementNode, navigate } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
-    import { MIN_UV_INDEX, NB_DAYS_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
+    import { MIN_UV_INDEX, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
-    import { OM_MODELS } from '~/services/om';
-    import { getProvider, getProviderType, providers } from '~/services/weatherproviderfactory';
+    import { OM_MODELS } from '~/services/providers/om';
+    import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
-    import { openLink, showAlertOptionSelect } from '~/utils/ui';
+    import { hideLoading, openLink, showAlertOptionSelect } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, navigationBarHeight } from '~/variables';
-
+    import IconButton from '../common/IconButton.svelte';
+    import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
+    const storeSettings = {};
+</script>
 
+<script lang="ts">
     // technique for only specific properties to get updated on store change
     let { colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors;
     $: ({ colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors);
@@ -30,6 +33,14 @@
     let collectionView: NativeViewElementNode<CollectionView>;
 
     let items: ObservableArray<any>;
+
+    export let title = $slc('settings.title');
+    export let reorderEnabled = false;
+    export let actionBarButtons = [
+        { icon: 'mdi-share-variant', id: 'share' },
+        { icon: 'mdi-github', id: 'github' }
+    ];
+    export let options: any[] = null;
 
     function getTitle(item) {
         switch (item.id) {
@@ -40,152 +51,276 @@
         }
     }
     function getDescription(item) {
-        return typeof item.description === 'function' ? item.description() : item.description;
+        return typeof item.description === 'function' ? item.description(item) : item.description;
+    }
+
+    function getStoreSetting(k: string, defaultValue) {
+        if (!storeSettings[k]) {
+            storeSettings[k] = JSON.parse(ApplicationSettings.getString(k, defaultValue));
+        }
+        return storeSettings[k];
     }
     function refresh() {
-        const newItems: any[] = [
-            {
-                type: 'header',
-                title: lc('donate')
-            },
-            {
-                id: 'language',
-                description: getLocaleDisplayName,
-                title: lc('language')
-            },
-            {
-                id: 'dark_mode',
-                description: getThemeDisplayName,
-                title: lc('theme.title')
-            },
-            {
-                type: 'switch',
-                id: 'auto_black',
-                title: lc('auto_black'),
-                value: ApplicationSettings.getBoolean('auto_black', false)
-            },
-            {
-                type: 'switch',
-                id: 'animations',
-                title: lc('animations'),
-                value: ApplicationSettings.getBoolean('animations', false)
-            },
-            {
-                type: 'switch',
-                id: 'clock_24',
-                title: lc('clock_24'),
-                value: clock_24
-            },
-            {
-                key: 'provider',
-                id: 'setting',
-                valueType: 'string',
-                description: () => lc('provider.' + getProviderType()),
-                title: lc('provider.title'),
-                currentValue: getProviderType,
-                values: providers.map((t) => ({ value: t, title: lc(t) }))
-            },
-            {
-                key: 'open_meteo_prefered_model',
-                id: 'setting',
-                valueType: 'string',
-                description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
-                title: lc('open_meteo_prefered_model'),
-                currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
-                values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
-            },
-            {
-                type: 'switch',
-                id: 'imperial',
-                title: lc('imperial_units'),
-                value: $imperial
-            },
-            {
-                key: 'forecast_nb_days',
-                id: 'setting',
-                title: lc('forecast_nb_days'),
-                values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
-                currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
-                rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
-            },
-            {
-                key: 'min_uv_index',
-                id: 'setting',
-                title: lc('min_uv_index'),
-                values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
-                currentValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX),
-                rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
-            },
-            {
-                key: 'weather_map_colors',
-                id: 'setting',
-                title: lc('weather_map_colors'),
-                values: WEATHER_MAP_COLOR_SCHEMES,
-                description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
-            },
-            {
-                type: 'switch',
-                id: 'metric_temp_decimal',
-                title: lc('metric_temp_decimal'),
-                value: ApplicationSettings.getBoolean('metric_temp_decimal', false)
-            },
-            {
-                type: 'switch',
-                id: 'feels_like_temperatures',
-                title: lc('feels_like_temperatures'),
-                value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
-            },
-            {
-                type: 'prompt',
-                valueType: 'string',
-                id: 'setting',
-                key: 'owmApiKey',
-                description: lc('api_key_required_description'),
-                title: lc('owm_api_key')
-            }
-        ]
-            .concat(
-                PLAY_STORE_BUILD
-                    ? [
-                          //   {
-                          //       id: 'share',
-                          //       rightBtnIcon: 'mdi-chevron-right',
-                          //       title: lc('share_application')
-                          //   },
-                          {
-                              id: 'review',
-                              rightBtnIcon: 'mdi-chevron-right',
-                              title: lc('review_application')
-                          }
-                      ]
-                    : ([] as any)
-            )
-            .concat([
-                // {
-                //     id: 'version',
-                //     title: lc('version'),
-                //     description: __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__
-                // },
-                // {
-                //     id: 'github',
-                //     rightBtnIcon: 'mdi-chevron-right',
-                //     title: lc('source_code'),
-                //     description: lc('get_app_source_code')
-                // },
+        const newItems: any[] =
+            options ||
+            [
                 {
-                    id: 'third_party',
-                    // rightBtnIcon: 'mdi-chevron-right',
-                    title: lc('third_parties'),
-                    description: lc('list_used_third_parties')
+                    type: 'header',
+                    title: __IOS__ ? lc('show_love') : lc('donate')
+                },
+                {
+                    type: 'sectionheader',
+                    title: lc('general')
+                },
+                {
+                    id: 'language',
+                    description: () => getLocaleDisplayName(),
+                    title: lc('language')
+                },
+                {
+                    id: 'dark_mode',
+                    description: () => getThemeDisplayName(),
+                    title: lc('theme.title')
+                },
+                {
+                    type: 'switch',
+                    id: 'auto_black',
+                    title: lc('auto_black'),
+                    value: ApplicationSettings.getBoolean('auto_black', false)
+                },
+                {
+                    type: 'switch',
+                    id: 'clock_24',
+                    title: lc('clock_24'),
+                    value: clock_24
                 }
-            ] as any);
+            ]
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('units'),
+                        description: lc('units_settings'),
+                        icon: 'mdi-temperature-celsius',
+                        options: () => [
+                            {
+                                type: 'switch',
+                                id: 'imperial',
+                                title: lc('imperial_units'),
+                                value: $imperial
+                            },
+                            {
+                                type: 'switch',
+                                id: 'metric_temp_decimal',
+                                title: lc('metric_temp_decimal'),
+                                value: ApplicationSettings.getBoolean('metric_temp_decimal', false)
+                            }
+                        ]
+                    }
+                ] as any)
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('providers'),
+                        description: lc('providers_settings'),
+                        icon: 'mdi-cloud-circle',
+                        options: () => [
+                            {
+                                key: 'provider',
+                                id: 'setting',
+                                valueType: 'string',
+                                description: () => lc('provider.' + getProviderType()),
+                                title: lc('provider.title'),
+                                currentValue: getProviderType,
+                                values: providers.map((t) => ({ value: t, title: lc(t) }))
+                            },
+                            {
+                                key: 'open_meteo_prefered_model',
+                                id: 'setting',
+                                valueType: 'string',
+                                description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
+                                title: lc('open_meteo_prefered_model'),
+                                currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
+                                values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
+                            },
+                            {
+                                type: 'prompt',
+                                valueType: 'string',
+                                id: 'setting',
+                                key: 'owmApiKey',
+                                description: lc('api_key_required_description'),
+                                title: lc('owm_api_key')
+                            },
+                            {
+                                key: 'forecast_nb_days',
+                                id: 'setting',
+                                title: lc('forecast_nb_days'),
+                                values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
+                                currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
+                                rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
+                            },
+                            {
+                                key: 'forecast_nb_hours',
+                                id: 'setting',
+                                title: lc('forecast_nb_hours'),
+                                values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
+                                currentValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST),
+                                rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
+                            },
+                            {
+                                key: 'forecast_nb_minutes',
+                                id: 'setting',
+                                title: lc('forecast_nb_minutes'),
+                                values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
+                                currentValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST),
+                                rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
+                            }
+                        ]
+                    }
+                ] as any)
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('weather_data'),
+                        description: lc('weather_data_settings'),
+                        reorderEnabled: true,
+                        onReordered: () => {},
+                        icon: 'mdi-gauge',
+                        options: () => {
+                            const currentData = weatherDataService.currentWeatherData;
+                            const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => currentData.indexOf(d) === -1);
+                            return [
+                                {
+                                    type: 'switch',
+                                    id: 'feels_like_temperatures',
+                                    title: lc('feels_like_temperatures'),
+                                    value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
+                                },
+                                {
+                                    key: 'min_uv_index',
+                                    id: 'setting',
+                                    title: lc('min_uv_index'),
+                                    values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
+                                    currentValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX),
+                                    rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
+                                },
+                                {
+                                    type: 'sectionheader',
+                                    id: 'enabled',
+                                    title: lc('enabled_weather_data')
+                                }
+                            ]
+                                .concat(
+                                    currentData.map((k) => ({
+                                        id: k,
+                                        reorder: true,
+                                        type: 'reorder',
+                                        title: getWeatherDataTitle(k)
+                                    })) as any
+                                )
+                                .concat([
+                                    {
+                                        type: 'sectionheader',
+                                        id: 'disabled',
+                                        reorder: true,
+                                        title: lc('disabled_weather_data')
+                                    }
+                                ] as any)
+                                .concat(
+                                    disabledData.map((k) => ({
+                                        id: k,
+                                        reorder: true,
+                                        type: 'reorder',
+                                        title: getWeatherDataTitle(k)
+                                    })) as any
+                                );
+                        }
+                    }
+                ] as any)
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('map'),
+                        description: lc('map_settings'),
+                        icon: 'mdi-map',
+                        options: () => [
+                            {
+                                key: 'weather_map_colors',
+                                id: 'setting',
+                                title: lc('weather_map_colors'),
+                                values: WEATHER_MAP_COLOR_SCHEMES,
+                                description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
+                            }
+                        ]
+                    }
+                ] as any)
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('geolocation'),
+                        description: lc('geolocation_settings'),
+                        icon: 'mdi-map-marker-circle',
+                        options: () => [
+                            {
+                                type: 'switch',
+                                id: 'refresh_location_on_pull',
+                                title: lc('refresh_location_on_pull'),
+                                value: ApplicationSettings.getBoolean('refresh_location_on_pull', false)
+                            }
+                        ]
+                    }
+                ] as any)
+                .concat([
+                    {
+                        id: 'third_party',
+                        // rightBtnIcon: 'mdi-chevron-right',
+                        title: lc('third_parties'),
+                        description: lc('list_used_third_parties')
+                    }
+                ] as any)
+                .concat(
+                    PLAY_STORE_BUILD
+                        ? [
+                              //   {
+                              //       id: 'share',
+                              //       rightBtnIcon: 'mdi-chevron-right',
+                              //       title: lc('share_application')
+                              //   },
+                              {
+                                  type: 'rightIcon',
+                                  id: 'review',
+                                  rightBtnIcon: 'mdi-chevron-right',
+                                  title: lc('review_application')
+                              }
+                          ]
+                        : ([] as any)
+                )
+
+                .concat([
+                    {
+                        type: 'sectionheader',
+                        title: lc('backup_restore')
+                    },
+                    {
+                        id: 'export_settings',
+                        title: lc('export_settings'),
+                        description: lc('export_settings_desc')
+                        // rightBtnIcon: 'mdi-chevron-right'
+                    },
+                    {
+                        id: 'import_settings',
+                        title: lc('import_settings'),
+                        description: lc('import_settings_desc')
+                        // rightBtnIcon: 'mdi-chevron-right'
+                    }
+                ] as any);
+
         items = new ObservableArray(newItems);
     }
     refresh();
 
-    async function onLongPress(item, event) {
+    async function onLongPress(id, event) {
         try {
-            switch (item.id) {
+            switch (id) {
                 case 'version':
                     if (SENTRY_ENABLED) {
                         throw new Error('test error');
@@ -202,6 +337,16 @@
         }
     }
     let checkboxTapTimer;
+    async function onRightIconTap(item, event) {
+        try {
+            const needsUpdate = await item.onRightIconTap?.(item, event);
+            if (needsUpdate) {
+                updateItem(item);
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
     async function onTap(item, event) {
         try {
             if (item.type === 'checkbox' || item.type === 'switch') {
@@ -213,6 +358,20 @@
                 return;
             }
             switch (item.id) {
+                case 'sub_settings': {
+                    const component = (await import('~/components/settings/Settings.svelte')).default;
+                    navigate({
+                        page: component,
+                        props: {
+                            title: item.title,
+                            reorderEnabled: item.reorderEnabled,
+                            options: item.options(),
+                            actionBarButtons: item.actionBarButtons?.() || []
+                        }
+                    });
+
+                    break;
+                }
                 case 'github':
                     openLink(GIT_URL);
                     break;
@@ -306,17 +465,33 @@
 
                     break;
                 }
+                default: {
+                    const needsUpdate = await item.onTap?.(item, event);
+                    if (needsUpdate) {
+                        updateItem(item);
+                    }
+                    break;
+                }
             }
         } catch (err) {
             showError(err);
+        } finally {
+            hideLoading();
         }
     }
+    onLanguageChanged(refresh);
 
     function selectTemplate(item, index, items) {
-        if (item.type === 'prompt') {
-            return 'default';
+        if (item.type) {
+            if (item.type === 'prompt') {
+                return 'default';
+            }
+            return item.type;
         }
-        return item.type || 'default';
+        if (item.icon) {
+            return 'leftIcon';
+        }
+        return 'default';
     }
 
     async function onCheckBox(item, event) {
@@ -329,9 +504,11 @@
             clearTimeout(checkboxTapTimer);
             checkboxTapTimer = null;
         }
+        DEV_LOG && console.log('onCheckBox', item.id, value);
         try {
             switch (item.id) {
                 default:
+                    DEV_LOG && console.log('updating setting for checkbox', item.id, item.key, value);
                     ApplicationSettings.setBoolean(item.key || item.id, value);
                     break;
             }
@@ -340,28 +517,48 @@
         }
     }
     function refreshCollectionView() {
-        collectionView?.nativeView.refresh();
-        //     console.log('refreshCollectionView');
-        // const nativeView = collectionView?.nativeView;
-        //     if (nativeView) {
-        //         items.forEach((item, index)=>{
-        //         if (item.type === 'switch') {
-        //             nativeView.getViewForItemAtIndex(index).getViewById('checkbox')?.updateTheme?.();
-        //         }
-        //     });
-        //     }
+        collectionView?.nativeView?.refresh();
     }
     onThemeChanged(refreshCollectionView);
-    onLanguageChanged((value, event) => {
-        if (event.clock_24 !== true) {
-            refresh();
+
+    async function onItemReordered(e) {
+        try {
+            const oldIndex = e.index;
+            const oldData = e.item;
+            const newIndex = e.data.targetIndex;
+            const disabledPosition = items.findIndex((d) => d.id === 'disabled');
+            const enabledPosition = items.findIndex((d) => d.id === 'enabled');
+            weatherDataService.updateCurrentWeatherData([...items.slice(enabledPosition + 1, disabledPosition)].map((d) => d.id));
+        } catch (error) {
+            showError(error);
         }
-    });
+    }
+    function onItemReorderStarting(e) {}
+    function onItemReorderCheck(e) {
+        e.returnValue = e.item.reorder;
+    }
+
+    function startReordering(item, event) {
+        if (event.action === 'down') {
+            const index = items.indexOf(item);
+            collectionView.nativeView.startDragging(index);
+        }
+    }
 </script>
 
 <page actionBarHidden={true}>
     <gridlayout rows="auto,*">
-        <collectionview bind:this={collectionView} itemTemplateSelector={selectTemplate} {items} row={1} android:paddingBottom={$navigationBarHeight}>
+        <collectionview
+            bind:this={collectionView}
+            accessibilityValue="settingsCV"
+            itemTemplateSelector={selectTemplate}
+            {items}
+            {reorderEnabled}
+            row={1}
+            android:paddingBottom={$navigationBarHeight}
+            on:itemReordered={onItemReordered}
+            on:itemReorderCheck={onItemReorderCheck}
+            on:itemReorderStarting={onItemReorderStarting}>
             <Template key="header" let:item>
                 <gridlayout rows="auto,auto">
                     <stacklayout
@@ -375,86 +572,59 @@
                         verticalAlignment="center"
                         on:tap={(event) => onTap({ id: 'sponsor' }, event)}>
                         <label color="white" fontFamily={$fonts.mdi} fontSize={26} marginRight={10} text="mdi-heart" verticalAlignment="center" />
-                        <label color="white" fontSize={14} text={item.title} textWrap={true} verticalAlignment="center" />
+                        <label color="white" fontSize={12} text={item.title} textWrap={true} verticalAlignment="center" />
                     </stacklayout>
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
                         <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50} />
-                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress({ id: 'version' }, event)} />
+                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress('version', event)} />
                     </stacklayout>
                 </gridlayout>
             </Template>
+            <Template key="sectionheader" let:item>
+                <label class="sectionHeader" text={item.title} />
+            </Template>
             <Template key="switch" let:item>
-                <ListItemAutoSize leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <switch id="checkbox" checked={item.value} col={2} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
+                <ListItemAutoSize fontSize={20} leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <switch id="checkbox" checked={item.value} col={2} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
                 </ListItemAutoSize>
             </Template>
             <Template key="checkbox" let:item>
-                <ListItemAutoSize leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <checkbox id="checkbox" checked={item.value} col={2} on:checkedChange={(e) => onCheckBox(item, e)} />
+                <ListItemAutoSize fontSize={20} leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <checkbox id="checkbox" checked={item.value} col={2} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} />
                 </ListItemAutoSize>
             </Template>
-            <Template let:item>
+            <Template key="rightIcon" let:item>
+                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <IconButton col={2} text={item.rightBtnIcon} on:tap={(event) => onRightIconTap(item, event)} />
+                </ListItemAutoSize>
+            </Template>
+            <Template key="reorder" let:item>
+                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <label col={2} fontFamily={$fonts.mdi} fontSize={24} padding={4} text="mdi-dots-grid" verticalAlignment="center" on:touch={(event) => startReordering(item, event)} />
+                </ListItemAutoSize>
+            </Template>
+            <Template key="leftIcon" let:item>
                 <ListItemAutoSize
+                    fontSize={20}
                     leftIcon={item.icon}
-                    rightIcon={item.rightBtnIcon}
                     rightValue={item.rightValue}
                     showBottomLine={false}
                     subtitle={getDescription(item)}
                     title={getTitle(item)}
-                    on:tap={(event) => onTap(item, event)}
-                    on:longPress={(event) => onLongPress(item, event)}>
+                    on:tap={(event) => onTap(item, event)}>
+                    <label col={0} fontFamily={$fonts.mdi} fontSize={24} padding="0 10 0 0" text={item.icon} verticalAlignment="center" />
                 </ListItemAutoSize>
             </Template>
-            <!-- <Template key="switch" let:item>
-                <gridlayout columns="*,auto" padding="10 16 10 16">
-                    <stacklayout verticalAlignment="middle" on:tap={(event) => onTap(item, event)}>
-                        <label fontSize={17} fontWeight="bold" lineBreak="end" maxLines={1} text={getTitle(item)} verticalTextAlignment="top" />
-                        <label
-                            color={colorOnSurfaceVariant}
-                            fontSize={14}
-                            lineBreak="end"
-                            text={item.description}
-                            verticalTextAlignment="top"
-                            visibility={item.description?.length > 0 ? 'visible' : 'collapse'} />
-                    </stacklayout>
-                    <checkbox id="checkbox" checked={item.value} col={1} on:checkedChange={(e) => onCheckBox(item, e.value)} />
-                </gridlayout>
-            </Template>
             <Template let:item>
-                <gridlayout columns="auto,*,auto" padding="10 16 10 16" rippleColor={colorOnSurface} on:tap={(event) => onTap(item, event)} on:longPress={(event) => onLongPress(item.id, item)}>
-                    <label fontFamily={$fonts.mdi} fontSize={36} marginLeft="-10" text={item.icon} verticalAlignment="middle" visibility={!!item.icon ? 'visible' : 'hidden'} width={40} />
-                    <stacklayout col={1} height={item.description?.length > 0 ? 'auto' : 50} marginLeft="10" verticalAlignment="middle">
-                        <label color={colorOnSurface} fontSize={17} fontWeight="bold" lineBreak="end" maxLines={1} text={getTitle(item)} textWrap="true" verticalTextAlignment="top" />
-                        <label color={colorOnSurfaceVariant} fontSize={14} lineBreak="end" text={item.description} verticalTextAlignment="top" />
-                    </stacklayout>
-
-                    <label
-                        col={2}
-                        color={colorOnSurfaceVariant}
-                        marginLeft={16}
-                        marginRight={16}
-                        text={item.rightValue && item.rightValue()}
-                        verticalAlignment="center"
-                        visibility={!!item.rightValue ? 'visible' : 'collapse'} />
-                    <label
-                        col={2}
-                        color={colorOutlineVariant}
-                        fontFamily={$fonts.mdi}
-                        fontSize={30}
-                        horizontalAlignment="right"
-                        marginLeft={16}
-                        marginRight={16}
-                        text={item.rightBtnIcon}
-                        verticalAlignment="center"
-                        visibility={!!item.rightBtnIcon ? 'visible' : 'hidden'}
-                        width={25} />
-                </gridlayout>
-            </Template> -->
+                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                </ListItemAutoSize>
+            </Template>
         </collectionview>
-        <CActionBar canGoBack title={$slc('settings.title')}>
-            <mdbutton class="actionBarButton" text="mdi-share-variant" variant="text" on:tap={(event) => onTap({ id: 'share' }, event)} />
-            <mdbutton class="actionBarButton" text="mdi-github" variant="text" on:tap={(event) => onTap({ id: 'github' }, event)} />
+        <CActionBar canGoBack {title}>
+            {#each actionBarButtons as button}
+                <mdbutton class="actionBarButton" text={button.icon} variant="text" on:tap={(event) => onTap({ id: button.id }, event)} />
+            {/each}
         </CActionBar>
     </gridlayout>
 </page>

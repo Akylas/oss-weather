@@ -45,7 +45,7 @@
                   if (onLongPress) {
                       onLongPress(event);
                   } else {
-                    //   showToolTip(tooltip);
+                      //   showToolTip(tooltip);
                   }
               }
             : null;
@@ -66,10 +66,9 @@
         staticLayout.draw(canvas);
         // canvas.drawText(text, w2, w2+ textSize/3, iconPaint);
     }
-
 </script>
 
-<canvas
+<canvasview
     bind:this={canvas}
     borderRadius={shape === 'round' || (rounded && !shape) ? size / 2 : null}
     disableCss={true}

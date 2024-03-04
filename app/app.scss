@@ -148,7 +148,8 @@ page,
     background-color: var(--colorBackground);
     status-bar-color: var(--colorBackground);
 
-    .ns-dark &, .ns-black & {
+    .ns-dark &,
+    .ns-black & {
         status-bar-style: dark;
     }
 }
@@ -196,4 +197,20 @@ page,
     font-size: 13;
     color: var(--colorOnBackground);
     // color: #ffffff88;
+}
+
+
+
+.sectionHeader {
+    font-size: 15;
+    font-weight: 500;
+    color: var(--colorPrimary);
+    padding: 5 5 5 16;
+}
+
+.sectionBigHeader {
+    font-size: 20;
+    font-weight: 500;
+    color: var(--colorPrimary);
+    padding: 4 0 10 0;
 }

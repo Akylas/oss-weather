@@ -229,13 +229,25 @@
                     saveLocation(result);
                 }
             }
-        } catch (err) {
-            showError(err);
+        } catch (error) {
+            showError(error);
         } finally {
             loading = false;
         }
     }
+    async function onPullToRefresh() {
+        try {
+            const refreshLocationOnPull = ApplicationSettings.getBoolean('refresh_location_on_pull', false);
+            if (refreshLocationOnPull) {
+                await getLocationAndWeather();
+            } else {
+                await refresh();
 
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
     async function refresh() {
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
@@ -252,15 +264,19 @@
     }
 
     async function askForApiKey() {
-        const ApiKeysBottomSheet = (await import('~/components/APIKeysBottomSheet.svelte')).default;
-        const result: boolean = await showBottomSheet({
-            parent: page,
-            view: ApiKeysBottomSheet,
-            dismissOnBackgroundTap: true,
-            dismissOnDraggingDownSheet: true
-        });
-        if (result) {
-            refresh();
+        try {
+            const ApiKeysBottomSheet = (await import('~/components/APIKeysBottomSheet.svelte')).default;
+            const result: boolean = await showBottomSheet({
+                parent: page,
+                view: ApiKeysBottomSheet,
+                dismissOnBackgroundTap: true,
+                dismissOnDraggingDownSheet: true
+            });
+            if (result) {
+                refresh();
+            }
+        } catch (error) {
+            showError(error);
         }
     }
     onMount(async () => {
@@ -272,13 +288,17 @@
         }
 
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
-            if (networkConnected !== event.data.connected) {
-                networkConnected = event.data.connected;
-                if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
-                    refresh();
+            try {
+                if (networkConnected !== event.data.connected) {
+                    networkConnected = event.data.connected;
+                    if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
+                        refresh();
+                    }
+                } else {
+                    updateView();
                 }
-            } else {
-                updateView();
+            } catch (error) {
+                showError(error);
             }
         });
         networkService.start(); // should send connection event and then refresh
@@ -290,7 +310,11 @@
 
     onLanguageChanged((lang) => {
         DEV_LOG && console.log('refresh triggered by lang change');
-        refresh();
+        try {
+            refresh();
+        } catch (error) {
+            showError(error);
+        }
     });
 
     async function showAlerts() {
@@ -392,6 +416,7 @@
         ApplicationSettings.setString('provider', newProvider);
     }
 </script>
+
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
@@ -407,7 +432,7 @@
             {#if !networkConnected && !weatherData}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if weatherLocation}
-                <pullrefresh bind:this={pullRefresh} row={1} on:refresh={refresh}>
+                <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
                     <WeatherComponent {items} {weatherLocation} on:tap={onTap} />
                 </pullrefresh>
                 <label

@@ -134,23 +134,6 @@
                                 values: providers.map((t) => ({ value: t, title: lc(t) }))
                             },
                             {
-                                key: 'open_meteo_prefered_model',
-                                id: 'setting',
-                                valueType: 'string',
-                                description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
-                                title: lc('open_meteo_prefered_model'),
-                                currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
-                                values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
-                            },
-                            {
-                                type: 'prompt',
-                                valueType: 'string',
-                                id: 'setting',
-                                key: 'owmApiKey',
-                                description: lc('api_key_required_description'),
-                                title: lc('owm_api_key')
-                            },
-                            {
                                 key: 'forecast_nb_days',
                                 id: 'setting',
                                 title: lc('forecast_nb_days'),
@@ -173,6 +156,43 @@
                                 values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
                                 currentValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST),
                                 rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
+                            },
+                            {
+                                type: 'sectionheader',
+                                title: lc('provider.openmeteo')
+                            },
+                            {
+                                key: 'open_meteo_prefered_model',
+                                id: 'setting',
+                                valueType: 'string',
+                                description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
+                                title: lc('open_meteo_prefered_model'),
+                                currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
+                                values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
+                            },
+                            {
+                                type: 'sectionheader',
+                                title: lc('provider.openweathermap')
+                            },
+                            {
+                                type: 'prompt',
+                                valueType: 'string',
+                                id: 'setting',
+                                key: 'owmApiKey',
+                                description: lc('api_key_required_description'),
+                                title: lc('owm_api_key')
+                            },
+                            {
+                                id: 'setting',
+                                valueType: 'string',
+                                key: 'owm_one_call_version',
+                                title: lc('owm_one_call_version'),
+                                values: [
+                                    { value: '2.5', title: '2.5' },
+                                    { value: '3.0', title: '3.0' }
+                                ],
+                                currentValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5'),
+                                rightValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5')
                             }
                         ]
                     }

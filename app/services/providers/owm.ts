@@ -16,9 +16,9 @@ export class OWMProvider extends WeatherProvider {
         super();
     }
 
-    private static async fetch<T = any>(apiName: string, queryParams: OWMParams = {}) {
+    private static async fetch<T = any>(apiVersion: string, apiName: string, queryParams: OWMParams = {}) {
         return request<T>({
-            url: `https://api.openweathermap.org/data/2.5/${apiName}`,
+            url: `https://api.openweathermap.org/data/${apiVersion}/${apiName}`,
             method: 'GET',
             queryParams: {
                 lang,
@@ -32,7 +32,8 @@ export class OWMProvider extends WeatherProvider {
     public override async getWeather(weatherLocation: WeatherLocation) {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
-        const result = await OWMProvider.fetch<OneCallResult>('onecall', coords);
+        const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '2.5');
+        const result = await OWMProvider.fetch<OneCallResult>(onecallVersion, 'onecall', coords);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
         const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);

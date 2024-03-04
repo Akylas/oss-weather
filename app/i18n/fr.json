@@ -57,7 +57,7 @@
     "export_settings_desc": "exporter tous les paramètres de l'application afin de pouvoir les importer plus tard",
     "extreme_cold": "Extrême froid",
     "favorites": "Favoris",
-    "feels_like_temperatures": "le spectacle ressemble à de la température lorsqu'il est disponible",
+    "feels_like_temperatures": "afficher la température ressentie lorsqu'elle est disponible",
     "file": "Fichier",
     "flood": "Inondations",
     "fog": "Brouillard",

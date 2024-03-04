@@ -129,6 +129,7 @@
     "open_meteo_prefered_model": "Open-Meteo preferred model",
     "open_website": "Open website",
     "owm_api_key": "OpenWeatherMap API key",
+    "owm_one_call_version": "OneCall version",
     "partly_cloudy": "Partly cloudy",
     "pick_date": "Pick a date",
     "please_describe_error": "Please describe the error",

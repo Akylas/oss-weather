@@ -2,7 +2,7 @@
     import { titlecase } from '@nativescript-community/l';
     import { Template } from 'svelte-native/components';
     import { formatDate, l } from '~/helpers/locale';
-    import type { Alert } from '~/services/openweathermap';
+    import type { Alert } from '~/services//providers/weather';
 
     export let alerts: Alert[];
 </script>

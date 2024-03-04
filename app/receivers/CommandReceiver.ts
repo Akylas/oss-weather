@@ -1,5 +1,5 @@
 import { geocodeAddress, networkService, prepareItems } from '~/services/api';
-import { getProvider } from '~/services/weatherproviderfactory';
+import { getProvider } from '~/services//providers/weatherproviderfactory';
 
 @JavaProxy('com.akylas.weather.CommandReceiver')
 @NativeClass

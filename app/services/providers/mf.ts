@@ -319,9 +319,8 @@ export class MFProvider extends WeatherProvider {
             d.windGust = data.wind_speed_gust * 3.6;
             d.windSpeed = data.wind_speed * 3.6;
             d.iso = data.iso0;
-            // TODO: difference between iso0 and 'rain snow limit'
             if (typeof data['rain snow limit'] === 'number') {
-                d.iso = data['rain snow limit'];
+                d.rainSnowLimit = data['rain snow limit'];
             }
             // d.pressure = data.pressure;
             return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain_1h, data.snow_1h);

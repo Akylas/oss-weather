@@ -67,7 +67,7 @@
     "forecast_nb_minutes": "Nombre de minutes dans la prévision minute (si disponible, inclut Actuel)",
     "freezing_drizzle": "Bruine verglaçante",
     "freezing_fog": "Brouillard glacial",
-    "freezing_level": "niveau de congélation",
+    "freezing_level": "isotherme 0°",
     "freezing_rain": "Pluie verglaçante",
     "french": "Français",
     "general": "général",

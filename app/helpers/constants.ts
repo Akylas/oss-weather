@@ -1,4 +1,4 @@
-export const NB_DAYS_FORECAST = 12;
+export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;
 export const NB_MINUTES_FORECAST = 60;
 export const MIN_UV_INDEX = 1;

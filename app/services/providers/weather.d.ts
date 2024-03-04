@@ -39,6 +39,7 @@ export interface CommonWeatherData {
     windSpeed?: number;
     windGust?: number;
     temperature?: number;
+    usingFeelsLike?: boolean;
     temperatureMin?: number;
     temperatureMax?: number;
     precipProbability?: number;

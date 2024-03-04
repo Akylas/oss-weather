@@ -43,6 +43,7 @@ export class OWMProvider extends WeatherProvider {
                 {
                     time: result.current.dt * 1000,
                     temperature: feelsLikeTemperatures ? result.current.feels_like : result.current.temp,
+                    usingFeelsLike: feelsLikeTemperatures,
                     pressure: result.current.pressure,
                     humidity: result.current.humidity,
                     cloudCover: result.current.clouds,
@@ -107,6 +108,7 @@ export class OWMProvider extends WeatherProvider {
                 d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
                 d.windGust = Math.round(data.wind_gust * 3.6);
                 d.temperature = feelsLikeTemperatures ? data.feels_like : data.temp;
+                d.usingFeelsLike = feelsLikeTemperatures;
 
                 d.windBearing = data.wind_deg;
                 if (hasNext) {
@@ -138,7 +140,7 @@ export class OWMProvider extends WeatherProvider {
     }
 
     public static async getCityName(pos: Coord) {
-        const result = await OWMProvider.fetch<CityWeather>('weather', {
+        const result = await OWMProvider.fetch<CityWeather>('2.5', 'weather', {
             lat: pos.lat,
             lon: pos.lon
         });

@@ -197,7 +197,7 @@ export class OMProvider extends WeatherProvider {
             d.icon = this.convertWeatherCodeToIcon(code, this.getDataArray(hourly, 'is_day', preferedModel)[index]);
             d.description = OMProvider.weatherCodeDescription[code];
             d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', preferedModel)[index];
-
+            d.usingFeelsLike = feelsLikeTemperatures;
             d.windBearing = this.getDataArray(hourly, 'winddirection_10m', preferedModel)[index];
 
             const hasNext = index < hourlyLastIndex;
@@ -264,6 +264,7 @@ export class OMProvider extends WeatherProvider {
                       {
                           time: current.time * 1000,
                           temperature: feelsLikeTemperatures ? current.apparent_temperature : current.temperature_2m,
+                          usingFeelsLike: feelsLikeTemperatures,
                           windSpeed: current.windspeed_10m,
                           cloudCover: current.cloudcover,
                           windBearing: current.winddirection_10m,
@@ -283,6 +284,7 @@ export class OMProvider extends WeatherProvider {
                         icon: this.convertWeatherCodeToIcon(code, true),
                         temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', preferedModel)[index],
                         temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', preferedModel)[index],
+                        usingFeelsLike: feelsLikeTemperatures,
                         // humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
                         uvIndex: Math.ceil(this.getDataArray(daily, 'uv_index_max', preferedModel)?.[index]),
                         windGust: Math.round(this.getDataArray(daily, 'windgusts_10m_max', preferedModel)[index]),

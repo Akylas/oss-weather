@@ -211,10 +211,12 @@
 
         const windSpeedData = weatherDataService.getItemData('windSpeed', item);
 
+        let iconDeltaY = 0;
         if (windSpeedData) {
             windSpeedData.paint.setTextSize(11 * $fontScale);
             windSpeedData.paint.setColor(windSpeedData.color || colorOnSurface);
             canvas.drawText(`${windSpeedData.icon} ${windSpeedData.value} ${windSpeedData.subvalue}`, w2, iconDecale, windSpeedData.paint);
+            iconDeltaY += 18;
         }
         const windGustData = weatherDataService.getItemData('windGust', item);
         if (windGustData) {
@@ -227,7 +229,7 @@
             const staticLayout = new StaticLayout(`${windGustData.value} ${windGustData.subvalue}`, textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
 
             canvas.save();
-            canvas.translate(w2, iconDecale + 4);
+            canvas.translate(w2, iconDecale + 4 - 18 + iconDeltaY);
             if (item.windGust > 80) {
                 const width = staticLayout.getWidth();
                 textPaint.setColor(windGustData.color);

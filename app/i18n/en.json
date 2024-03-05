@@ -64,7 +64,7 @@
     "font_scale": "Font scale",
     "forecast_nb_days": "Days in forecast (if available, includes Current)",
     "forecast_nb_hours": "Number of hours in hourly forecast (if available)",
-    "forecast_nb_minutes": "Number of minutes in minutely forecast (if available)",
+    "forecast_nb_minutes": "Number of minutes in minutely forecast (when available)",
     "freezing_drizzle": "Freezing drizzle",
     "freezing_fog": "Freezing fog",
     "freezing_level": "freezing level",

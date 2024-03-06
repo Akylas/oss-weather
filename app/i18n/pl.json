@@ -49,6 +49,7 @@
     "error": "Błąd",
     "espagnol": "hiszpański",
     "expires": "Wygasa",
+    "export_settings": "eksportuj ustawienia",
     "extreme_cold": "Ekstremalnie zimno",
     "favorites": "Ulubione",
     "feels_like_temperatures": "pokaz przypomina temperaturę, jeśli jest dostępny",
@@ -61,6 +62,8 @@
     "freezing_level": "poziom zamarzania",
     "freezing_rain": "Marznący deszcz",
     "french": "Francuski",
+    "general": "ogólne",
+    "geolocation": "geolokalizacja",
     "german": "Niemiecki",
     "gps_location": "Znajdź lokalizację GPS",
     "gps_not_authorized": "Włącz GPS i przyznaj OSS Weather dostęp do niego, aby określić swoją lokalizację",
@@ -76,6 +79,7 @@
     "heavy_snow": "Duże opady śniegu",
     "heavy_snow_shower": "Silny deszcz śniegu",
     "imperial_units": "Jednostki imperialne (°F, mph,…)",
+    "import_settings": "importuj ustawienia",
     "ios": {
         "info": {
             "plist": {
@@ -97,6 +101,7 @@
     "list_used_third_parties": "lista używanych stron trzecich",
     "loading": "Ładowanie",
     "map": "Mapa",
+    "map_settings": "ustawienia mapy",
     "medium": "Umiarkowany",
     "metric_temp_decimal": "w przypadku temperatury metrycznej używaj wartości dziesiętnych",
     "missing_location_perm": "Brak pozwolenia na lokalizację",
@@ -112,6 +117,7 @@
     "ok": "OK",
     "open_website": "Otwórz stronę internetową",
     "owm_api_key": "Klucz API OpenWeatherMap",
+    "owm_one_call_version": "Wersja OneCall",
     "partly_cloudy": "Częściowe zachmurzenie",
     "pick_date": "Wybierz datę",
     "please_describe_error": "Proszę opisać błąd",
@@ -125,6 +131,7 @@
         "openweathermap": "Otwórz mapę pogody",
         "title": "Dostawca"
     },
+    "providers": "dostawcy",
     "quit": "Zrezygnować",
     "rain": "Deszcz",
     "rain_flood": "Deszcz/powódź",
@@ -170,6 +177,8 @@
     "turkish": "turecki",
     "uchinaguchi": "Okinawa",
     "ukrainian": "ukraiński",
+    "units": "jednostki",
+    "uv_index": "indeks uv",
     "version": "Wersja",
     "weather_map": "Mapa pogody",
     "wind": "Wiatr"

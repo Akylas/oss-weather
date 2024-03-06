@@ -5,7 +5,7 @@
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { prompt } from '@nativescript-community/ui-material-dialogs';
     import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
-    import { ApplicationSettings, ContentView, ObservableArray, Utils, View } from '@nativescript/core';
+    import { ApplicationSettings, ContentView, ObservableArray, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode, navigate } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -553,15 +553,17 @@
             showError(error);
         }
     }
-    function onItemReorderStarting(e) {}
+    function onItemReorderStarting(e) {
+        e.returnValue = e.item.reorder === true && e.item.id !== 'disabled';
+    }
     function onItemReorderCheck(e) {
         e.returnValue = e.item.reorder;
     }
 
-    function startReordering(item, event) {
+    function startReordering(item, event: TouchGestureEventData) {
         if (event.action === 'down') {
             const index = items.indexOf(item);
-            collectionView.nativeView.startDragging(index);
+            collectionView.nativeView.startDragging(index, event.getActivePointers()[0]);
         }
     }
 </script>

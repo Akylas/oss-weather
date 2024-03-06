@@ -129,6 +129,7 @@
     "open_meteo_prefered_model": "Modèle préféré d’Open-Meteo",
     "open_website": "Ouvrir le site web",
     "owm_api_key": "Clé d'API OpenWeatherMap",
+    "owm_one_call_version": "Version de OneCall",
     "partly_cloudy": "Partiellement nuageux",
     "pick_date": "Choisir une date",
     "please_describe_error": "Veuillez décrire l'erreur",

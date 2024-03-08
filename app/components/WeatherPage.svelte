@@ -215,13 +215,17 @@
                 gps = new GPS();
             }
             if (!gps.isEnabled()) {
-                const r = await confirm({
-                    title: lc('gps_off'),
-                    okButtonText: lc('settings'),
-                    cancelButtonText: lc('close')
-                });
-                if (__ANDROID__ && r) {
-                    await gps.openGPSSettings();
+                if (__IOS__) {
+                    throw new Error(lc('gps_off'));
+                } else {
+                    const r = await confirm({
+                        title: lc('gps_off'),
+                        okButtonText: lc('settings'),
+                        cancelButtonText: lc('close')
+                    });
+                    if (r) {
+                        await gps.openGPSSettings();
+                    }
                 }
             }
             if (gps.isEnabled()) {
@@ -240,29 +244,20 @@
     }
     async function onPullToRefresh() {
         try {
+            if (pullRefresh) {
+                pullRefresh.nativeView.refreshing = false;
+            }
+            loading = true;
             const refreshLocationOnPull = ApplicationSettings.getBoolean('refresh_location_on_pull', false);
             if (refreshLocationOnPull) {
                 await getLocationAndWeather();
             } else {
-                await refresh();
-
+                await refreshWeather();
             }
         } catch (error) {
             showError(error);
-        }
-    }
-    async function refresh() {
-        if (!weatherLocation) {
-            showSnack({ message: l('no_location_set') });
-            return;
-        }
-        if (pullRefresh) {
-            pullRefresh.nativeView.refreshing = true;
-        }
-
-        await refreshWeather();
-        if (pullRefresh) {
-            pullRefresh.nativeView.refreshing = false;
+        } finally {
+            loading = false;
         }
     }
 
@@ -276,7 +271,7 @@
                 dismissOnDraggingDownSheet: true
             });
             if (result) {
-                refresh();
+                refreshWeather();
             }
         } catch (error) {
             showError(error);
@@ -295,7 +290,7 @@
                 if (networkConnected !== event.data.connected) {
                     networkConnected = event.data.connected;
                     if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
-                        refresh();
+                        refreshWeather();
                     }
                 } else {
                     updateView();
@@ -314,7 +309,7 @@
     onLanguageChanged((lang) => {
         DEV_LOG && console.log('refresh triggered by lang change');
         try {
-            refresh();
+            refreshWeather();
         } catch (error) {
             showError(error);
         }
@@ -342,7 +337,7 @@
     prefs.on('key:provider', (event) => {
         try {
             provider = getProviderType();
-            refresh();
+            refreshWeather();
         } catch (error) {
             showError(error);
         }

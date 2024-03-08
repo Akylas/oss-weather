@@ -70,6 +70,7 @@
     "quit": "Tuffɣa",
     "rain": "Lehwa",
     "rain_flood": "Lehwa/Tiḥemmalin",
+    "rain_shower": "Ageffur d iceṛcuṛen",
     "refresh": "Smiren",
     "review_application": "Gred tamawt i usnas",
     "russian": "Tarusit",
@@ -97,7 +98,7 @@
     "spanish": "Taspenyulit",
     "theme": {
         "auto": "Amurman",
-        "black": "Aberkan",
+        "black": "Ubrik",
         "dark": "Aberkan",
         "light": "Aceɛlal",
         "title": "Asentel"

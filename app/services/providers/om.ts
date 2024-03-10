@@ -75,46 +75,58 @@ export class OMProvider extends WeatherProvider {
         99: l('heavy_hailstorm')
     };
 
-    private convertWeatherCodeToIcon(code: number, is_day: number | boolean = 1) {
+    private convertWeatherCodeToIcon(code: number) {
         // const actualCode = code % 100;
-        const night = is_day ? 'd' : 'n';
         switch (code) {
             case 0:
             case 1:
-                return '01' + night;
+                return 800;
             case 2:
-                return '02' + night;
+                return 802;
             case 3:
-                return '04' + night;
+                return 804;
             case 45:
             case 48:
-                return '50' + night;
+                return 741;
             case 51:
-            case 53:
-            case 55:
             case 56:
+                return 300;
+            case 53:
             case 57:
+                return 310;
+            case 55:
+                return 321;
+            case 61:
+                return 500;
+            case 63:
+            case 66:
+                return 502;
+            case 65:
+            case 67:
+                return 504;
             case 80:
             case 81:
+                return 520;
             case 82:
-            case 85:
-            case 86:
-                return '09' + night;
-            case 61:
-            case 63:
-            case 65:
-            case 66:
-            case 67:
-                return '10' + night;
+                return 530;
+
             case 71:
+                return 600;
             case 73:
+            case 85:
+                return 601;
             case 75:
+            case 86:
+                return 602;
             case 77:
-                return '13' + night;
+                return 611;
             case 95:
+                return 200;
             case 96:
+                return 210;
+            case 97:
             case 99:
-                return '11' + night;
+                return 202;
         }
     }
 
@@ -136,7 +148,7 @@ export class OMProvider extends WeatherProvider {
                 forecast_hours,
                 forecast_minutely_15,
                 hourly:
-                    'precipitation_probability,precipitation,snow_depth,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
+                    'precipitation_probability,precipitation,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
                     (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
                 current: 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
                 minutely_15: 'precipitation',
@@ -194,7 +206,8 @@ export class OMProvider extends WeatherProvider {
             const d = {} as Hourly;
             d.time = time * 1000;
             const code = hourly_weathercodes[index];
-            d.icon = this.convertWeatherCodeToIcon(code, this.getDataArray(hourly, 'is_day', preferedModel)[index]);
+            d.isDay = !!this.getDataArray(hourly, 'is_day', preferedModel)[index];
+            d.iconId = this.convertWeatherCodeToIcon(code);
             d.description = OMProvider.weatherCodeDescription[code];
             d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', preferedModel)[index];
             d.usingFeelsLike = feelsLikeTemperatures;
@@ -210,6 +223,11 @@ export class OMProvider extends WeatherProvider {
             if (hasNext && snowfall) {
                 d.snowfall = snowfall[index + 1] || -1;
             }
+            // const rain = this.getDataArray(hourly, 'rain', preferedModel);
+            // let hourlyRain;
+            // if (hasNext && rain) {
+            //     hourlyRain = rain[index + 1] || -1;
+            // }
 
             const precipitation = this.getDataArray(hourly, 'precipitation', preferedModel);
             if (hasNext && precipitation) {
@@ -231,11 +249,9 @@ export class OMProvider extends WeatherProvider {
             if (freezinglevel_height) {
                 d.iso = freezinglevel_height[index];
             }
-            // if (typeof data['rain snow limit'] === 'number') {
-            //     d.rainSnowLimit = data['rain snow limit'];
-            // }
             // d.pressure = data.pressure;
-            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, hourly.rain?.[index], hourly.snowfall?.[index]);
+            // 1.428 is the Open-Meteo factor to compute snow height in cm vs water precipitation level
+            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.precipAccumulation - Math.round(d.snowfall * 142.8) / 100, d.snowfall);
         });
 
         const minutely_15 = forecast.minutely_15;
@@ -267,8 +283,9 @@ export class OMProvider extends WeatherProvider {
                           usingFeelsLike: feelsLikeTemperatures,
                           windSpeed: current.windspeed_10m,
                           cloudCover: current.cloudcover,
+                          isDay: !!current.is_day,
                           windBearing: current.winddirection_10m,
-                          icon: this.convertWeatherCodeToIcon(current.weathercode, current.is_day),
+                          iconId: this.convertWeatherCodeToIcon(current.weathercode),
                           description: OMProvider.weatherCodeDescription[current.weathercode]
                       } as Currently,
                       WeatherDataType.CURRENT,
@@ -281,7 +298,8 @@ export class OMProvider extends WeatherProvider {
                     const d = {
                         time: time * 1000,
                         description: OMProvider.weatherCodeDescription[code],
-                        icon: this.convertWeatherCodeToIcon(code, true),
+                        isDay: true,
+                        iconId: this.convertWeatherCodeToIcon(code),
                         temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', preferedModel)[index],
                         temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', preferedModel)[index],
                         usingFeelsLike: feelsLikeTemperatures,

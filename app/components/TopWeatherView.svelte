@@ -18,7 +18,7 @@
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { weatherDataService } from '~/services/weatherData';
-    import { Currently, MinutelyData } from '~/services/providers/weather';
+    import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, fonts, rainColor, snowColor } from '~/variables';
     const dispatch = createEventDispatcher();
@@ -32,7 +32,7 @@
     interface Item extends Currently {
         minutely?: MinutelyData[];
         lastUpdate: number;
-        hourly?;
+        hourly?: Hourly[];
     }
     export let item: Item;
     export let weatherLocation: FavoriteLocation;
@@ -58,7 +58,6 @@
     }[];
 
     let color: string | Color;
-    let precipIcon: string;
     let hasPrecip = false;
 
     // we need a factor cause using timestamp means
@@ -163,7 +162,7 @@
             leftAxis.setAxisMaximum(4);
             leftAxis.setDrawLimitLines(hasPrecip);
             if (hasPrecip) {
-                const color = item.icon.startsWith('13') ? snowColor : rainColor;
+                const color = item.hourly?.[0]?.precipColor || rainColor.hex;
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'intensity', 'time', 'intensity');
@@ -225,14 +224,6 @@
 
     $: if (weatherLocation) {
         weatherLocation.isFavorite = isFavorite(weatherLocation);
-    }
-
-    $: if (item && item.icon.startsWith('13')) {
-        color = snowColor;
-        precipIcon = 'wi-snowflake-cold';
-    } else {
-        color = rainColor;
-        precipIcon = 'wi-raindrop';
     }
 
     onThemeChanged(() => {
@@ -390,7 +381,14 @@
         horizontalAlignment="left"
     /> -->
     <linechart bind:this={lineChart} height={90} marginBottom={30} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
-    <WeatherIcon col={1} horizontalAlignment="right" icon={item.icon} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon
+        col={1}
+        horizontalAlignment="right"
+        iconData={[item.iconId, item.isDay]}
+        marginTop={15}
+        size={weatherIconSize * (2 - $fontScale)}
+        verticalAlignment="middle"
+        on:tap={(event) => dispatch('tap', event)} />
 
     <HourlyView colSpan={2} items={item.hourly} row={1} />
 </gridlayout>

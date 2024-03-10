@@ -151,19 +151,11 @@ export class DataService extends Observable {
                 return null;
             case 'precipAccumulation':
                 if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
-                    let color, precipIcon;
-                    if (item && item.icon.startsWith('13')) {
-                        color = snowColor;
-                        precipIcon = 'wi-snowflake-cold';
-                    } else {
-                        color = rainColor;
-                        precipIcon = 'wi-raindrop';
-                    }
                     return {
-                        paint: wiPaint,
-                        color,
+                        paint: item.precipFontUseApp ? appPaint : wiPaint,
+                        color: item.precipColor,
                         iconFontSize,
-                        icon: precipIcon,
+                        icon: item.precipIcon,
                         value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
                         subvalue: item.precipProbability > 0 && item.precipProbability + '%'
                     };

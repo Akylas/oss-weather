@@ -51,9 +51,10 @@ export class OWMProvider extends WeatherProvider {
                     windGust: result.current.wind_gust * 3.6,
                     windBearing: result.current.wind_deg,
                     uvIndex: result.current.uvi,
+                    isDay: result.current.dt < result.current.sunset && result.current.dt > result.current.sunrise,
                     sunriseTime: result.current.sunrise * 1000,
                     sunsetTime: result.current.sunset * 1000,
-                    icon: result.current.weather[0]?.icon,
+                    iconId: result.current.weather[0]?.id,
                     description: titlecase(result.current.weather[0]?.description)
                 } as Currently,
                 WeatherDataType.CURRENT,
@@ -63,7 +64,8 @@ export class OWMProvider extends WeatherProvider {
                 data: result.daily.slice(0, forecast_days).map((data) => {
                     const d = {} as DailyData;
                     d.time = data.dt * 1000;
-                    d.icon = data.weather[0]?.icon;
+                    d.isDay = true;
+                    d.iconId = data.weather[0]?.id;
                     d.description = titlecase(data.weather[0]?.description);
                     d.windSpeed = Math.round(data.wind_speed * 3.6);
                     d.windGust = Math.round(data.wind_gust * 3.6);
@@ -103,7 +105,9 @@ export class OWMProvider extends WeatherProvider {
                 const hasNext = index < hourlyLastIndex;
                 const d = {} as Hourly;
                 d.time = data.dt * 1000;
-                d.icon = data.weather[0]?.icon;
+                const icon = data.weather[0]?.icon;
+                d.isDay = icon.endsWith('d');
+                d.iconId = data.weather[0]?.id;
                 d.description = titlecase(data.weather[0]?.description);
                 d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
                 d.windGust = Math.round(data.wind_gust * 3.6);

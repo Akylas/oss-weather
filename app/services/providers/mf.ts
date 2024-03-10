@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { lang, lc } from '~/helpers/locale';
 import { WeatherLocation, request } from '../api';
-import { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
+import type { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 import { WeatherProvider } from './weatherprovider';
 import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { ApplicationSettings } from '@nativescript/core';
@@ -98,7 +98,7 @@ export class MFProvider extends WeatherProvider {
         const d = {
             time: dayStartTime,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
-            icon: this.convertMFICon(dailyForecast.daily_weather_icon),
+            iconId: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: dailyForecast.T_max,
             temperatureMin: dailyForecast.T_min,
             humidity: (dailyForecast.relative_humidity_max + dailyForecast.relative_humidity_min) / 2,
@@ -107,6 +107,7 @@ export class MFProvider extends WeatherProvider {
             windSpeed: windSpeed.count > 1 ? Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6) : 0,
             windBearing: windDegree.count > 1 ? Math.round((windDegree.total / windDegree.count) * 3.6) : -1,
             cloudCover: cloudCover.count > 1 ? Math.round(cloudCover.total / (cloudCover.count || 1)) : -1,
+            isDay: true,
             sunriseTime: dailyForecast.sunrise_time * 1000,
             sunsetTime: dailyForecast.sunset_time * 1000
         } as DailyData;
@@ -143,54 +144,66 @@ export class MFProvider extends WeatherProvider {
 
     private convertMFICon(icon: string) {
         if (!icon) {
-            return '01d';
+            return 801;
         }
-        const dayOrNight = icon.slice(-1) === 'n' ? 'n' : 'd';
         switch (parseInt(icon.replace(/^\D+/g, ''), 10)) {
-            case 1:
-                return '01' + dayOrNight;
             case 2:
-                return '02' + dayOrNight;
+                return 802;
             case 3:
+                return 804;
+            case 31:
+                return 731;
             case 32:
             case 33:
             case 34:
-                return '04' + dayOrNight;
+                return 781;
             case 4:
             case 5:
+                return 721;
             case 6:
             case 7:
             case 8:
-                return '50' + dayOrNight;
+                return 741;
             case 9:
             case 10:
             case 11:
+                return 500;
             case 12:
             case 13:
             case 14:
+                return 502;
             case 15:
-                return '10' + dayOrNight;
+                return 504;
             case 16:
+                return 200;
             case 24:
-            case 25:
             case 30:
-                return '11' + dayOrNight;
+                return 201;
+            case 25:
+                return 202;
             case 26:
+                return 210;
             case 27:
+                return 211;
             case 28:
+                return 212;
             case 29:
-                return '11' + dayOrNight;
-            case 19:
-            case 20:
-                return '09' + dayOrNight;
+                return 221;
             case 17:
+            case 19:
+                return 300;
+            case 20:
             case 18:
+                return 310;
             case 21:
+                return 600;
             case 22:
+                return 601;
             case 23:
-                return '13' + dayOrNight;
+                return 602;
+            case 1:
             default:
-                return '01' + dayOrNight;
+                return 800;
         }
     }
 
@@ -294,7 +307,10 @@ export class MFProvider extends WeatherProvider {
             const hasNext = index < hourlyLastIndex;
             const d = {} as Hourly;
             d.time = data.time * 1000;
-            d.icon = this.convertMFICon(data.weather_icon);
+            const icon = data.weather_icon;
+
+            d.isDay = icon.endsWith('j');
+            d.iconId = this.convertMFICon(icon);
             d.description = titlecase(data.weather_description);
             d.temperature = data.T;
 
@@ -334,7 +350,8 @@ export class MFProvider extends WeatherProvider {
                           windSpeed: current.properties.gridded.wind_speed,
                           //   windGust: current.properties.gridded.wind,
                           windBearing: current.properties.gridded.wind_direction,
-                          icon: this.convertMFICon(current.properties.gridded.weather_icon),
+                          isDay: current.properties.gridded.weather_icon.endsWith('j'),
+                          iconId: this.convertMFICon(current.properties.gridded.weather_icon),
                           description: titlecase(current.properties.gridded.weather_description)
                       } as Currently,
                       WeatherDataType.CURRENT,

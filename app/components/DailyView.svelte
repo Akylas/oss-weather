@@ -137,5 +137,5 @@
 </script>
 
 <canvasview bind:this={canvasView} height={100 * $fontScale} on:draw={drawOnCanvas}>
-    <WeatherIcon horizontalAlignment="right" icon={item.icon} marginRight="10" marginTop={16 * $fontScale} size={60 * $fontScale} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight="10" marginTop={16 * $fontScale} size={60 * $fontScale} on:tap={(event) => dispatch('tap', event)} />
 </canvasview>

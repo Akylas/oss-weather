@@ -10,6 +10,7 @@ import { CustomError, HTTPError, NoNetworkError } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { Photon, PhotonProperties } from '../../typings/photon';
 import { WeatherData } from './providers/weather';
+import { iconService } from './icon';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -211,6 +212,8 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
 }
 
+
+
 export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs()) {
     const newItems = [];
 
@@ -245,15 +248,16 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
 
             const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
             // current weather is a mix of actual current weather, hourly and daily
-            const dailyForCurrent = currentDaily;
             newItems.push(
                 Object.assign(currentDaily, {
                     lastUpdate,
+                    // icon: iconService.getIcon(currentDaily.iconId, currentDaily.isDay),
                     sunriseTime: times.sunriseEnd,
                     sunsetTime: times.sunsetStart,
                     hourly: hours.map((h, i) => ({
                         ...h,
                         index: i,
+                        // icon: iconService.getIcon(h.iconId, h.isDay),
                         min,
                         max,
                         tempDelta: (h.temperature - min) / delta,
@@ -275,12 +279,10 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
                 })
             );
         } else {
-            // const items = d.hourly;
-            // const sunriseTime = dayjs(d.sunriseTime).endOf('h').valueOf();
             newItems.push(
                 Object.assign(d, {
+                    // icon: iconService.getIcon(d.iconId, d.isDay),
                     index: newItems.length
-                    // scrollIndex: items.findIndex((h) => h.time >= sunriseTime)
                 })
             );
         }

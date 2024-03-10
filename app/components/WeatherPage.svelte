@@ -42,6 +42,11 @@
     let provider = getProviderType();
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
+    const usingNewIconSystem = ApplicationSettings.getBoolean('new_icon_system', false);
+    if (!usingNewIconSystem) {
+        ApplicationSettings.setBoolean('new_icon_system', true);
+        weatherData = null;
+    }
 
     let items = [];
 

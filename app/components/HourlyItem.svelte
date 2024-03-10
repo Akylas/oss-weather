@@ -220,7 +220,7 @@
         }
         const windGustData = weatherDataService.getItemData('windGust', item);
         if (windGustData) {
-            windGustData.paint.setTextSize(11 * $fontScale);
+            textPaint.setTextSize(11 * $fontScale);
             if (item.windGust <= 80) {
                 textPaint.setColor(windGustData.color);
             } else {
@@ -253,5 +253,5 @@
 
 <gridlayout on:tap={onTap}>
     <canvasview bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
-    <WeatherIcon icon={item.icon} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top" />
+    <WeatherIcon iconData={[item.iconId, item.isDay]} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top" />
 </gridlayout>

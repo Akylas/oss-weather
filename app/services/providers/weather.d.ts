@@ -34,7 +34,9 @@ export interface Daily {
 
 export interface CommonWeatherData {
     time: number;
-    icon: string;
+    // icon?: string;
+    iconId: number;
+    isDay: boolean;
     description?: string;
     windSpeed?: number;
     windGust?: number;
@@ -43,18 +45,19 @@ export interface CommonWeatherData {
     temperatureMin?: number;
     temperatureMax?: number;
     precipProbability?: number;
+    precipAccumulation?: number;
+    precipUnit?: UNITS;
+    precipIcon?: string;
+    precipFontUseApp?: boolean;
     cloudCover?: number;
     cloudCeiling?: number;
     precipColor?: string | Color;
-    precipIcon?: string;
     mixedRainSnow?: boolean;
-    precipUnit: UNITS;
     windBearing?: number;
     humidity?: number;
     pressure?: number;
     sunriseTime?: number;
     sunsetTime?: number;
-    precipAccumulation?: number;
     color?: string | Color;
     cloudColor?: string | Color;
     uvIndexColor?: string | Color;

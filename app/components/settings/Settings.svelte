@@ -21,6 +21,7 @@
     import { colors, fonts, iconColor, imperial, navigationBarHeight } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    import { iconService } from '~/services/icon';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -95,6 +96,30 @@
                     value: clock_24
                 }
             ]
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('icons'),
+                        description: lc('icons_settings'),
+                        icon: 'mdi-weather-partly-cloudy',
+                        options: () => [
+                            {
+                                type: 'switch',
+                                id: 'animations',
+                                title: lc('animations'),
+                                value: ApplicationSettings.getBoolean('animations', false)
+                            },
+                            {
+                                type: 'image',
+                                id: 'icon_pack',
+                                title: lc('icon_pack'),
+                                description: () => iconService.getPackName(),
+                                image: () => iconService.getPackIcon(),
+                                onTap: () => {}
+                            }
+                        ]
+                    }
+                ] as any)
                 .concat([
                     {
                         id: 'sub_settings',
@@ -636,6 +661,11 @@
                     title={getTitle(item)}
                     on:tap={(event) => onTap(item, event)}>
                     <label col={0} fontFamily={$fonts.mdi} fontSize={24} padding="0 10 0 0" text={item.icon} verticalAlignment="center" />
+                </ListItemAutoSize>
+            </Template>
+            <Template key="image" let:item>
+                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <image  col={2} height={45} src={item.image()} />
                 </ListItemAutoSize>
             </Template>
             <Template let:item>

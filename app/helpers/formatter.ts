@@ -1,8 +1,9 @@
 import { Color } from '@nativescript/core';
 import { getMoonIllumination } from 'suncalc';
-import { cloudyColor, imperialUnits, metricDecimalTemp, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
+import { cloudyColor, fonts, imperialUnits, metricDecimalTemp, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate } from './locale';
 import { Currently, DailyData, Hourly } from '~/services/providers/weather';
+import { get } from 'svelte/store';
 
 export enum UNITS {
     // InchHg = 'InchHg',
@@ -345,13 +346,7 @@ export enum WeatherDataType {
     HOURLY,
     CURRENT
 }
-export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
-    d: T,
-    type: WeatherDataType,
-    coord: { lat: number; lon: number },
-    rain?,
-    snow: any = d.icon?.startsWith('13') || false
-) {
+export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain = 0, snow = 0) {
     // if (type !== WeatherDataType.CURRENT) {
     d.precipColor = rainColor.hex;
     d.precipUnit = UNITS.MM;
@@ -361,10 +356,14 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
     if (snow && rain) {
         dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
         dd.mixedRainSnow = true;
+        d.precipIcon = 'app-rainsnow';
+        d.precipFontUseApp = true;
     } else if (rain) {
         dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+        d.precipIcon = 'wi-raindrop';
     } else if (snow) {
         d.precipColor = snowColor.hex;
+        d.precipIcon = 'wi-snowflake-cold';
         d.precipUnit = UNITS.CM;
         dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
     } else {

@@ -23,7 +23,10 @@
 
     const models = ['meteofrance', 'openweathermap', 'openmeteo'];
 
-    const dataToCompare = [{ id: 'temperature', type: 'linechart', forecast: 'hourly' }];
+    const dataToCompare = [
+        { id: 'temperature', type: 'linechart', forecast: 'hourly' },
+        { id: 'temperatureMin', type: 'linechart', forecast: 'daily' }
+    ];
 
     export let weatherLocation: FavoriteLocation;
 
@@ -34,19 +37,23 @@
         if (keys.length) {
             acc.push({
                 type: 'sectionheader',
-                name: provider.getName()
+                id: provider.id,
+                name: provider.getName(),
+                shortName: provider.getName().replace(/[^A-Z]+/g, '')
             });
             for (let index = 0; index < keys.length; index++) {
                 const key = keys[index];
                 acc.push({
                     id: provider.id + ':' + key,
-                    name: provider.getName() + ': ' + key
+                    name: provider.getName() + ': ' + key,
+                    shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
                 });
             }
         } else {
             acc.push({
                 id: provider.id,
-                name: provider.getName()
+                name: provider.getName(),
+                shortName: provider.getName().replace(/[^A-Z]+/g, '')
             });
         }
         return acc;
@@ -91,11 +98,14 @@
                 const providerType = model.split(':')[0] as ProviderType;
                 const provider = getProviderForType(providerType);
                 const weatherData = await provider.getWeather(weatherLocation);
-                return { weatherData, model };
+                const modelData = dataList.find((m) => m.id === model);
+                DEV_LOG && console.log('modelData', model, modelData);
+                return { weatherData, model: modelData as { id: string; name: string; shortName: string } };
                 // return prepareItems(weatherLocation, weatherData, now);
             })
         );
         DEV_LOG && console.log('weatherData', weatherData.length);
+
         const newItems = [];
         for (let i = 0; i < dataToCompare.length; i++) {
             const d = dataToCompare[i];
@@ -213,7 +223,7 @@
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
                     <collectionview bind:this={collectionView} id="data" itemTemplateSelector={selectDataTemplate} items={data}>
                         <Template key="linechart" let:item>
-                            <CompareLineChart height={150} {item} />
+                            <CompareLineChart height={200} {item} startingSide={item.startingSide} />
                         </Template>
                     </collectionview>
                 </pullrefresh>

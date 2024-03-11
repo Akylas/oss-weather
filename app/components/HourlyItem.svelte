@@ -81,7 +81,11 @@
         canvasView && canvasView.nativeView.invalidate();
     }
     $: {
-        precipitationHeight = item.precipAccumulation > 1 ? Math.sqrt(item.precipAccumulation) : item.precipAccumulation;
+        if (item.precipShowSnow) {
+            precipitationHeight = item.snowfall > 1 ? Math.sqrt(item.snowfall / 10) : item.snowfall / 10;
+        } else {
+            precipitationHeight = item.precipAccumulation > 1 ? Math.sqrt(item.precipAccumulation) : item.precipAccumulation;
+        }
         redraw();
     }
     const weatherIconSize = 40;

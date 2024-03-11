@@ -223,7 +223,7 @@ export class OMProvider extends WeatherProvider {
                 const snowfall = this.getDataArray(hourly, 'snowfall', preferedModel);
                 if (snowfall) {
                     //we want it in mm
-                    d.snowfall = snowfall[index + 1] * 10 || 0;
+                    d.snowfall = (snowfall[index + 1] || 0) * 10;
                 }
                 const rain = this.getDataArray(hourly, 'rain', preferedModel);
                 const showers = this.getDataArray(hourly, 'showers', preferedModel);

@@ -1,0 +1,16 @@
+### Features
+- icon pack support
+
+### Bug fixes
+- Translated using Weblate (Kabyle)
+- Translated using Weblate (Chinese (Simplified))
+- Translated using Weblate (Polish)
+- Translated using Weblate (Hindi)
+- resource naming fix
+- improved Open-Meteo weather forecast
+- improved OpenWeather weather forecast
+- improved Meteo-France weather forecast
+- improved rain/snow forecast with new custom icon
+- improved current weather forecast
+- better hourly snowfall forecast
+- if snowfall is too small show 

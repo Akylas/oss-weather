@@ -16,6 +16,7 @@ WEATHER_CODE_MAPPING.set(230, 200);
 WEATHER_CODE_MAPPING.set(231, 201);
 WEATHER_CODE_MAPPING.set(232, 202);
 
+WEATHER_CODE_MAPPING.set(300, 500);
 WEATHER_CODE_MAPPING.set(301, 300);
 WEATHER_CODE_MAPPING.set(302, 300);
 WEATHER_CODE_MAPPING.set(310, 300);
@@ -141,9 +142,12 @@ export class IconService extends Observable {
         const mapIds = animated ? this.lotties : this.images;
         let realIconId = iconId;
         let mapId = mapIds.get(realIconId);
-        while (mapId === undefined) {
+        while (mapId === undefined && realIconId !== undefined) {
             realIconId = WEATHER_CODE_MAPPING.get(realIconId);
             mapId = mapIds.get(realIconId);
+        }
+        if (!realIconId) {
+            return null;
         }
         const result = `${realIconId}${mapId === 1 ? (isDay ? 'd' : 'n') : ''}`;
         this.mappingCache.set(key, result);

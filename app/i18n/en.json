@@ -19,6 +19,7 @@
     "about_to_quit": "The app is closing because it is missing an API key",
     "absolute_vigilance": "Absolute vigilance",
     "animations": "Animations",
+    "animations_desc": "animated if the icon set supports it",
     "api_key": "API key",
     "api_key_required": "API key required",
     "api_key_required_description": "Create an account on OpenWeatherMap to get the gratis API key required to fetch weather data.\nThe app has one, but to stay within the limits of the gratis plan, each user must create their own API key.",

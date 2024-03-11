@@ -107,6 +107,7 @@
                                 type: 'switch',
                                 id: 'animations',
                                 title: lc('animations'),
+                                description: lc('animations_desc'),
                                 value: ApplicationSettings.getBoolean('animations', false)
                             },
                             {
@@ -665,7 +666,7 @@
             </Template>
             <Template key="image" let:item>
                 <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <image  col={2} height={45} src={item.image()} />
+                    <image col={2} height={45} src={item.image()} />
                 </ListItemAutoSize>
             </Template>
             <Template let:item>

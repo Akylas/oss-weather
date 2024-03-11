@@ -67,6 +67,10 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo
                 value *= 0.03937008; // to in
             } else if (unit === UNITS.CM) {
                 value /= 10;
+                if (value < 0.1) {
+                    unit = UNITS.MM;
+                    value *= 10;
+                }
             }
             return [value.toFixed(digits), toImperialUnit(unit, imperialUnits)];
         case UNITS.Celcius:

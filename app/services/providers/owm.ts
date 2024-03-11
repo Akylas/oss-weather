@@ -10,6 +10,7 @@ import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/help
 import { ApplicationSettings } from '@nativescript/core';
 
 export class OWMProvider extends WeatherProvider {
+    id = 'openweathermap';
     static owmApiKey = OWMProvider.readOwmApiKeySetting();
 
     constructor() {

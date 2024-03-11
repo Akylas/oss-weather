@@ -27,6 +27,7 @@
     "dependencies": {
         "@akylas/nativescript": "8.6.5",
         "@akylas/nativescript-inappbrowser": "3.1.8",
+        "@mapbox/to-color": "^2.0.0",
         "@mdi/font": "7.4.47",
         "@nativescript-community/appurl": "1.4.2",
         "@nativescript-community/css-theme": "1.2.13",

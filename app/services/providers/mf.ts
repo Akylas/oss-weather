@@ -17,6 +17,7 @@ interface MFParams extends Partial<Coord> {
 }
 
 export class MFProvider extends WeatherProvider {
+    id = 'meteofrance';
     private getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: ForecastForecast[], dailyForecast: Dailyforecast) {
         let precipitationTotal = 0;
         let snowfallTotal = 0;
@@ -351,6 +352,7 @@ export class MFProvider extends WeatherProvider {
             // console.log('hourly', data.weather_icon, dayjs(d.time).format('ddd DD/MM'), d.rain, d.snowfall, d.precipAccumulation);
             return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.rain, d.snowfall);
         });
+        DEV_LOG && console.log('current', JSON.stringify(current));
         const r = {
             currently: current?.properties?.gridded
                 ? weatherDataIconColors(
@@ -360,9 +362,9 @@ export class MFProvider extends WeatherProvider {
                           windSpeed: current.properties.gridded.wind_speed,
                           //   windGust: current.properties.gridded.wind,
                           windBearing: current.properties.gridded.wind_direction,
-                          isDay: current.properties.gridded.weather_icon.endsWith('j'),
-                          iconId: this.convertMFICon(current.properties.gridded.weather_icon),
-                          description: titlecase(current.properties.gridded.weather_description)
+                          isDay: current.properties.gridded.weather_icon ? current.properties.gridded.weather_icon.endsWith('j') : undefined,
+                          iconId: current.properties.gridded.weather_icon ? this.convertMFICon(current.properties.gridded.weather_icon) : undefined,
+                          description: current.properties.gridded.weather_description ? titlecase(current.properties.gridded.weather_description) : undefined
                       } as Currently,
                       WeatherDataType.CURRENT,
                       coords

@@ -1,0 +1,4 @@
+### Bug fixes
+- Meteo-France fix for current weather outside of France
+- crash/freeze fix after icon pack update
+- mapping fix

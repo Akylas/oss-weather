@@ -148,14 +148,14 @@ export class OMProvider extends WeatherProvider {
                 forecast_hours,
                 forecast_minutely_15,
                 hourly:
-                    'precipitation_probability,precipitation,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
+                    'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
                     (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
                 current: 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
                 minutely_15: 'precipitation',
                 // models: 'best_match',
                 // models: 'meteofrance_seamless',
                 daily:
-                    'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum' +
+                    'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum,showers_sum' +
                     (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min'),
                 models,
                 timeformat: 'unixtime',
@@ -215,23 +215,27 @@ export class OMProvider extends WeatherProvider {
 
             const hasNext = index < hourlyLastIndex;
 
-            const precipitation_probability = this.getDataArray(hourly, 'precipitation_probability', preferedModel);
-            if (precipitation_probability && hasNext) {
-                d.precipProbability = precipitation_probability[index + 1] || -1;
-            }
-            const snowfall = this.getDataArray(hourly, 'snowfall', preferedModel);
-            if (hasNext && snowfall) {
-                d.snowfall = snowfall[index + 1] || -1;
-            }
-            // const rain = this.getDataArray(hourly, 'rain', preferedModel);
-            // let hourlyRain;
-            // if (hasNext && rain) {
-            //     hourlyRain = rain[index + 1] || -1;
-            // }
+            if (hasNext) {
+                const precipitation_probability = this.getDataArray(hourly, 'precipitation_probability', preferedModel);
+                if (precipitation_probability) {
+                    d.precipProbability = precipitation_probability[index + 1] || -1;
+                }
+                const snowfall = this.getDataArray(hourly, 'snowfall', preferedModel);
+                if (snowfall) {
+                    //we want it in mm
+                    d.snowfall = snowfall[index + 1] * 10 || 0;
+                }
+                const rain = this.getDataArray(hourly, 'rain', preferedModel);
+                const showers = this.getDataArray(hourly, 'showers', preferedModel);
+                if (rain) {
+                    d.rain = (rain[index + 1] || 0) + (showers?.[index + 1] || 0);
+                }
 
-            const precipitation = this.getDataArray(hourly, 'precipitation', preferedModel);
-            if (hasNext && precipitation) {
-                d.precipAccumulation = precipitation[index + 1] ?? -1;
+                d.precipAccumulation = d.rain + d.snowfall / 7;
+                // const precipitation = this.getDataArray(hourly, 'precipitation', preferedModel);
+                // if (hasNext && precipitation) {
+                //     d.precipAccumulation = precipitation[index + 1] ?? 0;
+                // }
             }
 
             d.cloudCover = this.getDataArray(hourly, 'cloudcover', preferedModel)[index];
@@ -250,8 +254,8 @@ export class OMProvider extends WeatherProvider {
                 d.iso = freezinglevel_height[index];
             }
             // d.pressure = data.pressure;
-            // 1.428 is the Open-Meteo factor to compute snow height in cm vs water precipitation level
-            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.precipAccumulation - Math.round(d.snowfall * 142.8) / 100, d.snowfall);
+            // DEV_LOG && console.log('test', dayjs(d.time), code, d.iconId, d.temperature, d.precipProbability, d.precipAccumulation, d.rain, d.snowfall);
+            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.rain, d.snowfall);
         });
 
         const minutely_15 = forecast.minutely_15;
@@ -330,13 +334,8 @@ export class OMProvider extends WeatherProvider {
 
                     // const propRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
                     // const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-                    weatherDataIconColors(
-                        d,
-                        WeatherDataType.DAILY,
-                        weatherLocation.coord,
-                        this.getDataArray(daily, 'rain_sum', preferedModel)?.[index],
-                        this.getDataArray(daily, 'snowfall_sum', preferedModel)?.[index]
-                    );
+                    const rain = this.getDataArray(daily, 'showers_sum', preferedModel)?.[index] || 0 + this.getDataArray(daily, 'rain_sum', preferedModel)?.[index];
+                    weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, rain, this.getDataArray(daily, 'snowfall_sum', preferedModel)?.[index] * 10);
                     d.hourly = [];
                     return d;
                 })
@@ -350,10 +349,10 @@ export class OMProvider extends WeatherProvider {
         return r;
     }
 
-    private isDay(time: number, lat: number, lon: number) {
-        const times = getTimes(new Date(time), lat, lon);
-        return time > times.sunrise.valueOf() && time < times.sunsetStart.valueOf();
-    }
+    // private isDay(time: number, lat: number, lon: number) {
+    //     const times = getTimes(new Date(time), lat, lon);
+    //     return time > times.sunrise.valueOf() && time < times.sunsetStart.valueOf();
+    // }
 }
 
 interface OMParams {

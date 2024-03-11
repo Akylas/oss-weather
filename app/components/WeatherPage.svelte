@@ -312,6 +312,8 @@
 
         if (weatherData) {
             items = prepareItems(weatherLocation, weatherData, lastUpdate);
+        } else if (weatherLocation) {
+            refreshWeather();
         }
     });
 

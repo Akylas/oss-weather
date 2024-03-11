@@ -19,9 +19,9 @@ interface MFParams extends Partial<Coord> {
 export class MFProvider extends WeatherProvider {
     private getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: ForecastForecast[], dailyForecast: Dailyforecast) {
         let precipitationTotal = 0;
+        let snowfallTotal = 0;
+        let rainTotal = 0;
         const probPrecipitationTotal = { count: 0, total: 0 };
-        const probRainPrecipitationTotal = { count: 0, total: 0 };
-        const probSnowPrecipitationTotal = { count: 0, total: 0 };
         const rainSnowLimitTotal = { count: 0, total: 0 };
         const isoTotal = { count: 0, total: 0 };
 
@@ -37,24 +37,17 @@ export class MFProvider extends WeatherProvider {
             const time = hour.time;
             if (time >= dayStartTime && time < dayEndTime) {
                 // Precipitation
+                snowfallTotal += hour.snowfall;
+                rainTotal += hour.rain;
                 if (hour.precipAccumulation) {
                     precipitationTotal += hour.precipAccumulation;
                     // Precipitation probability
-                    if (hour.precipProbability) {
-                        precipProbability = Math.max(precipProbability, hour.precipProbability);
-                        probPrecipitationTotal.count++;
-                        probPrecipitationTotal.total += hour.precipProbability;
-                    }
-                    if (hour.precipProbabilities) {
-                        if (hour.precipProbabilities.rain) {
-                            probRainPrecipitationTotal.count++;
-                            probRainPrecipitationTotal.total += hour.precipProbabilities.rain;
-                        }
-                        if (hour.precipProbabilities.snow) {
-                            probSnowPrecipitationTotal.count++;
-                            probSnowPrecipitationTotal.total += hour.precipProbabilities.snow;
-                        }
-                    }
+                }
+
+                if (hour.precipProbability) {
+                    precipProbability = Math.max(precipProbability, hour.precipProbability);
+                    probPrecipitationTotal.count++;
+                    probPrecipitationTotal.total += hour.precipProbability;
                 }
 
                 if (hour.rainSnowLimit) {
@@ -94,7 +87,6 @@ export class MFProvider extends WeatherProvider {
                 }
             }
         }
-        // console.log('day:', dayjs(dayStartTime).format('ddd DD/MM'), dayStartTime, dayEndTime, dailyForecast, cloudCover, windSpeed, windSpeeds, windDegree, rainSnowLimitTotal);
         const d = {
             time: dayStartTime,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
@@ -107,9 +99,9 @@ export class MFProvider extends WeatherProvider {
             windSpeed: windSpeed.count > 1 ? Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6) : 0,
             windBearing: windDegree.count > 1 ? Math.round((windDegree.total / windDegree.count) * 3.6) : -1,
             cloudCover: cloudCover.count > 1 ? Math.round(cloudCover.total / (cloudCover.count || 1)) : -1,
-            isDay: true,
-            sunriseTime: dailyForecast.sunrise_time * 1000,
-            sunsetTime: dailyForecast.sunset_time * 1000
+            isDay: true
+            // sunriseTime: dailyForecast.sunrise_time * 1000,
+            // sunsetTime: dailyForecast.sunset_time * 1000
         } as DailyData;
         if (precipProbability > 0) {
             d.precipProbability = Math.round(precipProbability);
@@ -125,10 +117,21 @@ export class MFProvider extends WeatherProvider {
         if (isoTotal.count > 0) {
             d.iso = Math.round(isoTotal.total / isoTotal.count);
         }
+        // console.log(
+        //     'day:',
+        //     dayjs(dayStartTime).format('ddd DD/MM'),
+        //     dailyForecast.daily_weather_icon,
+        //     snowfallTotal,
+        //     rainTotal,
+        //     precipitationTotal,
+        //     dailyForecast.total_precipitation_24h,
+        //     probPrecipitationTotal
+        // );
 
-        const probRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-        const probSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-        weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, probRain, probSnow);
+        // const probRain = Math.round(probRainPrecipitationTotal.total / (probRainPrecipitationTotal.count || 1));
+        // const probSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
+        // console.log('daily', d, WeatherDataType.DAILY, weatherLocation.coord, probRain, probSnow)
+        weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, snowfallTotal === 0 && rainTotal === 0 ? precipAccumulation : rainTotal, snowfallTotal);
         d.hourly = [];
         return d;
         // return new HalfDay(
@@ -136,7 +139,7 @@ export class MFProvider extends WeatherProvider {
         //     new Temperature(temp, null, null, null, tempWindChill, null, null),
         //     new Precipitation(precipitationTotal, null, precipitationRain, precipitationSnow, null),
         //     new PrecipitationProbability(probPrecipitationTotal, null, probPrecipitationRain, probPrecipitationSnow, probPrecipitationIce),
-        //     new PrecipitationDuration(null, null, null, null, null),
+        //     new Precipitati`onDuration(null, null, null, null, null),
         //     new Wind(windDirection, windDegree, windSpeed, windLevel),
         //     cloudCover
         // );
@@ -190,13 +193,15 @@ export class MFProvider extends WeatherProvider {
             case 29:
                 return 221;
             case 17:
-            case 19:
-                return 300;
-            case 20:
+                return 620;
             case 18:
-                return 310;
-            case 21:
                 return 600;
+            case 19:
+                return 615;
+            case 20:
+                return 616;
+            case 21:
+                return 621;
             case 22:
                 return 601;
             case 23:
@@ -250,7 +255,6 @@ export class MFProvider extends WeatherProvider {
                 break;
             }
         }
-
         return {
             rain: rainProbability,
             snow: snowProbability,
@@ -298,13 +302,14 @@ export class MFProvider extends WeatherProvider {
         // DEV_LOG && console.log('current', JSON.stringify(current));
         // DEV_LOG && console.log('warnings', JSON.stringify(warnings));
         const now = Date.now();
+        const startOfHour = dayjs(now).startOf('h').valueOf() / 1000;
         const forecastData = forecast.properties.forecast;
+        const firstHourIndex = forecastData.findIndex((d) => d.time > startOfHour);
         let hourlyLastIndex = forecastData.findIndex((d) => d.weather_icon === null || d.T === null || (d.time - now / 1000) / 3600 > forecast_hours);
         if (hourlyLastIndex === -1) {
             hourlyLastIndex = forecastData.length - 1;
         }
-        const hourlyData = forecastData?.slice(0, hourlyLastIndex).map((data, index) => {
-            const hasNext = index < hourlyLastIndex;
+        const hourlyData = forecastData?.slice(Math.max(firstHourIndex - 1, 0), hourlyLastIndex).map((data, index) => {
             const d = {} as Hourly;
             d.time = data.time * 1000;
             const icon = data.weather_icon;
@@ -315,7 +320,11 @@ export class MFProvider extends WeatherProvider {
             d.temperature = data.T;
 
             d.windBearing = data.wind_direction;
-            const acc = (data.snow_1h || 0) + (data.rain_1h || 0);
+
+            d.snowfall = data.snow_1h || (data.snow_3h && data.snow_3h / 3) || (data.snow_6h && data.snow_6h / 6) || 0;
+            d.rain = data.rain_1h || (data.rain_3h && data.rain_3h / 3) || (data.rain_6h && data.rain_6h / 6) || 0;
+
+            const acc = d.snowfall + d.rain;
             if (acc > 0) {
                 d.precipAccumulation = acc;
             }
@@ -339,13 +348,14 @@ export class MFProvider extends WeatherProvider {
                 d.rainSnowLimit = data['rain snow limit'];
             }
             // d.pressure = data.pressure;
-            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, data.rain_1h, data.snow_1h);
+            // console.log('hourly', data.weather_icon, dayjs(d.time).format('ddd DD/MM'), d.rain, d.snowfall, d.precipAccumulation);
+            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.rain, d.snowfall);
         });
         const r = {
-            currently: current?.properties
+            currently: current?.properties?.gridded
                 ? weatherDataIconColors(
                       {
-                          time: current.update_time * 1000,
+                          time: current.properties.gridded.time * 1000,
                           temperature: current.properties.gridded.T,
                           windSpeed: current.properties.gridded.wind_speed,
                           //   windGust: current.properties.gridded.wind,
@@ -359,7 +369,7 @@ export class MFProvider extends WeatherProvider {
                   )
                 : {},
             daily: {
-                data: forecast.properties.daily_forecast.slice(0, forecast_days).map((data) => this.getDaily(weatherLocation, hourlyData, forecast.properties.forecast, data))
+                data: forecast.properties.daily_forecast.slice(0, forecast_days).map((data) => this.getDaily(weatherLocation, hourlyData, forecastData, data))
             },
             minutely: {
                 data:

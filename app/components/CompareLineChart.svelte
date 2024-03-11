@@ -35,7 +35,6 @@
         id: string;
     }
     export let item: Item;
-    export let fakeNow = null;
     export let startingSide;
 
     let lineChart: NativeViewElementNode<LineChart>;
@@ -230,10 +229,10 @@
     {startingSide}
     translationFunction={swipeMenuTranslationFunction}
     {...$$restProps}>
-    <gridLayout prop:mainContent rows="auto,*">
+    <gridlayout prop:mainContent rows="auto,*">
         <label class="sectionHeader" paddingTop={10} text={`${item.id} (${lc(item.forecast)})`} />
         <linechart bind:this={lineChart} row={1} />
-    </gridLayout>
+    </gridlayout>
     <gridlayout prop:rightDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" rows="*" width={100}>
         <collectionview height="200" items={legends} nestedScrollingEnabled={false} rowHeight={30}>
             <Template let:item>

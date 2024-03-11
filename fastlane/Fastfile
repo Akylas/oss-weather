@@ -1,4 +1,5 @@
 require 'json'
+require 'fileutils'
 class String
   def titlecase
     split(/([[:alpha:]]+)/).map(&:capitalize).join
@@ -85,7 +86,9 @@ end
 desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
-  sh("rm", "-fr", "platforms/#{platform}")
+  if (Dir.exist?("platforms/#{platform}"))
+    FileUtils.remove_dir("platforms/#{platform}")
+  end
   if (platform == 'ios')
     sh("npm", "run", "prepare.ios.sentry")
   else
@@ -310,7 +313,6 @@ platform :android do
     end
 
     metadata_dir="metadata/android"
-    require 'fileutils'
     system 'mkdir', '-p', metadata_dir
     writeFileIfNotExist("#{metadata_dir}/fr-FR/changelogs/#{version}.txt", changelog)
     writeFileIfNotExist("#{metadata_dir}/en-US/changelogs/#{version}.txt", changelog)
@@ -332,8 +334,13 @@ platform :android do
 
   desc 'Build the Android application.'
   lane :build do |params|
-    sh("rm", "-fr", "platforms/android")
-    sh("rm", "-fr", "platforms/tempPlugin")
+    if (Dir.exist?("./platforms/android"))
+      FileUtils.remove_dir("./platforms/android")
+    end
+    if (Dir.exist?("./platforms/tempPlugin"))
+      puts "deleting: "  + "platforms/tempPlugin"
+      FileUtils.remove_dir("./platforms/tempPlugin")
+    end
     options = params[:options]
     puts "build flavor:"  + params[:flavor]
     puts "build options:"  + JSON.generate(options.to_json)

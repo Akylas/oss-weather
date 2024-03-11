@@ -333,6 +333,7 @@ platform :android do
   desc 'Build the Android application.'
   lane :build do |params|
     sh("rm", "-fr", "platforms/android")
+    sh("rm", "-fr", "platforms/tempPlugin")
     options = params[:options]
     puts "build flavor:"  + params[:flavor]
     puts "build options:"  + JSON.generate(options.to_json)

@@ -110,7 +110,7 @@
                 if (precipProbability > 0) {
                     canvas.drawText(precipProbability + '%', w2, h - 22 * $fontScale, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipAccumulation, item.precipUnit), w2, h - 12 * $fontScale, textPaint);
+                canvas.drawText(formatValueToUnit(item.precipShowSnow ? item.snowfall : item.precipAccumulation, item.precipUnit), w2, h - 12 * $fontScale, textPaint);
             }
         }
         canvas.save();

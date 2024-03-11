@@ -1,8 +1,6 @@
 <script context="module" lang="ts">
-    import { getBoolean } from '@nativescript/core/application-settings';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
-    import { prefs } from '~/services/preferences';
     import { iconService } from '~/services/icon';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
 </script>
 
 <script lang="ts">
@@ -11,9 +9,10 @@
     export let iconData: [number, boolean];
     export let size: string | number = 40;
     // export let autoPlay = true;
-    export let autoPlay = getBoolean('animations', false);
+    export let autoPlay = iconService.animated;
     let iconSrc: string;
     $: {
+        autoPlay = iconService.animated;
         if (iconData) {
             const icon = iconService.getIcon(iconData[0], iconData[1]);
             if (autoPlay) {
@@ -25,10 +24,6 @@
             iconSrc = null;
         }
     }
-
-    prefs.on('key:animations', () => {
-        autoPlay = getBoolean('animations');
-    });
 
     function conditionalEvent(node, { condition, event, callback }) {
         let toRemove;

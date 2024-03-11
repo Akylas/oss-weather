@@ -34,10 +34,6 @@
         }
     }
 
-    prefs.on('key:animations', () => {
-        collectionView?.nativeView?.refresh();
-    });
-
     onThemeChanged(() => {
         collectionView.nativeView.refreshVisibleItems();
     });

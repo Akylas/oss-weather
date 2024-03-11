@@ -4,6 +4,7 @@ import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 
 const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
 export const onIconPackChanged = createGlobalEventListener('iconPack');
+// export const onIconAnimationsChanged = createGlobalEventListener('iconAnimations');
 
 const WEATHER_CODE_MAPPING = new Map<number, number>();
 WEATHER_CODE_MAPPING.set(201, 200);
@@ -100,10 +101,22 @@ export class IconService extends Observable {
     images: Map<number, number> = new Map<number, number>();
     lotties: Map<number, number> = new Map<number, number>();
     mappingCache: Map<string, string> = new Map<string, string>();
+    mAnimated: boolean;
     constructor() {
         super();
         this.load(false);
+        this.updateAnimatedState(false);
         prefs.on('key:icon_set', () => this.load(), this);
+        prefs.on('key:animations', () => this.updateAnimatedState(), this);
+    }
+    updateAnimatedState(fire = true) {
+        this.mAnimated = ApplicationSettings.getBoolean('animations', false);
+        // if (fire) {
+        //     globalObservable.notify({ eventName: 'iconAnimations', data: this.mAnimated });
+        // }
+    }
+    get animated() {
+        return this.mAnimated && this.lotties.size;
     }
     load(fireChange = true) {
         this.iconSet = ApplicationSettings.getString('icon_set', 'meteocons');
@@ -134,7 +147,6 @@ export class IconService extends Observable {
         }
         const result = `${realIconId}${mapId === 1 ? (isDay ? 'd' : 'n') : ''}`;
         this.mappingCache.set(key, result);
-        DEV_LOG && console.log('getIcon', iconId, isDay, result);
         return result;
     }
     async getAvailableThemes() {

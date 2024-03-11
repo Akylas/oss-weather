@@ -348,26 +348,40 @@ export enum WeatherDataType {
 }
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain = 0, snow = 0) {
     // if (type !== WeatherDataType.CURRENT) {
-    d.precipColor = rainColor.hex;
-    d.precipUnit = UNITS.MM;
     // d.color = Color.mix(color, cloudyColor, d.cloudCover).hex;
-    const dd = d as DailyData;
-    const cloudCover = Math.max(dd.cloudCover, 0);
-    if (snow && rain) {
-        dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
-        dd.mixedRainSnow = true;
-        d.precipIcon = 'app-rainsnow';
-        d.precipFontUseApp = true;
-    } else if (rain) {
-        dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0), rainColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+    const cloudCover = d.cloudCover ? Math.max(d.cloudCover, 0) : 0;
+    if (snow || rain || d.precipAccumulation) {
+        d.precipColor = rainColor.hex;
         d.precipIcon = 'wi-raindrop';
-    } else if (snow) {
-        d.precipColor = snowColor.hex;
-        d.precipIcon = 'wi-snowflake-cold';
-        d.precipUnit = UNITS.CM;
-        dd.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(dd.precipAccumulation * 10, 100)).hex;
+        d.precipUnit = UNITS.MM;
+        let ratio;
+        if (snow > rain) {
+            ratio = rain / snow;
+        } else {
+            ratio = snow / rain;
+        }
+        // we need to compare snow and rain, but sometimes it is not "normal"
+        // and we get rain with sub 0 temperatures...
+        if (snow && rain && ratio > 0.3 && (d.temperature || 0) > 0) {
+            d.precipColor = Color.mix(snowColor, rainColor, 50);
+            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(d.precipAccumulation * 10, 100)).hex;
+            d.mixedRainSnow = true;
+            d.precipIcon = 'app-rain-snow';
+            d.precipFontUseApp = true;
+        } else if (snow && (snow > rain || (d.temperature || 0) < 0)) {
+            d.precipColor = snowColor.hex;
+            d.precipIcon = 'wi-snowflake-cold';
+            d.precipUnit = UNITS.CM;
+            d.precipShowSnow = true;
+            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(d.precipAccumulation * 10, 100)).hex;
+        } else if (rain) {
+            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(d.precipAccumulation * 10, 100)).hex;
+        } else {
+            DEV_LOG && console.log('not possible?', rain, snow, d);
+            d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(d.precipAccumulation * 10, 100)).hex;
+        }
     } else {
-        dd.color = Color.mix(sunnyColor, cloudyColor, cloudCover).hex;
+        d.color = Color.mix(sunnyColor, cloudyColor, cloudCover ?? 0).hex;
     }
     // }
     if (d['uvIndex'] !== undefined) {
@@ -379,8 +393,9 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         d['moonPerc'] = Math.round((28 / moonPhase) * 100);
         d['moonIcon'] = moonIcon(moonPhase);
     }
-
-    d.cloudColor = cloudyColor.setAlpha(d.cloudCover * 2.55).hex;
+    if (cloudCover) {
+        d.cloudColor = cloudyColor.setAlpha(cloudCover * 2.55).hex;
+    }
 
     const wBIcon = windBeaufortIcon(d.windSpeed);
     if (wBIcon) {

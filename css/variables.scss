@@ -1,13 +1,14 @@
 $icomoon-font-family: "app" !default;
 $icomoon-font-path: "fonts" !default;
 
-$app-refresh: "\e908";
-$app-wind_0: "\e900";
-$app-wind_1: "\e901";
-$app-wind_2: "\e902";
-$app-wind_3: "\e903";
-$app-wind_4: "\e904";
-$app-wind_5: "\e905";
-$app-wind_6: "\e906";
-$app-wind_7: "\e907";
+$app-rain-snow: unquote('"\\e909"');
+$app-wind_0: unquote('"\\e900"');
+$app-wind_1: unquote('"\\e901"');
+$app-wind_2: unquote('"\\e902"');
+$app-wind_3: unquote('"\\e903"');
+$app-wind_4: unquote('"\\e904"');
+$app-wind_5: unquote('"\\e905"');
+$app-wind_6: unquote('"\\e906"');
+$app-wind_7: unquote('"\\e907"');
+$app-refresh: unquote('"\\e908"');
 

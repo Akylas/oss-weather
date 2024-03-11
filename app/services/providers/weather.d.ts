@@ -49,6 +49,7 @@ export interface CommonWeatherData {
     precipUnit?: UNITS;
     precipIcon?: string;
     precipFontUseApp?: boolean;
+    precipShowSnow?: boolean;
     cloudCover?: number;
     cloudCeiling?: number;
     precipColor?: string | Color;
@@ -87,6 +88,7 @@ export interface Hourly extends CommonWeatherData {
     };
     rainSnowLimit?: number;
     snowfall?: number;
+    rain?: number;
 }
 export interface Currently extends CommonWeatherData {
     time: number;

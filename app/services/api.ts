@@ -212,8 +212,6 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
 }
 
-
-
 export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs()) {
     const newItems = [];
 
@@ -221,18 +219,22 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
     const endOfMinute = now.endOf('m').valueOf();
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
-            const { precipAccumulation, cloudCover, cloudCeiling, iso, ...currentDaily } = weatherData.daily.data[index];
-            const firstHourIndex = currentDaily.hourly.findIndex((h) => h.time >= startOfHour);
+            const dailyData = weatherData.daily.data[index];
+            // eslint-disable-next-line prefer-const
+            let { precipAccumulation, cloudCover, cloudCeiling, iso, isDay, uvIndex, windGust, hourly, ...current } = dailyData;
+
+            const firstHourIndex = hourly.findIndex((h) => h.time >= startOfHour);
             const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-            if (firstHourIndex <= 1) {
-                Object.assign(currentDaily, weatherData.currently);
+            const hours = firstHourIndex >= 0 ? hourly.slice(firstHourIndex) : [];
+
+            current = firstHourIndex >= 0 ? { ...hours[index] } : current;
+            if (firstHourIndex === 0 && firstMinuteIndex > 10) {
+                Object.assign(current, weatherData.minutely.data[firstMinuteIndex - 1]);
             }
-            if (firstHourIndex > 1) {
-                Object.assign(currentDaily, currentDaily.hourly[firstHourIndex - 1]);
-            } else if (firstMinuteIndex > 10) {
-                Object.assign(currentDaily, weatherData.minutely.data[firstMinuteIndex - 1]);
+            if (now.valueOf() - weatherData.currently.time <= 1000 * 60 * 20) {
+                Object.assign(current, weatherData.currently);
             }
-            const hours = firstHourIndex >= 0 ? currentDaily.hourly.slice(firstHourIndex) : [];
+            // const { ...currentDaily } = current;
             let min = 10000;
             let max = -10000;
             hours.forEach((h, i) => {
@@ -249,8 +251,12 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
             // current weather is a mix of actual current weather, hourly and daily
             newItems.push(
-                Object.assign(currentDaily, {
+                Object.assign(current, {
                     lastUpdate,
+                    isDay: now.valueOf() < times.sunsetStart.valueOf() && now.valueOf() > times.sunriseEnd.valueOf(),
+                    temperatureMin: dailyData.temperatureMin,
+                    temperatureMax: dailyData.temperatureMax,
+                    moonIcon: dailyData.moonIcon,
                     // icon: iconService.getIcon(currentDaily.iconId, currentDaily.isDay),
                     sunriseTime: times.sunriseEnd,
                     sunsetTime: times.sunsetStart,

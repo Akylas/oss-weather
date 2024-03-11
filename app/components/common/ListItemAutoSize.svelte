@@ -96,7 +96,16 @@
         verticalAlignment="middle"
         visibility={!!leftIcon ? 'visible' : 'collapse'}
         width={iconFontSize * 2} /> -->
-    <label col={mainCol} disableCss={true} lineBreak="end" paddingBottom={addedPadding} paddingTop={addedPadding} textWrap={true} verticalAlignment="center" verticalTextAlignment="center">
+    <label
+        col={mainCol}
+        disableCss={true}
+        lineBreak="end"
+        paddingBottom={addedPadding}
+        paddingTop={addedPadding}
+        textWrap={true}
+        verticalAlignment="center"
+        verticalTextAlignment="center"
+        {...$$restProps.titleProps || {}}>
         <cspan color={titleColor || color || colorOnSurface} fontSize={fontSize * $fontScale} {fontWeight} text={title} />
         <cspan color={subtitleColor || colorOnSurfaceVariant} fontSize={subtitleFontSize * $fontScale} text={subtitle ? '\n' + subtitle : null} />
     </label>

@@ -277,7 +277,7 @@ module.exports = (env, params = {}) => {
     appSymbols.variables
         .filter((v) => v.name.startsWith('$app-'))
         .forEach((v) => {
-            appIcons[v.name.replace('$app-', '')] = String.fromCharCode(parseInt(v.value.slice(2), 16));
+            appIcons[v.name.replace('$app-', '')] = String.fromCharCode(parseInt(v.value.slice(11, -2), 16));
         });
 
     const scssPrepend = `$appFontFamily: app;

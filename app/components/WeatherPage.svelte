@@ -175,9 +175,11 @@
     }
 
     async function updateView() {
-        items = prepareItems(weatherLocation, weatherData, lastUpdate);
-        ApplicationSettings.setNumber('lastUpdate', lastUpdate);
-        ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
+        if (weatherLocation && weatherData) {
+            items = prepareItems(weatherLocation, weatherData, lastUpdate);
+            ApplicationSettings.setNumber('lastUpdate', lastUpdate);
+            ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
+        }
     }
 
     onWeatherDataChanged(updateView);

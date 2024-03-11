@@ -52,8 +52,8 @@ export class OWMProvider extends WeatherProvider {
                     windBearing: result.current.wind_deg,
                     uvIndex: result.current.uvi,
                     isDay: result.current.dt < result.current.sunset && result.current.dt > result.current.sunrise,
-                    sunriseTime: result.current.sunrise * 1000,
-                    sunsetTime: result.current.sunset * 1000,
+                    // sunriseTime: result.current.sunrise * 1000,
+                    // sunsetTime: result.current.sunset * 1000,
                     iconId: result.current.weather[0]?.id,
                     description: titlecase(result.current.weather[0]?.description)
                 } as Currently,
@@ -78,8 +78,8 @@ export class OWMProvider extends WeatherProvider {
                     d.windBearing = data.wind_deg;
                     d.humidity = data.humidity;
                     d.pressure = data.pressure;
-                    d.sunriseTime = data.sunrise * 1000;
-                    d.sunsetTime = data.sunset * 1000;
+                    // d.sunriseTime = data.sunrise * 1000;
+                    // d.sunsetTime = data.sunset * 1000;
                     d.precipAccumulation = data.snow ? data.snow : data.rain ? data.rain : 0;
                     d.uvIndex = data.uvi;
 
@@ -115,16 +115,18 @@ export class OWMProvider extends WeatherProvider {
                 d.usingFeelsLike = feelsLikeTemperatures;
 
                 d.windBearing = data.wind_deg;
-                if (hasNext) {
-                    const nextData = result.hourly[index + 1];
-                    d.precipAccumulation = nextData.snow ? nextData.snow['1h'] : nextData.rain ? nextData.rain['1h'] : 0;
+                const nextData = hasNext ? result.hourly[index + 1] : undefined;
+                if (hasNext && nextData) {
+                    d.snowfall = nextData.snow?.['1h'] || 0;
+                    d.rain = nextData.rain?.['1h'] || 0;
+                    d.precipAccumulation = d.snowfall + d.rain;
                 }
                 // d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
                 d.precipProbability = Math.round(data.pop * 100);
                 d.cloudCover = data.clouds;
                 d.humidity = data.humidity;
                 d.pressure = data.pressure;
-                weatherDataIconColors(d, WeatherDataType.HOURLY, coords, data.rain?.['1h'], data.snow?.['1h']);
+                weatherDataIconColors(d, WeatherDataType.HOURLY, coords, d.rain, d.snowfall);
 
                 return d;
             });

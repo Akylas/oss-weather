@@ -11,20 +11,52 @@
     import { showError } from '~/utils/error';
     import { colors } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems } from '~/services/api';
     import { onMount } from 'svelte';
     import { Page, View } from '@nativescript/core';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
+    import { getProviderForType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { ProviderType } from '~/services/providers/weather';
+    import CompareLineChart from './CompareLineChart.svelte';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
 
+    const models = ['meteofrance', 'openweathermap', 'openmeteo'];
+
+    const dataToCompare = [{ id: 'temperature', type: 'linechart', forecast: 'hourly' }];
+
     export let weatherLocation: FavoriteLocation;
 
-    const dataList = [];
+    const dataList = providers.reduce((acc, val) => {
+        const provider = getProviderForType(val);
+        const models = provider.getModels();
+        const keys = Object.keys(models);
+        if (keys.length) {
+            acc.push({
+                type: 'sectionheader',
+                name: provider.getName()
+            });
+            for (let index = 0; index < keys.length; index++) {
+                const key = keys[index];
+                acc.push({
+                    id: provider.id + ':' + key,
+                    name: provider.getName() + ': ' + key
+                });
+            }
+        } else {
+            acc.push({
+                id: provider.id,
+                name: provider.getName()
+            });
+        }
+        return acc;
+    }, []);
+    DEV_LOG && console.log('dataList', dataList);
     let page: NativeViewElementNode<Page>;
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
     let loading = false;
+    let data = [];
 
     onMount(async () => {
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
@@ -36,7 +68,11 @@
                 showError(error);
             }
         });
-        networkService.start(); // should send connection event and then refresh
+        // networkService.start(); // should send connection event and then refresh
+        networkConnected = networkService.connected;
+        if (models.length && dataToCompare.length) {
+            refreshWeather();
+        }
     });
 
     async function refreshWeather() {
@@ -49,6 +85,31 @@
             return;
         }
         loading = true;
+        const now = Date.now();
+        const weatherData = await Promise.all(
+            models.map(async (model) => {
+                const providerType = model.split(':')[0] as ProviderType;
+                const provider = getProviderForType(providerType);
+                const weatherData = await provider.getWeather(weatherLocation);
+                return { weatherData, model };
+                // return prepareItems(weatherLocation, weatherData, now);
+            })
+        );
+        DEV_LOG && console.log('weatherData', weatherData.length);
+        const newItems = [];
+        for (let i = 0; i < dataToCompare.length; i++) {
+            const d = dataToCompare[i];
+            switch (d.type) {
+                default:
+                case 'linechart':
+                    DEV_LOG && console.log('d', d);
+                    newItems.push({
+                        weatherData,
+                        ...d
+                    });
+            }
+        }
+        data = newItems;
 
         try {
         } catch (err) {
@@ -59,28 +120,21 @@
     }
     async function onPullToRefresh() {
         try {
-            await refresh();
+            if (pullRefresh) {
+                pullRefresh.nativeView.refreshing = false;
+            }
+            loading = true;
+            await refreshWeather();
         } catch (error) {
             showError(error);
-        }
-    }
-    async function refresh() {
-        if (!weatherLocation) {
-            showSnack({ message: l('no_location_set') });
-            return;
-        }
-        if (pullRefresh) {
-            pullRefresh.nativeView.refreshing = true;
-        }
-
-        await refreshWeather();
-        if (pullRefresh) {
-            pullRefresh.nativeView.refreshing = false;
+        } finally {
+            loading = false;
         }
     }
 
     let drawer: DrawerElement;
     let dataListCollectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
+    let collectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
     function toggleDrawer() {
         drawer?.toggle();
     }
@@ -122,6 +176,23 @@
         }
         DEV_LOG && console.log('onCheckBox', item.id, value);
     }
+
+    function isModelSelected(item) {
+        return models.indexOf(item.id) !== -1;
+    }
+
+    function selectModelsTemplate(item, index, items) {
+        if (item.type) {
+            return item.type;
+        }
+        return 'default';
+    }
+    function selectDataTemplate(item, index, items) {
+        if (item.type) {
+            return item.type;
+        }
+        return 'linechart';
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
@@ -140,20 +211,37 @@
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
-                    <!-- <WeatherComponent {items} {weatherLocation} on:tap={onTap} /> -->
+                    <collectionview bind:this={collectionView} id="data" itemTemplateSelector={selectDataTemplate} items={data}>
+                        <Template key="linechart" let:item>
+                            <CompareLineChart height={150} {item} />
+                        </Template>
+                    </collectionview>
                 </pullrefresh>
             {/if}
             <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name}></CActionBar>
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
             <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />
-            <collectionview bind:this={dataListCollectionView} id="favorite" items={dataList} row={1}>
+            <collectionview bind:this={dataListCollectionView} id="models" itemTemplateSelector={selectModelsTemplate} items={dataList} row={1}>
                 <Template key="sectionheader" let:item>
-                    <label class="sectionHeader" text={item.title} />
+                    <label class="sectionHeader" text={item.name} />
                 </Template>
-                <Template key="switch" let:item>
-                    <ListItemAutoSize fontSize={20} on:tap={(event) => onTap(item, event)}>
-                        <switch id="checkbox" checked={item.value} col={2} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
+                <Template let:item>
+                    <ListItemAutoSize
+                        padding="0 16 0 16"
+                        rows="50"
+                        title={item.name}
+                        titleProps={{
+                            padding: 0
+                        }}
+                        on:tap={(event) => onTap(item, event)}>
+                        <checkbox
+                            boxType={item.boxType}
+                            checked={isModelSelected(item)}
+                            col={item.boxType === 'circle' ? 0 : 2}
+                            ios:marginRight={10}
+                            verticalAlignment="center"
+                            on:checkedChange={(e) => onCheckBox(item, e)} />
                     </ListItemAutoSize>
                 </Template>
             </collectionview>

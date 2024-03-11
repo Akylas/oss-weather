@@ -17,7 +17,6 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import SelectCity from '~/components/SelectCity.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
-    import WeatherMapPage from '~/components/WeatherMapPage.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
@@ -82,18 +81,25 @@
                 // }
             ];
             if (weatherLocation) {
-                options.push({
-                    icon: 'mdi-refresh',
-                    id: 'refresh',
-                    name: l('refresh')
-                });
-                // if (OWMProvider.hasOWMApiKey()) {
-                options.push({
-                    icon: 'mdi-map',
-                    id: 'map',
-                    name: l('map')
-                });
-                // }
+                options.push(
+                    ...[
+                        {
+                            icon: 'mdi-refresh',
+                            id: 'refresh',
+                            name: l('refresh')
+                        },
+                        // {
+                        //     icon: 'mdi-chart-bar',
+                        //     id: 'compare',
+                        //     name: l('compare_models')
+                        // },
+                        {
+                            icon: 'mdi-map',
+                            id: 'map',
+                            name: l('map')
+                        }
+                    ]
+                );
             }
             await showPopoverMenu({
                 options,
@@ -112,7 +118,12 @@
                                     navigate({ page: Settings });
                                     break;
                                 case 'map':
-                                    await openWeatherMap();
+                                    const WeatherMapPage = (await import('~/components/WeatherMapPage.svelte')).default;
+                                    navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
+                                    break;
+                                case 'compare':
+                                    const CompareWeather = (await import('~/components/CompareWeather.svelte')).default;
+                                    navigate({ page: CompareWeather, props: { weatherLocation } });
                                     break;
                                 case 'refresh':
                                     await refreshWeather();
@@ -153,6 +164,7 @@
         loading = true;
 
         try {
+            DEV_LOG && console.log('refreshWeather');
             weatherData = await getProvider().getWeather(weatherLocation);
             if (weatherData) {
                 // console.log(JSON.stringify(weatherData))
@@ -205,13 +217,6 @@
             }
         } catch (err) {
             showError(err);
-        }
-    }
-    async function openWeatherMap() {
-        try {
-            navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
-        } catch (error) {
-            showError(error);
         }
     }
     async function getLocationAndWeather() {
@@ -309,6 +314,7 @@
             }
         });
         networkService.start(); // should send connection event and then refresh
+        // networkConnected = networkService.connected;
 
         if (weatherData) {
             items = prepareItems(weatherLocation, weatherData, lastUpdate);

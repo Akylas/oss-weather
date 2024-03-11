@@ -41,6 +41,7 @@
     "cloud_cover": "cloud cover",
     "cloudy": "Cloudy",
     "coastal_flooding": "Coastal flooding",
+    "compare_models": "compare models",
     "description": "Description",
     "description_required": "A description is required",
     "disabled_weather_data": "disabled weather data",

@@ -137,8 +137,8 @@
 </script>
 
 <script lang="ts">
-       $: ({ colorOnSurface } = $colors);
- let chart: NativeViewElementNode<LineChart>;
+    $: ({ colorOnSurface } = $colors);
+    let chart: NativeViewElementNode<LineChart>;
 
     let chartInitialized = false;
     export let location: WeatherLocation;

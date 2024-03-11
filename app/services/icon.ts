@@ -1,7 +1,9 @@
 import { ApplicationSettings, File, Folder, Observable, knownFolders, path } from '@nativescript/core';
 import { prefs } from './preferences';
+import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 
 const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
+export const onIconPackChanged = createGlobalEventListener('iconPack');
 
 const WEATHER_CODE_MAPPING = new Map<number, number>();
 WEATHER_CODE_MAPPING.set(201, 200);
@@ -80,17 +82,17 @@ function fillIconMap(folderPath: string, map: Map<number, number>) {
         }, map);
 }
 export class IconService extends Observable {
-    getIconConfig() {
+    getIconConfig(folderPath = this.iconSetFolderPath) {
         if (!this.iconSetConfig) {
-            this.iconSetConfig = JSON.parse(File.fromPath(path.join(this.iconSetFolderPath, 'config.json')).readTextSync());
+            this.iconSetConfig = JSON.parse(File.fromPath(path.join(folderPath, 'config.json')).readTextSync());
         }
         return this.iconSetConfig;
     }
     getPackName() {
         return this.getIconConfig().name;
     }
-    getPackIcon() {
-        return path.join(this.iconSetFolderPath, 'images/800d.png');
+    getPackIcon(folderPath = this.iconSetFolderPath) {
+        return path.join(folderPath, 'images/800d.png');
     }
     iconSet: string;
     iconSetFolderPath: string;
@@ -100,16 +102,19 @@ export class IconService extends Observable {
     mappingCache: Map<string, string> = new Map<string, string>();
     constructor() {
         super();
-        this.load();
-        prefs.on('key:icon_set', this.load, this);
+        this.load(false);
+        prefs.on('key:icon_set', () => this.load(), this);
     }
-    load() {
+    load(fireChange = true) {
         this.iconSet = ApplicationSettings.getString('icon_set', 'meteocons');
         this.iconSetFolderPath = path.join(iconThemesFolder, this.iconSet);
         this.iconSetConfig = null;
         fillIconMap(path.join(this.iconSetFolderPath, 'images'), this.images);
         fillIconMap(path.join(this.iconSetFolderPath, 'lottie'), this.lotties);
         this.mappingCache.clear();
+        if (fireChange) {
+            globalObservable.notify({ eventName: 'iconPack', data: this.iconSet });
+        }
     }
     getIcon(iconId: number, isDay: boolean, animated = false) {
         const key = `${iconId}${isDay ? 1 : 0}${animated ? 1 : 0}`;
@@ -129,7 +134,22 @@ export class IconService extends Observable {
         }
         const result = `${realIconId}${mapId === 1 ? (isDay ? 'd' : 'n') : ''}`;
         this.mappingCache.set(key, result);
+        DEV_LOG && console.log('getIcon', iconId, isDay, result);
         return result;
+    }
+    async getAvailableThemes() {
+        const theme_folders = await Folder.fromPath(iconThemesFolder).getEntities();
+        return Promise.all(
+            theme_folders.map(async (folderPath) => {
+                const jsonData = JSON.parse(await File.fromPath(path.join(folderPath._path, 'config.json')).readText());
+                const icon = this.getPackIcon(folderPath._path);
+                return {
+                    icon,
+                    name: jsonData.name,
+                    id: folderPath.name
+                };
+            })
+        );
     }
 }
 export const iconService = new IconService();

@@ -33,6 +33,7 @@
     import { WeatherData } from '~/services/providers/weather';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
     import { onWeatherDataChanged } from '~/services/weatherData';
+    import { onIconPackChanged } from '~/services/icon';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -180,6 +181,7 @@
     }
 
     onWeatherDataChanged(updateView);
+    onIconPackChanged(updateView);
 
     function saveLocation(result: WeatherLocation) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;

@@ -233,6 +233,39 @@
                     </ListItem>
                 {/if}
             </Template>
+            <Template key="image" let:item>
+                {#if autoSizeListItem}
+                    <ListItemAutoSize
+                        {borderRadius}
+                        color={item.color}
+                        {fontSize}
+                        {fontWeight}
+                        {iconFontSize}
+                        leftIcon={item.icon}
+                        showBottomLine={showBorders}
+                        subtitle={item.subtitle}
+                        title={item.name}
+                        on:tap={(event) => onTap(item, event)}>
+                        <image col={2} height={45} src={item.image} />
+                    </ListItemAutoSize>
+                {:else}
+                    <ListItem
+                        {borderRadius}
+                        color={item.color}
+                        columns="auto,*,auto"
+                        {fontSize}
+                        {fontWeight}
+                        {iconFontSize}
+                        leftIcon={item.icon}
+                        mainCol={1}
+                        showBottomLine={showBorders}
+                        subtitle={item.subtitle}
+                        title={item.name}
+                        on:tap={(event) => onTap(item, event)}>
+                        <image col={2} height={45} src={item.image} />
+                    </ListItem>
+                {/if}
+            </Template>
             <Template let:item>
                 {#if autoSizeListItem}
                     <ListItemAutoSize

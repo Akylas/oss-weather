@@ -5,7 +5,7 @@
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { prompt } from '@nativescript-community/ui-material-dialogs';
     import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
-    import { ApplicationSettings, ContentView, ObservableArray, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { ApplicationSettings, ContentView, ObservableArray, Page, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode, navigate } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -32,6 +32,7 @@
     $: ({ colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors);
 
     let collectionView: NativeViewElementNode<CollectionView>;
+    let page: NativeViewElementNode<Page>;
 
     let items: ObservableArray<any>;
 
@@ -41,7 +42,7 @@
         { icon: 'mdi-share-variant', id: 'share' },
         { icon: 'mdi-github', id: 'github' }
     ];
-    export let options: any[] = null;
+    export let options: (page, updateItem) => any[] = null;
 
     function getTitle(item) {
         switch (item.id) {
@@ -63,7 +64,7 @@
     }
     function refresh() {
         const newItems: any[] =
-            options ||
+            options?.(page, updateItem) ||
             [
                 {
                     type: 'header',
@@ -102,23 +103,48 @@
                         title: lc('icons'),
                         description: lc('icons_settings'),
                         icon: 'mdi-weather-partly-cloudy',
-                        options: () => [
-                            {
-                                type: 'switch',
-                                id: 'animations',
-                                title: lc('animations'),
-                                description: lc('animations_desc'),
-                                value: ApplicationSettings.getBoolean('animations', false)
-                            },
-                            {
-                                type: 'image',
-                                id: 'icon_pack',
-                                title: lc('icon_pack'),
-                                description: () => iconService.getPackName(),
-                                image: () => iconService.getPackIcon(),
-                                onTap: () => {}
-                            }
-                        ]
+                        options(page, updateItem) {
+                            return [
+                                {
+                                    type: 'switch',
+                                    id: 'animations',
+                                    title: lc('animations'),
+                                    description: lc('animations_desc'),
+                                    value: ApplicationSettings.getBoolean('animations', false)
+                                },
+                                {
+                                    type: 'image',
+                                    id: 'icon_pack',
+                                    title: lc('icon_pack'),
+                                    description: () => iconService.getPackName(),
+                                    image: () => iconService.getPackIcon(),
+                                    async onTap(item) {
+                                        const themes = await iconService.getAvailableThemes();
+                                        const component = (await import('~/components/common/OptionSelect.svelte')).default;
+                                        const result = await showAlertOptionSelect(
+                                            component,
+                                            {
+                                                height: Math.min(themes.length * 56, 400),
+                                                rowHeight: 56,
+                                                options: themes.map((k) => ({
+                                                    name: k.name,
+                                                    data: k.id,
+                                                    type: 'image',
+                                                    image: k.icon
+                                                }))
+                                            },
+                                            {
+                                                title: lc('icon_pack')
+                                            }
+                                        );
+                                        if (result?.data) {
+                                            ApplicationSettings.setString('icon_set', result.data);
+                                            updateItem(item, 'id');
+                                        }
+                                    }
+                                }
+                            ];
+                        }
                     }
                 ] as any)
                 .concat([
@@ -411,7 +437,7 @@
                         props: {
                             title: item.title,
                             reorderEnabled: item.reorderEnabled,
-                            options: item.options(),
+                            options: item.options,
                             actionBarButtons: item.actionBarButtons?.() || []
                         }
                     });
@@ -594,7 +620,7 @@
     }
 </script>
 
-<page actionBarHidden={true}>
+<page bind:this={page} id={title} actionBarHidden={true}>
     <gridlayout rows="auto,*">
         <collectionview
             bind:this={collectionView}

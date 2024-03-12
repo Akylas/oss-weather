@@ -8,6 +8,7 @@
     "authorize": "Ssireg",
     "behavioral_tips": "Lewṣayat n leɛqel",
     "cancel": "Sefsex",
+    "clear": "Teṣfa tignewt",
     "clock_24": "Sseqdec amasal n 24 n yisragen",
     "close": "Mdel",
     "cloud_cover": "asignew",
@@ -61,7 +62,7 @@
     "pick_date": "Fren azemz",
     "please_describe_error": "Ttxil-k·m, glem-d tuccḍa-nni",
     "portuguese": "Tapurtugit",
-    "preferences": "Imenyafen",
+    "preferences": "Ismenyifen",
     "provider": {
         "meteofrance": "Météo France",
         "openmeteo": "Open-Meteo",
@@ -89,7 +90,7 @@
         "title": "Iɣewwaṛen"
     },
     "share_application": "Bḍu asnas",
-    "show_love": "ssken-d leḥmala-k·m",
+    "show_love": "ma iεǧeb-ak·am usenfaṛ-a, tzemreḍ ad d-tessekneḍ kra n tayri neɣ ad tettekkiḍ ula deg-s!",
     "snow": "Adfel",
     "snow_grains": "Imeččimen n wedfel",
     "snow_ice": "Adfel/Agris",

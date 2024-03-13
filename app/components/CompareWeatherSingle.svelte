@@ -9,11 +9,11 @@
     import { FavoriteLocation } from '~/helpers/favorites';
     import { l, lc, slc } from '~/helpers/locale';
     import { showError } from '~/utils/error';
-    import { colors } from '~/variables';
+    import { actionBarButtonHeight, colors } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems } from '~/services/api';
     import { onMount } from 'svelte';
-    import { ApplicationSettings, ObservableArray, Page, View } from '@nativescript/core';
+    import { ApplicationSettings, NavigatedData, ObservableArray, Page, View } from '@nativescript/core';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { getProviderForType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { ProviderType } from '~/services/providers/weather';
@@ -99,7 +99,7 @@
     let page: NativeViewElementNode<Page>;
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
-    let loading = false;
+    let loading = true;
     let currentItem;
 
     onMount(async () => {
@@ -114,9 +114,6 @@
         });
         // networkService.start(); // should send connection event and then refresh
         networkConnected = networkService.connected;
-        if (models.length && dataToCompare) {
-            refreshData();
-        }
     });
 
     async function refreshData() {
@@ -267,9 +264,15 @@
         }
         return 'default';
     }
+
+    function onNavigatedTo(args: NavigatedData): void {
+        if (models.length && dataToCompare) {
+            refreshData();
+        }
+    }
 </script>
 
-<page bind:this={page} actionBarHidden={true}>
+<page bind:this={page} actionBarHidden={true} on:navigatedTo={onNavigatedTo}>
     <drawer
         bind:this={drawer}
         gestureHandlerOptions={{
@@ -291,6 +294,7 @@
                 <mdbutton horizontalAlignment="center" row={1} text={lc('select_data')} variant="text" verticalAlignment="middle" on:tap={toggleRightDrawer} />
             {/if}
             <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name}>
+                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
                 <mdbutton class="actionBarButton" text="mdi-layers-triple" variant="text" verticalAlignment="middle" on:tap={toggleLeftDrawer} />
                 <mdbutton class="actionBarButton" text="mdi-sun-thermometer-outline" variant="text" verticalAlignment="middle" on:tap={toggleRightDrawer} />
             </CActionBar>

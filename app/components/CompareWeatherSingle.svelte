@@ -118,39 +118,38 @@
     });
 
     async function refreshData() {
-        if (!weatherLocation) {
-            showSnack({ message: l('no_location_set') });
-            return;
-        }
-        if (!networkConnected) {
-            showSnack({ message: l('no_network') });
-            return;
-        }
-        loading = true;
-        const now = Date.now();
-        const weatherData = await Promise.all(
-            models.map(async (model) => {
-                const data = model.split(':');
-                const providerType = data[0] as ProviderType;
-                const provider = getProviderForType(providerType);
-                // TODO: for Open-Meteo make a single request for all models
-                const weatherData = await provider.getWeather(weatherLocation, { minutely: false, current: false, warnings: false, forceModel: true, model: data[1] });
-                const modelData = modelsList.find((m) => m.id === model);
-                // DEV_LOG && console.log('modelData', model, modelData);
-                return { weatherData, model: modelData as { id: string; name: string; shortName: string } };
-                // return prepareItems(weatherLocation, weatherData, now);
-            })
-        );
-
-        currentItem = {
-            weatherData,
-            chartType: dataToCompare.type,
-            timestamp: now,
-            hidden: [],
-            ...dataToCompare
-        };
-
         try {
+            if (!weatherLocation) {
+                showSnack({ message: l('no_location_set') });
+                return;
+            }
+            if (!networkConnected) {
+                showSnack({ message: l('no_network') });
+                return;
+            }
+            loading = true;
+            const now = Date.now();
+            const weatherData = await Promise.all(
+                models.map(async (model) => {
+                    const data = model.split(':');
+                    const providerType = data[0] as ProviderType;
+                    const provider = getProviderForType(providerType);
+                    // TODO: for Open-Meteo make a single request for all models
+                    const weatherData = await provider.getWeather(weatherLocation, { minutely: false, current: false, warnings: false, forceModel: true, model: data[1] });
+                    const modelData = modelsList.find((m) => m.id === model);
+                    // DEV_LOG && console.log('modelData', model, modelData);
+                    return { weatherData, model: modelData as { id: string; name: string; shortName: string } };
+                    // return prepareItems(weatherLocation, weatherData, now);
+                })
+            );
+
+            currentItem = {
+                weatherData,
+                chartType: dataToCompare.type,
+                timestamp: now,
+                hidden: [],
+                ...dataToCompare
+            };
         } catch (err) {
             showError(err);
         } finally {

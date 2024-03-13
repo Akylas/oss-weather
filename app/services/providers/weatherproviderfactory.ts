@@ -7,7 +7,13 @@ import { ApplicationSettings } from '@akylas/nativescript';
 import { prefs } from '../preferences';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 
-export const providers = ['meteofrance', 'openweathermap', 'openmeteo'] as const;
+export enum Providers {
+    MeteoFrance = 'meteofrance',
+    OpenWeather = 'openweathermap',
+    OpenMeteo = 'openmeteo'
+}
+
+export const providers = Object.values(Providers);
 
 let currentProvider: WeatherProvider;
 prefs.on('key:provider', () => {
@@ -37,12 +43,12 @@ export function getProviderType(): ProviderType {
 
 export function getProviderForType(newType: ProviderType): WeatherProvider {
     switch (newType) {
-        case 'openweathermap':
+        case Providers.OpenWeather:
             return OWMProvider.getInstance();
 
-        case 'meteofrance':
+        case Providers.MeteoFrance:
             return MFProvider.getInstance();
-        case 'openmeteo':
+        case Providers.OpenMeteo:
         default:
             return OMProvider.getInstance();
     }

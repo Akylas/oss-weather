@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { FeatureCollection, MultiPolygon } from 'geojson';
     import { GPS } from '@nativescript-community/gps';
     import { request } from '@nativescript-community/perms';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
@@ -6,9 +7,9 @@
     import { confirm } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Color, CoreTypes, EventData, Frame, Page } from '@nativescript/core';
+    import { Color, CoreTypes, EventData, File, Frame, Page, knownFolders, path } from '@nativescript/core';
     import { Application, ApplicationSettings } from '@nativescript/core';
-    import { throttle } from '@nativescript/core/utils';
+    import { openFile, openUrl, throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import { navigate, showModal } from 'svelte-native';
@@ -27,12 +28,14 @@
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
     import { globalObservable } from '~/utils/svelte/ui';
-    import { showPopoverMenu } from '~/utils/ui';
+    import { openLink, showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { WeatherData } from '~/services/providers/weather';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
     import { onWeatherDataChanged } from '~/services/weatherData';
     import { onIconPackChanged } from '~/services/icon';
+    import { isBRABounds } from '~/utils/utils';
+    import { getFile } from '@nativescript-community/https';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -100,6 +103,13 @@
                         }
                     ]
                 );
+                if (isBRABounds(weatherLocation)) {
+                    options.push({
+                        icon: 'mdi-snowflake-alert',
+                        id: 'bra',
+                        name: l('bra')
+                    });
+                }
             }
             await showPopoverMenu({
                 options,
@@ -139,6 +149,26 @@
                                 case 'font-scale':
                                     const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
                                     navigate({ page: FontSizeSettingScreen });
+                                    break;
+                                case 'bra':
+                                    const franceGeoJSON = JSON.parse(
+                                        await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()
+                                    ) as FeatureCollection<MultiPolygon>;
+                                    const classifyPoint = require('robust-point-in-polygon');
+                                    const coord = [weatherLocation.coord.lon, weatherLocation.coord.lat];
+                                    let massifId = -1;
+                                    franceGeoJSON.features.some((feature) => {
+                                        const result = classifyPoint(feature.geometry.coordinates[0][0], coord);
+                                        if (result <= 0) {
+                                            massifId = feature.properties.code;
+                                            return true;
+                                        }
+                                    });
+                                    if (massifId !== -1) {
+                                        const result = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        DEV_LOG && console.log('massifId', massifId, result.path);
+                                        openFile(result.path);
+                                    }
                                     break;
                             }
                         }

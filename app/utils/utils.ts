@@ -1,5 +1,6 @@
 import { Application, Device, Frame } from '@nativescript/core';
 import { Dayjs } from 'dayjs';
+import { FavoriteLocation } from '~/helpers/favorites';
 import { lc } from '~/helpers/locale';
 export const sdkVersion = parseInt(Device.sdkVersion, 10);
 
@@ -26,4 +27,10 @@ export async function pickDate(currentDate: Dayjs) {
             datePicker.show(parentView._getRootFragmentManager(), 'datepicker');
         });
     }
+}
+
+const BRA_BOUNDS = [-1.604004,41.228249,9.667969,46.521076];
+export function isBRABounds(location: FavoriteLocation) {
+    const coords = location.coord;
+    return coords.lon >= BRA_BOUNDS[0] && coords.lon <= BRA_BOUNDS[2] && coords.lat >= BRA_BOUNDS[1] && coords.lat <= BRA_BOUNDS[3];
 }

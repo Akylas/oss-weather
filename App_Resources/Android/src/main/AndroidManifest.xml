@@ -29,6 +29,12 @@
                 <data android:scheme="weather" />
             </intent-filter>
         </activity>
+        <provider android:name="androidx.core.content.FileProvider"
+            android:authorities="__PACKAGE__.provider" android:exported="false"
+            android:grantUriPermissions="true" tools:replace="android:authorities">
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" tools:replace="android:resource" />
+        </provider>
         <meta-data android:name="android.webkit.WebView.MetricsOptOut" android:value="true" />
         <meta-data android:name="io.sentry.anr.enable" android:value="false" />
         <meta-data android:name="io.sentry.breadcrumbs.activity-lifecycle" android:value="false" />

@@ -23,9 +23,13 @@
     import { colors, fontScale } from '~/variables';
 
     const legendIconPaint = new Paint();
+    legendIconPaint.setTextSize(13);
+
     legendIconPaint.strokeWidth = 2;
     const legendPaint = new Paint();
+    legendPaint.setTextSize(13);
     const labelPaint = new Paint();
+    labelPaint.setTextSize(13);
     labelPaint.setTextAlign(Align.CENTER);
     const mFontMetricsBuffer = new FontMetrics();
 </script>

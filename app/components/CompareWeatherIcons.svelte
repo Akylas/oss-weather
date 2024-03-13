@@ -11,6 +11,7 @@
     import { colors, fontScale } from '~/variables';
 
     const paint = new Paint();
+    paint.setTextSize(13);
 
     const mFontMetricsBuffer = new FontMetrics();
     paint.getFontMetrics(mFontMetricsBuffer);

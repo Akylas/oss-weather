@@ -67,26 +67,15 @@ label {
     color: var(--colorOnBackground);
 }
 
-htmllabel,
-canvasview,
-label,
-button,
-textfield,
-mdtextfield,
-checkbox,
-mdbutton {
-    ios-a11y-adjusts-font-size: true;
-}
-
 mdtextfield {
     stroke-color: var(--colorOutline);
     placeholder-color: var(--colorOutline);
     color: var(--colorOnSurface);
 }
 
-mdbutton {
-    shape: round;
-    padding: 0;
+mdbutton[variant=outline] {
+    // shape: round;
+    // padding: 0;
     color: var(--colorOnSurface);
     ripple-color: var(--colorOnSurface);
 

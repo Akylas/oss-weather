@@ -14,13 +14,13 @@
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { isFavorite, toggleFavorite } from '~/helpers/favorites';
-    import { UNITS, formatValueToUnit } from '~/helpers/formatter';
+    import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { weatherDataService } from '~/services/weatherData';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
+    import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
-    import { colors, fontScale, fonts, rainColor, snowColor } from '~/variables';
+    import { colors, fontScale, fonts, rainColor } from '~/variables';
     const dispatch = createEventDispatcher();
 
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -286,19 +286,19 @@
         textPaint.setColor(colorOnSurface);
         if (item.temperature) {
             textPaint.setTextSize(36 * $fontScale);
-            canvas.drawText(formatValueToUnit(item.temperature, UNITS.Celcius), 10, 36 * $fontScale, textPaint);
+            canvas.drawText(formatWeatherValue(item, 'temperature'), 10, 36 * $fontScale, textPaint);
         }
         const nString = createNativeAttributedString({
             spans: [
                 {
                     fontSize: 17 * $fontScale,
                     color: colorOnSurfaceVariant,
-                    text: formatValueToUnit(item.temperatureMin, UNITS.Celcius)
+                    text: formatWeatherValue(item, 'temperatureMin')
                 },
                 {
                     fontSize: 20 * $fontScale,
                     color: colorOnSurface,
-                    text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)
+                    text: ' ' + formatWeatherValue(item, 'temperatureMax')
                 }
             ]
         });

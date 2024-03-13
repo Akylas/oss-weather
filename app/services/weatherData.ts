@@ -2,14 +2,60 @@ import { Align, Paint } from '@nativescript-community/ui-canvas';
 import { ApplicationSettings, Color, Observable } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
-import { UNITS, convertValueToUnit, formatValueToUnit, toImperialUnit } from '~/helpers/formatter';
+import { convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
 import { l, lc } from '~/helpers/locale';
 import { CommonWeatherData } from '~/services/providers/weather';
-import { fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
-import { prefs } from './preferences';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { fontScale, fonts, nightColor } from '~/variables';
+import { prefs } from './preferences';
 
-export const AVAILABLE_WEATHER_DATA = ['windSpeed', 'precipAccumulation', 'cloudCover', 'uvIndex', 'windGust', 'moon', 'windBeaufort'];
+export enum WeatherProps {
+    precipAccumulation = 'precipAccumulation',
+    precipProbability = 'precipProbability',
+    cloudCover = 'cloudCover',
+    uvIndex = 'uvIndex',
+    windGust = 'windGust',
+    moon = 'moon',
+    windBeaufort = 'windBeaufort',
+    temperature = 'temperature',
+    temperatureMin = 'temperatureMin',
+    temperatureMax = 'temperatureMax',
+    snowDepth = 'snowDepth',
+    snowfall = 'snowfall',
+    iso = 'iso',
+    iconId = 'iconId',
+    windSpeed = 'windSpeed',
+    windBearing = 'windBearing',
+    rainSnowLimit = 'rainSnowLimit'
+}
+
+export const AVAILABLE_WEATHER_DATA = [
+    WeatherProps.windSpeed,
+    WeatherProps.precipAccumulation,
+    WeatherProps.cloudCover,
+    WeatherProps.uvIndex,
+    WeatherProps.windGust,
+    WeatherProps.moon,
+    WeatherProps.snowDepth,
+    WeatherProps.windBeaufort
+];
+export const AVAILABLE_COMPARE_WEATHER_DATA = [
+    WeatherProps.precipProbability,
+    WeatherProps.windBearing,
+    WeatherProps.windSpeed,
+    WeatherProps.precipAccumulation,
+    WeatherProps.cloudCover,
+    WeatherProps.uvIndex,
+    WeatherProps.windGust,
+    WeatherProps.temperature,
+    WeatherProps.temperatureMin,
+    WeatherProps.temperatureMax,
+    WeatherProps.snowDepth,
+    WeatherProps.snowfall,
+    WeatherProps.iconId,
+    WeatherProps.iso,
+    WeatherProps.rainSnowLimit
+];
 
 export const onWeatherDataChanged = createGlobalEventListener('weatherData');
 
@@ -29,33 +75,38 @@ fonts.subscribe((data) => {
 });
 
 const WEATHER_DATA_ICONS = {
-    moon: (item: CommonWeatherData) => item.moonIcon,
-    cloudCover: 'wi-cloud',
-    windGust: 'wi-strong-wind',
-    uvIndex: 'mdi-weather-sunny-alert',
-    windBeaufort: (item: CommonWeatherData) => item.windBeaufortIcon,
-    windSpeed: (item: CommonWeatherData) => item.windIcon,
-    precipAccumulation: (item: CommonWeatherData) => item.precipIcon
+    [WeatherProps.moon]: (item: CommonWeatherData) => item.moonIcon,
+    [WeatherProps.iconId]: 'mdi-theme-light-dark',
+    [WeatherProps.cloudCover]: 'wi-cloud',
+    [WeatherProps.windGust]: 'wi-strong-wind',
+    [WeatherProps.uvIndex]: 'mdi-weather-sunny-alert',
+    [WeatherProps.windBeaufort]: (item: CommonWeatherData) => item.windBeaufortIcon,
+    [WeatherProps.windSpeed]: (item: CommonWeatherData) => item.windIcon,
+    [WeatherProps.precipAccumulation]: (item: CommonWeatherData) => item.precipIcon
 };
-export function getWeatherDataTitle(key: string) {
-    switch (key) {
-        case 'moon':
-            return lc('moon');
-        case 'windSpeed':
-            return lc('wind_speed');
-        case 'precipAccumulation':
-            return lc('precipitation');
-        case 'cloudCover':
-            return lc('cloud_cover');
-        case 'uvIndex':
-            return lc('uv_index');
-        case 'windGust':
-            return lc('wind_gust');
-        case 'windBeaufort':
-            return lc('wind_beaufort');
-        default:
-            break;
+
+const WEATHER_DATA_TITLES = {
+    [WeatherProps.iconId]: lc('weather_condition'),
+    [WeatherProps.moon]: lc('moon'),
+    [WeatherProps.cloudCover]: lc('cloud_cover'),
+    [WeatherProps.windGust]: lc('wind_gust'),
+    [WeatherProps.uvIndex]: lc('uv_index'),
+    [WeatherProps.windBeaufort]: lc('wind_beaufort'),
+    [WeatherProps.windSpeed]: lc('wind_speed'),
+    [WeatherProps.rainSnowLimit]: lc('rain_snow_limit'),
+    [WeatherProps.iso]: lc('freezing_level'),
+    [WeatherProps.precipAccumulation]: lc('precipitation')
+};
+
+export function getWeatherDataIcon(key: string) {
+    let icon = WEATHER_DATA_ICONS[key];
+    if (typeof icon === 'function') {
+        icon = icon({ [key]: 0 });
     }
+    return icon;
+}
+export function getWeatherDataTitle(key: string) {
+    return WEATHER_DATA_TITLES[key] || key;
 }
 const ICONS_SIZE_FACTOR = {
     uvIndex: 1.2
@@ -138,18 +189,19 @@ export class DataService extends Observable {
         }
         const iconFontSize = 20 * get(fontScale) * options.iconFactor;
         switch (key) {
-            case 'windSpeed':
+            case WeatherProps.windSpeed:
                 if (item.windSpeed) {
+                    const data = convertWeatherValueToUnit(item, 'windSpeed');
                     return {
                         iconFontSize,
                         paint: appPaint,
                         icon,
-                        value: convertValueToUnit(item.windSpeed, UNITS.Speed)[0],
-                        subvalue: toImperialUnit(UNITS.Speed)
+                        value: data[0],
+                        subvalue: data[1]
                     };
                 }
                 return null;
-            case 'precipAccumulation':
+            case WeatherProps.precipAccumulation:
                 if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
                     return {
                         paint: item.precipFontUseApp ? appPaint : wiPaint,
@@ -157,48 +209,49 @@ export class DataService extends Observable {
                         iconFontSize,
                         icon: item.precipIcon,
                         value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
-                        subvalue: item.precipProbability > 0 && item.precipProbability + '%'
+                        subvalue: item.precipProbability > 0 && formatWeatherValue(item, 'precipProbability')
                     };
                 } else {
                     return null;
                 }
-            case 'cloudCover':
+            case WeatherProps.cloudCover:
                 if (item.cloudCover > 20) {
                     return {
                         paint: wiPaint,
                         color: item.cloudColor,
                         iconFontSize,
                         icon,
-                        value: Math.round(item.cloudCover) + '%',
-                        subvalue: item.cloudCeiling && formatValueToUnit(item.cloudCeiling, UNITS.Distance)
+                        value: formatWeatherValue(item, 'cloudCover'),
+                        subvalue: item.cloudCeiling && formatWeatherValue(item, 'cloudCeiling')
                     };
                 }
                 return null;
-            case 'uvIndex':
+            case WeatherProps.uvIndex:
                 if (item.uvIndex >= this.minUVIndexToShow) {
                     return {
                         paint: mdiPaint,
                         color: item.uvIndexColor,
                         iconFontSize,
                         icon,
-                        value: Math.round(item.uvIndex) + ''
+                        value: formatWeatherValue(item, 'uvIndex')
                     };
                 }
                 return null;
-            case 'windGust':
+            case WeatherProps.windGust:
                 if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
+                    const data = convertWeatherValueToUnit(item, 'windGust');
                     return {
                         iconFontSize,
                         paint: wiPaint,
                         color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
                         icon,
-                        value: convertValueToUnit(item.windGust, UNITS.Speed)[0],
-                        subvalue: toImperialUnit(UNITS.Speed)
+                        value: data[0],
+                        subvalue: data[1]
                     };
                 }
                 return null;
 
-            case 'moon':
+            case WeatherProps.moon:
                 return {
                     paint: wiPaint,
                     color: nightColor,
@@ -206,7 +259,7 @@ export class DataService extends Observable {
                     icon,
                     value: l('moon')
                 };
-            case 'windBeaufort':
+            case WeatherProps.windBeaufort:
                 if (item.windBeaufortIcon) {
                     return {
                         paint: wiPaint,

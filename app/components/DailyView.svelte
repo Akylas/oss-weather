@@ -2,10 +2,10 @@
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { UNITS, formatValueToUnit } from '~/helpers/formatter';
+    import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate } from '~/helpers/locale';
-    import { weatherDataService } from '~/services/weatherData';
     import { DailyData } from '~/services/providers/weather';
+    import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale } from '~/variables';
 
@@ -95,12 +95,12 @@
                     {
                         fontSize: 17 * $fontScale,
                         color: colorOnSurfaceVariant,
-                        text: formatValueToUnit(item.temperatureMin, UNITS.Celcius)
+                        text: formatWeatherValue(item, 'temperatureMin')
                     },
                     {
                         fontSize: 20 * $fontScale,
                         color: colorOnSurface,
-                        text: ' ' + formatValueToUnit(item.temperatureMax, UNITS.Celcius)
+                        text: ' ' + formatWeatherValue(item, 'temperatureMax')
                     }
                 ]
             },

@@ -1,3 +1,3 @@
 OSS Weather is a simple application to get clear and precise weather information from any place around the world. You get daily and minutely weather condition, plus precipitations map.
-Data is provided by OpenWeatherMap, Open-Meteo or MeteoFrance.
+Data is provided by OpenWeather, Open-Meteo or MeteoFrance.
 

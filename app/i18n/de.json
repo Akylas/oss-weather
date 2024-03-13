@@ -21,7 +21,7 @@
     "animations": "Animationen",
     "api_key": "API-Schlüssel",
     "api_key_required": "API-Schlüssel erforderlich",
-    "api_key_required_description": "Um Wetterdaten von OpenWeatherMap zu erhalten, wird ein kostenloser API-Schlüssel benötigt. \nDie App hat standardmäßig einen API-Schlüssel, aber um das Limit an Datenabfragen nicht zu übersteigen, muss jeder Benutzer einen eigenen API-Schlüssel erstellen.",
+    "api_key_required_description": "Um Wetterdaten von OpenWeather zu erhalten, wird ein kostenloser API-Schlüssel benötigt. \nDie App hat standardmäßig einen API-Schlüssel, aber um das Limit an Datenabfragen nicht zu übersteigen, muss jeder Benutzer einen eigenen API-Schlüssel erstellen.",
     "app": {
         "name": "OSS Wetter"
     },
@@ -111,7 +111,7 @@
     "non_valid_email": "Ungültige E-Mail-Adresse",
     "ok": "OK",
     "open_website": "Webseite öffnen",
-    "owm_api_key": "OpenWeatherMap API-Schlüssel",
+    "owm_api_key": "OpenWeather API-Schlüssel",
     "partly_cloudy": "Teilweise bewölkt",
     "pick_date": "Wähle ein Datum",
     "please_describe_error": "Bitte beschreibe den Fehler",
@@ -122,7 +122,7 @@
     "provider": {
         "meteofrance": "Méteo France",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "Wetterdaten-Anbieter"
     },
     "quit": "Verlassen",

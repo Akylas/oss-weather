@@ -21,7 +21,7 @@
     "animations": "animazioni",
     "api_key": "chiave API",
     "api_key_required": "chiave API richiesta",
-    "api_key_required_description": "è richiesta una chiave API da OpenWeatherMap per scaricare i dati meteorologici. \nL'applicazione ne distribuisce una per impostazione predefinita, tuttavia per rimanere nel piano gratuito, ogni utente deve creare la propria chiave API.\n\nPuoi farlo creando un profilo sul loro sito web.",
+    "api_key_required_description": "è richiesta una chiave API da OpenWeather per scaricare i dati meteorologici. \nL'applicazione ne distribuisce una per impostazione predefinita, tuttavia per rimanere nel piano gratuito, ogni utente deve creare la propria chiave API.\n\nPuoi farlo creando un profilo sul loro sito web.",
     "app": {
         "name": "OSS Weather"
     },
@@ -111,7 +111,7 @@
     "non_valid_email": "email non valida",
     "ok": "OK",
     "open_website": "apri sito web",
-    "owm_api_key": "chiave API di OpenWeatherMap",
+    "owm_api_key": "chiave API di OpenWeather",
     "partly_cloudy": "parzialmente nuvoloso",
     "pick_date": "scegli una data",
     "please_describe_error": "descrivi l'errore",
@@ -122,7 +122,7 @@
     "provider": {
         "meteofrance": "MéteoFrance",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "fornitore"
     },
     "quit": "esci",

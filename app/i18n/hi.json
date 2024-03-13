@@ -21,7 +21,7 @@
     "animations": "एनिमेशन",
     "api_key": "API कुंजी",
     "api_key_required": "API कुंजी आवश्यक है",
-    "api_key_required_description": "मौसम डेटा लाने के लिए आवश्यक निःशुल्क API कुंजी प्राप्त करने के लिए OpenWeatherMap पर एक खाता बनाएं।\nऐप में एक है, लेकिन मुफ्त योजना की सीमा के भीतर रहने के लिए, प्रत्येक उपयोगकर्ता को अपनी स्वयं की API कुंजी बनानी होगी।",
+    "api_key_required_description": "मौसम डेटा लाने के लिए आवश्यक निःशुल्क API कुंजी प्राप्त करने के लिए OpenWeather पर एक खाता बनाएं।\nऐप में एक है, लेकिन मुफ्त योजना की सीमा के भीतर रहने के लिए, प्रत्येक उपयोगकर्ता को अपनी स्वयं की API कुंजी बनानी होगी।",
     "app": {
         "name": "OSS Weather"
     },
@@ -128,7 +128,7 @@
     "ok": "ठीक है",
     "open_meteo_prefered_model": "Open-Meteo पसंदीदा मॉडल",
     "open_website": "वेबसाइट खोलें",
-    "owm_api_key": "OpenWeatherMap API कुंजी",
+    "owm_api_key": "OpenWeather API कुंजी",
     "owm_one_call_version": "OneCall संस्करण",
     "partly_cloudy": "आंशिक बादल छाए रहेंगे",
     "pick_date": "एक तारीख चुनें",
@@ -141,7 +141,7 @@
     "provider": {
         "meteofrance": "मेटियो फ़्रांस",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "प्रदाता"
     },
     "providers": "प्रदाता",

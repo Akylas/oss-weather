@@ -22,7 +22,7 @@
     "animations_desc": "animated if the icon set supports it",
     "api_key": "API key",
     "api_key_required": "API key required",
-    "api_key_required_description": "Create an account on OpenWeatherMap to get the gratis API key required to fetch weather data.\nThe app has one, but to stay within the limits of the gratis plan, each user must create their own API key.",
+    "api_key_required_description": "Create an account on OpenWeather to get the gratis API key required to fetch weather data.\nThe app has one, but to stay within the limits of the gratis plan, each user must create their own API key.",
     "app": {
         "name": "OSS Weather"
     },
@@ -119,6 +119,7 @@
     "metric_temp_decimal": "use decimal for metric temperature",
     "min_uv_index": "UV index below won't be shown",
     "missing_location_perm": "Location permission missing",
+    "models": "models",
     "moon": "Moon",
     "mostly_clear": "Mostly clear",
     "my_location": "My location",
@@ -131,7 +132,7 @@
     "ok": "OK",
     "open_meteo_prefered_model": "Open-Meteo preferred model",
     "open_website": "Open website",
-    "owm_api_key": "OpenWeatherMap API key",
+    "owm_api_key": "OpenWeather API key",
     "owm_one_call_version": "OneCall version",
     "partly_cloudy": "Partly cloudy",
     "pick_date": "Pick a date",
@@ -144,7 +145,7 @@
     "provider": {
         "meteofrance": "Méteo France",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "Provider"
     },
     "providers": "providers",
@@ -153,6 +154,7 @@
     "rain": "Rain",
     "rain_flood": "Rain/flood",
     "rain_shower": "Rain shower",
+    "rain_snow_limit": "rain snow limit",
     "refresh": "Refresh",
     "refresh_location_on_pull": "find location and weather on every pull-to-refresh",
     "reset": "Reset",
@@ -200,6 +202,7 @@
     "units_settings": "all units related settings",
     "uv_index": "uv index",
     "version": "Version",
+    "weather_condition": "weather condition",
     "weather_data": "weather data",
     "weather_data_settings": "select shown weather data and their settings",
     "weather_map": "Weather map",

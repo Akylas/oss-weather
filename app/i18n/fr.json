@@ -22,7 +22,7 @@
     "animations_desc": "animé si le jeu d'icônes le prend en charge",
     "api_key": "Clé d'API",
     "api_key_required": "Clé d'API requise",
-    "api_key_required_description": "Pour obtenir les données météorologiques d'OpenWeatherMap, une clé d'API gratuite est requise. \nL'application en fournit une par défaut, cependant pour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé d'API.",
+    "api_key_required_description": "Pour obtenir les données météorologiques d'OpenWeather, une clé d'API gratuite est requise. \nL'application en fournit une par défaut, cependant pour rester sous le plan gratuit, chaque utilisateur doit créer sa propre clé d'API.",
     "app": {
         "name": "OSS Météo"
     },
@@ -41,6 +41,7 @@
     "cloud_cover": "couverture nuageuse",
     "cloudy": "Nuageux",
     "coastal_flooding": "Inondations côtières",
+    "compare_models": "comparer les modèles",
     "description": "Description",
     "description_required": "Une description est requise",
     "disabled_weather_data": "données météo désactivées",
@@ -118,6 +119,7 @@
     "metric_temp_decimal": "Utiliser la décimale pour la température métrique",
     "min_uv_index": "L'indice UV ci-dessous ne sera pas affiché",
     "missing_location_perm": "L'autorisation de localisation est manquante",
+    "models": "des modèles",
     "moon": "Lune",
     "mostly_clear": "Principalement degagé",
     "my_location": "Mon emplacement",
@@ -130,7 +132,7 @@
     "ok": "OK",
     "open_meteo_prefered_model": "Modèle préféré d’Open-Meteo",
     "open_website": "Ouvrir le site web",
-    "owm_api_key": "Clé d'API OpenWeatherMap",
+    "owm_api_key": "Clé d'API OpenWeather",
     "owm_one_call_version": "Version de OneCall",
     "partly_cloudy": "Partiellement nuageux",
     "pick_date": "Choisir une date",
@@ -143,7 +145,7 @@
     "provider": {
         "meteofrance": "Météo France",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "Fournisseur"
     },
     "providers": "fournisseurs",
@@ -152,6 +154,7 @@
     "rain": "Pluie",
     "rain_flood": "Pluie/inondation",
     "rain_shower": "Averses de pluie",
+    "rain_snow_limit": "limite pluie/neige",
     "refresh": "Rafraîchir",
     "refresh_location_on_pull": "trouvez l'emplacement et la météo à chaque Dérouler-Actualiser",
     "reset": "Réinitialiser",

@@ -9,15 +9,16 @@
     export let extraPaddingLeft: number = 0;
     export let iconFontSize: number = 24;
     export let fontSize: number = 17;
-    export let fontWeight: string = 'bold';
+    export let fontWeight: string | number = 500;
     export let subtitleFontSize: number = 14;
-    export let title: string = null;;
+    export let title: string = null;
     export let subtitle: string = null;
     export let leftIcon: string = null;
     export let columns: string = '*';
     export let mainCol = 0;
     export let leftIconFonFamily: string = $fonts.mdi;
     export let color: string = colorOnSurface;
+    export let subtitleColor: string = null;
     export let onDraw: (event: { canvas: Canvas; object: CanvasView }) => void = null;
 </script>
 
@@ -28,9 +29,11 @@
         </cgroup>
         <cgroup paddingLeft={(leftIcon ? iconFontSize * 2 : 0) + extraPaddingLeft} textAlignment="left" verticalAlignment="middle">
             <cspan fontSize={fontSize * $fontScale} {fontWeight} text={title} />
-            <cspan color={colorOnSurfaceVariant} fontSize={subtitleFontSize * $fontScale} text={subtitle ? '\n' + subtitle : ''} visibility={subtitle ? 'visible' : 'hidden'} />
+            <cspan color={subtitleColor || colorOnSurfaceVariant} fontSize={subtitleFontSize * $fontScale} text={subtitle ? '\n' + subtitle : ''} visibility={subtitle ? 'visible' : 'hidden'} />
         </cgroup>
     </canvaslabel>
     <slot />
-    <line color={colorOutlineVariant} height="1" startX="20" startY="0" stopX="100%" stopY="0" strokeWidth="1" verticalAlignment="bottom" visibility={showBottomLine ? 'visible' : 'hidden'} />
+    {#if showBottomLine}
+        <line color={colorOutlineVariant} height="1" startX="20" startY="0" stopX="100%" stopY="0" strokeWidth="1" verticalAlignment="bottom" />
+    {/if}
 </canvasview>

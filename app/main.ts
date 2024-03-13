@@ -4,20 +4,19 @@ import { install as installGestures } from '@nativescript-community/gesturehandl
 import { setGeoLocationKeys } from '@nativescript-community/gps';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
-import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 import SwipeMenuElement from '@nativescript-community/ui-collectionview-swipemenu/svelte';
+import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, ScrollView, Trace, TraceErrorHandler } from '@nativescript/core';
+import { Application, ScrollView, TraceErrorHandler } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { startSentry } from '~/utils/sentry';
-import { CollectionViewTraceCategory } from '@nativescript-community/ui-collectionview';
-// import './app.scss';
+import { NestedScrollView } from './NestedScrollView';
 
 try {
     startSentry();
@@ -28,20 +27,13 @@ try {
     installUIMixins();
     installBottomSheets();
 
-    class NestedScrollView extends ScrollView {
-        createNativeView() {
-            if (__ANDROID__) {
-                return new androidx.core.widget.NestedScrollView(this._context);
-            }
-            return super.createNativeView();
-        }
-    }
     registerElement('Frame', () => new FrameElement());
     registerElement('Page', () => new PageElement());
     registerNativeViewElement('AbsoluteLayout', () => require('@nativescript/core').AbsoluteLayout);
+    registerNativeViewElement('scrollview', () => require('@nativescript/core').ScrollView);
     registerNativeViewElement('GridLayout', () => require('@nativescript/core').GridLayout);
     registerNativeViewElement('image', () => require('@nativescript/core').Image);
-    registerNativeViewElement('ScrollView', () => NestedScrollView);
+    // registerNativeViewElement('scrollview', () => NestedScrollView);
     registerNativeViewElement('StackLayout', () => require('@nativescript/core').StackLayout);
     registerNativeViewElement('slider', () => require('@nativescript-community/ui-material-slider').Slider, null, {}, { override: true });
     registerNativeViewElement('WebView', () => require('@nativescript/core').WebView);
@@ -53,7 +45,9 @@ try {
     registerNativeViewElement('Switch', () => require('@nativescript-community/ui-material-switch').Switch);
     registerNativeViewElement('label', () => Label as any, null, {}, { override: true });
     registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-material-activityindicator').ActivityIndicator);
-    registerNativeViewElement('lineChart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
+    registerNativeViewElement('linechart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
+    registerNativeViewElement('scatterchart', () => require('@nativescript-community/ui-chart/charts/ScatterChart').ScatterChart);
+    registerNativeViewElement('combinedchart', () => require('@nativescript-community/ui-chart/charts/CombinedChart').CombinedChart);
     registerNativeViewElement('lottie', () => require('@nativescript-community/ui-lottie').LottieView);
     registerNativeViewElement('pullrefresh', () => require('@nativescript-community/ui-pulltorefresh').PullToRefresh);
     registerNativeViewElement('canvasview', () => require('@nativescript-community/ui-canvas').CanvasView);

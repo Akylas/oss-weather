@@ -88,11 +88,11 @@
                             id: 'refresh',
                             name: l('refresh')
                         },
-                        // {
-                        //     icon: 'mdi-chart-bar',
-                        //     id: 'compare',
-                        //     name: l('compare_models')
-                        // },
+                        {
+                            icon: 'mdi-chart-bar',
+                            id: 'compare',
+                            name: l('compare_models')
+                        },
                         {
                             icon: 'mdi-map',
                             id: 'map',
@@ -122,7 +122,7 @@
                                     navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
                                     break;
                                 case 'compare':
-                                    const CompareWeather = (await import('~/components/CompareWeather.svelte')).default;
+                                    const CompareWeather = (await import('~/components/CompareWeatherSingle.svelte')).default;
                                     navigate({ page: CompareWeather, props: { weatherLocation } });
                                     break;
                                 case 'refresh':

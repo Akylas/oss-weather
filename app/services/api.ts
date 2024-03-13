@@ -28,6 +28,10 @@ export interface HttpRequestOptions extends HTTPSOptions {
     queryParams?: {};
 }
 
+export function getCacheControl(maxAge = 60, stale = 59) {
+    return `max-age=${maxAge}, max-stale=${stale}, stale-while-revalidate=${stale}`;
+}
+
 export function queryString(params, location) {
     const obj = {};
     let i, len, key, value;

@@ -286,7 +286,7 @@ module.exports = (env, params = {}) => {
     `;
     const scssLoaderRuleIndex = config.module.rules.findIndex((r) => r.test && r.test.toString().indexOf('scss') !== -1);
     config.module.rules.splice(scssLoaderRuleIndex, 1, {
-        test: /app\.scss$/,
+        test: /\.scss$/,
         use: [
             { loader: 'apply-css-loader' },
             {

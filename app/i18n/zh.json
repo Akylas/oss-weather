@@ -22,6 +22,9 @@
     "api_key": "API 密钥",
     "api_key_required": "需要 API 密钥",
     "api_key_required_description": "要获取天气数据，需先在 OpenWeather 创建账号并获取免费的 API 密钥。\n虽然应用内置有一个密钥，但由于免费计划的限制，每个用户必须创建自己的 API 密钥。",
+    "app": {
+        "name": "OSS 天气"
+    },
     "authorize": "授权",
     "auto_black": "自动暗色主题使用纯黑背景",
     "avalanche": "雪崩",
@@ -123,6 +126,7 @@
     "open_meteo_prefered_model": "Open-Meteo 偏好模型",
     "open_website": "打开网页",
     "owm_api_key": "OpenWeather API 密钥",
+    "owm_one_call_version": "OneCall 版本",
     "partly_cloudy": "局部多云",
     "pick_date": "选择日期",
     "please_describe_error": "请描述错误",

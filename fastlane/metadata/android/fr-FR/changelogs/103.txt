@@ -1,0 +1,11 @@
+### Features
+- BRA support for France
+
+### Bug fixes
+- Translated using Weblate (Hindi)
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Kabyle)
+- Translated using Weblate (Chinese (Simplified))
+- show current selected map color scheme
+- catch errors which computing compare

@@ -18,7 +18,7 @@
         "svelte-check": "svelte-check --compiler-warnings 'a11y-no-onchange:ignore,a11y-label-has-associated-control:ignore,a11y-autofocus:ignore,illegal-attribute-character:ignore'"
     },
     "main": "app/main",
-    "description": "Access weather data from the public OpenWeatherMap data",
+    "description": "Access weather data from the public OpenWeather data",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Akylas/oss-weather/issues"

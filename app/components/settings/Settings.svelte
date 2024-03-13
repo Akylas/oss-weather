@@ -319,6 +319,7 @@
                                 key: 'weather_map_colors',
                                 id: 'setting',
                                 title: lc('weather_map_colors'),
+                                currentValue: () => ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS),
                                 values: WEATHER_MAP_COLOR_SCHEMES,
                                 description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
                             }
@@ -659,29 +660,31 @@
                 <label class="sectionHeader" text={item.title} />
             </Template>
             <Template key="switch" let:item>
-                <ListItemAutoSize fontSize={20} leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <switch id="checkbox" checked={item.value} col={2} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
+                <ListItemAutoSize fontSize={20} leftIcon={item.icon} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <switch id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
                 </ListItemAutoSize>
             </Template>
             <Template key="checkbox" let:item>
-                <ListItemAutoSize fontSize={20} leftIcon={item.icon} mainCol={1} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <checkbox id="checkbox" checked={item.value} col={2} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} />
+                <ListItemAutoSize fontSize={20} leftIcon={item.icon} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <checkbox id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} />
                 </ListItemAutoSize>
             </Template>
             <Template key="rightIcon" let:item>
-                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <IconButton col={2} text={item.rightBtnIcon} on:tap={(event) => onRightIconTap(item, event)} />
+                <ListItemAutoSize fontSize={20} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <IconButton col={1} text={item.rightBtnIcon} on:tap={(event) => onRightIconTap(item, event)} />
                 </ListItemAutoSize>
             </Template>
             <Template key="reorder" let:item>
-                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <label col={2} fontFamily={$fonts.mdi} fontSize={24} padding={4} text="mdi-dots-grid" verticalAlignment="center" on:touch={(event) => startReordering(item, event)} />
+                <ListItemAutoSize fontSize={20} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <label col={1} fontFamily={$fonts.mdi} fontSize={24} padding={4} text="mdi-dots-grid" verticalAlignment="center" on:touch={(event) => startReordering(item, event)} />
                 </ListItemAutoSize>
             </Template>
             <Template key="leftIcon" let:item>
                 <ListItemAutoSize
+                    columns="auto,*,auto"
                     fontSize={20}
                     leftIcon={item.icon}
+                    mainCol={1}
                     rightValue={item.rightValue}
                     showBottomLine={false}
                     subtitle={getDescription(item)}
@@ -691,8 +694,8 @@
                 </ListItemAutoSize>
             </Template>
             <Template key="image" let:item>
-                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
-                    <image col={2} height={45} src={item.image()} />
+                <ListItemAutoSize fontSize={20} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                    <image col={1} height={45} src={item.image()} />
                 </ListItemAutoSize>
             </Template>
             <Template let:item>

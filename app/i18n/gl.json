@@ -21,7 +21,7 @@
     "animations": "Animacións",
     "api_key": "API key",
     "api_key_required": "Requírese unha API key",
-    "api_key_required_description": "Crea unha conta no OpenWeatherMap para obter unha API key de balde requirida para obter os datos meteorolóxicos.\nA app ten unha, mais para estar dentro dos límites do plan gratuito, cada usuario debe crear a súa propia API key.",
+    "api_key_required_description": "Crea unha conta no OpenWeather para obter unha API key de balde requirida para obter os datos meteorolóxicos.\nA app ten unha, mais para estar dentro dos límites do plan gratuito, cada usuario debe crear a súa propia API key.",
     "app": {
         "name": "OSS Weather"
     },
@@ -111,7 +111,7 @@
     "non_valid_email": "E-mail non válido",
     "ok": "Aceptar",
     "open_website": "Abrir sitio web",
-    "owm_api_key": "API key de OpenWeatherMap",
+    "owm_api_key": "API key de OpenWeather",
     "partly_cloudy": "Parcialmente nuboso",
     "pick_date": "Selecciona unha data",
     "please_describe_error": "Por favor, describe o erro",
@@ -122,7 +122,7 @@
     "provider": {
         "meteofrance": "Méteo Francia",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "Provedor"
     },
     "quit": "Saír",

@@ -7,4 +7,4 @@
 - limit hours and minutely data from Open-Meteo
 - Open-Meteo try to show daily color when possible (we miss cloud cover data)
 - better error handling with Open-Meteo requests
-- OpenWeatherMap/OpenMeteo try to get more uniform minutely data
+- OpenWeather/OpenMeteo try to get more uniform minutely data

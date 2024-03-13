@@ -10,7 +10,7 @@ const WEATHER_CODE_MAPPING = new Map<number, number>();
 WEATHER_CODE_MAPPING.set(201, 200);
 WEATHER_CODE_MAPPING.set(202, 200);
 WEATHER_CODE_MAPPING.set(211, 210);
-WEATHER_CODE_MAPPING.set(212, 210);
+WEATHER_CODE_MAPPING.set(212, 211);
 WEATHER_CODE_MAPPING.set(221, 212);
 WEATHER_CODE_MAPPING.set(230, 200);
 WEATHER_CODE_MAPPING.set(231, 201);
@@ -117,7 +117,7 @@ export class IconService extends Observable {
         // }
     }
     get animated() {
-        return this.mAnimated && this.lotties.size;
+        return this.mAnimated && this.lotties.size > 0;
     }
     load(fireChange = true) {
         this.iconSet = ApplicationSettings.getString('icon_set', 'weathericons');
@@ -130,7 +130,7 @@ export class IconService extends Observable {
             globalObservable.notify({ eventName: 'iconPack', data: this.iconSet });
         }
     }
-    getIcon(iconId: number, isDay: boolean, animated = false) {
+    getIcon(iconId: number, isDay: boolean, animated = this.animated) {
         const key = `${iconId}${isDay ? 1 : 0}${animated ? 1 : 0}`;
         const cached = this.mappingCache.get(key);
         if (cached) {

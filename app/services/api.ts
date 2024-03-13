@@ -28,6 +28,10 @@ export interface HttpRequestOptions extends HTTPSOptions {
     queryParams?: {};
 }
 
+export function getCacheControl(maxAge = 60, stale = 59) {
+    return `max-age=${maxAge}, max-stale=${stale}, stale-while-revalidate=${stale}`;
+}
+
 export function queryString(params, location) {
     const obj = {};
     let i, len, key, value;
@@ -224,7 +228,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             let { precipAccumulation, cloudCover, cloudCeiling, iso, isDay, uvIndex, windGust, hourly, ...current } = dailyData;
 
             const firstHourIndex = hourly.findIndex((h) => h.time >= startOfHour);
-            const firstMinuteIndex = weatherData.minutely ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
+            const firstMinuteIndex = weatherData.minutely?.data ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
             const hours = firstHourIndex >= 0 ? hourly.slice(firstHourIndex) : [];
 
             current = firstHourIndex >= 0 ? { ...hours[index] } : current;

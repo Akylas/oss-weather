@@ -21,7 +21,7 @@
     "animations": "アニメーション",
     "api_key": "apiキー",
     "api_key_required": "APIキーが必要です",
-    "api_key_required_description": "OpenWeatherMapから気象データを取得するには、無料のAPIキーが必要です。 \nアプリケーションはデフォルトでAPIキーを配布しますが、無料プランを維持するには、各ユーザーが独自のAPIキーを作成する必要があります。\n\nこれを行うには、Webサイトでアカウントを作成してください。",
+    "api_key_required_description": "OpenWeatherから気象データを取得するには、無料のAPIキーが必要です。 \nアプリケーションはデフォルトでAPIキーを配布しますが、無料プランを維持するには、各ユーザーが独自のAPIキーを作成する必要があります。\n\nこれを行うには、Webサイトでアカウントを作成してください。",
     "app": {
         "name": "OSS Weather"
     },
@@ -111,7 +111,7 @@
     "non_valid_email": "有効ではないEメール",
     "ok": "OK",
     "open_website": "webサイトを開く",
-    "owm_api_key": "OpenWeatherMapAPIキー",
+    "owm_api_key": "OpenWeatherAPIキー",
     "partly_cloudy": "ところにより曇り",
     "pick_date": "日付を選択",
     "please_describe_error": "エラーについての説明",
@@ -122,7 +122,7 @@
     "provider": {
         "meteofrance": "MéteoFrance",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "プロバイダー"
     },
     "quit": "やめる",

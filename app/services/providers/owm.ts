@@ -30,7 +30,7 @@ export class OWMProvider extends WeatherProvider {
         });
     }
 
-    public override async getWeather(weatherLocation: WeatherLocation) {
+    public override async getWeather(weatherLocation: WeatherLocation, { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '2.5');
@@ -139,7 +139,7 @@ export class OWMProvider extends WeatherProvider {
     static readOwmApiKeySetting() {
         let key = ApplicationSettings.getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
         DEV_LOG && console.log('readOwmApiKeySetting', key);
-        if (key?.length === 0) {
+        if (!key || key?.length === 0) {
             ApplicationSettings.remove('owmApiKey');
             key = OWM_MY_KEY || OWM_DEFAULT_KEY;
         }

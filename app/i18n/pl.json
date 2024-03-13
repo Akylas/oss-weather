@@ -21,7 +21,7 @@
     "animations": "Animacje",
     "api_key": "Klucz API",
     "api_key_required": "Wymagany jest klucz API",
-    "api_key_required_description": "Utwórz konto na OpenWeatherMap, aby uzyskać bezpłatny klucz API wymagany do pobierania danych pogodowych.\nAplikacja już posiada wbudowany taki klucz, ale aby nie przekroczyć limitów darmowego planu, każdy użytkownik musi utworzyć własny klucz API.",
+    "api_key_required_description": "Utwórz konto na OpenWeather, aby uzyskać bezpłatny klucz API wymagany do pobierania danych pogodowych.\nAplikacja już posiada wbudowany taki klucz, ale aby nie przekroczyć limitów darmowego planu, każdy użytkownik musi utworzyć własny klucz API.",
     "app": {
         "name": "Pogoda OSS"
     },
@@ -116,7 +116,7 @@
     "non_valid_email": "Nieprawidłowy adres e-mail",
     "ok": "OK",
     "open_website": "Otwórz stronę internetową",
-    "owm_api_key": "Klucz API OpenWeatherMap",
+    "owm_api_key": "Klucz API OpenWeather",
     "owm_one_call_version": "Wersja OneCall",
     "partly_cloudy": "Częściowe zachmurzenie",
     "pick_date": "Wybierz datę",

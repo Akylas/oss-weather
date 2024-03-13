@@ -5,10 +5,10 @@
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { UNITS, formatValueToUnit } from '~/helpers/formatter';
+    import { UNITS, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, formatTime, lc } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { weatherDataService } from '~/services/weatherData';
+    import { getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { Hourly } from '~/services/providers/weather';
     import { colors, fontScale, fonts, snowColor } from '~/variables';
 
@@ -112,7 +112,7 @@
                 textPaint.setColor(colorOnSurface);
                 textPaint.setAlpha(150);
                 if (precipProbability > 0) {
-                    canvas.drawText(precipProbability + '%', w2, h - 22 * $fontScale, textPaint);
+                    canvas.drawText(formatWeatherValue(item, 'precipProbability'), w2, h - 22 * $fontScale, textPaint);
                 }
                 canvas.drawText(formatValueToUnit(item.precipShowSnow ? item.snowfall : item.precipAccumulation, item.precipUnit), w2, h - 12 * $fontScale, textPaint);
             }
@@ -168,7 +168,7 @@
         }
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(13 * $fontScale);
-        canvas.drawText(`${formatValueToUnit(item.temperature, UNITS.Celcius)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
+        canvas.drawText(`${formatWeatherValue(item, 'temperature')}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
         canvas.restore();
 
         if (item.cloudCeiling > 0) {
@@ -180,7 +180,7 @@
             textPaint.setColor(color);
             textPaint.setTextSize(10 * $fontScale);
             textPaint.setAlpha((item.cloudCover / 100) * heightProb * 255);
-            canvas.drawText(formatValueToUnit(item.cloudCeiling, UNITS.Distance), w2, top + 20 * $fontScale, textPaint);
+            canvas.drawText(formatWeatherValue(item, 'cloudCeiling'), w2, top + 20 * $fontScale, textPaint);
             textPaint.setAlpha(255);
             paint.setAlpha(255);
         }
@@ -225,7 +225,7 @@
         const windGustData = weatherDataService.getItemData('windGust', item);
         if (windGustData) {
             textPaint.setTextSize(11 * $fontScale);
-            if (item.windGust <= 80) {
+            if (item.windGust <= 50) {
                 textPaint.setColor(windGustData.color);
             } else {
                 textPaint.setColor('#ffffff');
@@ -234,7 +234,7 @@
 
             canvas.save();
             canvas.translate(w2, iconDecale + 4 - 18 + iconDeltaY);
-            if (item.windGust > 80) {
+            if (item.windGust > 50) {
                 const width = staticLayout.getWidth();
                 textPaint.setColor(windGustData.color);
                 canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, staticLayout.getHeight() - 0, 4, 4, textPaint);
@@ -247,7 +247,10 @@
     function onTap() {
         let message = item.description;
         if (item.iso > 0) {
-            message = (message ? message + '\n ' : '') + `${lc('freezing_level')}: ${formatValueToUnit(item.iso, UNITS.Distance)}`;
+            message = (message ? message + '\n ' : '') + `${getWeatherDataTitle('iso')}: ${formatWeatherValue(item, 'iso')}`;
+        }
+        if (item.rainSnowLimit > 0) {
+            message = (message ? message + ' /  ' : '') + `${getWeatherDataTitle('rainSnowLimit')}: ${formatWeatherValue(item, 'rainSnowLimit')}`;
         }
         if (message) {
             showSnack({ message });

@@ -21,7 +21,7 @@
     "animations": "Animasjoner",
     "api_key": "API-nøkkel",
     "api_key_required": "API-nøkkel kreves",
-    "api_key_required_description": "Opprett konto på OpenWeatherMap for å skaffe gratis API-nøkkel som kreves for å hente værdata.\nProgrammet har en, men for å holde seg innen grensene for gratis plan må hver bruker lage sin egen API-nøkkel.",
+    "api_key_required_description": "Opprett konto på OpenWeather for å skaffe gratis API-nøkkel som kreves for å hente værdata.\nProgrammet har en, men for å holde seg innen grensene for gratis plan må hver bruker lage sin egen API-nøkkel.",
     "app": {
         "name": "OSS-vær"
     },
@@ -111,7 +111,7 @@
     "non_valid_email": "Ikke-gyldig e-postadresse",
     "ok": "OK",
     "open_website": "Åpne nettsiden",
-    "owm_api_key": "OpenWeatherMap-API-nøkkel",
+    "owm_api_key": "OpenWeather-API-nøkkel",
     "partly_cloudy": "Delvis skyet",
     "pick_date": "Velg en dato",
     "please_describe_error": "Beskriv feilen",
@@ -122,7 +122,7 @@
     "provider": {
         "meteofrance": "Méteo France",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "Tilbyder"
     },
     "quit": "Avslutt",

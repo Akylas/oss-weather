@@ -2,8 +2,10 @@ import { Color } from '@nativescript/core';
 import { getMoonIllumination } from 'suncalc';
 import { cloudyColor, fonts, imperialUnits, metricDecimalTemp, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate } from './locale';
-import { Currently, DailyData, Hourly } from '~/services/providers/weather';
+import { CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { get } from 'svelte/store';
+import { WeatherProps } from '~/services/weatherData';
+import { iconService } from '~/services/icon';
 
 export enum UNITS {
     // InchHg = 'InchHg',
@@ -11,9 +13,12 @@ export enum UNITS {
     // kPa = 'kPa',
     // hPa = 'hPa',
     // Inch = 'inch',
+    IconId = 'iconId',
+    UV = '',
     MM = 'mm',
     CM = 'cm',
-    Celcius = 'celcius',
+    Percent = '%',
+    Celcius = '°',
     Duration = 'duration',
     Date = 'date',
     Distance = 'm',
@@ -21,6 +26,21 @@ export enum UNITS {
     Speed = 'km/h',
     SpeedM = 'm/h'
 }
+
+export const PROP_TO_UNIT = {
+    windSpeed: UNITS.Speed,
+    windGust: UNITS.Speed,
+    temperature: UNITS.Celcius,
+    temperatureMin: UNITS.Celcius,
+    temperatureMax: UNITS.Celcius,
+    iso: UNITS.Distance,
+    rainSnowLimit: UNITS.Distance,
+    cloudCover: UNITS.Percent,
+    uvIndex: UNITS.UV,
+    precipProbability: UNITS.Percent,
+    cloudCeiling: UNITS.Distance
+};
+
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
 }
@@ -49,7 +69,8 @@ export function toImperialUnit(unit: UNITS, imperial = imperialUnits) {
             return unit;
     }
 }
-export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo05?: boolean } = {}): [string | number, string] {
+export function convertValueToUnit(value: any, unit: UNITS, options: { round?: boolean; roundedTo05?: boolean } = {}): [string | number, string] {
+    const round = options.round ?? true;
     switch (unit) {
         // case UNITS.kPa:
         //     return [(value / 10).toFixed(), 'kPa'];
@@ -59,11 +80,14 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo
         //     return [(value * 0.750061561303).toFixed(), 'mm Hg'];
         // case UNITS.InchHg:
         //     return [(value * 0.0295299830714).toFixed(), 'in Hg'];
+        case UNITS.Percent:
+        case UNITS.UV:
+            return [round ? Math.round(value) : value, unit];
         case UNITS.CM:
         case UNITS.MM:
-            let digits = 1;
+            let digits = 10;
             if (imperialUnits) {
-                digits = 2;
+                digits = 100;
                 value *= 0.03937008; // to in
             } else if (unit === UNITS.CM) {
                 value /= 10;
@@ -72,14 +96,12 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo
                     value *= 10;
                 }
             }
-            return [value.toFixed(digits), toImperialUnit(unit, imperialUnits)];
+            return [round ? Math.round(value * digits) / digits : value, toImperialUnit(unit, imperialUnits)];
         case UNITS.Celcius:
             if (imperialUnits) {
                 value = celciusToFahrenheit(value);
-                // return [celciusToFahrenheit(value).toFixed(1), '°'];
             }
-            return [metricDecimalTemp ? Math.round(value * 10) / 10 : Math.round(value), '°'];
-        // return [Math.round(value * 10) / 10, '°'];
+            return [metricDecimalTemp ? Math.round(value * 10) / 10 : round ? Math.round(value) : value, unit];
         case UNITS.Date:
             return [formatDate(value, 'L LT'), ''];
 
@@ -88,24 +110,28 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo
             if (imperialUnits) {
                 value *= 3.28084; // to feet
             }
-            return [value.toFixed(), toImperialUnit(unit, imperialUnits)];
+            return [Math.round(value), toImperialUnit(unit, imperialUnits)];
         case UNITS.DistanceKm:
             if (imperialUnits) {
                 value *= 3.28084; // to feet
                 if (value < 5280) {
-                    return [value.toFixed(), toImperialUnit(UNITS.Distance, imperialUnits)];
+                    return [round ? Math.round(value) : value, toImperialUnit(UNITS.Distance, imperialUnits)];
                 } else if (value > 528000) {
-                    return [(value / 5280).toFixed(0), toImperialUnit(unit, imperialUnits)];
+                    value /= 5280;
+                    return [round ? Math.round(value) : value, toImperialUnit(unit, imperialUnits)];
                 } else {
-                    return [(value / 5280).toFixed(1), toImperialUnit(unit, imperialUnits)];
+                    value /= 5280;
+                    return [round ? Math.round(value * 10) / 10 : value, toImperialUnit(unit, imperialUnits)];
                 }
             } else {
                 if (value < 1000) {
-                    return [value.toFixed(), UNITS.Distance];
+                    return [round ? Math.round(value) : value, UNITS.Distance];
                 } else if (value > 100000) {
-                    return [(value / 1000).toFixed(0), unit];
+                    value /= 1000;
+                    return [round ? Math.round(value) : value, unit];
                 } else {
-                    return [(value / 1000).toFixed(1), unit];
+                    value /= 1000;
+                    return [round ? Math.round(value * 10) / 10 : value, unit];
                 }
             }
 
@@ -118,13 +144,23 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { roundedTo
             // } else {
             // if > 100 we still need to send a . at the end...
             if (options.roundedTo05 === true) {
-                return [(Math.round(value * 2) / 2).toFixed(1), toImperialUnit(unit, imperialUnits)];
+                return [((Math.round(value * 2) / 2) * 10) / 10, toImperialUnit(unit, imperialUnits)];
             }
-            return [value.toFixed(), toImperialUnit(unit, imperialUnits)];
+            return [round ? Math.round(value) : value, toImperialUnit(unit, imperialUnits)];
         // }
         default:
-            return [value.toFixed(), toImperialUnit(unit, imperialUnits)];
+            return [round ? Math.round(value) : value, toImperialUnit(unit, imperialUnits)];
     }
+}
+
+export function convertWeatherValueToUnit(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean; round?: boolean }) {
+    return convertValueToUnit(item[key], PROP_TO_UNIT[key], options);
+}
+export function formatWeatherValue(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
+    if (key === WeatherProps.iconId) {
+        return iconService.getIcon(item.iconId, item.isDay, false);
+    }
+    return formatValueToUnit(item[key], PROP_TO_UNIT[key], options);
 }
 
 export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
@@ -381,7 +417,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         } else if (rain) {
             d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(d.precipAccumulation * 10, 100)).hex;
         } else {
-            DEV_LOG && console.log('not possible?', rain, snow, d);
+            // DEV_LOG && console.log('not possible?', rain, snow, d);
             d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), rainColor, Math.min(d.precipAccumulation * 10, 100)).hex;
         }
     } else {

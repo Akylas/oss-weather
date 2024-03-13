@@ -9,7 +9,10 @@ export abstract class WeatherProvider {
     private static _singleton: WeatherProvider;
     // private static _singletonProviderType: ProviderType;
 
-    abstract getWeather(weatherLocation: WeatherLocation, model?: string): Promise<WeatherData>;
+    abstract getWeather(
+        weatherLocation: WeatherLocation,
+        options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean }
+    ): Promise<WeatherData>;
 
     getModels() {
         return {};

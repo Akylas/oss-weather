@@ -135,10 +135,24 @@ export class OMProvider extends WeatherProvider {
     }
 
     // https://api.open-meteo.com/v1/forecast?latitude=45.18&longitude=5.71&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weathercode,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,windspeed_10m,winddirection_10m,windgusts_10m,uv_index,uv_index_clear_sky&models=best_match&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant&timeformat=unixtime&forecast_days=14&timezone=auto
-    private async fetch<T = any>(apiName: string = 'forecast', queryParams: OMParams = {}, model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')) {
+    private async fetch<T = any>(
+        apiName: string = 'forecast',
+        queryParams: OMParams = {},
+        {
+            current,
+            warnings,
+            minutely,
+            forceModel,
+            model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
+        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean } = {}
+    ) {
         let models = 'best_match';
         if (model !== 'best_match') {
-            models += ',' + model;
+            if (forceModel === true) {
+                models = model;
+            } else {
+                models += ',' + model;
+            }
         }
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
@@ -154,10 +168,11 @@ export class OMProvider extends WeatherProvider {
                 hourly:
                     'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
                     (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
-                current: 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
-                minutely_15: 'precipitation',
-                // models: 'best_match',
-                // models: 'meteofrance_seamless',
+                current:
+                    current !== false
+                        ? 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m')
+                        : undefined,
+                minutely_15: minutely !== false ? 'precipitation' : undefined,
                 daily:
                     'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum,showers_sum' +
                     (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min'),
@@ -191,10 +206,18 @@ export class OMProvider extends WeatherProvider {
         return result;
     }
 
-    public override async getWeather(weatherLocation: WeatherLocation, model: string = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')) {
+    public override async getWeather(
+        weatherLocation: WeatherLocation,
+        {
+            current,
+            warnings,
+            minutely,
+            model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
+        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string } = {}
+    ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
-        const forecast = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon }, model);
+        const forecast = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon }, { model, current, warnings, minutely });
         // console.log('forecast', Object.keys(forecast), Object.keys(forecast.hourly));
         // console.log('rain', JSON.stringify(rain));
         // console.log('current', JSON.stringify(current));
@@ -263,7 +286,7 @@ export class OMProvider extends WeatherProvider {
 
         const minutely_15 = forecast.minutely_15;
         // minutely data starts at the start of the day!
-        const minutelyPrecipitation = this.getDataArray(minutely_15, 'precipitation', model);
+        const minutelyPrecipitation = minutely_15 ? this.getDataArray(minutely_15, 'precipitation', model) : undefined;
         const minutelyData = minutelyPrecipitation
             ? minutely_15.time.map((time, index) => {
                   const hasNext = index < minutely_15.time.length;
@@ -277,23 +300,23 @@ export class OMProvider extends WeatherProvider {
                   return d;
               })
             : undefined;
-        const current = forecast.current;
+        const currentData = forecast.current;
         const daily = forecast.daily;
         const daily_weathercodes = this.getMixedDataArray(daily, 'weathercode', model);
         const dailyLastIndex = daily_weathercodes.findIndex((d) => d === null);
         const r = {
-            currently: current
+            currently: currentData
                 ? weatherDataIconColors(
                       {
-                          time: current.time * 1000,
-                          temperature: feelsLikeTemperatures ? current.apparent_temperature : current.temperature_2m,
+                          time: currentData.time * 1000,
+                          temperature: feelsLikeTemperatures ? currentData.apparent_temperature : currentData.temperature_2m,
                           usingFeelsLike: feelsLikeTemperatures,
-                          windSpeed: current.windspeed_10m,
-                          cloudCover: current.cloudcover,
-                          isDay: !!current.is_day,
-                          windBearing: current.winddirection_10m,
-                          iconId: this.convertWeatherCodeToIcon(current.weathercode),
-                          description: OMProvider.weatherCodeDescription[current.weathercode]
+                          windSpeed: currentData.windspeed_10m,
+                          cloudCover: currentData.cloudcover,
+                          isDay: !!currentData.is_day,
+                          windBearing: currentData.winddirection_10m,
+                          iconId: this.convertWeatherCodeToIcon(currentData.weathercode),
+                          description: OMProvider.weatherCodeDescription[currentData.weathercode]
                       } as Currently,
                       WeatherDataType.CURRENT,
                       coords

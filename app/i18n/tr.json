@@ -22,7 +22,7 @@
     "animations_desc": "simge seti destekliyorsa canlandırılır",
     "api_key": "API anahtarı",
     "api_key_required": "API anahtarı gerekli",
-    "api_key_required_description": "OpenWeatherMap'ten hava durumu verilerini almak için ücretsiz bir API anahtarı gereklidir.\nUygulama varsayılan olarak bir tane sağlar, ancak ücretsiz planda kalabilmek için her kullanıcının kendi API anahtarını oluşturması gerekir.",
+    "api_key_required_description": "OpenWeather'ten hava durumu verilerini almak için ücretsiz bir API anahtarı gereklidir.\nUygulama varsayılan olarak bir tane sağlar, ancak ücretsiz planda kalabilmek için her kullanıcının kendi API anahtarını oluşturması gerekir.",
     "app": {
         "name": "OSS Hava Durumu"
     },
@@ -131,7 +131,7 @@
     "ok": "OK",
     "open_meteo_prefered_model": "Tercih edilen Open-Meteo modeli",
     "open_website": "Web sitesini aç",
-    "owm_api_key": "OpenWeatherMap API anahtarı",
+    "owm_api_key": "OpenWeather API anahtarı",
     "owm_one_call_version": "OneCall sürümü",
     "partly_cloudy": "Parçalı bulutlu",
     "pick_date": "Bir tarih seçin",
@@ -144,7 +144,7 @@
     "provider": {
         "meteofrance": "Méteo Fransa",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "Sağlayıcı"
     },
     "providers": "sağlayıcılar",

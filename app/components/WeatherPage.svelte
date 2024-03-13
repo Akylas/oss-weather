@@ -22,7 +22,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { OWMProvider } from '~/services/providers/owm';
     import { prefs } from '~/services/preferences';
-    import { getProvider, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
@@ -88,11 +88,11 @@
                             id: 'refresh',
                             name: l('refresh')
                         },
-                        // {
-                        //     icon: 'mdi-chart-bar',
-                        //     id: 'compare',
-                        //     name: l('compare_models')
-                        // },
+                        {
+                            icon: 'mdi-chart-bar',
+                            id: 'compare',
+                            name: l('compare_models')
+                        },
                         {
                             icon: 'mdi-map',
                             id: 'map',
@@ -122,7 +122,7 @@
                                     navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
                                     break;
                                 case 'compare':
-                                    const CompareWeather = (await import('~/components/CompareWeather.svelte')).default;
+                                    const CompareWeather = (await import('~/components/CompareWeatherSingle.svelte')).default;
                                     navigate({ page: CompareWeather, props: { weatherLocation } });
                                     break;
                                 case 'refresh':
@@ -351,9 +351,10 @@
             showError(err);
         }
     }
-    prefs.on('key:provider', (event) => {
+    onProviderChanged((event) => {
         try {
             provider = getProviderType();
+            DEV_LOG && console.log('provider changed', provider);
             refreshWeather();
         } catch (error) {
             showError(error);

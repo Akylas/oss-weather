@@ -5,13 +5,16 @@ import { OWMProvider } from './owm';
 import { ProviderType } from './weather';
 import { ApplicationSettings } from '@akylas/nativescript';
 import { prefs } from '../preferences';
+import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 
 export const providers = ['meteofrance', 'openweathermap', 'openmeteo'] as const;
 
 let currentProvider: WeatherProvider;
 prefs.on('key:provider', () => {
-    setProvider(getProviderType());
+    const provider = setProvider(getProviderType());
+    globalObservable.notify({ eventName: 'provider', data: provider });
 });
+export const onProviderChanged = createGlobalEventListener('provider');
 
 export function getProvider(): WeatherProvider {
     DEV_LOG && console.log('getProvider', getProviderType(), !!currentProvider);

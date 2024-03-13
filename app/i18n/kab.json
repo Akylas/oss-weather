@@ -57,7 +57,7 @@
     "no_network": "Ulac aẓeṭṭa",
     "ok": "IH",
     "open_website": "Ldi asmel Web",
-    "owm_api_key": "Tasarut API n OpenWeatherMap",
+    "owm_api_key": "Tasarut API n OpenWeather",
     "partly_cloudy": "Issegnew cwiṭ",
     "pick_date": "Fren azemz",
     "please_describe_error": "Ttxil-k·m, glem-d tuccḍa-nni",
@@ -66,7 +66,7 @@
     "provider": {
         "meteofrance": "Météo France",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap"
+        "openweathermap": "OpenWeather"
     },
     "quit": "Tuffɣa",
     "rain": "Lehwa",

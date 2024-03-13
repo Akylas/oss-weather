@@ -1,3 +1,3 @@
-Application Open Source pour accéder aux données météorologiques détaillées d'OpenWeatherMap, Open-Meteo et Meteo France. Radar météorologique fourni par RainViewer.
+Application Open Source pour accéder aux données météorologiques détaillées d'OpenWeather, Open-Meteo et Meteo France. Radar météorologique fourni par RainViewer.
 Vous pouvez créer une clé OWM gratuite pour accéder aux données météorologiques.
 Il y a une clé par défaut incluse dans l'application, mais l'accès est limité et vous pouvez obtenir des erreurs liées à la limite de taux.

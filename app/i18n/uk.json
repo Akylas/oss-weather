@@ -21,7 +21,7 @@
     "animations": "анімації",
     "api_key": "api ключ",
     "api_key_required": "Необхідний API ключ",
-    "api_key_required_description": "Для отримання погодних даних з OpenWeatherMap потрібен безкоштовний ключ API. \nДодаток розповсюджує один за замовчуванням, однак, щоб залишатися в рамках безкоштовного плану, кожен користувач повинен створити свій власний API-ключ.\n\nЦе можна зробити, створивши обліковий запис на їхньому сайті.",
+    "api_key_required_description": "Для отримання погодних даних з OpenWeather потрібен безкоштовний ключ API. \nДодаток розповсюджує один за замовчуванням, однак, щоб залишатися в рамках безкоштовного плану, кожен користувач повинен створити свій власний API-ключ.\n\nЦе можна зробити, створивши обліковий запис на їхньому сайті.",
     "app": {
         "name": "OSS Погода"
     },
@@ -111,7 +111,7 @@
     "non_valid_email": "недійсна пошта",
     "ok": "OK",
     "open_website": "відкрити сайт",
-    "owm_api_key": "OpenWeatherMap API Ключ",
+    "owm_api_key": "OpenWeather API Ключ",
     "partly_cloudy": "частково хмарно",
     "pick_date": "вибрати дату",
     "please_describe_error": "будь ласка, опишіть помилку",
@@ -122,7 +122,7 @@
     "provider": {
         "meteofrance": "MéteoFrance",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "постачальник"
     },
     "quit": "вийти",

@@ -319,6 +319,7 @@
                                 key: 'weather_map_colors',
                                 id: 'setting',
                                 title: lc('weather_map_colors'),
+                                currentValue: () => ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS),
                                 values: WEATHER_MAP_COLOR_SCHEMES,
                                 description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
                             }

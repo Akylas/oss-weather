@@ -1,0 +1,7 @@
+### Features
+- basic models compare feature
+
+### Bug fixes
+- new github build without sentry enabled
+- no weather icon fix
+- rename OpenWeatherMap to OpenWeather

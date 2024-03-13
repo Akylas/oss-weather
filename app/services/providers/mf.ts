@@ -276,10 +276,15 @@ export class MFProvider extends WeatherProvider {
         });
     }
 
-    public override async getWeather(weatherLocation: WeatherLocation) {
+    public override async getWeather(weatherLocation: WeatherLocation, { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
-        const result = await Promise.all([this.fetch<MFForecastResult>('v2/forecast', coords), this.fetch<MFMinutely>('v3/nowcast/rain', coords), this.fetch<MFCurrent>('v2/observation', coords)]);
+
+        const result = await Promise.all([
+            this.fetch<MFForecastResult>('v2/forecast', coords),
+            minutely !== false ? this.fetch<MFMinutely>('v3/nowcast/rain', coords) : () => Promise.resolve(undefined as MFMinutely),
+            current !== false ? this.fetch<MFCurrent>('v2/observation', coords) : () => Promise.resolve(undefined as MFCurrent)
+        ]);
         // if (forecast.position.dept) {
         // we are in france we can get more
 
@@ -288,11 +293,11 @@ export class MFProvider extends WeatherProvider {
         const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
 
         const forecast = result[0];
-        const rain = result[1];
-        const current = result[2];
-        let warnings: MFWarnings;
-        if (forecast.properties.french_department) {
-            warnings = await this.fetch<MFWarnings>('v3/warning/full', {
+        const rain = result[1] as MFMinutely;
+        const currentData = result[2] as MFCurrent;
+        let warningsData: MFWarnings;
+        if (warnings !== false && forecast.properties.french_department) {
+            warningsData = await this.fetch<MFWarnings>('v3/warning/full', {
                 ...coords,
                 domain: forecast.properties.french_department
             }).catch((err) => null);
@@ -301,7 +306,7 @@ export class MFProvider extends WeatherProvider {
         // DEV_LOG && console.log('forecast', JSON.stringify(forecast));
         // DEV_LOG && console.log('rain', JSON.stringify(rain));
         // DEV_LOG && console.log('current', JSON.stringify(current));
-        // DEV_LOG && console.log('warnings', JSON.stringify(warnings));
+        // DEV_LOG && console.log('warningsData', JSON.stringify(warningsData));
         const now = Date.now();
         const startOfHour = dayjs(now).startOf('h').valueOf() / 1000;
         const forecastData = forecast.properties.forecast;
@@ -345,26 +350,28 @@ export class MFProvider extends WeatherProvider {
             d.windGust = data.wind_speed_gust * 3.6;
             d.windSpeed = data.wind_speed * 3.6;
             d.iso = data.iso0;
-            if (typeof data['rain snow limit'] === 'number') {
-                d.rainSnowLimit = data['rain snow limit'];
+            if (typeof data.rain_snow_limit === 'number') {
+                d.rainSnowLimit = data.rain_snow_limit;
             }
             // d.pressure = data.pressure;
             // console.log('hourly', data.weather_icon, dayjs(d.time).format('ddd DD/MM'), d.rain, d.snowfall, d.precipAccumulation);
             return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.rain, d.snowfall);
         });
-        DEV_LOG && console.log('current', JSON.stringify(current));
+
+        const currentConditions = currentData?.properties?.gridded;
+        // DEV_LOG && console.log('current', JSON.stringify(currentData));
         const r = {
-            currently: current?.properties?.gridded
+            currently: currentConditions
                 ? weatherDataIconColors(
                       {
-                          time: current.properties.gridded.time * 1000,
-                          temperature: current.properties.gridded.T,
-                          windSpeed: current.properties.gridded.wind_speed,
-                          //   windGust: current.properties.gridded.wind,
-                          windBearing: current.properties.gridded.wind_direction,
-                          isDay: current.properties.gridded.weather_icon ? current.properties.gridded.weather_icon.endsWith('j') : undefined,
-                          iconId: current.properties.gridded.weather_icon ? this.convertMFICon(current.properties.gridded.weather_icon) : undefined,
-                          description: current.properties.gridded.weather_description ? titlecase(current.properties.gridded.weather_description) : undefined
+                          time: currentConditions.time * 1000,
+                          temperature: currentConditions.T,
+                          windSpeed: currentConditions.wind_speed,
+                          //   windGust: currentConditions.wind,
+                          windBearing: currentConditions.wind_direction,
+                          isDay: currentConditions.weather_icon ? currentConditions.weather_icon.endsWith('j') : undefined,
+                          iconId: currentConditions.weather_icon ? this.convertMFICon(currentConditions.weather_icon) : undefined,
+                          description: currentConditions.weather_description ? titlecase(currentConditions.weather_description) : undefined
                       } as Currently,
                       WeatherDataType.CURRENT,
                       coords
@@ -383,8 +390,8 @@ export class MFProvider extends WeatherProvider {
                             }) as MinutelyData
                     ) || []
             },
-            alerts: warnings
-                ? warnings.timelaps.reduce((acc, timelaps) => {
+            alerts: warningsData
+                ? warningsData.timelaps.reduce((acc, timelaps) => {
                       timelaps.timelaps_items
                           .filter((it) => it.color_id > 1)
                           .forEach((w) => {
@@ -392,7 +399,7 @@ export class MFProvider extends WeatherProvider {
                                   start: w.begin_time * 1000,
                                   end: w.end_time * 1000,
                                   event: this.getWarningType(timelaps.phenomenon_id) + ' - ' + this.getWarningText(w.color_id),
-                                  description: w.color_id >= 1 ? this.getWarningContent(timelaps.phenomenon_id, warnings) : undefined
+                                  description: w.color_id >= 1 ? this.getWarningContent(timelaps.phenomenon_id, warningsData) : undefined
                               } as Alert);
                           });
                       return acc;

@@ -22,7 +22,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { OWMProvider } from '~/services/providers/owm';
     import { prefs } from '~/services/preferences';
-    import { getProvider, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
@@ -351,9 +351,10 @@
             showError(err);
         }
     }
-    prefs.on('key:provider', (event) => {
+    onProviderChanged((event) => {
         try {
             provider = getProviderType();
+            DEV_LOG && console.log('provider changed', provider);
             refreshWeather();
         } catch (error) {
             showError(error);

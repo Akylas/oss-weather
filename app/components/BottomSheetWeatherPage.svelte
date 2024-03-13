@@ -6,7 +6,7 @@
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { colors } from '~/variables';
     import { l, lc } from '~/helpers/locale';
-    import { getProvider, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
 
     $: ({ colorBackground } = $colors);
@@ -50,7 +50,7 @@
     $: refresh(weatherLocation);
     let provider = getProviderType();
 
-    prefs.on('key:provider', (event) => {
+    onProviderChanged((event) => {
         provider = getProviderType();
         refresh();
     });

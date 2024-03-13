@@ -182,6 +182,7 @@
                     this={component}
                     {borderRadius}
                     color={item.color}
+                    columns="*,auto"
                     {fontSize}
                     {fontWeight}
                     {iconFontSize}
@@ -190,7 +191,7 @@
                     subtitle={item.subtitle}
                     title={item.name}
                     on:tap={(event) => onTap(item, event)}>
-                    <mdbutton class="icon-btn" col={2} text={item.rightIcon} variant="text" on:tap={(event) => onRightTap(item, event)} />
+                    <mdbutton class="icon-btn" col={1} text={item.rightIcon} variant="text" on:tap={(event) => onRightTap(item, event)} />
                 </svelte:component>
             </Template>
             <Template key="image" let:item>
@@ -198,6 +199,7 @@
                     this={component}
                     {borderRadius}
                     color={item.color}
+                    columns="*,auto"
                     {fontSize}
                     {fontWeight}
                     {iconFontSize}
@@ -206,7 +208,7 @@
                     subtitle={item.subtitle}
                     title={item.name}
                     on:tap={(event) => onTap(item, event)}>
-                    <image col={2} height={45} src={item.image} />
+                    <image col={1} height={45} src={item.image} />
                 </svelte:component>
             </Template>
             <Template let:item>

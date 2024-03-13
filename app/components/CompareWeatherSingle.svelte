@@ -21,6 +21,7 @@
     import toColor from '@mapbox/to-color';
     import { AVAILABLE_COMPARE_WEATHER_DATA, AVAILABLE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
+    import ListItem from './common/ListItem.svelte';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
 
@@ -306,10 +307,12 @@
                     <label class="sectionHeader" text={item.name} />
                 </Template>
                 <Template let:item>
-                    <ListItemAutoSize
+                    <ListItem
                         borderLeftColor={item.color}
                         borderLeftWidth={6}
                         color={item.color}
+                        columns="*,auto"
+                        fontWeight="normal"
                         padding="0 0 0 10"
                         paddingLeft={0}
                         paddingRight={0}
@@ -325,13 +328,13 @@
                         <checkbox
                             id="checkbox"
                             checked={isModelSelected(item)}
-                            col={2}
+                            col={1}
                             ios:marginRight={10}
                             color={item.color}
                             fillColor={item.color}
                             verticalAlignment="center"
                             on:checkedChange={(e) => onModelCheckBox(item, e)} />
-                    </ListItemAutoSize>
+                    </ListItem>
                 </Template>
             </collectionview>
             <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} />
@@ -343,8 +346,9 @@
                     <label class="sectionHeader" text={item.name} />
                 </Template>
                 <Template let:item>
-                    <ListItemAutoSize
+                    <ListItem
                         columns="*,auto,auto"
+                        fontWeight="normal"
                         mainCol={0}
                         padding="0 0 0 16"
                         rows="50"
@@ -356,7 +360,7 @@
                         }}>
                         <checkbox checked={item.hourlySelected} col={1} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('hourly', item, e)} />
                         <checkbox checked={item.dailySelected} col={2} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('daily', item, e)} />
-                    </ListItemAutoSize>
+                    </ListItem>
                 </Template>
             </collectionview>
             <!-- <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} /> -->

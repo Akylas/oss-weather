@@ -4,7 +4,7 @@ import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 
 const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
 export const onIconPackChanged = createGlobalEventListener('iconPack');
-// export const onIconAnimationsChanged = createGlobalEventListener('iconAnimations');
+export const onIconAnimationsChanged = createGlobalEventListener('iconAnimations');
 
 const WEATHER_CODE_MAPPING = new Map<number, number>();
 WEATHER_CODE_MAPPING.set(201, 200);
@@ -70,7 +70,7 @@ function fillIconMap(folderPath: string, map: Map<number, number>) {
         .getEntitiesSync()
         .map((e) => e.name)
         .reduce((acc, current) => {
-            current = current.slice(0, -4);
+            current = current.split('.').slice(0, -1).join('.');
             const length = current.length;
             if (length === 3) {
                 acc.set(parseInt(current, 10), 0);
@@ -112,9 +112,9 @@ export class IconService extends Observable {
     }
     updateAnimatedState(fire = true) {
         this.mAnimated = ApplicationSettings.getBoolean('animations', false);
-        // if (fire) {
-        //     globalObservable.notify({ eventName: 'iconAnimations', data: this.mAnimated });
-        // }
+        if (fire) {
+            globalObservable.notify({ eventName: 'iconAnimations', data: this.mAnimated });
+        }
     }
     get animated() {
         return this.mAnimated && this.lotties.size > 0;

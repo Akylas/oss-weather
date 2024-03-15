@@ -74,6 +74,7 @@
         curveTempPoints: number[];
         odd: boolean;
     };
+    export let animated: boolean = false;
     let canvasView;
     let precipitationHeight = 0;
 
@@ -260,5 +261,5 @@
 
 <gridlayout on:tap={onTap}>
     <canvasview bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
-    <WeatherIcon iconData={[item.iconId, item.isDay]} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top" />
+    <WeatherIcon {animated} iconData={[item.iconId, item.isDay]} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top" />
 </gridlayout>

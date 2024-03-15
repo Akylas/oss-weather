@@ -19,6 +19,7 @@
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
     export let item: DailyData;
+    export let animated: boolean = false;
     let canvasView;
     const dispatch = createEventDispatcher();
 
@@ -137,5 +138,12 @@
 </script>
 
 <canvasview bind:this={canvasView} height={100 * $fontScale} on:draw={drawOnCanvas}>
-    <WeatherIcon horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight="10" marginTop={16 * $fontScale} size={60 * $fontScale} on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon
+        {animated}
+        horizontalAlignment="right"
+        iconData={[item.iconId, item.isDay]}
+        marginRight="10"
+        marginTop={16 * $fontScale}
+        size={60 * $fontScale}
+        on:tap={(event) => dispatch('tap', event)} />
 </canvasview>

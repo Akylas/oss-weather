@@ -17,6 +17,7 @@
     import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
+    import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
@@ -38,6 +39,7 @@
     export let weatherLocation: FavoriteLocation;
     export let height;
     export let fakeNow;
+    export let animated = false;
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
@@ -382,6 +384,7 @@
     /> -->
     <linechart bind:this={lineChart} height={90} marginBottom={30} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
     <WeatherIcon
+        {animated}
         col={1}
         horizontalAlignment="right"
         iconData={[item.iconId, item.isDay]}

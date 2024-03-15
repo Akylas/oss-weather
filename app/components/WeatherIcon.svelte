@@ -9,13 +9,12 @@
     export let iconData: [number, boolean];
     export let size: string | number = 40;
     // export let autoPlay = true;
-    export let autoPlay = iconService.animated;
+    export let animated = false;
     let iconSrc: string;
     $: {
-        autoPlay = iconService.animated;
         if (iconData) {
             const icon = iconService.getIcon(iconData[0], iconData[1]);
-            if (autoPlay) {
+            if (animated) {
                 iconSrc = `~/assets/icon_themes/${iconService.iconSet}/lottie/${icon}.lottie`;
             } else {
                 iconSrc = `${iconService.iconSetFolderPath}/images/${icon}.png`;
@@ -42,11 +41,11 @@
     }
 </script>
 
-{#if autoPlay}
+{#if animated}
     <lottie
         {...$$restProps}
         async={false}
-        {autoPlay}
+        autoPlay={true}
         height={size}
         {isUserInteractionEnabled}
         loop={true}

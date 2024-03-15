@@ -5,6 +5,7 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyItem from '~/components/HourlyItem.svelte';
     import { onThemeChanged } from '~/helpers/theme';
+    import { iconService } from '~/services/icon';
     import { colors, fontScale, onImperialChanged } from '~/variables';
 
     $: ({ colorBackground } = $colors);
@@ -31,6 +32,12 @@
     onThemeChanged(() => {
         collectionView.nativeView.refreshVisibleItems();
     });
+    function selectTemplate(item, index, items) {
+        if (iconService.animated) {
+            return 'animated';
+        }
+        return 'default';
+    }
 </script>
 
 <gridlayout {...$$restProps}>
@@ -42,12 +49,16 @@
         iosOverflowSafeAreaEnabled="false"
         isBounceEnabled="false"
         itemIdGenerator={(_item, index) => index}
+        itemTemplateSelector={selectTemplate}
         {items}
         nestedScrollingEnabled={false}
         orientation="horizontal"
         rowHeight="100%"
         on:dataPopulated={onDataPopulated}
         on:scroll={onScrollEvent}>
+        <Template key="animated" let:item>
+            <HourlyItem animated={true} {item} />
+        </Template>
         <Template let:item>
             <HourlyItem {item} />
         </Template>

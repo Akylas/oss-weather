@@ -1,0 +1,7 @@
+### Bug fixes
+- icons not showing
+- compare charts line a bit bigger
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Hindi)
+- ensure we update everything when animation setting changes

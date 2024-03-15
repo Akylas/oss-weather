@@ -11,7 +11,7 @@
     import { prefs } from '~/services/preferences';
     import { actionBarHeight, fontScale, navigationBarHeight, onImperialChanged, screenHeightDips, statusBarHeight } from '~/variables';
     import { onThemeChanged } from '~/helpers/theme';
-    import { iconService } from '~/services/icon';
+    import { iconService, onIconAnimationsChanged } from '~/services/icon';
 
     export let items: any[];
     export let weatherLocation: WeatherLocation;
@@ -37,6 +37,9 @@
         collectionView.nativeView.refreshVisibleItems();
     });
     onImperialChanged(() => {
+        collectionView?.nativeView?.refreshVisibleItems();
+    });
+    onIconAnimationsChanged(() => {
         collectionView?.nativeView?.refreshVisibleItems();
     });
     function onTap(item) {

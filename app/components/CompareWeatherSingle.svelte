@@ -48,7 +48,7 @@
     );
 
     export let weatherLocation: FavoriteLocation;
-    const providerColors = {};
+    let providerColors = {};
 
     interface Model {
         id: string;
@@ -59,44 +59,58 @@
         shortName: string;
     }
 
-    const modelsList: Model[] = providers.reduce((acc, val) => {
-        const provider = getProviderForType(val);
-        const models = provider.getModels();
-        const keys = Object.keys(models);
+    function updateColors(args = { saturation: 3, brightness: 0.8 }) {
+        providerColors = {};
+        modelsList.forEach((model) => {
+            const provider = model.id.split(':')[0];
+            let colorGenerator = providerColors[provider];
+            if (!colorGenerator) {
+                colorGenerator = providerColors[provider] = new toColor(provider, args);
+            }
+        });
+        modelsCollectionView?.nativeElement.refreshVisibleItems();
+    }
 
-        let colorGenerator = providerColors[val];
-        if (!colorGenerator) {
-            colorGenerator = providerColors[val] = new toColor(val, { saturation: 3, brightness: 0.8 });
-        }
-        if (keys.length) {
-            // acc.push({
-            //     type: 'sectionheader',
-            //     id: provider.id,
-            //     name: provider.getName(),
-            //     // color: colorGenerator.getColor().hsl.formatted,
-            //     shortName: provider.getName().replace(/[^A-Z]+/g, '')
-            // });
-            for (let index = 0; index < keys.length; index++) {
-                const key = keys[index];
+    const modelsList = new ObservableArray<Model>(
+        providers.reduce((acc, val) => {
+            const provider = getProviderForType(val);
+            const models = provider.getModels();
+            const keys = Object.keys(models);
+
+            let colorGenerator = providerColors[val];
+            if (!colorGenerator) {
+                colorGenerator = providerColors[val] = new toColor(val, { saturation: 3, brightness: 0.8 });
+            }
+            if (keys.length) {
+                // acc.push({
+                //     type: 'sectionheader',
+                //     id: provider.id,
+                //     name: provider.getName(),
+                //     // color: colorGenerator.getColor().hsl.formatted,
+                //     shortName: provider.getName().replace(/[^A-Z]+/g, '')
+                // });
+                for (let index = 0; index < keys.length; index++) {
+                    const key = keys[index];
+                    acc.push({
+                        id: provider.id + ':' + key,
+                        title: provider.getName(),
+                        subtitle: key,
+                        name: provider.getName() + ': ' + key,
+                        color: colorGenerator.getColor().hsl.formatted,
+                        shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
+                    } as Model);
+                }
+            } else {
                 acc.push({
-                    id: provider.id + ':' + key,
-                    title: provider.getName(),
-                    subtitle: key,
-                    name: provider.getName() + ': ' + key,
+                    id: provider.id,
+                    name: provider.getName(),
                     color: colorGenerator.getColor().hsl.formatted,
-                    shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
+                    shortName: provider.getName().replace(/[^A-Z]+/g, '')
                 } as Model);
             }
-        } else {
-            acc.push({
-                id: provider.id,
-                name: provider.getName(),
-                color: colorGenerator.getColor().hsl.formatted,
-                shortName: provider.getName().replace(/[^A-Z]+/g, '')
-            } as Model);
-        }
-        return acc;
-    }, []);
+            return acc;
+        }, [])
+    );
     let page: NativeViewElementNode<Page>;
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;

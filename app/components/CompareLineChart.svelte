@@ -32,6 +32,8 @@
     labelPaint.setTextSize(13);
     labelPaint.setTextAlign(Align.CENTER);
     const mFontMetricsBuffer = new FontMetrics();
+
+    const LINE_WIDTH = 2;
 </script>
 
 <script lang="ts">
@@ -174,9 +176,9 @@
                         const set = new LineDataSet(data, wData.model.id, 'time', key);
                         set['modelId'] = wData.model.id;
                         const enabled = item.hidden.indexOf(wData.model.id) === -1;
-                        set.setLineWidth(enabled ? 1 : 0);
+                        set.setLineWidth(enabled ? LINE_WIDTH : 0);
                         set.setDrawCircles(enabled);
-                        set.setCircleSize(1);
+                        set.setCircleSize(LINE_WIDTH);
                         // set.setDrawValues(true);
                         set.setColor(color);
                         // set.setFillColor(color);
@@ -294,7 +296,7 @@
                             break;
                         default:
                             (set as LineDataSet).setDrawCircles(enabled);
-                            (set as LineDataSet).setLineWidth(enabled ? 1 : 0);
+                            (set as LineDataSet).setLineWidth(enabled ? LINE_WIDTH : 0);
                             break;
                     }
                     chart.invalidate();

@@ -22,7 +22,7 @@
     export let onDraw: (event: { canvas: Canvas; object: CanvasView }) => void = null;
 </script>
 
-<canvasview {columns} rippleColor={colorPrimary} on:tap={(event) => dispatch('tap', event)} {...$$restProps} padding="0 16 0 16">
+<canvasview {columns} padding="0 16 0 16" rippleColor={colorPrimary} on:tap={(event) => dispatch('tap', event)} {...$$restProps}>
     <canvaslabel col={mainCol} color={color || colorOnSurface} on:draw={onDraw}>
         <cgroup paddingBottom={subtitle ? 10 : 0} verticalAlignment="middle">
             <cspan fontFamily={leftIconFonFamily} fontSize={iconFontSize * $fontScale} paddingLeft="10" text={leftIcon} visibility={leftIcon ? 'visible' : 'hidden'} width={iconFontSize * 2} />

@@ -236,9 +236,16 @@
             canvas.save();
             canvas.translate(w2, iconDecale + 4 - 18 + iconDeltaY);
             if (item.windGust > 50) {
+                const oldColor = textPaint.color;
                 const width = staticLayout.getWidth();
+                // this fixes a current issue with the Paint getDrawTextAttribs is set on Paint in getHeight
+                // if we change the paint color to draw the rect
+                // then if we do it too soon the paint getDrawTextAttribs is going to use that new
+                // color and thus we loose the color set before for the text
+                const height = staticLayout.getHeight();
                 textPaint.setColor(windGustData.color);
-                canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, staticLayout.getHeight() - 0, 4, 4, textPaint);
+                canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, height - 0, 4, 4, textPaint);
+                textPaint.setColor(oldColor);
             }
 
             staticLayout.draw(canvas);

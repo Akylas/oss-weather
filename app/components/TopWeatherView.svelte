@@ -17,7 +17,6 @@
     import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';

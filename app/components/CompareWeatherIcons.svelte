@@ -57,7 +57,7 @@
     });
     $: {
         columns = Math.max(...(item.forecast === 'daily' ? item.weatherData.map((w) => w.weatherData.daily.data.length) : item.weatherData.map((w) => w.weatherData.daily.data[0].hourly.length)));
-        width = columns * COLUMN_WIDTH;
+        width = columns * COLUMN_WIDTH + 90;
     }
     $: height = item.weatherData.length * (COLUMN_HEIGHT + 6) + 30;
 
@@ -111,26 +111,28 @@
             canvas.restore();
             let lastTimestamp;
 
-            function onBlock(d: CommonWeatherData) {
-                // DEV_LOG && console.log('tst', data.model.id, dayjs(d.time).format('HH DD/MM'));
-                const deltaHours = lastTimestamp ? Math.round((d.time - lastTimestamp) / 3600000) : -1;
-                if (deltaHours > 1) {
-                    dx += COLUMN_WIDTH * (deltaHours - 1);
-                }
-                drawWeatherItem(d, canvas, dx, dy);
-                dx += COLUMN_WIDTH;
-                lastTimestamp = d.time;
-            }
             if (item.forecast === 'hourly') {
                 data.weatherData.daily.data[0].hourly.forEach((d) => {
                     if (d.time >= startOfHourTimeStamp) {
-                        onBlock(d);
+                        const deltaHours = lastTimestamp ? Math.round((d.time - lastTimestamp) / 3600000) : -1;
+                        if (deltaHours > 1) {
+                            dx += COLUMN_WIDTH * (deltaHours - 1);
+                        }
+                        drawWeatherItem(d, canvas, dx, dy);
+                        dx += COLUMN_WIDTH;
+                        lastTimestamp = d.time;
                     }
                 });
             } else {
                 data.weatherData.daily.data.forEach((d) => {
                     if (d.time >= startOfDayTimeStamp) {
-                        onBlock(d);
+                        const deltaDays = lastTimestamp ? Math.round((d.time - lastTimestamp) / (24 * 3600000)) : -1;
+                        if (deltaDays > 1) {
+                            dx += COLUMN_WIDTH * (deltaDays - 1);
+                        }
+                        drawWeatherItem(d, canvas, dx, dy);
+                        dx += COLUMN_WIDTH;
+                        lastTimestamp = d.time;
                     }
                 });
             }
@@ -156,7 +158,7 @@
                 }
             } else {
                 for (let index = 0; index < columns; index++) {
-                    const date = startOfDay.add(index + 1, 'h');
+                    const date = startOfDay.add(index + 1, 'd');
                     canvas.drawText(date.format('DD/MM'), dx + COLUMN_WIDTH / 2, dy, paint);
                     dx += COLUMN_WIDTH;
                 }
@@ -173,7 +175,7 @@
 <gridlayout rows="auto,auto,*" {...$$restProps}>
     <label class="sectionHeader" paddingTop={10} text={`${item.id} (${lc(item.forecast)})`} />
     <scrollview bind:this={headerScrollView} height={30} isUserInteractionEnabled={false} orientation="horizontal" row={1} scrollBarIndicatorVisible={false}>
-        <canvasview height="100%" {width} on:draw={onDrawHeader} />
+        <canvasview height="100%" horizontalAlignment="left" {width} on:draw={onDrawHeader} />
     </scrollview>
     <collectionview items={[item]} row={2} rowHeight={height}>
         <Template let:item>

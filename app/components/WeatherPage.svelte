@@ -7,7 +7,7 @@
     import { confirm } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Color, CoreTypes, EventData, File, Frame, Page, knownFolders, path } from '@nativescript/core';
+    import { Color, CoreTypes, EventData, File, Frame, Page, Screen, knownFolders, path } from '@nativescript/core';
     import { Application, ApplicationSettings } from '@nativescript/core';
     import { openFile, openUrl, throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
@@ -28,7 +28,7 @@
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
     import { globalObservable } from '~/utils/svelte/ui';
-    import { openLink, showPopoverMenu } from '~/utils/ui';
+    import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { WeatherData } from '~/services/providers/weather';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
@@ -116,8 +116,49 @@
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
                 props: {
-                    width: 220 * $systemFontScale
+                    width: 220 * $systemFontScale,
+                    maxHeight: Screen.mainScreen.heightDIPs
                     // autoSizeListItem: true
+                },
+                onLongPress: async (item, event, close) => {
+                    try {
+                        if (item) {
+                            switch (item.id) {
+                                case 'bra':
+                                    const franceGeoJSON = JSON.parse(
+                                        await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()
+                                    ) as FeatureCollection<MultiPolygon>;
+                                    const options = franceGeoJSON.features.map((feature) => ({
+                                        name: feature.properties.title,
+                                        subtitle: `${feature.properties.Departemen} (${feature.properties.mountain})`,
+                                        id: feature.properties.code
+                                    }));
+                                    await close();
+                                    const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
+                                    DEV_LOG && console.log('options', options);
+                                    const result = await showBottomSheet({
+                                        parent: null,
+                                        view: OptionSelect,
+                                        ignoreTopSafeArea: true,
+                                        props: {
+                                            options,
+                                            rowHeight: 58,
+                                            height: 400
+                                        }
+                                    });
+                                    if (result) {
+                                        showLoading();
+                                        const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
+                                        DEV_LOG && console.log('massifId', result.id, pdfFile.path);
+                                        openFile(pdfFile.path);
+                                    }
+                            }
+                        }
+                    } catch (error) {
+                        showError(error);
+                    } finally {
+                        hideLoading();
+                    }
                 },
                 onClose: async (item) => {
                     try {
@@ -165,6 +206,7 @@
                                         }
                                     });
                                     if (massifId !== -1) {
+                                        showLoading();
                                         const result = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
                                         DEV_LOG && console.log('massifId', massifId, result.path);
                                         openFile(result.path);
@@ -174,6 +216,8 @@
                         }
                     } catch (error) {
                         showError(error);
+                    } finally {
+                        hideLoading();
                     }
                 }
             });

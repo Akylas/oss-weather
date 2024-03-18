@@ -1,0 +1,4 @@
+### Bug fixes
+- long press on BRA will allow to select mountain
+- missing icon for thunderstorm forecast
+- multiple fixes for comparing models

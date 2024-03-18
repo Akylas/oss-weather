@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { Align, Canvas, CanvasView, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { conditionalEvent, createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, fonts } from '~/variables';
     const iconPaint = new Paint();
     // iconPaint.setTextAlign(Align.CENTER);
@@ -25,6 +25,7 @@
     export let color: string = null;
     export let subtitleColor: string = null;
     export let subtitle: string = null;
+    export let onLongPress: (item, e) => void = null;
     // export let leftIcon: string = null;
     export let rightValue: string | Function = null;
     // const leftColumn = iconFontSize * 1.4 * $fontScale;
@@ -84,8 +85,8 @@
     padding="0 16 0 16"
     rippleColor={color || colorOnSurface}
     on:tap={(event) => dispatch('tap', event)}
-    on:longPress={(event) => dispatch('longPress', event)}
     on:draw={draw}
+    use:conditionalEvent={{ condition: !!onLongPress, event: 'longPress', callback: onLongPress }}
     {...$$restProps}>
     <!-- <label
         fontFamily={leftIconFonFamily}

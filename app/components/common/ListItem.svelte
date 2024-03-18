@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Canvas, CanvasView } from '@nativescript-community/ui-canvas';
     import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { conditionalEvent } from '~/utils/svelte/ui';
     import { colors, fontScale, fonts } from '~/variables';
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorPrimary, colorOutlineVariant } = $colors);
     const dispatch = createEventDispatcher();
@@ -16,13 +17,20 @@
     export let leftIcon: string = null;
     export let columns: string = '*';
     export let mainCol = 0;
+    export let onLongPress: (item, e) => void = null;
     export let leftIconFonFamily: string = $fonts.mdi;
     export let color: string = colorOnSurface;
     export let subtitleColor: string = null;
     export let onDraw: (event: { canvas: Canvas; object: CanvasView }) => void = null;
 </script>
 
-<canvasview {columns} padding="0 16 0 16" rippleColor={colorPrimary} on:tap={(event) => dispatch('tap', event)} {...$$restProps}>
+<canvasview
+    {columns}
+    padding="0 16 0 16"
+    rippleColor={colorPrimary}
+    on:tap={(event) => dispatch('tap', event)}
+    use:conditionalEvent={{ condition: !!onLongPress, event: 'longPress', callback: onLongPress }}
+    {...$$restProps}>
     <canvaslabel col={mainCol} color={color || colorOnSurface} on:draw={onDraw}>
         <cgroup paddingBottom={subtitle ? 10 : 0} verticalAlignment="middle">
             <cspan fontFamily={leftIconFonFamily} fontSize={iconFontSize * $fontScale} paddingLeft="10" text={leftIcon} visibility={leftIcon ? 'visible' : 'hidden'} width={iconFontSize * 2} />

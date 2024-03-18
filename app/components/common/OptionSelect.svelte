@@ -33,11 +33,12 @@
     export let options: OptionType[] | ObservableArray<OptionType[]>;
     export let onClose = null;
     export let selectedIndex = -1;
-    export let height: number | string = null;
+    export let height: number | string = 'auto';
     export let fontSize = 16;
     export let iconFontSize = 24;
     export let onCheckBox: (item, value, e) => void = null;
     export let onRightIconTap: (item, e) => void = null;
+    export let onLongPress: (item, e, close: Function) => void = null;
     let filteredOptions: OptionType[] | ObservableArray<OptionType[]> = null;
     let filter: string = null;
 
@@ -55,8 +56,8 @@
     updateFiltered(filter);
     $: updateFilteredDebounce(filter);
 
-    function close(value?: OptionType) {
-        (onClose || closeBottomSheet)(value);
+    async function close(value?: OptionType) {
+        return (onClose || closeBottomSheet)(value);
     }
 
     let checkboxTapTimer;
@@ -90,6 +91,9 @@
         } else {
             close(item);
         }
+    }
+    function handleOnLongPress(item, event) {
+        onLongPress?.(item, event, close);
     }
     function onCheckedChanged(item, event) {
         if (checkboxTapTimer) {
@@ -151,7 +155,7 @@
                     on:tap={() => (filter = null)} />
             </gridlayout>
         {/if}
-        <collectionView {itemTemplateSelector} items={filteredOptions} row={1} {rowHeight} on:dataPopulated={onDataPopulated}>
+        <collectionView ios:contentInsetAdjustmentBehavior={2} {itemTemplateSelector} items={filteredOptions} row={1} {rowHeight} on:dataPopulated={onDataPopulated}>
             <Template key="checkbox" let:item>
                 <svelte:component
                     this={component}
@@ -163,6 +167,7 @@
                     {iconFontSize}
                     leftIcon={item.icon}
                     mainCol={1}
+                    onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     showBottomLine={showBorders}
                     subtitle={item.subtitle}
                     title={item.name}
@@ -187,6 +192,7 @@
                     {fontWeight}
                     {iconFontSize}
                     leftIcon={item.icon}
+                    onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     showBottomLine={showBorders}
                     subtitle={item.subtitle}
                     title={item.name}
@@ -204,6 +210,7 @@
                     {fontWeight}
                     {iconFontSize}
                     leftIcon={item.icon}
+                    onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     showBottomLine={showBorders}
                     subtitle={item.subtitle}
                     title={item.name}
@@ -220,13 +227,13 @@
                     {fontWeight}
                     {iconFontSize}
                     leftIcon={item.icon}
+                    onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     rightIcon={item.rightIcon}
                     showBottomLine={showBorders}
                     subtitle={item.subtitle}
                     title={item.name}
                     on:rightTap={(event) => onRightTap(item, event)}
-                    on:tap={(event) => onTap(item, event)}>
-                </svelte:component>
+                    on:tap={(event) => onTap(item, event)} />
             </Template>
         </collectionView>
     </gridlayout>

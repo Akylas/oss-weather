@@ -49,7 +49,6 @@
         hidden: string[];
     }
     export let item: Item & { startingSide: string };
-    export let handleAllCharts = false;
     // export let startingSide;
 
     let chartView: NativeViewElementNode<CombinedChart>;

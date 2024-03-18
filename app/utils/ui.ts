@@ -134,14 +134,16 @@ export async function showPopoverMenu<T = any>({
     options,
     anchor,
     onClose,
+    onLongPress,
     props,
     horizPos,
     vertPos,
     closeOnClose = true
-}: { options; anchor; onClose?; props?; closeOnClose? } & Partial<PopoverOptions>) {
+}: { options; anchor; onClose?; onLongPress?; props?; closeOnClose? } & Partial<PopoverOptions>) {
     const { colorSurfaceContainer } = get(colors);
     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
     const rowHeight = (props?.rowHeight || 58) * get(fontScale);
+    DEV_LOG && console.log('showPopoverMenu', props?.maxHeight, rowHeight, rowHeight * options.length);
     const result: T = await showPopover({
         backgroundColor: colorSurfaceContainer,
         view: OptionSelect,
@@ -159,6 +161,7 @@ export async function showPopoverMenu<T = any>({
             height: Math.min(rowHeight * options.length, props?.maxHeight || 400),
             width: 200 * get(fontScale),
             options,
+            onLongPress,
             onClose: async (item) => {
                 if (closeOnClose) {
                     if (__IOS__) {

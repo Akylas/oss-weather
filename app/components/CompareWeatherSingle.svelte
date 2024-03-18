@@ -302,7 +302,7 @@
             {#if !networkConnected}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if currentItem}
-                <CompareLineChart handleAllCharts={true} item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'hidden' : 'visible'} />
+                <CompareLineChart item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'hidden' : 'visible'} />
                 <CompareWeatherIcons item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'visible' : 'hidden'} />
             {:else}
                 <mdbutton horizontalAlignment="center" row={1} text={lc('select_data')} variant="text" verticalAlignment="middle" on:tap={toggleRightDrawer} />

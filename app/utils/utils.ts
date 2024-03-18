@@ -29,8 +29,9 @@ export async function pickDate(currentDate: Dayjs) {
     }
 }
 
-const BRA_BOUNDS = [-1.604004,41.228249,9.667969,46.521076];
+const BRA_BOUNDS = [-4.855957, 41.310824, 9.645996, 51.124213];
 export function isBRABounds(location: FavoriteLocation) {
     const coords = location.coord;
+    DEV_LOG && console.log('isBRABounds', coords);
     return coords.lon >= BRA_BOUNDS[0] && coords.lon <= BRA_BOUNDS[2] && coords.lat >= BRA_BOUNDS[1] && coords.lat <= BRA_BOUNDS[3];
 }

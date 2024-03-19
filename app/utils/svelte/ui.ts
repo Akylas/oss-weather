@@ -1,7 +1,10 @@
+import { throttle } from '@akylas/nativescript/utils/common';
+import { Frame, Observable, View } from '@nativescript/core';
 import { onDestroy } from 'svelte';
+import { closeModal as sCloseModal, goBack as sGoBack, navigate as sNavigate, showModal as sShowModal } from 'svelte-native';
+import { BackNavigationOptions, NavigationOptions, ShowModalOptions } from 'svelte-native/dom';
 import { asSvelteTransition, easings } from 'svelte-native/transitions';
 import { get_current_component } from 'svelte/internal';
-import { Application, Color, Observable, Screen, Utils } from '@nativescript/core';
 
 export const globalObservable = new Observable();
 
@@ -80,4 +83,27 @@ export function createEventDispatcher<T>() {
         }
         return true;
     };
+}
+export function goBack(options?: BackNavigationOptions) {
+    const frame = Frame.topmost();
+    // this means the frame is animating
+    // doing goBack would mean boing back up 2 levels because
+    // the animating context is not yet in the backStack
+    if (frame['_executingContext']) {
+        return;
+    }
+    return sGoBack(options);
+}
+type NavigateFunc = <T>(options: NavigationOptions<T>) => SvelteComponent<T>;
+const throttledSNavigate = throttle(sNavigate, 500) as NavigateFunc;
+export function navigate<T>(options: NavigationOptions<T>) {
+    return throttledSNavigate<T>(options);
+}
+
+export function closeModal(result: any, parent?: View) {
+    return sCloseModal(result, parent);
+}
+
+export function showModal<T, U>(modalOptions: ShowModalOptions<U>): Promise<T> {
+    return sShowModal(modalOptions);
 }

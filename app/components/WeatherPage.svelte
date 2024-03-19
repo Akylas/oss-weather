@@ -12,7 +12,6 @@
     import { openFile, openUrl, throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
-    import { navigate, showModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -27,7 +26,7 @@
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
-    import { globalObservable } from '~/utils/svelte/ui';
+    import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
     import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { WeatherData } from '~/services/providers/weather';

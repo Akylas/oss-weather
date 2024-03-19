@@ -1,6 +1,6 @@
 // (com as any).tns.Runtime.getCurrentRuntime().enableVerboseLogging();
 // we need to use lat lon
-import { install as installGestures } from '@nativescript-community/gesturehandler';
+import { GestureRootView, install as installGestures } from '@nativescript-community/gesturehandler';
 import { setGeoLocationKeys } from '@nativescript-community/gps';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
@@ -10,7 +10,7 @@ import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, ScrollView, TraceErrorHandler } from '@nativescript/core';
+import { Application, Frame, NavigatedData, Page, ScrollView, TraceErrorHandler } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
@@ -88,18 +88,29 @@ try {
         }
     });
 
-    const errorHandler: TraceErrorHandler = {
-        handlerError(err) {
-            console.error('handlerError', err, err.stack);
-            // Option 1 (development) - throw the error
-            throw err;
-
-            // Option 2 (development) - logging the error via write method provided from trace module
-
-            // (production) - custom functionality for error handling
-            // reportToAnalytics(err)
-        }
-    };
+    if (!PRODUCTION && DEV_LOG) {
+        Page.on('navigatingTo', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'to', event.object, event.isBackNavigation);
+        });
+        Page.on('showingModally', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'MODAL', event.object, event.isBackNavigation);
+        });
+        Frame.on('showingModally', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'MODAL', event.object, event.isBackNavigation);
+        });
+        Frame.on('closingModally', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'CLOSING MODAL', event.object, event.isBackNavigation);
+        });
+        Page.on('closingModally', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'CLOSING MODAL', event.object, event.isBackNavigation);
+        });
+        GestureRootView.on('shownInBottomSheet', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'BOTTOMSHEET', event.object, event.isBackNavigation);
+        });
+        GestureRootView.on('closedBottomSheet', (event: NavigatedData) => {
+            DEV_LOG && console.info('NAVIGATION', 'CLOSING BOTTOMSHEET', event.object, event.isBackNavigation);
+        });
+    }
 
     svelteNative(WeatherPage, {});
 } catch (error) {

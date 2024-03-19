@@ -1,1 +1,6 @@
-{}
+{
+    "about": "A proposito de",
+    "animations": "Animationes",
+    "api_key": "Clave API",
+    "api_key_required": "Clave API requirite"
+}

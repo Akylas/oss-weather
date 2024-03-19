@@ -241,35 +241,35 @@ export class OMProvider extends WeatherProvider {
 
             const hasNext = index < hourlyLastIndex;
 
-            if (hasNext) {
-                const precipitation_probability = this.getDataArray(hourly, 'precipitation_probability', model);
-                if (precipitation_probability) {
-                    d.precipProbability = precipitation_probability[index + 1] || -1;
-                }
-                const snowfall = this.getDataArray(hourly, 'snowfall', model);
-                if (snowfall) {
-                    //we want it in mm
-                    d.snowfall = (snowfall[index + 1] || 0) * 10;
-                }
-                const rain = this.getDataArray(hourly, 'rain', model);
-                const showers = this.getDataArray(hourly, 'showers', model);
-                if (rain) {
-                    d.rain = (rain[index + 1] || 0) + (showers?.[index + 1] || 0);
-                }
-
-                d.precipAccumulation = d.rain + d.snowfall / 7;
-                // const precipitation = this.getDataArray(hourly, 'precipitation', model);
-                // if (hasNext && precipitation) {
-                //     d.precipAccumulation = precipitation[index + 1] ?? 0;
-                // }
+            // if (hasNext) {
+            const precipitation_probability = this.getDataArray(hourly, 'precipitation_probability', model);
+            if (precipitation_probability) {
+                d.precipProbability = precipitation_probability[index] || -1;
             }
+            const snowfall = this.getDataArray(hourly, 'snowfall', model);
+            if (snowfall) {
+                //we want it in mm
+                d.snowfall = (snowfall[index] || 0) * 10;
+            }
+            const rain = this.getDataArray(hourly, 'rain', model);
+            const showers = this.getDataArray(hourly, 'showers', model);
+            if (rain) {
+                d.rain = (rain[index] || 0) + (showers?.[index] || 0);
+            }
+
+            d.precipAccumulation = d.rain + d.snowfall / 7;
+            // const precipitation = this.getDataArray(hourly, 'precipitation', model);
+            // if (hasNext && precipitation) {
+            //     d.precipAccumulation = precipitation[index + 1] ?? 0;
+            // }
+            // }
 
             d.cloudCover = this.getDataArray(hourly, 'cloudcover', model)[index];
             d.windSpeed = this.getDataArray(hourly, 'windspeed_10m', model)[index];
 
             const windgusts_10m = this.getDataArray(hourly, 'windgusts_10m', model);
-            if (hasNext && windgusts_10m) {
-                d.windGust = windgusts_10m[index + 1];
+            if (windgusts_10m) {
+                d.windGust = windgusts_10m[index];
             }
             const snow_depth = this.getDataArray(hourly, 'snow_depth', model);
             if (snow_depth) {
@@ -293,10 +293,10 @@ export class OMProvider extends WeatherProvider {
                   const d = {} as MinutelyData;
                   d.time = time * 1000;
                   // for now we only handle precipitation
-                  if (hasNext) {
-                      const precipitation = minutelyPrecipitation[index + 1] || -1;
-                      d.intensity = precipitation >= 1.5 ? 3 : precipitation >= 0.7 ? 2 : precipitation > 0 ? 1 : 0;
-                  }
+                  //   if (hasNext) {
+                  const precipitation = minutelyPrecipitation[index] || -1;
+                  d.intensity = precipitation >= 1.5 ? 3 : precipitation >= 0.7 ? 2 : precipitation > 0 ? 1 : 0;
+                  //   }
                   return d;
               })
             : undefined;

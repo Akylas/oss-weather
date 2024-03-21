@@ -1,27 +1,26 @@
 <script context="module" lang="ts">
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
-    import { pickFolder } from '@nativescript-community/ui-document-picker';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { prompt } from '@nativescript-community/ui-material-dialogs';
-    import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
-    import { ApplicationSettings, ContentView, ObservableArray, Page, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { ApplicationSettings, ObservableArray, Page, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode, navigate } from 'svelte-native/dom';
+    import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import { MIN_UV_INDEX, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
+    import { iconService } from '~/services/icon';
     import { OM_MODELS } from '~/services/providers/om';
     import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
+    import { navigate } from '~/utils/svelte/ui';
     import { hideLoading, openLink, showAlertOptionSelect } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, navigationBarHeight } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
-    import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { iconService } from '~/services/icon';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>

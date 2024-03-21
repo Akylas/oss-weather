@@ -1,0 +1,6 @@
+### Bug fixes
+- OpenMeteo precipitation were decaled in hourly forecast
+- possible crash in hourly
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Interlingua)
+- Translated using Weblate (Hindi)

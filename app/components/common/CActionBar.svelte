@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Frame } from '@nativescript/core/ui/frame';
     import { onMount } from 'svelte';
-    import { closeModal, goBack } from 'svelte-native';
+    import { closeModal, goBack } from '~/utils/svelte/ui';
     import { conditionalEvent } from '~/utils/svelte/ui';
     import { fontScale } from '~/variables';
 

@@ -85,6 +85,7 @@
     "heavy_snow": "大雪",
     "heavy_snow_shower": "强阵雪",
     "icon_pack": "图标包",
+    "icons_settings": "图标与动画设置",
     "imperial_units": "英制单位（°F、mPh、……）",
     "import_settings": "导入设置",
     "import_settings_desc": "从先前的备份中导入所有设置",
@@ -114,6 +115,7 @@
     "metric_temp_decimal": "公制温度下显示小数",
     "min_uv_index": "不显示小于此数值的紫外线指数",
     "missing_location_perm": "未授予定位权限",
+    "models": "模型",
     "moon": "月相",
     "mostly_clear": "大部晴朗",
     "my_location": "我的位置",
@@ -138,7 +140,7 @@
     "provider": {
         "meteofrance": "Méteo France",
         "openmeteo": "Open-Meteo",
-        "openweathermap": "OpenWeatherMap",
+        "openweathermap": "OpenWeather",
         "title": "数据提供方"
     },
     "providers": "数据来源",

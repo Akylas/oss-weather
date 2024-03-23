@@ -2,5 +2,25 @@
     "about": "A proposito de",
     "animations": "Animationes",
     "api_key": "Clave API",
-    "api_key_required": "Clave API requirite"
+    "api_key_required": "Clave API requirite",
+    "cancel": "Cancellar",
+    "clear": "Rader",
+    "clock_24": "Usar le formato 24 horas",
+    "close": "Clauder",
+    "description": "Description",
+    "description_required": "Un description es requirite",
+    "email": "E-mail",
+    "email_required": "Un adresse de e-mail valide es requirite",
+    "english": "Anglese",
+    "error": "Error",
+    "espagnol": "Espaniol",
+    "export_settings": "parametros de exportation",
+    "favorites": "Favoritos",
+    "file": "File",
+    "font_scale": "Scala del typo de litteras",
+    "gps_location": "Trovar le position GPS",
+    "settings": {
+        "title": "Parametros"
+    },
+    "share_application": "Compartir le app"
 }

@@ -286,7 +286,7 @@
     }
 </script>
 
-<page bind:this={page} actionBarHidden={true} screenOrientation="landscape" on:navigatedTo={onNavigatedTo}>
+<page bind:this={page} id="comparesingle" actionBarHidden={true} screenOrientation="landscape" on:navigatedTo={onNavigatedTo}>
     <drawer
         bind:this={drawer}
         gestureHandlerOptions={{

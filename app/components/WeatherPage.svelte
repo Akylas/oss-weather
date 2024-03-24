@@ -11,7 +11,7 @@
     import { Application, ApplicationSettings } from '@nativescript/core';
     import { openFile, openUrl, throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -25,7 +25,7 @@
     import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { alert, showError } from '~/utils/error';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { actionBarButtonHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
+    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
     import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
     import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
@@ -116,7 +116,7 @@
                 vertPos: VerticalPosition.BELOW,
                 props: {
                     width: 220 * $systemFontScale,
-                    maxHeight: Screen.mainScreen.heightDIPs
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
                     // autoSizeListItem: true
                 },
                 onLongPress: async (item, event, close) => {
@@ -364,7 +364,13 @@
             showError(error);
         }
     }
+    function onOrientationChanged(event) {
+        page.nativeElement.checkStatusBarVisibility();
+    }
     onMount(async () => {
+        if (__IOS__) {
+            Application.on(Application.orientationChangedEvent, onOrientationChanged);
+        }
         if (provider === 'openweathermap') {
             if (!OWMProvider.hasOWMApiKey() && weatherLocation) {
                 // wait a bit
@@ -393,6 +399,11 @@
             items = prepareItems(weatherLocation, weatherData, lastUpdate);
         } else if (weatherLocation) {
             refreshWeather();
+        }
+    });
+    onDestroy(() => {
+        if (__IOS__) {
+            Application.off(Application.orientationChangedEvent, onOrientationChanged);
         }
     });
 

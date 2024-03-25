@@ -19,7 +19,7 @@
     "about_to_quit": "APIキーがないためアプリが終了しようとしています",
     "absolute_vigilance": "絶対的な警戒",
     "animations": "アニメーション",
-    "api_key": "apiキー",
+    "api_key": "APIキー",
     "api_key_required": "APIキーが必要です",
     "api_key_required_description": "OpenWeatherから気象データを取得するには、無料のAPIキーが必要です。 \nアプリケーションはデフォルトでAPIキーを配布しますが、無料プランを維持するには、各ユーザーが独自のAPIキーを作成する必要があります。\n\nこれを行うには、Webサイトでアカウントを作成してください。",
     "app": {
@@ -75,6 +75,7 @@
     "heavy_rain_shower": "どしゃ降り",
     "heavy_snow": "大雪",
     "heavy_snow_shower": "大雪のにわか雨",
+    "icon_pack": "アイコンパック",
     "imperial_units": "帝国単位（°F, mPh,...）",
     "ios": {
         "info": {

@@ -268,7 +268,7 @@ export class MFProvider extends WeatherProvider {
             url: `https://webservice.meteofrance.com/${apiName}`,
             method: 'GET',
             queryParams: {
-                language: lang,
+                lang,
                 formatDate: 'timestamp',
                 token: mfApiKey,
                 ...queryParams

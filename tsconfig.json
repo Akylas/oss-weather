@@ -30,6 +30,6 @@
         },
         "plugins": [{ "transform": "@nativescript/webpack/dist/transformers/NativeClass", "type": "raw" }]
     },
-    "include": ["app/**/*", "typings"],
+    "include": ["app/**/*", "typings/*.d.ts"],
     "exclude": ["node_modules", "platforms", "**/angular"]
 }

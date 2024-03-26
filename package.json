@@ -139,7 +139,6 @@
         ]
     },
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "@nativescript-community/systemui": "portal:../nativescript-systemui/packages/systemui"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     }
 }

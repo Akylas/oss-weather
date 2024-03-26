@@ -1,0 +1,7 @@
+### Bug fixes
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Chinese (Simplified))
+- Translated using Weblate (German)
+- Meteo-France not using current locale
+- Translated using Weblate (Japanese)
+- Translated using Weblate (Interlingua)

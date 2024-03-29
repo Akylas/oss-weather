@@ -94,6 +94,11 @@
                             icon: 'mdi-map',
                             id: 'map',
                             name: l('map')
+                        },
+                        {
+                            icon: 'mb',
+                            id: 'meteo_blue',
+                            name: 'meteoblue'
                         }
                     ]
                 );
@@ -175,6 +180,10 @@
                                     break;
                                 case 'gps_location':
                                     await getLocationAndWeather();
+                                    break;
+                                case 'meteo_blue':
+                                    const MeteoBlue = (await import('~/components/MeteoBlue.svelte')).default;
+                                    navigate({ page: MeteoBlue, props: { weatherLocation } });
                                     break;
                                 // case 'about':
                                 //     const About = require('~/components/About.svelte').default;
@@ -383,7 +392,6 @@
             }
         });
         networkService.start(); // should send connection event and then refresh
-        // networkConnected = networkService.connected;
 
         if (weatherData) {
             items = prepareItems(weatherLocation, weatherData, lastUpdate);

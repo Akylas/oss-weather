@@ -7,6 +7,7 @@
 /// <reference path="../node_modules/@nativescript/types-android/lib/android-32.d.ts" />
 /// <reference path="../node_modules/@nativescript/core/global-types.d.ts" />
 /// <reference path="../node_modules/@nativescript-community/ui-material-bottomsheet/bottomsheet.d.ts" />
+/// <reference path="../node_modules/@nativescript-community/https/typings/okhttp3.d.ts" />
 
 declare const SUPPORTED_LOCALES: string[];
 declare const DEFAULT_LOCALE: string;

@@ -7,6 +7,9 @@ import android.content.res.TypedArray;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.color.DynamicColors;
 import java.util.Locale;
+import android.util.Log;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 public class Utils {
     public static int getColorFromName(Context context, String name) {
@@ -45,6 +48,31 @@ public class Utils {
 
     public static Locale getSystemLocale() {
         return androidx.core.os.ConfigurationCompat.getLocales(android.content.res.Resources.getSystem().getConfiguration()).get(0);
+    }
+
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+    }
+    public static okhttp3.Interceptor getOfflineCacheInterceptor(Context context) {
+        return new okhttp3.Interceptor() {
+            @Override public okhttp3.Response intercept(okhttp3.Interceptor.Chain chain) throws java.io.IOException {
+                okhttp3.Request request = chain.request();
+                okhttp3.Response originalResponse = chain.proceed(chain.request());
+                Log.d("JS", "interceptor "+ Utils.isNetworkAvailable(context));
+                if (Utils.isNetworkAvailable(context)) {
+                    return originalResponse.newBuilder()
+                            .build();
+                } else {
+                    return originalResponse.newBuilder()
+                            .header("Cache-Control", "public, only-if-cached")
+                            .build();
+                }
+            }
+        };
     }
 
 }

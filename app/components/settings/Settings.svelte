@@ -41,7 +41,11 @@
         { icon: 'mdi-share-variant', id: 'share' },
         { icon: 'mdi-github', id: 'github' }
     ];
-    export let options: (page, updateItem) => any[] = null;
+    export let subSettingsOptions: string = null;
+    export let options: (page, updateImte) => any[] = null;
+    if (!options && subSettingsOptions) {
+        options = getSubSettings(subSettingsOptions);
+    }
 
     function getTitle(item) {
         switch (item.id) {
@@ -60,6 +64,211 @@
             storeSettings[k] = JSON.parse(ApplicationSettings.getString(k, defaultValue));
         }
         return storeSettings[k];
+    }
+    function getSubSettings(id: string) {
+        switch (id) {
+            case 'units':
+                return () => [
+                    {
+                        type: 'switch',
+                        id: 'imperial',
+                        title: lc('imperial_units'),
+                        value: $imperial
+                    },
+                    {
+                        type: 'switch',
+                        id: 'metric_temp_decimal',
+                        title: lc('metric_temp_decimal'),
+                        value: ApplicationSettings.getBoolean('metric_temp_decimal', false)
+                    }
+                ];
+            case 'icons':
+                return (page, updateItem) => [
+                    {
+                        type: 'switch',
+                        id: 'animations',
+                        title: lc('animations'),
+                        description: lc('animations_desc'),
+                        value: ApplicationSettings.getBoolean('animations', false)
+                    },
+                    {
+                        type: 'image',
+                        id: 'icon_pack',
+                        title: lc('icon_pack'),
+                        description: () => iconService.getPackName(),
+                        image: () => iconService.getPackIcon(),
+                        async onTap(item) {
+                            const themes = await iconService.getAvailableThemes();
+                            const component = (await import('~/components/common/OptionSelect.svelte')).default;
+                            const result = await showAlertOptionSelect(
+                                component,
+                                {
+                                    height: Math.min(themes.length * 56, 400),
+                                    rowHeight: 56,
+                                    options: themes.map((k) => ({
+                                        name: k.name,
+                                        data: k.id,
+                                        type: 'image',
+                                        image: k.icon
+                                    }))
+                                },
+                                {
+                                    title: lc('icon_pack')
+                                }
+                            );
+                            if (result?.data) {
+                                ApplicationSettings.setString('icon_set', result.data);
+                                updateItem(item, 'id');
+                            }
+                        }
+                    }
+                ];
+            case 'providers':
+                return () => [
+                    {
+                        key: 'provider',
+                        id: 'setting',
+                        valueType: 'string',
+                        description: () => lc('provider.' + getProviderType()),
+                        title: lc('provider.title'),
+                        currentValue: getProviderType,
+                        values: providers.map((t) => ({ value: t, title: lc(t) }))
+                    },
+                    {
+                        key: 'forecast_nb_days',
+                        id: 'setting',
+                        title: lc('forecast_nb_days'),
+                        values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
+                        rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
+                    },
+                    {
+                        key: 'forecast_nb_hours',
+                        id: 'setting',
+                        title: lc('forecast_nb_hours'),
+                        values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        currentValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST),
+                        rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
+                    },
+                    {
+                        key: 'forecast_nb_minutes',
+                        id: 'setting',
+                        title: lc('forecast_nb_minutes'),
+                        values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        currentValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST),
+                        rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
+                    },
+                    {
+                        type: 'sectionheader',
+                        title: lc('provider.openmeteo')
+                    },
+                    {
+                        key: 'open_meteo_prefered_model',
+                        id: 'setting',
+                        valueType: 'string',
+                        description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
+                        title: lc('open_meteo_prefered_model'),
+                        currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
+                        values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
+                    },
+                    {
+                        type: 'sectionheader',
+                        title: lc('provider.openweathermap')
+                    },
+                    {
+                        type: 'prompt',
+                        valueType: 'string',
+                        id: 'setting',
+                        key: 'owmApiKey',
+                        description: lc('api_key_required_description'),
+                        title: lc('owm_api_key')
+                    },
+                    {
+                        id: 'setting',
+                        valueType: 'string',
+                        key: 'owm_one_call_version',
+                        title: lc('owm_one_call_version'),
+                        values: [
+                            { value: '2.5', title: '2.5' },
+                            { value: '3.0', title: '3.0' }
+                        ],
+                        currentValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5'),
+                        rightValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5')
+                    }
+                ];
+            case 'weather_data':
+                return () => {
+                    const currentData = weatherDataService.currentWeatherData;
+                    const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => currentData.indexOf(d) === -1);
+                    return [
+                        {
+                            type: 'switch',
+                            id: 'feels_like_temperatures',
+                            title: lc('feels_like_temperatures'),
+                            value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
+                        },
+                        {
+                            key: 'min_uv_index',
+                            id: 'setting',
+                            title: lc('min_uv_index'),
+                            values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
+                            currentValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX),
+                            rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
+                        },
+                        {
+                            type: 'sectionheader',
+                            id: 'enabled',
+                            title: lc('enabled_weather_data')
+                        }
+                    ]
+                        .concat(
+                            currentData.map((k) => ({
+                                id: k,
+                                reorder: true,
+                                type: 'reorder',
+                                title: getWeatherDataTitle(k)
+                            })) as any
+                        )
+                        .concat([
+                            {
+                                type: 'sectionheader',
+                                id: 'disabled',
+                                reorder: true,
+                                title: lc('disabled_weather_data')
+                            }
+                        ] as any)
+                        .concat(
+                            disabledData.map((k) => ({
+                                id: k,
+                                reorder: true,
+                                type: 'reorder',
+                                title: getWeatherDataTitle(k)
+                            })) as any
+                        );
+                };
+            case 'map':
+                return () => [
+                    {
+                        key: 'weather_map_colors',
+                        id: 'setting',
+                        title: lc('weather_map_colors'),
+                        currentValue: () => ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS),
+                        values: WEATHER_MAP_COLOR_SCHEMES,
+                        description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
+                    }
+                ];
+            case 'geolocation':
+                return () => [
+                    {
+                        type: 'switch',
+                        id: 'refresh_location_on_pull',
+                        title: lc('refresh_location_on_pull'),
+                        value: ApplicationSettings.getBoolean('refresh_location_on_pull', false)
+                    }
+                ];
+            default:
+                break;
+        }
     }
     function refresh() {
         const newItems: any[] =
@@ -94,6 +303,11 @@
                     id: 'clock_24',
                     title: lc('clock_24'),
                     value: clock_24
+                },
+                {
+                    icon: 'mdi-format-size',
+                    id: 'font_scale',
+                    title: lc('font_scale')
                 }
             ]
                 .concat([
@@ -102,48 +316,7 @@
                         title: lc('icons'),
                         description: lc('icons_settings'),
                         icon: 'mdi-weather-partly-cloudy',
-                        options(page, updateItem) {
-                            return [
-                                {
-                                    type: 'switch',
-                                    id: 'animations',
-                                    title: lc('animations'),
-                                    description: lc('animations_desc'),
-                                    value: ApplicationSettings.getBoolean('animations', false)
-                                },
-                                {
-                                    type: 'image',
-                                    id: 'icon_pack',
-                                    title: lc('icon_pack'),
-                                    description: () => iconService.getPackName(),
-                                    image: () => iconService.getPackIcon(),
-                                    async onTap(item) {
-                                        const themes = await iconService.getAvailableThemes();
-                                        const component = (await import('~/components/common/OptionSelect.svelte')).default;
-                                        const result = await showAlertOptionSelect(
-                                            component,
-                                            {
-                                                height: Math.min(themes.length * 56, 400),
-                                                rowHeight: 56,
-                                                options: themes.map((k) => ({
-                                                    name: k.name,
-                                                    data: k.id,
-                                                    type: 'image',
-                                                    image: k.icon
-                                                }))
-                                            },
-                                            {
-                                                title: lc('icon_pack')
-                                            }
-                                        );
-                                        if (result?.data) {
-                                            ApplicationSettings.setString('icon_set', result.data);
-                                            updateItem(item, 'id');
-                                        }
-                                    }
-                                }
-                            ];
-                        }
+                        options: getSubSettings('icons')
                     }
                 ] as any)
                 .concat([
@@ -152,20 +325,7 @@
                         title: lc('units'),
                         description: lc('units_settings'),
                         icon: 'mdi-temperature-celsius',
-                        options: () => [
-                            {
-                                type: 'switch',
-                                id: 'imperial',
-                                title: lc('imperial_units'),
-                                value: $imperial
-                            },
-                            {
-                                type: 'switch',
-                                id: 'metric_temp_decimal',
-                                title: lc('metric_temp_decimal'),
-                                value: ApplicationSettings.getBoolean('metric_temp_decimal', false)
-                            }
-                        ]
+                        options: getSubSettings('units')
                     }
                 ] as any)
                 .concat([
@@ -174,78 +334,7 @@
                         title: lc('providers'),
                         description: lc('providers_settings'),
                         icon: 'mdi-cloud-circle',
-                        options: () => [
-                            {
-                                key: 'provider',
-                                id: 'setting',
-                                valueType: 'string',
-                                description: () => lc('provider.' + getProviderType()),
-                                title: lc('provider.title'),
-                                currentValue: getProviderType,
-                                values: providers.map((t) => ({ value: t, title: lc(t) }))
-                            },
-                            {
-                                key: 'forecast_nb_days',
-                                id: 'setting',
-                                title: lc('forecast_nb_days'),
-                                values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
-                                currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
-                                rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
-                            },
-                            {
-                                key: 'forecast_nb_hours',
-                                id: 'setting',
-                                title: lc('forecast_nb_hours'),
-                                values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
-                                currentValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST),
-                                rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
-                            },
-                            {
-                                key: 'forecast_nb_minutes',
-                                id: 'setting',
-                                title: lc('forecast_nb_minutes'),
-                                values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
-                                currentValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST),
-                                rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
-                            },
-                            {
-                                type: 'sectionheader',
-                                title: lc('provider.openmeteo')
-                            },
-                            {
-                                key: 'open_meteo_prefered_model',
-                                id: 'setting',
-                                valueType: 'string',
-                                description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
-                                title: lc('open_meteo_prefered_model'),
-                                currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
-                                values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
-                            },
-                            {
-                                type: 'sectionheader',
-                                title: lc('provider.openweathermap')
-                            },
-                            {
-                                type: 'prompt',
-                                valueType: 'string',
-                                id: 'setting',
-                                key: 'owmApiKey',
-                                description: lc('api_key_required_description'),
-                                title: lc('owm_api_key')
-                            },
-                            {
-                                id: 'setting',
-                                valueType: 'string',
-                                key: 'owm_one_call_version',
-                                title: lc('owm_one_call_version'),
-                                values: [
-                                    { value: '2.5', title: '2.5' },
-                                    { value: '3.0', title: '3.0' }
-                                ],
-                                currentValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5'),
-                                rightValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5')
-                            }
-                        ]
+                        options: getSubSettings('providers')
                     }
                 ] as any)
                 .concat([
@@ -256,55 +345,7 @@
                         reorderEnabled: true,
                         onReordered: () => {},
                         icon: 'mdi-gauge',
-                        options: () => {
-                            const currentData = weatherDataService.currentWeatherData;
-                            const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => currentData.indexOf(d) === -1);
-                            return [
-                                {
-                                    type: 'switch',
-                                    id: 'feels_like_temperatures',
-                                    title: lc('feels_like_temperatures'),
-                                    value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
-                                },
-                                {
-                                    key: 'min_uv_index',
-                                    id: 'setting',
-                                    title: lc('min_uv_index'),
-                                    values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
-                                    currentValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX),
-                                    rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
-                                },
-                                {
-                                    type: 'sectionheader',
-                                    id: 'enabled',
-                                    title: lc('enabled_weather_data')
-                                }
-                            ]
-                                .concat(
-                                    currentData.map((k) => ({
-                                        id: k,
-                                        reorder: true,
-                                        type: 'reorder',
-                                        title: getWeatherDataTitle(k)
-                                    })) as any
-                                )
-                                .concat([
-                                    {
-                                        type: 'sectionheader',
-                                        id: 'disabled',
-                                        reorder: true,
-                                        title: lc('disabled_weather_data')
-                                    }
-                                ] as any)
-                                .concat(
-                                    disabledData.map((k) => ({
-                                        id: k,
-                                        reorder: true,
-                                        type: 'reorder',
-                                        title: getWeatherDataTitle(k)
-                                    })) as any
-                                );
-                        }
+                        options: getSubSettings('weather_data')
                     }
                 ] as any)
                 .concat([
@@ -313,16 +354,7 @@
                         title: lc('map'),
                         description: lc('map_settings'),
                         icon: 'mdi-map',
-                        options: () => [
-                            {
-                                key: 'weather_map_colors',
-                                id: 'setting',
-                                title: lc('weather_map_colors'),
-                                currentValue: () => ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS),
-                                values: WEATHER_MAP_COLOR_SCHEMES,
-                                description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
-                            }
-                        ]
+                        options: getSubSettings('map')
                     }
                 ] as any)
                 .concat([
@@ -331,14 +363,7 @@
                         title: lc('geolocation'),
                         description: lc('geolocation_settings'),
                         icon: 'mdi-map-marker-circle',
-                        options: () => [
-                            {
-                                type: 'switch',
-                                id: 'refresh_location_on_pull',
-                                title: lc('refresh_location_on_pull'),
-                                value: ApplicationSettings.getBoolean('refresh_location_on_pull', false)
-                            }
-                        ]
+                        options: getSubSettings('geolocation')
                     }
                 ] as any)
                 .concat([
@@ -409,6 +434,12 @@
         }
     }
     let checkboxTapTimer;
+    function clearCheckboxTimer() {
+        if (checkboxTapTimer) {
+            clearTimeout(checkboxTapTimer);
+            checkboxTapTimer = null;
+        }
+    }
     async function onRightIconTap(item, event) {
         try {
             const needsUpdate = await item.onRightIconTap?.(item, event);
@@ -424,6 +455,7 @@
             if (item.type === 'checkbox' || item.type === 'switch') {
                 // we dont want duplicate events so let s timeout and see if we clicking diretly on the checkbox
                 const checkboxView: CheckBox = ((event.object as View).parent as View).getViewById('checkbox');
+                clearCheckboxTimer();
                 checkboxTapTimer = setTimeout(() => {
                     checkboxView.checked = !checkboxView.checked;
                 }, 10);
@@ -444,6 +476,10 @@
 
                     break;
                 }
+                case 'font_scale':
+                    const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
+                    navigate({ page: FontSizeSettingScreen });
+                    break;
                 case 'github':
                     openLink(GIT_URL);
                     break;
@@ -557,7 +593,7 @@
 
     function selectTemplate(item, index, items) {
         if (item.type) {
-            if (item.type === 'prompt') {
+            if (item.type === 'prompt' || item.type === 'slider') {
                 return 'default';
             }
             return item.type;
@@ -568,18 +604,17 @@
         return 'default';
     }
 
+    let ignoreNextOnCheckBoxChange = false;
     async function onCheckBox(item, event) {
-        if (item.value === event.value) {
+        if (ignoreNextOnCheckBoxChange || item.value === event.value) {
             return;
         }
         const value = event.value;
         item.value = value;
-        if (checkboxTapTimer) {
-            clearTimeout(checkboxTapTimer);
-            checkboxTapTimer = null;
-        }
+        clearCheckboxTimer();
         DEV_LOG && console.log('onCheckBox', item.id, value);
         try {
+            ignoreNextOnCheckBoxChange = true;
             switch (item.id) {
                 default:
                     DEV_LOG && console.log('updating setting for checkbox', item.id, item.key, value);
@@ -588,6 +623,8 @@
             }
         } catch (error) {
             showError(error);
+        } finally {
+            ignoreNextOnCheckBoxChange = false;
         }
     }
     function refreshCollectionView() {

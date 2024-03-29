@@ -70,11 +70,6 @@
                     icon: 'mdi-cogs',
                     id: 'preferences',
                     name: l('preferences')
-                },
-                {
-                    icon: 'mdi-format-size',
-                    id: 'font-scale',
-                    name: lc('font_scale')
                 }
                 // {
                 //     icon: 'mdi-information-outline',
@@ -185,11 +180,6 @@
                                 //     const About = require('~/components/About.svelte').default;
                                 //     navigate({ page: About });
                                 //     break;
-
-                                case 'font-scale':
-                                    const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
-                                    navigate({ page: FontSizeSettingScreen });
-                                    break;
                                 case 'bra':
                                     const franceGeoJSON = JSON.parse(
                                         await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()

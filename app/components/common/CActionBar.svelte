@@ -3,9 +3,10 @@
     import { onMount } from 'svelte';
     import { closeModal, goBack } from '~/utils/svelte/ui';
     import { conditionalEvent } from '~/utils/svelte/ui';
-    import { fontScale } from '~/variables';
+    import { actionBarHeight, fontScale } from '~/variables';
 
-    export let title: string;
+    export let title: string = null;
+    export let height = $actionBarHeight;
     export let showMenuIcon: boolean = false;
     export let canGoBack: boolean = false;
     export let modalWindow: boolean = false;
@@ -44,9 +45,10 @@
     }
     $: menuIconVisible = ((canGoBack || modalWindow) && !disableBackButton) || showMenuIcon;
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapse';
+    DEV_LOG && console.log('height', height);
 </script>
 
-<gridlayout class="actionBar" columns="auto,*,auto" paddingLeft={5} paddingRight={5} rows="*" on:swipe {...$$restProps}>
+<gridlayout class="actionBar" columns="auto,*,auto" rows={`${height},auto`} on:swipe {...$$restProps} on:tap={() => {}}>
     <label
         id="actionBarTitle"
         class="actionBarTitle"
@@ -58,12 +60,18 @@
         text={title || ''}
         textAlignment="left"
         verticalTextAlignment="center"
-        visibility={!!title ? 'visible' : 'hidden'} />
-    <stacklayout col={0} orientation="horizontal">
+        visibility={!!title ? 'visible' : 'hidden'}
+        {...$$restProps?.titleProps}>
+        <slot name="subtitle" />
+        <slot name="subtitle2" />
+    </label>
+    <slot name="center" />
+    <stacklayout orientation="horizontal">
         <mdbutton class="actionBarButton" text={menuIcon} variant="text" visibility={menuIconVisibility} on:tap={onMenuIconBtn} />
         <slot name="left" />
     </stacklayout>
     <stacklayout col={2} orientation="horizontal">
         <slot />
     </stacklayout>
+    <slot name="bottom" row={1} />
 </gridlayout>

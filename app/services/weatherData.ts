@@ -114,6 +114,7 @@ const ICONS_SIZE_FACTOR = {
 
 export interface CommonData {
     color?: string | Color;
+    textColor?: string | Color;
     paint?: Paint;
     iconFontSize?: number;
     icon?: string;
@@ -243,7 +244,8 @@ export class DataService extends Observable {
                     return {
                         iconFontSize,
                         paint: wiPaint,
-                        color: item.windGust > 80 ? '#ff0353' : '#FFBC03',
+                        color: item.windGust > 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
+                        textColor: item.windGust > 80 ? '#ffffff' : item.windGust > 50 ? '#222' : '#FFBC03',
                         icon,
                         value: data[0],
                         subvalue: data[1]

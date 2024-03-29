@@ -18,6 +18,7 @@
     "about": "About",
     "about_to_quit": "The app is closing because it is missing an API key",
     "absolute_vigilance": "Absolute vigilance",
+    "all_in_one": "all in one",
     "animations": "Animations",
     "animations_desc": "animated if the icon set supports it",
     "api_key": "API key",
@@ -118,6 +119,7 @@
     "map": "Map",
     "map_settings": "map settings",
     "medium": "Moderate",
+    "meteogram": "meteogram",
     "metric_temp_decimal": "use decimal for metric temperature",
     "min_uv_index": "UV index below won't be shown",
     "missing_location_perm": "Location permission missing",
@@ -177,6 +179,7 @@
     "settings": {
         "title": "Settings"
     },
+    "seven_days": "7 days",
     "share_application": "Share the app",
     "show_love": "if you enjoy the project, you can show some love or even contribute!",
     "snow": "Snow",

@@ -172,7 +172,7 @@
                                     navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
                                     break;
                                 case 'compare':
-                                    const CompareWeather = (await import('~/components/CompareWeatherSingle.svelte')).default;
+                                    const CompareWeather = (await import('~/components/compare/CompareWeatherSingle.svelte')).default;
                                     navigate({ page: CompareWeather, props: { weatherLocation } });
                                     break;
                                 case 'refresh':

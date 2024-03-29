@@ -143,9 +143,10 @@ class NetworkService extends Observable {
             memorySize: 10 * 1024 * 1024
         });
         if (__ANDROID__) {
-            //@ts-ignore
             try {
+                //@ts-ignore
                 https.addInterceptor(com.nativescript.https.CacheInterceptor.INTERCEPTOR);
+                //@ts-ignore
                 https.addNetworkInterceptor(com.nativescript.https.CacheInterceptor.INTERCEPTOR);
             } catch (error) {
                 console.error(error);

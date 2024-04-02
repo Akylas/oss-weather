@@ -18,6 +18,7 @@
     "about": "Hakkında",
     "about_to_quit": "Uygulama API anahtarı olmadığı için kapanmak üzere",
     "absolute_vigilance": "Mutlak dikkat",
+    "all_in_one": "hepsi bir arada",
     "animations": "Animasyonlar",
     "animations_desc": "simge seti destekliyorsa canlandırılır",
     "api_key": "API anahtarı",
@@ -118,6 +119,7 @@
     "map": "Harita",
     "map_settings": "harita ayarları",
     "medium": "Ilıman",
+    "meteogram": "meteogram",
     "metric_temp_decimal": "metrik sıcaklık için ondalık sayıyı kullanın",
     "min_uv_index": "Altındaki UV göstergesi gösterilmeyecek",
     "missing_location_perm": "Konum izni yok",
@@ -177,6 +179,7 @@
     "settings": {
         "title": "Ayarlar"
     },
+    "seven_days": "7 gün",
     "share_application": "Uygulamayı paylaş",
     "show_love": "Eğer proje hoşunuza giderse, biraz sevgi gösterebilir, hatta katkıda bulunabilirsiniz!",
     "snow": "Kar",

@@ -51,6 +51,7 @@
         "@nativescript-community/ui-collectionview-swipemenu": "5.3.30",
         "@nativescript-community/ui-document-picker": "^1.1.17",
         "@nativescript-community/ui-drawer": "0.1.27",
+        "@nativescript-community/ui-image": "4.3.39",
         "@nativescript-community/ui-label": "1.3.26",
         "@nativescript-community/ui-lottie": "5.0.11",
         "@nativescript-community/ui-material-activityindicator": "7.2.47",
@@ -64,6 +65,7 @@
         "@nativescript-community/ui-popover": "0.1.16",
         "@nativescript-community/ui-pulltorefresh": "2.5.3",
         "@nativescript-community/ui-share-file": "^1.3.3",
+        "@nativescript-community/ui-zoomimage": "4.3.39",
         "@nativescript/detox": "^1.0.1",
         "@nativescript/iqkeyboardmanager": "2.1.1",
         "dayjs": "1.11.10",
@@ -134,7 +136,6 @@
         ]
     },
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "@nativescript-community/systemui": "portal:../nativescript-systemui/packages/systemui"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     }
 }

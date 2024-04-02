@@ -12,8 +12,8 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 21
-    versionCode 106
-    versionName "1.12.4"
+    versionCode 107
+    versionName "1.12.5"
 
     // if (project.hasProperty('resConfigs')) {
     //   def resConfigs = project.findProperty('resConfigs')
@@ -169,7 +169,7 @@ configurations {
 }
 
 dependencies {
-    implementation 'androidx.core:core-splashscreen:1.0.1'
+    implementation 'androidx.core:core-splashscreen:1.1.0-alpha02'
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10") {
             because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")

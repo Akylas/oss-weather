@@ -18,6 +18,7 @@
     "about": "Acerca de",
     "about_to_quit": "La aplicación se cierra porque le falta una clave API",
     "absolute_vigilance": "Una vigilancia absoluta",
+    "all_in_one": "Todo en uno",
     "animations": "Animaciones",
     "animations_desc": "Animaciones si los iconos lo permiten",
     "api_key": "Clave de la API",
@@ -118,6 +119,7 @@
     "map": "Mapa",
     "map_settings": "ajustes del mapa",
     "medium": "Moderado",
+    "meteogram": "meteorograma",
     "metric_temp_decimal": "utilizar decimales para la temperatura métrica",
     "min_uv_index": "El índice UV inferior no se mostrará",
     "missing_location_perm": "Falta el permiso de ubicación",
@@ -177,6 +179,7 @@
     "settings": {
         "title": "Ajustes"
     },
+    "seven_days": "Una semana",
     "share_application": "Compartir la aplicación",
     "show_love": "si te gusta el proyecto, ¡puedes darle me gusta o incluso contribuir!",
     "snow": "Nieve",

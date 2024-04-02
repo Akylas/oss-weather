@@ -17,6 +17,7 @@ import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { startSentry } from '~/utils/sentry';
 import { NestedScrollView } from './NestedScrollView';
+import { initialize } from '@nativescript-community/ui-image';
 
 try {
     startSentry();
@@ -26,6 +27,7 @@ try {
     installMixins();
     installUIMixins();
     installBottomSheets();
+    initialize({ isDownsampleEnabled: true });
 
     registerElement('Frame', () => new FrameElement());
     registerElement('Page', () => new PageElement());
@@ -57,6 +59,7 @@ try {
     registerNativeViewElement('cspan', () => require('@nativescript-community/ui-canvaslabel').Span);
     registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
     registerNativeViewElement('checkbox', () => require('@nativescript-community/ui-checkbox').CheckBox);
+    registerNativeViewElement('zoomimage', () => require('@nativescript-community/ui-zoomimage').ZoomImg);
     DrawerElement.register();
     CollectionViewElement.register();
     SwipeMenuElement.register();

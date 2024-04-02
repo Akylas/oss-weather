@@ -11,35 +11,27 @@ import { showError } from './error';
 import { Label } from '@nativescript-community/ui-label';
 
 export async function openLink(url) {
-    try {
-        const { colorPrimary } = get(colors);
-        const available = await InAppBrowser.isAvailable();
-        if (available) {
-            return InAppBrowser.open(url, {
-                // iOS Properties
-                dismissButtonStyle: 'close',
-                preferredBarTintColor: colorPrimary,
-                preferredControlTintColor: 'white',
-                readerMode: false,
-                animated: true,
-                enableBarCollapsing: true,
-                // Android Properties
-                showTitle: true,
-                toolbarColor: colorPrimary,
-                secondaryToolbarColor: 'white',
-                enableUrlBarHiding: true,
-                enableDefaultShare: true,
-                forceCloseOnRedirection: false
-            });
-        } else {
-            Utils.openUrl(url);
-        }
-    } catch (error) {
-        alert({
-            title: 'Error',
-            message: error.message,
-            okButtonText: 'Ok'
+    const { colorPrimary } = get(colors);
+    const available = await InAppBrowser.isAvailable();
+    if (available) {
+        return InAppBrowser.open(url, {
+            // iOS Properties
+            dismissButtonStyle: 'close',
+            preferredBarTintColor: colorPrimary,
+            preferredControlTintColor: 'white',
+            readerMode: false,
+            animated: true,
+            enableBarCollapsing: true,
+            // Android Properties
+            showTitle: true,
+            toolbarColor: colorPrimary,
+            secondaryToolbarColor: 'white',
+            enableUrlBarHiding: true,
+            enableDefaultShare: true,
+            forceCloseOnRedirection: false
         });
+    } else {
+        Utils.openUrl(url);
     }
 }
 

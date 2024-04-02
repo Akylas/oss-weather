@@ -1,7 +1,7 @@
 import { getFromLocation } from '@nativescript-community/geocoding';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
-import { Application, ApplicationEventData } from '@nativescript/core';
+import { Application, ApplicationEventData, Folder, Utils, knownFolders } from '@nativescript/core';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
@@ -25,6 +25,8 @@ export interface NetworkConnectionStateEventData extends EventData {
 }
 
 export interface HttpRequestOptions extends HTTPSOptions {
+    noJSON?: boolean;
+    offlineSupport?: boolean;
     queryParams?: {};
 }
 
@@ -131,6 +133,25 @@ class NetworkService extends Observable {
         Application.on(Application.foregroundEvent, this.onAppResume, this);
         startMonitoring(this.onConnectionStateChange.bind(this));
         this.connectionType = getConnectionType();
+        const folder = Folder.fromPath(knownFolders.documents().path).getFolder('cache');
+        const diskLocation = folder.path;
+        DEV_LOG && console.log('setCache', diskLocation);
+
+        https.setCache({
+            diskLocation,
+            diskSize: 40 * 1024 * 1024,
+            memorySize: 10 * 1024 * 1024
+        });
+        if (__ANDROID__) {
+            try {
+                //@ts-ignore
+                https.addInterceptor(com.nativescript.https.CacheInterceptor.INTERCEPTOR);
+                //@ts-ignore
+                https.addNetworkInterceptor(com.nativescript.https.CacheInterceptor.INTERCEPTOR);
+            } catch (error) {
+                console.error(error);
+            }
+        }
     }
     stop() {
         if (!this.monitoring) {
@@ -153,16 +174,21 @@ export const networkService = new NetworkService();
 async function handleRequestResponse<T>(response: https.HttpsResponse<https.HttpsResponseLegacy<T>>, requestParams: HttpRequestOptions, requestStartTime, retry): Promise<T> {
     const statusCode = response.statusCode;
     let content: T;
-    try {
-        content = await response.content.toJSONAsync();
-    } catch (err) {
-        console.error(err);
+    if (requestParams.noJSON !== true) {
+        try {
+            content = await response.content.toJSONAsync();
+        } catch (err) {
+            console.error(err);
+        }
     }
     if (!content) {
         content = (await response.content.toStringAsync()) as any;
     }
+    if (!content) {
+        content = response.reason as any;
+    }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    // DEV_LOG && console.log('handleRequestResponse', statusCode, JSON.stringify(content));
+    DEV_LOG && console.log('handleRequestResponse', statusCode, response.headers, JSON.stringify(content));
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -201,7 +227,7 @@ function getRequestHeaders(requestParams?: HttpRequestOptions) {
     return headers;
 }
 export async function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
-    if (!networkService.connected) {
+    if (requestParams.offlineSupport !== true && !networkService.connected) {
         throw new NoNetworkError();
     }
     if (requestParams.queryParams) {

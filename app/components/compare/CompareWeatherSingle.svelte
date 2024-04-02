@@ -1,48 +1,52 @@
 <script lang="ts">
+    import toColor from '@mapbox/to-color';
+    import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
+    import { ApplicationSettings, NavigatedData, ObservableArray, Page, View } from '@nativescript/core';
+    import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
+    import ListItem from '~/components/common/ListItem.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';
     import { l, lc, slc } from '~/helpers/locale';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
+    import { ProviderType } from '~/services/providers/weather';
+    import { getProviderForType, providers } from '~/services/providers/weatherproviderfactory';
+    import { AVAILABLE_COMPARE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { actionBarButtonHeight, colors } from '~/variables';
-    import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, prepareItems } from '~/services/api';
-    import { onMount } from 'svelte';
-    import { ApplicationSettings, NavigatedData, Page, View } from '@nativescript/core';
-    import { CheckBox } from '@nativescript-community/ui-checkbox';
-    import { getProviderForType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
-    import { ProviderType } from '~/services/providers/weather';
     import CompareLineChart from './CompareLineChart.svelte';
-    import toColor from '@mapbox/to-color';
-    import { AVAILABLE_COMPARE_WEATHER_DATA, AVAILABLE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
 
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
-    const dataToCompare: any[] = JSON.parse(ApplicationSettings.getString('compare_data', '[{"id":"temperature","type":"linechart","forecast":"hourly"}]'));
+    let dataToCompare: any = JSON.parse(ApplicationSettings.getString('compare_data_single', '{"id":"temperature","type":"linechart","forecast":"hourly"}'));
 
     const CHART_TYPE = {
         [WeatherProps.iconId]: 'weathericons',
         // [WeatherProps.windSpeed]: 'scatterchart',
         // [WeatherProps.windGust]: 'scatterchart',
+        [WeatherProps.cloudCover]: 'scatterchart',
         [WeatherProps.windBearing]: 'scatterchart'
     };
 
-    const possibleDatas = AVAILABLE_COMPARE_WEATHER_DATA.map((k) => ({
-        id: k,
-        type: CHART_TYPE[k] || 'linechart',
-        title: getWeatherDataTitle(k),
-        icon: getWeatherDataIcon(k)
-    }));
+    const possibleDatas = new ObservableArray(
+        AVAILABLE_COMPARE_WEATHER_DATA.map((k) => ({
+            id: k,
+            type: CHART_TYPE[k] || 'linechart',
+            title: getWeatherDataTitle(k),
+            icon: getWeatherDataIcon(k),
+            dailySelected: dataToCompare.id === k && dataToCompare.forecast === 'daily',
+            hourlySelected: dataToCompare.id === k && dataToCompare.forecast === 'hourly'
+        }))
+    );
 
     export let weatherLocation: FavoriteLocation;
-    const providerColors = {};
+    let providerColors = {};
 
     interface Model {
         id: string;
@@ -53,49 +57,63 @@
         shortName: string;
     }
 
-    const modelsList: Model[] = providers.reduce((acc, val) => {
-        const provider = getProviderForType(val);
-        const models = provider.getModels();
-        const keys = Object.keys(models);
+    function updateColors(args = { saturation: 3, brightness: 0.8 }) {
+        providerColors = {};
+        modelsList.forEach((model) => {
+            const provider = model.id.split(':')[0];
+            let colorGenerator = providerColors[provider];
+            if (!colorGenerator) {
+                colorGenerator = providerColors[provider] = new toColor(provider, args);
+            }
+        });
+        modelsCollectionView?.nativeElement.refreshVisibleItems();
+    }
 
-        let colorGenerator = providerColors[val];
-        if (!colorGenerator) {
-            colorGenerator = providerColors[val] = new toColor(val, { saturation: 3, brightness: 0.8 });
-        }
-        if (keys.length) {
-            // acc.push({
-            //     type: 'sectionheader',
-            //     id: provider.id,
-            //     name: provider.getName(),
-            //     // color: colorGenerator.getColor().hsl.formatted,
-            //     shortName: provider.getName().replace(/[^A-Z]+/g, '')
-            // });
-            for (let index = 0; index < keys.length; index++) {
-                const key = keys[index];
+    const modelsList = new ObservableArray<Model>(
+        providers.reduce((acc, val) => {
+            const provider = getProviderForType(val);
+            const models = provider.getModels();
+            const keys = Object.keys(models);
+
+            let colorGenerator = providerColors[val];
+            if (!colorGenerator) {
+                colorGenerator = providerColors[val] = new toColor(val, { saturation: 3, brightness: 0.8 });
+            }
+            if (keys.length) {
+                // acc.push({
+                //     type: 'sectionheader',
+                //     id: provider.id,
+                //     name: provider.getName(),
+                //     // color: colorGenerator.getColor().hsl.formatted,
+                //     shortName: provider.getName().replace(/[^A-Z]+/g, '')
+                // });
+                for (let index = 0; index < keys.length; index++) {
+                    const key = keys[index];
+                    acc.push({
+                        id: provider.id + ':' + key,
+                        title: provider.getName(),
+                        subtitle: key,
+                        name: provider.getName() + ': ' + key,
+                        color: colorGenerator.getColor().hsl.formatted,
+                        shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
+                    } as Model);
+                }
+            } else {
                 acc.push({
-                    id: provider.id + ':' + key,
-                    title: provider.getName(),
-                    subtitle: key,
-                    name: provider.getName() + ': ' + key,
+                    id: provider.id,
+                    name: provider.getName(),
                     color: colorGenerator.getColor().hsl.formatted,
-                    shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
+                    shortName: provider.getName().replace(/[^A-Z]+/g, '')
                 } as Model);
             }
-        } else {
-            acc.push({
-                id: provider.id,
-                name: provider.getName(),
-                color: colorGenerator.getColor().hsl.formatted,
-                shortName: provider.getName().replace(/[^A-Z]+/g, '')
-            } as Model);
-        }
-        return acc;
-    }, []);
+            return acc;
+        }, [])
+    );
     let page: NativeViewElementNode<Page>;
-    let pullRefresh: NativeViewElementNode<PullToRefresh>;
+    // let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
     let loading = true;
-    let data = [];
+    let currentItem;
 
     onMount(async () => {
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
@@ -107,15 +125,8 @@
                 showError(error);
             }
         });
-        // networkService.start(); // should send connection event and then refresh
         networkConnected = networkService.connected;
     });
-
-    function onNavigatedTo(args: NavigatedData): void {
-        if (models.length && dataToCompare) {
-            refreshData();
-        }
-    }
 
     async function refreshData() {
         try {
@@ -143,48 +154,36 @@
                 })
             );
 
-            const newItems = [];
-            for (let i = 0; i < dataToCompare.length; i++) {
-                const d = dataToCompare[i];
-                switch (d.type) {
-                    default:
-                    case 'line':
-                    case 'scatter':
-                        // DEV_LOG && console.log('d', d);
-                        newItems.push({
-                            weatherData,
-                            chartType: d.type,
-                            timestamp: now,
-                            hidden: [],
-                            ...d
-                        });
-                }
-            }
-            data = newItems;
+            currentItem = {
+                weatherData,
+                chartType: dataToCompare.type,
+                timestamp: now,
+                hidden: [],
+                ...dataToCompare
+            };
         } catch (err) {
             showError(err);
         } finally {
             loading = false;
         }
     }
-    async function onPullToRefresh() {
-        try {
-            if (pullRefresh) {
-                pullRefresh.nativeView.refreshing = false;
-            }
-            loading = true;
-            await refreshData();
-        } catch (error) {
-            showError(error);
-        } finally {
-            loading = false;
-        }
-    }
+    // async function onPullToRefresh() {
+    //     try {
+    //         if (pullRefresh) {
+    //             pullRefresh.nativeView.refreshing = false;
+    //         }
+    //         loading = true;
+    //         await refreshData();
+    //     } catch (error) {
+    //         showError(error);
+    //     } finally {
+    //         loading = false;
+    //     }
+    // }
 
     let drawer: DrawerElement;
     let modelsCollectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
     let dataCollectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
-    let collectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
     function toggleLeftDrawer() {
         drawer?.toggle('left');
     }
@@ -239,28 +238,35 @@
     }
     async function onDataCheckBox(forecast: string, item, event) {
         const value = event.value;
-        const index = dataToCompare.findIndex((d) => d.id === item.id && d.forecast === forecast);
-        if (index === -1) {
-            if (value) {
-                dataToCompare.push({ ...item, forecast });
+        if (value) {
+            const currentlySelectedIndex = possibleDatas.findIndex((d) => d.id === dataToCompare.id);
+            const index = possibleDatas.findIndex((d) => d.id === item.id);
+            if (index !== currentlySelectedIndex && currentlySelectedIndex !== -1) {
+                possibleDatas.setItem(currentlySelectedIndex, { ...possibleDatas.getItem(currentlySelectedIndex), dailySelected: false, hourlySelected: false });
             }
+            DEV_LOG && console.log('onDataCheckBox1', forecast, item.id, value, currentlySelectedIndex, JSON.stringify(dataToCompare));
+            dataToCompare = { ...item, forecast };
+            if (forecast === 'hourly') {
+                item.hourlySelected = true;
+                item.dailySelected = false;
+            } else {
+                item.hourlySelected = false;
+                item.dailySelected = true;
+            }
+            if (index !== -1) {
+                possibleDatas.setItem(index, item);
+            }
+
+            DEV_LOG && console.log('onDataCheckBox', forecast, item.id, value, currentlySelectedIndex, JSON.stringify(dataToCompare));
+            ApplicationSettings.setString('compare_data_single', JSON.stringify(dataToCompare));
+            refreshData();
         } else {
-            if (!value) {
-                dataToCompare.splice(index, 1);
-            }
+            event.object.checked = true;
         }
-        DEV_LOG && console.log('onDataCheckBox', forecast, item.id, value, index, JSON.stringify(dataToCompare));
-        ApplicationSettings.setString('compare_data', JSON.stringify(dataToCompare));
     }
 
     function isModelSelected(item) {
         return models.indexOf(item.id) !== -1;
-    }
-    function isHourlyDataSelected(item) {
-        return dataToCompare.findIndex((d) => d.id === item.id && d.forecast === 'hourly') !== -1;
-    }
-    function isDailyDataSelected(item) {
-        return dataToCompare.findIndex((d) => d.id === item.id && d.forecast === 'daily') !== -1;
     }
 
     function selectModelsTemplate(item, index, items) {
@@ -269,19 +275,15 @@
         }
         return 'default';
     }
-    function selectDataTemplate(item, index, items) {
-        DEV_LOG && console.log('selectDataTemplate', item.type);
-        switch (item.type) {
-            case 'weathericons':
-            case 'scatterchart':
-                return item.type;
-            default:
-                return 'linechart';
+
+    function onNavigatedTo(args: NavigatedData): void {
+        if (models.length && dataToCompare) {
+            refreshData();
         }
     }
 </script>
 
-<page bind:this={page} actionBarHidden={true}>
+<page bind:this={page} id="comparesingle" actionBarHidden={true} screenOrientation="landscape" on:navigatedTo={onNavigatedTo}>
     <drawer
         bind:this={drawer}
         gestureHandlerOptions={{
@@ -296,20 +298,11 @@
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
+            {:else if currentItem}
+                <CompareLineChart item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'hidden' : 'visible'} />
+                <CompareWeatherIcons item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'visible' : 'hidden'} />
             {:else}
-                <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
-                    <collectionview bind:this={collectionView} id="data" itemTemplateSelector={selectDataTemplate} items={data}>
-                        <Template key="linechart" let:item>
-                            <CompareLineChart height={200} {item} />
-                        </Template>
-                        <Template key="scatterchart" let:item>
-                            <CompareLineChart height={200} {item} />
-                        </Template>
-                        <Template key="weathericons" let:item>
-                            <CompareWeatherIcons {item} />
-                        </Template>
-                    </collectionview>
-                </pullrefresh>
+                <mdbutton horizontalAlignment="center" row={1} text={lc('select_data')} variant="text" verticalAlignment="middle" on:tap={toggleRightDrawer} />
             {/if}
             <CActionBar showMenuIcon title={weatherLocation && weatherLocation.name}>
                 <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
@@ -324,11 +317,15 @@
                     <label class="sectionHeader" text={item.name} />
                 </Template>
                 <Template let:item>
-                    <ListItemAutoSize
+                    <ListItem
                         borderLeftColor={item.color}
                         borderLeftWidth={6}
                         color={item.color}
+                        columns="*,auto"
+                        fontWeight="normal"
                         padding="0 0 0 10"
+                        paddingLeft={0}
+                        paddingRight={0}
                         rows="50"
                         subtitle={item.subtitle || null}
                         subtitleColor={item.color}
@@ -341,13 +338,13 @@
                         <checkbox
                             id="checkbox"
                             checked={isModelSelected(item)}
-                            col={2}
+                            col={1}
                             ios:marginRight={10}
                             color={item.color}
                             fillColor={item.color}
                             verticalAlignment="center"
                             on:checkedChange={(e) => onModelCheckBox(item, e)} />
-                    </ListItemAutoSize>
+                    </ListItem>
                 </Template>
             </collectionview>
             <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} />
@@ -359,10 +356,11 @@
                     <label class="sectionHeader" text={item.name} />
                 </Template>
                 <Template let:item>
-                    <ListItemAutoSize
+                    <ListItem
                         columns="*,auto,auto"
+                        fontWeight="normal"
                         mainCol={0}
-                        padding="0 0 0 10"
+                        padding="0 0 0 16"
                         rows="50"
                         subtitle={item.subtitle || null}
                         title={item.title || item.name}
@@ -370,12 +368,12 @@
                             paddingTop: 0,
                             paddingBottom: 0
                         }}>
-                        <checkbox checked={isHourlyDataSelected(item)} col={1} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('hourly', item, e)} />
-                        <checkbox checked={isDailyDataSelected(item)} col={2} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('daily', item, e)} />
-                    </ListItemAutoSize>
+                        <checkbox checked={item.hourlySelected} col={1} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('hourly', item, e)} />
+                        <checkbox checked={item.dailySelected} col={2} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('daily', item, e)} />
+                    </ListItem>
                 </Template>
             </collectionview>
-            <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} />
+            <!-- <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} /> -->
         </gridlayout>
     </drawer>
 </page>

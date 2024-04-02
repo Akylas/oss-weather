@@ -70,11 +70,6 @@
                     icon: 'mdi-cogs',
                     id: 'preferences',
                     name: l('preferences')
-                },
-                {
-                    icon: 'mdi-format-size',
-                    id: 'font-scale',
-                    name: lc('font_scale')
                 }
                 // {
                 //     icon: 'mdi-information-outline',
@@ -99,6 +94,11 @@
                             icon: 'mdi-map',
                             id: 'map',
                             name: l('map')
+                        },
+                        {
+                            icon: 'mb',
+                            id: 'meteo_blue',
+                            name: 'meteoblue'
                         }
                     ]
                 );
@@ -172,7 +172,7 @@
                                     navigate({ page: WeatherMapPage, props: { focusPos: weatherLocation ? weatherLocation.coord : undefined } });
                                     break;
                                 case 'compare':
-                                    const CompareWeather = (await import('~/components/CompareWeatherSingle.svelte')).default;
+                                    const CompareWeather = (await import('~/components/compare/CompareWeatherSingle.svelte')).default;
                                     navigate({ page: CompareWeather, props: { weatherLocation } });
                                     break;
                                 case 'refresh':
@@ -181,15 +181,14 @@
                                 case 'gps_location':
                                     await getLocationAndWeather();
                                     break;
+                                case 'meteo_blue':
+                                    const MeteoBlue = (await import('~/components/MeteoBlue.svelte')).default;
+                                    navigate({ page: MeteoBlue, props: { weatherLocation } });
+                                    break;
                                 // case 'about':
                                 //     const About = require('~/components/About.svelte').default;
                                 //     navigate({ page: About });
                                 //     break;
-
-                                case 'font-scale':
-                                    const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
-                                    navigate({ page: FontSizeSettingScreen });
-                                    break;
                                 case 'bra':
                                     const franceGeoJSON = JSON.parse(
                                         await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()
@@ -393,7 +392,6 @@
             }
         });
         networkService.start(); // should send connection event and then refresh
-        // networkConnected = networkService.connected;
 
         if (weatherData) {
             items = prepareItems(weatherLocation, weatherData, lastUpdate);

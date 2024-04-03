@@ -60,7 +60,7 @@
             }
         } catch (error) {
             showError(error);
-            loading = false
+            loading = false;
         }
     }
     onMount(() => {

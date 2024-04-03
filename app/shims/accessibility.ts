@@ -7,3 +7,5 @@ export function isAccessibilityServiceEnabled() {
 export function setupAccessibleView(view) {}
 
 export function updateContentDescription() {}
+
+export const AccessibilityRole = {};

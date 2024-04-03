@@ -13,7 +13,7 @@ android {
     multiDexEnabled false
     minSdkVersion 21
     versionCode 107
-    versionName "1.12.5"
+    versionName "1.12.6"
 
     // if (project.hasProperty('resConfigs')) {
     //   def resConfigs = project.findProperty('resConfigs')

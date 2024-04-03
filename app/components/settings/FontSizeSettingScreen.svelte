@@ -6,7 +6,7 @@
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { WeatherLocation, prepareItems } from '~/services/api';
     import { colors } from '~/variables';
-    import CActionBar from './common/CActionBar.svelte';
+    import CActionBar from '../common/CActionBar.svelte';
     import dayjs from 'dayjs';
     import { WeatherData } from '~/services/providers/weather';
 

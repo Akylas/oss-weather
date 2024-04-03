@@ -477,7 +477,7 @@
                     break;
                 }
                 case 'font_scale':
-                    const FontSizeSettingScreen = require('~/components/FontSizeSettingScreen.svelte').default;
+                    const FontSizeSettingScreen = (await import('~/components/settings/FontSizeSettingScreen.svelte')).default;
                     navigate({ page: FontSizeSettingScreen });
                     break;
                 case 'github':

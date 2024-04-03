@@ -60,6 +60,7 @@
             }
         } catch (error) {
             showError(error);
+            loading = false;
         }
     }
     onMount(() => {
@@ -163,7 +164,8 @@
             noCache={networkConnected}
             row={2}
             src={currentImageSrc}
-            stretch="fitStart"
+            android:stretch="fitStart"
+            ios:stretch="aspectFit"
             width="100%"
             on:finalImageSet={onImageLoaded}
             on:failure={onImageFailure} />

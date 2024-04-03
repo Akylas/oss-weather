@@ -33,9 +33,9 @@
     {...$$restProps}>
     <canvaslabel col={mainCol} color={color || colorOnSurface} on:draw={onDraw}>
         <cgroup paddingBottom={subtitle ? 10 : 0} verticalAlignment="middle">
-            <cspan fontFamily={leftIconFonFamily} fontSize={iconFontSize * $fontScale} paddingLeft="10" text={leftIcon} visibility={leftIcon ? 'visible' : 'hidden'} width={iconFontSize * 2} />
+            <cspan fontFamily={leftIconFonFamily} fontSize={iconFontSize * $fontScale} paddingLeft="8" text={leftIcon} visibility={leftIcon ? 'visible' : 'hidden'} width={iconFontSize * 2} />
         </cgroup>
-        <cgroup paddingLeft={(leftIcon ? iconFontSize * 2 : 0) + extraPaddingLeft} textAlignment="left" verticalAlignment="middle">
+        <cgroup paddingLeft={(leftIcon ? 38 : 0) + extraPaddingLeft} textAlignment="left" verticalAlignment="middle">
             <cspan fontSize={fontSize * $fontScale} {fontWeight} text={title} />
             <cspan color={subtitleColor || colorOnSurfaceVariant} fontSize={subtitleFontSize * $fontScale} text={subtitle ? '\n' + subtitle : ''} visibility={subtitle ? 'visible' : 'hidden'} />
         </cgroup>

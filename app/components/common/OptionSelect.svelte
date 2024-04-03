@@ -164,7 +164,7 @@
                     columns="auto,*,auto"
                     {fontSize}
                     fontWeight={item.fontWeight || fontWeight}
-                    {iconFontSize}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     leftIcon={item.icon}
                     mainCol={1}
                     onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
@@ -189,8 +189,8 @@
                     color={item.color}
                     columns="*,auto"
                     {fontSize}
-                    {fontWeight}
-                    {iconFontSize}
+                    fontWeight={item.fontWeight || fontWeight}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     leftIcon={item.icon}
                     onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     showBottomLine={showBorders}
@@ -207,8 +207,8 @@
                     color={item.color}
                     columns="*,auto"
                     {fontSize}
-                    {fontWeight}
-                    {iconFontSize}
+                    fontWeight={item.fontWeight || fontWeight}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     leftIcon={item.icon}
                     onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     showBottomLine={showBorders}
@@ -224,8 +224,8 @@
                     {borderRadius}
                     color={item.color}
                     {fontSize}
-                    {fontWeight}
-                    {iconFontSize}
+                    fontWeight={item.fontWeight || fontWeight}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     leftIcon={item.icon}
                     onLongPress={onLongPress ? (event) => handleOnLongPress(item, event) : null}
                     rightIcon={item.rightIcon}

@@ -76,7 +76,7 @@
                 //     id: 'about',
                 //     text: l('about')
                 // }
-            ];
+            ] as any;
             if (weatherLocation) {
                 options.push(
                     ...[

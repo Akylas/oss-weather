@@ -393,7 +393,7 @@ export class MFProvider extends WeatherProvider {
             alerts: warningsData
                 ? warningsData.timelaps.reduce((acc, timelaps) => {
                       timelaps.timelaps_items
-                          .filter((it) => it.color_id > 1)
+                          .filter((it) => it.color_id > 1 && it.end_time * 1000 > now)
                           .forEach((w) => {
                               acc.push({
                                   start: w.begin_time * 1000,
@@ -476,9 +476,9 @@ export class MFProvider extends WeatherProvider {
             }
             content += lc('behavioral_tips') + ':\n' + advices;
         }
-        if (!content.length && warningsResult.comments?.text?.length) {
-            content = warningsResult.comments?.text[0];
-        }
+        // if (!content.length && warningsResult.comments?.text?.length) {
+        //     content = warningsResult.comments?.text[0];
+        // }
         // There are also text blocks with hour by hour evaluation, but it’s way too detailed
         return content.length ? content : null;
     }

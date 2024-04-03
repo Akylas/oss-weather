@@ -97,6 +97,7 @@
                         },
                         {
                             icon: 'mb',
+                            iconFontSize: 16,
                             id: 'meteo_blue',
                             name: 'meteoblue'
                         }

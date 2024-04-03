@@ -110,21 +110,6 @@ mdbutton[variant=outline] {
     // }
 }
 
-.alertView {
-    margin: 10;
-    padding-top: 10;
-    padding-bottom: 10;
-    border-radius: 4;
-    background-color: var(--colorSurface);
-    // background-color: #eee;
-    // .ns-dark & {
-    //     background-color: #444;
-    // }
-    // .ns-black & {
-    //     background-color: #222;
-    // }
-}
-
 frame {
     background-color: var(--colorBackground);
 }

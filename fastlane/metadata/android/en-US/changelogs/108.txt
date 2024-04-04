@@ -1,0 +1,12 @@
+### Features
+- meteoblue meteogram support
+
+### Bug fixes
+- settings refactor
+- wind gust drawing fix
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Hindi)
+- better Meteo-France alerts
+- Translated using Weblate (French)
+- Translated using Weblate (Italian)

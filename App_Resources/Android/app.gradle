@@ -12,7 +12,7 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 21
-    versionCode 107
+    versionCode 108
     versionName "1.12.6"
 
     // if (project.hasProperty('resConfigs')) {

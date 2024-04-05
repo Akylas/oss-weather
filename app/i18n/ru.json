@@ -147,7 +147,7 @@
     "precipitation": "Атмосферные осадки",
     "preferences": "Параметры",
     "provider": {
-        "meteofrance": "Méteo France",
+        "meteofrance": "Méteo France",
         "openmeteo": "Open‐Meteo",
         "openweathermap": "OpenWeather",
         "title": "Источник погоды"

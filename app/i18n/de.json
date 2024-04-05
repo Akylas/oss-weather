@@ -18,6 +18,7 @@
     "about": "Über",
     "about_to_quit": "Die App wird beendet, weil kein API-Schlüssel vorhanden ist",
     "absolute_vigilance": "Erhöhte Aufmerksamkeit geboten",
+    "all_in_one": "Alle in einem",
     "animations": "Animationen",
     "animations_desc": "Animiert, wenn das Symbolmbol-Set es unterstützt",
     "api_key": "API-Schlüssel",
@@ -64,6 +65,9 @@
     "flood": "Überschwemmungen",
     "fog": "Nebel",
     "font_scale": "Schriftskalierung",
+    "forecast_nb_days": "Tage in der Vorhersage (falls verfügbar, beinhaltet den aktuellen Tag)",
+    "forecast_nb_hours": "Anzahl der Stunden in der stündlichen Vorhersage (falls verfügbar)",
+    "forecast_nb_minutes": "Anzahl Minuten in der minütigen Vorhersage (wenn verfügbar)",
     "freezing_drizzle": "Gefrierender Sprühregen",
     "freezing_fog": "Gefrierender Nebel",
     "freezing_level": "Gefrierpunkt",
@@ -144,6 +148,7 @@
         "openweathermap": "OpenWeather",
         "title": "Wetterdaten-Anbieter"
     },
+    "providers": "Anbieter",
     "providers_settings": "Anbieter Auswahl und Einstellungen",
     "quit": "Verlassen",
     "rain": "Regen",
@@ -169,6 +174,7 @@
     "settings": {
         "title": "Einstellungen"
     },
+    "seven_days": "7 Tage",
     "share_application": "App teilen",
     "show_love": "Wenn ihnen das Projekt gefällt, können Sie etwas Liebe zeigen oder sogar Beitragen!",
     "snow": "Schnee",

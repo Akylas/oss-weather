@@ -1,0 +1,6 @@
+### Features
+- support new Open-Meteo model GFS GraphCast
+
+### Bug fixes
+- Translated using Weblate (Russian)
+- Translated using Weblate (German)

@@ -24,6 +24,7 @@ export const OM_MODELS = {
     gfs_seamless: 'GFS Seamless',
     gfs_global: 'GFS Global',
     gfs_hrrr: 'GFS HRRR',
+    gfs_graphcast025: 'GFS GraphCast',
     icon_seamless: 'DWD Icon Seamless',
     icon_global: 'DWD Icon Global',
     icon_eu: 'DWD Icon EU',

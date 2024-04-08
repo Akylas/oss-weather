@@ -6,7 +6,7 @@ import { connectionType, getConnectionType, startMonitoring, stopMonitoring } fr
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
 import { lang } from '~/helpers/locale';
-import { CustomError, HTTPError, NoNetworkError } from '~/utils/error';
+import { CustomError, HTTPError, NoNetworkError, wrapNativeException } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { Photon, PhotonProperties } from '../../typings/photon';
 import { WeatherData } from './providers/weather';
@@ -188,7 +188,7 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
         content = response.reason as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    DEV_LOG && console.log('handleRequestResponse', statusCode, response.headers, JSON.stringify(content));
+    DEV_LOG && console.log('handleRequestResponse', statusCode, JSON.stringify(content));
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -238,8 +238,20 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
 
     const requestStartTime = Date.now();
     DEV_LOG && console.log('request', requestParams);
-    const response = await https.request<T>(requestParams);
-    return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
+    try {
+        const response = await https.request<T>(requestParams);
+        return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
+    } catch (error) {
+        throw wrapNativeException(
+            error,
+            (message) =>
+                new HTTPError({
+                    message,
+                    statusCode: -1,
+                    requestParams
+                })
+        );
+    }
 }
 
 export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs()) {

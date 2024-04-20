@@ -61,15 +61,15 @@
     "export_settings_desc": "Экспорт всех настроек приложения с целью последующего восстановления",
     "extreme_cold": "Экстремальный холод",
     "favorites": "Избранные",
-    "feels_like_temperatures": "Показывать температуру «ощущается как» (если доступно)",
+    "feels_like_temperatures": "Отобразить ощущаемую температуру, если доступно",
     "file": "Файл",
     "flood": "Наводнение",
     "fog": "Туман",
     "font_scale": "Размер текста",
-    "forecast_nb_days": "Отображение количества дней в графике погоды (если доступно)",
-    "forecast_nb_hours": "Кол-во часов в почасовом прогнозе погоды (если доступно)",
-    "forecast_nb_minutes": "Кол-во минут в минутном прогнозе погоды (если доступно)",
-    "freezing_drizzle": "Изморозь",
+    "forecast_nb_days": "Дни в прогнозе (если доступно, включая текущий)",
+    "forecast_nb_hours": "Число часов в почасовом прогнозе (если доступно)",
+    "forecast_nb_minutes": "Число минут в минутном прогнозе (если доступно)",
+    "freezing_drizzle": "Ледяная морось",
     "freezing_fog": "Ледяной туман",
     "freezing_level": "Высота замерзания",
     "freezing_rain": "Ледяной дождь",
@@ -79,8 +79,8 @@
     "geolocation_settings": "Настройки связанные с геолокацией",
     "german": "Немецкий",
     "gps_location": "Найти местоположение по GPS",
-    "gps_not_authorized": "Пожалуйста включите GPS и разрешите OSS Weather использовать ваше местоположение",
-    "gps_not_enabled": "Пожалуйста включите GPS и разрешите OSS Weather находить ваше местоположение",
+    "gps_not_authorized": "Пожалуйста, включите GPS и предоставьте приложению OSS Погода доступ к нему для определения вашего местоположения",
+    "gps_not_enabled": "Пожалуйста, включите GPS, чтобы приложение OSS Погода могло определить ваше местоположение",
     "gps_off": "GPS выключен",
     "hailstorm": "Град",
     "heat_wave": "Жара",
@@ -99,7 +99,7 @@
     "ios": {
         "info": {
             "plist": {
-                "NSLocationWhenInUseUsageDescription": "'OSS Weather' использует ваше местоположение, чтобы получать данные о погоде"
+                "NSLocationWhenInUseUsageDescription": "'OSS Погода' использует ваше местоположение, чтобы получать данные о погоде"
             }
         }
     },
@@ -109,7 +109,7 @@
     "last_updated": "Обновлено",
     "light": "Слабый",
     "light_drizzle": "Лёгкая морось",
-    "light_freezing_drizzle": "Лёгкая моросящая изморось",
+    "light_freezing_drizzle": "Лёгкая ледяная морось",
     "light_freezing_rain": "Лёгкий ледяной дождь",
     "light_rain": "Лёгкий дождь",
     "light_rain_shower": "Лёгкий ливень",
@@ -129,12 +129,12 @@
     "my_location": "Моё местоположение",
     "name": "Имя",
     "no_location_desc": "Вы ещё не выбрали местоположение.\nВыберите или используйте GPS.",
-    "no_location_set": "Место не выбрано",
+    "no_location_set": "Местоположение не указано",
     "no_network": "Отсутствует подключение к Интернету",
     "no_particular_vigilance": "Отсутствие особой осторожности",
     "non_valid_email": "Неверный адрес электронной почты",
     "ok": "ОК",
-    "open_meteo_prefered_model": "Предпочтительный источник погоды Open-Meteo",
+    "open_meteo_prefered_model": "Предпочтительный метеоисточник Open-Meteo",
     "open_website": "Открыть веб‐сайт",
     "owm_api_key": "OpenWeather API ключ",
     "owm_one_call_version": "Версия OneCall",
@@ -175,7 +175,7 @@
     "select_theme": "Выберите тему",
     "send": "Отправить",
     "send_bug_report": "Отправить сообщение об ошибке",
-    "send_bug_report_desc": "Введите почту и описание ошибки",
+    "send_bug_report_desc": "Введите адрес электронной почты и описание ошибки, с которой вы столкнулись",
     "settings": {
         "title": "Настройки"
     },

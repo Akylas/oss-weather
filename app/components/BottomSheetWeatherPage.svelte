@@ -66,7 +66,7 @@
     }
 </script>
 
-<gridlayout class="weatherpage" height="100%" rows="auto,*">
+<gesturerootview class="weatherpage" height="100%" rows="auto,*">
     <CActionBar title={name} on:swipe={onSwipe}>
         <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
     </CActionBar>
@@ -79,4 +79,4 @@
         text={lc('powered_by', l(`provider.${provider}`))}
         verticalAlignment="top" />
     <WeatherComponent {items} row={1} {weatherLocation} />
-</gridlayout>
+</gesturerootview>

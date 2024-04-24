@@ -10,6 +10,7 @@ import {
     Frame,
     GridLayout,
     Trace,
+    Utils,
     View
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
@@ -280,7 +281,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const lat = parseFloat(uri.getQueryParameter('lat'));
             const lon = parseFloat(uri.getQueryParameter('lon'));
             if (isNaN(lat) || isNaN(lon)) {
-                android.widget.Toast.makeText(Application.android.context, 'wrong_parameters', android.widget.Toast.LENGTH_LONG);
+                android.widget.Toast.makeText(Utils.android.getApplicationContext(), 'wrong_parameters', android.widget.Toast.LENGTH_LONG);
                 activity.finish();
                 return;
             }

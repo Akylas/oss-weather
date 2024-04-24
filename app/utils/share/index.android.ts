@@ -1,6 +1,6 @@
-import { Application, Device, ImageSource, Utils, knownFolders, path } from '@nativescript/core';
-import { Content, Options } from './share';
-export * from './share.common';
+import { Application, Device, Utils, knownFolders, path } from '@nativescript/core';
+import { Content, Options } from '.';
+export * from './index.common';
 
 let numberOfImagesCreated = 0;
 const sdkVersionInt = parseInt(Device.sdkVersion, 10);
@@ -14,7 +14,7 @@ export async function share(content: Content, options: Options = {}) {
     const Intent = android.content.Intent;
 
     const intent = new Intent(ACTION_SEND);
-    intent.setTypeAndNormalize('text/plain');
+    intent.setTypeAndNormalize(options.mimetype || 'text/plain');
 
     if (content.title) {
         intent.putExtra(Intent.EXTRA_SUBJECT, content.title);
@@ -28,7 +28,9 @@ export async function share(content: Content, options: Options = {}) {
     const uris = [];
 
     async function addImage(image) {
-        intent.setTypeAndNormalize('image/jpeg');
+        if (!options.mimetype) {
+            intent.setTypeAndNormalize('image/jpeg');
+        }
         const imageFileName = 'share_image_' + numberOfImagesCreated++ + '.jpg';
         const filePath = path.join(knownFolders.temp().path, imageFileName);
         await image.saveToFileAsync(filePath, 'jpg');

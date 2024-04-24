@@ -1,4 +1,4 @@
-import { File, knownFolders } from '@akylas/nativescript';
+import { knownFolders } from '@akylas/nativescript';
 import { ShareFile, ShareOptions } from '@nativescript-community/ui-share-file';
 const shareFileObject = new ShareFile();
 

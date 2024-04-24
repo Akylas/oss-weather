@@ -20,6 +20,7 @@
     import { actionBarButtonHeight, colors } from '~/variables';
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
+    import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
 
@@ -28,9 +29,14 @@
 
     const CHART_TYPE = {
         [WeatherProps.iconId]: 'weathericons',
+        [WeatherProps.precipAccumulation]: 'barchart',
+        [WeatherProps.precipProbability]: 'scatterchart',
         // [WeatherProps.windSpeed]: 'scatterchart',
-        // [WeatherProps.windGust]: 'scatterchart',
+        [WeatherProps.windGust]: 'scatterchart',
+        [WeatherProps.snowDepth]: 'barchart',
         [WeatherProps.cloudCover]: 'scatterchart',
+        [WeatherProps.uvIndex]: 'scatterchart',
+        [WeatherProps.cloudCeiling]: 'scatterchart',
         [WeatherProps.windBearing]: 'scatterchart'
     };
 
@@ -57,14 +63,20 @@
         shortName: string;
     }
 
-    function updateColors(args = { saturation: 3, brightness: 0.8 }) {
+    function generateColor(provider: string) {
+        DEV_LOG && console.log('generateColor', provider, isDarkTheme());
+        return new toColor(provider, { saturation: 3, brightness: isDarkTheme() ? 1.2 : 0.9 });
+    }
+
+    function updateColors() {
         providerColors = {};
         modelsList.forEach((model) => {
             const provider = model.id.split(':')[0];
             let colorGenerator = providerColors[provider];
             if (!colorGenerator) {
-                colorGenerator = providerColors[provider] = new toColor(provider, args);
+                colorGenerator = providerColors[provider] = generateColor(provider);
             }
+            model.color = colorGenerator.getColor().hsl.formatted;
         });
         modelsCollectionView?.nativeElement.refreshVisibleItems();
     }
@@ -77,7 +89,7 @@
 
             let colorGenerator = providerColors[val];
             if (!colorGenerator) {
-                colorGenerator = providerColors[val] = new toColor(val, { saturation: 3, brightness: 0.8 });
+                colorGenerator = providerColors[val] = generateColor(val);
             }
             if (keys.length) {
                 // acc.push({
@@ -130,6 +142,7 @@
 
     async function refreshData() {
         try {
+            DEV_LOG && console.log('refreshData', networkConnected, JSON.stringify(weatherLocation));
             if (!weatherLocation) {
                 showSnack({ message: l('no_location_set') });
                 return;
@@ -153,6 +166,7 @@
                     // return prepareItems(weatherLocation, weatherData, now);
                 })
             );
+            DEV_LOG && console.log('channging currentItem');
 
             currentItem = {
                 weatherData,
@@ -281,6 +295,10 @@
             refreshData();
         }
     }
+    onThemeChanged(() => {
+        updateColors();
+        refreshData();
+    });
 </script>
 
 <page bind:this={page} id="comparesingle" actionBarHidden={true} screenOrientation="landscape" on:navigatedTo={onNavigatedTo}>
@@ -324,8 +342,6 @@
                         columns="*,auto"
                         fontWeight="normal"
                         padding="0 0 0 10"
-                        paddingLeft={0}
-                        paddingRight={0}
                         rows="50"
                         subtitle={item.subtitle || null}
                         subtitleColor={item.color}

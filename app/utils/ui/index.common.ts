@@ -1,14 +1,14 @@
 import { InAppBrowser } from '@akylas/nativescript-inappbrowser';
+import { Label } from '@nativescript-community/ui-label';
 import { AlertDialog, MDCAlertControlerOptions, alert } from '@nativescript-community/ui-material-dialogs';
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
-import { ActivityIndicator, AlertOptions, StackLayout, Utils, View } from '@nativescript/core';
+import { ActivityIndicator, AlertOptions, Application, StackLayout, Utils, View } from '@nativescript/core';
 import { NativeViewElementNode, createElement } from 'svelte-native/dom';
 import { get } from 'svelte/store';
 import { lc } from '~/helpers/locale';
-import { colors, fontScale, systemFontScale } from '~/variables';
-import { showError } from './error';
-import { Label } from '@nativescript-community/ui-label';
+import { colors, fontScale } from '~/variables';
+import { showError } from '../error';
 
 export async function openLink(url) {
     const { colorPrimary } = get(colors);
@@ -175,4 +175,8 @@ export async function showPopoverMenu<T = any>({
         }
     });
     return result;
+}
+
+export function isLandscape() {
+    return Application.orientation() === 'landscape';
 }

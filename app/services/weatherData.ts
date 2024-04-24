@@ -1,18 +1,39 @@
-import { Align, Paint } from '@nativescript-community/ui-canvas';
+import { Align, Cap, Paint, Style } from '@nativescript-community/ui-canvas';
 import { ApplicationSettings, Color, Observable } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
 import { convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
 import { l, lc } from '~/helpers/locale';
-import { CommonWeatherData } from '~/services/providers/weather';
+import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { fontScale, fonts, nightColor } from '~/variables';
+import { cloudyColor, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
 import { prefs } from './preferences';
+
+export enum UNITS {
+    // InchHg = 'InchHg',
+    // MMHg = 'MMHg',
+    // kPa = 'kPa',
+    // hPa = 'hPa',
+    // Inch = 'inch',
+    IconId = 'iconId',
+    UV = '',
+    MM = 'mm',
+    CM = 'cm',
+    Percent = '%',
+    Celcius = '°',
+    Duration = 'duration',
+    Date = 'date',
+    Distance = 'm',
+    DistanceKm = 'km',
+    Speed = 'km/h',
+    SpeedM = 'm/h'
+}
 
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
     precipProbability = 'precipProbability',
     cloudCover = 'cloudCover',
+    cloudCeiling = 'cloudCeiling',
     uvIndex = 'uvIndex',
     windGust = 'windGust',
     moon = 'moon',
@@ -28,6 +49,30 @@ export enum WeatherProps {
     windBearing = 'windBearing',
     rainSnowLimit = 'rainSnowLimit'
 }
+
+export const PROP_TO_UNIT = {
+    [WeatherProps.windSpeed]: UNITS.Speed,
+    [WeatherProps.windGust]: UNITS.Speed,
+    [WeatherProps.temperature]: UNITS.Celcius,
+    [WeatherProps.temperatureMin]: UNITS.Celcius,
+    [WeatherProps.temperatureMax]: UNITS.Celcius,
+    [WeatherProps.iso]: UNITS.Distance,
+    [WeatherProps.rainSnowLimit]: UNITS.Distance,
+    [WeatherProps.cloudCover]: UNITS.Percent,
+    [WeatherProps.uvIndex]: UNITS.UV,
+    [WeatherProps.precipProbability]: UNITS.Percent,
+    [WeatherProps.precipAccumulation]: UNITS.MM,
+    [WeatherProps.snowDepth]: UNITS.CM,
+    [WeatherProps.snowfall]: UNITS.CM,
+    [WeatherProps.cloudCeiling]: UNITS.Distance
+};
+
+export const DEFAULT_COMMON_WEATHER_DATA = '["windSpeed", "precipAccumulation", "cloudCover", "uvIndex", "windGust", "windBeaufort", "moon"]';
+
+const arcPaint = new Paint();
+arcPaint.style = Style.STROKE;
+arcPaint.setTextAlign(Align.CENTER);
+arcPaint.strokeCap = Cap.ROUND;
 
 export const AVAILABLE_WEATHER_DATA = [
     WeatherProps.windSpeed,
@@ -59,11 +104,11 @@ export const AVAILABLE_COMPARE_WEATHER_DATA = [
 
 export const onWeatherDataChanged = createGlobalEventListener('weatherData');
 
-const wiPaint = new Paint();
+export const wiPaint = new Paint();
 wiPaint.setTextAlign(Align.CENTER);
-const mdiPaint = new Paint();
+export const mdiPaint = new Paint();
 mdiPaint.setTextAlign(Align.CENTER);
-const appPaint = new Paint();
+export const appPaint = new Paint();
 appPaint.setTextAlign(Align.CENTER);
 
 fonts.subscribe((data) => {
@@ -95,7 +140,20 @@ const WEATHER_DATA_TITLES = {
     [WeatherProps.windSpeed]: lc('wind_speed'),
     [WeatherProps.rainSnowLimit]: lc('rain_snow_limit'),
     [WeatherProps.iso]: lc('freezing_level'),
-    [WeatherProps.precipAccumulation]: lc('precipitation')
+    [WeatherProps.precipAccumulation]: lc('precipitation'),
+    [WeatherProps.aqi]: lc('aqi')
+};
+const WEATHER_DATA_COLORS = {
+    [WeatherProps.moon]: nightColor,
+    [WeatherProps.cloudCover]: cloudyColor,
+    // [WeatherProps.windGust]: scatteredCloudyColor,
+    // [WeatherProps.windBeaufort]: scatteredCloudyColor,
+    // [WeatherProps.windSpeed]: scatteredCloudyColor,
+    // [WeatherProps.uvIndex]: scatteredCloudyColor,
+    [WeatherProps.rainSnowLimit]: rainColor,
+    [WeatherProps.iso]: snowColor,
+    [WeatherProps.precipAccumulation]: rainColor,
+    [WeatherProps.aqi]: lc('aqi')
 };
 
 export function getWeatherDataIcon(key: string) {
@@ -107,6 +165,9 @@ export function getWeatherDataIcon(key: string) {
 }
 export function getWeatherDataTitle(key: string) {
     return WEATHER_DATA_TITLES[key] || key;
+}
+export function getWeatherDataColor(key: string) {
+    return WEATHER_DATA_COLORS[key];
 }
 const ICONS_SIZE_FACTOR = {
     uvIndex: 1.2

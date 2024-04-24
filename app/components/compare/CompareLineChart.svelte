@@ -1,35 +1,40 @@
 <script context="module" lang="ts">
-    import { Align, Canvas, FontMetrics, Paint, RectF } from '@nativescript-community/ui-canvas';
-    import { CombinedChart, LineChart, ScatterChart } from '@nativescript-community/ui-chart';
+    import { Align, Canvas, DashPathEffect, FontMetrics, Paint, RectF } from '@nativescript-community/ui-canvas';
+    import { CombinedChart } from '@nativescript-community/ui-chart';
     import { ScatterShape } from '@nativescript-community/ui-chart/charts/ScatterChart';
     import { LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
+    import { BarData } from '@nativescript-community/ui-chart/data/BarData';
+    import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
+    import { ChartData } from '@nativescript-community/ui-chart/data/ChartData';
     import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
+    import { Entry } from '@nativescript-community/ui-chart/data/Entry';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
-    import { AxisRenderer } from '@nativescript-community/ui-chart/renderer/AxisRenderer';
+    import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { Color, ObservableArray } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { PROP_TO_UNIT, convertWeatherValueToUnit } from '~/helpers/formatter';
+    import { convertWeatherValueToUnit } from '~/helpers/formatter';
     import { formatDate, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import { PROP_TO_UNIT } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { colors, fontScale } from '~/variables';
 
     const legendIconPaint = new Paint();
-    legendIconPaint.setTextSize(13);
+    legendIconPaint.textSize = 13;
 
     legendIconPaint.strokeWidth = 2;
     const legendPaint = new Paint();
-    legendPaint.setTextSize(13);
+    legendPaint.textSize = 13;
     const labelPaint = new Paint();
-    labelPaint.setTextSize(13);
+    labelPaint.textSize = 13;
     labelPaint.setTextAlign(Align.CENTER);
     const mFontMetricsBuffer = new FontMetrics();
 
@@ -37,22 +42,22 @@
 </script>
 
 <script lang="ts">
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors);
+    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorPrimary } = $colors;
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorPrimary } = $colors);
 
     interface Item {
         weatherData: { weatherData: WeatherData; model: { id: string; name: string; shortName: string; color: string } }[];
         forecast: string;
-        chartType: 'linechart' | 'scatterchart';
+        chartType: 'linechart' | 'scatterchart' | 'barchart';
         id: string;
         timestamp: number;
         hidden: string[];
     }
     export let item: Item & { startingSide: string };
+    $: console.log('item changed', Object.keys(item));
     // export let startingSide;
 
     let chartView: NativeViewElementNode<CombinedChart>;
-    const data = new CombinedData();
     let drawer: DrawerElement;
     let chartInitialized = false;
 
@@ -65,144 +70,198 @@
     // using 64bit data which canvas does not support (android Matrix specifically)
     const legends = new ObservableArray([]);
     let lastKey: string;
+    let globalStartTimestamp = Number.MAX_SAFE_INTEGER;
     function updateLineChart(item: Item) {
         const key = item.id + item.forecast + item.timestamp;
         if (key === lastKey) {
             return;
         }
+        DEV_LOG && console.log('updateLineChart', key);
         lastKey = key;
         const chart = chartView?.nativeView;
         if (chart) {
-            const xAxis = chart.getXAxis();
-            const leftAxis = chart.getAxisLeft();
+            const xAxis = chart.xAxis;
+            const leftAxis = chart.leftAxis;
             if (!chartInitialized) {
                 chartInitialized = true;
 
-                leftAxis.setTextColor(colorOnSurface);
-                chart.getXAxis().setTextColor(colorOnSurface);
-                chart.setMinOffset(0);
-                chart.setAutoScaleMinMaxEnabled(true);
-                chart.setBorderWidth(1);
-                chart.setDrawBorders(true);
-                chart.setClipDataToContent(false);
-                xAxis.setEnabled(true);
-                xAxis.setTextSize(10 * $fontScale);
-                xAxis.setLabelTextAlign(Align.CENTER);
+                leftAxis.textColor = colorOnSurface;
+                chart.xAxis.textColor = colorOnSurface;
+                chart.minOffset = 0;
+                chart.highlightFullBarEnabled = false;
+                chart.autoScaleMinMaxEnabled = true;
+                chart.clipDataToContent = true;
+                chart.pinchZoomEnabled = true;
+                chart.dragEnabled = true;
+                chart.highlightsFilterByAxis = false;
+                chart.scaleXEnabled = true;
+                chart.scaleYEnabled = false;
+                chart.highlightPerTapEnabled = true;
+                chart.highlightPerDragEnabled = true;
+                chart.setExtraOffsets(0, 0, 0, 0);
+                // chart.setBorderWidth(1);
+                // chart.drawBorders=(true);
+                // chart.clipDataToContent = false;
+                xAxis.enabled = true;
+                xAxis.textSize = 10 * $fontScale;
+                xAxis.labelTextAlign = Align.CENTER;
                 xAxis.ensureLastLabel = true;
-                xAxis.setPosition(XAxisPosition.BOTTOM);
-                xAxis.setYOffset(12);
+                xAxis.position = XAxisPosition.BOTTOM;
+                xAxis.yOffset = 12;
+                // xAxis.drawMarkTicks = true;
+                // xAxis.centerAxisLabels = true;
 
-                leftAxis.setSpaceBottom(5);
-                leftAxis.setSpaceTop(5);
-                chart.setData(data);
+                leftAxis.spaceBottom = 5;
+                leftAxis.spaceTop = 5;
+            } else {
+                chart.resetZoom();
             }
-            const limitLine = new LimitLine(Date.now());
-            limitLine.setLineWidth(2);
-            limitLine.enableDashedLine(4, 2, 0);
-            limitLine.setLineColor(colorOnSurfaceVariant);
-            xAxis.removeAllLimitLines();
-            xAxis.addLimitLine(limitLine);
-            leftAxis.setGridColor(colorOnSurfaceVariant + '33');
-            xAxis.setGridColor(colorOnSurfaceVariant + '33');
+
+            leftAxis.gridColor = colorOnSurfaceVariant + '33';
+            xAxis.gridColor = colorOnSurfaceVariant + '33';
             const newLegends = [];
             if (item.forecast === 'hourly') {
-                xAxis.setForcedInterval(3600 * 1000);
-                chart.setExtraOffsets(0, 0, 15, 0);
+                xAxis.forcedInterval = 1;
 
-                xAxis.setValueFormatter({
+                xAxis.valueFormatter = {
                     getAxisLabel: (value, axis) => {
-                        const date = dayjs(value);
+                        const date = dayjs(globalStartTimestamp + value * 3600 * 1000);
                         // if (date.get('m') === 0) {
                         if (date.get('h') === 0) {
-                            return formatDate(value, 'ddd');
+                            return date.format('ddd\nDD/MM');
                         } else if (date.get('h') % 4 === 0) {
-                            return formatDate(value, 'HH');
+                            return date.format('HH');
                         }
                         // }
                     }
-                });
+                };
             } else {
-                xAxis.setForcedInterval(24 * 3600 * 1000);
-                chart.setExtraOffsets(0, 0, 15, 0);
-                xAxis.setValueFormatter({
-                    getAxisLabel: (value, axis) => formatDate(value, 'DD/MM')
-                });
+                xAxis.forcedInterval = 24;
+                xAxis.valueFormatter = {
+                    getAxisLabel: (value, axis) => formatDate(globalStartTimestamp + value * 3600 * 1000, 'DD/MM')
+                };
             }
 
-            xAxis.setCustomRenderer({
-                drawGridLine(c: Canvas, renderer: AxisRenderer, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
-                    if (dayjs(axisValue).get('h') === 0) {
+            const gridLinePathEffect = new DashPathEffect([4, 8], 0);
+            xAxis.customRenderer = {
+                drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
+                    const hours = dayjs(globalStartTimestamp + axisValue * 3600 * 1000).get('h');
+                    if (hours % 4 === 0) {
+                        if (hours === 0) {
+                            paint.setPathEffect(null);
+                        } else {
+                            paint.setPathEffect(gridLinePathEffect);
+                        }
                         c.drawLine(x, rect.bottom, x, rect.top, paint);
                     }
                 },
-                drawLabel(c: Canvas, renderer: AxisRenderer, text, x, y, paint: Paint, anchor, angleDegrees) {
+                drawLabel(c: Canvas, axis, text, x, y, paint: Paint, anchor, angleDegrees) {
                     if (text) {
-                        c.drawText(text, x, y, paint);
+                        const lines = text.split('\n');
+                        for (let index = 0; index < lines.length; index++) {
+                            c.drawText(lines[index], x, y + index * paint.textSize, paint);
+                        }
                     }
                 }
-            });
+            };
             const chartType = item.chartType;
-            data.mLineData = null;
-            data.mScatterData = null;
+            const data = new CombinedData();
+            let xAxisMaximum = -1;
             const dataSets = item.weatherData.map((wData) => {
                 const key = item.id;
-                const data = (item.forecast === 'hourly' ? wData.weatherData.daily.data[0].hourly : wData.weatherData.daily.data).map((d: DailyData | Hourly) => ({
+                const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
+                const startTimestamp = sourceData[0].time;
+                const data = sourceData.map((d: DailyData | Hourly) => ({
                     ...d,
+                    deltaHours: (d.time - startTimestamp) / (3600 * 1000),
                     [key]: convertWeatherValueToUnit(d, key, { round: false })[0]
                 }));
+                xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);
+                globalStartTimestamp = Math.min(globalStartTimestamp, startTimestamp);
                 const color = wData.model.color;
+                const enabled = item.hidden.indexOf(wData.model.id) === -1;
+                newLegends.push({
+                    name: wData.model.name,
+                    shortName: wData.model.shortName,
+                    id: wData.model.id,
+                    enabled,
+                    color
+                });
                 switch (chartType) {
                     case 'scatterchart': {
-                        const set = new ScatterDataSet(data, wData.model.id, 'time', key);
+                        const set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key);
                         set['modelId'] = wData.model.id;
-                        const enabled = item.hidden.indexOf(wData.model.id) === -1;
-                        set.setScatterShape(ScatterShape.CIRCLE);
-                        set.setDrawIcons(enabled);
-                        set.setScatterShapeSize(enabled ? 4 : 0);
+                        set.scatterShape = ScatterShape.CIRCLE;
+                        set.drawIconsEnabled = enabled;
+                        set.highlightColor = colorPrimary;
+                        set.scatterShapeSize = enabled ? 4 : 0;
                         set.setColor(color);
-                        // set.setFillColor(color);
-                        newLegends.push({
-                            name: wData.model.name,
-                            shortName: wData.model.shortName,
-                            id: wData.model.id,
-                            enabled,
-                            color
-                        });
+                        // set.fillColor=(color);
                         return set;
                     }
+                    case 'barchart':
+                        const set = new BarDataSet(data, wData.model.id, 'deltaHours', key);
+                        // DEV_LOG && console.log('create barDataSet', wData.model.id, enabled, color);
+                        // set.drawValuesEnabled = false;
+                        set['modelId'] = wData.model.id;
+                        set.visible = enabled;
+                        set.highlightColor = colorPrimary;
+                        set.setColor(color);
+                        // set.axisDependency = AxisDependency.RIGHT
+                        // set.fillColor=(color);
+                        return set;
                     case 'linechart':
                     default: {
-                        const set = new LineDataSet(data, wData.model.id, 'time', key);
+                        const set = new LineDataSet(data, wData.model.id, 'deltaHours', key);
                         set['modelId'] = wData.model.id;
-                        const enabled = item.hidden.indexOf(wData.model.id) === -1;
-                        set.setLineWidth(enabled ? LINE_WIDTH : 0);
-                        set.setDrawCircles(enabled);
-                        set.setCircleSize(LINE_WIDTH);
-                        // set.setDrawValues(true);
+                        set.lineWidth = enabled ? LINE_WIDTH : 0;
+                        set.highlightColor = colorPrimary;
+                        // set.drawCirclesEnabled = enabled;
+                        // set.circleRadius = LINE_WIDTH;
+                        // set.drawValuesEnabled=(true);
                         set.setColor(color);
-                        // set.setFillColor(color);
-                        newLegends.push({
-                            name: wData.model.name,
-                            shortName: wData.model.shortName,
-                            id: wData.model.id,
-                            enabled,
-                            color
-                        });
+                        // set.fillColor=(color);
+                        // DEV_LOG && console.log('lineChart', set['modelId'], enabled, color);
                         return set;
                     }
                 }
             });
+            xAxis.axisMinimum = -1.5;
+            xAxis.axisMaximum = xAxisMaximum + 1.5;
             legends.splice(0, legends.length, ...newLegends);
             // DEV_LOG && console.log('legends', JSON.stringify(legends));
             switch (chartType) {
                 case 'scatterchart':
-                    data.setData(new ScatterData(dataSets as ScatterDataSet[]));
+                    data.scatterData = new ScatterData(dataSets as ScatterDataSet[]);
+                    break;
+                case 'barchart':
+                    const barData = new BarData(dataSets as BarDataSet[]);
+                    const nbDataSets = dataSets.length;
+                    const groupSpace = 0.3 / nbDataSets;
+                    const barSpace = 0.01; // x2 dataset
+                    const barWidth = (1 - groupSpace - barSpace * nbDataSets) / nbDataSets;
+                    // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
+                    barData.barWidth = barWidth;
+                    barData.groupBars(0, groupSpace, barSpace, true, true); // start at x = 0
+                    // DEV_LOG && console.log('create barData', nbDataSets, barWidth, barSpace, groupSpace);
+                    data.barData = barData;
                     break;
                 default:
-                    data.setData(new LineData(dataSets as LineDataSet[]));
+                    data.lineData = new LineData(dataSets as LineDataSet[]);
                     break;
             }
-            chart.setData(data);
+
+            const limitLine = new LimitLine((Date.now() - globalStartTimestamp) / (3600 * 1000));
+            limitLine.lineWidth = 2;
+            limitLine.enableDashedLine(4, 2, 0);
+            limitLine.lineColor = colorOnSurfaceVariant;
+            xAxis.removeAllLimitLines();
+            xAxis.addLimitLine(limitLine);
+
+            chart.data = data;
+            // DEV_LOG && console.log('set combined data');
+            chart.data.notifyDataChanged();
+            chart.notifyDataSetChanged();
         }
     }
     $: if (chartView) {
@@ -214,15 +273,15 @@
         if (chart) {
             const newColor = $colors.colorOnSurface;
             DEV_LOG && console.log('onThemeChanged', !!chart, colorOnSurface, newColor);
-            const leftAxis = chart.getAxisLeft();
-            const xAxis = chart.getXAxis();
-            leftAxis.setTextColor(newColor);
-            xAxis.setTextColor(newColor);
+            const leftAxis = chart.leftAxis;
+            const xAxis = chart.xAxis;
+            leftAxis.textColor = newColor;
+            xAxis.textColor = newColor;
 
-            leftAxis.setGridColor(colorOnSurfaceVariant + '33');
-            xAxis.setGridColor(colorOnSurfaceVariant + '33');
-            leftAxis.getLimitLines().forEach((l) => l.setLineColor(newColor));
-            // chart.getLegend().setTextColor(newColor);
+            leftAxis.gridColor = colorOnSurfaceVariant + '33';
+            xAxis.gridColor = colorOnSurfaceVariant + '33';
+            leftAxis.limitLines.forEach((l) => (l.lineColor = newColor));
+            // chart.getLegend().textColor = (newColor);
             chart.invalidate();
         }
     });
@@ -230,11 +289,11 @@
     function redraw() {
         const chart = chartView?.nativeView;
         if (chartInitialized && chart) {
-            const xAxis = chart.getXAxis();
-            const leftAxis = chart.getAxisLeft();
-            leftAxis.setTextSize(10 * $fontScale);
-            xAxis.setTextSize(10 * $fontScale);
-            labelPaint.setTextSize(10 * $fontScale);
+            const xAxis = chart.xAxis;
+            const leftAxis = chart.leftAxis;
+            leftAxis.textSize = 10 * $fontScale;
+            xAxis.textSize = 10 * $fontScale;
+            labelPaint.textSize = 10 * $fontScale;
         }
         labelPaint.getFontMetrics(mFontMetricsBuffer);
         chartView?.nativeView.invalidate();
@@ -288,14 +347,17 @@
                 const chart = chartView?.nativeView;
                 if (chart) {
                     const enabled = legendItem.enabled;
-                    const set = chart.getData().getDataSetByLabel(legendItem.id, false);
+                    const set = chart.data.getDataSetByLabel(legendItem.id, false);
                     switch (item.chartType) {
                         case 'scatterchart':
-                            (set as ScatterDataSet).setScatterShapeSize(enabled ? 4 : 0);
+                            (set as ScatterDataSet).scatterShapeSize = enabled ? 4 : 0;
+                            break;
+                        case 'barchart':
+                            (set as BarDataSet).visible = enabled;
                             break;
                         default:
-                            (set as LineDataSet).setDrawCircles(enabled);
-                            (set as LineDataSet).setLineWidth(enabled ? LINE_WIDTH : 0);
+                            // (set as LineDataSet).drawCirclesEnabled = enabled;
+                            (set as LineDataSet).lineWidth = enabled ? LINE_WIDTH : 0;
                             break;
                     }
                     chart.invalidate();
@@ -309,7 +371,25 @@
     function getUnit(prop) {
         return PROP_TO_UNIT[prop];
     }
-
+    // let highlighted: any[] = [];
+    function onChartHighlight({ object: chart, entry, highlight, highlights }: { object: CombinedChart; entry: Entry; highlight: Highlight; highlights: Highlight[] }) {
+        // highlighted = highlights
+        //     .sort((a, b) => a.dataSetIndex - b.dataSetIndex)
+        //     .map((h) => {
+        //         const dataSet = (chart.data[h.dataType] as ChartData<any, any>).getDataSetByIndex(h.dataSetIndex);
+        //         return {
+        //             entry: h.entry,
+        //             x: h.x,
+        //             y: h.y,
+        //             xTouchPx: h.xTouchPx,
+        //             yTouchPx: h.yTouchPx,
+        //             modelName: dataSet['modelId'],
+        //             color: dataSet.color,
+        //             timestamp: globalStartTimestamp + h.x * 3600 * 1000
+        //         };
+        //     });
+        // DEV_LOG && console.log('onChartHighlight', highlights.length, JSON.stringify(highlighted));
+    }
 </script>
 
 <drawer
@@ -326,7 +406,22 @@
         <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} />
         <mdbutton class="mdi" horizontalAlignment="right" text="mdi-format-list-bulleted-square" variant="text" on:tap={() => drawer.toggle()} />
 
-        <combinedchart bind:this={chartView} row={1} />
+        <combinedchart bind:this={chartView} row={1} on:highlight={onChartHighlight} />
+        <!-- <label
+            backgroundColor={new Color(colorBackground).setAlpha(200)}
+            borderRadius={10}
+            horizontalAlignment="right"
+            margin="0 10 25 0"
+            row={1}
+            textAlignment="right"
+            verticalAlignment="bottom"
+            visibility={highlighted && highlighted.length ? 'visible' : 'hidden'}>
+            <cspan text={highlighted && highlighted.length ? dayjs(highlighted[0].timestamp).format('L LT') : null} />
+            {#each highlighted as high}
+                <cspan color={high.color} fontWeight="bold" text={'\n' + '-- '} />
+                <cspan text={high.y + getUnit(item.id)} />
+            {/each}
+        </label> -->
     </gridlayout>
     <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
         <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">

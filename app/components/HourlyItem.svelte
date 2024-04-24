@@ -1,67 +1,30 @@
 <script context="module" lang="ts">
-    import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, LayoutAlignment, LinearGradient, Paint, Path, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
+    import { Align, LayoutAlignment, LinearGradient, Paint, Path, Rect, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { UNITS, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
-    import { formatDate, formatTime, lc } from '~/helpers/locale';
+    import { formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
+    import { formatDate, formatTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { Hourly } from '~/services/providers/weather';
-    import { colors, fontScale, fonts, snowColor } from '~/variables';
+    import { getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    import { generateGradient } from '~/utils/utils';
+    import { colors, fontScale } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
     const pathPaint = new Paint();
-    pathPaint.setColor('blue');
     pathPaint.setStrokeWidth(5);
     pathPaint.setStyle(Style.STROKE);
     const curvePath = new Path();
 
     const oddColor = new Color(0.05 * 255, 120, 120, 120);
 
-    function tempColor(t, min, max) {
-        // Map the temperature to a 0-1 range
-        let a = (t - min) / (max - min);
-        a = a < 0 ? 0 : a > 1 ? 1 : a;
-
-        // Scrunch the green/cyan range in the middle
-        const sign = a < 0.5 ? -1 : 1;
-        a = (sign * Math.pow(2 * Math.abs(a - 0.5), 0.35)) / 2 + 0.5;
-
-        // Linear interpolation between the cold and hot
-        const h0 = 259;
-        const h1 = 12;
-        const h = h0 * (1 - a) + h1 * a;
-        return new Color(255, h, 75, 90, 'hsv');
-    }
-
     let lastGradient: { min; max; gradient: LinearGradient };
 
-    function generateGradient(nbColor, min, max, h, posOffset) {
-        // console.log('generateGradient', min, max)
-        const tmin = -20;
-        const tmax = 30;
-        // const tmin = Math.min(min, -30);
-        // const tmax = Math.max(max, 30);
-        const colors = [];
-        const positions = [];
-        const posDelta = 1 / nbColor;
-        const tempDelta = (max - min) / nbColor;
-        for (let index = 0; index < nbColor; index++) {
-            colors.push(tempColor(max - index * tempDelta, tmin, tmax));
-            positions.push(posOffset + posDelta * index);
-        }
-        return {
-            min,
-            max,
-            gradient: new LinearGradient(0, 0, 0, h, colors, positions, TileMode.CLAMP)
-        };
-    }
 </script>
 
 <script lang="ts">
@@ -201,6 +164,13 @@
         //     textPaint.setAlpha(255);
         //     paint.setAlpha(255);
         // }
+        if (item.aqi && item.aqiColor) {
+            paint.setColor(item.aqiColor);
+            canvas.drawRect(0, 0, w, 5, paint);
+            // paint.setColor(item.color);
+            // canvas.drawRect(0, h - 5, w, h, paint);
+            // } else {
+        }
         paint.setColor(item.color);
         canvas.drawRect(0, h - 10, w, h, paint);
 

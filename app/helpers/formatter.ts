@@ -4,42 +4,8 @@ import { cloudyColor, fonts, imperialUnits, metricDecimalTemp, nightColor, rainC
 import { formatDate } from './locale';
 import { CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { get } from 'svelte/store';
-import { WeatherProps } from '~/services/weatherData';
+import { PROP_TO_UNIT, UNITS, WeatherProps } from '~/services/weatherData';
 import { iconService } from '~/services/icon';
-
-export enum UNITS {
-    // InchHg = 'InchHg',
-    // MMHg = 'MMHg',
-    // kPa = 'kPa',
-    // hPa = 'hPa',
-    // Inch = 'inch',
-    IconId = 'iconId',
-    UV = '',
-    MM = 'mm',
-    CM = 'cm',
-    Percent = '%',
-    Celcius = '°',
-    Duration = 'duration',
-    Date = 'date',
-    Distance = 'm',
-    DistanceKm = 'km',
-    Speed = 'km/h',
-    SpeedM = 'm/h'
-}
-
-export const PROP_TO_UNIT = {
-    windSpeed: UNITS.Speed,
-    windGust: UNITS.Speed,
-    temperature: UNITS.Celcius,
-    temperatureMin: UNITS.Celcius,
-    temperatureMax: UNITS.Celcius,
-    iso: UNITS.Distance,
-    rainSnowLimit: UNITS.Distance,
-    cloudCover: UNITS.Percent,
-    uvIndex: UNITS.UV,
-    precipProbability: UNITS.Percent,
-    cloudCeiling: UNITS.Distance
-};
 
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
@@ -69,7 +35,10 @@ export function toImperialUnit(unit: UNITS, imperial = imperialUnits) {
             return unit;
     }
 }
-export function convertValueToUnit(value: any, unit: UNITS, options: { round?: boolean; roundedTo05?: boolean } = {}): [string | number, string] {
+export function convertValueToUnit(value: any, unit: UNITS, options: { round?: boolean; roundedTo05?: boolean } = {}): [number, string] {
+    if (value === undefined || value === null) {
+        return [null, unit];
+    }
     const round = options.round ?? true;
     switch (unit) {
         // case UNITS.kPa:

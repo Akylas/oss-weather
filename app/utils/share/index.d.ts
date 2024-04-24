@@ -1,5 +1,4 @@
 import { Color } from '@nativescript/core';
-export * from './share.common';
 
 export interface Content {
     title?: string;
@@ -11,6 +10,7 @@ export interface Content {
     url?: string;
 }
 export interface Options {
+    mimetype?: string;
     dialogTitle?: string;
     excludedActivityTypes?: string[];
     tintColor?: string | Color;

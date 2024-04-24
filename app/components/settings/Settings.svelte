@@ -18,7 +18,7 @@
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
     import { navigate } from '~/utils/svelte/ui';
-    import { hideLoading, openLink, showAlertOptionSelect } from '~/utils/ui';
+    import { hideLoading, isLandscape, openLink, showAlertOptionSelect } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, navigationBarHeight } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
@@ -506,6 +506,8 @@
                     const ThirdPartySoftwareBottomSheet = (await import('~/components/settings/ThirdPartySoftwareBottomSheet.svelte')).default;
                     showBottomSheet({
                         parent: this,
+                        peekHeight: 400,
+                        // skipCollapsedState: isLandscape(),
                         view: ThirdPartySoftwareBottomSheet
                     });
                     break;

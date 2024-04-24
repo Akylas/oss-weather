@@ -171,7 +171,12 @@ class NetworkService extends Observable {
 
 export const networkService = new NetworkService();
 
-async function handleRequestResponse<T>(response: https.HttpsResponse<https.HttpsResponseLegacy<T>>, requestParams: HttpRequestOptions, requestStartTime, retry): Promise<T> {
+async function handleRequestResponse<T>(
+    response: https.HttpsResponse<https.HttpsResponseLegacy<T>>,
+    requestParams: HttpRequestOptions,
+    requestStartTime,
+    retry
+): Promise<{ content: T; time: number }> {
     const statusCode = response.statusCode;
     let content: T;
     if (requestParams.noJSON !== true) {
@@ -188,7 +193,7 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
         content = response.reason as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    DEV_LOG && console.log('handleRequestResponse', statusCode, JSON.stringify(content));
+    DEV_LOG && console.log('handleRequestResponse', statusCode, response.headers, JSON.stringify(content));
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -216,7 +221,7 @@ async function handleRequestResponse<T>(response: https.HttpsResponse<https.Http
             });
         }
     }
-    return content as any as T;
+    return { content: content as any as T, time: dayjs(response.headers['Date']).valueOf() } as RequestResult<T>;
 }
 function getRequestHeaders(requestParams?: HttpRequestOptions) {
     const headers = requestParams?.headers ?? {};
@@ -225,6 +230,11 @@ function getRequestHeaders(requestParams?: HttpRequestOptions) {
     }
 
     return headers;
+}
+
+export interface RequestResult<T> {
+    content: T;
+    time: number;
 }
 export async function request<T = any>(requestParams: HttpRequestOptions, retry = 0) {
     if (requestParams.offlineSupport !== true && !networkService.connected) {
@@ -259,15 +269,14 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
 
     const startOfHour = now.startOf('h').valueOf();
     const endOfMinute = now.endOf('m').valueOf();
+    const firstHourIndex = weatherData.hourly.findIndex((h) => h.time >= startOfHour);
+    const firstMinuteIndex = weatherData.minutely?.data ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
+    const hours = firstHourIndex >= 0 ? weatherData.hourly.slice(firstHourIndex) : [];
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
             const dailyData = weatherData.daily.data[index];
             // eslint-disable-next-line prefer-const
-            let { precipAccumulation, cloudCover, cloudCeiling, iso, isDay, uvIndex, windGust, hourly, ...current } = dailyData;
-
-            const firstHourIndex = hourly.findIndex((h) => h.time >= startOfHour);
-            const firstMinuteIndex = weatherData.minutely?.data ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-            const hours = firstHourIndex >= 0 ? hourly.slice(firstHourIndex) : [];
+            let { precipAccumulation, cloudCover, cloudCeiling, iso, isDay, uvIndex, windGust, ...current } = dailyData;
 
             current = firstHourIndex >= 0 ? { ...hours[index] } : current;
             if (firstHourIndex === 0 && firstMinuteIndex > 10) {
@@ -368,7 +377,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
             limit: 40
         }
     });
-    return results.features
+    return results.content.features
         .filter((r) => supportedOSMKeys.indexOf(r.properties.osm_key) !== -1 || supportedOSMValues.indexOf(r.properties.osm_value) !== -1)
         .map(
             (f) =>

@@ -1,5 +1,6 @@
 import { Application, Color } from '@nativescript/core';
-import { Content, Options } from './share';
+import { Content, Options } from '.';
+export * from './index.common';
 
 @NativeClass
 class ItemSource extends NSObject implements UIActivityItemSource {
@@ -10,7 +11,6 @@ class ItemSource extends NSObject implements UIActivityItemSource {
     metadata?: { title: string; image?; icon?; originalURL? };
     static initWithData(data, placeholder, subject, metadata) {
         const delegate = ItemSource.new() as ItemSource;
-        console.log('ItemSource', 'initWithData', delegate, data, placeholder, subject, metadata);
         delegate.data = data;
         delegate.placeholder = placeholder;
         delegate.subject = subject;
@@ -22,11 +22,9 @@ class ItemSource extends NSObject implements UIActivityItemSource {
     //     throw new Error('Method not implemented.');
     // }
     activityViewControllerItemForActivityType(activityViewController: UIActivityViewController, activityType: string) {
-        console.log('ItemSource', 'activityViewControllerItemForActivityType');
         return this.data;
     }
     activityViewControllerLinkMetadata?(activityViewController: UIActivityViewController) {
-        console.log('ItemSource', 'activityViewControllerLinkMetadata');
         if (this.metadata) {
             const metadata = LPLinkMetadata.new();
             metadata.title = this.metadata.title;
@@ -45,11 +43,9 @@ class ItemSource extends NSObject implements UIActivityItemSource {
         return null;
     }
     activityViewControllerPlaceholderItem(activityViewController: UIActivityViewController) {
-        console.log('ItemSource', 'activityViewControllerPlaceholderItem');
         return this.placeholder;
     }
     activityViewControllerSubjectForActivityType?(activityViewController: UIActivityViewController, activityType: string): string {
-        console.log('ItemSource', 'activityViewControllerSubjectForActivityType');
         return this.subject;
     }
     // activityViewControllerThumbnailImageForActivityTypeSuggestedSize?(activityViewController: UIActivityViewController, activityType: string, size: any): UIImage {

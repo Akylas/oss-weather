@@ -1,4 +1,5 @@
-import { Application, Device, Frame } from '@nativescript/core';
+import { LinearGradient, TileMode } from '@nativescript-community/ui-canvas';
+import { Application, Color, Device, Frame, ImageSource, Utils } from '@nativescript/core';
 import { Dayjs } from 'dayjs';
 import { FavoriteLocation } from '~/helpers/favorites';
 import { lc } from '~/helpers/locale';
@@ -34,4 +35,48 @@ export function isBRABounds(location: FavoriteLocation) {
     const coords = location.coord;
     DEV_LOG && console.log('isBRABounds', coords);
     return coords.lon >= BRA_BOUNDS[0] && coords.lon <= BRA_BOUNDS[2] && coords.lat >= BRA_BOUNDS[1] && coords.lat <= BRA_BOUNDS[3];
+}
+export function loadImage(imagePath, loadOptions: { width?; height?; resizeThreshold?; sourceWidth?; sourceHeight?; jpegQuality? } = {}) {
+    loadOptions.resizeThreshold = loadOptions.resizeThreshold || 4500;
+    if (__IOS__) {
+        return new ImageSource(ImageUtils.readImageFromFileStringOptions(imagePath, JSON.stringify(loadOptions)));
+    } else {
+        return new ImageSource(com.akylas.weather.ImageUtils.Companion.readBitmapFromFile(Utils.android.getApplicationContext(), imagePath, JSON.stringify(loadOptions)));
+    }
+}
+
+export function tempColor(t, min, max) {
+    // Map the temperature to a 0-1 range
+    let a = (t - min) / (max - min);
+    a = a < 0 ? 0 : a > 1 ? 1 : a;
+
+    // Scrunch the green/cyan range in the middle
+    const sign = a < 0.5 ? -1 : 1;
+    a = (sign * Math.pow(2 * Math.abs(a - 0.5), 0.35)) / 2 + 0.5;
+
+    // Linear interpolation between the cold and hot
+    const h0 = 259;
+    const h1 = 12;
+    const h = h0 * (1 - a) + h1 * a;
+    return new Color(255, h, 75, 90, 'hsv');
+}
+export function generateGradient(nbColor, min, max, h, posOffset) {
+    // console.log('generateGradient', min, max)
+    const tmin = -20;
+    const tmax = 30;
+    // const tmin = Math.min(min, -30);
+    // const tmax = Math.max(max, 30);
+    const colors = [];
+    const positions = [];
+    const posDelta = 1 / nbColor;
+    const tempDelta = (max - min) / nbColor;
+    for (let index = 0; index < nbColor; index++) {
+        colors.push(tempColor(max - index * tempDelta, tmin, tmax));
+        positions.push(posOffset + posDelta * index);
+    }
+    return {
+        min,
+        max,
+        gradient: new LinearGradient(0, 0, 0, h, colors, positions, TileMode.CLAMP)
+    };
 }

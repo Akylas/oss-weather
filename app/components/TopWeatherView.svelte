@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
     import { LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
@@ -28,6 +28,10 @@
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
     const textPaint = new Paint();
+    const arcPaint = new Paint();
+    arcPaint.style = Style.STROKE;
+    arcPaint.setTextAlign(Align.CENTER);
+    arcPaint.strokeCap = Cap.ROUND;
 
     interface Item extends Currently {
         minutely?: MinutelyData[];
@@ -58,7 +62,6 @@
         intensity: number;
     }[];
 
-    let color: string | Color;
     let hasPrecip = false;
 
     // we need a factor cause using timestamp means
@@ -96,36 +99,36 @@
                 data.unshift({ time: data[0].time - 1, intensity: 0 });
             }
             DEV_LOG && console.log('data', JSON.stringify(data));
-            const xAxis = chart.getXAxis();
-            const leftAxis = chart.getAxisLeft();
+            const xAxis = chart.xAxis;
+            const leftAxis = chart.leftAxis;
             if (!chartInitialized) {
                 chartInitialized = true;
-                chart.setNoDataText(null);
-                chart.setAutoScaleMinMaxEnabled(true);
-                chart.setDoubleTapToZoomEnabled(false);
-                chart.getLegend().setEnabled(false);
-                xAxis.setEnabled(true);
-                xAxis.setTextSize(10 * $fontScale);
-                xAxis.setLabelTextAlign(Align.CENTER);
-                xAxis.setDrawGridLines(false);
+                chart.noDataText = null;
+                chart.autoScaleMinMaxEnabled = true;
+                chart.doubleTapToZoomEnabled = false;
+                // chart.getLegend().enabled =(false);
+                xAxis.enabled = true;
+                xAxis.textSize = 10 * $fontScale;
+                xAxis.labelTextAlign = Align.CENTER;
+                xAxis.drawGridLines = false;
                 // xAxis.setCenterAxisLabels(true);
                 xAxis.ensureLastLabel = true;
                 // xAxis.setGranularity(10 * 60 * 1000)
                 // xAxis.setGranularityEnabled(true)
-                xAxis.setDrawMarkTicks(true);
-                xAxis.setValueFormatter({
+                xAxis.drawMarkTicks = true;
+                xAxis.valueFormatter = {
                     getAxisLabel: (value, axis) => dayjs(value / timeFactor + delta).diff(now / timeFactor + delta, 'm') + 'm'
-                });
-                xAxis.setPosition(XAxisPosition.BOTTOM);
+                };
+                xAxis.position = XAxisPosition.BOTTOM;
 
                 // const rightAxis = char   t.getAxisRight();
                 // rightAxis.setEnabled(false);
 
-                leftAxis.setAxisMinimum(0);
-                leftAxis.setDrawGridLines(false);
-                leftAxis.setDrawLabels(false);
-                leftAxis.setDrawMarkTicks(false);
-                leftAxis.setDrawAxisLine(false);
+                leftAxis.axisMinimum = 0;
+                leftAxis.drawGridLines = false;
+                leftAxis.drawLabels = false;
+                leftAxis.drawMarkTicks = false;
+                leftAxis.drawAxisLine = false;
                 // leftAxis.removeAllLimitLines();
                 [
                     { limit: 1, label: l('light') },
@@ -133,86 +136,87 @@
                     { limit: 3, label: l('heavy') }
                 ].forEach((l) => {
                     const limitLine = new LimitLine(l.limit, l.label.toUpperCase());
-                    limitLine.setLineWidth(1);
-                    limitLine.setXOffset(0);
-                    limitLine.setTextSize(8 * $fontScale);
-                    limitLine.setYOffset(1);
+                    limitLine.lineWidth = 1;
+                    limitLine.xOffset = 0;
+                    limitLine.textSize = 8 * $fontScale;
+                    limitLine.yOffset = 1;
                     limitLine.enableDashedLine(2, 2, 0);
                     // limitLine.setLineColor('red');
-                    limitLine.setLabelPosition(LimitLabelPosition.RIGHT_TOP);
+                    limitLine.labelPosition = LimitLabelPosition.RIGHT_TOP;
                     leftAxis.addLimitLine(limitLine);
                 });
             }
             const limitColor = new Color(colorOnSurface).setAlpha(100).hex;
-            leftAxis.getLimitLines().forEach((l) => {
-                l.setTextColor(limitColor);
-                l.setLineColor(limitColor);
+            leftAxis.limitLines.forEach((l) => {
+                l.textColor = limitColor;
+                l.lineColor = limitColor;
             });
-            xAxis.setTextColor(colorOnSurface);
-            xAxis.setAxisMinValue(0);
+            xAxis.textColor = colorOnSurface;
+            xAxis.axisMinimum = 0;
 
             // we want exactly one label per 10 min
             const labelCount = Math.min(data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0, 7);
-            xAxis.setLabelCount(labelCount, true);
+            xAxis.labelCount = labelCount;
+            xAxis.forceLabelsEnabled = true;
 
             let needsToSetData = false;
             let needsUpdate = false;
             hasPrecip = data.some((d) => d.intensity > 0);
 
-            leftAxis.setAxisMinimum(0);
-            leftAxis.setAxisMaximum(4);
-            leftAxis.setDrawLimitLines(hasPrecip);
+            leftAxis.axisMinimum = 0;
+            leftAxis.axisMaximum = 4;
+            leftAxis.drawLimitLines = hasPrecip;
             if (hasPrecip) {
                 const color = item.hourly?.[0]?.precipColor || rainColor.hex;
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'intensity', 'time', 'intensity');
-                    precipChartSet.setAxisDependency(AxisDependency.LEFT);
-                    precipChartSet.setLineWidth(1);
-                    // precipChartSet.setDrawCircles(true);
-                    precipChartSet.setDrawFilled(true);
-                    precipChartSet.setFillAlpha(150);
-                    precipChartSet.setMode(Mode.CUBIC_BEZIER);
-                    precipChartSet.setCubicIntensity(0.4);
+                    precipChartSet.axisDependency = AxisDependency.LEFT;
+                    precipChartSet.lineWidth = 1;
+                    // precipChartSet.drawCircles=(true);
+                    precipChartSet.drawFilledEnabled = true;
+                    precipChartSet.fillAlpha = 150;
+                    precipChartSet.mode = Mode.CUBIC_BEZIER;
+                    precipChartSet.cubicIntensity = 0.4;
                 } else {
-                    precipChartSet.setValues(data);
+                    precipChartSet.values = data;
                     needsUpdate = true;
                 }
 
                 precipChartSet.setColor(color);
-                precipChartSet.setFillColor(color);
-            } else if (precipChartSet && precipChartSet.getEntryCount() > 0) {
+                precipChartSet.fillColor = color;
+            } else if (precipChartSet && precipChartSet.entryCount > 0) {
                 precipChartSet.clear();
                 needsToSetData = true;
             }
             // const hasCloud = data.some((d) => d.cloudCeiling > 0);
             // const rightAxis = chart.getAxisRight();
-            // rightAxis.setDrawLabels(hasCloud);
+            // rightAxis.drawLabels=(hasCloud);
             // // console.log('hasCloud', hasCloud, data);
             // if (hasCloud) {
-            //     // rightAxis.setLabelCount(4, false);
+            //     // rightAxis.labelCount=(4, false);
             //     if (!cloudChartSet) {
             //         needsToSetData = true;
             //         cloudChartSet = new LineDataSet(data, 'cloudCeiling', 'time', 'cloudCeiling');
             //         cloudChartSet.setAxisDependency(AxisDependency.RIGHT);
-            //         cloudChartSet.setLineWidth(2);
-            //         cloudChartSet.setDrawIcons(false);
-            //         cloudChartSet.setDrawValues(false);
-            //         cloudChartSet.setDrawFilled(false);
+            //         cloudChartSet.lineWidth=(2);
+            //         cloudChartSet.drawIconsEnabled=(false);
+            //         cloudChartSet.drawValuesEnabled=(false);
+            //         cloudChartSet.drawFilled=(false);
             //         cloudChartSet.setColor('gray');
-            //         cloudChartSet.setMode(Mode.HORIZONTAL_BEZIER);
+            //         cloudChartSet.mode=(Mode.HORIZONTAL_BEZIER);
             //     } else {
-            //         cloudChartSet.setValues(data);
+            //         cloudChartSet.values=(data);
             //         needsUpdate = true;
             //     }
             // } else if (cloudChartSet) {
             //     cloudChartSet.clear();
             // }
             if (needsToSetData) {
-                chart.setData(new LineData([precipChartSet].filter((s) => !!s)));
+                chart.data = new LineData([precipChartSet].filter((s) => !!s));
             } else if (needsUpdate) {
                 precipChartSet.notifyDataSetChanged();
-                chart.getData().notifyDataChanged();
+                chart.data.notifyDataChanged();
                 chart.notifyDataSetChanged();
             }
         }
@@ -230,28 +234,25 @@
     onThemeChanged(() => {
         const chart = lineChart?.nativeView;
         if (chart) {
-            chart.getXAxis().setTextColor(colorOnSurface);
+            chart.xAxis.textColor = colorOnSurface;
             chart.invalidate();
             const limitColor = new Color(colorOnSurface).setAlpha(0.5).hex;
-            chart
-                .getAxisLeft()
-                .getLimitLines()
-                .forEach((l) => {
-                    l.setTextColor(limitColor);
-                    l.setLineColor(limitColor);
-                });
+            chart.leftAxis.limitLines.forEach((l) => {
+                l.textColor = limitColor;
+                l.lineColor = limitColor;
+            });
         }
     });
     let canvasView;
     function redraw() {
         const chart = lineChart?.nativeView;
         if (chartInitialized && chart) {
-            const xAxis = chart.getXAxis();
-            const leftAxis = chart.getAxisLeft();
-            leftAxis.getLimitLines().forEach((l) => {
-                l.setTextSize(8 * $fontScale);
+            const xAxis = chart.xAxis;
+            const leftAxis = chart.leftAxis;
+            leftAxis.limitLines.forEach((l) => {
+                l.textSize = 8 * $fontScale;
             });
-            xAxis.setTextSize(10 * $fontScale);
+            xAxis.textSize = 10 * $fontScale;
         }
         lineChart?.nativeView.invalidate();
         canvasView?.nativeView.invalidate();
@@ -260,33 +261,38 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getIconsData(item);
+        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
 
         const iconsTop = hasPrecip ? 45 : topViewHeight / 2 - 20 * $fontScale;
         const iconsLeft = 26;
         centeredItemsToDraw.forEach((c, index) => {
             const x = index * 45 * $fontScale + iconsLeft;
             const paint = c.paint || textIconPaint;
-            paint.setTextSize(c.iconFontSize);
+            paint.textSize = c.iconFontSize;
             paint.setColor(c.color || colorOnSurface);
-            if (c.icon) {
-                canvas.drawText(c.icon, x, iconsTop + 20, paint);
-            }
-            if (c.value) {
-                textIconPaint.setTextSize(12 * $fontScale);
-                textIconPaint.setColor(c.color || colorOnSurface);
-                canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
-            }
-            if (c.subvalue) {
-                textIconPaint.setTextSize(9 * $fontScale);
-                textIconPaint.setColor(c.color || colorOnSurface);
-                canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
+            if (c.customDraw) {
+                c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);
+            } else {
+                if (c.icon) {
+                    canvas.drawText(c.icon, x, iconsTop + 20, paint);
+                }
+                if (c.value) {
+                    textIconPaint.textSize = 12 * $fontScale;
+                    textIconPaint.setColor(c.color || colorOnSurface);
+                    canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
+                }
+                if (c.subvalue) {
+                    textIconPaint.textSize = 9 * $fontScale;
+                    textIconPaint.setColor(c.color || colorOnSurface);
+                    canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
+                }
             }
         });
-        textPaint.setTextAlign(Align.LEFT);
+
         textPaint.setColor(colorOnSurface);
+        textPaint.setTextAlign(Align.LEFT);
         if (item.temperature) {
-            textPaint.setTextSize(36 * $fontScale);
+            textPaint.textSize = 36 * $fontScale;
             canvas.drawText(formatWeatherValue(item, 'temperature'), 10, 36 * $fontScale, textPaint);
         }
         const nString = createNativeAttributedString({
@@ -311,7 +317,7 @@
 
         canvas.save();
         canvas.translate(10, h - 8 - 14 * $fontScale);
-        textPaint.setTextSize(14 * $fontScale);
+        textPaint.textSize = 14 * $fontScale;
         staticLayout = new StaticLayout(
             createNativeAttributedString({
                 spans: [
@@ -344,9 +350,9 @@
         canvas.restore();
 
         textPaint.setTextAlign(Align.RIGHT);
-        textPaint.setTextSize(20 * $fontScale);
+        textPaint.textSize = 20 * $fontScale;
         canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22 * $fontScale, textPaint);
-        textPaint.setTextSize(14 * $fontScale);
+        textPaint.textSize = 14 * $fontScale;
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
 
         textPaint.setColor(colorOutline);

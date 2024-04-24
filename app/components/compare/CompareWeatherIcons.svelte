@@ -20,6 +20,7 @@
 <script lang="ts">
     import { Template } from 'svelte-native/components';
     import { showError } from '~/utils/error';
+    import { loadImage } from '~/utils/utils';
 
     let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors);
@@ -46,7 +47,7 @@
         if (icon) {
             return icon;
         }
-        icon = iconCache[realIcon] = ImageSource.fromFileSync(`${iconService.iconSetFolderPath}/images/${realIcon}.png`);
+        icon = iconCache[realIcon] = loadImage(`${iconService.iconSetFolderPath}/images/${realIcon}.png`, { resizeThreshold: 70 });
         return icon;
     }
     onDestroy(() => {
@@ -56,7 +57,7 @@
         }
     });
     $: {
-        columns = Math.max(...(item.forecast === 'daily' ? item.weatherData.map((w) => w.weatherData.daily.data.length) : item.weatherData.map((w) => w.weatherData.daily.data[0].hourly.length)));
+        columns = Math.max(...(item.forecast === 'daily' ? item.weatherData.map((w) => w.weatherData.daily.data.length) : item.weatherData.map((w) => w.weatherData.hourly.length)));
         width = columns * COLUMN_WIDTH + 90;
     }
     $: height = item.weatherData.length * (COLUMN_HEIGHT + 6) + 30;
@@ -112,7 +113,7 @@
             let lastTimestamp;
 
             if (item.forecast === 'hourly') {
-                data.weatherData.daily.data[0].hourly.forEach((d) => {
+                data.weatherData.hourly.forEach((d) => {
                     if (d.time >= startOfHourTimeStamp) {
                         const deltaHours = lastTimestamp ? Math.round((d.time - lastTimestamp) / 3600000) : -1;
                         if (deltaHours > 1) {

@@ -9,6 +9,8 @@
         "com.google.android.material.datepicker:MaterialDatePicker",
         "android.text.format:DateFormat",
         "androidx.core.splashscreen:SplashScreen",
+        "com.akylas.weather:ImageUtils",
+        "com.akylas.weather:ImageUtils.Companion",
         "com.akylas.weather:Utils"
     ],
     "blacklist": [

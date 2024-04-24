@@ -7,6 +7,7 @@ module.exports = {
     id: 'com.akylas.weather',
     appResourcesPath: 'App_Resources',
     buildPath: 'platforms',
+    webpackPackageName: '@akylas/nativescript-webpack',
     webpackConfigPath: 'app.webpack.config.js',
     appPath: 'app',
     forceLog: loggingEnabled,
@@ -15,6 +16,7 @@ module.exports = {
         defaultLanguage: 'en'
     },
     android: {
+        runtimePackageName: '@akylas/nativescript-android-runtime',
         gradleVersion: '8.3',
         markingMode: 'none',
         codeCache: true,

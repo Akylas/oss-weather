@@ -2,7 +2,7 @@ const webpackConfig = require('./webpack.config.js');
 const webpack = require('webpack');
 const { readFileSync, readdirSync } = require('fs');
 const { dirname, join, relative, resolve } = require('path');
-const nsWebpack = require('@nativescript/webpack');
+const nsWebpack = require('@akylas/nativescript-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
@@ -688,7 +688,7 @@ module.exports = (env, params = {}) => {
                     collapse_vars: platform !== 'android',
                     sequences: platform !== 'android',
                     passes: 3,
-                    drop_console: production && noconsole
+                    drop_console: production && noconsole,
                 }
             }
         })

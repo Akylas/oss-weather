@@ -34,19 +34,22 @@
         try {
             loading = true;
             currentUrl = `https://www.meteoblue.com/fr/meteo/prevision/${tabs[tabIndex].urlId}/${weatherLocation.coord.lat.toFixed(3)}N${weatherLocation.coord.lon.toFixed(3)}E`;
-            const result = await request<string>({
-                url: currentUrl,
-                method: 'GET',
-                offlineSupport: true, // not to throw error when no network
-                headers: {
-                    'Cache-Control': networkConnected ? 'max-age=86400' : 'only-if-cached',
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0' // meteoblue wants this
-                },
-                noJSON: true
-            });
+            const result = (
+                await request<string>({
+                    url: currentUrl,
+                    method: 'GET',
+                    offlineSupport: true, // not to throw error when no network
+                    headers: {
+                        'Cache-Control': networkConnected ? 'max-age=60*60' : 'only-if-cached',
+                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0' // meteoblue wants this
+                    },
+                    noJSON: true
+                })
+            ).content;
             const match = result.match(/(?:data-(?:href|original)=)["'](\/\/my\.meteoblue\.com\/images\/.*?["'])/);
             if (match) {
-                const newImageSrc = 'https:' + match[1].slice(1, -1).replace(/&amp;/g, '&');
+                const newImageSrc = 'https:' + match[1].slice(0, -1).replace(/&amp;/g, '&');
+                DEV_LOG && console.log('newImageSrc', newImageSrc);
                 if (networkConnected) {
                     getImagePipeline().evictFromCache(newImageSrc);
                 }
@@ -59,8 +62,9 @@
                 currentImageSrc = null;
             }
         } catch (error) {
-            showError(error);
             loading = false;
+            showError(error);
+        } finally {
         }
     }
     onMount(() => {

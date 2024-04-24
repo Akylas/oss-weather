@@ -16,6 +16,7 @@ import { CSSUtils } from '@nativescript/core/css/system-classes';
 import { WeatherLocation } from '~/services/api';
 import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
+import { isLandscape } from '~/utils/ui';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -289,6 +290,8 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             await showBottomSheet({
                 parent: rootView,
                 view: BottomSheetWeatherPage as any,
+                peekHeight: 400,
+                // skipCollapsedState: isLandscape(),
                 dismissOnBackgroundTap: true,
                 dismissOnDraggingDownSheet: true,
                 props: {

@@ -6,7 +6,7 @@
     import { actionBarHeight, fontScale } from '~/variables';
 
     export let title: string = null;
-    export let height = $actionBarHeight;
+    export let height = null;
     export let showMenuIcon: boolean = false;
     export let canGoBack: boolean = false;
     export let modalWindow: boolean = false;
@@ -48,7 +48,7 @@
     DEV_LOG && console.log('height', height);
 </script>
 
-<gridlayout class="actionBar" columns="auto,*,auto" rows={`${height},auto`} on:swipe {...$$restProps} on:tap={() => {}}>
+<gridlayout class="actionBar" columns="auto,*,auto" rows={`${height || $actionBarHeight},auto`} on:swipe {...$$restProps} on:tap={() => {}}>
     <label
         id="actionBarTitle"
         class="actionBarTitle"

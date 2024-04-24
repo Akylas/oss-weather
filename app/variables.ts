@@ -110,37 +110,60 @@ function updateSystemFontScale(value) {
     }
 }
 
+function getRootViewStyle() {
+    let rootView = Application.getRootView();
+    if (rootView?.parent) {
+        rootView = rootView.parent as any;
+    }
+    return rootView?.style;
+}
+
 const onInitRootView = function () {
     // we need a timeout to read rootView css variable. not 100% sure why yet
     if (__ANDROID__) {
         // setTimeout(() => {
-        const rootView = Application.getRootView();
-
-        const rootViewStyle = rootView?.style;
+        const rootViewStyle = getRootViewStyle();
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
-        actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
-        actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
-        const activity = Application.android.startActivity;
+        const context = Utils.android.getApplicationContext();
         const nUtils = com.akylas.weather.Utils;
-        const nActionBarHeight = nUtils.getDimensionFromInt(activity, 16843499);
-        if (nActionBarHeight > 0) {
-            actionBarHeight.set(Utils.layout.toDeviceIndependentPixels(nActionBarHeight));
-        }
-        const resources = Utils.android.getApplicationContext().getResources();
+
+        const resources = context.getResources();
         updateSystemFontScale(resources.getConfiguration().fontScale);
+        isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
+
+        // NavigationBar
         const id = resources.getIdentifier('config_showNavigationBar', 'bool', 'android');
         let resourceId = resources.getIdentifier('navigation_bar_height', 'dimen', 'android');
         if (id > 0 && resourceId > 0 && (resources.getBoolean(id) || (!PRODUCTION && isSimulator()))) {
             navigationBarHeight.set(Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId)));
         }
-        isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
+
+        // StatusBar
         resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
-        if (id > 0 && resourceId > 0) {
+        if (resourceId > 0) {
             innerStatusBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
             statusBarHeight.set(innerStatusBarHeight);
         }
         globalMarginTop = innerStatusBarHeight;
-        // }, 0);
+
+        // ActionBar
+        // resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
+        let nActionBarHeight = Utils.layout.toDeviceIndependentPixels(nUtils.getDimensionFromInt(context, 16843499 /* actionBarSize */));
+        // let nActionBarHeight = 0;
+        // if (resourceId > 0) {
+        //     nActionBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
+        // }
+        if (nActionBarHeight > 0) {
+            actionBarHeight.set(nActionBarHeight);
+            rootViewStyle?.setUnscopedCssVariable('--actionBarHeight', nActionBarHeight + '');
+        } else {
+            nActionBarHeight = parseFloat(rootViewStyle.getCssVariable('--actionBarHeight'));
+            actionBarHeight.set(nActionBarHeight);
+        }
+        const nActionBarButtonHeight = nActionBarHeight - 10;
+        actionBarButtonHeight.set(nActionBarButtonHeight);
+        rootViewStyle?.setUnscopedCssVariable('--actionBarButtonHeight', nActionBarButtonHeight + '');
+        DEV_LOG && console.log('actionBarHeight', nActionBarHeight);
     }
 
     if (__IOS__) {
@@ -151,7 +174,6 @@ const onInitRootView = function () {
         // DEV_LOG && console.log('fonts', get(fonts));
         updateSystemFontScale(getCurrentFontScale());
         Application.on(Application.fontScaleChangedEvent, (event) => updateSystemFontScale(event.newValue));
-        DEV_LOG && console.log('getCurrentFontScale', getCurrentFontScale());
         actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
         navigationBarHeight.set(Application.ios.window.safeAreaInsets.bottom);
@@ -161,7 +183,25 @@ const onInitRootView = function () {
     Application.off(Application.initRootViewEvent, onInitRootView);
     // getRealThemeAndUpdateColors();
 };
+function onOrientationChanged() {
+    if (__ANDROID__) {
+        const rootViewStyle = getRootViewStyle();
+        const context = Utils.android.getApplicationContext();
+        const nUtils = com.akylas.weather.Utils;
+
+        const nActionBarHeight = Utils.layout.toDeviceIndependentPixels(nUtils.getDimensionFromInt(context, 16843499 /* actionBarSize */));
+        if (nActionBarHeight > 0) {
+            actionBarHeight.set(nActionBarHeight);
+            rootViewStyle?.setUnscopedCssVariable('--actionBarHeight', nActionBarHeight + '');
+        }
+        const nActionBarButtonHeight = nActionBarHeight - 10;
+        actionBarButtonHeight.set(nActionBarButtonHeight);
+        rootViewStyle?.setUnscopedCssVariable('--actionBarButtonHeight', nActionBarButtonHeight + '');
+        DEV_LOG && console.log('onOrientationChanged actionBarHeight', nActionBarHeight, nActionBarButtonHeight);
+    }
+}
 Application.on(Application.initRootViewEvent, onInitRootView);
+Application.on(Application.orientationChangedEvent, onOrientationChanged);
 Application.on('activity_started', () => {
     if (__ANDROID__) {
         const resources = Utils.android.getApplicationContext().getResources();
@@ -169,17 +209,22 @@ Application.on('activity_started', () => {
     }
 });
 
-export function updateThemeColors(theme: string) {
+let lastThemeColor: string;
+export function updateThemeColors(theme: string, force = false) {
     DEV_LOG && console.log('updateThemeColors', theme);
-    const currentColors = get(colors);
     let rootView = Application.getRootView();
     if (rootView?.parent) {
         rootView = rootView.parent as any;
     }
     const rootViewStyle = rootView?.style;
-    if (!rootViewStyle) {
+    if (!rootViewStyle || !theme) {
         return;
     }
+    // if (!force && lastThemeColor === theme) {
+    //     return;
+    // }
+    lastThemeColor = theme;
+    const currentColors = get(colors);
     // rootViewStyle?.setUnscopedCssVariable('--systemFontScale', systemFontScale + '');
     if (__ANDROID__) {
         const nUtils = com.akylas.weather.Utils;

@@ -139,6 +139,8 @@
                                     const result = await showBottomSheet({
                                         parent: null,
                                         view: OptionSelect,
+                                        peekHeight: 400,
+                                        // skipCollapsedState: isLandscape(),
                                         ignoreTopSafeArea: true,
                                         props: {
                                             options,
@@ -353,6 +355,8 @@
             const ApiKeysBottomSheet = (await import('~/components/APIKeysBottomSheet.svelte')).default;
             const result: boolean = await showBottomSheet({
                 parent: page,
+                peekHeight: 400,
+                // skipCollapsedState: isLandscape(),
                 view: ApiKeysBottomSheet,
                 dismissOnBackgroundTap: true,
                 dismissOnDraggingDownSheet: true
@@ -425,6 +429,8 @@
             await showBottomSheet({
                 parent: page,
                 view: AlertView,
+                peekHeight: 400,
+                // skipCollapsedState: isLandscape(),
                 trackingScrollView: 'scrollView',
                 props: {
                     alerts: weatherData.alerts
@@ -451,7 +457,8 @@
             await showBottomSheet({
                 parent,
                 view: AstronomyView,
-                // peekHeight: 300,
+                peekHeight: 400,
+                // skipCollapsedState: isLandscape(),
                 props: {
                     location: weatherLocation,
                     startTime: dayjs(event.time)

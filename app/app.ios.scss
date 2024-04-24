@@ -33,12 +33,3 @@ mdcardview {
 mdtextfield[variant=none] {
     padding:0;
 }
-
-page {
-    status-bar-style: light;
-    .ns-dark &,
-    &.ns-dark, .ns-black &,
-    &.ns-black {
-        status-bar-style: dark;
-    }
-}

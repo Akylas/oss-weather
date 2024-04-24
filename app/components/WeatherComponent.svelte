@@ -1,17 +1,15 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Application } from '@nativescript/core';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
-    import { FavoriteLocation } from '~/helpers/favorites';
-    import { WeatherLocation } from '~/services/api';
-    import { prefs } from '~/services/preferences';
-    import { actionBarHeight, fontScale, navigationBarHeight, onImperialChanged, screenHeightDips, statusBarHeight } from '~/variables';
     import { onThemeChanged } from '~/helpers/theme';
+    import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
+    import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { actionBarHeight, fontScale, navigationBarHeight, onImperialChanged, screenHeightDips, screenWidthDips, statusBarHeight } from '~/variables';
 
     export let items: any[];
     export let weatherLocation: WeatherLocation;
@@ -20,7 +18,7 @@
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
     let topHeight = 0;
-    $: topHeight = Math.max(Math.min(screenHeightDips - $actionBarHeight - $navigationBarHeight - $statusBarHeight - 100 * $fontScale, 470 * $fontScale), 370 * $fontScale);
+    $: topHeight = Math.max(Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - $navigationBarHeight - $statusBarHeight - 100 * $fontScale, 470 * $fontScale), 370 * $fontScale);
 
     function itemTemplateSelector(item, index, items) {}
     let isLayedout = false;

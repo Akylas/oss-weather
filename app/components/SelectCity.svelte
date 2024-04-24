@@ -27,6 +27,7 @@
     function unfocus() {
         clearSearchTimeout();
     }
+
     function onTextChange(e) {
         const query = e.value;
         clearSearchTimeout();
@@ -34,7 +35,7 @@
         if (query && query.length > 2) {
             searchAsTypeTimer = setTimeout(() => {
                 searchAsTypeTimer = null;
-                searchCity(query);
+                searchCity();
             }, 500);
         } else if (currentSearchText && currentSearchText.length > 2) {
             unfocus();
@@ -42,10 +43,11 @@
         currentSearchText = query;
     }
 
-    async function searchCity(query) {
+    async function searchCity() {
         try {
+            clearSearchTimeout();
             loading = true;
-            searchResults = new ObservableArray((await photonSearch(query)).map((s) => ({ ...s, isFavorite: isFavorite(s) })));
+            searchResults = new ObservableArray((await photonSearch(currentSearchText)).map((s) => ({ ...s, isFavorite: isFavorite(s) })));
         } catch (err) {
             showError(err);
         } finally {
@@ -97,7 +99,7 @@
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
         </CActionBar>
-        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} />
+        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} />
         <collectionview items={searchResults} row={2}>
             <Template let:item>
                 <ListItemAutoSize disableCss={false} subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)}>

@@ -1,3 +1,4 @@
+export const DATA_VERSION = 1;
 export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;
 export const NB_MINUTES_FORECAST = 60;

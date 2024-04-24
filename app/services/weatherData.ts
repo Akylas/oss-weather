@@ -47,7 +47,8 @@ export enum WeatherProps {
     iconId = 'iconId',
     windSpeed = 'windSpeed',
     windBearing = 'windBearing',
-    rainSnowLimit = 'rainSnowLimit'
+    rainSnowLimit = 'rainSnowLimit',
+    aqi = 'aqi'
 }
 
 export const PROP_TO_UNIT = {
@@ -82,7 +83,8 @@ export const AVAILABLE_WEATHER_DATA = [
     WeatherProps.windGust,
     WeatherProps.moon,
     WeatherProps.snowDepth,
-    WeatherProps.windBeaufort
+    WeatherProps.windBeaufort,
+    WeatherProps.aqi
 ];
 export const AVAILABLE_COMPARE_WEATHER_DATA = [
     WeatherProps.precipProbability,
@@ -174,6 +176,7 @@ const ICONS_SIZE_FACTOR = {
 };
 
 export interface CommonData {
+    key: string;
     color?: string | Color;
     textColor?: string | Color;
     paint?: Paint;
@@ -181,12 +184,57 @@ export interface CommonData {
     icon?: string;
     value?: string | number;
     subvalue?: string;
+    customDraw?(...args);
 }
 export interface CommonDataOptions {
     id: string;
     icon: string | ((item: CommonWeatherData) => string);
     iconFactor: number;
     // getData: (options: CommonDataOptions, item: CommonWeatherData) => any;
+}
+
+export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
+    for (let index = 0; index < addedDatas.length; index++) {
+        const addedData = addedDatas[index];
+        Object.keys(addedData).forEach((k) => {
+            const mainDataK = mainData[k]?.data || mainData[k];
+            const addedDataK = addedData[k]?.data || addedData[k];
+            // DEV_LOG && console.log('mergeWeatherData key', k, mainDataK?.length, addedDataK?.length);
+            if (!Array.isArray(mainDataK) && !Array.isArray(addedDataK)) {
+                // DEV_LOG && console.log('mergeWeatherData object', k);
+                Object.assign(mainDataK, addedDataK);
+                return;
+            }
+            if (!mainDataK?.length || !addedDataK?.length) {
+                return;
+            }
+            const originalFirstTime = mainDataK[0].time;
+            const addedDataFirstTime = addedDataK[0].time;
+            DEV_LOG && console.log('mergeWeatherData', k, originalFirstTime, addedDataFirstTime);
+            if (addedDataFirstTime >= originalFirstTime) {
+                let index = mainDataK.findIndex((d) => d.time === addedDataFirstTime);
+                // DEV_LOG && console.log('assigning test', k, index, mainDataK[0].time, addedDataK[0].time);
+                if (index !== -1) {
+                    for (index; index < mainDataK.length; index++) {
+                        if (index < mainDataK.length && index < addedDataK.length && mainDataK[index].time === addedDataK[index].time) {
+                            // DEV_LOG && console.log('assigning', k, index, addedDataK[index]);
+                            Object.assign(mainDataK[index], addedDataK[index]);
+                        }
+                    }
+                }
+            } else {
+                let index = addedDataK.findIndex((d) => d.time === originalFirstTime);
+                if (index !== -1) {
+                    for (index; index < addedDataK.length; index++) {
+                        if (index < mainDataK.length && index < addedDataK.length && mainDataK[index].time === addedDataK[index].time) {
+                            // DEV_LOG && console.log('assigning1', k, index, addedDataK[index]);
+                            Object.assign(mainDataK[index], addedDataK[index]);
+                        }
+                    }
+                }
+            }
+        });
+    }
 }
 
 export class DataService extends Observable {
@@ -253,8 +301,9 @@ export class DataService extends Observable {
         switch (key) {
             case WeatherProps.windSpeed:
                 if (item.windSpeed) {
-                    const data = convertWeatherValueToUnit(item, 'windSpeed');
+                    const data = convertWeatherValueToUnit(item, WeatherProps.windSpeed);
                     return {
+                        key,
                         iconFontSize,
                         paint: appPaint,
                         icon,
@@ -262,47 +311,85 @@ export class DataService extends Observable {
                         subvalue: data[1]
                     };
                 }
-                return null;
+                break;
+            case WeatherProps.aqi:
+                if (item.aqi) {
+                    return {
+                        key,
+                        iconFontSize,
+                        paint: mdiPaint,
+                        color: item.aqiColor,
+                        icon: 'mdi-leaf',
+                        value: item.aqi,
+                        subvalue: 'aqi'
+                        // customDraw(canvas, fontScale, textPaint, item: CommonData, x, y, width) {
+                        //     const size = (width * 2) / 3;
+                        //     const arcY = y - size / 5;
+                        //     const STROKE_WIDTH = 4 * fontScale;
+                        //     const arcRect = new RectF(x - size / 2, arcY - size / 2, x + size / 2, arcY + size / 2);
+                        //     const delta = 180 - 45 + STROKE_WIDTH / 2;
+                        //     arcPaint.setStrokeWidth(STROKE_WIDTH);
+                        //     arcPaint.color = new Color(colorForAqi(item.value));
+                        //     arcPaint.setAlpha(100);
+                        //     canvas.drawArc(arcRect, 0 + delta, 270 - STROKE_WIDTH, false, arcPaint);
+                        //     arcPaint.setAlpha(255);
+                        //     canvas.drawArc(arcRect, 0 + delta, ((item.value as number) / 400) * (270 - STROKE_WIDTH), false, arcPaint);
+
+                        //     // textPaint.setColor(colorForAqi(item.aqi));
+                        //     textPaint.setTextSize(14 * fontScale);
+                        //     canvas.drawText(item.value + '', x, arcY + (size * 1) / 5, textPaint);
+
+                        //     textPaint.setTextSize(12 * fontScale);
+                        //     // textPaint.setColor(item.color || colorOnSurface);
+                        //     canvas.drawText(item.subvalue + '', x, y + 19 * fontScale, textPaint);
+                        // }
+                    };
+                }
+                break;
             case WeatherProps.precipAccumulation:
                 if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
                     return {
+                        key,
                         paint: item.precipFontUseApp ? appPaint : wiPaint,
                         color: item.precipColor,
                         iconFontSize,
                         icon: item.precipIcon,
                         value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
-                        subvalue: item.precipProbability > 0 && formatWeatherValue(item, 'precipProbability')
+                        subvalue: item.precipProbability > 0 && formatWeatherValue(item, WeatherProps.precipProbability)
                     };
-                } else {
-                    return null;
                 }
+                break;
+
             case WeatherProps.cloudCover:
                 if (item.cloudCover > 20) {
                     return {
+                        key,
                         paint: wiPaint,
                         color: item.cloudColor,
                         iconFontSize,
                         icon,
-                        value: formatWeatherValue(item, 'cloudCover'),
-                        subvalue: item.cloudCeiling && formatWeatherValue(item, 'cloudCeiling')
+                        value: formatWeatherValue(item, WeatherProps.cloudCover),
+                        subvalue: item.cloudCeiling && formatWeatherValue(item, WeatherProps.cloudCeiling)
                     };
                 }
-                return null;
+                break;
             case WeatherProps.uvIndex:
                 if (item.uvIndex >= this.minUVIndexToShow) {
                     return {
+                        key,
                         paint: mdiPaint,
                         color: item.uvIndexColor,
                         iconFontSize,
                         icon,
-                        value: formatWeatherValue(item, 'uvIndex')
+                        value: formatWeatherValue(item, WeatherProps.uvIndex)
                     };
                 }
-                return null;
+                break;
             case WeatherProps.windGust:
                 if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-                    const data = convertWeatherValueToUnit(item, 'windGust');
+                    const data = convertWeatherValueToUnit(item, WeatherProps.windGust);
                     return {
+                        key,
                         iconFontSize,
                         paint: wiPaint,
                         color: item.windGust > 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
@@ -312,10 +399,11 @@ export class DataService extends Observable {
                         subvalue: data[1]
                     };
                 }
-                return null;
+                break;
 
             case WeatherProps.moon:
                 return {
+                    key,
                     paint: wiPaint,
                     color: nightColor,
                     iconFontSize,
@@ -325,12 +413,13 @@ export class DataService extends Observable {
             case WeatherProps.windBeaufort:
                 if (item.windBeaufortIcon) {
                     return {
+                        key,
                         paint: wiPaint,
                         iconFontSize,
                         icon
                     };
                 }
-                return null;
+                break;
             default:
                 break;
         }

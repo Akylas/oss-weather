@@ -8,6 +8,7 @@ import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
 import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { ApplicationSettings } from '@nativescript/core';
+import dayjs from 'dayjs';
 
 export class OWMProvider extends WeatherProvider {
     id = 'openweathermap';
@@ -26,6 +27,9 @@ export class OWMProvider extends WeatherProvider {
                 units: 'metric',
                 appid: OWMProvider.owmApiKey,
                 ...queryParams
+            },
+            headers: {
+                'Cache-Control': `max-age=${60 * 5}`
             }
         });
     }
@@ -35,36 +39,41 @@ export class OWMProvider extends WeatherProvider {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '2.5');
         const result = await OWMProvider.fetch<OneCallResult>(onecallVersion, 'onecall', coords);
+        const forecast = result.content;
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
         const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
         // console.log('test', JSON.stringify(result.daily));
         const r = {
+            time: result.time,
             currently: weatherDataIconColors(
                 {
-                    time: result.current.dt * 1000,
-                    temperature: feelsLikeTemperatures ? result.current.feels_like : result.current.temp,
+                    time: forecast.current.dt * 1000,
+                    temperature: feelsLikeTemperatures ? forecast.current.feels_like : forecast.current.temp,
                     usingFeelsLike: feelsLikeTemperatures,
-                    pressure: result.current.pressure,
-                    humidity: result.current.humidity,
-                    cloudCover: result.current.clouds,
-                    windSpeed: result.current.wind_speed * 3.6,
-                    windGust: result.current.wind_gust * 3.6,
-                    windBearing: result.current.wind_deg,
-                    uvIndex: result.current.uvi,
-                    isDay: result.current.dt < result.current.sunset && result.current.dt > result.current.sunrise,
-                    // sunriseTime: result.current.sunrise * 1000,
-                    // sunsetTime: result.current.sunset * 1000,
-                    iconId: result.current.weather[0]?.id,
-                    description: titlecase(result.current.weather[0]?.description)
+                    pressure: forecast.current.pressure,
+                    humidity: forecast.current.humidity,
+                    cloudCover: forecast.current.clouds,
+                    windSpeed: forecast.current.wind_speed * 3.6,
+                    windGust: forecast.current.wind_gust * 3.6,
+                    windBearing: forecast.current.wind_deg,
+                    uvIndex: forecast.current.uvi,
+                    isDay: forecast.current.dt < forecast.current.sunset && forecast.current.dt > forecast.current.sunrise,
+                    // sunriseTime: forecast.current.sunrise * 1000,
+                    // sunsetTime: forecast.current.sunset * 1000,
+                    iconId: forecast.current.weather[0]?.id,
+                    description: titlecase(forecast.current.weather[0]?.description)
                 } as Currently,
                 WeatherDataType.CURRENT,
                 coords
             ),
             daily: {
-                data: result.daily.slice(0, forecast_days).map((data) => {
+                data: forecast.daily.slice(0, forecast_days).map((data) => {
                     const d = {} as DailyData;
-                    d.time = data.dt * 1000;
+                    d.time = dayjs
+                        .utc(data.dt * 1000)
+                        .startOf('d')
+                        .valueOf();
                     d.isDay = true;
                     d.iconId = data.weather[0]?.id;
                     d.description = titlecase(data.weather[0]?.description);
@@ -91,18 +100,18 @@ export class OWMProvider extends WeatherProvider {
             },
             minutely: {
                 data:
-                    result.minutely
+                    forecast.minutely
                         ?.map((h) => ({
                             intensity: h.precipitation >= 1.5 ? 3 : h.precipitation >= 0.7 ? 2 : h.precipitation > 0 ? 1 : 0,
                             time: h.dt * 1000
                         }))
                         .filter((d, i) => i % 5 === 0) || []
             },
-            alerts: result.alerts
+            alerts: forecast.alerts
         } as WeatherData;
-        if (result.hourly) {
-            const hourlyLastIndex = Math.min(result.hourly.length, forecast_hours) - 1;
-            r.daily.data[0].hourly = result.hourly.slice(0, hourlyLastIndex + 1).map((data, index) => {
+        if (forecast.hourly) {
+            const hourlyLastIndex = Math.min(forecast.hourly.length, forecast_hours) - 1;
+            r.hourly = forecast.hourly.slice(0, hourlyLastIndex + 1).map((data, index) => {
                 const hasNext = index < hourlyLastIndex;
                 const d = {} as Hourly;
                 d.time = data.dt * 1000;
@@ -116,7 +125,7 @@ export class OWMProvider extends WeatherProvider {
                 d.usingFeelsLike = feelsLikeTemperatures;
 
                 d.windBearing = data.wind_deg;
-                const nextData = hasNext ? result.hourly[index + 1] : undefined;
+                const nextData = hasNext ? forecast.hourly[index + 1] : undefined;
                 if (hasNext && nextData) {
                     d.snowfall = nextData.snow?.['1h'] || 0;
                     d.rain = nextData.rain?.['1h'] || 0;

@@ -1,40 +1,39 @@
 <script lang="ts">
-    import type { FeatureCollection, MultiPolygon } from 'geojson';
     import { GPS } from '@nativescript-community/gps';
+    import { getFile } from '@nativescript-community/https';
     import { request } from '@nativescript-community/perms';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
+    import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Color, CoreTypes, EventData, File, Frame, Page, Screen, knownFolders, path } from '@nativescript/core';
-    import { Application, ApplicationSettings } from '@nativescript/core';
-    import { openFile, openUrl, throttle } from '@nativescript/core/utils';
+    import { Application, ApplicationSettings, Color, CoreTypes, EventData, File, Frame, Page, Screen, knownFolders, path } from '@nativescript/core';
+    import { openFile, throttle } from '@nativescript/core/utils';
     import dayjs from 'dayjs';
+    import type { FeatureCollection, MultiPolygon } from 'geojson';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
-    import CActionBar from '~/components/common/CActionBar.svelte';
     import SelectCity from '~/components/SelectCity.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
+    import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
-    import { OWMProvider } from '~/services/providers/owm';
-    import { prefs } from '~/services/preferences';
-    import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
-    import { alert, showError } from '~/utils/error';
-    import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
-    import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
-    import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
-    import { VerticalPosition } from '@nativescript-community/ui-popover';
-    import { WeatherData } from '~/services/providers/weather';
-    import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { onWeatherDataChanged } from '~/services/weatherData';
     import { onIconPackChanged } from '~/services/icon';
+    import { OWMProvider } from '~/services/providers/owm';
+    import { WeatherData } from '~/services/providers/weather';
+    import { getAqiProvider, getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import { DEFAULT_COMMON_WEATHER_DATA, WeatherProps, mergeWeatherData, onWeatherDataChanged } from '~/services/weatherData';
+    import { alert, showError } from '~/utils/error';
+    import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
+    import { hideLoading, isLandscape, showLoading, showPopoverMenu } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils';
-    import { getFile } from '@nativescript-community/https';
+    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
+    import ListItemAutoSize from './common/ListItemAutoSize.svelte';
+    import { DATA_VERSION } from '~/helpers/constants';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -44,9 +43,9 @@
     let provider = getProviderType();
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
-    const usingNewIconSystem = ApplicationSettings.getBoolean('new_icon_system', false);
-    if (!usingNewIconSystem) {
-        ApplicationSettings.setBoolean('new_icon_system', true);
+    const data_version = ApplicationSettings.getNumber('data_version', -1);
+    if (data_version !== DATA_VERSION) {
+        ApplicationSettings.setNumber('data_version', DATA_VERSION);
         weatherData = null;
     }
 
@@ -91,6 +90,11 @@
                             name: l('compare_models')
                         },
                         {
+                            icon: 'mdi-chart-areaspline',
+                            id: 'chart',
+                            name: l('chart')
+                        },
+                        {
                             icon: 'mdi-map',
                             id: 'map',
                             name: l('map')
@@ -128,11 +132,13 @@
                                     const franceGeoJSON = JSON.parse(
                                         await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()
                                     ) as FeatureCollection<MultiPolygon>;
-                                    const options = franceGeoJSON.features.map((feature) => ({
-                                        name: feature.properties.title,
-                                        subtitle: `${feature.properties.Departemen} (${feature.properties.mountain})`,
-                                        id: feature.properties.code
-                                    }));
+                                    const options = franceGeoJSON.features
+                                        .map((feature) => ({
+                                            name: feature.properties.title as string,
+                                            subtitle: `${feature.properties.Departemen} (${feature.properties.mountain})`,
+                                            id: feature.properties.code
+                                        }))
+                                        .sort((a, b) => a.name.localeCompare(b.name));
                                     await close();
                                     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
                                     DEV_LOG && console.log('options', options);
@@ -177,6 +183,10 @@
                                 case 'compare':
                                     const CompareWeather = (await import('~/components/compare/CompareWeatherSingle.svelte')).default;
                                     navigate({ page: CompareWeather, props: { weatherLocation } });
+                                    break;
+                                case 'chart':
+                                    const HourlyChart = (await import('~/components/HourlyChart.svelte')).default;
+                                    navigate({ page: HourlyChart, props: { weatherLocation, weatherData } });
                                     break;
                                 case 'refresh':
                                     await refreshWeather();
@@ -240,10 +250,17 @@
 
         try {
             DEV_LOG && console.log('refreshWeather');
+            const usedWeatherData = ApplicationSettings.getString('common_data', DEFAULT_COMMON_WEATHER_DATA);
+
             weatherData = await getProvider().getWeather(weatherLocation);
             if (weatherData) {
-                // console.log(JSON.stringify(weatherData))
-                lastUpdate = Date.now();
+                if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
+                    const aqiData = await getAqiProvider().getAirQuality(weatherLocation);
+                    if (aqiData) {
+                        mergeWeatherData(weatherData, aqiData);
+                    }
+                }
+                lastUpdate = weatherData.time;
                 await updateView();
             }
         } catch (err) {

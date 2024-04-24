@@ -3,7 +3,7 @@ import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { lang, lc } from '~/helpers/locale';
-import { WeatherLocation, request } from '../api';
+import { RequestResult, WeatherLocation, request } from '../api';
 import type { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 import { WeatherProvider } from './weatherprovider';
 import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
@@ -89,7 +89,7 @@ export class MFProvider extends WeatherProvider {
             }
         }
         const d = {
-            time: dayStartTime,
+            time: dayjs.utc(dailyForecast.time * 1000).valueOf(),
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
             iconId: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: dailyForecast.T_max,
@@ -133,7 +133,6 @@ export class MFProvider extends WeatherProvider {
         // const probSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
         // console.log('daily', d, WeatherDataType.DAILY, weatherLocation.coord, probRain, probSnow)
         weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, snowfallTotal === 0 && rainTotal === 0 ? precipAccumulation : rainTotal, snowfallTotal);
-        d.hourly = [];
         return d;
         // return new HalfDay(
         //     dailyForecast.weather12H == null ? WeatherCode.CLEAR : getWeatherCode(dailyForecast.weather12H.icon),
@@ -272,6 +271,9 @@ export class MFProvider extends WeatherProvider {
                 formatDate: 'timestamp',
                 token: mfApiKey,
                 ...queryParams
+            },
+            headers: {
+                'Cache-Control': `max-age=${60 * 5}`
             }
         });
     }
@@ -282,8 +284,8 @@ export class MFProvider extends WeatherProvider {
 
         const result = await Promise.all([
             this.fetch<MFForecastResult>('v2/forecast', coords),
-            minutely !== false ? this.fetch<MFMinutely>('v3/nowcast/rain', coords) : () => Promise.resolve(undefined as MFMinutely),
-            current !== false ? this.fetch<MFCurrent>('v2/observation', coords) : () => Promise.resolve(undefined as MFCurrent)
+            minutely !== false ? this.fetch<MFMinutely>('v3/nowcast/rain', coords) : Promise.resolve(undefined as RequestResult<MFMinutely>),
+            current !== false ? this.fetch<MFCurrent>('v2/observation', coords) : Promise.resolve(undefined as RequestResult<MFCurrent>)
         ]);
         // if (forecast.position.dept) {
         // we are in france we can get more
@@ -292,15 +294,17 @@ export class MFProvider extends WeatherProvider {
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
         const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
 
-        const forecast = result[0];
-        const rain = result[1] as MFMinutely;
-        const currentData = result[2] as MFCurrent;
+        const forecast = result[0]?.content;
+        const rain = result[1]?.content;
+        const currentData = result[2]?.content;
         let warningsData: MFWarnings;
         if (warnings !== false && forecast.properties.french_department) {
-            warningsData = await this.fetch<MFWarnings>('v3/warning/full', {
-                ...coords,
-                domain: forecast.properties.french_department
-            }).catch((err) => null);
+            warningsData = (
+                await this.fetch<MFWarnings>('v3/warning/full', {
+                    ...coords,
+                    domain: forecast.properties.french_department
+                }).catch((err) => null as RequestResult<MFWarnings>)
+            )?.content;
         }
         // }
         // DEV_LOG && console.log('forecast', JSON.stringify(forecast));
@@ -361,6 +365,7 @@ export class MFProvider extends WeatherProvider {
         const currentConditions = currentData?.properties?.gridded;
         // DEV_LOG && console.log('current', JSON.stringify(currentData));
         const r = {
+            time: result[0].time,
             currently: currentConditions
                 ? weatherDataIconColors(
                       {
@@ -406,7 +411,7 @@ export class MFProvider extends WeatherProvider {
                   }, [])
                 : []
         } as WeatherData;
-        r.daily.data[0].hourly = hourlyData;
+        r.hourly = hourlyData;
         return r;
     }
 

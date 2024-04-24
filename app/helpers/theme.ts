@@ -15,6 +15,14 @@ export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
 export const onThemeChanged = createGlobalEventListener('theme');
 export let theme: Themes;
+if (__IOS__ && SDK_VERSION < 13) {
+    theme = 'light';
+} else {
+    theme = getString('theme', DEFAULT_THEME) as Themes;
+}
+if (theme.length === 0) {
+    theme = DEFAULT_THEME as Themes;
+}
 export const sTheme = writable('auto');
 export const currentTheme = writable('auto');
 
@@ -31,7 +39,10 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
             realTheme = 'black';
         }
         if (__ANDROID__) {
-            com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
+            if (Application.android.startActivity) {
+                com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
+
+            }
         }
         Theme.setMode(Theme.Auto, undefined, realTheme, false);
         updateThemeColors(realTheme);
@@ -143,7 +154,7 @@ function getSystemAppearance() {
     if (typeof Application.systemAppearance === 'function') {
         return Application.systemAppearance();
     }
-    // eslint-disable-next-line @typescript-eslint/unbound-method
+
     return Application.systemAppearance;
 }
 
@@ -176,14 +187,6 @@ export function start() {
         return;
     }
     started = true;
-    if (__IOS__ && SDK_VERSION < 13) {
-        theme = 'light';
-    } else {
-        theme = getString('theme', DEFAULT_THEME) as Themes;
-    }
-    if (theme.length === 0) {
-        theme = DEFAULT_THEME as Themes;
-    }
 
     prefs.on('key:auto_black', () => {
         autoDarkToBlack = getBoolean('auto_black');
@@ -224,10 +227,10 @@ export function start() {
     });
 
     function onReady() {
+        DEV_LOG && console.log('onReady', theme);
         applyTheme(theme);
-        const realTheme = getRealTheme(theme);
-        currentTheme.set(realTheme);
-        updateThemeColors(realTheme);
+        currentTheme.set(getRealTheme(theme));
+        // updateThemeColors(realTheme);
     }
     if (__ANDROID__) {
         const context = Utils.android.getApplicationContext();

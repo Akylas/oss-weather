@@ -2,6 +2,7 @@ import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale, titlec
 import { Application, ApplicationSettings, Device, File, Utils } from '@nativescript/core';
 import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import { derived, get, writable } from 'svelte/store';
@@ -12,6 +13,7 @@ import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 dayjs.extend(duration);
+dayjs.extend(utc);
 
 export let lang;
 export const $lang = writable(null);

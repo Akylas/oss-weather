@@ -1,14 +1,14 @@
 import { titlecase } from '@nativescript-community/l';
 import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
-import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
+import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
 import { l, lang } from '~/helpers/locale';
 import { WeatherLocation, request } from '../api';
 import { Forecast } from './openmeteo';
 import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
-import { Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
+import { AirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
@@ -42,6 +42,32 @@ export const OM_MODELS = {
     arpae_cosmo_2i: 'ARPAE COSMO 2I',
     arpae_cosmo_2i_ruc: 'ARPAE COSMO 2I RUC',
     arpae_cosmo_5m: 'ARPAE COSMO 5M'
+};
+
+export const API_KEY_VALUES = {
+    forecast: ({ feelsLikeTemperatures, current, minutely }) => ({
+        hourly:
+            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
+            (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
+        current: current !== false ? 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m') : undefined,
+        minutely_15: minutely !== false ? 'precipitation' : undefined,
+        daily:
+            'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum,showers_sum' +
+            (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min')
+    }),
+    'air-quality': ({ current }) => ({
+        hourly: 'european_aqi',
+        current: current !== false ? 'european_aqi' : undefined,
+        daily: 'european_aqi'
+    })
+};
+export const API_MAX_VALUES = {
+    forecast: {
+        forecast_days: 15
+    },
+    'air-quality': {
+        forecast_days: 6
+    }
 };
 
 export class OMProvider extends WeatherProvider {
@@ -139,48 +165,29 @@ export class OMProvider extends WeatherProvider {
     private async fetch<T = any>(
         apiName: string = 'forecast',
         queryParams: OMParams = {},
-        {
-            current,
-            warnings,
-            minutely,
-            forceModel,
-            model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
-        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean } = {}
+        { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {},
+        subdomain = 'api'
     ) {
-        let models = 'best_match';
-        if (model !== 'best_match') {
-            if (forceModel === true) {
-                models = model;
-            } else {
-                models += ',' + model;
-            }
-        }
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
-        const forecast_minutely_15 = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15;
+        const forecast_minutely_15 = Math.round(ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15);
+
+        const apikeyValues = API_KEY_VALUES[apiName]({ feelsLikeTemperatures, current, minutely });
         return request<T>({
-            url: `https://api.open-meteo.com/v1/${apiName}`,
+            url: `https://${subdomain}.open-meteo.com/v1/${apiName}`,
             method: 'GET',
             queryParams: {
-                forecast_days,
+                forecast_days: Math.min(API_MAX_VALUES[apiName].forecast_days, forecast_days),
                 forecast_hours,
                 forecast_minutely_15,
-                hourly:
-                    'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
-                    (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
-                current:
-                    current !== false
-                        ? 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m')
-                        : undefined,
-                minutely_15: minutely !== false ? 'precipitation' : undefined,
-                daily:
-                    'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum,showers_sum' +
-                    (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min'),
-                models,
+                ...apikeyValues,
                 timeformat: 'unixtime',
                 timezone: 'Africa/Accra', // we force UTC to get utc timestamps
                 ...queryParams
+            },
+            headers: {
+                'Cache-Control': `max-age=${60 * 5}`
             }
         });
     }
@@ -213,22 +220,33 @@ export class OMProvider extends WeatherProvider {
             current,
             warnings,
             minutely,
+            forceModel,
             model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
-        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string } = {}
+        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean } = {}
     ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
-        const forecast = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon }, { model, current, warnings, minutely });
-        // console.log('forecast', Object.keys(forecast), Object.keys(forecast.hourly));
+        let models = 'best_match';
+        if (model !== 'best_match') {
+            if (forceModel === true) {
+                models = model;
+            } else {
+                models += ',' + model;
+            }
+        }
+        const result = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon, models }, { current, warnings, minutely });
+        const forecast = result.content;
+        // console.log('forecast', Object.keys(forecast));
         // console.log('rain', JSON.stringify(rain));
         // console.log('current', JSON.stringify(current));
         // console.log('warnings', JSON.stringify(warnings));
         const hourly = forecast.hourly;
+        // console.log('hourly', JSON.stringify(hourly));
         const hourly_weathercodes = this.getMixedDataArray(hourly, 'weathercode', model);
         let hourlyLastIndex = hourly_weathercodes.findIndex((d) => d === null);
-        if (hourlyLastIndex === -1) {
-            hourlyLastIndex = hourly_weathercodes.length - 1;
-        }
+        // if (hourlyLastIndex === -1) {
+        hourlyLastIndex = hourly_weathercodes.length - 1;
+        // }
         const hourlyData = hourly.time.slice(0, hourlyLastIndex).map((time, index) => {
             const d = {} as Hourly;
             d.time = time * 1000;
@@ -306,6 +324,7 @@ export class OMProvider extends WeatherProvider {
         const daily_weathercodes = this.getMixedDataArray(daily, 'weathercode', model);
         const dailyLastIndex = daily_weathercodes.findIndex((d) => d === null);
         const r = {
+            time: result.time,
             currently: currentData
                 ? weatherDataIconColors(
                       {
@@ -331,16 +350,16 @@ export class OMProvider extends WeatherProvider {
                         description: OMProvider.weatherCodeDescription[code],
                         isDay: true,
                         iconId: this.convertWeatherCodeToIcon(code),
-                        temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model)[index],
-                        temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', model)[index],
+                        temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model)?.[index],
+                        temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', model)?.[index],
                         usingFeelsLike: feelsLikeTemperatures,
                         // humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
                         uvIndex: Math.ceil(this.getDataArray(daily, 'uv_index_max', model)?.[index]),
-                        windGust: Math.round(this.getDataArray(daily, 'windgusts_10m_max', model)[index]),
-                        windSpeed: Math.round(this.getDataArray(daily, 'windspeed_10m_max', model)[index]),
-                        windBearing: Math.round(this.getDataArray(daily, 'winddirection_10m_dominant', model)[index]),
+                        windGust: Math.round(this.getDataArray(daily, 'windgusts_10m_max', model)?.[index]),
+                        windSpeed: Math.round(this.getDataArray(daily, 'windspeed_10m_max', model)?.[index]),
+                        windBearing: Math.round(this.getDataArray(daily, 'winddirection_10m_dominant', model)?.[index]),
                         precipProbability: this.getDataArray(daily, 'precipitation_probability_max', model)?.[index],
-                        precipAccumulation: this.getDataArray(daily, 'precipitation_sum', model)[index]
+                        precipAccumulation: this.getDataArray(daily, 'precipitation_sum', model)?.[index]
                         // cloudCover: Math.round(daily.clou),
                         // sunriseTime: dailyForecast.sun.rise * 1000,
                         // sunsetTime: dailyForecast.sun.set * 1000
@@ -363,7 +382,6 @@ export class OMProvider extends WeatherProvider {
                     // const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
                     const rain = this.getDataArray(daily, 'showers_sum', model)?.[index] || 0 + this.getDataArray(daily, 'rain_sum', model)?.[index];
                     weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, rain, this.getDataArray(daily, 'snowfall_sum', model)?.[index] * 10);
-                    d.hourly = [];
                     return d;
                 })
             },
@@ -372,7 +390,59 @@ export class OMProvider extends WeatherProvider {
             },
             alerts: []
         } as WeatherData;
-        r.daily.data[0].hourly = hourlyData;
+        r.hourly = hourlyData;
+        DEV_LOG && console.log('om getWeather', JSON.stringify(r));
+        return r;
+    }
+
+    async getAirQuality(weatherLocation: WeatherLocation, { current, minutely }: { minutely?: boolean; current?: boolean } = {}): Promise<AirQualityData> {
+        const coords = weatherLocation.coord;
+        const result = await this.fetch<Forecast>('air-quality', { latitude: coords.lat, longitude: coords.lon }, { current, minutely }, 'air-quality-api');
+        const hourly = result.content.hourly;
+        const daily = [];
+        let lastDay;
+
+        const hourlyData = hourly.time.map((time, index) => {
+            const d = {} as Hourly;
+            d.time = time * 1000;
+            const currentDay = dayjs.utc(d.time).startOf('d').valueOf();
+            if (!lastDay || currentDay !== lastDay.time) {
+                lastDay = {
+                    time: currentDay,
+                    aqi_sum: 0,
+                    aqi_count: 0
+                };
+                daily.push(lastDay);
+            }
+            d.aqi = this.getDataArray(hourly, 'european_aqi')[index];
+            lastDay.aqi_sum += d.aqi;
+            lastDay.aqi_count += 1;
+            return aqiDataIconColors(d);
+        });
+
+        const currentData = result.content.current;
+        // const daily = result.daily;
+        const r = {
+            time: result.time,
+            currently: currentData
+                ? aqiDataIconColors({
+                      time: currentData.time * 1000,
+                      aqi: (currentData as any).european_aqi
+                  } as Currently)
+                : {},
+            daily: {
+                data: daily
+                    .filter((d) => d.aqi_count >= 3)
+                    .map((d) =>
+                        aqiDataIconColors({
+                            time: d.time,
+                            aqi: Math.round(d.aqi_sum / d.aqi_count)
+                        })
+                    )
+            },
+            hourly: hourlyData
+        } as AirQualityData;
+        r.hourly = hourlyData;
         return r;
     }
 
@@ -385,6 +455,7 @@ export class OMProvider extends WeatherProvider {
 interface OMParams {
     latitude?: number;
     longitude?: number;
+    [k: string]: any;
 }
 
 // function round5(t) {

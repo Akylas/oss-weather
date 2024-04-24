@@ -2,7 +2,7 @@ import { Color } from '@nativescript/core';
 import { getMoonIllumination } from 'suncalc';
 import { cloudyColor, fonts, imperialUnits, metricDecimalTemp, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate } from './locale';
-import { CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
+import { CommonAirQualityData, CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { get } from 'svelte/store';
 import { PROP_TO_UNIT, UNITS, WeatherProps } from '~/services/weatherData';
 import { iconService } from '~/services/icon';
@@ -180,6 +180,22 @@ export function colorForUV(uvIndex) {
     }
 }
 
+export function colorForAqi(uvIndex) {
+    if (uvIndex >= 100) {
+        return '#7d2181';
+    } else if (uvIndex >= 80) {
+        return '#ec2c45';
+    } else if (uvIndex >= 60) {
+        return '#f38725';
+    } else if (uvIndex >= 40) {
+        return '#f9cc33';
+    } else if (uvIndex >= 20) {
+        return '#c5e173';
+    } else {
+        return '#7bd878';
+    }
+}
+
 export function colorForIcon(icon, time, sunrise, sunset) {
     // console.log('colorForIcon', icon);
     switch (icon) {
@@ -354,6 +370,11 @@ export enum WeatherDataType {
     DAILY,
     HOURLY,
     CURRENT
+}
+
+export function aqiDataIconColors<T extends CommonAirQualityData>(d: T) {
+    d.aqiColor = colorForAqi(d.aqi);
+    return d;
 }
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain = 0, snow = 0) {
     // if (type !== WeatherDataType.CURRENT) {

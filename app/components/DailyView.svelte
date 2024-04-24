@@ -74,20 +74,24 @@
         centeredItemsToDraw.forEach((c, index) => {
             const x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
             const paint = c.paint || textIconPaint;
-            paint.setTextSize(c.iconFontSize);
-            paint.setColor(c.color || colorOnSurface);
-            if (c.icon) {
-                canvas.drawText(c.icon, x, iconsTop + 20, paint);
-            }
-            if (c.value) {
-                textIconSubPaint.setTextSize(12 * $fontScale);
-                textIconSubPaint.setColor(c.color || colorOnSurface);
-                canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
-            }
-            if (c.subvalue) {
-                textIconSubPaint.setTextSize(9 * $fontScale);
-                textIconSubPaint.setColor(c.color || colorOnSurface);
-                canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
+            if (c.customDraw) {
+                c.customDraw(canvas, $fontScale, paint, c, x, iconsTop + 20, 40);
+            } else {
+                paint.setTextSize(c.iconFontSize);
+                paint.setColor(c.color || colorOnSurface);
+                if (c.icon) {
+                    canvas.drawText(c.icon, x, iconsTop + 20, paint);
+                }
+                if (c.value) {
+                    textIconSubPaint.setTextSize(12 * $fontScale);
+                    textIconSubPaint.setColor(c.color || colorOnSurface);
+                    canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
+                }
+                if (c.subvalue) {
+                    textIconSubPaint.setTextSize(9 * $fontScale);
+                    textIconSubPaint.setColor(c.color || colorOnSurface);
+                    canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
+                }
             }
         });
         const nString = createNativeAttributedString(

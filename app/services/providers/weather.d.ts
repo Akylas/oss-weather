@@ -4,10 +4,19 @@ import { providers } from './weatherproviderfactory';
 export type ProviderType = (typeof providers)[number];
 
 export interface WeatherData {
+    time: number;
     currently: Currently;
     daily: Daily;
     minutely: Minutely;
     alerts: Alert[];
+    hourly: Hourly[];
+}
+export interface AirQualityData {
+    time: number;
+    currently?: AirQualityCurrently;
+    daily?: AirQualityDaily;
+    hourly: AirQualityHourly[];
+    // minutely?: AirQualityMinutely;
 }
 
 export interface Alert {
@@ -32,7 +41,22 @@ export interface Daily {
     data: DailyData[];
 }
 
-export interface CommonWeatherData {
+export interface CommonAirQualityData {
+    time: number;
+    aqi: number;
+    aqiColor?: string;
+    components?: {
+        co?: number;
+        no?: number;
+        no2?: number;
+        o3?: number;
+        so2?: number;
+        pm2_5?: number;
+        pm10?: number;
+        nh3?: number;
+    };
+}
+export interface CommonWeatherData extends CommonAirQualityData {
     time: number;
     // icon?: string;
     iconId: number;
@@ -76,7 +100,6 @@ export interface DailyData extends CommonWeatherData {
     sunriseTime?: number;
     sunsetTime?: number;
 
-    hourly: Hourly[];
     rainSnowLimit?: number;
 }
 
@@ -96,3 +119,9 @@ export interface Currently extends CommonWeatherData {
     sunriseTime?: number;
     sunsetTime?: number;
 }
+
+export interface AirQualityCurrently extends CommonAirQualityData {}
+export interface AirQualityDaily {
+    data: CommonAirQualityData[];
+}
+export interface AirQualityMinutely extends CommonAirQualityData {}

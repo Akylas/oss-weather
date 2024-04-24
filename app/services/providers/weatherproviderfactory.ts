@@ -27,17 +27,18 @@ export function getProvider(): WeatherProvider {
     if (!currentProvider) {
         setProvider(getProviderType());
     }
-    // const requestedProviderType = getProviderType();
-    // eslint-disable-next-line prefer-const
-    // let [provider, providerType] = WeatherProvider.getInstance();
-    // if (requestedProviderType !== providerType) {
-    //     provider = setProvider(requestedProviderType);
-    // }
-    // return provider;
     return currentProvider;
+}
+export function getAqiProvider(): WeatherProvider {
+    DEV_LOG && console.log('getAqiProvider', getAqiProviderType());
+    return getProviderForType(getAqiProviderType());
 }
 export function getProviderType(): ProviderType {
     const requestedProviderType: ProviderType = (ApplicationSettings.getString('provider', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
+    return requestedProviderType;
+}
+export function getAqiProviderType(): ProviderType {
+    const requestedProviderType: ProviderType = (ApplicationSettings.getString('provider_aqi', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
     return requestedProviderType;
 }
 

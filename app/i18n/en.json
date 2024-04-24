@@ -27,6 +27,7 @@
     "app": {
         "name": "OSS Weather"
     },
+    "aqi": "Air Quality Index",
     "authorize": "Authorize",
     "auto_black": "Use black for auto-dark theme",
     "avalanche": "Avalanche",

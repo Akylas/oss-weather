@@ -1,5 +1,5 @@
 import { WeatherLocation } from '../api';
-import { ProviderType, WeatherData } from './weather';
+import { AirQualityData, ProviderType, WeatherData } from './weather';
 import { lang, lc } from '~/helpers/locale';
 
 const singletons = {};
@@ -13,6 +13,13 @@ export abstract class WeatherProvider {
         weatherLocation: WeatherLocation,
         options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean }
     ): Promise<WeatherData>;
+
+    async getAirQuality(
+        weatherLocation: WeatherLocation,
+        options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean }
+    ): Promise<AirQualityData> {
+        return null;
+    }
 
     getModels() {
         return {};

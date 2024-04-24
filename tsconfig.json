@@ -10,6 +10,7 @@
         "sourceMap": true,
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
+        "preserveSymlinks": true,
         "allowUnreachableCode": false,
         "allowSyntheticDefaultImports": true,
         "allowUnusedLabels": false,
@@ -28,7 +29,7 @@
             "@nativescript/core": ["node_modules/@akylas/nativescript"],
             "@nativescript/core/*": ["node_modules/@akylas/nativescript/*"]
         },
-        "plugins": [{ "transform": "@nativescript/webpack/dist/transformers/NativeClass", "type": "raw" }]
+        "plugins": [{ "transform": "@akylas/nativescript-webpack/dist/transformers/NativeClass", "type": "raw" }]
     },
     "include": ["app/**/*", "typings/*.d.ts"],
     "exclude": ["node_modules", "platforms", "**/angular"]

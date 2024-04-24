@@ -27,6 +27,26 @@
     "search.exclude": {
         "app/**/*.js": true
     },
+    "scss.lint.validProperties": [
+        "ios-a11y-adjusts-font-size",
+        "status-bar-style",
+        "navigation-bar-color",
+        "status-bar-color",
+        "ripple-color",
+        "stroke-color",
+        "fill-color",
+        "on-check-color",
+        "on-tint-color",
+        "shape",
+        "elevation",
+        "horizontal-align",
+        "horizontal-alignment",
+        "vertical-text-alignment",
+        "floating",
+        "vertical-alignment",
+        "placeholder-color",
+        "variant"
+    ],
     "svelte.plugin.svelte.compilerWarnings": {
         "a11y-aria-attributes": "ignore",
         "a11y-incorrect-aria-attribute-type": "ignore",

@@ -27,7 +27,7 @@ try {
     installMixins();
     installUIMixins();
     installBottomSheets();
-    initialize({ isDownsampleEnabled: true });
+    initialize({ isDownsampleEnabled: true, useOkhttp:true } as any);
 
     registerElement('Frame', () => new FrameElement());
     registerElement('Page', () => new PageElement());

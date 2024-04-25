@@ -1,0 +1,11 @@
+### Features
+- new hourly chart. Many charts fixes and improvements
+- basic AQI support (provided by Open-Meteo). Enable it in Settings/Weather Data
+
+### Bug fixes
+- Translated using Weblate (Kabyle)
+- Translated using Weblate (Russian)
+- Translated using Weblate (Italian)
+- Translated using Weblate (Chinese (Traditional))
+- Translated using Weblate (German)
+- better landscape support

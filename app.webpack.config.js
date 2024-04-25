@@ -172,7 +172,6 @@ module.exports = (env, params = {}) => {
         .filter((s) => s.endsWith('.json'))
         .map((s) => s.replace('.json', ''));
     config.externals.push('~/licenses.json');
-
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
             return cb(null, join('~/i18n/', request));
@@ -420,6 +419,7 @@ module.exports = (env, params = {}) => {
     const globOptions = { dot: false, ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
 
     const context = nsWebpack.Utils.platform.getEntryDirPath();
+    // folders need to exist (app/fonts, app/fonts/android... ) or it will trigger webpack unwanted changes
     const copyPatterns = [
         { context, from: 'fonts/!(ios|android)/**/*', to: 'fonts/[name][ext]', noErrorOnMissing: true, globOptions },
         { context, from: 'fonts/*', to: 'fonts/[name][ext]', noErrorOnMissing: true, globOptions },
@@ -681,6 +681,16 @@ module.exports = (env, params = {}) => {
     }
     config.externalsPresets = { node: false };
     config.resolve.fallback = config.resolve.fallback || {};
+    // config.resolve.fallback.timers = require.resolve('timers/');
+    config.resolve.fallback.stream = false;
+    config.resolve.fallback.timers = false;
+    config.resolve.fallback.buffer = false;
+    config.resolve.fallback.util = false;
+    config.resolve.fallback.path = false;
+    config.resolve.fallback.fs = false;
+    config.resolve.fallback.assert = false;
+    config.resolve.fallback.tty = false;
+    config.resolve.fallback.os = false;
     config.optimization.minimize = uglify !== undefined ? !!uglify : production;
     const isAnySourceMapEnabled = !!sourceMap || !!hiddenSourceMap || !!inlineSourceMap;
     const actual_keep_classnames_functionnames = keep_classnames_functionnames || platform !== 'android';

@@ -25,7 +25,7 @@
     },
     "repository": "https://github.com/Akylas/oss-weather",
     "dependencies": {
-        "@akylas/nativescript": "8.6.5",
+        "@akylas/nativescript": "8.7.2",
         "@akylas/nativescript-inappbrowser": "3.1.8",
         "@mapbox/to-color": "^2.0.0",
         "@mdi/font": "7.4.47",
@@ -80,7 +80,7 @@
     "devDependencies": {
         "@akylas/fontmin": "^0.9.9",
         "@akylas/nativescript-android-runtime": "8.6.3",
-        "@akylas/nativescript-webpack": "5.0.1-9.1",
+        "@akylas/nativescript-webpack": "5.0.21",
         "@babel/core": "^7.24.3",
         "@eslint/js": "^9.0.0",
         "@nativescript-community/set-version": "1.0.0",

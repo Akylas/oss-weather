@@ -71,7 +71,8 @@ export const API_MAX_VALUES = {
 };
 
 export class OMProvider extends WeatherProvider {
-    id = 'openmeteo';
+    static id = 'openmeteo'
+    id = OMProvider.id;
     getModels() {
         return OM_MODELS;
     }

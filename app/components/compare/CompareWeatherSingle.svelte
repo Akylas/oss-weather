@@ -80,7 +80,6 @@
         });
         modelsCollectionView?.nativeElement.refreshVisibleItems();
     }
-
     const modelsList = new ObservableArray<Model>(
         providers.reduce((acc, val) => {
             const provider = getProviderForType(val);
@@ -92,13 +91,6 @@
                 colorGenerator = providerColors[val] = generateColor(val);
             }
             if (keys.length) {
-                // acc.push({
-                //     type: 'sectionheader',
-                //     id: provider.id,
-                //     name: provider.getName(),
-                //     // color: colorGenerator.getColor().hsl.formatted,
-                //     shortName: provider.getName().replace(/[^A-Z]+/g, '')
-                // });
                 for (let index = 0; index < keys.length; index++) {
                     const key = keys[index];
                     acc.push({
@@ -154,19 +146,16 @@
             loading = true;
             const now = Date.now();
             const weatherData = await Promise.all(
-                models.map(async (model) => {
-                    const data = model.split(':');
+                models.map(async (modelId) => {
+                    const data = modelId.split(':');
                     const providerType = data[0] as ProviderType;
                     const provider = getProviderForType(providerType);
                     // TODO: for Open-Meteo make a single request for all models
                     const weatherData = await provider.getWeather(weatherLocation, { minutely: false, current: false, warnings: false, forceModel: true, model: data[1] });
-                    const modelData = modelsList.find((m) => m.id === model);
-                    // DEV_LOG && console.log('modelData', model, modelData);
-                    return { weatherData, model: modelData as { id: string; name: string; shortName: string } };
-                    // return prepareItems(weatherLocation, weatherData, now);
+                    const model = modelsList.find((m) => m.id === modelId);
+                    return { weatherData, model};
                 })
             );
-            DEV_LOG && console.log('channging currentItem');
 
             currentItem = {
                 weatherData,

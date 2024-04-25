@@ -29,7 +29,8 @@ export abstract class WeatherProvider {
     }
 
     public static getInstance<T extends WeatherProvider>(this: new () => T) {
-        const key = this.prototype.constructor.name;
+        // we use static id because prototype.constructor.name might not be uniq when uglified
+        const key = this['id'];
         if (!singletons[key]) {
             singletons[key] = new this();
         }

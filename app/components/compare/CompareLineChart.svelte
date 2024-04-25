@@ -54,7 +54,7 @@
         hidden: string[];
     }
     export let item: Item & { startingSide: string };
-    $: console.log('item changed', Object.keys(item));
+    // $: console.log('item changed', (item?.weatherData?.[0]?.model));
     // export let startingSide;
 
     let chartView: NativeViewElementNode<CombinedChart>;
@@ -76,192 +76,196 @@
         if (key === lastKey) {
             return;
         }
-        DEV_LOG && console.log('updateLineChart', key);
-        lastKey = key;
-        const chart = chartView?.nativeView;
-        if (chart) {
-            const xAxis = chart.xAxis;
-            const leftAxis = chart.leftAxis;
-            if (!chartInitialized) {
-                chartInitialized = true;
+        try {
+            const { weatherData, ...others} = item;
+            lastKey = key;
+            const chart = chartView?.nativeView;
+            if (chart) {
+                const xAxis = chart.xAxis;
+                const leftAxis = chart.leftAxis;
+                if (!chartInitialized) {
+                    chartInitialized = true;
 
-                leftAxis.textColor = colorOnSurface;
-                chart.xAxis.textColor = colorOnSurface;
-                chart.minOffset = 0;
-                chart.highlightFullBarEnabled = false;
-                chart.autoScaleMinMaxEnabled = true;
-                chart.clipDataToContent = true;
-                chart.pinchZoomEnabled = true;
-                chart.dragEnabled = true;
-                chart.highlightsFilterByAxis = false;
-                chart.scaleXEnabled = true;
-                chart.scaleYEnabled = false;
-                chart.highlightPerTapEnabled = true;
-                chart.highlightPerDragEnabled = true;
-                chart.setExtraOffsets(0, 0, 0, 0);
-                // chart.setBorderWidth(1);
-                // chart.drawBorders=(true);
-                // chart.clipDataToContent = false;
-                xAxis.enabled = true;
-                xAxis.textSize = 10 * $fontScale;
-                xAxis.labelTextAlign = Align.CENTER;
-                xAxis.ensureLastLabel = true;
-                xAxis.position = XAxisPosition.BOTTOM;
-                xAxis.yOffset = 12;
-                // xAxis.drawMarkTicks = true;
-                // xAxis.centerAxisLabels = true;
+                    leftAxis.textColor = colorOnSurface;
+                    chart.xAxis.textColor = colorOnSurface;
+                    chart.minOffset = 0;
+                    chart.highlightFullBarEnabled = false;
+                    chart.autoScaleMinMaxEnabled = true;
+                    chart.clipDataToContent = true;
+                    chart.pinchZoomEnabled = true;
+                    chart.dragEnabled = true;
+                    chart.highlightsFilterByAxis = false;
+                    chart.scaleXEnabled = true;
+                    chart.scaleYEnabled = false;
+                    chart.highlightPerTapEnabled = true;
+                    chart.highlightPerDragEnabled = true;
+                    chart.setExtraOffsets(0, 0, 0, 0);
+                    // chart.setBorderWidth(1);
+                    // chart.drawBorders=(true);
+                    // chart.clipDataToContent = false;
+                    xAxis.enabled = true;
+                    xAxis.textSize = 10 * $fontScale;
+                    xAxis.labelTextAlign = Align.CENTER;
+                    xAxis.ensureLastLabel = true;
+                    xAxis.position = XAxisPosition.BOTTOM;
+                    xAxis.yOffset = 12;
+                    // xAxis.drawMarkTicks = true;
+                    // xAxis.centerAxisLabels = true;
 
-                leftAxis.spaceBottom = 5;
-                leftAxis.spaceTop = 5;
-            } else {
-                chart.resetZoom();
-            }
-
-            leftAxis.gridColor = colorOnSurfaceVariant + '33';
-            xAxis.gridColor = colorOnSurfaceVariant + '33';
-            const newLegends = [];
-            if (item.forecast === 'hourly') {
-                xAxis.forcedInterval = 1;
-
-                xAxis.valueFormatter = {
-                    getAxisLabel: (value, axis) => {
-                        const date = dayjs(globalStartTimestamp + value * 3600 * 1000);
-                        // if (date.get('m') === 0) {
-                        if (date.get('h') === 0) {
-                            return date.format('ddd\nDD/MM');
-                        } else if (date.get('h') % 4 === 0) {
-                            return date.format('HH');
-                        }
-                        // }
-                    }
-                };
-            } else {
-                xAxis.forcedInterval = 24;
-                xAxis.valueFormatter = {
-                    getAxisLabel: (value, axis) => formatDate(globalStartTimestamp + value * 3600 * 1000, 'DD/MM')
-                };
-            }
-
-            const gridLinePathEffect = new DashPathEffect([4, 8], 0);
-            xAxis.customRenderer = {
-                drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
-                    const hours = dayjs(globalStartTimestamp + axisValue * 3600 * 1000).get('h');
-                    if (hours % 4 === 0) {
-                        if (hours === 0) {
-                            paint.setPathEffect(null);
-                        } else {
-                            paint.setPathEffect(gridLinePathEffect);
-                        }
-                        c.drawLine(x, rect.bottom, x, rect.top, paint);
-                    }
-                },
-                drawLabel(c: Canvas, axis, text, x, y, paint: Paint, anchor, angleDegrees) {
-                    if (text) {
-                        const lines = text.split('\n');
-                        for (let index = 0; index < lines.length; index++) {
-                            c.drawText(lines[index], x, y + index * paint.textSize, paint);
-                        }
-                    }
+                    leftAxis.spaceBottom = 5;
+                    leftAxis.spaceTop = 5;
+                } else {
+                    chart.resetZoom();
                 }
-            };
-            const chartType = item.chartType;
-            const data = new CombinedData();
-            let xAxisMaximum = -1;
-            const dataSets = item.weatherData.map((wData) => {
-                const key = item.id;
-                const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
-                const startTimestamp = sourceData[0].time;
-                const data = sourceData.map((d: DailyData | Hourly) => ({
-                    ...d,
-                    deltaHours: (d.time - startTimestamp) / (3600 * 1000),
-                    [key]: convertWeatherValueToUnit(d, key, { round: false })[0]
-                }));
-                xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);
-                globalStartTimestamp = Math.min(globalStartTimestamp, startTimestamp);
-                const color = wData.model.color;
-                const enabled = item.hidden.indexOf(wData.model.id) === -1;
-                newLegends.push({
-                    name: wData.model.name,
-                    shortName: wData.model.shortName,
-                    id: wData.model.id,
-                    enabled,
-                    color
+
+                leftAxis.gridColor = colorOnSurfaceVariant + '33';
+                xAxis.gridColor = colorOnSurfaceVariant + '33';
+                const newLegends = [];
+                if (item.forecast === 'hourly') {
+                    xAxis.forcedInterval = 1;
+
+                    xAxis.valueFormatter = {
+                        getAxisLabel: (value, axis) => {
+                            const date = dayjs(globalStartTimestamp + value * 3600 * 1000);
+                            // if (date.get('m') === 0) {
+                            if (date.get('h') === 0) {
+                                return date.format('ddd\nDD/MM');
+                            } else if (date.get('h') % 4 === 0) {
+                                return date.format('HH');
+                            }
+                            // }
+                        }
+                    };
+                } else {
+                    xAxis.forcedInterval = 24;
+                    xAxis.valueFormatter = {
+                        getAxisLabel: (value, axis) => formatDate(globalStartTimestamp + value * 3600 * 1000, 'DD/MM')
+                    };
+                }
+
+                const gridLinePathEffect = new DashPathEffect([4, 8], 0);
+                xAxis.customRenderer = {
+                    drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
+                        const hours = dayjs(globalStartTimestamp + axisValue * 3600 * 1000).get('h');
+                        if (hours % 4 === 0) {
+                            if (hours === 0) {
+                                paint.setPathEffect(null);
+                            } else {
+                                paint.setPathEffect(gridLinePathEffect);
+                            }
+                            c.drawLine(x, rect.bottom, x, rect.top, paint);
+                        }
+                    },
+                    drawLabel(c: Canvas, axis, text, x, y, paint: Paint, anchor, angleDegrees) {
+                        if (text) {
+                            const lines = text.split('\n');
+                            for (let index = 0; index < lines.length; index++) {
+                                c.drawText(lines[index], x, y + index * paint.textSize, paint);
+                            }
+                        }
+                    }
+                };
+                const chartType = item.chartType;
+                const data = new CombinedData();
+                let xAxisMaximum = -1;
+                const dataSets = item.weatherData.map((wData) => {
+                    const key = item.id;
+                    const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
+                    const startTimestamp = sourceData[0].time;
+                    const data = sourceData.map((d: DailyData | Hourly) => ({
+                        ...d,
+                        deltaHours: (d.time - startTimestamp) / (3600 * 1000),
+                        [key]: convertWeatherValueToUnit(d, key, { round: false })[0]
+                    }));
+                    xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);
+                    globalStartTimestamp = Math.min(globalStartTimestamp, startTimestamp);
+                    const color = wData.model.color;
+                    const enabled = item.hidden.indexOf(wData.model.id) === -1;
+                    newLegends.push({
+                        name: wData.model.name,
+                        shortName: wData.model.shortName,
+                        id: wData.model.id,
+                        enabled,
+                        color
+                    });
+                    switch (chartType) {
+                        case 'scatterchart': {
+                            const set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key);
+                            set['modelId'] = wData.model.id;
+                            set.scatterShape = ScatterShape.CIRCLE;
+                            set.drawIconsEnabled = enabled;
+                            set.highlightColor = colorPrimary;
+                            set.scatterShapeSize = enabled ? 4 : 0;
+                            set.setColor(color);
+                            // set.fillColor=(color);
+                            return set;
+                        }
+                        case 'barchart':
+                            const set = new BarDataSet(data, wData.model.id, 'deltaHours', key);
+                            // DEV_LOG && console.log('create barDataSet', wData.model.id, enabled, color);
+                            // set.drawValuesEnabled = false;
+                            set['modelId'] = wData.model.id;
+                            set.visible = enabled;
+                            set.highlightColor = colorPrimary;
+                            set.setColor(color);
+                            // set.axisDependency = AxisDependency.RIGHT
+                            // set.fillColor=(color);
+                            return set;
+                        case 'linechart':
+                        default: {
+                            const set = new LineDataSet(data, wData.model.id, 'deltaHours', key);
+                            set['modelId'] = wData.model.id;
+                            set.lineWidth = enabled ? LINE_WIDTH : 0;
+                            set.highlightColor = colorPrimary;
+                            // set.drawCirclesEnabled = enabled;
+                            // set.circleRadius = LINE_WIDTH;
+                            // set.drawValuesEnabled=(true);
+                            set.setColor(color);
+                            // set.fillColor=(color);
+                            // DEV_LOG && console.log('lineChart', set['modelId'], enabled, color);
+                            return set;
+                        }
+                    }
                 });
+                xAxis.axisMinimum = -1.5;
+                xAxis.axisMaximum = xAxisMaximum + 1.5;
+                legends.splice(0, legends.length, ...newLegends);
+                // DEV_LOG && console.log('legends', JSON.stringify(legends));
                 switch (chartType) {
-                    case 'scatterchart': {
-                        const set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key);
-                        set['modelId'] = wData.model.id;
-                        set.scatterShape = ScatterShape.CIRCLE;
-                        set.drawIconsEnabled = enabled;
-                        set.highlightColor = colorPrimary;
-                        set.scatterShapeSize = enabled ? 4 : 0;
-                        set.setColor(color);
-                        // set.fillColor=(color);
-                        return set;
-                    }
+                    case 'scatterchart':
+                        data.scatterData = new ScatterData(dataSets as ScatterDataSet[]);
+                        break;
                     case 'barchart':
-                        const set = new BarDataSet(data, wData.model.id, 'deltaHours', key);
-                        // DEV_LOG && console.log('create barDataSet', wData.model.id, enabled, color);
-                        // set.drawValuesEnabled = false;
-                        set['modelId'] = wData.model.id;
-                        set.visible = enabled;
-                        set.highlightColor = colorPrimary;
-                        set.setColor(color);
-                        // set.axisDependency = AxisDependency.RIGHT
-                        // set.fillColor=(color);
-                        return set;
-                    case 'linechart':
-                    default: {
-                        const set = new LineDataSet(data, wData.model.id, 'deltaHours', key);
-                        set['modelId'] = wData.model.id;
-                        set.lineWidth = enabled ? LINE_WIDTH : 0;
-                        set.highlightColor = colorPrimary;
-                        // set.drawCirclesEnabled = enabled;
-                        // set.circleRadius = LINE_WIDTH;
-                        // set.drawValuesEnabled=(true);
-                        set.setColor(color);
-                        // set.fillColor=(color);
-                        // DEV_LOG && console.log('lineChart', set['modelId'], enabled, color);
-                        return set;
-                    }
+                        const barData = new BarData(dataSets as BarDataSet[]);
+                        const nbDataSets = dataSets.length;
+                        const groupSpace = 0.3 / nbDataSets;
+                        const barSpace = 0.01; // x2 dataset
+                        const barWidth = (1 - groupSpace - barSpace * nbDataSets) / nbDataSets;
+                        // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
+                        barData.barWidth = barWidth;
+                        barData.groupBars(0, groupSpace, barSpace, true, true); // start at x = 0
+                        // DEV_LOG && console.log('create barData', nbDataSets, barWidth, barSpace, groupSpace);
+                        data.barData = barData;
+                        break;
+                    default:
+                        data.lineData = new LineData(dataSets as LineDataSet[]);
+                        break;
                 }
-            });
-            xAxis.axisMinimum = -1.5;
-            xAxis.axisMaximum = xAxisMaximum + 1.5;
-            legends.splice(0, legends.length, ...newLegends);
-            // DEV_LOG && console.log('legends', JSON.stringify(legends));
-            switch (chartType) {
-                case 'scatterchart':
-                    data.scatterData = new ScatterData(dataSets as ScatterDataSet[]);
-                    break;
-                case 'barchart':
-                    const barData = new BarData(dataSets as BarDataSet[]);
-                    const nbDataSets = dataSets.length;
-                    const groupSpace = 0.3 / nbDataSets;
-                    const barSpace = 0.01; // x2 dataset
-                    const barWidth = (1 - groupSpace - barSpace * nbDataSets) / nbDataSets;
-                    // (0.45 + 0.02) * 2 + 0.06 = 1.00 -> interval per "group"
-                    barData.barWidth = barWidth;
-                    barData.groupBars(0, groupSpace, barSpace, true, true); // start at x = 0
-                    // DEV_LOG && console.log('create barData', nbDataSets, barWidth, barSpace, groupSpace);
-                    data.barData = barData;
-                    break;
-                default:
-                    data.lineData = new LineData(dataSets as LineDataSet[]);
-                    break;
+
+                const limitLine = new LimitLine((Date.now() - globalStartTimestamp) / (3600 * 1000));
+                limitLine.lineWidth = 2;
+                limitLine.enableDashedLine(4, 2, 0);
+                limitLine.lineColor = colorOnSurfaceVariant;
+                xAxis.removeAllLimitLines();
+                xAxis.addLimitLine(limitLine);
+
+                chart.data = data;
+                // DEV_LOG && console.log('set combined data');
+                chart.data.notifyDataChanged();
+                chart.notifyDataSetChanged();
             }
-
-            const limitLine = new LimitLine((Date.now() - globalStartTimestamp) / (3600 * 1000));
-            limitLine.lineWidth = 2;
-            limitLine.enableDashedLine(4, 2, 0);
-            limitLine.lineColor = colorOnSurfaceVariant;
-            xAxis.removeAllLimitLines();
-            xAxis.addLimitLine(limitLine);
-
-            chart.data = data;
-            // DEV_LOG && console.log('set combined data');
-            chart.data.notifyDataChanged();
-            chart.notifyDataSetChanged();
+        } catch (error) {
+            showError(error)
         }
     }
     $: if (chartView) {

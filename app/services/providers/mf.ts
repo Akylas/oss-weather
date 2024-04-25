@@ -17,7 +17,9 @@ interface MFParams extends Partial<Coord> {
 }
 
 export class MFProvider extends WeatherProvider {
-    id = 'meteofrance';
+    static id = 'meteofrance'
+    id = MFProvider.id;
+
     private getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: ForecastForecast[], dailyForecast: Dailyforecast) {
         let precipitationTotal = 0;
         let snowfallTotal = 0;

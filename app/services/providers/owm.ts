@@ -11,7 +11,8 @@ import { ApplicationSettings } from '@nativescript/core';
 import dayjs from 'dayjs';
 
 export class OWMProvider extends WeatherProvider {
-    id = 'openweathermap';
+    static id = 'openweathermap'
+    id = OWMProvider.id;
     static owmApiKey = OWMProvider.readOwmApiKeySetting();
 
     constructor() {

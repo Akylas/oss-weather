@@ -13,7 +13,7 @@
     import { Color, EventData, ImageSource, ObservableArray } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import { convertWeatherValueToUnit, toImperialUnit, windIcon } from '~/helpers/formatter';
     import { lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';

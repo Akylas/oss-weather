@@ -3,7 +3,7 @@ import { MFProvider } from './mf';
 import { OMProvider } from './om';
 import { OWMProvider } from './owm';
 import { ProviderType } from './weather';
-import { ApplicationSettings } from '@akylas/nativescript';
+import { ApplicationSettings } from '@nativescript/core';
 import { prefs } from '../preferences';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 

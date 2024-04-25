@@ -15,7 +15,7 @@
     import type { FeatureCollection, MultiPolygon } from 'geojson';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
-    import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import SelectCity from '~/components/SelectCity.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';

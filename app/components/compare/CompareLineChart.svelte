@@ -18,7 +18,7 @@
     import { Color, ObservableArray } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import { convertWeatherValueToUnit } from '~/helpers/formatter';
     import { formatDate, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';

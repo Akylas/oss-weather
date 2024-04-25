@@ -2,7 +2,7 @@
     import { getString } from '@nativescript/core/application-settings';
     import { lc } from '~/helpers/locale';
     import CActionBar from '~/components/common/CActionBar.svelte';
-    import { ApplicationSettings } from '@akylas/nativescript';
+    import { ApplicationSettings } from '@nativescript/core';
     import { WEATHER_MAP_COLORS } from '~/helpers/constants';
 </script>
 

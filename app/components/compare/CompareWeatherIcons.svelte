@@ -3,7 +3,7 @@
     import { ImageSource, ScrollView } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onDestroy } from 'svelte';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import { lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';

@@ -1,20 +1,16 @@
 <script context="module" lang="ts">
-    import { getString } from '@nativescript/core/application-settings';
-    import { lc, lu } from '~/helpers/locale';
-    import CActionBar from '~/components/common/CActionBar.svelte';
-    import { ApplicationSettings } from '@akylas/nativescript';
-    import { WEATHER_MAP_COLORS } from '~/helpers/constants';
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { FailureEventData, FinalEventData, getImagePipeline } from '@nativescript-community/ui-image';
     import { ZoomImg } from '@nativescript-community/ui-zoomimage';
-    import { showError } from '~/utils/error';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, getCacheControl, networkService, request } from '~/services/api';
-    import { FavoriteLocation } from '~/helpers/favorites';
-    import { actionBarButtonHeight, colors } from '~/variables';
-    import { openLink } from '~/utils/ui';
-    import { onMount } from 'svelte';
     import dayjs from 'dayjs';
+    import { onMount } from 'svelte';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import CActionBar from '~/components/common/CActionBar.svelte';
+    import { FavoriteLocation } from '~/helpers/favorites';
+    import { lu } from '~/helpers/locale';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, request } from '~/services/api';
+    import { showError } from '~/utils/error';
+    import { openLink } from '~/utils/ui';
+    import { actionBarButtonHeight, colors } from '~/variables';
 </script>
 
 <script lang="ts">

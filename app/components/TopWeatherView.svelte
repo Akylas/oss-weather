@@ -9,7 +9,7 @@
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { Color } from '@nativescript/core';
     import dayjs from 'dayjs';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';

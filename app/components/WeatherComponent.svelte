@@ -2,7 +2,7 @@
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Application } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
     import { onThemeChanged } from '~/helpers/theme';

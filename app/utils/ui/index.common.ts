@@ -4,7 +4,8 @@ import { AlertDialog, MDCAlertControlerOptions, alert } from '@nativescript-comm
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
 import { ActivityIndicator, AlertOptions, Application, StackLayout, Utils, View } from '@nativescript/core';
-import { NativeViewElementNode, createElement } from 'svelte-native/dom';
+import type { NativeViewElementNode } from 'svelte-native/dom';
+import { createElement } from 'svelte-native/dom';
 import { get } from 'svelte/store';
 import { lc } from '~/helpers/locale';
 import { colors, fontScale } from '~/variables';

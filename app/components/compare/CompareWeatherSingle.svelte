@@ -7,7 +7,7 @@
     import { ApplicationSettings, NavigatedData, ObservableArray, Page, View } from '@nativescript/core';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
-    import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItem from '~/components/common/ListItem.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';

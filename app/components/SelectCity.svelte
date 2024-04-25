@@ -2,7 +2,7 @@
     import { ObservableArray, TextField } from '@nativescript/core';
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';

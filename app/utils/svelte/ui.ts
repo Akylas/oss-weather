@@ -1,8 +1,8 @@
-import { throttle } from '@akylas/nativescript/utils/common';
+import { throttle } from '@nativescript/core/utils/common';
 import { Frame, Observable, View } from '@nativescript/core';
 import { onDestroy } from 'svelte';
 import { closeModal as sCloseModal, goBack as sGoBack, navigate as sNavigate, showModal as sShowModal } from 'svelte-native';
-import { BackNavigationOptions, NavigationOptions, ShowModalOptions } from 'svelte-native/dom';
+import type { BackNavigationOptions, NavigationOptions, ShowModalOptions } from 'svelte-native/dom';
 import { asSvelteTransition, easings } from 'svelte-native/transitions';
 import { get_current_component } from 'svelte/internal';
 

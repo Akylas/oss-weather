@@ -7,17 +7,16 @@ import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 import SwipeMenuElement from '@nativescript-community/ui-collectionview-swipemenu/svelte';
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 import DrawerElement from '@nativescript-community/ui-drawer/svelte';
+import { initialize } from '@nativescript-community/ui-image';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, Frame, NavigatedData, Page, ScrollView, TraceErrorHandler } from '@nativescript/core';
+import { Application, Frame, NavigatedData, Page } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { startSentry } from '~/utils/sentry';
-import { NestedScrollView } from './NestedScrollView';
-import { initialize } from '@nativescript-community/ui-image';
 
 try {
     startSentry();
@@ -27,7 +26,7 @@ try {
     installMixins();
     installUIMixins();
     installBottomSheets();
-    initialize({ isDownsampleEnabled: true, useOkhttp:true } as any);
+    initialize({ isDownsampleEnabled: true, useOkhttp: true } as any);
 
     registerElement('Frame', () => new FrameElement());
     registerElement('Page', () => new PageElement());

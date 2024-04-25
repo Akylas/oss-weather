@@ -5,7 +5,7 @@
     import { prompt } from '@nativescript-community/ui-material-dialogs';
     import { ApplicationSettings, ObservableArray, Page, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import { MIN_UV_INDEX, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';

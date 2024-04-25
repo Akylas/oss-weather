@@ -2,7 +2,7 @@
     import { GetMoonIlluminationResult, GetTimesResult, getMoonIllumination, getMoonPosition, getPosition, getTimes } from 'suncalc';
     import { Align, Canvas, DashPathEffect, Paint, Style } from '@nativescript-community/ui-canvas';
     import { CanvasLabel } from '@nativescript-community/ui-canvaslabel/canvaslabel.common';
-    import { LineChart } from '@nativescript-community/ui-chart/charts';
+    import { LineChart } from '@nativescript-community/ui-chart';
     import { AxisBase } from '@nativescript-community/ui-chart/components/AxisBase';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { Entry } from '@nativescript-community/ui-chart/data/Entry';
@@ -12,7 +12,7 @@
     import { Utils } from '@nativescript-community/ui-chart/utils/Utils';
     import { ViewPortHandler } from '@nativescript-community/ui-chart/utils/ViewPortHandler';
     import dayjs, { Dayjs } from 'dayjs';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import { formatTime, l, lc, lu } from '~/helpers/locale';
     import { showError } from '~/utils/error';
     import { pickDate } from '~/utils/utils';

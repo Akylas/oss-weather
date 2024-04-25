@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 const webpackConfig = require('./webpack.config.js');
 const webpack = require('webpack');
 const { readFileSync, readdirSync } = require('fs');
-const { dirname, join, relative, resolve } = require('path');
+const { dirname, join, isAbsolute, relative, resolve } = require('path');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const nsWebpack = require('@akylas/nativescript-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -92,6 +94,7 @@ module.exports = (env, params = {}) => {
         testlog, // --env.testlog
         fakeall, // --env.fakeall
         profile, // --env.profile
+        report, // --env.report
         fork = true, // --env.fakeall
         adhoc, // --env.adhoc
         timeline, // --env.timeline
@@ -154,7 +157,7 @@ module.exports = (env, params = {}) => {
 
         config.plugins.unshift(
             new StatsPlugin(resolve(join(projectRoot, 'webpack.stats.json')), {
-                preset: 'normal',
+                preset: 'minimal',
                 chunkModules: true,
                 modules: true,
                 usedExports: true
@@ -195,7 +198,7 @@ module.exports = (env, params = {}) => {
     if (platform === 'android') {
         const gradlePath = resolve(projectRoot, appResourcesPath, 'Android/app.gradle');
         const gradleData = readFileSync(gradlePath, 'utf8');
-        appVersion = gradleData.match(/versionName "((?:[0-9]+\.?)+)"/)[1];
+        appVersion = gradleData.match(/versionName "((?:[0-9]+\.?)+(?:-(?:[a-z]|[A-Z])+)?)"/)[1];
         buildNumber = gradleData.match(/versionCode ([0-9]+)/)[1];
     } else if (platform === 'ios') {
         const plistPath = resolve(projectRoot, appResourcesPath, 'iOS/Info.plist');
@@ -214,10 +217,9 @@ module.exports = (env, params = {}) => {
         'global.TNS_WEBPACK': 'true',
         __UI_LABEL_USE_LIGHT_FORMATTEDSTRING__: true,
         __UI_USE_EXTERNAL_RENDERER__: true,
-        __UI_USE_XML_PARSER__: false,
-        'global.__AUTO_REGISTER_UI_MODULES__': false,
         __ACCESSIBILITY_DEFAULT_ENABLED__: false,
         __ONLY_ALLOW_ROOT_VARIABLES__: true,
+        __UI_USE_XML_PARSER__: false,
         __IOS__: isIOS,
         __ANDROID__: isAndroid,
         'global.autoLoadPolyfills': false,
@@ -504,7 +506,15 @@ module.exports = (env, params = {}) => {
     );
     config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')}).\js`)));
 
-    config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|ui-carto|ui-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
+    // config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|ui-carto|ui-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
+    config.optimization.splitChunks.cacheGroups.defaultVendor.test = function (module) {
+        const absPath = module.resource;
+        if (absPath) {
+            const relativePath = relative(projectRoot, absPath);
+            return absPath.indexOf('node_modules') !== -1 || !(relativePath && !relativePath.startsWith('..') && !isAbsolute(relativePath));
+        }
+        return false;
+    };
     config.plugins.push(new IgnoreNotFoundExportPlugin());
 
     const nativescriptReplace = '(NativeScript[\\/]dist[\\/]packages[\\/]core|@nativescript/core)';
@@ -515,7 +525,7 @@ module.exports = (env, params = {}) => {
             }
         })
     );
-    if (fork) {
+    if (fork && production) {
         if (!accessibility) {
             config.plugins.push(
                 new webpack.NormalModuleReplacementPlugin(/accessibility$/, (resource) => {
@@ -611,6 +621,19 @@ module.exports = (env, params = {}) => {
         );
     }
 
+    if (report) {
+        // Generate report files for bundles content
+        config.plugins.push(
+            new BundleAnalyzerPlugin({
+                analyzerMode: 'static',
+                openAnalyzer: false,
+                generateStatsFile: true,
+                reportFilename: resolve(projectRoot, 'report', 'report.html'),
+                statsFilename: resolve(projectRoot, 'report', 'stats.json')
+            })
+        );
+    }
+
     if (hiddenSourceMap || sourceMap) {
         if (!!sentry && !!uploadSentry) {
             config.devtool = false;
@@ -666,7 +689,7 @@ module.exports = (env, params = {}) => {
         new TerserPlugin({
             parallel: true,
             terserOptions: {
-                ecma: isAndroid ? 2020 : 2020,
+                ecma: 2020,
                 module: true,
                 toplevel: false,
                 keep_classnames: actual_keep_classnames_functionnames,

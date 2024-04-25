@@ -119,6 +119,10 @@ android {
     exclude "assets/app/**/*.js.map"
     exclude "org/bouncycastle/**"
     exclude "license/**"
+    jniLibs {
+        // we should not need this. why did it start creating twice as big apks  (gradle 8.4?)?
+        useLegacyPackaging project.hasProperty('splitEnabled')
+    }
 
   }
   dependenciesInfo {

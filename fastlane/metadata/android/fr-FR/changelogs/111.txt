@@ -1,0 +1,11 @@
+### Features
+- allow to choose wether to show charts in landscape mode from settings (default to false)
+
+### Bug fixes
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Russian)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Hindi)
+- try to show MB in user locale
+- font scale option fix
+- many charts improvements

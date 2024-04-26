@@ -6,8 +6,10 @@
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
     import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
+    import { BarLineScatterCandleBubbleDataSet } from '@nativescript-community/ui-chart/data/BarLineScatterCandleBubbleDataSet';
     import { ChartData } from '@nativescript-community/ui-chart/data/ChartData';
     import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
+    import { DataSet } from '@nativescript-community/ui-chart/data/DataSet';
     import { Entry } from '@nativescript-community/ui-chart/data/Entry';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet } from '@nativescript-community/ui-chart/data/LineDataSet';
@@ -194,44 +196,33 @@
                         enabled,
                         color
                     });
+                    let set: BarLineScatterCandleBubbleDataSet<any>;
                     switch (chartType) {
                         case 'scatterchart': {
-                            const set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key);
-                            set['modelId'] = wData.model.id;
-                            set.scatterShape = ScatterShape.CIRCLE;
-                            set.drawIconsEnabled = enabled;
-                            set.highlightColor = colorPrimary;
-                            set.scatterShapeSize = enabled ? 4 : 0;
-                            set.setColor(color);
-                            // set.fillColor=(color);
-                            return set;
+                            const scatterDataSet = (set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key));
+                            scatterDataSet.scatterShape = ScatterShape.CIRCLE;
+                            scatterDataSet.drawIconsEnabled = enabled;
+                            scatterDataSet.scatterShapeSize = enabled ? 4 : 0;
+                            break;
                         }
-                        case 'barchart':
-                            const set = new BarDataSet(data, wData.model.id, 'deltaHours', key);
-                            // DEV_LOG && console.log('create barDataSet', wData.model.id, enabled, color);
-                            // set.drawValuesEnabled = false;
-                            set['modelId'] = wData.model.id;
-                            set.visible = enabled;
-                            set.highlightColor = colorPrimary;
-                            set.setColor(color);
-                            // set.axisDependency = AxisDependency.RIGHT
-                            // set.fillColor=(color);
-                            return set;
+                        case 'barchart': {
+                            const barDataSet = (set = new BarDataSet(data, wData.model.id, 'deltaHours', key));
+                            barDataSet.visible = enabled;
+                            break;
+                        }
                         case 'linechart':
                         default: {
-                            const set = new LineDataSet(data, wData.model.id, 'deltaHours', key);
-                            set['modelId'] = wData.model.id;
-                            set.lineWidth = enabled ? LINE_WIDTH : 0;
-                            set.highlightColor = colorPrimary;
-                            // set.drawCirclesEnabled = enabled;
-                            // set.circleRadius = LINE_WIDTH;
-                            // set.drawValuesEnabled=(true);
-                            set.setColor(color);
-                            // set.fillColor=(color);
-                            // DEV_LOG && console.log('lineChart', set['modelId'], enabled, color);
-                            return set;
+                            {
+                                const lineDataSet = (set = new LineDataSet(data, wData.model.id, 'deltaHours', key));
+                                lineDataSet.lineWidth = enabled ? LINE_WIDTH : 0;
+                                break;
+                            }
                         }
                     }
+                    set['modelId'] = wData.model.id;
+                    set.color = color;
+                    set.highlightColor = colorPrimary;
+                    return set;
                 });
                 if (!screenOrientation && Application.orientation() !== 'landscape') {
                     chart.setScale(10 / (screenWidthDips / maxDatalength), 1);

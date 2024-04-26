@@ -6,7 +6,7 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';
-    import { lu } from '~/helpers/locale';
+    import { lang, lu } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, request } from '~/services/api';
     import { showError } from '~/utils/error';
     import { openLink } from '~/utils/ui';
@@ -26,22 +26,32 @@
     export let weatherLocation: FavoriteLocation;
     export const maxAge = dayjs.duration({ days: 1 }).asSeconds();
 
+    async function internalFetch(lang: string) {
+        currentUrl = `https://www.meteoblue.com/${lang}/weather/forecast/${tabs[tabIndex].urlId}/${weatherLocation.coord.lat.toFixed(3)}N${weatherLocation.coord.lon.toFixed(3)}E`;
+        return (
+            await request<string>({
+                url: currentUrl,
+                method: 'GET',
+                offlineSupport: true, // not to throw error when no network
+                headers: {
+                    'Cache-Control': networkConnected ? 'max-age=60*60' : 'only-if-cached',
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0' // meteoblue wants this
+                },
+                noJSON: true
+            })
+        ).content;
+    }
+
     async function refresh() {
         try {
             loading = true;
-            currentUrl = `https://www.meteoblue.com/fr/meteo/prevision/${tabs[tabIndex].urlId}/${weatherLocation.coord.lat.toFixed(3)}N${weatherLocation.coord.lon.toFixed(3)}E`;
-            const result = (
-                await request<string>({
-                    url: currentUrl,
-                    method: 'GET',
-                    offlineSupport: true, // not to throw error when no network
-                    headers: {
-                        'Cache-Control': networkConnected ? 'max-age=60*60' : 'only-if-cached',
-                        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0' // meteoblue wants this
-                    },
-                    noJSON: true
-                })
-            ).content;
+            let result: string;
+            try {
+                result = await internalFetch(lang.split('_')[0]);
+            } catch (error) {
+                result = await internalFetch('en');
+            }
+
             const match = result.match(/(?:data-(?:href|original)=)["'](\/\/my\.meteoblue\.com\/images\/.*?["'])/);
             if (match) {
                 const newImageSrc = 'https:' + match[1].slice(0, -1).replace(/&amp;/g, '&');

@@ -6,7 +6,7 @@ import { convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from
 import { l, lc } from '~/helpers/locale';
 import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { cloudyColor, fontScale, fonts, nightColor, rainColor, snowColor } from '~/variables';
+import { cloudyColor, fontScale, fonts, nightColor, rainColor, scatteredCloudyColor, snowColor, sunnyColor } from '~/variables';
 import { prefs } from './preferences';
 
 export enum UNITS {
@@ -148,12 +148,13 @@ const WEATHER_DATA_TITLES = {
 const WEATHER_DATA_COLORS = {
     [WeatherProps.moon]: nightColor,
     [WeatherProps.cloudCover]: cloudyColor,
-    // [WeatherProps.windGust]: scatteredCloudyColor,
-    // [WeatherProps.windBeaufort]: scatteredCloudyColor,
-    // [WeatherProps.windSpeed]: scatteredCloudyColor,
+    [WeatherProps.windGust]: scatteredCloudyColor,
+    [WeatherProps.windBeaufort]: scatteredCloudyColor,
+    [WeatherProps.windSpeed]: scatteredCloudyColor,
     // [WeatherProps.uvIndex]: scatteredCloudyColor,
     [WeatherProps.rainSnowLimit]: rainColor,
     [WeatherProps.iso]: snowColor,
+    [WeatherProps.iconId]: sunnyColor,
     [WeatherProps.precipAccumulation]: rainColor,
     [WeatherProps.aqi]: lc('aqi')
 };

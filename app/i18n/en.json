@@ -40,6 +40,7 @@
     "cancel": "Cancel",
     "charts": "charts",
     "charts_landscape": "force charts to show in landscape",
+    "charts_portrait_fullscreen": "charts use full height in portrait",
     "charts_settings": "charts related settings",
     "clear": "Clear",
     "clock_24": "Use 24-hour format",

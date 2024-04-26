@@ -2,6 +2,7 @@ export const DATA_VERSION = 1;
 
 export const ANIMATIONS_ENABLED = false;
 export const CHARTS_LANDSCAPE = false;
+export const CHARTS_PORTRAIT_FULLSCREEN = false;
 export const DECIMAL_METRICS_TEMP = false;
 
 export const NB_DAYS_FORECAST = 7;

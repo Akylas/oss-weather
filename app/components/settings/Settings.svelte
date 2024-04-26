@@ -11,6 +11,7 @@
     import {
         ANIMATIONS_ENABLED,
         CHARTS_LANDSCAPE,
+        CHARTS_PORTRAIT_FULLSCREEN,
         DECIMAL_METRICS_TEMP,
         MIN_UV_INDEX,
         NB_DAYS_FORECAST,
@@ -84,6 +85,12 @@
                         id: 'charts_landscape',
                         title: lc('charts_landscape'),
                         value: ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE)
+                    },
+                    {
+                        type: 'switch',
+                        id: 'charts_portrait_fullscreen',
+                        title: lc('charts_portrait_fullscreen'),
+                        value: ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN)
                     }
                 ];
             case 'units':

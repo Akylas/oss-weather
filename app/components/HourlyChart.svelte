@@ -19,7 +19,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { CommonWeatherData, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { showError } from '~/utils/error';
-    import { colors, fontScale, screenWidthDips } from '~/variables';
+    import { colors, fontScale, screenWidthDips, sunnyColor } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
@@ -34,7 +34,7 @@
     import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle } from '~/services/weatherData';
     import { generateGradient, loadImage, tempColor } from '~/utils/utils';
     import { actionBarButtonHeight } from '~/variables';
-    import { CHARTS_LANDSCAPE } from '~/helpers/constants';
+    import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;
@@ -88,6 +88,7 @@
     let networkConnected = networkService.connected;
     const loading = false;
     const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
+    let chartHeight = !screenOrientation && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
     let chartView: NativeViewElementNode<CombinedChart>;
     const combinedChartData = new CombinedData();
     let drawer: DrawerElement;
@@ -105,16 +106,16 @@
         icon = iconCache[realIcon] = loadImage(`${iconService.iconSetFolderPath}/images/${realIcon}.png`, { resizeThreshold: 80 });
         return icon;
     }
+    let chartNeedsZoomUpdate = false;
     function onOrientationChanged(event: OrientationChangedEventData) {
         const chart = chartView?.nativeElement;
         if (!chart) {
             return;
         }
-        if (event.newValue === 'landscape') {
-            chart.resetZoom();
-        } else {
-            chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
-        }
+        const isLandscape = event.newValue === 'landscape';
+        chartHeight = !isLandscape && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
+        console.log('onOrientationChanged');
+        chartNeedsZoomUpdate = true;
     }
 
     onMount(async () => {
@@ -379,7 +380,9 @@
                     //     return;
                     // }
                     const enabled = hidden.indexOf(key) === -1;
-                    const color = getWeatherDataColor(key) || colorOnSurface;
+                    const color = getWeatherDataColor(key);
+                    const hasCustomColor = !!color;
+                    const setColor = color || colorOnSurface;
                     newLegends.push({
                         name: getWeatherDataTitle(key),
                         shortName: getWeatherDataTitle(key),
@@ -396,16 +399,17 @@
                             // set.drawIconsEnabled=(enabled);
                             set.scatterShapeSize = 4;
                             // set.scatterShapeSize=(enabled ? 4 : 0);
-                            set.setColor(color);
+                            set.color = setColor;
+                            set['hasValueTextColor'] = hasCustomColor;
                             // set.fillColor=(color);
                             scatterDataSets.push(set);
                             break;
                         }
                         case 'barchart': {
                             const set = new BarDataSet(data, key, 'deltaHours', key);
-                            set.drawValuesEnabled = false;
                             set.visible = enabled;
-                            set.setColor(color);
+                            set.color = setColor;
+                            set['hasValueTextColor'] = hasCustomColor;
                             // set.axisDependency = AxisDependency.RIGHT
                             // set.fillColor=(color);
                             barDataSets.push(set);
@@ -414,6 +418,8 @@
                         case 'linechart':
                         default: {
                             const set = new LineDataSet(data, key, 'deltaHours', key === WeatherProps.iconId ? 'iconFake' : key);
+                            set.color = setColor;
+                            set['hasValueTextColor'] = hasCustomColor;
                             switch (key) {
                                 case WeatherProps.windSpeed:
                                     // set.drawValuesEnabled = true;
@@ -436,7 +442,7 @@
                                     set.mode = Mode.CUBIC_BEZIER;
                                     // set.cubicIntensity = 0.4;
                                     set.drawValuesEnabled = true;
-                                    set.valueTextColor = color;
+                                    set.valueTextColor = colorOnSurface;
                                     set.valueTextSize = 10;
                                     set.valueFormatter = {
                                         getFormattedValue(value: number, entry?: CommonWeatherData) {
@@ -461,7 +467,6 @@
                                     break;
                             }
                             // set.drawValuesEnabled=(true);
-                            set.setColor(color);
                             // set.fillColor=(color);
                             lineDataSets.push(set);
                             break;
@@ -502,14 +507,22 @@
         const chart = chartView?.nativeView;
         if (chart) {
             const newColor = $colors.colorOnSurface;
-            DEV_LOG && console.log('onThemeChanged', !!chart, colorOnSurface, newColor);
+            // DEV_LOG && console.log('onThemeChanged', !!chart, colorOnSurface, newColor);
             const leftAxis = chart.leftAxis;
-            const rightAxis = chart.axisRight;
+            const rightAxis = chart.rightAxis;
             const xAxis = chart.xAxis;
             leftAxis.textColor = rightAxis.textColor = xAxis.textColor = newColor;
 
             xAxis.gridColor = leftAxis.gridColor = rightAxis.gridColor = colorOnSurfaceVariant + '33';
             leftAxis.limitLines.forEach((l) => (l.lineColor = newColor));
+            const dataSets = chart.data.dataSets;
+            DEV_LOG && console.log('onThemeChanged', dataSets.length);
+            dataSets.forEach((d) => {
+                DEV_LOG && console.log('onThemeChanged', d.label, d['hasValueTextColor'], d.drawValuesEnabled);
+                if (d.drawValuesEnabled) {
+                    d.valueTextColor = newColor;
+                }
+            });
             // chart.getLegend().textColor = (newColor);
             chart.invalidate();
         }
@@ -544,8 +557,8 @@
     }
     function onDrawLegend({ id, name, shortName, color, enabled }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
         const h = canvas.getHeight();
-        legendIconPaint.color = color;
-        legendPaint.color = color;
+        legendIconPaint.color = color || colorOnSurface;
+        legendPaint.color = color || colorOnSurface;
         if (enabled) {
             // legendIconPaint.setStyle(enabled ? Style.FILL : Style.STROKE);
 
@@ -604,6 +617,19 @@
                 dataSet.shader = lastGradient.gradient;
             }
         }
+        //use a timeout to ensure we are called after chart layout changed was called
+        setTimeout(() => {
+            if (chartNeedsZoomUpdate) {
+                chartNeedsZoomUpdate = false;
+                if (screenOrientation || Application.orientation() === 'landscape') {
+                    chart.resetZoom();
+                } else {
+                    chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+                }
+                chart.highlight(null);
+                chart.invalidate();
+            }
+        }, 2);
     }
 </script>
 
@@ -625,12 +651,12 @@
                 <gridlayout prop:mainContent rows="auto,*">
                     <!-- <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} /> -->
 
-                    <combinedchart bind:this={chartView} row={1} on:layoutChanged={onLayoutChanged} />
+                    <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : undefined} on:layoutChanged={onLayoutChanged} />
                 </gridlayout>
                 <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
                     <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">
                         <Template let:item>
-                            <canvasview rippleColor={item.color} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />
+                            <canvasview rippleColor={item.color || colorOnSurface} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />
                         </Template>
                     </collectionview>
                 </gridlayout>
@@ -638,7 +664,7 @@
         {/if}
         <CActionBar showMenuIcon titleProps={{ visibility: 'visible' }}>
             <span slot="subtitle" text={weatherLocation && weatherLocation.name} />
-            <span slot="subtitle2" color={colorOnSurfaceVariant} fontSize={12} text={'\n' + lc(forecast)} />
+            <span slot="subtitle2" color={colorOutline} fontSize={12} text={'\n' + lc(forecast)} />
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
             <mdbutton class="actionBarButton" text="mdi-format-list-bulleted-square" variant="text" on:tap={() => drawer.toggle()} />
         </CActionBar>

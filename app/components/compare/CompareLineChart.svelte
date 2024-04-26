@@ -15,11 +15,13 @@
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { Application, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
+    import { EventData } from '@nativescript-community/ui-image';
+    import { Application, ApplicationSettings, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { convertWeatherValueToUnit } from '~/helpers/formatter';
     import { formatDate, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
@@ -56,6 +58,10 @@
     }
     export let item: Item & { startingSide: string };
     export let screenOrientation: string = null;
+    let chartHeight;
+    $: {
+        chartHeight = !screenOrientation && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
+    }
     // $: console.log('item changed', (item?.weatherData?.[0]?.model));
     // export let startingSide;
 
@@ -92,28 +98,23 @@
                     leftAxis.textColor = colorOnSurface;
                     chart.xAxis.textColor = colorOnSurface;
                     chart.minOffset = 0;
-                    chart.highlightFullBarEnabled = false;
+                    // chart.highlightFullBarEnabled = false;
                     chart.autoScaleMinMaxEnabled = true;
                     chart.clipDataToContent = true;
                     chart.pinchZoomEnabled = true;
                     chart.dragEnabled = true;
-                    chart.highlightsFilterByAxis = false;
+                    // chart.highlightsFilterByAxis = false;
                     chart.scaleXEnabled = true;
                     chart.scaleYEnabled = false;
-                    chart.highlightPerTapEnabled = true;
-                    chart.highlightPerDragEnabled = true;
+                    // chart.highlightPerTapEnabled = true;
+                    // chart.highlightPerDragEnabled = true;
                     chart.setExtraOffsets(0, 0, 0, 0);
-                    // chart.setBorderWidth(1);
-                    // chart.drawBorders=(true);
-                    // chart.clipDataToContent = false;
                     xAxis.enabled = true;
                     xAxis.textSize = 10 * $fontScale;
                     xAxis.labelTextAlign = Align.CENTER;
                     xAxis.ensureLastLabel = true;
                     xAxis.position = XAxisPosition.BOTTOM;
                     xAxis.yOffset = 12;
-                    // xAxis.drawMarkTicks = true;
-                    // xAxis.centerAxisLabels = true;
 
                     leftAxis.spaceBottom = 5;
                     leftAxis.spaceTop = 5;
@@ -403,16 +404,32 @@
         // DEV_LOG && console.log('onChartHighlight', highlights.length, JSON.stringify(highlighted));
     }
 
+    let chartNeedsZoomUpdate = false;
     function onOrientationChanged(event: OrientationChangedEventData) {
         const chart = chartView?.nativeElement;
         if (!chart) {
             return;
         }
-        if (event.newValue === 'landscape') {
-            chart.resetZoom();
-        } else {
-            chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
-        }
+        const isLandscape = event.newValue === 'landscape';
+        chartHeight = !isLandscape && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
+        console.log('onOrientationChanged');
+        chartNeedsZoomUpdate = true;
+    }
+    function onLayoutChanged(event: EventData) {
+        const chart = event.object as CombinedChart;
+        //use a timeout to ensure we are called after chart layout changed was called
+        setTimeout(() => {
+            if (chartNeedsZoomUpdate) {
+                chartNeedsZoomUpdate = false;
+                if (screenOrientation || Application.orientation() === 'landscape') {
+                    chart.resetZoom();
+                } else {
+                    chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+                }
+                chart.highlight(null);
+                chart.invalidate();
+            }
+        }, 2);
     }
     onMount(() => {
         Application.on(Application.orientationChangedEvent, onOrientationChanged);
@@ -436,7 +453,7 @@
         <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} />
         <mdbutton class="mdi" horizontalAlignment="right" text="mdi-format-list-bulleted-square" variant="text" on:tap={() => drawer.toggle()} />
 
-        <combinedchart bind:this={chartView} row={1} on:highlight={onChartHighlight} />
+        <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : undefined} on:highlight={onChartHighlight} on:layoutChanged={onLayoutChanged} />
         <!-- <label
             backgroundColor={new Color(colorBackground).setAlpha(200)}
             borderRadius={10}

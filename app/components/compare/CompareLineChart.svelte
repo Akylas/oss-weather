@@ -285,7 +285,6 @@
         const chart = chartView?.nativeView;
         if (chart) {
             const newColor = $colors.colorOnSurface;
-            DEV_LOG && console.log('onThemeChanged', !!chart, colorOnSurface, newColor);
             const leftAxis = chart.leftAxis;
             const xAxis = chart.xAxis;
             leftAxis.textColor = newColor;
@@ -412,7 +411,6 @@
         }
         const isLandscape = event.newValue === 'landscape';
         chartHeight = !isLandscape && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
-        console.log('onOrientationChanged');
         chartNeedsZoomUpdate = true;
     }
     function onLayoutChanged(event: EventData) {
@@ -453,7 +451,7 @@
         <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} />
         <mdbutton class="mdi" horizontalAlignment="right" text="mdi-format-list-bulleted-square" variant="text" on:tap={() => drawer.toggle()} />
 
-        <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : undefined} on:highlight={onChartHighlight} on:layoutChanged={onLayoutChanged} />
+        <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : 'stretch'} on:highlight={onChartHighlight} on:layoutChanged={onLayoutChanged} />
         <!-- <label
             backgroundColor={new Color(colorBackground).setAlpha(200)}
             borderRadius={10}

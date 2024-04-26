@@ -114,7 +114,6 @@
         }
         const isLandscape = event.newValue === 'landscape';
         chartHeight = !isLandscape && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
-        console.log('onOrientationChanged');
         chartNeedsZoomUpdate = true;
     }
 
@@ -516,9 +515,7 @@
             xAxis.gridColor = leftAxis.gridColor = rightAxis.gridColor = colorOnSurfaceVariant + '33';
             leftAxis.limitLines.forEach((l) => (l.lineColor = newColor));
             const dataSets = chart.data.dataSets;
-            DEV_LOG && console.log('onThemeChanged', dataSets.length);
             dataSets.forEach((d) => {
-                DEV_LOG && console.log('onThemeChanged', d.label, d['hasValueTextColor'], d.drawValuesEnabled);
                 if (d.drawValuesEnabled) {
                     d.valueTextColor = newColor;
                 }
@@ -651,7 +648,7 @@
                 <gridlayout prop:mainContent rows="auto,*">
                     <!-- <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} /> -->
 
-                    <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : undefined} on:layoutChanged={onLayoutChanged} />
+                    <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : 'stretch'} on:layoutChanged={onLayoutChanged} />
                 </gridlayout>
                 <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
                     <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">

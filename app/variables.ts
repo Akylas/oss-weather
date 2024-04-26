@@ -7,6 +7,7 @@ import { getRealTheme, theme } from './helpers/theme';
 import { prefs } from './services/preferences';
 import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
+import { DECIMAL_METRICS_TEMP } from './helpers/constants';
 
 export const colors = writable({
     colorPrimary: '',
@@ -73,7 +74,7 @@ export const rainColor = new Color('#4681C3');
 export const snowColor = new Color('#43b4e0');
 
 export let imperialUnits = ApplicationSettings.getBoolean('imperial', false);
-export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', false);
+export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
 export const imperial = writable(imperialUnits);
 let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale || get(systemFontScale));

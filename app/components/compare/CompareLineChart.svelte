@@ -15,8 +15,9 @@
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { Color, ObservableArray } from '@nativescript/core';
+    import { Application, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
     import dayjs from 'dayjs';
+    import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { convertWeatherValueToUnit } from '~/helpers/formatter';
@@ -25,7 +26,7 @@
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { PROP_TO_UNIT } from '~/services/weatherData';
     import { showError } from '~/utils/error';
-    import { colors, fontScale } from '~/variables';
+    import { colors, fontScale, screenWidthDips } from '~/variables';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;
@@ -54,6 +55,7 @@
         hidden: string[];
     }
     export let item: Item & { startingSide: string };
+    export let screenOrientation: string = null;
     // $: console.log('item changed', (item?.weatherData?.[0]?.model));
     // export let startingSide;
 
@@ -71,13 +73,14 @@
     const legends = new ObservableArray([]);
     let lastKey: string;
     let globalStartTimestamp = Number.MAX_SAFE_INTEGER;
+    let maxDatalength = 0;
     function updateLineChart(item: Item) {
         const key = item.id + item.forecast + item.timestamp;
         if (key === lastKey) {
             return;
         }
         try {
-            const { weatherData, ...others} = item;
+            const { weatherData, ...others } = item;
             lastKey = key;
             const chart = chartView?.nativeView;
             if (chart) {
@@ -167,6 +170,7 @@
                 };
                 const chartType = item.chartType;
                 const data = new CombinedData();
+                maxDatalength = 0;
                 let xAxisMaximum = -1;
                 const dataSets = item.weatherData.map((wData) => {
                     const key = item.id;
@@ -177,6 +181,7 @@
                         deltaHours: (d.time - startTimestamp) / (3600 * 1000),
                         [key]: convertWeatherValueToUnit(d, key, { round: false })[0]
                     }));
+                    maxDatalength = Math.max(maxDatalength, data.length);
                     xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);
                     globalStartTimestamp = Math.min(globalStartTimestamp, startTimestamp);
                     const color = wData.model.color;
@@ -227,6 +232,9 @@
                         }
                     }
                 });
+                if (!screenOrientation && Application.orientation() !== 'landscape') {
+                    chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+                }
                 xAxis.axisMinimum = -1.5;
                 xAxis.axisMaximum = xAxisMaximum + 1.5;
                 legends.splice(0, legends.length, ...newLegends);
@@ -265,7 +273,7 @@
                 chart.notifyDataSetChanged();
             }
         } catch (error) {
-            showError(error)
+            showError(error);
         }
     }
     $: if (chartView) {
@@ -394,6 +402,24 @@
         //     });
         // DEV_LOG && console.log('onChartHighlight', highlights.length, JSON.stringify(highlighted));
     }
+
+    function onOrientationChanged(event: OrientationChangedEventData) {
+        const chart = chartView?.nativeElement;
+        if (!chart) {
+            return;
+        }
+        if (event.newValue === 'landscape') {
+            chart.resetZoom();
+        } else {
+            chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+        }
+    }
+    onMount(() => {
+        Application.on(Application.orientationChangedEvent, onOrientationChanged);
+    });
+    onDestroy(() => {
+        Application.off(Application.orientationChangedEvent, onOrientationChanged);
+    });
 </script>
 
 <drawer

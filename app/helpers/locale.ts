@@ -27,11 +27,12 @@ export const clock_24Store = writable(null);
 export const onLanguageChanged = createGlobalEventListener('language');
 export const onTimeChanged = createGlobalEventListener('time');
 
-function loadDayjsLang(newLang: string) {
+async function loadDayjsLang(newLang: string) {
     const toLoad = newLang.replace('_', '-');
     try {
-        require(`dayjs/locale/${toLoad}.js`);
-        dayjs.locale(lang); // switch back to default English locale globally
+        await import(`dayjs/locale/${toLoad}.js`);
+        dayjs.locale(toLoad);
+        DEV_LOG && console.log('dayjs loaded', toLoad, dayjs().format('llll'));
     } catch (err) {
         if (toLoad.indexOf('-') !== -1) {
             loadDayjsLang(toLoad.split('-')[0]);
@@ -69,9 +70,9 @@ function setLang(newLang) {
             if (newLang === 'auto') {
                 appLocale = androidx.core.os.LocaleListCompat.getEmptyLocaleList();
             } else {
-                appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(actualNewLang);
+                appLocale = androidx.core.os.LocaleListCompat.forLanguageTags(actualNewLang + ',' + actualNewLang.split('_')[0]);
             }
-            DEV_LOG && console.log('appLocale', appLocale);
+            DEV_LOG && console.log('appLocale', appLocale, actualNewLang);
             // Call this on the main thread as it may require Activity.restart()
             androidx.appcompat.app.AppCompatDelegate['setApplicationLocales'](appLocale);
             currentLocale = null;

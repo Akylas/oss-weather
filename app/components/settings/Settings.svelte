@@ -8,7 +8,17 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
-    import { MIN_UV_INDEX, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
+    import {
+        ANIMATIONS_ENABLED,
+        CHARTS_LANDSCAPE,
+        DECIMAL_METRICS_TEMP,
+        MIN_UV_INDEX,
+        NB_DAYS_FORECAST,
+        NB_HOURS_FORECAST,
+        NB_MINUTES_FORECAST,
+        WEATHER_MAP_COLORS,
+        WEATHER_MAP_COLOR_SCHEMES
+    } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
@@ -35,7 +45,7 @@
 
     let items: ObservableArray<any>;
 
-    export let title = $slc('settings.title');
+    export let title = null;
     export let reorderEnabled = false;
     export let actionBarButtons = [
         { icon: 'mdi-share-variant', id: 'share' },
@@ -67,6 +77,15 @@
     }
     function getSubSettings(id: string) {
         switch (id) {
+            case 'charts':
+                return () => [
+                    {
+                        type: 'switch',
+                        id: 'charts_landscape',
+                        title: lc('charts_landscape'),
+                        value: ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE)
+                    }
+                ];
             case 'units':
                 return () => [
                     {
@@ -79,7 +98,7 @@
                         type: 'switch',
                         id: 'metric_temp_decimal',
                         title: lc('metric_temp_decimal'),
-                        value: ApplicationSettings.getBoolean('metric_temp_decimal', false)
+                        value: ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP)
                     }
                 ];
             case 'icons':
@@ -89,7 +108,7 @@
                         id: 'animations',
                         title: lc('animations'),
                         description: lc('animations_desc'),
-                        value: ApplicationSettings.getBoolean('animations', false)
+                        value: ApplicationSettings.getBoolean('animations', ANIMATIONS_ENABLED)
                     },
                     {
                         type: 'image',
@@ -346,6 +365,17 @@
                         onReordered: () => {},
                         icon: 'mdi-gauge',
                         options: getSubSettings('weather_data')
+                    }
+                ] as any)
+                .concat([
+                    {
+                        id: 'sub_settings',
+                        title: lc('charts'),
+                        description: lc('charts_settings'),
+                        reorderEnabled: true,
+                        onReordered: () => {},
+                        icon: 'mdi-chart-bar',
+                        options: getSubSettings('charts')
                     }
                 ] as any)
                 .concat([
@@ -661,7 +691,7 @@
     }
 </script>
 
-<page bind:this={page} id={title} actionBarHidden={true}>
+<page bind:this={page} id={title || $slc('settings.title')} actionBarHidden={true}>
     <gridlayout rows="auto,*">
         <collectionview
             bind:this={collectionView}
@@ -743,7 +773,7 @@
                 </ListItemAutoSize>
             </Template>
         </collectionview>
-        <CActionBar canGoBack {title}>
+        <CActionBar canGoBack title={title || $slc('settings.title')}>
             {#each actionBarButtons as button}
                 <mdbutton class="actionBarButton" text={button.icon} variant="text" on:tap={(event) => onTap({ id: button.id }, event)} />
             {/each}

@@ -10,7 +10,7 @@
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { Color, EventData, ImageSource, ObservableArray } from '@nativescript/core';
+    import { Application, ApplicationSettings, Color, EventData, ImageSource, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
@@ -19,7 +19,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { CommonWeatherData, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { showError } from '~/utils/error';
-    import { colors, fontScale } from '~/variables';
+    import { colors, fontScale, screenWidthDips } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
@@ -34,6 +34,7 @@
     import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle } from '~/services/weatherData';
     import { generateGradient, loadImage, tempColor } from '~/utils/utils';
     import { actionBarButtonHeight } from '~/variables';
+    import { CHARTS_LANDSCAPE } from '~/helpers/constants';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;
@@ -86,7 +87,7 @@
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
     const loading = false;
-
+    const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
     let chartView: NativeViewElementNode<CombinedChart>;
     const combinedChartData = new CombinedData();
     let drawer: DrawerElement;
@@ -104,8 +105,21 @@
         icon = iconCache[realIcon] = loadImage(`${iconService.iconSetFolderPath}/images/${realIcon}.png`, { resizeThreshold: 80 });
         return icon;
     }
+    function onOrientationChanged(event: OrientationChangedEventData) {
+        const chart = chartView?.nativeElement;
+        if (!chart) {
+            return;
+        }
+        if (event.newValue === 'landscape') {
+            chart.resetZoom();
+        } else {
+            chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+        }
+    }
 
     onMount(async () => {
+        Application.on(Application.orientationChangedEvent, onOrientationChanged);
+
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             try {
                 if (networkConnected !== event.data.connected) {
@@ -118,6 +132,7 @@
         networkConnected = networkService.connected;
     });
     onDestroy(() => {
+        Application.off(Application.orientationChangedEvent, onOrientationChanged);
         if (__ANDROID__) {
             Object.values(iconCache).forEach((item) => (item.android as android.graphics.Bitmap)?.recycle());
             iconCache = null;
@@ -129,7 +144,7 @@
     }
 
     let temperatureData: { min: number; max: number };
-
+    let maxDatalength = 0;
     function updateLineChart() {
         try {
             const chart = chartView?.nativeView;
@@ -195,6 +210,7 @@
                             } else if (dataSet.label === WeatherProps.windSpeed) {
                                 const drawOffsetY = 45;
                                 appPaint.color = dataSet.color;
+                                appPaint.setTextSize(12);
                                 canvas.drawText(icon as string, x, drawOffsetY, appPaint);
                             }
                         },
@@ -315,6 +331,7 @@
                     });
                     return result;
                 });
+                maxDatalength = data.length;
                 if (dataToShow.indexOf(WeatherProps.temperature) !== -1) {
                     temperatureData = { min: tempMin, max: tempMax };
                 }
@@ -353,7 +370,9 @@
                 //     }
                 //     DEV_LOG && console.log('daily', d.time, index, lastTimestamp);
                 // });
-                // chart.setScale(10 / (screenWidthDips / data.length), 1);
+                if (!screenOrientation && Application.orientation() !== 'landscape') {
+                    chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+                }
                 dataToShow.forEach((key) => {
                     const chartType = CHART_TYPE[key];
                     // if (data[0][key] === undefined) {
@@ -588,7 +607,7 @@
     }
 </script>
 
-<page bind:this={page} id="comparesingle" actionBarHidden={true} screenOrientation="landscape" on:navigatedTo={onNavigatedTo}>
+<page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
     <gridlayout rows="auto,*" prop:mainContent>
         {#if !networkConnected && !weatherData}
             <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />

@@ -21,11 +21,13 @@
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
+    import { CHARTS_LANDSCAPE } from '~/helpers/constants';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
 
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
     let dataToCompare: any = JSON.parse(ApplicationSettings.getString('compare_data_single', '{"id":"temperature","type":"linechart","forecast":"hourly"}'));
+    const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
 
     const CHART_TYPE = {
         [WeatherProps.iconId]: 'weathericons',
@@ -153,7 +155,7 @@
                     // TODO: for Open-Meteo make a single request for all models
                     const weatherData = await provider.getWeather(weatherLocation, { minutely: false, current: false, warnings: false, forceModel: true, model: data[1] });
                     const model = modelsList.find((m) => m.id === modelId);
-                    return { weatherData, model};
+                    return { weatherData, model };
                 })
             );
 
@@ -290,7 +292,7 @@
     });
 </script>
 
-<page bind:this={page} id="comparesingle" actionBarHidden={true} screenOrientation="landscape" on:navigatedTo={onNavigatedTo}>
+<page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
     <drawer
         bind:this={drawer}
         gestureHandlerOptions={{
@@ -306,8 +308,8 @@
             {#if !networkConnected}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if currentItem}
-                <CompareLineChart item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'hidden' : 'visible'} />
-                <CompareWeatherIcons item={currentItem} row={1} visibility={currentItem?.chartType === 'weathericons' ? 'visible' : 'hidden'} />
+                <CompareLineChart item={currentItem} row={1} {screenOrientation} visibility={currentItem?.chartType === 'weathericons' ? 'hidden' : 'visible'} />
+                <CompareWeatherIcons item={currentItem} row={1} {screenOrientation} visibility={currentItem?.chartType === 'weathericons' ? 'visible' : 'hidden'} />
             {:else}
                 <mdbutton horizontalAlignment="center" row={1} text={lc('select_data')} variant="text" verticalAlignment="middle" on:tap={toggleRightDrawer} />
             {/if}

@@ -1,6 +1,7 @@
 import { ApplicationSettings, File, Folder, Observable, knownFolders, path } from '@nativescript/core';
 import { prefs } from './preferences';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { ANIMATIONS_ENABLED } from '~/helpers/constants';
 
 const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
 export const onIconPackChanged = createGlobalEventListener('iconPack');
@@ -111,7 +112,7 @@ export class IconService extends Observable {
         prefs.on('key:animations', () => this.updateAnimatedState(), this);
     }
     updateAnimatedState(fire = true) {
-        this.mAnimated = ApplicationSettings.getBoolean('animations', false);
+        this.mAnimated = ApplicationSettings.getBoolean('animations', ANIMATIONS_ENABLED);
         if (fire) {
             globalObservable.notify({ eventName: 'iconAnimations', data: this.mAnimated });
         }

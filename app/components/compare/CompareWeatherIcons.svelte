@@ -37,6 +37,8 @@
     const COLUMN_HEIGHT = 50;
     const ICON_SIZE = 30;
     export let item: Item;
+    export let screenOrientation: string = null;
+
     let width;
     let columns;
 

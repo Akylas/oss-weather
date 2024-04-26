@@ -27,23 +27,32 @@ export const clock_24Store = writable(null);
 export const onLanguageChanged = createGlobalEventListener('language');
 export const onTimeChanged = createGlobalEventListener('time');
 
+function loadDayjsLang(newLang: string) {
+    const toLoad = newLang.replace('_', '-');
+    try {
+        require(`dayjs/locale/${toLoad}.js`);
+        dayjs.locale(lang); // switch back to default English locale globally
+    } catch (err) {
+        if (toLoad.indexOf('-') !== -1) {
+            loadDayjsLang(toLoad.split('-')[0]);
+        } else {
+            DEV_LOG && console.error(lang, `~/dayjs/${toLoad}`, err, err.stack);
+        }
+    }
+}
+
 $lang.subscribe((newLang: string) => {
     lang = newLang;
     if (!lang) {
         return;
     }
-    // console.log('changed lang', lang, Device.region);
-    try {
-        require(`dayjs/locale/${newLang}.js`);
-    } catch (err) {
-        console.error('failed to load dayjs locale', lang, `~/dayjs/${newLang}`, err, err.stack);
-    }
-    dayjs.locale(lang); // switch back to default English locale globally
+    DEV_LOG && console.log('changed lang', lang, Device.region);
+    loadDayjsLang(lang);
     try {
         // const localeData = require(`~/i18n/${lang}.json`);
         loadLocaleJSON(`~/i18n/${lang}.json`);
     } catch (err) {
-        console.error('failed to load lang json', lang, `~/i18n/${lang}.json`, File.exists(`~/i18n/${lang}.json`), err, err.stack);
+        console.error(lang, `~/i18n/${lang}.json`, File.exists(`~/i18n/${lang}.json`), err, err.stack);
     }
     globalObservable.notify({ eventName: 'language', data: lang });
 });

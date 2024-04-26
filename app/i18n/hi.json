@@ -27,6 +27,7 @@
     "app": {
         "name": "OSS Weather"
     },
+    "aqi": "वायु गुणवत्ता सूचकांक",
     "authorize": "अधिकृत करें",
     "auto_black": "ऑटो-डार्क थीम के लिए काले रंग का उपयोग करें",
     "avalanche": "हिमस्खलन",
@@ -44,6 +45,7 @@
     "cloudy": "बादलों से घिरा",
     "coastal_flooding": "तटवर्ती बाढ़",
     "compare_models": "मॉडलों की तुलना करें",
+    "data": "डेटा",
     "description": "विवरण",
     "description_required": "विवरण आवश्यक है",
     "disabled_weather_data": "अक्षम मौसम डेटा",
@@ -169,6 +171,7 @@
     "search_city": "खोजें",
     "search_location": "स्थान खोजें",
     "select": "चुनें",
+    "select_data": "डेटा चुनें",
     "select_language": "भाषा चुने",
     "select_location": "एक स्थान चुनें",
     "select_on_map": "मानचित्र पर चयन करें",

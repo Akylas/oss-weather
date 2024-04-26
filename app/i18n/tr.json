@@ -27,6 +27,7 @@
     "app": {
         "name": "OSS Hava Durumu"
     },
+    "aqi": "Hava Kalitesi Göstergesi",
     "authorize": "Yetki ver",
     "auto_black": "Otomatik koyu tema için siyahı kullan",
     "avalanche": "Çığ",
@@ -44,6 +45,7 @@
     "cloudy": "Bulutlu",
     "coastal_flooding": "Kıyı seli",
     "compare_models": "modelleri karşılaştır",
+    "data": "veri",
     "description": "Açıklama",
     "description_required": "Bir açıklama gerekli",
     "disabled_weather_data": "hava durumu verileri devre dışı",
@@ -169,6 +171,7 @@
     "search_city": "Ara",
     "search_location": "Konum ara",
     "select": "Seç",
+    "select_data": "veri seç",
     "select_language": "Dili seçin",
     "select_location": "Konum seçin",
     "select_on_map": "Haritadan seçin",

@@ -27,6 +27,7 @@
     "app": {
         "name": "OSS Tiempo"
     },
+    "aqi": "Índice de calidad del aire",
     "authorize": "Autorizar",
     "auto_black": "Utilizar el negro para el tema oscuro automático",
     "avalanche": "Avalancha",
@@ -44,6 +45,7 @@
     "cloudy": "Nublado",
     "coastal_flooding": "Inundaciones en la costa",
     "compare_models": "comparar modelos",
+    "data": "datos",
     "description": "Descripción",
     "description_required": "Se requiere una descripción",
     "disabled_weather_data": "Información meteorológica desactivada",
@@ -169,6 +171,7 @@
     "search_city": "Buscar",
     "search_location": "Buscar ubicación",
     "select": "Seleccionar",
+    "select_data": "seleccionar datos",
     "select_language": "seleccionar el idioma",
     "select_location": "Seleccionar una ubicación",
     "select_on_map": "Seleccionar en un mapa",

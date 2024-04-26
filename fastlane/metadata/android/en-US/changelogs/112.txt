@@ -1,0 +1,2 @@
+### Bug fixes
+- crash while swithing data in Compare models chart

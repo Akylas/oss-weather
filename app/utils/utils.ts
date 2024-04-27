@@ -37,7 +37,7 @@ export function isBRABounds(location: FavoriteLocation) {
     return coords.lon >= BRA_BOUNDS[0] && coords.lon <= BRA_BOUNDS[2] && coords.lat >= BRA_BOUNDS[1] && coords.lat <= BRA_BOUNDS[3];
 }
 export function loadImage(imagePath, loadOptions: { width?; height?; resizeThreshold?; sourceWidth?; sourceHeight?; jpegQuality? } = {}) {
-    loadOptions.resizeThreshold = loadOptions.resizeThreshold || 4500;
+    loadOptions.resizeThreshold ??= 4500;
     if (__IOS__) {
         return new ImageSource(ImageUtils.readImageFromFileStringOptions(imagePath, JSON.stringify(loadOptions)));
     } else {

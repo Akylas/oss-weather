@@ -132,12 +132,11 @@ export function formatWeatherValue(item: CommonWeatherData, key: string, options
     return formatValueToUnit(item[key], PROP_TO_UNIT[key], options);
 }
 
-export function formatValueToUnit(value: any, unit: UNITS, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
-    options = options || {};
+export function formatValueToUnit(value: any, unit: UNITS, options: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean } = {}) {
     if (unit === UNITS.Celcius) {
-        options.join = options.join || '';
+        options.join ??= '';
     } else {
-        options.join = options.join || ' ';
+        options.join ??= ' ';
     }
     const array = convertValueToUnit(value, unit, options);
     if (options.unitScale) {

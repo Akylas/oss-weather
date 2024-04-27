@@ -132,13 +132,13 @@ export class IconService extends Observable {
         }
     }
     getIcon(iconId: number, isDay: boolean, animated = this.animated) {
+        if (!iconId && iconId !== 0) {
+            return null;
+        }
         const key = `${iconId}${isDay ? 1 : 0}${animated ? 1 : 0}`;
         const cached = this.mappingCache.get(key);
         if (cached) {
             return cached;
-        }
-        if (iconId === undefined) {
-            return null;
         }
         const mapIds = animated ? this.lotties : this.images;
         let realIconId = iconId;

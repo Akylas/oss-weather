@@ -1,0 +1,5 @@
+### Bug fixes
+- Translated using Weblate (Russian)
+- Translated using Weblate (German)
+- Translated using Weblate (Turkish)
+- more compare models fix

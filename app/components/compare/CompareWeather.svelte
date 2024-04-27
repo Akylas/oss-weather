@@ -128,20 +128,29 @@
             }
             loading = true;
             const now = Date.now();
-            const weatherData = await Promise.all(
-                models.map(async (model) => {
-                    const data = model.split(':');
-                    const providerType = data[0] as ProviderType;
-                    const provider = getProviderForType(providerType);
-                    // TODO: for Open-Meteo make a single request for all models
-                    const weatherData = await provider.getWeather(weatherLocation, { minutely: false, current: false, warnings: false, forceModel: true, model: data[1] });
-                    const modelData = modelsList.find((m) => m.id === model);
-                    // DEV_LOG && console.log('modelData', model, modelData);
-                    return { weatherData, model: modelData as { id: string; name: string; shortName: string } };
-                    // return prepareItems(weatherLocation, weatherData, now);
-                })
-            );
-
+            const errors = [];
+            const weatherData = (
+                await Promise.all(
+                    models.map(async (modelId) => {
+                        try {
+                            const data = modelId.split(':');
+                            const providerType = data[0] as ProviderType;
+                            const provider = getProviderForType(providerType);
+                            // TODO: for Open-Meteo make a single request for all models
+                            const weatherData = await provider.getWeather(weatherLocation, { minutely: false, current: false, warnings: false, forceModel: true, model: data[1] });
+                            const model = modelsList.find((m) => m.id === modelId);
+                            return { weatherData, model };
+                        } catch (error) {
+                            errors.push(error);
+                            DEV_LOG && console.error(modelId, error, error.stack);
+                            return null;
+                        }
+                    })
+                )
+            ).filter((d) => !!d);
+            if (weatherData.length === 0) {
+                showError(errors[0]);
+            }
             const newItems = [];
             for (let i = 0; i < dataToCompare.length; i++) {
                 const d = dataToCompare[i];

@@ -45,6 +45,9 @@
     let iconCache: { [k: string]: ImageSource } = {};
     function getIcon(iconId, isDay): ImageSource {
         const realIcon = iconService.getIcon(iconId, isDay, false);
+        if (realIcon === null) {
+            return null;
+        }
         let icon = iconCache[realIcon];
         if (icon) {
             return icon;
@@ -83,6 +86,9 @@
 
     function drawWeatherItem(d: CommonWeatherData, canvas: Canvas, dx, dy) {
         const icon = getIcon(d.iconId, d.isDay);
+        if (!icon) {
+            return;
+        }
         srcRect.set(0, 0, icon.width, icon.height);
         dstRect.set(dx + COLUMN_WIDTH / 2 - ICON_SIZE / 2, dy + COLUMN_HEIGHT / 2 - ICON_SIZE / 2, dx + COLUMN_WIDTH / 2 + ICON_SIZE / 2, dy + COLUMN_HEIGHT / 2 + ICON_SIZE / 2);
         paint.color = d.color;

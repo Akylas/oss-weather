@@ -406,19 +406,29 @@
     }
     function onLayoutChanged(event: EventData) {
         const chart = event.object as CombinedChart;
-        //use a timeout to ensure we are called after chart layout changed was called
-        setTimeout(() => {
+        chart.once('postDraw', () => {
+            //use a timeout to ensure we are called after chart layout changed was called
+            // setTimeout(() => {
+            DEV_LOG && console.log('onLayoutChanged', chartNeedsZoomUpdate, screenOrientation, Application.orientation());
             if (chartNeedsZoomUpdate) {
                 chartNeedsZoomUpdate = false;
+                chart.highlight(null);
                 if (screenOrientation || Application.orientation() === 'landscape') {
                     chart.resetZoom();
                 } else {
                     chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
                 }
-                chart.highlight(null);
-                chart.invalidate();
+                if (__IOS__) {
+                    // On iOS calling setNeedsDisplay from drawRect does not seem to work so let s timeout
+                    setTimeout(() => {
+                        chart.invalidate();
+                    }, 0);
+                } else {
+                    chart.invalidate();
+                }
             }
-        }, 2);
+            // }, 0);
+        });
     }
     onMount(() => {
         Application.on(Application.orientationChangedEvent, onOrientationChanged);

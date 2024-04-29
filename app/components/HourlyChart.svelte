@@ -642,7 +642,7 @@
 </script>
 
 <page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
-    <gridlayout rows="auto,*" prop:mainContent>
+    <gridlayout rows="auto,*">
         {#if !networkConnected && !weatherData}
             <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
         {:else}
@@ -659,7 +659,13 @@
                 <gridlayout prop:mainContent rows="auto,*">
                     <!-- <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} /> -->
 
-                    <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : 'stretch'} on:layoutChanged={onLayoutChanged} />
+                    <combinedchart
+                        bind:this={chartView}
+                        height={chartHeight}
+                        iosOverflowSafeArea={false}
+                        row={1}
+                        verticalAlignment={chartHeight ? 'center' : 'stretch'}
+                        on:layoutChanged={onLayoutChanged} />
                 </gridlayout>
                 <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
                     <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">

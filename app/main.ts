@@ -4,6 +4,7 @@ import { GestureRootView, install as installGestures } from '@nativescript-commu
 import { setGeoLocationKeys } from '@nativescript-community/gps';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
+import { ChartTraceCategory } from '@nativescript-community/ui-chart';
 import SwipeMenuElement from '@nativescript-community/ui-collectionview-swipemenu/svelte';
 import CollectionViewElement from '@nativescript-community/ui-collectionview/svelte';
 import DrawerElement from '@nativescript-community/ui-drawer/svelte';
@@ -11,7 +12,7 @@ import { initialize } from '@nativescript-community/ui-image';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, Frame, NavigatedData, Page } from '@nativescript/core';
+import { Application, Frame, NavigatedData, Page, Trace } from '@nativescript/core';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
@@ -66,7 +67,7 @@ try {
     // Trace.addCategories(DomTraceCategory);
     // Trace.addCategories(Trace.categories.NativeLifecycle);
     // Trace.addCategories(Trace.categories.Transition);
-    // Trace.addCategories(Trace.categories.Animation);
+    // Trace.addCategories(ChartTraceCategory);
     // Trace.addCategories(CollectionViewTraceCategory);
     // Trace.enable();
     // on startup we need to ensure theme is loaded because of a mixin

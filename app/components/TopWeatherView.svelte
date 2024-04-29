@@ -387,7 +387,10 @@
         verticalAlignment="top"
         horizontalAlignment="left"
     /> -->
-    <linechart bind:this={lineChart} height={90} marginBottom={30} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
+    <!-- the gridlayout is there to ensure a max width for the chart -->
+    <gridlayout height={90} marginBottom={30} verticalAlignment="bottom" width={300}>
+        <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
+    </gridlayout>
     <WeatherIcon
         {animated}
         col={1}

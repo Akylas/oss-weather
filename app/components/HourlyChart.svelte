@@ -145,7 +145,8 @@
 
     let temperatureData: { min: number; max: number };
     let maxDatalength = 0;
-    function updateLineChart() {
+    let startTimestamp = 0;
+    function updateLineChart(setData = true) {
         try {
             const chart = chartView?.nativeView;
             if (chart) {
@@ -250,6 +251,9 @@
                         }
                     };
                 }
+                if (!setData) {
+                    return;
+                }
 
                 const newLegends = [];
                 const lineDataSets: LineDataSet[] = [];
@@ -257,7 +261,7 @@
                 const barDataSets: BarDataSet[] = [];
 
                 const sourceData = weatherData.hourly;
-                const startTimestamp = sourceData[0].time;
+                startTimestamp = sourceData[0].time;
 
                 const limitLine = new LimitLine((Date.now() - startTimestamp) / (3600 * 1000));
                 limitLine.lineWidth = 2;
@@ -265,6 +269,7 @@
                 limitLine.lineColor = colorOnSurfaceVariant;
                 xAxis.removeAllLimitLines();
                 xAxis.addLimitLine(limitLine);
+
 
                 // if (forecast === 'hourly') {
                 xAxis.forcedInterval = 1;
@@ -319,7 +324,7 @@
                             if (k === WeatherProps.iconId) {
                                 result['iconFake'] = 1;
                             } else if (k === WeatherProps.precipAccumulation) {
-                                result[k] = convertWeatherValueToUnit(d, k, { round: false })[0] * 10;
+                                result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                             } else if (k === WeatherProps.temperature) {
                                 result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                                 tempMin = Math.min(tempMin, result[k]);
@@ -331,6 +336,11 @@
                     });
                     return result;
                 });
+
+                leftAxis.spaceMax = 2; // add space so that highest values does not show over icons
+                rightAxis.spaceMax = 2; // add space so that highest bars does not show over icons
+                rightAxis.axisSuggestedMaximum = 10; // we set a max to get hourly precipitations at a "correct" level
+
                 maxDatalength = data.length;
                 if (dataToShow.indexOf(WeatherProps.temperature) !== -1) {
                     temperatureData = { min: tempMin, max: tempMax };
@@ -409,7 +419,7 @@
                             set.visible = enabled;
                             set.color = setColor;
                             set['hasValueTextColor'] = hasCustomColor;
-                            // set.axisDependency = AxisDependency.RIGHT
+                            set.axisDependency = AxisDependency.RIGHT;
                             // set.fillColor=(color);
                             barDataSets.push(set);
                             break;
@@ -493,13 +503,14 @@
                     combinedChartData.barData = null;
                 }
                 chart.data = combinedChartData;
+
             }
         } catch (error) {
             showError(error);
         }
     }
     $: if (chartView) {
-        updateLineChart();
+        updateLineChart(true);
     }
 
     onThemeChanged(() => {

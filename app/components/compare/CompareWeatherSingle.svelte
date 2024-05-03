@@ -311,6 +311,7 @@
             failOffsetYStart: -40,
             failOffsetYEnd: 40
         }}
+         iosIgnoreSafeArea={false}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
         on:close={onDrawerClose}
@@ -391,7 +392,6 @@
                     </ListItem>
                 </Template>
             </collectionview>
-            <!-- <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} /> -->
         </gridlayout>
     </drawer>
 </page>

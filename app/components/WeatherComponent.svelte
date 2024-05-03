@@ -51,7 +51,7 @@
 </script>
 
 <collectionview
-    bind:this={collectionView}
+bind:this={collectionView}
     id="main"
     {...$$restProps}
     iosOverflowSafeAreaEnabled="false"

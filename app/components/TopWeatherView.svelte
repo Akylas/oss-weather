@@ -155,7 +155,7 @@
             xAxis.axisMinimum = 0;
 
             // we want exactly one label per 10 min
-            const labelCount = Math.min(data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0, 7);
+            const labelCount = Math.max(0, Math.min(data.length ? (data[data.length - 1].time - now) / (10 * 60 * 1000 * timeFactor) + 1 : 0, 7));
             xAxis.labelCount = labelCount;
             xAxis.forceLabelsEnabled = true;
 
@@ -387,7 +387,10 @@
         verticalAlignment="top"
         horizontalAlignment="left"
     /> -->
-    <linechart bind:this={lineChart} height={90} marginBottom={30} verticalAlignment="bottom" visibility={hasPrecip ? 'visible' : 'hidden'} />
+    <!-- the gridlayout is there to ensure a max width for the chart -->
+    <gridlayout height={90} marginBottom={30} verticalAlignment="bottom" width={300}>
+        <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
+    </gridlayout>
     <WeatherIcon
         {animated}
         col={1}

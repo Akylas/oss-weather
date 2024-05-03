@@ -4,6 +4,7 @@ export const ANIMATIONS_ENABLED = false;
 export const CHARTS_LANDSCAPE = false;
 export const CHARTS_PORTRAIT_FULLSCREEN = false;
 export const DECIMAL_METRICS_TEMP = false;
+export const FEELS_LIKE_TEMPERATURE = false;
 
 export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;

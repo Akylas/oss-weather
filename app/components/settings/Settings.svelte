@@ -13,6 +13,7 @@
         CHARTS_LANDSCAPE,
         CHARTS_PORTRAIT_FULLSCREEN,
         DECIMAL_METRICS_TEMP,
+        FEELS_LIKE_TEMPERATURE,
         MIN_UV_INDEX,
         NB_DAYS_FORECAST,
         NB_HOURS_FORECAST,
@@ -231,7 +232,7 @@
                             type: 'switch',
                             id: 'feels_like_temperatures',
                             title: lc('feels_like_temperatures'),
-                            value: ApplicationSettings.getBoolean('feels_like_temperatures', false)
+                            value: ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE)
                         },
                         {
                             key: 'min_uv_index',

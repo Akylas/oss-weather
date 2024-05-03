@@ -9,7 +9,7 @@ import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
 import { AirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
-import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
+import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
@@ -71,7 +71,7 @@ export const API_MAX_VALUES = {
 };
 
 export class OMProvider extends WeatherProvider {
-    static id = 'openmeteo'
+    static id = 'openmeteo';
     id = OMProvider.id;
     getModels() {
         return OM_MODELS;
@@ -169,7 +169,7 @@ export class OMProvider extends WeatherProvider {
         { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {},
         subdomain = 'api'
     ) {
-        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
         const forecast_minutely_15 = Math.round(ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15);
@@ -225,7 +225,7 @@ export class OMProvider extends WeatherProvider {
             model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
         }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean } = {}
     ) {
-        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const coords = weatherLocation.coord;
         let models = 'best_match';
         if (model !== 'best_match') {

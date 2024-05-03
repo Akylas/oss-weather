@@ -6,12 +6,12 @@ import { CityWeather, Coord, OneCallResult } from './openweathermap';
 import { prefs } from '../preferences';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
-import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
+import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { ApplicationSettings } from '@nativescript/core';
 import dayjs from 'dayjs';
 
 export class OWMProvider extends WeatherProvider {
-    static id = 'openweathermap'
+    static id = 'openweathermap';
     id = OWMProvider.id;
     static owmApiKey = OWMProvider.readOwmApiKeySetting();
 
@@ -37,8 +37,7 @@ export class OWMProvider extends WeatherProvider {
 
     public override async getWeather(weatherLocation: WeatherLocation, { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const coords = weatherLocation.coord;
-        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
-        const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '2.5');
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '3.0');
         const result = await OWMProvider.fetch<OneCallResult>(onecallVersion, 'onecall', coords);
         const forecast = result.content;

@@ -1,0 +1,12 @@
+### Features
+- new settings to show current day data in "current weather" or "daily list"
+
+### Bug fixes
+- Translated using Weblate (German)
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Hindi)
+- hourly chart fixes and improvements
+- potential crash when apps wakes up after being on sub pages
+- better minutely chart layout in landscape
+- OpenWeather now defaults to 3.0 as 2.5 won't work anymore in a month (will remove it then)
+- make it clear that meteocons contains a greater 

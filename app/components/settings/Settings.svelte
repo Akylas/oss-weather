@@ -18,6 +18,8 @@
         NB_DAYS_FORECAST,
         NB_HOURS_FORECAST,
         NB_MINUTES_FORECAST,
+        SHOW_CURRENT_DAY_DAILY,
+        SHOW_DAILY_IN_CURRENTLY,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES
     } from '~/helpers/constants';

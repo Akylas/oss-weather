@@ -77,11 +77,14 @@ export let imperialUnits = ApplicationSettings.getBoolean('imperial', false);
 export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
 export const imperial = writable(imperialUnits);
 let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
-export const fontScale = writable(storedFontScale || get(systemFontScale));
+export const fontScale = writable(storedFontScale);
 export const isRTL = writable(false);
 
 export const onImperialChanged = createGlobalEventListener('imperial');
-
+export const onFontScaleChanged = createGlobalEventListener('fontscale');
+export function onSettingsChanged(key: string, callback) {
+    return createGlobalEventListener(key)(callback);
+}
 prefs.on('key:imperial', () => {
     imperialUnits = ApplicationSettings.getBoolean('imperial');
     imperial.set(imperialUnits);
@@ -94,21 +97,30 @@ prefs.on('key:metric_temp_decimal', () => {
     // we notify imperial to update ui
     globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
 });
+prefs.on('key:feels_like_temperatures', () => {
+    globalObservable.notify({ eventName: 'feels_like_temperatures', data: ApplicationSettings.getBoolean('feels_like_temperatures') });
+});
+prefs.on('key:show_current_day_daily', () => {
+    globalObservable.notify({ eventName: 'show_current_day_daily', data: ApplicationSettings.getBoolean('show_current_day_daily') });
+});
 prefs.on('key:fontscale', () => {
-    storedFontScale = ApplicationSettings.getNumber('fontscale');
+    storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
     if (storedFontScale === 1) {
         fontScale.set(get(systemFontScale));
     } else {
         fontScale.set(storedFontScale);
     }
+    globalObservable.notify({ eventName: 'fontscale', data: get(fontScale) });
 });
 
 function updateSystemFontScale(value) {
+    value = value || 1; // forbid 0
     systemFontScale.set(value);
     // console.log('updateSystemFontScale', value, storedFontScale);
     if (storedFontScale === 1) {
         fontScale.set(value);
     }
+    globalObservable.notify({ eventName: 'fontscale', data: get(fontScale) });
 }
 
 function getRootViewStyle() {

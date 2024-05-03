@@ -31,7 +31,7 @@
     import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
     import { hideLoading, isLandscape, showLoading, showPopoverMenu } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils';
-    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, systemFontScale } from '~/variables';
+    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
     import { DATA_VERSION } from '~/helpers/constants';
 
@@ -286,9 +286,6 @@
         }
     }
 
-    onWeatherDataChanged(updateView);
-    onIconPackChanged(updateView);
-
     function saveLocation(result: WeatherLocation) {
         const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
         if (cityChanged) {
@@ -435,6 +432,12 @@
             showError(error);
         }
     });
+
+    onWeatherDataChanged(updateView);
+    onIconPackChanged(updateView);
+    onSettingsChanged('feels_like_temperatures', refreshWeather);
+    onSettingsChanged('show_current_day_daily', updateView);
+    onSettingsChanged('show_daily_in_currently', updateView);
 
     async function showAlerts() {
         if (!weatherData.alerts) {

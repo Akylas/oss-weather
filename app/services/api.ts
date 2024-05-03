@@ -1,7 +1,7 @@
 import { getFromLocation } from '@nativescript-community/geocoding';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
-import { Application, ApplicationEventData, Folder, Utils, knownFolders } from '@nativescript/core';
+import { Application, ApplicationEventData, ApplicationSettings, Folder, Utils, knownFolders } from '@nativescript/core';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
@@ -11,6 +11,7 @@ import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { Photon, PhotonProperties } from '../../typings/photon';
 import { WeatherData } from './providers/weather';
 import { iconService } from './icon';
+import { SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -272,11 +273,16 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
     const firstHourIndex = weatherData.hourly.findIndex((h) => h.time >= startOfHour);
     const firstMinuteIndex = weatherData.minutely?.data ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
     const hours = firstHourIndex >= 0 ? weatherData.hourly.slice(firstHourIndex) : [];
+    const showCurrentInDaily = ApplicationSettings.getBoolean('show_current_day_daily', SHOW_CURRENT_DAY_DAILY);
+    const showDayDataInCurrent = ApplicationSettings.getBoolean('show_daily_in_currently', SHOW_DAILY_IN_CURRENTLY);
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
             const dailyData = weatherData.daily.data[index];
             // eslint-disable-next-line prefer-const
             let { precipAccumulation, cloudCover, cloudCeiling, iso, isDay, uvIndex, windGust, ...current } = dailyData;
+            if (showDayDataInCurrent) {
+                Object.assign(current, { precipAccumulation, cloudCover, cloudCeiling, iso, uvIndex, windGust });
+            }
 
             current = firstHourIndex >= 0 ? { ...hours[index] } : current;
             if (firstHourIndex === 0 && firstMinuteIndex > 10) {
@@ -301,40 +307,47 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
 
             const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
             // current weather is a mix of actual current weather, hourly and daily
-            newItems.push(
-                Object.assign(current, {
-                    lastUpdate,
-                    isDay: now.valueOf() < times.sunsetStart.valueOf() && now.valueOf() > times.sunriseEnd.valueOf(),
-                    temperatureMin: dailyData.temperatureMin,
-                    temperatureMax: dailyData.temperatureMax,
-                    moonIcon: dailyData.moonIcon,
-                    // icon: iconService.getIcon(currentDaily.iconId, currentDaily.isDay),
-                    sunriseTime: times.sunriseEnd,
-                    sunsetTime: times.sunsetStart,
-                    hourly: hours.map((h, i) => ({
-                        ...h,
-                        index: i,
-                        // icon: iconService.getIcon(h.iconId, h.isDay),
-                        min,
-                        max,
-                        tempDelta: (h.temperature - min) / delta,
-                        curveTempPoints: [
-                            hours[i - 3]?.temperature,
-                            hours[i - 2]?.temperature,
-                            hours[i - 1]?.temperature,
-                            h.temperature,
-                            hours[i + 1]?.temperature,
-                            hours[i + 2]?.temperature,
-                            hours[i + 3]?.temperature
-                        ]
-                            .filter((s) => s !== undefined)
-                            .map((s) => (s - min) / delta),
-                        odd: i % 2 === 0
-                    })),
-                    minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex, firstMinuteIndex + 8) : [],
-                    alerts: weatherData.alerts
-                })
-            );
+            newItems.push({
+                ...current,
+                lastUpdate,
+                isDay: now.valueOf() < times.sunsetStart.valueOf() && now.valueOf() > times.sunriseEnd.valueOf(),
+                temperatureMin: dailyData.temperatureMin,
+                temperatureMax: dailyData.temperatureMax,
+                moonIcon: dailyData.moonIcon,
+                // icon: iconService.getIcon(currentDaily.iconId, currentDaily.isDay),
+                sunriseTime: times.sunriseEnd,
+                sunsetTime: times.sunsetStart,
+                hourly: hours.map((h, i) => ({
+                    ...h,
+                    index: i,
+                    // icon: iconService.getIcon(h.iconId, h.isDay),
+                    min,
+                    max,
+                    tempDelta: (h.temperature - min) / delta,
+                    curveTempPoints: [
+                        hours[i - 3]?.temperature,
+                        hours[i - 2]?.temperature,
+                        hours[i - 1]?.temperature,
+                        h.temperature,
+                        hours[i + 1]?.temperature,
+                        hours[i + 2]?.temperature,
+                        hours[i + 3]?.temperature
+                    ]
+                        .filter((s) => s !== undefined)
+                        .map((s) => (s - min) / delta),
+                    odd: i % 2 === 0
+                })),
+                minutely: firstMinuteIndex >= 0 ? weatherData.minutely.data.slice(firstMinuteIndex, firstMinuteIndex + 8) : [],
+                alerts: weatherData.alerts
+            });
+            if (showCurrentInDaily) {
+                newItems.push(
+                    Object.assign(d, {
+                        // icon: iconService.getIcon(d.iconId, d.isDay),
+                        index: newItems.length
+                    })
+                );
+            }
         } else {
             newItems.push(
                 Object.assign(d, {

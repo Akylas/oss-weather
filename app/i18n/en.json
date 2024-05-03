@@ -188,6 +188,8 @@
     },
     "seven_days": "7 days",
     "share_application": "Share the app",
+    "show_current_day_daily": "show current day in daily list",
+    "show_daily_in_currently": "show current day data (like precipitation) in current weather",
     "show_love": "if you enjoy the project, you can show some love or even contribute!",
     "snow": "Snow",
     "snow_grains": "Snow grains",

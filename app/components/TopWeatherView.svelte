@@ -98,7 +98,7 @@
             if (data[0].time > 0) {
                 data.unshift({ time: data[0].time - 1, intensity: 0 });
             }
-            DEV_LOG && console.log('data', JSON.stringify(data));
+            // DEV_LOG && console.log('data', JSON.stringify(data));
             const xAxis = chart.xAxis;
             const leftAxis = chart.leftAxis;
             if (!chartInitialized) {
@@ -263,7 +263,7 @@
         const h = canvas.getHeight();
         const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
 
-        const iconsTop = hasPrecip ? 45 : topViewHeight / 2 - 20 * $fontScale;
+        const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
         const iconsLeft = 26;
         centeredItemsToDraw.forEach((c, index) => {
             const x = index * 45 * $fontScale + iconsLeft;
@@ -364,7 +364,7 @@
     }
 </script>
 
-<gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
+<gridlayout columns="*,auto" {height} rows={`${topViewHeight * $fontScale},*`}>
     <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={$fonts.wi} text="wi-sunrise " />

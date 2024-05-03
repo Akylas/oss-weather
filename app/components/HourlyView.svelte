@@ -26,12 +26,13 @@
         showRightShadowOpacity = Math.min(event.scrollSize - event.scrollOffset, 60) / 60;
     }
 
-    onImperialChanged(() => {
+    function refreshVisibleItems() {
         collectionView?.nativeView?.refreshVisibleItems();
-    });
-    onThemeChanged(() => {
-        collectionView.nativeView.refreshVisibleItems();
-    });
+    }
+
+    onImperialChanged(refreshVisibleItems);
+    onThemeChanged(refreshVisibleItems);
+
     function selectTemplate(item, index, items) {
         if (iconService.animated) {
             return 'animated';

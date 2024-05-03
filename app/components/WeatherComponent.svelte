@@ -9,7 +9,7 @@
     import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import { createEventDispatcher } from '~/utils/svelte/ui';
-    import { actionBarHeight, fontScale, navigationBarHeight, onImperialChanged, screenHeightDips, screenWidthDips, statusBarHeight } from '~/variables';
+    import { actionBarHeight, fontScale, navigationBarHeight, onFontScaleChanged, onImperialChanged, onSettingsChanged, screenHeightDips, screenWidthDips, statusBarHeight } from '~/variables';
 
     export let items: any[];
     export let weatherLocation: WeatherLocation;
@@ -30,16 +30,15 @@
             } catch (err) {}
         }
     }
+    function refreshVisibleItems() {
+        collectionView?.nativeView?.refreshVisibleItems();
+    }
 
-    onThemeChanged(() => {
-        collectionView.nativeView.refreshVisibleItems();
-    });
-    onImperialChanged(() => {
-        collectionView?.nativeView?.refreshVisibleItems();
-    });
-    onIconAnimationsChanged(() => {
-        collectionView?.nativeView?.refreshVisibleItems();
-    });
+    onThemeChanged(refreshVisibleItems);
+    onImperialChanged(refreshVisibleItems);
+    onIconAnimationsChanged(refreshVisibleItems);
+    onFontScaleChanged(refreshVisibleItems);
+
     function onTap(item) {
         dispatch('tap', item);
     }

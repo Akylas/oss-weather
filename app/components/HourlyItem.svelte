@@ -24,7 +24,6 @@
     const oddColor = new Color(0.05 * 255, 120, 120, 120);
 
     let lastGradient: { min; max; gradient: LinearGradient };
-
 </script>
 
 <script lang="ts">
@@ -82,7 +81,7 @@
             }
         }
         canvas.save();
-        const iconDecale = 27 * $fontScale + weatherIconSize + 11 * $fontScale;
+        const iconDecale = 27 * $fontScale + weatherIconSize * $fontScale + 11 * $fontScale;
         const lineOffset = iconDecale + 11 * $fontScale + 13 * $fontScale + (11 * $fontScale + 4);
         const pHeight = h - lineOffset - (22 * $fontScale + 10 * $fontScale);
 
@@ -234,5 +233,5 @@
 
 <gridlayout on:tap={onTap}>
     <canvasview bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
-    <WeatherIcon {animated} iconData={[item.iconId, item.isDay]} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize} verticalAlignment="top" />
+    <WeatherIcon {animated} iconData={[item.iconId, item.isDay]} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize * $fontScale} verticalAlignment="top" />
 </gridlayout>

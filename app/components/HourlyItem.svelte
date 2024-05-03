@@ -165,7 +165,7 @@
         // }
         if (item.aqi && item.aqiColor) {
             paint.setColor(item.aqiColor);
-            canvas.drawRect(0, 0, w, 5, paint);
+            canvas.drawRect(0, 0, w, 3, paint);
             // paint.setColor(item.color);
             // canvas.drawRect(0, h - 5, w, h, paint);
             // } else {

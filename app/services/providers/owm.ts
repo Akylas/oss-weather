@@ -39,6 +39,7 @@ export class OWMProvider extends WeatherProvider {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '2.5');
+        const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '3.0');
         const result = await OWMProvider.fetch<OneCallResult>(onecallVersion, 'onecall', coords);
         const forecast = result.content;
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;

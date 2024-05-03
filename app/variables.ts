@@ -54,15 +54,12 @@ export const fonts = writable({
     wi: '',
     app: ''
 });
-let innerStatusBarHeight = 20;
-export const statusBarHeight = writable(innerStatusBarHeight);
+export const windowInset = writable({ top: 0, left: 0, right: 0, bottom: 0 });
 export const actionBarButtonHeight = writable(0);
 export const actionBarHeight = writable(0);
 export const screenHeightDips = Screen.mainScreen.heightDIPs;
 export const screenWidthDips = Screen.mainScreen.widthDIPs;
-export const navigationBarHeight = writable(0);
 
-export let globalMarginTop = 0;
 export const systemFontScale = writable(1);
 
 export const iconColor = new Color('#FFC82F');
@@ -136,28 +133,31 @@ const onInitRootView = function () {
     if (__ANDROID__) {
         // setTimeout(() => {
         const rootViewStyle = getRootViewStyle();
+        const rootView = Application.getRootView();
+        if (rootView) {
+            (rootView.nativeViewProtected as android.view.View).setOnApplyWindowInsetsListener(
+                new android.view.View.OnApplyWindowInsetsListener({
+                    onApplyWindowInsets(view, insets) {
+                        const inset = insets.getSystemWindowInsets();
+                        windowInset.set({
+                            top: Utils.layout.toDeviceIndependentPixels(inset.top),
+                            bottom: Utils.layout.toDeviceIndependentPixels(inset.bottom),
+                            left: Utils.layout.toDeviceIndependentPixels(inset.left),
+                            right: Utils.layout.toDeviceIndependentPixels(inset.right)
+                        });
+                        return insets;
+                    }
+                })
+            );
+        }
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
+
         const context = Utils.android.getApplicationContext();
         const nUtils = com.akylas.weather.Utils;
 
         const resources = context.getResources();
         updateSystemFontScale(resources.getConfiguration().fontScale);
         isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
-
-        // NavigationBar
-        const id = resources.getIdentifier('config_showNavigationBar', 'bool', 'android');
-        let resourceId = resources.getIdentifier('navigation_bar_height', 'dimen', 'android');
-        if (id > 0 && resourceId > 0 && (resources.getBoolean(id) || (!PRODUCTION && isSimulator()))) {
-            navigationBarHeight.set(Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId)));
-        }
-
-        // StatusBar
-        resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
-        if (resourceId > 0) {
-            innerStatusBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
-            statusBarHeight.set(innerStatusBarHeight);
-        }
-        globalMarginTop = innerStatusBarHeight;
 
         // ActionBar
         // resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
@@ -189,7 +189,6 @@ const onInitRootView = function () {
         Application.on(Application.fontScaleChangedEvent, (event) => updateSystemFontScale(event.newValue));
         actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
-        navigationBarHeight.set(Application.ios.window.safeAreaInsets.bottom);
     }
     updateThemeColors(getRealTheme());
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));

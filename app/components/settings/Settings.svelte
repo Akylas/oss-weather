@@ -33,7 +33,7 @@
     import { share } from '~/utils/share';
     import { navigate } from '~/utils/svelte/ui';
     import { hideLoading, isLandscape, openLink, showAlertOptionSelect } from '~/utils/ui';
-    import { colors, fonts, iconColor, imperial, navigationBarHeight } from '~/variables';
+    import { colors, fonts, iconColor, imperial, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
@@ -43,6 +43,7 @@
     // technique for only specific properties to get updated on store change
     let { colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors;
     $: ({ colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors);
+    $: ({ bottom: windowInsetBottom } = $windowInset);
 
     let collectionView: NativeViewElementNode<CollectionView>;
     let page: NativeViewElementNode<Page>;
@@ -723,7 +724,7 @@
             {items}
             {reorderEnabled}
             row={1}
-            android:paddingBottom={$navigationBarHeight}
+            android:paddingBottom={windowInsetBottom}
             on:itemReordered={onItemReordered}
             on:itemReorderCheck={onItemReorderCheck}
             on:itemReorderStarting={onItemReorderStarting}>

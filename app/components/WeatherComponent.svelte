@@ -9,16 +9,17 @@
     import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import { createEventDispatcher } from '~/utils/svelte/ui';
-    import { actionBarHeight, fontScale, navigationBarHeight, onFontScaleChanged, onImperialChanged, onSettingsChanged, screenHeightDips, screenWidthDips, statusBarHeight } from '~/variables';
+    import { actionBarHeight, fontScale, onFontScaleChanged, onImperialChanged, screenHeightDips, screenWidthDips, windowInset } from '~/variables';
 
     export let items: any[];
     export let weatherLocation: WeatherLocation;
     export let fakeNow = null;
 
+    $: ({ bottom: windowInsetBottom, top: windowInsetTop } = $windowInset);
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
     let topHeight = 0;
-    $: topHeight = Math.max(Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - $navigationBarHeight - $statusBarHeight - 100 * $fontScale, 470 * $fontScale), 370 * $fontScale);
+    $: topHeight = Math.max(Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - windowInsetBottom - windowInsetTop - 100 * $fontScale, 470 * $fontScale), 370 * $fontScale);
 
     function itemTemplateSelector(item, index, items) {}
     let isLayedout = false;
@@ -51,7 +52,7 @@
 </script>
 
 <collectionview
-bind:this={collectionView}
+    bind:this={collectionView}
     id="main"
     {...$$restProps}
     iosOverflowSafeAreaEnabled="false"

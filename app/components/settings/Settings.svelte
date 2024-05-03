@@ -130,10 +130,11 @@
                             const result = await showAlertOptionSelect(
                                 component,
                                 {
-                                    height: Math.min(themes.length * 56, 400),
-                                    rowHeight: 56,
+                                    height: Math.min(themes.length * 65, 400),
+                                    rowHeight: 65,
                                     options: themes.map((k) => ({
                                         name: k.name,
+                                        subtitle: k.description,
                                         data: k.id,
                                         type: 'image',
                                         image: k.icon
@@ -228,6 +229,18 @@
                     const currentData = weatherDataService.currentWeatherData;
                     const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => currentData.indexOf(d) === -1);
                     return [
+                        {
+                            type: 'switch',
+                            id: 'show_current_day_daily',
+                            title: lc('show_current_day_daily'),
+                            value: ApplicationSettings.getBoolean('show_current_day_daily', SHOW_CURRENT_DAY_DAILY)
+                        },
+                        {
+                            type: 'switch',
+                            id: 'show_daily_in_currently',
+                            title: lc('show_daily_in_currently'),
+                            value: ApplicationSettings.getBoolean('show_daily_in_currently', SHOW_DAILY_IN_CURRENTLY)
+                        },
                         {
                             type: 'switch',
                             id: 'feels_like_temperatures',

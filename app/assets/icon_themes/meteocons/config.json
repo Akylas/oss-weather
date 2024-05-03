@@ -1,5 +1,6 @@
 {
     "id": "meteocons",
     "name": "Meteocons",
+    "description":"contains greater variety of icons for different weather conditions",
     "attribution": "https://github.com/basmilius/weather-icons"
 }

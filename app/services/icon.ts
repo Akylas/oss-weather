@@ -163,6 +163,7 @@ export class IconService extends Observable {
                 return {
                     icon,
                     name: jsonData.name,
+                    description: jsonData.description,
                     id: folderPath.name
                 };
             })

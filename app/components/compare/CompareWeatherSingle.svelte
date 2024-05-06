@@ -311,7 +311,7 @@
             failOffsetYStart: -40,
             failOffsetYEnd: 40
         }}
-         iosIgnoreSafeArea={false}
+        iosIgnoreSafeArea={false}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
         on:close={onDrawerClose}

@@ -7,7 +7,7 @@ import { getRealTheme, theme } from './helpers/theme';
 import { prefs } from './services/preferences';
 import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
-import { DECIMAL_METRICS_TEMP } from './helpers/constants';
+import { DECIMAL_METRICS_TEMP, WEATHER_DATA_LAYOUT } from './helpers/constants';
 
 export const colors = writable({
     colorPrimary: '',
@@ -72,6 +72,7 @@ export const snowColor = new Color('#43b4e0');
 
 export let imperialUnits = ApplicationSettings.getBoolean('imperial', false);
 export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
+export const weatherDataLayout = writable(ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
 let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale);
@@ -93,6 +94,12 @@ prefs.on('key:metric_temp_decimal', () => {
     DEV_LOG && console.log('key:metric_temp_decimal', imperialUnits, metricDecimalTemp);
     // we notify imperial to update ui
     globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
+});
+prefs.on('key:weather_data_layout', () => {
+    weatherDataLayout.set(ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT));
+    DEV_LOG && console.log('key:weather_data_layout', weatherDataLayout);
+    // we notify imperial to update ui
+    globalObservable.notify({ eventName: 'weather_data_layout', data: weatherDataLayout });
 });
 prefs.on('key:feels_like_temperatures', () => {
     globalObservable.notify({ eventName: 'feels_like_temperatures', data: ApplicationSettings.getBoolean('feels_like_temperatures') });

@@ -1,11 +1,10 @@
 import { Color } from '@nativescript/core';
 import { getMoonIllumination } from 'suncalc';
-import { cloudyColor, fonts, imperialUnits, metricDecimalTemp, nightColor, rainColor, snowColor, sunnyColor } from '~/variables';
-import { formatDate } from './locale';
-import { CommonAirQualityData, CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
-import { get } from 'svelte/store';
-import { PROP_TO_UNIT, UNITS, WeatherProps } from '~/services/weatherData';
 import { iconService } from '~/services/icon';
+import { CommonAirQualityData, CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
+import { PROP_TO_UNIT, UNITS, WeatherProps } from '~/services/weatherData';
+import { cloudyColor, imperialUnits, metricDecimalTemp, rainColor, snowColor, sunnyColor } from '~/variables';
+import { formatDate } from './locale';
 
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
@@ -195,35 +194,35 @@ export function colorForAqi(uvIndex) {
     }
 }
 
-export function colorForIcon(icon, time, sunrise, sunset) {
-    // console.log('colorForIcon', icon);
-    switch (icon) {
-        case 'clear-night':
-            return nightColor;
-        case 'clear-day':
-            return sunnyColor;
-        // break;
-        // return cloudyColor;
-        // break;
-        // case 'partly-cloudy-night':
-        // case 'partly-cloudy-day':
-        // case 'partly-cloudy':
-        //     return scatteredCloudyColor;
-        // case 'cloudy':
-        // case 'fog':
-        //     return cloudyColor;
-        // case 'rain':
-        //     return rainColor;
-        // case 'snow':
-        //     return snowColor;
-        default:
-            if (time > sunset || time < sunrise) {
-                return nightColor;
-            } else {
-                return sunnyColor;
-            }
-    }
-}
+// export function colorForIcon(icon, time, sunrise, sunset) {
+//     // console.log('colorForIcon', icon);
+//     switch (icon) {
+//         case 'clear-night':
+//             return nightColor;
+//         case 'clear-day':
+//             return sunnyColor;
+//         // break;
+//         // return cloudyColor;
+//         // break;
+//         // case 'partly-cloudy-night':
+//         // case 'partly-cloudy-day':
+//         // case 'partly-cloudy':
+//         //     return scatteredCloudyColor;
+//         // case 'cloudy':
+//         // case 'fog':
+//         //     return cloudyColor;
+//         // case 'rain':
+//         //     return rainColor;
+//         // case 'snow':
+//         //     return snowColor;
+//         default:
+//             if (time > sunset || time < sunrise) {
+//                 return nightColor;
+//             } else {
+//                 return sunnyColor;
+//             }
+//     }
+// }
 
 const moonIcons = [
     'wi-moon-new',

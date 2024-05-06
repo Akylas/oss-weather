@@ -20,6 +20,7 @@
         NB_MINUTES_FORECAST,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
+        WEATHER_DATA_LAYOUT,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES
     } from '~/helpers/constants';
@@ -223,8 +224,8 @@
                             { value: '2.5', title: '2.5' },
                             { value: '3.0', title: '3.0' }
                         ],
-                        currentValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5'),
-                        rightValue: () => ApplicationSettings.getString('owm_one_call_version', '2.5')
+                        currentValue: () => ApplicationSettings.getString('owm_one_call_version', '3.0'),
+                        rightValue: () => ApplicationSettings.getString('owm_one_call_version', '3.0')
                     }
                 ];
             case 'weather_data':
@@ -232,6 +233,18 @@
                     const currentData = weatherDataService.currentWeatherData;
                     const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => currentData.indexOf(d) === -1);
                     return [
+                        {
+                            id: 'setting',
+                            valueType: 'string',
+                            key: 'weather_data_layout',
+                            title: lc('weather_data_layout'),
+                            values: [
+                                { value: 'default', title: lc('default') },
+                                { value: 'line', title: lc('line') }
+                            ],
+                            currentValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT),
+                            rightValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT)
+                        },
                         {
                             type: 'switch',
                             id: 'show_current_day_daily',

@@ -121,7 +121,7 @@ function getActualLanguage(language) {
 export function formatDate(date: number | string | dayjs.Dayjs, formatStr: string = 'dddd LT') {
     if (date) {
         if (!date['format']) {
-            date = dayjs(date);
+            date = dayjs.utc(date);
         }
 
         if (clock_24 && formatStr.indexOf('LT') >= 0) {
@@ -137,7 +137,7 @@ export function formatDate(date: number | string | dayjs.Dayjs, formatStr: strin
 export function formatTime(date: number | dayjs.Dayjs | string | Date, formatStr: string = 'LT') {
     if (date) {
         if (!date['format']) {
-            date = dayjs(date);
+            date = dayjs.utc(date);
         }
         if (clock_24 && formatStr === 'LT') {
             formatStr = 'HH:mm';

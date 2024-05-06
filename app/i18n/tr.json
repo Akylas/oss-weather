@@ -126,7 +126,7 @@
     "map_settings": "harita ayarları",
     "medium": "Ilıman",
     "meteogram": "meteogram",
-    "metric_temp_decimal": "metrik sıcaklık için ondalık sayıyı kullanın",
+    "metric_temp_decimal": "sıcaklık için ondalık sayı kullanın",
     "min_uv_index": "Altındaki UV göstergesi gösterilmeyecek",
     "missing_location_perm": "Konum izni yok",
     "models": "modeller",

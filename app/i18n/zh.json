@@ -112,7 +112,7 @@
     "map": "地图",
     "map_settings": "地图设置",
     "medium": "中雨",
-    "metric_temp_decimal": "公制温度下显示小数",
+    "metric_temp_decimal": "使用小数表示温度",
     "min_uv_index": "不显示小于此数值的紫外线指数",
     "missing_location_perm": "未授予定位权限",
     "models": "模型",

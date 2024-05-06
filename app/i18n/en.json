@@ -126,7 +126,7 @@
     "map_settings": "map settings",
     "medium": "Moderate",
     "meteogram": "meteogram",
-    "metric_temp_decimal": "use decimal for metric temperature",
+    "metric_temp_decimal": "use decimal for temperature",
     "min_uv_index": "UV index below won't be shown",
     "missing_location_perm": "Location permission missing",
     "models": "models",

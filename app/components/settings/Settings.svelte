@@ -527,6 +527,18 @@
                     checkboxView.checked = !checkboxView.checked;
                 }, 10);
                 return;
+            } else if (item.type === 'reorder') {
+                const position = items.indexOf(item);
+                const disabledPosition = items.findIndex((d) => d.id === 'disabled');
+                const enabledPosition = items.findIndex((d) => d.id === 'enabled');
+                if (position > disabledPosition) {
+                    items.splice(position, 1);
+                    items.splice(disabledPosition, 0, item);
+                } else if (position > enabledPosition) {
+                    items.splice(position, 1);
+                    items.push(item);
+                }
+                return;
             }
             switch (item.id) {
                 case 'sub_settings': {
@@ -703,8 +715,6 @@
 
     async function onItemReordered(e) {
         try {
-            const oldIndex = e.index;
-            const oldData = e.item;
             const newIndex = e.data.targetIndex;
             const disabledPosition = items.findIndex((d) => d.id === 'disabled');
             const enabledPosition = items.findIndex((d) => d.id === 'enabled');

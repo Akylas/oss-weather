@@ -31,6 +31,8 @@ interface Current {
     windspeed_10m: number;
     winddirection_10m: number;
     windgusts_10m: number;
+    relative_humidity_2m: number;
+    pressure_msl: number;
 }
 
 interface Currentunits {

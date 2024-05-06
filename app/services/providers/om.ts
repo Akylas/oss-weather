@@ -10,6 +10,7 @@ import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
 import { AirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
+import { WeatherProps, weatherDataService } from '../weatherData';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
@@ -45,15 +46,35 @@ export const OM_MODELS = {
 };
 
 export const API_KEY_VALUES = {
-    forecast: ({ feelsLikeTemperatures, current, minutely }) => ({
+    forecast: ({ feelsLikeTemperatures, current, minutely, currentData }: { currentData: WeatherProps[]; feelsLikeTemperatures: boolean; current: boolean; minutely: boolean }) => ({
         hourly:
-            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m,is_day,freezinglevel_height,snow_depth' +
+            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,is_day' +
+            (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m,winddirection_10m' : '') +
+            (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m' : '') +
+            (currentData.includes(WeatherProps.cloudCover) ? ',cloudcover' : '') +
+            (currentData.includes(WeatherProps.snowDepth) ? ',snow_depth' : '') +
+            (currentData.includes(WeatherProps.dewpoint) ? ',dew_point_2m' : '') +
+            (currentData.includes(WeatherProps.iso) ? ',freezinglevel_height' : '') +
+            (currentData.includes(WeatherProps.sealevelPressure) ? ',pressure_msl' : '') +
+            (currentData.includes(WeatherProps.relativeHumidity) ? ',relative_humidity_2m' : '') +
             (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
-        current: current !== false ? 'weathercode,is_day,cloudcover,windspeed_10m,winddirection_10m,windgusts_10m' + (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m') : undefined,
+        current:
+            current !== false
+                ? 'weathercode,is_day' +
+                  (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m') +
+                  (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m,winddirection_10m' : '') +
+                  (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m' : '') +
+                  (currentData.includes(WeatherProps.cloudCover) ? ',cloudcover' : '') +
+                  (currentData.includes(WeatherProps.sealevelPressure) ? ',pressure_msl' : '') +
+                  (currentData.includes(WeatherProps.relativeHumidity) ? ',relative_humidity_2m' : '')
+                : undefined,
         minutely_15: minutely !== false ? 'precipitation' : undefined,
         daily:
-            'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant,rain_sum,snowfall_sum,showers_sum' +
-            (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min')
+            'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,rain_sum,snowfall_sum,showers_sum' +
+            (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min') +
+            (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m_max,winddirection_10m_dominant' : '') +
+            (currentData.includes(WeatherProps.relativeHumidity) ? ',relative_humidity_2m_mean' : '') +
+            (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m_max' : '')
     }),
     'air-quality': ({ current }) => ({
         hourly: 'european_aqi',
@@ -166,15 +187,15 @@ export class OMProvider extends WeatherProvider {
     private async fetch<T = any>(
         apiName: string = 'forecast',
         queryParams: OMParams = {},
-        { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {},
+        { current, warnings, minutely, weatherProps }: { warnings?: boolean; minutely?: boolean; current?: boolean; weatherProps?: WeatherProps[] } = {},
         subdomain = 'api'
     ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
         const forecast_minutely_15 = Math.round(ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15);
-
-        const apikeyValues = API_KEY_VALUES[apiName]({ feelsLikeTemperatures, current, minutely });
+        const currentData = weatherDataService.currentWeatherData.concat(weatherProps || []);
+        const apikeyValues = API_KEY_VALUES[apiName]({ feelsLikeTemperatures, current, minutely, currentData });
         return request<T>({
             url: `https://${subdomain}.open-meteo.com/v1/${apiName}`,
             method: 'GET',
@@ -222,8 +243,9 @@ export class OMProvider extends WeatherProvider {
             warnings,
             minutely,
             forceModel,
+            weatherProps,
             model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
-        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean } = {}
+        }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean; weatherProps?: WeatherProps[] } = {}
     ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const coords = weatherLocation.coord;
@@ -235,7 +257,7 @@ export class OMProvider extends WeatherProvider {
                 models += ',' + model;
             }
         }
-        const result = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon, models }, { current, warnings, minutely });
+        const result = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon, models }, { current, warnings, minutely, weatherProps });
         const forecast = result.content;
         // console.log('forecast', Object.keys(forecast));
         // console.log('rain', JSON.stringify(rain));
@@ -257,11 +279,10 @@ export class OMProvider extends WeatherProvider {
             d.description = OMProvider.weatherCodeDescription[code];
             d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', model)[index];
             d.usingFeelsLike = feelsLikeTemperatures;
-            d.windBearing = this.getDataArray(hourly, 'winddirection_10m', model)[index];
-
-            const hasNext = index < hourlyLastIndex;
-
-            // if (hasNext) {
+            const windBearing = this.getDataArray(hourly, 'winddirection_10m', model);
+            if (windBearing) {
+                d.windBearing = windBearing[index];
+            }
             const precipitation_probability = this.getDataArray(hourly, 'precipitation_probability', model);
             if (precipitation_probability) {
                 d.precipProbability = precipitation_probability[index] || -1;
@@ -284,8 +305,14 @@ export class OMProvider extends WeatherProvider {
             // }
             // }
 
-            d.cloudCover = this.getDataArray(hourly, 'cloudcover', model)[index];
-            d.windSpeed = this.getDataArray(hourly, 'windspeed_10m', model)[index];
+            const cloudcover = this.getDataArray(hourly, 'cloudcover', model);
+            if (cloudcover) {
+                d.cloudCover = cloudcover[index];
+            }
+            const windspeed_10m = this.getDataArray(hourly, 'windspeed_10m', model);
+            if (cloudcover) {
+                d.windSpeed = windspeed_10m[index];
+            }
 
             const windgusts_10m = this.getDataArray(hourly, 'windgusts_10m', model);
             if (windgusts_10m) {
@@ -298,6 +325,18 @@ export class OMProvider extends WeatherProvider {
             const freezinglevel_height = this.getDataArray(hourly, 'freezinglevel_height', model);
             if (freezinglevel_height) {
                 d.iso = freezinglevel_height[index];
+            }
+            const dew_point_2m = this.getDataArray(hourly, 'dew_point_2m', model);
+            if (dew_point_2m) {
+                d.dewpoint = dew_point_2m[index];
+            }
+            const pressure_msl = this.getDataArray(hourly, 'pressure_msl', model);
+            if (pressure_msl) {
+                d.sealevelPressure = pressure_msl[index];
+            }
+            const relative_humidity_2m = this.getDataArray(hourly, 'relative_humidity_2m', model);
+            if (pressure_msl) {
+                d.relativeHumidity = relative_humidity_2m[index];
             }
             // d.pressure = data.pressure;
             // DEV_LOG && console.log('test', dayjs(d.time), code, d.iconId, d.temperature, d.precipProbability, d.precipAccumulation, d.rain, d.snowfall);
@@ -333,6 +372,8 @@ export class OMProvider extends WeatherProvider {
                           temperature: feelsLikeTemperatures ? currentData.apparent_temperature : currentData.temperature_2m,
                           usingFeelsLike: feelsLikeTemperatures,
                           windSpeed: currentData.windspeed_10m,
+                          relativeHumidity: currentData.relative_humidity_2m,
+                          sealevelPressure: currentData.pressure_msl,
                           cloudCover: currentData.cloudcover,
                           isDay: !!currentData.is_day,
                           windBearing: currentData.winddirection_10m,
@@ -354,7 +395,7 @@ export class OMProvider extends WeatherProvider {
                         temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model)?.[index],
                         temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', model)?.[index],
                         usingFeelsLike: feelsLikeTemperatures,
-                        // humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
+                        relativeHumidity: this.getDataArray(daily, 'relative_humidity_2m_mean', model)?.[index],
                         uvIndex: Math.ceil(this.getDataArray(daily, 'uv_index_max', model)?.[index]),
                         windGust: Math.round(this.getDataArray(daily, 'windgusts_10m_max', model)?.[index]),
                         windSpeed: Math.round(this.getDataArray(daily, 'windspeed_10m_max', model)?.[index]),
@@ -364,7 +405,7 @@ export class OMProvider extends WeatherProvider {
                         // cloudCover: Math.round(daily.clou),
                         // sunriseTime: dailyForecast.sun.rise * 1000,
                         // sunsetTime: dailyForecast.sun.set * 1000
-                    } as any as DailyData;
+                    } as DailyData;
                     // if (precipProbability > 0) {
                     //     d.precipProbability = precipProbability;
                     // }

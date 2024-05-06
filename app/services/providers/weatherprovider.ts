@@ -1,4 +1,5 @@
 import { WeatherLocation } from '../api';
+import { WeatherProps } from '../weatherData';
 import { AirQualityData, ProviderType, WeatherData } from './weather';
 import { lang, lc } from '~/helpers/locale';
 
@@ -11,7 +12,7 @@ export abstract class WeatherProvider {
 
     abstract getWeather(
         weatherLocation: WeatherLocation,
-        options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean }
+        options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean; weatherProps?: WeatherProps[] }
     ): Promise<WeatherData>;
 
     async getAirQuality(

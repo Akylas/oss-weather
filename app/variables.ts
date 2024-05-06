@@ -64,7 +64,7 @@ export const systemFontScale = writable(1);
 
 export const iconColor = new Color('#FFC82F');
 export const sunnyColor = new Color('#FFC930');
-export const nightColor = new Color('#845987');
+// export const nightColor = new Color('#845987');
 export const scatteredCloudyColor = new Color('#aaa');
 export const cloudyColor = new Color('#929292');
 export const rainColor = new Color('#4681C3');

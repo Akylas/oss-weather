@@ -52,8 +52,9 @@ export class OWMProvider extends WeatherProvider {
                     time: forecast.current.dt * 1000,
                     temperature: feelsLikeTemperatures ? forecast.current.feels_like : forecast.current.temp,
                     usingFeelsLike: feelsLikeTemperatures,
-                    pressure: forecast.current.pressure,
-                    humidity: forecast.current.humidity,
+                    sealevelPressure: forecast.current.pressure,
+                    relativeHumidity: forecast.current.humidity,
+                    dewpoint: forecast.current.dew_point,
                     cloudCover: forecast.current.clouds,
                     windSpeed: forecast.current.wind_speed * 3.6,
                     windGust: forecast.current.wind_gust * 3.6,
@@ -87,8 +88,9 @@ export class OWMProvider extends WeatherProvider {
                     d.precipProbability = Math.round(data.pop * 100);
                     d.cloudCover = data.clouds;
                     d.windBearing = data.wind_deg;
-                    d.humidity = data.humidity;
-                    d.pressure = data.pressure;
+                    d.relativeHumidity = data.humidity;
+                    d.sealevelPressure = data.pressure;
+                    d.dewpoint = data.dew_point;
                     // d.sunriseTime = data.sunrise * 1000;
                     // d.sunsetTime = data.sunset * 1000;
                     d.precipAccumulation = data.snow ? data.snow : data.rain ? data.rain : 0;
@@ -135,8 +137,9 @@ export class OWMProvider extends WeatherProvider {
                 // d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
                 d.precipProbability = Math.round(data.pop * 100);
                 d.cloudCover = data.clouds;
-                d.humidity = data.humidity;
-                d.pressure = data.pressure;
+                d.relativeHumidity = data.humidity;
+                d.sealevelPressure = data.pressure;
+                d.dewpoint = data.dew_point;
                 weatherDataIconColors(d, WeatherDataType.HOURLY, coords, d.rain, d.snowfall);
 
                 return d;

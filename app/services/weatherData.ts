@@ -2,11 +2,11 @@ import { Align, Cap, Paint, Style } from '@nativescript-community/ui-canvas';
 import { ApplicationSettings, Color, Observable } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
-import { convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
+import { colorForAqi, convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
 import { l, lc } from '~/helpers/locale';
 import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { cloudyColor, fontScale, fonts, nightColor, rainColor, scatteredCloudyColor, snowColor, sunnyColor } from '~/variables';
+import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowColor, sunnyColor } from '~/variables';
 import { prefs } from './preferences';
 
 export enum UNITS {
@@ -21,6 +21,7 @@ export enum UNITS {
     CM = 'cm',
     Percent = '%',
     Celcius = '°',
+    Pressure = 'hPa',
     Duration = 'duration',
     Date = 'date',
     Distance = 'm',
@@ -48,7 +49,10 @@ export enum WeatherProps {
     windSpeed = 'windSpeed',
     windBearing = 'windBearing',
     rainSnowLimit = 'rainSnowLimit',
-    aqi = 'aqi'
+    aqi = 'aqi',
+    sealevelPressure = 'sealevelPressure',
+    relativeHumidity = 'relativeHumidity',
+    dewpoint = 'dewpoint'
 }
 
 export const PROP_TO_UNIT = {
@@ -57,11 +61,14 @@ export const PROP_TO_UNIT = {
     [WeatherProps.temperature]: UNITS.Celcius,
     [WeatherProps.temperatureMin]: UNITS.Celcius,
     [WeatherProps.temperatureMax]: UNITS.Celcius,
+    [WeatherProps.dewpoint]: UNITS.Celcius,
+    [WeatherProps.sealevelPressure]: UNITS.Pressure,
     [WeatherProps.iso]: UNITS.Distance,
     [WeatherProps.rainSnowLimit]: UNITS.Distance,
     [WeatherProps.cloudCover]: UNITS.Percent,
     [WeatherProps.uvIndex]: UNITS.UV,
     [WeatherProps.precipProbability]: UNITS.Percent,
+    [WeatherProps.relativeHumidity]: UNITS.Percent,
     [WeatherProps.precipAccumulation]: UNITS.MM,
     [WeatherProps.snowDepth]: UNITS.CM,
     [WeatherProps.snowfall]: UNITS.CM,
@@ -84,7 +91,10 @@ export const AVAILABLE_WEATHER_DATA = [
     WeatherProps.moon,
     WeatherProps.snowDepth,
     WeatherProps.windBeaufort,
-    WeatherProps.aqi
+    WeatherProps.aqi,
+    WeatherProps.sealevelPressure,
+    WeatherProps.relativeHumidity,
+    WeatherProps.dewpoint
 ];
 export const AVAILABLE_COMPARE_WEATHER_DATA = [
     WeatherProps.precipProbability,
@@ -124,6 +134,9 @@ fonts.subscribe((data) => {
 const WEATHER_DATA_ICONS = {
     [WeatherProps.moon]: (item: CommonWeatherData) => item.moonIcon,
     [WeatherProps.iconId]: 'mdi-theme-light-dark',
+    [WeatherProps.sealevelPressure]: 'wi-barometer',
+    [WeatherProps.relativeHumidity]: 'wi-humidity',
+    [WeatherProps.dewpoint]: 'mdi-thermometer-water',
     [WeatherProps.cloudCover]: 'wi-cloud',
     [WeatherProps.windGust]: 'wi-strong-wind',
     [WeatherProps.uvIndex]: 'mdi-weather-sunny-alert',
@@ -143,10 +156,15 @@ const WEATHER_DATA_TITLES = {
     [WeatherProps.rainSnowLimit]: lc('rain_snow_limit'),
     [WeatherProps.iso]: lc('freezing_level'),
     [WeatherProps.precipAccumulation]: lc('precipitation'),
-    [WeatherProps.aqi]: lc('aqi')
+    [WeatherProps.aqi]: lc('aqi'),
+    [WeatherProps.sealevelPressure]: lc('sealevel_pressure'),
+    [WeatherProps.dewpoint]: lc('dewpoint'),
+    [WeatherProps.relativeHumidity]: lc('relative_humidity')
 };
 const WEATHER_DATA_COLORS = {
-    [WeatherProps.moon]: nightColor,
+    [WeatherProps.moon]: '#845987',
+    [WeatherProps.dewpoint]: '#0cafeb',
+    [WeatherProps.relativeHumidity]: '#1e88e2',
     [WeatherProps.cloudCover]: cloudyColor,
     [WeatherProps.windGust]: scatteredCloudyColor,
     [WeatherProps.windBeaufort]: scatteredCloudyColor,
@@ -156,7 +174,7 @@ const WEATHER_DATA_COLORS = {
     [WeatherProps.iso]: snowColor,
     [WeatherProps.iconId]: sunnyColor,
     [WeatherProps.precipAccumulation]: rainColor,
-    [WeatherProps.aqi]: lc('aqi')
+    [WeatherProps.aqi]: colorForAqi(0)
 };
 
 export function getWeatherDataIcon(key: string) {
@@ -173,7 +191,11 @@ export function getWeatherDataColor(key: string) {
     return WEATHER_DATA_COLORS[key];
 }
 const ICONS_SIZE_FACTOR = {
-    uvIndex: 1.2
+    [WeatherProps.sealevelPressure]: 0.9,
+    [WeatherProps.windSpeed]: 0.8,
+    [WeatherProps.uvIndex]: 1,
+    [WeatherProps.cloudCover]: 0.9,
+    [WeatherProps.relativeHumidity]: 0.8
 };
 
 export interface CommonData {
@@ -252,7 +274,7 @@ export class DataService extends Observable {
         prefs.on('key:common_data', this.load, this);
         prefs.on('key:min_uv_index', setminUVIndexToShow);
     }
-    currentWeatherData: string[] = [];
+    currentWeatherData: WeatherProps[] = [];
 
     updateCurrentWeatherData(data, save = true) {
         this.currentWeatherData = data;
@@ -291,7 +313,7 @@ export class DataService extends Observable {
     }
 
     getItemData(key: string, item: CommonWeatherData, options = this.currentWeatherDataOptions[key]): CommonData {
-        if (!options) {
+        if (!options || !item.hasOwnProperty(key) || item[key] === null) {
             return null;
         }
         let icon: string = options.icon as any;
@@ -302,7 +324,7 @@ export class DataService extends Observable {
         switch (key) {
             case WeatherProps.windSpeed:
                 if (item.windSpeed) {
-                    const data = convertWeatherValueToUnit(item, WeatherProps.windSpeed);
+                    const data = convertWeatherValueToUnit(item, key);
                     return {
                         key,
                         iconFontSize,
@@ -369,7 +391,7 @@ export class DataService extends Observable {
                         color: item.cloudColor,
                         iconFontSize,
                         icon,
-                        value: formatWeatherValue(item, WeatherProps.cloudCover),
+                        value: formatWeatherValue(item, key),
                         subvalue: item.cloudCeiling && formatWeatherValue(item, WeatherProps.cloudCeiling)
                     };
                 }
@@ -382,13 +404,13 @@ export class DataService extends Observable {
                         color: item.uvIndexColor,
                         iconFontSize,
                         icon,
-                        value: formatWeatherValue(item, WeatherProps.uvIndex)
+                        value: formatWeatherValue(item, key)
                     };
                 }
                 break;
             case WeatherProps.windGust:
                 if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust > 2 * item.windSpeed))) {
-                    const data = convertWeatherValueToUnit(item, WeatherProps.windGust);
+                    const data = convertWeatherValueToUnit(item, key);
                     return {
                         key,
                         iconFontSize,
@@ -402,11 +424,49 @@ export class DataService extends Observable {
                 }
                 break;
 
+            case WeatherProps.dewpoint: {
+                // const data = convertWeatherValueToUnit(item, key);
+                return {
+                    key,
+                    color: WEATHER_DATA_COLORS[key],
+                    iconFontSize,
+                    paint: mdiPaint,
+                    value: formatWeatherValue(item, key),
+                    icon
+                    // value: data[0],
+                    // subvalue: data[1]
+                };
+            }
+
+            case WeatherProps.relativeHumidity: {
+                // const data = convertWeatherValueToUnit(item, key);
+                return {
+                    key,
+                    iconFontSize,
+                    color: WEATHER_DATA_COLORS[key],
+                    paint: wiPaint,
+                    icon,
+                    value: formatWeatherValue(item, key)
+                    // subvalue: data[1]
+                };
+            }
+            case WeatherProps.sealevelPressure: {
+                const data = convertWeatherValueToUnit(item, key);
+                return {
+                    key,
+                    iconFontSize,
+                    paint: wiPaint,
+                    icon,
+                    // value: formatWeatherValue(item, key),
+                    value: data[0],
+                    subvalue: data[1]
+                };
+            }
             case WeatherProps.moon:
                 return {
                     key,
                     paint: wiPaint,
-                    color: nightColor,
+                    color: WEATHER_DATA_COLORS[key],
                     iconFontSize,
                     icon,
                     value: l('moon')

@@ -46,6 +46,9 @@
     async function searchCity() {
         try {
             clearSearchTimeout();
+            if (!currentSearchText) {
+                return;
+            }
             loading = true;
             searchResults = new ObservableArray((await photonSearch(currentSearchText)).map((s) => ({ ...s, isFavorite: isFavorite(s) })));
         } catch (err) {

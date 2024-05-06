@@ -89,8 +89,8 @@ prefs.on('key:imperial', () => {
     globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
 });
 prefs.on('key:metric_temp_decimal', () => {
-    DEV_LOG && console.log('key:metric_temp_decimal', imperialUnits);
-    metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal');
+    metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
+    DEV_LOG && console.log('key:metric_temp_decimal', imperialUnits, metricDecimalTemp);
     // we notify imperial to update ui
     globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
 });

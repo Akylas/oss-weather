@@ -608,7 +608,7 @@
     let lastGradient: { min; max; gradient: LinearGradient };
     function onLayoutChanged(event: EventData) {
         const chart = event.object as CombinedChart;
-        DEV_LOG && console.log('onLayoutChanged', chart.getMeasuredHeight(), (event.object as CombinedChart).viewPortHandler.contentRect.height(), temperatureData);
+        // DEV_LOG && console.log('onLayoutChanged', chart.getMeasuredHeight(), (event.object as CombinedChart).viewPortHandler.contentRect.height(), temperatureData);
         if (temperatureData && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, chart.viewPortHandler.contentRect.height(), 0);
             const dataSet = chart.lineData.getDataSetByLabel(WeatherProps.temperature, false);

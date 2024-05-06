@@ -409,7 +409,7 @@
         chart.once('postDraw', () => {
             //use a timeout to ensure we are called after chart layout changed was called
             // setTimeout(() => {
-            DEV_LOG && console.log('onLayoutChanged', chartNeedsZoomUpdate, screenOrientation, Application.orientation());
+            // DEV_LOG && console.log('onLayoutChanged', chartNeedsZoomUpdate, screenOrientation, Application.orientation());
             if (chartNeedsZoomUpdate) {
                 chartNeedsZoomUpdate = false;
                 chart.highlight(null);

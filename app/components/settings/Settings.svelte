@@ -239,8 +239,8 @@
                             key: 'weather_data_layout',
                             title: lc('weather_data_layout'),
                             values: [
-                                { value: 'default', title: lc('default') },
-                                { value: 'line', title: lc('line') }
+                                { value: 'default', title: lc('blocks') },
+                                { value: 'line', title: lc('lines') }
                             ],
                             currentValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT),
                             rightValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT)

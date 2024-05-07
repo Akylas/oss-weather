@@ -17,7 +17,7 @@
                 <label col={1} fontSize={14} padding="0 4 4 0" textWrap={true}>
                     <cspan fontSize={17} text={item.event} visibility={item.event ? 'visible' : 'hidden'} />
                     <cspan fontSize={17} text={'\n' + item.sender_name} visibility={item.sender_name ? 'visible' : 'hidden'} />
-                    <cspan color={colorOnSurfaceVariant} text="{'\n' + titlecase(l('expires'))}: {formatDate(item.end, 'dddd LT')}" />
+                    <cspan color={colorOnSurfaceVariant} text="{'\n' + titlecase(l('expires'))}: {formatDate(item.end, 'dddd LT', item.timezoneOffset)}" />
                     <cspan color={colorOutlineVariant} text={'\n' + item.description} visibility={item.description?.length ? 'visible' : 'hidden'} />
                 </label>
             </gridlayout>

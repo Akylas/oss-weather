@@ -15,7 +15,7 @@
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { convertWeatherValueToUnit, toImperialUnit, windIcon } from '~/helpers/formatter';
-    import { lc } from '~/helpers/locale';
+    import { getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { CommonWeatherData, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { showError } from '~/utils/error';
@@ -139,6 +139,7 @@
     let temperatureData: { min: number; max: number };
     let maxDatalength = 0;
     let startTimestamp = 0;
+    let timezoneOffset;
     function updateLineChart(setData = true) {
         try {
             const chart = chartView?.nativeView;
@@ -183,7 +184,7 @@
                             if (dataSet.label === WeatherProps.iconId) {
                                 const imageSource = icon as ImageSource;
                                 const iconSize = 30;
-                                const date = dayjs(startTimestamp + entry['deltaHours'] * 3600 * 1000);
+                                const date = getLocalTime(startTimestamp + entry['deltaHours'] * 3600 * 1000, timezoneOffset);
                                 // if (date.get('m') === 0) {
                                 if (x - lastIconX > iconSize || date.get('h') % Math.round(4 / chart.scaleX) === 0) {
                                     const drawOffsetX = x - iconSize / 2;
@@ -254,9 +255,10 @@
                 const barDataSets: BarDataSet[] = [];
 
                 const sourceData = weatherData.hourly;
+                timezoneOffset = sourceData[0].timezoneOffset;
                 startTimestamp = sourceData[0].time;
 
-                const limitLine = new LimitLine((Date.now() - startTimestamp) / (3600 * 1000));
+                const limitLine = new LimitLine((getLocalTime(undefined, timezoneOffset).valueOf() - startTimestamp) / (3600 * 1000));
                 limitLine.lineWidth = 2;
                 limitLine.enableDashedLine(4, 2, 0);
                 limitLine.lineColor = colorOnSurfaceVariant;
@@ -268,7 +270,7 @@
 
                 xAxis.valueFormatter = {
                     getAxisLabel: (value, axis) => {
-                        const date = dayjs(startTimestamp + value * 3600 * 1000);
+                        const date = getLocalTime(startTimestamp + value * 3600 * 1000, timezoneOffset);
                         // if (date.get('m') === 0) {
                         if (date.get('h') === 0) {
                             return date.format('ddd\nDD/MM');
@@ -288,7 +290,7 @@
                 const gridLinePathEffect = new DashPathEffect([4, 8], 0);
                 xAxis.customRenderer = {
                     drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
-                        const hours = dayjs(startTimestamp + axisValue * 3600 * 1000).get('h');
+                        const hours = getLocalTime(startTimestamp + axisValue * 3600 * 1000).get('h');
                         if (hours % 4 === 0) {
                             if (hours === 0) {
                                 paint.setPathEffect(null);

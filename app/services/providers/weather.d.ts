@@ -58,6 +58,8 @@ export interface CommonAirQualityData {
 }
 export interface CommonWeatherData extends CommonAirQualityData {
     time: number;
+    timezone?: string;
+    timezoneOffset?: number;
     // icon?: string;
     iconId: number;
     isDay: boolean;

@@ -196,7 +196,7 @@ async function handleRequestResponse<T>(
         content = response.reason as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    DEV_LOG && console.log('handleRequestResponse', statusCode, response.headers, JSON.stringify(content));
+    DEV_LOG && console.info('handleRequestResponse', statusCode, JSON.stringify(response.headers), JSON.stringify(content));
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -250,7 +250,7 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     requestParams.headers = getRequestHeaders(requestParams);
 
     const requestStartTime = Date.now();
-    DEV_LOG && console.log('request', requestParams);
+    DEV_LOG && console.info('request', JSON.stringify(requestParams));
     try {
         const response = await https.request<T>(requestParams);
         return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
@@ -267,7 +267,7 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     }
 }
 
-export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs()) {
+export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs.utc()) {
     const newItems = [];
 
     const startOfHour = now.startOf('h').valueOf();
@@ -307,20 +307,26 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             });
             const delta = max - min;
 
-            const times = getTimes(now.toDate(), weatherLocation.coord.lat, weatherLocation.coord.lon);
+            const times = getTimes(dayjs.utc() as any, weatherLocation.coord.lat, weatherLocation.coord.lon);
+            const sunsetTime = dayjs.utc(times.sunsetStart.valueOf()).valueOf();
+            const sunriseTime = dayjs.utc(times.sunriseEnd.valueOf()).valueOf();
             // current weather is a mix of actual current weather, hourly and daily
             newItems.push({
                 ...current,
                 lastUpdate,
-                isDay: now.valueOf() < times.sunsetStart.valueOf() && now.valueOf() > times.sunriseEnd.valueOf(),
+                timezone: weatherLocation.timezone,
+                timezoneOffset: weatherLocation.timezoneOffset,
+                isDay: now.valueOf() < sunsetTime && now.valueOf() > sunriseTime,
                 temperatureMin: dailyData.temperatureMin,
                 temperatureMax: dailyData.temperatureMax,
                 moonIcon: dailyData.moonIcon,
                 // icon: iconService.getIcon(currentDaily.iconId, currentDaily.isDay),
-                sunriseTime: times.sunriseEnd,
-                sunsetTime: times.sunsetStart,
+                sunriseTime,
+                sunsetTime,
                 hourly: hours.map((h, i) => ({
                     ...h,
+                    timezone: weatherLocation.timezone,
+                    timezoneOffset: weatherLocation.timezoneOffset,
                     index: i,
                     // icon: iconService.getIcon(h.iconId, h.isDay),
                     min,
@@ -345,6 +351,8 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             if (showCurrentInDaily) {
                 newItems.push(
                     Object.assign(d, {
+                        timezone: weatherLocation.timezone,
+                        timezoneOffset: weatherLocation.timezoneOffset,
                         // icon: iconService.getIcon(d.iconId, d.isDay),
                         index: newItems.length
                     })
@@ -353,6 +361,8 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
         } else {
             newItems.push(
                 Object.assign(d, {
+                    timezone: weatherLocation.timezone,
+                    timezoneOffset: weatherLocation.timezoneOffset,
                     // icon: iconService.getIcon(d.iconId, d.isDay),
                     index: newItems.length
                 })
@@ -368,6 +378,8 @@ const supportedOSMValues = ['winter_sports'];
 
 export interface WeatherLocation {
     name: string;
+    timezone?: string;
+    timezoneOffset?: number;
     sys?: PhotonProperties;
     coord: {
         lat: number;
@@ -407,20 +419,20 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
 }
 
 export async function getTimezone(location: FavoriteLocation) {
-    return (
-        await request<{ iana_timezone: string }>({
-            url: 'https://api.geotimezone.com/public/timezone',
-
+    const result = (
+        await request<{ timeZone: string; currentUtcOffset: { seconds: number } }>({
+            url: 'https://www.timeapi.io/api/TimeZone/coordinate',
             method: 'GET',
             queryParams: {
-                latitude: location.coord[1],
-                longitude: location.coord[0]
+                latitude: location.coord.lat,
+                longitude: location.coord.lon
             },
             headers: {
                 'User-Agent': 'OSSWeatherApp'
             }
         })
-    ).content.iana_timezone;
+    ).content;
+    return { timezone: result.timeZone, timezoneOffset: result.currentUtcOffset.seconds / 3600 };
 }
 export async function requestNominatimReverse(coord: { lat: number; lon: number }) {
     const result = (
@@ -440,15 +452,15 @@ export async function requestNominatimReverse(coord: { lat: number; lon: number 
     return {
         coord,
         name: result.name,
-        sys:{
-            city:result.address.municipality,
+        sys: {
+            city: result.address.municipality,
             country: result.address.country,
-                    state: result.address.county,
-                    housenumber: result.address.house_number,
-                    postcode: result.address.postcode,
-                    street: result.address.road
+            state: result.address.county,
+            housenumber: result.address.house_number,
+            postcode: result.address.postcode,
+            street: result.address.road
         }
-    } as WeatherLocation
+    } as WeatherLocation;
 }
 
 export async function geocodeAddress(coord: { lat: number; lon: number }) {

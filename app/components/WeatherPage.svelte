@@ -20,7 +20,7 @@
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
-    import { l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { getLocalTime, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
@@ -249,13 +249,14 @@
         loading = true;
 
         try {
-            DEV_LOG && console.log('refreshWeather');
             const usedWeatherData = ApplicationSettings.getString('common_data', DEFAULT_COMMON_WEATHER_DATA);
-            let timezone;
-            [weatherData, timezone] = await Promise.all([getProvider().getWeather(weatherLocation), !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation)]);
-            if (timezone) {
-                DEV_LOG && console.log('timezone', timezone);
-                weatherLocation.timezone = timezone;
+            let timezoneData;
+            [weatherData, timezoneData] = await Promise.all([
+                getProvider().getWeather(weatherLocation),
+                !!weatherLocation.timezoneOffset ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
+            ]);
+            if (timezoneData) {
+                Object.assign(weatherLocation, timezoneData);
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             }
             if (weatherData) {
@@ -479,6 +480,7 @@
         try {
             const AstronomyView = (await import('~/components/astronomy/AstronomyView.svelte')).default;
             const parent = Frame.topmost() || Application.getRootView();
+            DEV_LOG && console.log('showAstronomyView', event.time, event.timezoneOffset);
             await showBottomSheet({
                 parent,
                 view: AstronomyView,
@@ -486,7 +488,8 @@
                 // skipCollapsedState: isLandscape(),
                 props: {
                     location: weatherLocation,
-                    startTime: dayjs(event.time)
+                    timezoneOffset: event.timezoneOffset,
+                    // startTime: getLocalTime(event.time, event.timezoneOffset)
                 }
             });
         } catch (err) {

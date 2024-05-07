@@ -5,7 +5,7 @@
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
-    import { formatDate, formatTime } from '~/helpers/locale';
+    import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/providers/weather';
     import { getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
@@ -53,7 +53,7 @@
     }
     const weatherIconSize = 40;
     function drawOnCanvas(event) {
-        const endDay = dayjs().endOf('d').valueOf();
+        const endDay = getLocalTime(undefined, item.timezoneOffset).endOf('d').valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
         const w = canvas.getWidth();
         const w2 = w / 2;
@@ -176,10 +176,10 @@
         textPaint.setFontWeight('bold');
         textPaint.setColor(colorOnSurface);
         textPaint.setTextSize(13 * $fontScale);
-        canvas.drawText(formatTime(item.time), w2, 16 * $fontScale, textPaint);
+        canvas.drawText(formatTime(item.time, undefined, item.timezoneOffset), w2, 16 * $fontScale, textPaint);
         if (item.time > endDay) {
             textPaint.setTextSize(12 * $fontScale);
-            canvas.drawText(formatDate(item.time, 'ddd'), w2, 28 * $fontScale, textPaint);
+            canvas.drawText(formatDate(item.time, 'ddd', item.timezoneOffset), w2, 28 * $fontScale, textPaint);
         }
         textPaint.setFontWeight('normal');
 

@@ -407,7 +407,7 @@
                         text: 'wi-sunrise '
                     },
                     {
-                        text: formatTime(item.sunriseTime)
+                        text: formatTime(item.sunriseTime, undefined, item.timezoneOffset)
                     },
                     {
                         color: '#ff7200',
@@ -415,7 +415,7 @@
                         text: '  wi-sunset '
                     },
                     {
-                        text: formatTime(item.sunsetTime)
+                        text: formatTime(item.sunsetTime, undefined, item.timezoneOffset)
                     }
                 ]
             }),

@@ -13,7 +13,7 @@
     import { ViewPortHandler } from '@nativescript-community/ui-chart/utils/ViewPortHandler';
     import dayjs, { Dayjs } from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { formatTime, l, lc, lu } from '~/helpers/locale';
+    import { formatTime, getLocalTime, l, lc, lu } from '~/helpers/locale';
     import { showError } from '~/utils/error';
     import { pickDate } from '~/utils/utils';
     import { colors, fonts } from '~/variables';
@@ -142,7 +142,8 @@
 
     let chartInitialized = false;
     export let location: WeatherLocation;
-    export let startTime = dayjs();
+    export let timezoneOffset;
+    export let startTime = getLocalTime(undefined, timezoneOffset);
     // let limitLine: LimitLine;
     let illumination: GetMoonIlluminationResult; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
@@ -168,7 +169,8 @@
         if (!chart) {
             return;
         }
-        const computeStartTime = startTime.startOf('d');
+        const computeStartTime = getLocalTime(startTime.startOf('d').valueOf(), timezoneOffset);
+        DEV_LOG && console.log('updateChartData', startTime, computeStartTime);
         const chartView = chart.nativeView;
         const sets = [];
         sunPoses = [];
@@ -191,14 +193,14 @@
                 drawHighlight(c: Canvas, h: Highlight<Entry>, set: LineDataSet, paint: Paint) {
                     const hours = Math.min(Math.floor(h.x / 6), 23);
                     const minutes = (h.x * 10) % 60;
-                    startTime = startTime.set('h', hours).set('m', minutes);
-                    c.drawLine(h.xPx, 0, h.xPx, c.getHeight(), highlightPaint);
+                    const timestamp =  startTime.set('h', hours).set('m', minutes);
+                    c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                     highlightPaint.setTextAlign(Align.LEFT);
-                    let x = h.xPx + 4;
-                    const text = formatTime(startTime);
+                    let x = h.drawX + 4;
+                    const text = formatTime(timestamp);
                     const size = Utils.calcTextSize(highlightPaint, text);
                     if (x > c.getWidth() - size.width) {
-                        x = h.xPx - 4;
+                        x = h.drawX - 4;
                         highlightPaint.setTextAlign(Align.RIGHT);
                     }
                     c.drawText(text, x, 14, highlightPaint);
@@ -270,7 +272,7 @@
         try {
             const date = await pickDate(startTime);
             if (date && startTime.valueOf() !== date) {
-                updateStartTime(dayjs(date));
+                updateStartTime(getLocalTime(date, timezoneOffset));
             }
         } catch (error) {
             showError(error);
@@ -396,18 +398,18 @@
     <mdbutton class="icon-btn" horizontalAlignment="left" text="mdi-chevron-left" variant="text" on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
     <label colSpan={2} fontSize={17} marginLeft={50} marginRight={50} text={startTime.format('LL')} textAlignment="center" verticalTextAlignment="center" on:tap={selectDate} />
     <mdbutton class="icon-btn" col={1} horizontalAlignment="right" text="mdi-chevron-right" variant="text" on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
-    <linechart bind:this={chart} backgroundColor="#222222" colSpan={3} row={1}>
+    <linechart bind:this={chart} backgroundColor="#222222" colSpan={3} row={1} on:postDra>
         <rectangle fillColor="#a0caff" height="50%" width="100%" />
     </linechart>
     {#if sunTimes}
         <canvaslabel bind:this={bottomLabel} colSpan={3} fontSize={18} padding="0 10 0 10" row={2} on:draw={drawMoonPosition}>
             <cgroup color="#ffa500" verticalAlignment="middle">
                 <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-up" />
-                <cspan text={' ' + formatTime(sunTimes.sunriseEnd)} />
+                <cspan text={' ' + formatTime(dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf(), undefined, timezoneOffset)} />
             </cgroup>
             <cgroup color="#ff7200" textAlignment="center" verticalAlignment="middle">
                 <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-down" />
-                <cspan text={' ' + formatTime(sunTimes.sunsetStart)} />
+                <cspan text={' ' + formatTime(dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf(), undefined, timezoneOffset)} />
             </cgroup>
             <cgroup textAlignment="right" verticalAlignment="middle">
                 <!-- <cspan text={moonAzimuth.exact + '(' + Math.round(illumination.fraction * 100) + '%) '} /> -->

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+// import Timezone from 'dayjs/plugin/timezone';
 import { derived, get, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { showError } from '~/utils/error';
@@ -14,7 +15,7 @@ const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(LocalizedFormat);
 dayjs.extend(duration);
 dayjs.extend(utc);
-
+// dayjs.extend(Timezone);
 export let lang;
 export const $lang = writable(null);
 let default24Clock = false;
@@ -118,10 +119,14 @@ function getActualLanguage(language) {
 
 // const rtf = new Intl.RelativeTimeFormat('es');
 
-export function formatDate(date: number | string | dayjs.Dayjs, formatStr: string = 'dddd LT') {
+export function getLocalTime(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
+    return timezoneOffset !== undefined ? dayjs.utc(timestamp).utcOffset(timezoneOffset) : dayjs(timestamp);
+}
+
+export function formatDate(date: number | string | dayjs.Dayjs | Date, formatStr: string = 'dddd LT', timezoneOffset?: number) {
     if (date) {
         if (!date['format']) {
-            date = dayjs.utc(date);
+            date = getLocalTime(date, timezoneOffset);
         }
 
         if (clock_24 && formatStr.indexOf('LT') >= 0) {
@@ -134,10 +139,10 @@ export function formatDate(date: number | string | dayjs.Dayjs, formatStr: strin
     }
     return '';
 }
-export function formatTime(date: number | dayjs.Dayjs | string | Date, formatStr: string = 'LT') {
+export function formatTime(date: number | dayjs.Dayjs | string | Date, formatStr: string = 'LT', timezoneOffset?: number) {
     if (date) {
         if (!date['format']) {
-            date = dayjs.utc(date);
+            date = getLocalTime(date, timezoneOffset);
         }
         if (clock_24 && formatStr === 'LT') {
             formatStr = 'HH:mm';

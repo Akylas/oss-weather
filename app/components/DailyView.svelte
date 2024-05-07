@@ -1,9 +1,10 @@
 <script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatWeatherValue } from '~/helpers/formatter';
-    import { formatDate } from '~/helpers/locale';
+    import { formatDate, getLocalTime } from '~/helpers/locale';
     import { DailyData } from '~/services/providers/weather';
     import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
@@ -53,10 +54,11 @@
         // textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor(colorOnSurface);
-        canvas.drawText(formatDate(item.time, 'ddd'), 10, 26 * $fontScale, textPaint);
+        // item.time is in UTC which will always be the starting time of the day. If we offset we might get the wrong date.
+        canvas.drawText(formatDate(item.time, 'ddd', 0), 10, 26 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(15 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'DD/MM'), 10, 46 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'DD/MM', 0), 10, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
         const centeredItemsToDraw = weatherDataService.getIconsData(item, ['moon', 'windBeaufort']);

@@ -19,13 +19,12 @@
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { EventData } from '@nativescript-community/ui-image';
     import { Application, ApplicationSettings, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
-    import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { convertWeatherValueToUnit } from '~/helpers/formatter';
-    import { formatDate, lc } from '~/helpers/locale';
+    import { formatDate, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { PROP_TO_UNIT } from '~/services/weatherData';
@@ -82,6 +81,7 @@
     let lastKey: string;
     let globalStartTimestamp = Number.MAX_SAFE_INTEGER;
     let maxDatalength = 0;
+    let timezoneOffset;
     function updateLineChart(item: Item) {
         const key = item.id + item.forecast + item.timestamp;
         if (key === lastKey) {
@@ -132,7 +132,7 @@
 
                     xAxis.valueFormatter = {
                         getAxisLabel: (value, axis) => {
-                            const date = dayjs(globalStartTimestamp + value * 3600 * 1000);
+                            const date = getLocalTime(globalStartTimestamp + value * 3600 * 1000, timezoneOffset);
                             // if (date.get('m') === 0) {
                             if (date.get('h') === 0) {
                                 return date.format('ddd\nDD/MM');
@@ -145,14 +145,14 @@
                 } else {
                     xAxis.forcedInterval = 24;
                     xAxis.valueFormatter = {
-                        getAxisLabel: (value, axis) => formatDate(globalStartTimestamp + value * 3600 * 1000, 'DD/MM')
+                        getAxisLabel: (value, axis) => formatDate(globalStartTimestamp + value * 3600 * 1000, 'DD/MM', timezoneOffset)
                     };
                 }
 
                 const gridLinePathEffect = new DashPathEffect([4, 8], 0);
                 xAxis.customRenderer = {
                     drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
-                        const hours = dayjs(globalStartTimestamp + axisValue * 3600 * 1000).get('h');
+                        const hours = getLocalTime(globalStartTimestamp + axisValue * 3600 * 1000).get('h');
                         if (hours % 4 === 0) {
                             if (hours === 0) {
                                 paint.setPathEffect(null);
@@ -179,6 +179,9 @@
                     const key = item.id;
                     const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
                     const startTimestamp = sourceData[0].time;
+                    if (timezoneOffset === undefined) {
+                        timezoneOffset = sourceData[0].timezoneOffset;
+                    }
                     const data = sourceData.map((d: DailyData | Hourly) => ({
                         ...d,
                         deltaHours: (d.time - startTimestamp) / (3600 * 1000),

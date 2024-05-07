@@ -7,7 +7,6 @@ import { globalObservable } from '~/utils/svelte/ui';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
-    timezone?: string;
     startingSide?: string;
 }
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));

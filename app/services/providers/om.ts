@@ -205,7 +205,6 @@ export class OMProvider extends WeatherProvider {
                 forecast_minutely_15,
                 ...apikeyValues,
                 timeformat: 'unixtime',
-                timezone: 'Africa/Accra', // we force UTC to get utc timestamps
                 ...queryParams
             },
             headers: {

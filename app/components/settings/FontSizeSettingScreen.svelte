@@ -22,7 +22,7 @@
     );
 
     const fakeNow = weatherData.currently.time;
-    const items = prepareItems(weatherLocation, weatherData, lastUpdate, dayjs(fakeNow));
+    const items = prepareItems(weatherLocation, weatherData, lastUpdate, dayjs.utc(fakeNow));
     let fontScale = ApplicationSettings.getNumber('fontscale', 1);
     onMount(async () => {});
     function setFontScale(value) {

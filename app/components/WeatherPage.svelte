@@ -253,7 +253,7 @@
             let timezoneData;
             [weatherData, timezoneData] = await Promise.all([
                 getProvider().getWeather(weatherLocation),
-                !!weatherLocation.timezoneOffset ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
+                !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
             ]);
             if (timezoneData) {
                 Object.assign(weatherLocation, timezoneData);

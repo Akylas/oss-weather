@@ -69,8 +69,8 @@
         //     icon: item.moonIcon,
         //     value: l('moon')
         // });
-        // const count = centeredItemsToDraw.length;
-        const count = Math.max(4, centeredItemsToDraw.length);
+        const count = centeredItemsToDraw.length;
+        // const count = Math.max(4, centeredItemsToDraw.length);
 
         switch ($weatherDataLayout) {
             case 'line': {

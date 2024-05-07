@@ -9,6 +9,7 @@ import { lang } from '~/helpers/locale';
 import { CustomError, HTTPError, NoNetworkError, wrapNativeException } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { Photon, PhotonProperties } from '../../typings/photon';
+import { NominatimResult } from '../../typings/nominatim';
 import { WeatherData } from './providers/weather';
 import { iconService } from './icon';
 import { SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
@@ -403,6 +404,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
         );
 }
 
+export async function getTimezone(location: FavoriteLocation) {
     return (
         await request<{ iana_timezone: string }>({
             url: 'https://api.geotimezone.com/public/timezone',
@@ -418,6 +420,35 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
         })
     ).content.iana_timezone;
 }
+export async function requestNominatimReverse(coord: { lat: number; lon: number }) {
+    const result = (
+        await request<NominatimResult>({
+            url: 'https://nominatim.openstreetmap.org/reverse',
+
+            method: 'GET',
+            queryParams: {
+                format: 'json',
+                ...coord
+            },
+            headers: {
+                'User-Agent': 'OSSWeatherApp'
+            }
+        })
+    ).content;
+    return {
+        coord,
+        name: result.name,
+        sys:{
+            city:result.address.municipality,
+            country: result.address.country,
+                    state: result.address.county,
+                    housenumber: result.address.house_number,
+                    postcode: result.address.postcode,
+                    street: result.address.road
+        }
+    } as WeatherLocation
+}
+
 export async function geocodeAddress(coord: { lat: number; lon: number }) {
     try {
         const results = await getFromLocation(coord.lat, coord.lon, 10);

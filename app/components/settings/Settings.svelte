@@ -529,8 +529,8 @@
                 return;
             } else if (item.type === 'reorder') {
                 const position = items.indexOf(item);
-                const disabledPosition = items.findIndex((d) => d.id === 'disabled');
-                const enabledPosition = items.findIndex((d) => d.id === 'enabled');
+                let disabledPosition = items.findIndex((d) => d.id === 'disabled');
+                let enabledPosition = items.findIndex((d) => d.id === 'enabled');
                 if (position > disabledPosition) {
                     items.splice(position, 1);
                     items.splice(disabledPosition, 0, item);
@@ -538,6 +538,9 @@
                     items.splice(position, 1);
                     items.push(item);
                 }
+                disabledPosition = items.findIndex((d) => d.id === 'disabled');
+                enabledPosition = items.findIndex((d) => d.id === 'enabled');
+                weatherDataService.updateCurrentWeatherData([...items.slice(enabledPosition + 1, disabledPosition)].map((d) => d.id));
                 return;
             }
             switch (item.id) {

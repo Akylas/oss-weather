@@ -249,7 +249,7 @@ L.TileLayer.wmsHeader(
     [
         {
             header: 'User-Agent',
-            value: 'AlpiMaps'
+            value: 'OSSWeatherApp'
         }
     ]
 ).addTo(map);

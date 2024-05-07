@@ -309,7 +309,7 @@ export class OMProvider extends WeatherProvider {
                 d.cloudCover = cloudcover[index];
             }
             const windspeed_10m = this.getDataArray(hourly, 'windspeed_10m', model);
-            if (cloudcover) {
+            if (windspeed_10m) {
                 d.windSpeed = windspeed_10m[index];
             }
 

@@ -334,7 +334,7 @@ export class OMProvider extends WeatherProvider {
                 d.sealevelPressure = pressure_msl[index];
             }
             const relative_humidity_2m = this.getDataArray(hourly, 'relative_humidity_2m', model);
-            if (pressure_msl) {
+            if (relative_humidity_2m) {
                 d.relativeHumidity = relative_humidity_2m[index];
             }
             // d.pressure = data.pressure;

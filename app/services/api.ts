@@ -451,11 +451,11 @@ export async function requestNominatimReverse(coord: { lat: number; lon: number 
     ).content;
     return {
         coord,
-        name: result.name,
+        name: result.name || result.address.city || result.address.municipality,
         sys: {
-            city: result.address.municipality,
+            city: result.address.city || result.address.municipality,
             country: result.address.country,
-            state: result.address.county,
+            state: result.address.state || result.address.county,
             housenumber: result.address.house_number,
             postcode: result.address.postcode,
             street: result.address.road
@@ -491,12 +491,17 @@ export async function geocodeAddress(coord: { lat: number; lon: number }) {
                 name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
             } as WeatherLocation;
         }
-    } catch (error) {
-        console.error('geocodeAddress error:', error);
-        return {
-            coord,
-            sys: {},
-            name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
-        } as WeatherLocation;
+    } catch (error1) {
+        console.error('geocodeAddress error:', error1);
+        try {
+            return requestNominatimReverse(coord);
+        } catch (error2) {
+            console.error('geocodeAddress error:', error2);
+            return {
+                coord,
+                sys: {},
+                name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
+            } as WeatherLocation;
+        }
     }
 }

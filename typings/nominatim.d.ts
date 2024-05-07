@@ -21,6 +21,7 @@ export interface NominatimAddress {
     industrial: string;
     village: string;
     municipality: string;
+    city: string;
     county: string;
     house_number?: string;
     'ISO3166-2-lvl6': string;

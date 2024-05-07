@@ -1,0 +1,10 @@
+### Features
+- times are now shown in the location local time and not "your" local time.
+
+### Bug fixes
+- Translated using Weblate (Russian)
+- Translated using Weblate (Hindi)
+- fallback to online reverse geocoding if system reports an error
+- error with OpenMeteo when pressure is used but not relative humidity
+- settings not update when "tapping" to show/hide weather data
+- center weather data in daily list when less than 4 datas

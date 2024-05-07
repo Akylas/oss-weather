@@ -21,7 +21,7 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
     import { WeatherData } from '~/services/providers/weather';
@@ -251,8 +251,13 @@
         try {
             DEV_LOG && console.log('refreshWeather');
             const usedWeatherData = ApplicationSettings.getString('common_data', DEFAULT_COMMON_WEATHER_DATA);
-
-            weatherData = await getProvider().getWeather(weatherLocation);
+            let timezone;
+            [weatherData, timezone] = await Promise.all([getProvider().getWeather(weatherLocation), !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation)]);
+            if (timezone) {
+                DEV_LOG && console.log('timezone', timezone);
+                weatherLocation.timezone = timezone;
+                ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+            }
             if (weatherData) {
                 if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
                     const aqiData = await getAqiProvider().getAirQuality(weatherLocation);

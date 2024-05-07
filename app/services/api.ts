@@ -12,6 +12,7 @@ import { Photon, PhotonProperties } from '../../typings/photon';
 import { WeatherData } from './providers/weather';
 import { iconService } from './icon';
 import { SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
+import { FavoriteLocation } from '~/helpers/favorites';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -402,6 +403,21 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
         );
 }
 
+    return (
+        await request<{ iana_timezone: string }>({
+            url: 'https://api.geotimezone.com/public/timezone',
+
+            method: 'GET',
+            queryParams: {
+                latitude: location.coord[1],
+                longitude: location.coord[0]
+            },
+            headers: {
+                'User-Agent': 'OSSWeatherApp'
+            }
+        })
+    ).content.iana_timezone;
+}
 export async function geocodeAddress(coord: { lat: number; lon: number }) {
     try {
         const results = await getFromLocation(coord.lat, coord.lon, 10);

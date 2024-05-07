@@ -376,6 +376,7 @@ export interface WeatherLocation {
 }
 const PHOTON_SUPPORTED_LANGUAGES = ['en', 'de', 'fr'];
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
+    DEV_LOG && console.log('photonSearch', q, lat, long, queryParams);
     let actualLang = lang.split('-')[0];
     if (PHOTON_SUPPORTED_LANGUAGES.indexOf(actualLang) === -1) {
         actualLang = 'en';
@@ -389,7 +390,8 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
             lat,
             lon,
             lang: actualLang,
-            limit: 40
+            limit: 40,
+            ...queryParams
         }
     });
     return results.content.features

@@ -8,6 +8,8 @@ export const SHOW_CURRENT_DAY_DAILY = false;
 export const SHOW_DAILY_IN_CURRENTLY = false;
 export const FEELS_LIKE_TEMPERATURE = false;
 
+export const WEATHER_DATA_LAYOUT = 'default';
+
 export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;
 export const NB_MINUTES_FORECAST = 60;

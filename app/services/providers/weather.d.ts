@@ -79,8 +79,9 @@ export interface CommonWeatherData extends CommonAirQualityData {
     precipColor?: string | Color;
     mixedRainSnow?: boolean;
     windBearing?: number;
-    humidity?: number;
-    pressure?: number;
+    relativeHumidity?: number;
+    sealevelPressure?: number;
+    dewpoint?: number;
     sunriseTime?: number;
     sunsetTime?: number;
     color?: string | Color;

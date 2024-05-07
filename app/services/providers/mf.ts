@@ -17,7 +17,7 @@ interface MFParams extends Partial<Coord> {
 }
 
 export class MFProvider extends WeatherProvider {
-    static id = 'meteofrance'
+    static id = 'meteofrance';
     id = MFProvider.id;
 
     private getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: ForecastForecast[], dailyForecast: Dailyforecast) {
@@ -96,7 +96,7 @@ export class MFProvider extends WeatherProvider {
             iconId: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: dailyForecast.T_max,
             temperatureMin: dailyForecast.T_min,
-            humidity: (dailyForecast.relative_humidity_max + dailyForecast.relative_humidity_min) / 2,
+            relativeHumidity: (dailyForecast.relative_humidity_max + dailyForecast.relative_humidity_min) / 2,
             uvIndex: dailyForecast.uv_index,
             windGust: Math.round(windGust * 3.6),
             windSpeed: windSpeed.count > 1 ? Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6) : 0,
@@ -329,9 +329,11 @@ export class MFProvider extends WeatherProvider {
             d.isDay = icon.endsWith('j');
             d.iconId = this.convertMFICon(icon);
             d.description = titlecase(data.weather_description);
-            d.temperature = data.T;
+            d.temperature = feelsLikeTemperatures ? data.T_windchill : data.T;
 
             d.windBearing = data.wind_direction;
+            d.sealevelPressure = data.P_sea;
+            d.relativeHumidity = data.relative_humidity;
 
             d.snowfall = data.snow_1h || data.snow_3h || data.snow_6h || data.snow_12h || data.snow_24h || 0;
             d.rain = data.rain_1h || data.rain_3h || data.rain_6h || data.rain_12h || data.rain_24h || 0;
@@ -352,7 +354,6 @@ export class MFProvider extends WeatherProvider {
             }
             // d.precipProbabilities = probabilities;
             d.cloudCover = data.total_cloud_cover;
-            d.humidity = data.relative_humidity;
             d.windGust = data.wind_speed_gust * 3.6;
             d.windSpeed = data.wind_speed * 3.6;
             d.iso = data.iso0;

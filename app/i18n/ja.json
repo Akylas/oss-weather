@@ -99,7 +99,7 @@
     "loading": "読み込み中",
     "map": "マップ",
     "medium": "適度",
-    "metric_temp_decimal": "メートル温度には 10 進数を使用します",
+    "metric_temp_decimal": "温度には10進数を使用します",
     "missing_location_perm": "位置情報の許可がありません",
     "moon": "月",
     "mostly_clear": "ほぼ快晴",

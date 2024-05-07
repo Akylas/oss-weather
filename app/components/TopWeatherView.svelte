@@ -7,7 +7,7 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { Color } from '@nativescript/core';
+    import { Color, Utils } from '@nativescript/core';
     import dayjs from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
@@ -20,7 +20,7 @@
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
-    import { colors, fontScale, fonts, rainColor } from '~/variables';
+    import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
     const dispatch = createEventDispatcher();
 
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -262,32 +262,112 @@
         const w = canvas.getWidth();
         const h = canvas.getHeight();
         const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
-
-        const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
-        const iconsLeft = 26;
-        centeredItemsToDraw.forEach((c, index) => {
-            const x = index * 45 * $fontScale + iconsLeft;
-            const paint = c.paint || textIconPaint;
-            paint.textSize = c.iconFontSize;
-            paint.setColor(c.color || colorOnSurface);
-            if (c.customDraw) {
-                c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);
-            } else {
-                if (c.icon) {
-                    canvas.drawText(c.icon, x, iconsTop + 20, paint);
+        const w2 = Utils.layout.toDeviceIndependentPixels(lineChart.nativeElement.getMeasuredWidth()) / 2;
+        // canvas.translate(26, 0);
+        switch ($weatherDataLayout) {
+            case 'line': {
+                textPaint.setTextAlign(Align.LEFT);
+                textIconPaint.setTextAlign(Align.CENTER);
+                const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
+                const lineHeight = 20 * $fontScale;
+                const lineWidth = 100 * $fontScale;
+                const nbLines = Math.ceil(centeredItemsToDraw.length / 2);
+                canvas.drawLine(w2, iconsTop, w2, iconsTop + lineHeight * nbLines, textIconPaint);
+                for (let index = 0; index < nbLines - 1; index++) {
+                    const y = iconsTop + lineHeight * (index + 1);
+                    canvas.drawLine(w2 - lineWidth, y, w2 + lineWidth, y, textIconPaint);
                 }
-                if (c.value) {
-                    textIconPaint.textSize = 12 * $fontScale;
-                    textIconPaint.setColor(c.color || colorOnSurface);
-                    canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
+                const iconDelta = 20 * $fontScale;
+                for (let index = 0; index < centeredItemsToDraw.length; index++) {
+                    const columnIndex = index % 2;
+                    const lineIndex = Math.floor(index / 2);
+                    const y = iconsTop + lineHeight * lineIndex;
+                    const c = centeredItemsToDraw[index];
+                    const paint = c.paint || textIconPaint;
+                    if (c.icon) {
+                        // paint.setColor(c.color || colorOnSurface);
+                        // canvas.drawText(c.icon, columnIndex === 0 ? w2 - 20 : w2 + 20, y + lineHeight + lineHeight / 2 - paint.textSize / 2, paint);
+                        const dataNString = createNativeAttributedString(
+                            {
+                                spans: [
+                                    {
+                                        fontSize: c.iconFontSize,
+                                        color: c.color || colorOnSurface,
+                                        fontFamily: paint.fontFamily,
+                                        text: c.icon
+                                    }
+                                ]
+                            },
+                            null
+                        );
+                        canvas.save();
+                        const staticLayout = new StaticLayout(dataNString, textPaint, iconDelta, LayoutAlignment.ALIGN_CENTER, 1, 0, true);
+                        // canvas.translate(columnIndex === 0 ? w2 - lineWidth : w2 + lineWidth  - staticLayout.getWidth(), y + lineHeight / 2 - staticLayout.getHeight() / 2);
+                        canvas.translate(columnIndex === 0 ? w2 - lineWidth : w2 + 2, y + lineHeight / 2 - staticLayout.getHeight() / 2);
+                        staticLayout.draw(canvas);
+                        canvas.restore();
+                    }
+                    const dataNString = createNativeAttributedString(
+                        {
+                            spans: [
+                                c.value
+                                    ? {
+                                          fontSize: 12 * $fontScale,
+                                          color: c.color || colorOnSurface,
+                                          text: c.value + ' '
+                                      }
+                                    : undefined,
+                                c.subvalue
+                                    ? {
+                                          fontSize: 9 * $fontScale,
+                                          color: c.color || colorOnSurface,
+                                          text: c.subvalue + ' '
+                                      }
+                                    : undefined
+                            ].filter((s) => !!s)
+                        },
+                        null
+                    );
+                    canvas.save();
+                    const staticLayout = new StaticLayout(dataNString, textPaint, lineWidth, LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
+                    canvas.translate(iconDelta + (columnIndex === 0 ? w2 - lineWidth + 5 : w2 + 5), y + lineHeight / 2 - staticLayout.getHeight() / 2);
+                    // const staticLayout = new StaticLayout(dataNString, textPaint, lineWidth, columnIndex === 0 ? LayoutAlignment.ALIGN_OPPOSITE : LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
+                    // canvas.translate(columnIndex === 0 ? w2 - lineWidth - 5 : w2 + 5, y + lineHeight / 2 - staticLayout.getHeight() / 2);
+                    staticLayout.draw(canvas);
+                    canvas.restore();
                 }
-                if (c.subvalue) {
-                    textIconPaint.textSize = 9 * $fontScale;
-                    textIconPaint.setColor(c.color || colorOnSurface);
-                    canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
-                }
+                break;
             }
-        });
+            default:
+            case 'default': {
+                const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
+                const iconsLeft = 26;
+                centeredItemsToDraw.forEach((c, index) => {
+                    const x = index * 45 * $fontScale + iconsLeft;
+                    const paint = c.paint || textIconPaint;
+                    paint.textSize = c.iconFontSize;
+                    paint.setColor(c.color || colorOnSurface);
+                    if (c.customDraw) {
+                        c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);
+                    } else {
+                        if (c.icon) {
+                            canvas.drawText(c.icon, x, iconsTop + 20, paint);
+                        }
+                        if (c.value) {
+                            textIconPaint.textSize = 12 * $fontScale;
+                            textIconPaint.setColor(c.color || colorOnSurface);
+                            canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
+                        }
+                        if (c.subvalue) {
+                            textIconPaint.textSize = 9 * $fontScale;
+                            textIconPaint.setColor(c.color || colorOnSurface);
+                            canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
+                        }
+                    }
+                });
+                break;
+            }
+        }
 
         textPaint.setColor(colorOnSurface);
         textPaint.setTextAlign(Align.LEFT);

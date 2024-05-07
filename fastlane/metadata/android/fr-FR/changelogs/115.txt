@@ -1,0 +1,13 @@
+### Features
+- added sea level pressure, relative humidity and dew point
+- experimental new "line" layout for weather data (available through weather data settings)
+- settings/weatherdata: tap on data to hide/show without the need to reorder
+
+### Bug fixes
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Russian)
+- Translated using Weblate (Turkish)
+- Translated using Weblate (Hindi)
+- Translated using Weblate (Arabic)
+- Translated using Weblate (German)
+- prevent error while sea

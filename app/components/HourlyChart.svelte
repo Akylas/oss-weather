@@ -31,7 +31,7 @@
     import { l } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
-    import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle } from '~/services/weatherData';
+    import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { generateGradient, loadImage, tempColor } from '~/utils/utils';
     import { actionBarButtonHeight } from '~/variables';
     import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
@@ -73,15 +73,8 @@
     export let weatherLocation: FavoriteLocation;
     export let weatherData: WeatherData;
     export let forecast = 'hourly';
-    export let dataToShow = [
-        WeatherProps.iconId,
-        WeatherProps.windSpeed,
-        WeatherProps.temperature,
-        // WeatherProps.temperatureMin,
-        // WeatherProps.temperatureMax,
-        WeatherProps.precipAccumulation
-        // WeatherProps.cloudCover
-    ];
+    const currentData = weatherDataService.currentWeatherData;
+    export let dataToShow = [...new Set([WeatherProps.windSpeed, WeatherProps.precipAccumulation].filter((s) => currentData.includes(s)).concat([WeatherProps.iconId, WeatherProps.temperature]))];
 
     let page: NativeViewElementNode<Page>;
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
@@ -269,7 +262,6 @@
                 limitLine.lineColor = colorOnSurfaceVariant;
                 xAxis.removeAllLimitLines();
                 xAxis.addLimitLine(limitLine);
-
 
                 // if (forecast === 'hourly') {
                 xAxis.forcedInterval = 1;
@@ -503,7 +495,6 @@
                     combinedChartData.barData = null;
                 }
                 chart.data = combinedChartData;
-
             }
         } catch (error) {
             showError(error);
@@ -617,7 +608,7 @@
     let lastGradient: { min; max; gradient: LinearGradient };
     function onLayoutChanged(event: EventData) {
         const chart = event.object as CombinedChart;
-        DEV_LOG && console.log('onLayoutChanged', chart.getMeasuredHeight(), (event.object as CombinedChart).viewPortHandler.contentRect.height(), temperatureData);
+        // DEV_LOG && console.log('onLayoutChanged', chart.getMeasuredHeight(), (event.object as CombinedChart).viewPortHandler.contentRect.height(), temperatureData);
         if (temperatureData && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, chart.viewPortHandler.contentRect.height(), 0);
             const dataSet = chart.lineData.getDataSetByLabel(WeatherProps.temperature, false);

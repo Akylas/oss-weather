@@ -485,11 +485,10 @@ export async function geocodeAddress(coord: { lat: number; lon: number }) {
             // newData.name = formatAddress(newData.sys);
             return newData;
         } else {
-            return {
-                coord,
-                sys: {},
-                name: coord.lat.toFixed(2) + ',' + coord.lon.toFixed(2)
-            } as WeatherLocation;
+            // we throw to ensure a nominatim request is done
+            // this can happen either when there is really no result(no way to distinguish)
+            // or when the platform does not really support geocoding (DivestOS)
+            throw new Error();
         }
     } catch (error1) {
         console.error('geocodeAddress error:', error1);

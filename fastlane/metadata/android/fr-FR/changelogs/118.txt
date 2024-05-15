@@ -1,0 +1,5 @@
+### Bug fixes
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Polish)
+- crash fix on android < 29
+- use fallback for system without geocoder

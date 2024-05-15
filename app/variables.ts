@@ -8,6 +8,7 @@ import { prefs } from './services/preferences';
 import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
 import { DECIMAL_METRICS_TEMP, WEATHER_DATA_LAYOUT } from './helpers/constants';
+import { SDK_VERSION } from '@nativescript/core/utils';
 
 export const colors = writable({
     colorPrimary: '',
@@ -145,13 +146,22 @@ const onInitRootView = function () {
             (rootView.nativeViewProtected as android.view.View).setOnApplyWindowInsetsListener(
                 new android.view.View.OnApplyWindowInsetsListener({
                     onApplyWindowInsets(view, insets) {
-                        const inset = insets.getSystemWindowInsets();
-                        windowInset.set({
-                            top: Utils.layout.toDeviceIndependentPixels(inset.top),
-                            bottom: Utils.layout.toDeviceIndependentPixels(inset.bottom),
-                            left: Utils.layout.toDeviceIndependentPixels(inset.left),
-                            right: Utils.layout.toDeviceIndependentPixels(inset.right)
-                        });
+                        if (SDK_VERSION >= 29) {
+                            const inset = insets.getSystemWindowInsets();
+                            windowInset.set({
+                                top: Utils.layout.toDeviceIndependentPixels(inset.top),
+                                bottom: Utils.layout.toDeviceIndependentPixels(inset.bottom),
+                                left: Utils.layout.toDeviceIndependentPixels(inset.left),
+                                right: Utils.layout.toDeviceIndependentPixels(inset.right)
+                            });
+                        } else {
+                            windowInset.set({
+                                top: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetTop()),
+                                bottom: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetBottom()),
+                                left: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetLeft()),
+                                right: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetRight())
+                            });
+                        }
                         return insets;
                     }
                 })

@@ -62,6 +62,7 @@
         "@nativescript-community/ui-material-snackbar": "7.2.53",
         "@nativescript-community/ui-material-switch": "7.2.53",
         "@nativescript-community/ui-material-textfield": "7.2.53",
+        "@nativescript-community/ui-material-textview": "7.2.53",
         "@nativescript-community/ui-popover": "0.1.17",
         "@nativescript-community/ui-pulltorefresh": "2.5.3",
         "@nativescript-community/ui-share-file": "1.3.3",

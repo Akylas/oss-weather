@@ -181,3 +181,12 @@ export async function showPopoverMenu<T = any>({
 export function isLandscape() {
     return Application.orientation() === 'landscape';
 }
+
+export function createView<T extends View>(claz: new () => T, props: Partial<Pick<T, keyof T>>, events?) {
+    const view: T = new claz();
+    Object.assign(view, props);
+    if (events) {
+        Object.keys(events).forEach((k) => view.on(k, events[k]));
+    }
+    return view;
+}

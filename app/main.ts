@@ -42,6 +42,7 @@ try {
     registerNativeViewElement('gesturerootview', () => require('@nativescript-community/gesturehandler').GestureRootView);
 
     registerNativeViewElement('span', () => require('@nativescript/core').Span);
+    registerNativeViewElement('textview', () => require('@nativescript-community/ui-material-textview').TextView, null, {}, { override: true });
     registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
     registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
     registerNativeViewElement('Switch', () => require('@nativescript-community/ui-material-switch').Switch);

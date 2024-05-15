@@ -49,6 +49,7 @@
     "cloud_cover": "cloud cover",
     "cloudy": "Cloudy",
     "coastal_flooding": "Coastal flooding",
+    "comments": "comments",
     "compare_models": "compare models",
     "data": "data",
     "description": "Description",
@@ -69,6 +70,7 @@
     "export_settings_desc": "export all application settings so that you can import them later",
     "extreme_cold": "Extreme cold",
     "favorites": "Favorites",
+    "feedback_sent": "feedback sent",
     "feels_like_temperatures": "show feels like temperature when available",
     "file": "File",
     "flood": "Flood",
@@ -188,6 +190,7 @@
     "send": "Send",
     "send_bug_report": "Send bug report",
     "send_bug_report_desc": "Enter an e-mail address and a description for the encountered error",
+    "send_feedback": "send feedback",
     "settings": {
         "title": "Settings"
     },

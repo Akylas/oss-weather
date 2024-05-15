@@ -2,8 +2,8 @@
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { prompt } from '@nativescript-community/ui-material-dialogs';
-    import { ApplicationSettings, ObservableArray, Page, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
+    import { ApplicationSettings, ObservableArray, Page, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -33,9 +33,13 @@
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
     import { navigate } from '~/utils/svelte/ui';
-    import { hideLoading, isLandscape, openLink, showAlertOptionSelect } from '~/utils/ui';
+    import { createView, hideLoading, isLandscape, openLink, showAlertOptionSelect } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
+    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { TextView } from '@nativescript-community/ui-material-textview';
+    import { Sentry } from '~/utils/sentry';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -442,6 +446,17 @@
                     }
                 ] as any)
                 .concat(
+                    SENTRY_ENABLED
+                        ? [
+                              {
+                                  id: 'feedback',
+                                  icon: 'mdi-bullhorn',
+                                  title: lc('send_feedback')
+                              }
+                          ]
+                        : ([] as any)
+                )
+                .concat(
                     PLAY_STORE_BUILD
                         ? [
                               //   {
@@ -593,7 +608,56 @@
                         view: ThirdPartySoftwareBottomSheet
                     });
                     break;
+                case 'feedback': {
+                    if (SENTRY_ENABLED) {
+                        const view = createView(StackLayout, {
+                            padding: 10
+                        });
+                        const commentsTF = createView(TextView, {
+                            hint: lc('comments'),
+                            variant: 'outline',
+                            height: 150,
+                            returnKeyType: 'done'
+                        });
+                        const emailTF = createView(TextField, {
+                            hint: lc('email'),
+                            variant: 'outline',
+                            autocapitalizationType: 'none',
+                            autocorrect: false,
+                            keyboardType: 'email',
+                            returnKeyType: 'next'
+                        });
+                        const nameTF = createView(TextField, {
+                            hint: lc('name'),
+                            variant: 'outline',
+                            returnKeyType: 'next'
+                        });
+                        view.addChild(nameTF);
+                        view.addChild(emailTF);
+                        view.addChild(commentsTF);
+                        const result = await confirm({
+                            title: lc('send_feedback'),
+                            okButtonText: l('send'),
+                            cancelButtonText: l('cancel'),
+                            view
+                        });
+                        if (result) {
+                            const eventId = Sentry.captureMessage('User Feedback');
 
+                            Sentry.captureUserFeedback({
+                                event_id: eventId,
+                                name: nameTF.text,
+                                email: emailTF.text,
+                                comments: commentsTF.text
+                            });
+                            Sentry.flush();
+                            showSnack({ message: l('feedback_sent') });
+                        }
+                    } else {
+                        openLink(GIT_URL + 'issues');
+                    }
+                    break;
+                }
                 case 'setting': {
                     if (item.type === 'prompt') {
                         const result = await prompt({

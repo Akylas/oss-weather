@@ -1,20 +1,4 @@
 {
-    "terminal.integrated.env.osx": {
-        "IOS_APP_ID": "1499117252",
-        "SENTRY_PROJECT": "ossweather",
-        "SENTRY_PREFIX": "app:///",
-        "SENTRY_ORG": "akylas",
-        "SENTRY_URL": "https://bugs.akylas.fr",
-        "SOURCEMAP_REL_DIR": "../../sourcemaps"
-    },
-    "terminal.integrated.env.linux": {
-        "IOS_APP_ID": "1499117252",
-        "SENTRY_PROJECT": "ossweather",
-        "SENTRY_PREFIX": "app:///",
-        "SENTRY_ORG": "akylas",
-        "SENTRY_URL": "https://bugs.akylas.fr",
-        "SOURCEMAP_REL_DIR": "../../sourcemaps"
-    },
     "files.exclude": {
         "schema": true
     },
@@ -28,6 +12,8 @@
         "app/**/*.js": true
     },
     "scss.lint.validProperties": [
+        "max-font-size",
+        "min-font-size",
         "ios-a11y-adjusts-font-size",
         "status-bar-style",
         "navigation-bar-color",

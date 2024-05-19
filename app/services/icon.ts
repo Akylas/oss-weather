@@ -121,7 +121,7 @@ export class IconService extends Observable {
         return this.mAnimated && this.lotties.size > 0;
     }
     load(fireChange = true) {
-        this.iconSet = ApplicationSettings.getString('icon_set', 'weathericons');
+        this.iconSet = ApplicationSettings.getString('icon_set', 'meteocons');
         this.iconSetFolderPath = path.join(iconThemesFolder, this.iconSet);
         this.iconSetConfig = null;
         fillIconMap(path.join(this.iconSetFolderPath, 'images'), this.images);

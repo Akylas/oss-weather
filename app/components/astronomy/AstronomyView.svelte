@@ -10,7 +10,6 @@
     import { LineDataSet } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
     import { Utils } from '@nativescript-community/ui-chart/utils/Utils';
-    import { ViewPortHandler } from '@nativescript-community/ui-chart/utils/ViewPortHandler';
     import dayjs, { Dayjs } from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { formatTime, getLocalTime, l, lc, lu } from '~/helpers/locale';
@@ -18,6 +17,12 @@
     import { pickDate } from '~/utils/utils';
     import { colors, fonts } from '~/variables';
     import { WeatherLocation } from '~/services/api';
+    import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
+    import { Color } from '@akylas/nativescript';
+
+    const nightPaint = new Paint();
+    const nightLiinePaint = new Paint();
+
     const PI = Math.PI;
     const PI_DIV2 = PI / 2;
     const TO_DEG = 180 / PI;
@@ -137,12 +142,14 @@
 </script>
 
 <script lang="ts">
-    $: ({ colorOnSurface } = $colors);
-    let chart: NativeViewElementNode<LineChart>;
+    let { colorOnSurface, colorBackground, colorOnSurfaceVariant } = $colors;
+    $: ({ colorOnSurface, colorBackground, colorOnSurfaceVariant } = $colors);
+    let chartView: NativeViewElementNode<LineChart>;
 
     let chartInitialized = false;
     export let location: WeatherLocation;
     export let timezoneOffset;
+    export let selectableDate = true;
     export let startTime = getLocalTime(undefined, timezoneOffset);
     // let limitLine: LimitLine;
     let illumination: GetMoonIlluminationResult; // MoonPhase;
@@ -163,15 +170,39 @@
     highlightPaint.setPathEffect(new DashPathEffect([3, 3], 0));
     highlightPaint.setTextAlign(Align.LEFT);
     highlightPaint.setTextSize(10);
+    // let chartBackgroundColor =
+    function updateTheme() {
+        nightPaint.color = new Color($colors.colorBackground).setAlpha(170);
+        nightLiinePaint.color = new Color($colors.colorOnSurface).setAlpha(150);
+    }
+    updateTheme();
+    onThemeChanged(() => {
+        updateTheme();
+        const chart = chartView?.nativeView;
+        if (chart) {
+            const newColor = $colors.colorOnSurface;
+            // DEV_LOG && console.log('onThemeChanged', !!chart, colorOnSurface, newColor);
+            const leftAxis = chart.leftAxis;
+            const xAxis = chart.xAxis;
+            leftAxis.textColor = xAxis.textColor = highlightPaint.color = newColor;
+            const dataSets = chart.data.dataSets;
+            dataSets.forEach((d) => {
+                if (d.drawValuesEnabled) {
+                    d.valueTextColor = newColor;
+                }
+            });
+            chart.invalidate();
+        }
+    });
 
     let bottomLabel: NativeViewElementNode<CanvasLabel>;
     function updateChartData() {
-        if (!chart) {
+        if (!chartView) {
             return;
         }
         const computeStartTime = getLocalTime(startTime.startOf('d').valueOf(), timezoneOffset);
         DEV_LOG && console.log('updateChartData', startTime, computeStartTime);
-        const chartView = chart.nativeView;
+        const chart = chartView.nativeView;
         const sets = [];
         sunPoses = [];
         moonPoses = [];
@@ -182,22 +213,29 @@
         }
         if (!chartInitialized) {
             chartInitialized = true;
-            const leftAxis = chartView.leftAxis;
-            const xAxis = chartView.xAxis;
-            chartView.setExtraOffsets(0, 0, 0, 0);
-            chartView.minOffset = 0;
-            chartView.clipDataToContent = false;
-            chartView.highlightPerTapEnabled = true;
-            chartView.highlightPerDragEnabled = true;
-            chartView.customRenderer = {
+            const leftAxis = chart.leftAxis;
+            const xAxis = chart.xAxis;
+
+            leftAxis.textColor = xAxis.textColor = highlightPaint.color = colorOnSurface;
+            chart.setExtraOffsets(0, 0, 0, 0);
+            chart.minOffset = 0;
+            chart.clipDataToContent = false;
+            chart.highlightPerTapEnabled = true;
+            chart.highlightPerDragEnabled = true;
+            chart.customRenderer = {
                 drawHighlight(c: Canvas, h: Highlight<Entry>, set: LineDataSet, paint: Paint) {
+                    const w = c.getWidth();
+                    const height = c.getHeight();
+                    c.drawRect(0, height / 2, w, height, nightPaint);
+                    c.drawLine(0, height / 2, w, height / 2, nightLiinePaint);
+
                     const hours = Math.min(Math.floor(h.x / 6), 23);
                     const minutes = (h.x * 10) % 60;
-                    const timestamp =  startTime.set('h', hours).set('m', minutes);
+                    startTime = startTime.set('h', hours).set('m', minutes);
                     c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                     highlightPaint.setTextAlign(Align.LEFT);
                     let x = h.drawX + 4;
-                    const text = formatTime(timestamp);
+                    const text = formatTime(startTime);
                     const size = Utils.calcTextSize(highlightPaint, text);
                     if (x > c.getWidth() - size.width) {
                         x = h.drawX - 4;
@@ -215,7 +253,6 @@
             leftAxis.axisMaximum = PI_DIV2;
             xAxis.position = XAxisPosition.BOTTOM_INSIDE;
             xAxis.forcedInterval = 24;
-            xAxis.textColor = 'white';
             xAxis.drawAxisLine = false;
             xAxis.drawGridLines = false;
             xAxis.ensureVisible = true;
@@ -240,31 +277,36 @@
         // limitLine.setLabel(formatTime(startTime));
         // limitLine.setLimit(nowMinutes / 10);
 
-        const chartData = chartView.data;
+        const chartData = chart.data;
         if (!chartData) {
             let set = new LineDataSet(sunPoses, 'sun', undefined, 'altitude');
-            set.setColor('#ffdd55');
+            set.fillFormatter = {
+                getFillLinePosition: (dataSet, dataProvider) => 0
+            };
+            set.fillColor = set.color = '#ffdd55';
+            set.fillAlpha = 50;
+            set.drawFilledEnabled = true;
             set.lineWidth = 3;
             sets.push(set);
             set = new LineDataSet(moonPoses, 'moon', undefined, 'altitude');
-            set.setColor('white');
-            set.lineWidth = 3;
+            set.color = '#bbb';
+            set.lineWidth = 1;
             sets.unshift(set);
 
             const lineData = new LineData(sets);
-            chartView.data = lineData;
+            chart.data = lineData;
 
             const nowMinutes = startTime.diff(computeStartTime, 'minutes');
-            const h = chartView.getHighlightByXValue(nowMinutes / 10);
-            chartView.highlight(h[0]);
+            const h = chart.getHighlightByXValue(nowMinutes / 10);
+            chart.highlight(h[0]);
         } else {
             chartData.getDataSetByIndex(1).values = sunPoses;
             chartData.getDataSetByIndex(1).notifyDataSetChanged();
             chartData.getDataSetByIndex(0).values = moonPoses;
             chartData.getDataSetByIndex(0).notifyDataSetChanged();
             chartData.notifyDataChanged();
-            chartView.notifyDataSetChanged();
-            chartView.invalidate();
+            chart.notifyDataSetChanged();
+            chart.invalidate();
         }
     }
 
@@ -281,7 +323,7 @@
 
     $: {
         try {
-            if (chart) {
+            if (chartView) {
                 updateChartData();
             }
         } catch (err) {
@@ -394,13 +436,33 @@
     }
 </script>
 
-<gesturerootview columns="*,*" rows="50,200,50,auto">
-    <mdbutton class="icon-btn" horizontalAlignment="left" text="mdi-chevron-left" variant="text" on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
-    <label colSpan={2} fontSize={17} marginLeft={50} marginRight={50} text={startTime.format('LL')} textAlignment="center" verticalTextAlignment="center" on:tap={selectDate} />
-    <mdbutton class="icon-btn" col={1} horizontalAlignment="right" text="mdi-chevron-right" variant="text" on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
-    <linechart bind:this={chart} backgroundColor="#222222" colSpan={3} row={1} on:postDra>
-        <rectangle fillColor="#a0caff" height="50%" width="100%" />
-    </linechart>
+<gesturerootview columns="*,*" rows={`${selectableDate ? 50 : 0},200,50,auto`} {...$$restProps}>
+    <mdbutton
+        class="icon-btn"
+        horizontalAlignment="left"
+        text="mdi-chevron-left"
+        variant="text"
+        visibility={selectableDate ? 'visible' : 'hidden'}
+        on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
+    <label
+        colSpan={2}
+        fontSize={17}
+        marginLeft={50}
+        marginRight={50}
+        text={startTime.format('LL')}
+        textAlignment="center"
+        verticalTextAlignment="center"
+        visibility={selectableDate ? 'visible' : 'hidden'}
+        on:tap={selectDate} />
+    <mdbutton
+        class="icon-btn"
+        col={1}
+        horizontalAlignment="right"
+        text="mdi-chevron-right"
+        variant="text"
+        visibility={selectableDate ? 'visible' : 'hidden'}
+        on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
+    <linechart bind:this={chartView} colSpan={3} row={1} />
     {#if sunTimes}
         <canvaslabel bind:this={bottomLabel} colSpan={3} fontSize={18} padding="0 10 0 10" row={2} on:draw={drawMoonPosition}>
             <cgroup color="#ffa500" verticalAlignment="middle">

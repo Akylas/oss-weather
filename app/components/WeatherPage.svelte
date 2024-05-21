@@ -24,7 +24,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
-    import { WeatherData } from '~/services/providers/weather';
+    import { Daily, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { getAqiProvider, getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { DEFAULT_COMMON_WEATHER_DATA, WeatherProps, mergeWeatherData, onWeatherDataChanged } from '~/services/weatherData';
     import { alert, showError } from '~/utils/error';
@@ -185,7 +185,7 @@
                                     navigate({ page: CompareWeather, props: { weatherLocation } });
                                     break;
                                 case 'chart':
-                                    const HourlyChart = (await import('~/components/HourlyChart.svelte')).default;
+                                    const HourlyChart = (await import('~/components/HourlyChartPage.svelte')).default;
                                     navigate({ page: HourlyChart, props: { weatherLocation, weatherData } });
                                     break;
                                 case 'refresh':
@@ -478,20 +478,37 @@
 
     const onTap = throttle(async function (event) {
         try {
-            const AstronomyView = (await import('~/components/astronomy/AstronomyView.svelte')).default;
-            const parent = Frame.topmost() || Application.getRootView();
-            DEV_LOG && console.log('showAstronomyView', event.time, event.timezoneOffset);
-            await showBottomSheet({
-                parent,
-                view: AstronomyView,
-                peekHeight: 400,
-                // skipCollapsedState: isLandscape(),
+            const item = event as DailyData;
+            const component = (await import('~/components/DailyPage.svelte')).default;
+            const startOfDay = dayjs(item.time).startOf('d').valueOf();
+            const endOfDay = dayjs(item.time).endOf('d').valueOf();
+            const hourly = items[0].hourly as Hourly[];
+            const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
+            const endIndex = hourly.findIndex((h) => h.time > endOfDay);
+            DEV_LOG && console.log('show daily page', item.time, startOfDay, endOfDay, startIndex, endIndex);
+            navigate({
+                page: component,
                 props: {
+                    item: { ...item, hourly: startIndex >= 0 ? hourly.slice(startIndex, endIndex === -1 ? hourly.length : endIndex + 1) : [] },
                     location: weatherLocation,
-                    timezoneOffset: event.timezoneOffset,
-                    // startTime: getLocalTime(event.time, event.timezoneOffset)
+                    weatherLocation,
+                    timezoneOffset: item.timezoneOffset
                 }
             });
+            // const AstronomyView = (await import('~/components/astronomy/AstronomyView.svelte')).default;
+            // const parent = Frame.topmost() || Application.getRootView();
+            // DEV_LOG && console.log('showAstronomyView', event.time, event.timezoneOffset);
+            // await showBottomSheet({
+            //     parent,
+            //     view: AstronomyView,
+            //     peekHeight: 400,
+            //     // skipCollapsedState: isLandscape(),
+            //     props: {
+            //         location: weatherLocation,
+            //         timezoneOffset: event.timezoneOffset,
+            //         // startTime: getLocalTime(event.time, event.timezoneOffset)
+            //     }
+            // });
         } catch (err) {
             showError(err);
         }

@@ -7,31 +7,39 @@
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { Color, Utils } from '@nativescript/core';
+    import { ApplicationSettings, Color, Utils } from '@nativescript/core';
     import dayjs from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
+    import { MAIN_PAGE_HOURLY_CHART, SETTINGS_MAIN_PAGE_HOURLY_CHART } from '~/helpers/constants';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
+    import { prefs } from '~/services/preferences';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
+    import HourlyChartView from './HourlyChartView.svelte';
     const dispatch = createEventDispatcher();
+
+    let showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
+    prefs.on(`key:${SETTINGS_MAIN_PAGE_HOURLY_CHART}`, () => {
+        showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
+    });
 
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
     const textPaint = new Paint();
-    const arcPaint = new Paint();
-    arcPaint.style = Style.STROKE;
-    arcPaint.setTextAlign(Align.CENTER);
-    arcPaint.strokeCap = Cap.ROUND;
+    // const arcPaint = new Paint();
+    // arcPaint.style = Style.STROKE;
+    // arcPaint.setTextAlign(Align.CENTER);
+    // arcPaint.strokeCap = Cap.ROUND;
 
     interface Item extends Currently {
         minutely?: MinutelyData[];
@@ -480,6 +488,9 @@
         size={weatherIconSize * (2 - $fontScale)}
         verticalAlignment="middle"
         on:tap={(event) => dispatch('tap', event)} />
-
-    <HourlyView colSpan={2} items={item.hourly} row={1} />
+    {#if showHourlyChart}
+        <HourlyChartView barWidth={1} colSpan={2} fixedBarScale={false} height={200} hourly={item.hourly} rightAxisSuggestedMaximum={8} row={1} temperatureLineWidth={3} />
+    {:else}
+        <HourlyView colSpan={2} items={item.hourly} row={1} />
+    {/if}
 </gridlayout>

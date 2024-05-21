@@ -1,3 +1,5 @@
+<svelte:options accessors />
+
 <script context="module" lang="ts">
     import { Align, Canvas, DashPathEffect, FontMetrics, LinearGradient, Paint, Rect, RectF } from '@nativescript-community/ui-canvas';
     import { CombinedChart } from '@nativescript-community/ui-chart';
@@ -9,32 +11,24 @@
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
-    import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { Application, ApplicationSettings, Color, EventData, ImageSource, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
-    import dayjs from 'dayjs';
-    import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { convertWeatherValueToUnit, toImperialUnit, windIcon } from '~/helpers/formatter';
-    import { getLocalTime, lc } from '~/helpers/locale';
+    import { getLocalTime } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { CommonWeatherData, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
     import { showError } from '~/utils/error';
-    import { colors, fontScale, screenWidthDips, sunnyColor } from '~/variables';
+    import { colors, fontScale, screenWidthDips } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
     import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
-    import { NavigatedData, Page } from '@nativescript/core';
+    import { Page } from '@nativescript/core';
     import { onDestroy, onMount } from 'svelte';
-    import CActionBar from '~/components/common/CActionBar.svelte';
-    import { FavoriteLocation } from '~/helpers/favorites';
-    import { l } from '~/helpers/locale';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
+    import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { iconService } from '~/services/icon';
     import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { generateGradient, loadImage, tempColor } from '~/utils/utils';
-    import { actionBarButtonHeight } from '~/variables';
-    import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
+    import { generateGradient, loadImage } from '~/utils/utils';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;
@@ -62,32 +56,32 @@
         [WeatherProps.cloudCover]: 'scatterchart',
         [WeatherProps.windBearing]: 'scatterchart'
     };
-
-    const textBounds = new Rect(0, 0, 0, 0);
 </script>
 
 <script lang="ts">
+    const currentData = weatherDataService.currentWeatherData;
     let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors);
 
-    export let weatherLocation: FavoriteLocation;
-    export let weatherData: WeatherData;
-    export let forecast = 'hourly';
-    const currentData = weatherDataService.currentWeatherData;
+    export let hourly: Hourly[];
     export let dataToShow = [...new Set([WeatherProps.windSpeed, WeatherProps.precipAccumulation].filter((s) => currentData.includes(s)).concat([WeatherProps.iconId, WeatherProps.temperature]))];
+    export let temperatureLineWidth = 3;
+    export let barWidth = 0.8;
+    export let fixedBarScale = true;
+    export let rightAxisSuggestedMaximum = 10;
+    export const legends = new ObservableArray([]);
+    let chartView: NativeViewElementNode<CombinedChart>;
+
+    export function getChart() {
+        return chartView?.nativeElement;
+    }
 
     let page: NativeViewElementNode<Page>;
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
-    let networkConnected = networkService.connected;
-    const loading = false;
     const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
-    let chartHeight = !screenOrientation && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
-    let chartView: NativeViewElementNode<CombinedChart>;
     const combinedChartData = new CombinedData();
-    let drawer: DrawerElement;
     let chartInitialized = false;
     const hidden: string[] = [];
-    const legends = new ObservableArray([]);
 
     let iconCache: { [k: string]: ImageSource } = {};
     function getIcon(iconId, isDay): ImageSource {
@@ -99,31 +93,10 @@
         icon = iconCache[realIcon] = loadImage(`${iconService.iconSetFolderPath}/images/${realIcon}.png`, { resizeThreshold: 80 });
         return icon;
     }
-    let chartNeedsZoomUpdate = false;
-    function onOrientationChanged(event: OrientationChangedEventData) {
-        const chart = chartView?.nativeElement;
-        if (!chart) {
-            return;
-        }
-        const isLandscape = event.newValue === 'landscape';
-        chartHeight = !isLandscape && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
-        chartNeedsZoomUpdate = true;
-    }
-
     onMount(async () => {
         Application.on(Application.orientationChangedEvent, onOrientationChanged);
-
-        networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
-            try {
-                if (networkConnected !== event.data.connected) {
-                    networkConnected = event.data.connected;
-                }
-            } catch (error) {
-                showError(error);
-            }
-        });
-        networkConnected = networkService.connected;
     });
+
     onDestroy(() => {
         Application.off(Application.orientationChangedEvent, onOrientationChanged);
         if (__ANDROID__) {
@@ -132,15 +105,11 @@
         }
     });
 
-    function onNavigatedTo(args: NavigatedData): void {
-        updateLineChart();
-    }
-
     let temperatureData: { min: number; max: number };
-    let maxDatalength = 0;
+    export let maxDatalength = 0;
     let startTimestamp = 0;
     let timezoneOffset;
-    function updateLineChart(setData = true) {
+    export function updateLineChart(setData = true) {
         try {
             const chart = chartView?.nativeView;
             if (chart) {
@@ -205,42 +174,53 @@
                             } else if (dataSet.label === WeatherProps.windSpeed) {
                                 const drawOffsetY = 45;
                                 appPaint.color = dataSet.color;
-                                appPaint.setTextSize(12);
+                                appPaint.setTextSize(10);
                                 canvas.drawText(icon as string, x, drawOffsetY, appPaint);
                             }
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {
                             const yProperty = dataSet.yProperty;
-                            if (entryIndex !== 0 && entryIndex < dataSet.entryCount - 1) {
-                                const value = entry[yProperty];
-                                const prevValue = dataSet.getEntryForIndex(entryIndex - 1)[yProperty];
-                                const nextValue = dataSet.getEntryForIndex(entryIndex + 1)[yProperty];
-                                // DEV_LOG && console.log('test', value, prevValue, nextValue);
-                                if (prevValue !== value && !(prevValue < value && value < nextValue) && !(prevValue > value && value > nextValue)) {
-                                    // if (yProperty === WeatherProps.temperature) {
-                                    //     const entryTempColor = tempColor(value, temperatureData.min, temperatureData.max);
-                                    //     paint.setColor(color);
-                                    //     paint.getTextBounds(valueText, 0, valueText.length, textBounds);
-                                    //     const height = textBounds.height();
-                                    //     const width = textBounds.width();
-                                    //     const deltaY = -height - 2;
-                                    //     paint.setColor(entryTempColor);
-                                    //     paint.setAlpha(210);
-                                    //     c.drawRoundRect(x + (-width / 2 - 4), y + deltaY, x + (width / 2 + 4), y + deltaY + (height + 5), 4, 4, paint);
-                                    //     paint.setAlpha(255);
-                                    //     paint.setColor(color);
-                                    //     c.drawText(valueText, x, y, paint);
-                                    // } else {
-                                    paint.setColor(color);
-                                    c.drawText(valueText, x, y, paint);
-                                    // }
-                                }
+                            // if (entryIndex !== 0 && entryIndex < dataSet.entryCount - 1) {
+                            const value = entry[yProperty];
+                            const prevValue = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1)[yProperty] : null;
+                            const nextValue = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1)[yProperty] : null;
+                            // DEV_LOG && console.log('test', value, prevValue, nextValue);
+                            if (nextValue === null || prevValue === null || (prevValue !== value && !(prevValue < value && value < nextValue) && !(prevValue > value && value > nextValue))) {
+                                const showUnder = value < prevValue;
+                                // if (yProperty === WeatherProps.temperature) {
+                                //     const entryTempColor = tempColor(value, temperatureData.min, temperatureData.max);
+                                //     paint.setColor(color);
+                                //     paint.getTextBounds(valueText, 0, valueText.length, textBounds);
+                                //     const height = textBounds.height();
+                                //     const width = textBounds.width();
+                                //     const deltaY = -height - 2;
+                                //     paint.setColor(entryTempColor);
+                                //     paint.setAlpha(210);
+                                //     c.drawRoundRect(x + (-width / 2 - 4), y + deltaY, x + (width / 2 + 4), y + deltaY + (height + 5), 4, 4, paint);
+                                //     paint.setAlpha(255);
+                                //     paint.setColor(color);
+                                //     c.drawText(valueText, x, y, paint);
+                                // } else {
+                                paint.setColor(color);
+                                c.drawText(valueText, x, y + (showUnder ? 14 : 0), paint);
+                                // }
                             }
+                            // }
                         },
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
-                            if (e.precipColor) {
-                                paint.color = e.precipColor;
-                            }
+                            const precipProbability = e.precipProbability;
+                            //                     let precipitationHeight;
+                            //                     if (e.precipShowSnow) {
+                            //     precipitationHeight = e.snowfall > 1 ? Math.sqrt(e.snowfall / 10) : e.snowfall / 10;
+                            // } else {
+                            //     precipitationHeight = e.precipAccumulation > 1 ? Math.sqrt(e.precipAccumulation) : e.precipAccumulation;
+                            // }
+                            // const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - 10);
+                            paint.setColor(e.precipColor);
+                            paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                            // if (e.precipColor) {
+                            //     paint.color = e.precipColor;
+                            // }
                             c.drawRect(left, top, right, bottom, paint);
                         }
                     };
@@ -254,7 +234,10 @@
                 const scatterDataSets: ScatterDataSet[] = [];
                 const barDataSets: BarDataSet[] = [];
 
-                const sourceData = weatherData.hourly;
+                const sourceData = hourly;
+                if (sourceData.length === 0) {
+                    return;
+                }
                 timezoneOffset = sourceData[0].timezoneOffset;
                 startTimestamp = sourceData[0].time;
 
@@ -333,9 +316,9 @@
 
                 leftAxis.spaceMax = 2; // add space so that highest values does not show over icons
                 rightAxis.spaceMax = 2; // add space so that highest bars does not show over icons
-                rightAxis.axisSuggestedMaximum = 10; // we set a max to get hourly precipitations at a "correct" level
+                rightAxis.axisSuggestedMaximum = rightAxisSuggestedMaximum; // we set a max to get hourly precipitations at a "correct" level
 
-                maxDatalength = data.length;
+                maxDatalength = Math.round((data[data.length - 1].time - data[0].time) / (1000 * 3600));
                 if (dataToShow.indexOf(WeatherProps.temperature) !== -1) {
                     temperatureData = { min: tempMin, max: tempMax };
                 }
@@ -374,8 +357,11 @@
                 //     }
                 //     DEV_LOG && console.log('daily', d.time, index, lastTimestamp);
                 // });
+                // DEV_LOG && console.log('updateLineChart', screenOrientation, Application.orientation(), screenWidthDips, maxDatalength);
                 if (!screenOrientation && Application.orientation() !== 'landscape') {
                     chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
+                } else {
+                    chart.resetZoom();
                 }
                 dataToShow.forEach((key) => {
                     const chartType = CHART_TYPE[key];
@@ -442,6 +428,7 @@
                                     if (lastGradient) {
                                         set.shader = lastGradient.gradient;
                                     }
+                                    set.lineWidth = temperatureLineWidth;
                                     set.mode = Mode.CUBIC_BEZIER;
                                     // set.cubicIntensity = 0.4;
                                     set.drawValuesEnabled = true;
@@ -490,8 +477,8 @@
                 }
                 if (barDataSets.length) {
                     const barData = new BarData(barDataSets);
-                    barData.barWidth = 0.8;
-                    barData.fixedBarScale = true;
+                    barData.barWidth = barWidth;
+                    barData.fixedBarScale = fixedBarScale;
                     combinedChartData.data = barData;
                 } else {
                     combinedChartData.barData = null;
@@ -502,7 +489,7 @@
             showError(error);
         }
     }
-    $: if (chartView) {
+    $: if (chartView && hourly) {
         updateLineChart(true);
     }
 
@@ -542,75 +529,14 @@
     }
     fontScale.subscribe(redraw);
 
-    function swipeMenuTranslationFunction(side, width, value, delta, progress) {
-        const result = {
-            bottomDrawer: {
-                translateY: side === 'left' ? -value : value
-                //    translateX: side === 'right' ? -delta : delta
-            },
-            backDrop: {
-                // translateX: side === 'right' ? -delta : delta,
-                opacity: progress * 0.05
-            }
-        } as any;
-
-        return result;
-    }
-    function onDrawLegend({ id, name, shortName, color, enabled }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
-        const h = canvas.getHeight();
-        legendIconPaint.color = color || colorOnSurface;
-        legendPaint.color = color || colorOnSurface;
-        if (enabled) {
-            // legendIconPaint.setStyle(enabled ? Style.FILL : Style.STROKE);
-
-            canvas.drawRect(0, 0, 5, h, legendIconPaint);
-        }
-        const nameAndKey = name.split(': ');
-        if (nameAndKey.length === 2) {
-            canvas.drawText(nameAndKey[0], 15, h / 2 - 3, legendPaint);
-            canvas.drawText(nameAndKey[1], 15, h / 2 - mFontMetricsBuffer.ascent, legendPaint);
-        } else {
-            canvas.drawText(name, 15, h / 2 - mFontMetricsBuffer.ascent / 2, legendPaint);
-        }
-    }
-
-    function toggleLegend(legendItem, event) {
-        try {
-            legendItem.enabled = !legendItem.enabled;
-            const index = legends.findIndex((l) => l.id === legendItem.id);
-            const hiddenIndex = hidden.indexOf(legendItem.id);
-            if (hiddenIndex >= 0 && legendItem.enabled) {
-                hidden.splice(hiddenIndex, 1);
-            } else if (hiddenIndex === -1 && !legendItem.enabled) {
-                hidden.push(legendItem.id);
-            }
-            if (index >= 0) {
-                const chart = chartView?.nativeView;
-                if (chart) {
-                    const enabled = legendItem.enabled;
-                    const set = chart.data.getDataSetByLabel(legendItem.id, false);
-                    set.visible = enabled;
-                    // switch (legendItem.chartType) {
-                    //     case 'scatterchart':
-                    //         (set as ScatterDataSet).scatterShapeSize=(enabled ? 4 : 0);
-                    //         break;
-                    //     default:
-                    //         (set as LineDataSet).drawCircles=(enabled);
-                    //         (set as LineDataSet).lineWidth = (enabled ? LINE_WIDTH : 0);
-                    //         break;
-                    // }
-                    chart.invalidate();
-                }
-                legends.setItem(index, legendItem);
-            }
-        } catch (error) {
-            showError(error);
-        }
+    let chartNeedsZoomUpdate = false;
+    function onOrientationChanged(event: OrientationChangedEventData) {
+        DEV_LOG && console.log('onOrientationChanged');
+        chartNeedsZoomUpdate = true;
     }
     let lastGradient: { min; max; gradient: LinearGradient };
     function onLayoutChanged(event: EventData) {
         const chart = event.object as CombinedChart;
-        // DEV_LOG && console.log('onLayoutChanged', chart.getMeasuredHeight(), (event.object as CombinedChart).viewPortHandler.contentRect.height(), temperatureData);
         if (temperatureData && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, chart.viewPortHandler.contentRect.height(), 0);
             const dataSet = chart.lineData.getDataSetByLabel(WeatherProps.temperature, false);
@@ -619,6 +545,7 @@
             }
         }
         //use a timeout to ensure we are called after chart layout changed was called
+        DEV_LOG && console.log('onOrientationChanged', screenOrientation, Application.orientation());
         setTimeout(() => {
             if (chartNeedsZoomUpdate) {
                 chartNeedsZoomUpdate = false;
@@ -634,46 +561,4 @@
     }
 </script>
 
-<page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
-    <gridlayout rows="auto,*">
-        {#if !networkConnected && !weatherData}
-            <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
-        {:else}
-            <drawer
-                bind:this={drawer}
-                bottomDrawerMode="over"
-                bottomSwipeDistance={200}
-                closeAnimationDuration={100}
-                gestureEnabled={false}
-                openAnimationDuration={100}
-                row={1}
-                translationFunction={swipeMenuTranslationFunction}
-                {...$$restProps}>
-                <gridlayout prop:mainContent rows="auto,*">
-                    <!-- <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} /> -->
-
-                    <combinedchart
-                        bind:this={chartView}
-                        height={chartHeight}
-                        iosOverflowSafeArea={false}
-                        row={1}
-                        verticalAlignment={chartHeight ? 'center' : 'stretch'}
-                        on:layoutChanged={onLayoutChanged} />
-                </gridlayout>
-                <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
-                    <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">
-                        <Template let:item>
-                            <canvasview rippleColor={item.color || colorOnSurface} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />
-                        </Template>
-                    </collectionview>
-                </gridlayout>
-            </drawer>
-        {/if}
-        <CActionBar showMenuIcon titleProps={{ visibility: 'visible' }}>
-            <span slot="subtitle" text={weatherLocation && weatherLocation.name} />
-            <span slot="subtitle2" color={colorOutline} fontSize={12} text={'\n' + lc(forecast)} />
-            <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
-            <mdbutton class="actionBarButton" text="mdi-format-list-bulleted-square" variant="text" on:tap={() => drawer.toggle()} />
-        </CActionBar>
-    </gridlayout>
-</page>
+<combinedchart bind:this={chartView} on:layoutChanged={onLayoutChanged} {...$$restProps} />

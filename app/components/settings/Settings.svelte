@@ -595,9 +595,21 @@
                     openLink(STORE_REVIEW_LINK);
                     break;
                 case 'sponsor':
-                    // Apple wants us to use in-app purchase for donations => taking 30% ...
-                    // so lets just open github and ask for love...
-                    openLink(__IOS__ ? GIT_URL : SPONSOR_URL);
+                case 'sponsor':
+                    switch (item.type) {
+                        case 'librepay':
+                            openLink('https://liberapay.com/farfromrefuge');
+                            break;
+                        case 'patreon':
+                            openLink('https://patreon.com/farfromrefuge');
+                            break;
+
+                        default:
+                            // Apple wants us to use in-app purchase for donations => taking 30% ...
+                            // so lets just open github and ask for love...
+                            openLink(__IOS__ ? GIT_URL : SPONSOR_URL);
+                            break;
+                    }
                     break;
                 case 'third_party':
                     const ThirdPartySoftwareBottomSheet = (await import('~/components/settings/ThirdPartySoftwareBottomSheet.svelte')).default;
@@ -820,19 +832,31 @@
             on:itemReorderStarting={onItemReorderStarting}>
             <Template key="header" let:item>
                 <gridlayout rows="auto,auto">
-                    <stacklayout
-                        backgroundColor="#ea4bae"
-                        borderRadius={10}
-                        horizontalAlignment="center"
-                        margin="10 16 0 16"
-                        orientation="horizontal"
-                        padding={10}
-                        rippleColor="white"
-                        verticalAlignment="center"
-                        on:tap={(event) => onTap({ id: 'sponsor' }, event)}>
-                        <label color="white" fontFamily={$fonts.mdi} fontSize={26} marginRight={10} text="mdi-heart" verticalAlignment="center" />
-                        <label color="white" fontSize={12} text={item.title} textWrap={true} verticalAlignment="center" />
-                    </stacklayout>
+                    <gridlayout columns="*,auto,auto" margin="10 16 0 16">
+                        <stacklayout
+                            backgroundColor="#ea4bae"
+                            borderRadius={10}
+                            orientation="horizontal"
+                            padding={10}
+                            rippleColor="white"
+                            verticalAlignment="center"
+                            on:tap={(event) => onTap({ id: 'sponsor' }, event)}>
+                            <label color="white" fontFamily={$fonts.mdi} fontSize={26} marginRight={10} text="mdi-heart" verticalAlignment="center" />
+                            <label color="white" fontSize={12} text={item.title} textWrap={true} verticalAlignment="center" />
+                        </stacklayout>
+                        {#if __ANDROID__}
+                            <image
+                                borderRadius={6}
+                                col={1}
+                                height={40}
+                                margin="0 10 0 10"
+                                rippleColor="white"
+                                src="~/assets/images/librepay.png"
+                                verticalAlignment="center"
+                                on:tap={(event) => onTap({ id: 'sponsor', type: 'librepay' }, event)} />
+                            <image borderRadius={6} col={2} height={40} rippleColor="#f96754" src="~/assets/images/patreon.png" on:tap={(event) => onTap({ id: 'sponsor', type: 'patreon' }, event)} />
+                        {/if}
+                    </gridlayout>
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
                         <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50} />

@@ -49,6 +49,7 @@
     "cloud_cover": "बादलों का आवरण",
     "cloudy": "बादलों से घिरा",
     "coastal_flooding": "तटवर्ती बाढ़",
+    "comments": "टिप्पणियां",
     "compare_models": "मॉडलों की तुलना करें",
     "data": "डेटा",
     "description": "विवरण",
@@ -69,6 +70,7 @@
     "export_settings_desc": "सभी एप्लिकेशन सेटिंग्स निर्यात करें ताकि आप उन्हें बाद में आयात कर सकें",
     "extreme_cold": "अत्यधिक ठंड",
     "favorites": "पसंदीदा",
+    "feedback_sent": "प्रतिक्रिया भेजी गई",
     "feels_like_temperatures": "उपलब्ध होने पर तापमान जैसा महसूस होता है",
     "file": "फाइल",
     "flood": "बाढ़",
@@ -188,6 +190,7 @@
     "send": "भेजें",
     "send_bug_report": "बग रिपोर्ट भेजें",
     "send_bug_report_desc": "ई-मेल पता और सामने आई त्रुटि का विवरण दर्ज करें",
+    "send_feedback": "प्रतिक्रिया भेजें",
     "settings": {
         "title": "सेटिंग्स"
     },

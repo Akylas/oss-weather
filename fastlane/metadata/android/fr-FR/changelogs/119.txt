@@ -1,0 +1,13 @@
+### Features
+- Setting to show hourly chart in main and daily views
+- new hourly "popover" on hour tap
+- pollen/pollutant support (in daily views). Using Open-Meteo for now
+
+### Bug fixes
+- Translated using Weblate (Russian)
+- Translated using Weblate (Hindi)
+- changed default theme to meteocons as it has more icons (giving more detail weather condition)
+- show patreon/librepay links in settings
+- astronomy view follows system theme
+- Translated using Weblate (German)
+- Translated using Weblate 

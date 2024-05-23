@@ -193,18 +193,19 @@ export const POLLENS_POLLUTANTS_TITLES = {
     pm2_5: lc('pm25'),
     so2: lc('so2'),
     co: lc('co'),
-    alder: lc('alder'),
-    birch: lc('birch'),
-    grass: lc('grass'),
-    mugwort: lc('mugwort'),
-    olive: lc('olive'),
-    ragweed: lc('ragweed')
+    mold: lc('mold'),
+    alder: lc('alnus'),
+    birch: lc('betula'),
+    grass: lc('poaeceae'),
+    mugwort: lc('artemisia'),
+    olive: lc('olea'),
+    ragweed: lc('ambrosia')
 };
 
 function nearest(arr: number[], n: number) {
     let low = 0;
     let index = 0;
-    while (n > arr[index+1]) {
+    while (n > arr[index + 1]) {
         low++;
         index++;
     }

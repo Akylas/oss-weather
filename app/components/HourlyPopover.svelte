@@ -9,6 +9,8 @@
     import WeatherPage from './WeatherPage.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
     import { iconService } from '~/services/icon';
+    import { formatTime } from '~/helpers/locale';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
 
     const labelPaint = new Paint();
 
@@ -25,7 +27,7 @@
     let data: CommonData[];
     function updateNativeTexts(item: CommonWeatherData) {
         data = weatherDataService.getIconsData(item, [WeatherProps.windBeaufort], [WeatherProps.temperature], [WeatherProps.rainSnowLimit, WeatherProps.iso]);
-        height = data.length * 17 * $fontScale;
+        height = data.length * 19 * $fontScale;
         // iconsNativeString = createNativeAttributedString({
         //     spans: data
         //         .map((c) => [
@@ -69,7 +71,7 @@
         const dx = 0;
         let dy = 0;
 
-        const addedDy = 17;
+        const addedDy = 19;
         for (let index = 0; index < data.length; index++) {
             const c = data[index];
             const paint = c.paint || labelPaint;
@@ -82,7 +84,7 @@
                 spans: [
                     c.value
                         ? {
-                              fontSize: 12 * $fontScale,
+                              fontSize: 14 * $fontScale,
                               //   verticalAlignment: 'center',
                               color: c.color || colorOnSurface,
                               text: c.value + (c.subvalue ? ' ' : '\n')
@@ -90,7 +92,7 @@
                         : undefined,
                     c.subvalue
                         ? {
-                              fontSize: 9 * $fontScale,
+                              fontSize: 11 * $fontScale,
                               color: c.color || colorOnSurface,
                               //   verticalAlignment: 'center',
                               text: c.subvalue + '\n'
@@ -99,8 +101,8 @@
                 ].filter((s) => !!s)
             });
             canvas.save();
-            const staticLayout = new StaticLayout(nativeText, labelPaint, w - 40, LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
-            canvas.translate(20, dy);
+            const staticLayout = new StaticLayout(nativeText, labelPaint, w - 60 * $fontScale, LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
+            canvas.translate(30 * $fontScale, dy);
             // const staticLayout = new StaticLayout(dataNString, textPaint, lineWidth, columnIndex === 0 ? LayoutAlignment.ALIGN_OPPOSITE : LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
             // canvas.translate(columnIndex === 0 ? w2 - lineWidth - 5 : w2 + 5, y + lineHeight / 2 - staticLayout.getHeight() / 2);
             staticLayout.draw(canvas);
@@ -111,18 +113,21 @@
     }
 </script>
 
-<gesturerootview
-    backgroundColor={new Color(colorBackground).setAlpha(240)}
-    borderColor={colorOutline}
-    borderRadius={8}
-    borderWidth={1}
-    columns={`${24 * $fontScale},${50 * $fontScale},${30 * $fontScale}`}
-    padding={5}
-    rows={`auto,auto,${height}`}>
-    <WeatherIcon {animated} col={2} iconData={[item.iconId, item.isDay]} verticalAlignment="top" />
-    <label colSpan={2} fontSize={12 * $fontScale} fontWeight="bold" text={dayjs(item.time).format('LT \nddd, DD/MM')} />
-    <label colSpan={3} fontSize={12 * $fontScale} marginBottom={10} row={1} text={item.description} />
-    <!-- <label lineHeight={18 * $fontScale} row={1} text={iconsNativeString} textAlignment="center" verticalTextAlignment="center" /> -->
-    <!-- <label col={1} lineHeight={18 * $fontScale} row={1} text={textNativeString} /> -->
-    <canvasView colSpan={3} row={2} on:draw={onDraw} />
+<gesturerootview columns="auto" rows="auto">
+    <gridlayout
+        backgroundColor={new Color(colorBackground).setAlpha(240)}
+        borderColor={colorOutline}
+        borderRadius={8}
+        borderWidth={1}
+        columns={`${100 * $fontScale},${50 * $fontScale}`}
+        padding={5}
+        rows={`auto,auto,${height}`}
+        on:tap={() => closePopover()}>
+        <WeatherIcon {animated} col={1} iconData={[item.iconId, item.isDay]} verticalAlignment="top" />
+        <label colSpan={2} fontSize={14 * $fontScale} fontWeight="bold" text={formatTime(item.time, 'LT') + '\n' + formatTime(item.time, 'DD/MM')} />
+        <label colSpan={2} fontSize={14 * $fontScale} marginBottom={10} row={1} text={item.description} />
+        <!-- <label lineHeight={18 * $fontScale} row={1} text={iconsNativeString} textAlignment="center" verticalTextAlignment="center" /> -->
+        <!-- <label col={1} lineHeight={18 * $fontScale} row={1} text={textNativeString} /> -->
+        <canvasView colSpan={2} row={2} on:draw={onDraw} />
+    </gridlayout>
 </gesturerootview>

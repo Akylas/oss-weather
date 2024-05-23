@@ -68,11 +68,13 @@
         background={`linear-gradient(to right, ${colorBackground}, ${new Color(colorBackground).setAlpha(0)})`}
         height="100%"
         horizontalAlignment="left"
+        isUserInteractionEnabled={false}
         opacity={showLeftShadowOpacity}
         width={40} />
     <absolutelayout
         background={`linear-gradient(to right, ${new Color(colorBackground).setAlpha(0)}, ${colorBackground})`}
         height="100%"
+        isUserInteractionEnabled={false}
         horizontalAlignment="right"
         opacity={showRightShadowOpacity}
         width={40} />

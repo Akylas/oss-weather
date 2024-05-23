@@ -416,7 +416,7 @@ export class DataService extends Observable {
                 }
                 break;
             case WeatherProps.precipAccumulation:
-                if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 1) {
+                if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 0.1) {
                     return {
                         key,
                         paint: item.precipFontUseApp ? appPaint : wiPaint,

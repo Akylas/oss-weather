@@ -216,7 +216,6 @@ export function getIndexedColor(value: number, indexes: number[], colors: string
         return null;
     }
     const [low, high] = nearest(indexes, value);
-    DEV_LOG && console.log('getIndexedColor', value, indexes, low, high);
 
     if (mix) {
         return Color.mix(new Color(colors[low]), new Color(colors[high]), ((value - indexes[low]) / (indexes[high] - indexes[low])) * 100).hex;

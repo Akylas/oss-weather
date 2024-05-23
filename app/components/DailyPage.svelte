@@ -251,21 +251,21 @@
         let row, col, dx, dy, data;
         pollensPollutantsTitlePaint.textSize = 17 * $fontScale;
         pollensPollutantsTitlePaint.color = colorOnSurface;
-        canvas.drawText(title, 20, 25 * $fontScale, pollensPollutantsTitlePaint);
+        canvas.drawText(title, 20, 30 * $fontScale, pollensPollutantsTitlePaint);
 
         pollensPollutantsTitlePaint.textSize = 14 * $fontScale;
-        pollensPollutantsSubtitlePaint.textSize = 13 * $fontScale;
+        pollensPollutantsSubtitlePaint.textSize = 12 * $fontScale;
         pollensPollutantsSubtitlePaint.color = colorOutline;
         Object.keys(polls).forEach((k, index) => {
             col = index % 2;
             row = Math.floor(index / 2);
             dx = (col * w) / 2 + 25;
-            dy = row * 40 + 40;
+            dy = row * 40 + 55;
             data = polls[k];
             pollensPollutantsIndicatorPaint.color = data.color;
             canvas.drawCircle(dx + 2, dy + 13, 4, pollensPollutantsIndicatorPaint);
-            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 12, pollensPollutantsTitlePaint);
-            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 25, pollensPollutantsSubtitlePaint);
+            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 11, pollensPollutantsTitlePaint);
+            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 26, pollensPollutantsSubtitlePaint);
         });
         canvas.drawLine(0, h - 1, w, h - 1, pollensPollutantsSubtitlePaint);
     }

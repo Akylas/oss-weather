@@ -1,13 +1,15 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
-    import { Application } from '@nativescript/core';
+    import { Application, ApplicationSettings } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
+    import { MAIN_PAGE_HOURLY_CHART, SETTINGS_MAIN_PAGE_HOURLY_CHART } from '~/helpers/constants';
     import { onThemeChanged } from '~/helpers/theme';
     import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
+    import { prefs } from '~/services/preferences';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { actionBarHeight, fontScale, onFontScaleChanged, onImperialChanged, screenHeightDips, screenWidthDips, windowInset } from '~/variables';
 
@@ -19,9 +21,15 @@
     const dispatch = createEventDispatcher();
     let collectionView: NativeViewElementNode<CollectionView>;
     let topHeight = 0;
-    $: topHeight = Math.max(Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - windowInsetBottom - windowInsetTop - 100 * $fontScale, 470 * $fontScale), 370 * $fontScale);
+    let showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
+    prefs.on(`key:${SETTINGS_MAIN_PAGE_HOURLY_CHART}`, () => {
+        showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
+    });
+    $: {
+        topHeight = Math.max(Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - windowInsetBottom - windowInsetTop - 100, showHourlyChart ? 400 : 470), 370);
+        refreshVisibleItems();
+    }
 
-    function itemTemplateSelector(item, index, items) {}
     let isLayedout = false;
     function onCollectionViewLayoutCompleted() {
         if (!isLayedout) {

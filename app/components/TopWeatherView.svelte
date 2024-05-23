@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
-    import { LineChart } from '@nativescript-community/ui-chart';
+    import { CombinedChart, LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
@@ -61,7 +61,7 @@
     }
     let lineChart: NativeViewElementNode<LineChart>;
     const weatherIconSize = 140;
-    const topViewHeight = 210;
+    const topViewHeight = 210 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -450,9 +450,20 @@
     function toggleItemFavorite(item: FavoriteLocation) {
         weatherLocation = toggleFavorite(item);
     }
+
+    function onChartConfigure(chart: CombinedChart): void {
+        chart.leftAxis.drawAxisLine = false;
+        chart.leftAxis.drawGridLines = false;
+        chart.leftAxis.drawLabels = false;
+        chart.rightAxis.drawAxisLine = false;
+        chart.rightAxis.drawGridLines = false;
+        chart.rightAxis.drawLabels = false;
+        chart.highlightPerTapEnabled = true;
+        chart.setExtraOffsets(0, 40, 0, 10);
+    }
 </script>
 
-<gridlayout columns="*,auto" {height} rows={`${topViewHeight * $fontScale},*`}>
+<gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
     <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}>
         <!-- <cgroup fontSize={14 * $fontScale} verticalAlignment="bottom">
             <cspan color="#ffa500" fontFamily={$fonts.wi} text="wi-sunrise " />
@@ -489,7 +500,18 @@
         verticalAlignment="middle"
         on:tap={(event) => dispatch('tap', event)} />
     {#if showHourlyChart}
-        <HourlyChartView barWidth={1} colSpan={2} fixedBarScale={false} height={200} hourly={item.hourly} rightAxisSuggestedMaximum={8} row={1} temperatureLineWidth={3} />
+        <HourlyChartView
+            barWidth={1}
+            borderBottomColor={colorOutline}
+            borderBottomWidth={1}
+            colSpan={2}
+            fixedBarScale={false}
+            hourly={item.hourly}
+            {onChartConfigure}
+            rightAxisSuggestedMaximum={8}
+            row={1}
+            showCurrentTimeLimitLine={false}
+            temperatureLineWidth={3} />
     {:else}
         <HourlyView colSpan={2} items={item.hourly} row={1} />
     {/if}

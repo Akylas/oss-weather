@@ -542,6 +542,7 @@ export async function showHourlyPopover(
         vertPos: VerticalPosition.ALIGN_TOP,
         horizPos: HorizontalPosition.ALIGN_LEFT,
         focusable: false,
+        hideArrow: true,
         props: {
             item,
             ...(props || {})

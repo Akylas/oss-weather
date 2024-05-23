@@ -191,8 +191,8 @@
             windSpeedData.paint.setTextSize(11 * $fontScale);
             windSpeedData.paint.setColor(windSpeedData.color || colorOnSurface);
             canvas.drawText(`${windSpeedData.icon} ${windSpeedData.value} ${windSpeedData.subvalue}`, w2, iconDecale, windSpeedData.paint);
-            iconDeltaY += 18;
         }
+        iconDeltaY += 18;
         const windGustData = weatherDataService.getItemData(WeatherProps.windGust, item);
         if (windGustData) {
             textPaint.setTextSize(11 * $fontScale);

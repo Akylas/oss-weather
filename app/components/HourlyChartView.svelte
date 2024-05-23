@@ -153,6 +153,7 @@
                     chart.disableScrollEnabled = false;
                     chart.setExtraOffsets(0, 30, 0, 0);
                     chart.highlightsFilterByAxis = false;
+                    chart.highlightPerTapEnabled = true;
                     chart.pinchZoomEnabled = true;
                     chart.dragEnabled = true;
                     chart.scaleXEnabled = true;

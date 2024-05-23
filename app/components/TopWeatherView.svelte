@@ -458,7 +458,6 @@
         chart.rightAxis.drawAxisLine = false;
         chart.rightAxis.drawGridLines = false;
         chart.rightAxis.drawLabels = false;
-        chart.highlightPerTapEnabled = true;
         chart.setExtraOffsets(0, 40, 0, 10);
     }
 </script>

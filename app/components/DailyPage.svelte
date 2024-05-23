@@ -9,17 +9,24 @@
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
     import { weatherDataService } from '~/services/weatherData';
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { formatWeatherValue } from '~/helpers/formatter';
+    import { POLLENS_POLLUTANTS_TITLES, formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { WeatherLocation } from '~/services/api';
     import CActionBar from './common/CActionBar.svelte';
     import HourlyChartView from './HourlyChartView.svelte';
     import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
+    import { CombinedChart } from '@nativescript-community/ui-chart';
+    import { CommonWeatherData, Hourly } from '~/services/providers/weather';
     const weatherIconSize = 100;
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
     const textPaint = new Paint();
+    const pollensPollutantsIndicatorPaint = new Paint();
+    const pollensPollutantsTitlePaint = new Paint();
+
+    pollensPollutantsTitlePaint.fontWeight = 'bold';
+    const pollensPollutantsSubtitlePaint = new Paint();
     // const arcPaint = new Paint();
     // arcPaint.style = Style.STROKE;
     // arcPaint.setTextAlign(Align.CENTER);
@@ -30,7 +37,7 @@
 <script lang="ts">
     const showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART);
 
-    export let item;
+    export let item: CommonWeatherData & { hourly: Hourly[] };
     export let location: WeatherLocation;
     export let weatherLocation: WeatherLocation;
     export let timezoneOffset;
@@ -227,32 +234,92 @@
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
     }
+
+    function onChartConfigure(chart: CombinedChart): void {
+        chart.leftAxis.drawAxisLine = false;
+        chart.leftAxis.drawGridLines = false;
+        chart.leftAxis.drawLabels = false;
+        chart.rightAxis.drawAxisLine = false;
+        chart.rightAxis.drawGridLines = false;
+        chart.rightAxis.drawLabels = false;
+        chart.setExtraOffsets(0, 40, 0, 10);
+    }
+
+    function drawPollOnCanvas(polls, title: string, canvas: Canvas) {
+        const w = canvas.getWidth();
+        const h = canvas.getHeight();
+        let row, col, dx, dy, data;
+        pollensPollutantsTitlePaint.textSize = 17 * $fontScale;
+        pollensPollutantsTitlePaint.color = colorOnSurface;
+        canvas.drawText(title, 20, 25 * $fontScale, pollensPollutantsTitlePaint);
+
+        pollensPollutantsTitlePaint.textSize = 14 * $fontScale;
+        pollensPollutantsSubtitlePaint.textSize = 13 * $fontScale;
+        pollensPollutantsSubtitlePaint.color = colorOutline;
+        Object.keys(polls).forEach((k, index) => {
+            col = index % 2;
+            row = Math.floor(index / 2);
+            dx = (col * w) / 2 + 25;
+            dy = row * 40 + 40;
+            data = polls[k];
+            pollensPollutantsIndicatorPaint.color = data.color;
+            canvas.drawCircle(dx + 2, dy + 13, 4, pollensPollutantsIndicatorPaint);
+            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 12, pollensPollutantsTitlePaint);
+            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 25, pollensPollutantsSubtitlePaint);
+        });
+        canvas.drawLine(0, h - 1, w, h - 1, pollensPollutantsSubtitlePaint);
+    }
+    function drawPollutants({ canvas }: { canvas: Canvas }) {
+        drawPollOnCanvas(item.pollutants, lc('pollutants'), canvas);
+    }
+    function drawPollens({ canvas }: { canvas: Canvas }) {
+        drawPollOnCanvas(item.pollens, lc('pollens'), canvas);
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
     <scrollview>
-        <gridlayout rows="auto,auto,auto,*">
+        <gridlayout rows="auto,auto,auto,auto,auto,auto">
             <gridlayout columns="*,auto" height={topViewHeight} row={1}>
                 <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
-                <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginBottom={12} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="bottom" />
+                <WeatherIcon
+                    {animated}
+                    col={1}
+                    horizontalAlignment="right"
+                    iconData={[item.iconId, item.isDay]}
+                    marginBottom={12}
+                    size={weatherIconSize * (2 - $fontScale)}
+                    verticalAlignment="bottom" />
             </gridlayout>
-            {#if showHourlyChart}
-                <HourlyChartView
-                    barWidth={1}
-                    fixedBarScale={false}
-                    height={200}
-                    hourly={item.hourly}
-                    rightAxisSuggestedMaximum={8}
-                    row={2}
-                    temperatureLineWidth={3}
-                    visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
-            {:else}
-                <HourlyView height={250} items={item.hourly} row={2} />
+            ${#if item.hourly && item.hourly.length}
+                {#if showHourlyChart}
+                    <HourlyChartView
+                        barWidth={1}
+                        borderBottomColor={colorOutline}
+                        borderBottomWidth={1}
+                        fixedBarScale={false}
+                        height={200}
+                        hourly={item.hourly}
+                        {onChartConfigure}
+                        rightAxisSuggestedMaximum={8}
+                        row={2}
+                        showCurrentTimeLimitLine={false}
+                        temperatureLineWidth={3}
+                        visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
+                {:else}
+                    <HourlyView height={250} items={item.hourly} row={2} />
+                {/if}
             {/if}
-            <AstronomyView {location} row={3} selectableDate={false} {startTime} {timezoneOffset} />
-    
+
+            {#if item.pollutants}
+                <canvasview height={Math.ceil(Object.keys(item.pollutants).length / 2 + 1) * 40 * $fontScale} row={3} on:draw={drawPollutants} />
+            {/if}
+            {#if item.pollens}
+                <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2 + 1) * 40 * $fontScale} row={4} on:draw={drawPollens} />
+            {/if}
+            <AstronomyView {location} row={5} selectableDate={false} {startTime} {timezoneOffset} />
+
             <CActionBar title={weatherLocation && weatherLocation.name}></CActionBar>
         </gridlayout>
     </scrollview>
-    
 </page>

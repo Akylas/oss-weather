@@ -147,7 +147,7 @@ export async function showPopoverMenu<T = any>({
         vertPos: vertPos ?? VerticalPosition.CENTER,
         props: {
             borderRadius: 10,
-            elevation: 3,
+            elevation: __IOS__ ? 0: 3,
             margin: 4,
             fontWeight: 500,
             backgroundColor: colorSurfaceContainer,

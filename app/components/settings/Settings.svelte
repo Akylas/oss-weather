@@ -12,12 +12,16 @@
         ANIMATIONS_ENABLED,
         CHARTS_LANDSCAPE,
         CHARTS_PORTRAIT_FULLSCREEN,
+        DAILY_PAGE_HOURLY_CHART,
         DECIMAL_METRICS_TEMP,
         FEELS_LIKE_TEMPERATURE,
+        MAIN_PAGE_HOURLY_CHART,
         MIN_UV_INDEX,
         NB_DAYS_FORECAST,
         NB_HOURS_FORECAST,
         NB_MINUTES_FORECAST,
+        SETTINGS_DAILY_PAGE_HOURLY_CHART,
+        SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
         WEATHER_DATA_LAYOUT,
@@ -100,6 +104,18 @@
                         id: 'charts_portrait_fullscreen',
                         title: lc('charts_portrait_fullscreen'),
                         value: ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_MAIN_PAGE_HOURLY_CHART,
+                        title: lc('show_hourly_chart_on_main'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_DAILY_PAGE_HOURLY_CHART,
+                        title: lc('show_hourly_chart_on_daily'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART)
                     }
                 ];
             case 'units':
@@ -134,9 +150,7 @@
                         image: () => iconService.getPackIcon(),
                         async onTap(item) {
                             const themes = await iconService.getAvailableThemes();
-                            const component = (await import('~/components/common/OptionSelect.svelte')).default;
                             const result = await showAlertOptionSelect(
-                                component,
                                 {
                                     height: Math.min(themes.length * 65, 400),
                                     rowHeight: 65,
@@ -695,9 +709,7 @@
                             updateItem(item);
                         }
                     } else {
-                        const component = (await import('~/components/common/OptionSelect.svelte')).default;
                         const result = await showAlertOptionSelect(
-                            component,
                             {
                                 height: Math.min(item.values.length * 56, 400),
                                 rowHeight: 56,

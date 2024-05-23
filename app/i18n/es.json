@@ -49,6 +49,7 @@
     "cloud_cover": "nubosidad",
     "cloudy": "Nublado",
     "coastal_flooding": "Inundaciones en la costa",
+    "comments": "comentarios",
     "compare_models": "comparar modelos",
     "data": "datos",
     "description": "Descripción",
@@ -69,6 +70,7 @@
     "export_settings_desc": "exportar todos los ajustes de la aplicación para poder importarlos más tarde",
     "extreme_cold": "Frío extremo",
     "favorites": "Favoritos",
+    "feedback_sent": "comentarios enviados",
     "feels_like_temperatures": "mostrar se siente como temperatura cuando está disponible",
     "file": "Archivo",
     "flood": "Inundación",
@@ -188,6 +190,7 @@
     "send": "Enviar",
     "send_bug_report": "Enviar un informe de error",
     "send_bug_report_desc": "Introduzca una dirección de correo electrónico y una descripción del error encontrado",
+    "send_feedback": "enviar comentarios",
     "settings": {
         "title": "Ajustes"
     },

@@ -206,12 +206,28 @@ const onInitRootView = function () {
         Application.on(Application.fontScaleChangedEvent, (event) => updateSystemFontScale(event.newValue));
         actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
+        updateIOSWindowInset();
     }
     updateThemeColors(getRealTheme());
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));
     Application.off(Application.initRootViewEvent, onInitRootView);
     // getRealThemeAndUpdateColors();
 };
+
+function updateIOSWindowInset() {
+    if (__IOS__) {
+        setTimeout(() => {
+            const safeAreaInsets = Application.getRootView().nativeViewProtected.safeAreaInsets;
+            windowInset.set({
+                left: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.left)),
+                top: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.top)),
+                right: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.right)),
+                bottom: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.bottom))
+            });
+            DEV_LOG && console.log('updateIOSWindowInset', get(windowInset));
+        }, 0);
+    }
+}
 function onOrientationChanged() {
     if (__ANDROID__) {
         const rootViewStyle = getRootViewStyle();
@@ -226,6 +242,8 @@ function onOrientationChanged() {
         const nActionBarButtonHeight = nActionBarHeight - 10;
         actionBarButtonHeight.set(nActionBarButtonHeight);
         rootViewStyle?.setUnscopedCssVariable('--actionBarButtonHeight', nActionBarButtonHeight + '');
+    } else {
+        updateIOSWindowInset();
     }
 }
 Application.on(Application.initRootViewEvent, onInitRootView);

@@ -45,7 +45,6 @@
     }
     $: menuIconVisible = ((canGoBack || modalWindow) && !disableBackButton) || showMenuIcon;
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapse';
-    DEV_LOG && console.log('height', height);
 </script>
 
 <gridlayout class="actionBar" columns="auto,*,auto" rows={`${height || $actionBarHeight},auto`} on:swipe {...$$restProps} on:tap={() => {}}>

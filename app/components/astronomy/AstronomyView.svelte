@@ -201,7 +201,6 @@
             return;
         }
         const computeStartTime = getLocalTime(startTime.startOf('d').valueOf(), timezoneOffset);
-        DEV_LOG && console.log('updateChartData', startTime, computeStartTime);
         const chart = chartView.nativeView;
         const sets = [];
         sunPoses = [];

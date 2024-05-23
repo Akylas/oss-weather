@@ -8,7 +8,8 @@
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/providers/weather';
-    import { getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
+    import { showError } from '~/utils/error';
     import { generateGradient } from '~/utils/utils';
     import { colors, fontScale } from '~/variables';
 
@@ -131,7 +132,7 @@
         }
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(13 * $fontScale);
-        canvas.drawText(`${formatWeatherValue(item, 'temperature')}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
+        canvas.drawText(`${formatWeatherValue(item, WeatherProps.temperature)}`, w2, pHeight * (1 - item.tempDelta) - 6 * $fontScale, textPaint);
         canvas.restore();
 
         if (item.cloudCeiling > 0) {
@@ -183,7 +184,7 @@
         }
         textPaint.setFontWeight('normal');
 
-        const windSpeedData = weatherDataService.getItemData('windSpeed', item);
+        const windSpeedData = weatherDataService.getItemData(WeatherProps.windSpeed, item);
 
         let iconDeltaY = 0;
         if (windSpeedData) {
@@ -192,7 +193,7 @@
             canvas.drawText(`${windSpeedData.icon} ${windSpeedData.value} ${windSpeedData.subvalue}`, w2, iconDecale, windSpeedData.paint);
             iconDeltaY += 18;
         }
-        const windGustData = weatherDataService.getItemData('windGust', item);
+        const windGustData = weatherDataService.getItemData(WeatherProps.windGust, item);
         if (windGustData) {
             textPaint.setTextSize(11 * $fontScale);
             textPaint.setColor(windGustData.textColor);
@@ -218,15 +219,16 @@
         }
     }
     function onTap() {
-        let message = item.description;
-        if (item.iso > 0) {
-            message = (message ? message + '\n ' : '') + `${getWeatherDataTitle('iso')}: ${formatWeatherValue(item, 'iso')}`;
-        }
-        if (item.rainSnowLimit > 0) {
-            message = (message ? message + ' /  ' : '') + `${getWeatherDataTitle('rainSnowLimit')}: ${formatWeatherValue(item, 'rainSnowLimit')}`;
-        }
-        if (message) {
-            showSnack({ message });
+        try {
+            showHourlyPopover(
+                item,
+                {},
+                {
+                    anchor: canvasView?.nativeView
+                }
+            );
+        } catch (error) {
+            showError(error);
         }
     }
 </script>

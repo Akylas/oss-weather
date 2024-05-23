@@ -8,6 +8,11 @@ import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowColor, sunnyColor } from '~/variables';
 import { prefs } from './preferences';
+import { tempColor } from '~/utils/utils';
+import { PopoverOptions, showPopover } from '@nativescript-community/ui-popover/svelte';
+import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
+import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
+import { ComponentProps } from 'svelte';
 
 export enum UNITS {
     // InchHg = 'InchHg',
@@ -137,6 +142,9 @@ const WEATHER_DATA_ICONS = {
     [WeatherProps.sealevelPressure]: 'wi-barometer',
     [WeatherProps.relativeHumidity]: 'wi-humidity',
     [WeatherProps.dewpoint]: 'mdi-thermometer-water',
+    [WeatherProps.temperature]: 'mdi-thermometer',
+    [WeatherProps.rainSnowLimit]: 'app-rain-snow',
+    [WeatherProps.iso]: 'mdi-snowflake-thermometer',
     [WeatherProps.cloudCover]: 'wi-cloud',
     [WeatherProps.windGust]: 'wi-strong-wind',
     [WeatherProps.uvIndex]: 'mdi-weather-sunny-alert',
@@ -169,6 +177,7 @@ const WEATHER_DATA_COLORS = {
     [WeatherProps.windGust]: scatteredCloudyColor,
     [WeatherProps.windBeaufort]: scatteredCloudyColor,
     [WeatherProps.windSpeed]: scatteredCloudyColor,
+    [WeatherProps.windBearing]: scatteredCloudyColor,
     // [WeatherProps.uvIndex]: scatteredCloudyColor,
     [WeatherProps.rainSnowLimit]: rainColor,
     [WeatherProps.iso]: snowColor,
@@ -200,6 +209,7 @@ const ICONS_SIZE_FACTOR = {
 
 export interface CommonData {
     key: string;
+    iconColor?: string | Color;
     color?: string | Color;
     textColor?: string | Color;
     paint?: Paint;
@@ -233,7 +243,6 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
             }
             const originalFirstTime = mainDataK[0].time;
             const addedDataFirstTime = addedDataK[0].time;
-            DEV_LOG && console.log('mergeWeatherData', k, originalFirstTime, addedDataFirstTime);
             if (addedDataFirstTime >= originalFirstTime) {
                 let index = mainDataK.findIndex((d) => d.time === addedDataFirstTime);
                 // DEV_LOG && console.log('assigning test', k, index, mainDataK[0].time, addedDataK[0].time);
@@ -261,7 +270,7 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
 }
 
 export class DataService extends Observable {
-    currentWeatherDataOptions: { [k: string]: CommonDataOptions };
+    // currentWeatherDataOptions: { [k: string]: CommonDataOptions };
     minUVIndexToShow = MIN_UV_INDEX;
     constructor() {
         super();
@@ -275,18 +284,25 @@ export class DataService extends Observable {
         prefs.on('key:min_uv_index', setminUVIndexToShow);
     }
     currentWeatherData: WeatherProps[] = [];
-
-    updateCurrentWeatherData(data, save = true) {
+    getWeatherDataOptions(key: WeatherProps) {
+        return {
+            id: key,
+            icon: WEATHER_DATA_ICONS[key],
+            iconFactor: ICONS_SIZE_FACTOR[key] ?? 1
+            // getData: this.getItemData
+        };
+    }
+    updateCurrentWeatherData(data: WeatherProps[], save = true) {
         this.currentWeatherData = data;
-        this.currentWeatherDataOptions = data.reduce((acc, key) => {
-            acc[key] = {
-                id: key,
-                icon: WEATHER_DATA_ICONS[key],
-                iconFactor: ICONS_SIZE_FACTOR[key] ?? 1
-                // getData: this.getItemData
-            };
-            return acc;
-        }, {});
+        // this.currentWeatherDataOptions = data.reduce((acc, key) => {
+        //     acc[key] = {
+        //         id: key,
+        //         icon: WEATHER_DATA_ICONS[key],
+        //         iconFactor: ICONS_SIZE_FACTOR[key] ?? 1
+        //         // getData: this.getItemData
+        //     };
+        //     return acc;
+        // }, {});
         if (save) {
             ApplicationSettings.setString('common_data', JSON.stringify(data));
             globalObservable.notify({ eventName: 'weatherData', data });
@@ -299,20 +315,15 @@ export class DataService extends Observable {
         );
     }
 
-    getIconsData(item: CommonWeatherData, filter = []) {
-        let keys = Object.keys(this.currentWeatherDataOptions);
+    getIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
+        let keys = addedBefore.concat(this.currentWeatherData).concat(addedAfter);
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
-        return keys
-            .map((k) => {
-                const options = this.currentWeatherDataOptions[k];
-                return this.getItemData(k, item, options);
-            })
-            .filter((d) => !!d);
+        return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
     }
 
-    getItemData(key: string, item: CommonWeatherData, options = this.currentWeatherDataOptions[key]): CommonData {
+    getItemData(key: WeatherProps, item: CommonWeatherData, options = this.getWeatherDataOptions(key)): CommonData {
         if (!options || !item.hasOwnProperty(key) || item[key] === null) {
             return null;
         }
@@ -335,6 +346,41 @@ export class DataService extends Observable {
                     };
                 }
                 break;
+            case WeatherProps.temperature:
+                // const data = convertWeatherValueToUnit(item, key);
+                return {
+                    key,
+                    iconFontSize,
+                    iconColor: tempColor(item[key], -20, 30),
+                    paint: mdiPaint,
+                    icon,
+                    value: formatWeatherValue(item, key)
+                    // subvalue: data[1]
+                };
+            case WeatherProps.rainSnowLimit: {
+                const data = convertWeatherValueToUnit(item, key);
+                return {
+                    key,
+                    iconFontSize,
+                    iconColor: rainColor,
+                    paint: appPaint,
+                    icon,
+                    value: data[0],
+                    subvalue: data[1]
+                };
+            }
+            case WeatherProps.iso: {
+                const data = convertWeatherValueToUnit(item, key);
+                return {
+                    key,
+                    iconFontSize,
+                    iconColor: snowColor,
+                    paint: mdiPaint,
+                    icon,
+                    value: data[0],
+                    subvalue: data[1]
+                };
+            }
             case WeatherProps.aqi:
                 if (item.aqi) {
                     return {
@@ -428,7 +474,6 @@ export class DataService extends Observable {
                 // const data = convertWeatherValueToUnit(item, key);
                 return {
                     key,
-                    color: WEATHER_DATA_COLORS[key],
                     iconFontSize,
                     paint: mdiPaint,
                     value: formatWeatherValue(item, key),
@@ -443,7 +488,6 @@ export class DataService extends Observable {
                 return {
                     key,
                     iconFontSize,
-                    color: WEATHER_DATA_COLORS[key],
                     paint: wiPaint,
                     icon,
                     value: formatWeatherValue(item, key)
@@ -466,7 +510,6 @@ export class DataService extends Observable {
                 return {
                     key,
                     paint: wiPaint,
-                    color: WEATHER_DATA_COLORS[key],
                     iconFontSize,
                     icon,
                     value: l('moon')
@@ -487,3 +530,22 @@ export class DataService extends Observable {
     }
 }
 export const weatherDataService = new DataService();
+
+export async function showHourlyPopover(
+    item: CommonWeatherData,
+    props?: Partial<ComponentProps<HourlyPopover__SvelteComponent_>>,
+    options?: Partial<PopoverOptions<ComponentProps<HourlyPopover__SvelteComponent_>>>
+) {
+    const HourlyPopover = (await import('~/components/HourlyPopover.svelte')).default;
+    await showPopover({
+        view: HourlyPopover,
+        vertPos: VerticalPosition.ALIGN_TOP,
+        horizPos: HorizontalPosition.ALIGN_LEFT,
+        focusable: false,
+        props: {
+            item,
+            ...(props || {})
+        },
+        ...(options || {})
+    });
+}

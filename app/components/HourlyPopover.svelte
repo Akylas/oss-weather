@@ -78,7 +78,7 @@
             paint.color = c.iconColor || c.color || colorOnSurface;
             paint.textSize = c.iconFontSize * 0.8;
             paint.setTextAlign(Align.CENTER);
-            canvas.drawText(c.icon || ' ', 10, dy + (addedDy - 2) * $fontScale, paint);
+            canvas.drawText(c.icon || ' ', 10, dy + (addedDy - (__IOS__ ? 5 : 2)) * $fontScale, paint);
 
             const nativeText = createNativeAttributedString({
                 spans: [
@@ -117,7 +117,7 @@
     <gridlayout
         backgroundColor={new Color(colorBackground).setAlpha(240)}
         borderColor={colorOutline}
-        borderRadius={8}
+        borderRadius={__IOS__ ? 14 : 8}
         borderWidth={1}
         columns={`${100 * $fontScale},${50 * $fontScale}`}
         padding={5}

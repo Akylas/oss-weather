@@ -218,9 +218,9 @@
             canvas.restore();
         }
     }
-    function onTap() {
+    async function onTap() {
         try {
-            showHourlyPopover(
+            await showHourlyPopover(
                 item,
                 {},
                 {

@@ -45,15 +45,46 @@ export interface CommonAirQualityData {
     time: number;
     aqi: number;
     aqiColor?: string;
-    components?: {
-        co?: number;
-        no?: number;
-        no2?: number;
-        o3?: number;
-        so2?: number;
-        pm2_5?: number;
-        pm10?: number;
-        nh3?: number;
+    pollutants?: {
+        co?: {
+            unit: string;
+            value: number;
+        };
+        no?: {
+            unit: string;
+            value: number;
+        };
+        no2?: {
+            unit: string;
+            value: number;
+        };
+        o3?: {
+            unit: string;
+            value: number;
+        };
+        so2?: {
+            unit: string;
+            value: number;
+        };
+        pm2_5?: {
+            unit: string;
+            value: number;
+        };
+        pm10?: {
+            unit: string;
+            value: number;
+        };
+        nh3?: {
+            unit: string;
+            value: number;
+        };
+    };
+    pollens?: {
+        [k: string]: {
+            color?: string;
+            unit: string;
+            value: number;
+        };
     };
 }
 export interface CommonWeatherData extends CommonAirQualityData {

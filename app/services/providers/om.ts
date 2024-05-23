@@ -8,12 +8,21 @@ import { Forecast } from './openmeteo';
 import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherProvider } from './weatherprovider';
-import { AirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
+import { AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { WeatherProps, weatherDataService } from '../weatherData';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
+
+const KEY_MAPPING = {
+    european_aqi: 'aqi',
+    ozone: 'o3',
+    sulphur_dioxide: 'so2',
+    nitrogen_dioxide: 'co',
+    carbon_monoxide: 'no2',
+    ammonia: 'nh3'
+};
 
 export const OM_MODELS = {
     best_match: 'Best match',
@@ -77,9 +86,9 @@ export const API_KEY_VALUES = {
             (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m_max' : '')
     }),
     'air-quality': ({ current }) => ({
-        hourly: 'european_aqi',
-        current: current !== false ? 'european_aqi' : undefined,
-        daily: 'european_aqi'
+        hourly: 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen,european_aqi',
+        current: current !== false ? 'european_aqi' : undefined
+        // daily: 'european_aqi'
     })
 };
 export const API_MAX_VALUES = {
@@ -440,8 +449,11 @@ export class OMProvider extends WeatherProvider {
         const coords = weatherLocation.coord;
         const result = await this.fetch<Forecast>('air-quality', { latitude: coords.lat, longitude: coords.lon }, { current, minutely }, 'air-quality-api');
         const hourly = result.content.hourly;
-        const daily = [];
-        let lastDay;
+        const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];
+        let lastDay: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any };
+        const units = result.content.hourly_units;
+        const keys = new Set(Object.keys(units));
+        keys.delete('time');
 
         const hourlyData = hourly.time.map((time, index) => {
             const d = {} as Hourly;
@@ -450,19 +462,38 @@ export class OMProvider extends WeatherProvider {
             if (!lastDay || currentDay !== lastDay.time) {
                 lastDay = {
                     time: currentDay,
-                    aqi_sum: 0,
-                    aqi_count: 0
+                    tempDatas: {}
                 };
                 daily.push(lastDay);
             }
-            d.aqi = this.getDataArray(hourly, 'european_aqi')[index];
-            lastDay.aqi_sum += d.aqi;
-            lastDay.aqi_count += 1;
+
+            keys.forEach((k) => {
+                const value = this.getDataArray(hourly, k)[index];
+                let actualKey: string = KEY_MAPPING[k] || k;
+                let path;
+                if (actualKey === 'aqi') {
+                    d.aqi = value;
+                } else if (actualKey.endsWith('_pollen')) {
+                    actualKey = actualKey.slice(0, -7);
+                    path = 'pollens';
+                    d.pollens = d.pollens || {};
+                    d.pollens[actualKey] = { value, unit: units[k] };
+                } else {
+                    path = 'pollutants';
+                    d.pollutants = d.pollutants || {};
+                    d.pollutants[actualKey] = { value, unit: units[k] };
+                }
+
+                lastDay.tempDatas[actualKey] = lastDay.tempDatas[actualKey] || { sum: 0, count: 0, unit: units[k], path };
+                lastDay.tempDatas[actualKey].sum += value;
+                lastDay.tempDatas[actualKey].count += 1;
+            });
             return aqiDataIconColors(d);
         });
 
         const currentData = result.content.current;
         // const daily = result.daily;
+        const lastDailyIndex = daily.findIndex((d) => d.tempDatas.aqi.count < 3);
         const r = {
             time: result.time,
             currently: currentData
@@ -472,14 +503,22 @@ export class OMProvider extends WeatherProvider {
                   } as Currently)
                 : {},
             daily: {
-                data: daily
-                    .filter((d) => d.aqi_count >= 3)
-                    .map((d) =>
-                        aqiDataIconColors({
-                            time: d.time,
-                            aqi: Math.round(d.aqi_sum / d.aqi_count)
-                        })
-                    )
+                data: daily.slice(0, lastDailyIndex >= 0 ? lastDailyIndex : daily.length).map((d) =>
+                    aqiDataIconColors({
+                        time: d.time,
+                        ...Object.keys(d.tempDatas).reduce((acc, val) => {
+                            const tempData = d.tempDatas[val];
+                            let data = acc;
+                            if (tempData.path) {
+                                data = acc[tempData.path] = acc[tempData.path] || {};
+                                data[val] = { value: Math.round(tempData.sum / tempData.count), unit: tempData.unit };
+                            } else {
+                                data[val] = Math.round(tempData.sum / tempData.count);
+                            }
+                            return acc;
+                        }, {})
+                    } as CommonAirQualityData)
+                )
             },
             hourly: hourlyData
         } as AirQualityData;

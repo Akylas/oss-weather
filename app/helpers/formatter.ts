@@ -4,7 +4,7 @@ import { iconService } from '~/services/icon';
 import { CommonAirQualityData, CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { PROP_TO_UNIT, UNITS, WeatherProps } from '~/services/weatherData';
 import { cloudyColor, imperialUnits, metricDecimalTemp, rainColor, snowColor, sunnyColor } from '~/variables';
-import { formatDate } from './locale';
+import { formatDate, lc } from './locale';
 
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
@@ -164,34 +164,119 @@ export function formatValueToUnit(value: any, unit: UNITS, options: { prefix?: s
 //     const h = h0 * (1 - a) + h1 * a;
 //     return Color('hsl(' + [h, '75%', '40%'] + ')').toHexString();
 // }
-export function colorForUV(uvIndex) {
-    if (uvIndex >= 11) {
-        return '#9E47CC';
-    } else if (uvIndex >= 8) {
-        return '#F55023';
-    } else if (uvIndex >= 6) {
-        return '#FE8F00';
-    } else if (uvIndex >= 3) {
-        return '#FFBC03';
+const AIR_LEVEL_INDEXES = [0, 20, 40, 60, 80, 100];
+const AIR_QUALITY_COLORS = ['#7bd878', '#c5e173', '#f9cc33', '#f38725', '#ec2c45', '#7d2181'];
+
+const POLLEN_LEVEL_INDEXES = [0, 0, 25, 50, 75, 100];
+const POLLEN_LEVEL_COLORS = ['#bfbfbf', '#08c286', '#08c286', '#6ad555', '#ffd741', '#ffab40', '#ff3b30'];
+
+const UV_LEVEL_INDEXES = [0, 3, 6, 8, 11];
+const UV_LEVEL_COLORS = ['#9BC600', '#FFBC03', '#FE8F00', '#F55023', '#9E47CC'];
+
+const POLLUTANT_LEVEL_INDEXES = {
+    o3: [0, 50, 100, 160, 240, 480], // Plume 2023
+    no2: [0, 10, 25, 200, 400, 1000], // Plume 2023
+    pm10: [0, 15, 45, 80, 160, 400], // Plume 2023
+    pm2_5: [0, 5, 15, 30, 60, 150], // Plume 2023
+    so2: [0, 20, 40 /* daily */, 270, 500 /* 10 min */, 960 /* linear prolongation */], // WHO 2021
+    co: [0, 2, 4 /* daily */, 35 /* hourly */, 100 /* 15 min */, 230 /* linear prolongation */] // WHO 2021
+};
+
+const POLLUTANT_DEFAULT_LEVEL_INDEXES = [0, 20, 50, 100, 150, 250];
+const POLLUTANT_LEVEL_COLORS = ['#00e59b', '#ffc302', '#ff712b', '#f62a55', '#c72eaa', '#9930ff'];
+// const AIR_QUALITY_COLORS_BREEZY = ['#00e59b', '#ffc302', '#ff712b', '#f62a55', '#c72eaa', '#9930ff'];
+
+export const POLLENS_POLLUTANTS_TITLES = {
+    o3: lc('o3'),
+    no2: lc('no2'),
+    pm10: lc('pm10'),
+    pm2_5: lc('pm25'),
+    so2: lc('so2'),
+    co: lc('co'),
+    alder: lc('alder'),
+    birch: lc('birch'),
+    grass: lc('grass'),
+    mugwort: lc('mugwort'),
+    olive: lc('olive'),
+    ragweed: lc('ragweed')
+};
+
+function nearest(arr: number[], n: number) {
+    let low = 0;
+    let index = 0;
+    while (n > arr[index+1]) {
+        low++;
+        index++;
+    }
+    return [low, low < arr.length - 1 ? low + 1 : low];
+}
+export function getIndexedColor(value: number, indexes: number[], colors: string[], mix = false) {
+    if (isNaN(value)) {
+        return null;
+    }
+    const [low, high] = nearest(indexes, value);
+    DEV_LOG && console.log('getIndexedColor', value, indexes, low, high);
+
+    if (mix) {
+        return Color.mix(new Color(colors[low]), new Color(colors[high]), ((value - indexes[low]) / (indexes[high] - indexes[low])) * 100).hex;
     } else {
-        return '#9BC600';
+        return colors[low];
     }
 }
 
-export function colorForAqi(uvIndex) {
-    if (uvIndex >= 100) {
-        return '#7d2181';
-    } else if (uvIndex >= 80) {
-        return '#ec2c45';
-    } else if (uvIndex >= 60) {
-        return '#f38725';
-    } else if (uvIndex >= 40) {
-        return '#f9cc33';
-    } else if (uvIndex >= 20) {
-        return '#c5e173';
-    } else {
-        return '#7bd878';
-    }
+export function colorForAqi(value) {
+    return getIndexedColor(value, AIR_LEVEL_INDEXES, AIR_QUALITY_COLORS);
+    // if (value >= 100) {
+    //     return '#7d2181';
+    // } else if (value >= 80) {
+    //     return '#ec2c45';
+    // } else if (value >= 60) {
+    //     return '#f38725';
+    // } else if (value >= 40) {
+    //     return '#f9cc33';
+    // } else if (value >= 20) {
+    //     return '#c5e173';
+    // } else {
+    //     return '#7bd878';
+    // }
+}
+
+export function colorForUV(value) {
+    return getIndexedColor(value, UV_LEVEL_INDEXES, UV_LEVEL_COLORS);
+    // if (uvIndex >= 11) {
+    //     return '#9E47CC';
+    // } else if (uvIndex >= 8) {
+    //     return '#F55023';
+    // } else if (uvIndex >= 6) {
+    //     return '#FE8F00';
+    // } else if (uvIndex >= 3) {
+    //     return '#FFBC03';
+    // } else {
+    //     return '#9BC600';
+    // }
+}
+export function colorForPollutant(value, key) {
+    return getIndexedColor(value, POLLUTANT_LEVEL_INDEXES[key] || POLLUTANT_DEFAULT_LEVEL_INDEXES, POLLUTANT_LEVEL_COLORS);
+}
+
+export function colorForPollen(value) {
+    return getIndexedColor(value, POLLEN_LEVEL_INDEXES, POLLEN_LEVEL_COLORS);
+    // if (value === 0) {
+    //     return '#bfbfbf';
+    // }
+    // if (value <= 25) {
+    //     return '#08c286';
+    // }
+    // if (value <= 50) {
+    //     return '#6ad555';
+    // }
+    // if (value <= 75) {
+    //     return '#ffd741';
+    // }
+    // if (value <= 100) {
+    //     return '#ffab40';
+    // }
+    // return '#ff3b30';
 }
 
 // export function colorForIcon(icon, time, sunrise, sunset) {
@@ -372,6 +457,16 @@ export enum WeatherDataType {
 
 export function aqiDataIconColors<T extends CommonAirQualityData>(d: T) {
     d.aqiColor = colorForAqi(d.aqi);
+    if (d.pollens) {
+        Object.keys(d.pollens).forEach((k) => {
+            d.pollens[k].color = colorForPollen(d.pollens[k].value);
+        });
+    }
+    if (d.pollutants) {
+        Object.keys(d.pollutants).forEach((k) => {
+            d.pollutants[k].color = colorForPollutant(d.pollutants[k].value, k);
+        });
+    }
     return d;
 }
 export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(d: T, type: WeatherDataType, coord: { lat: number; lon: number }, rain = 0, snow = 0) {

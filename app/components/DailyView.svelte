@@ -6,7 +6,7 @@
     import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, getLocalTime } from '~/helpers/locale';
     import { DailyData } from '~/services/providers/weather';
-    import { weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, weatherDataLayout } from '~/variables';
 
@@ -218,7 +218,7 @@
         staticLayout.draw(canvas);
         canvas.restore();
 
-        const windBeaufortData = weatherDataService.getItemData('windBeaufort', item);
+        const windBeaufortData = weatherDataService.getItemData(WeatherProps.windBeaufort, item);
         if (windBeaufortData) {
             windBeaufortData.paint.setColor(windBeaufortData.color || colorOnSurface);
             windBeaufortData.paint.setTextSize(windBeaufortData.iconFontSize);
@@ -229,7 +229,7 @@
         textPaint.setColor(colorOnSurfaceVariant);
         canvas.drawText(item.description, 10, h - 10, textPaint);
 
-        const moonData = weatherDataService.getItemData('moon', item);
+        const moonData = weatherDataService.getItemData(WeatherProps.moon, item);
         if (moonData) {
             moonData.paint.setColor(moonData.color);
             moonData.paint.setTextSize(moonData.iconFontSize);

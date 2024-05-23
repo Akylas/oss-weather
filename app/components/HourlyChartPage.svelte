@@ -1,40 +1,23 @@
 <script context="module" lang="ts">
-    import { Align, Canvas, DashPathEffect, FontMetrics, LinearGradient, Paint, Rect, RectF } from '@nativescript-community/ui-canvas';
-    import { CombinedChart } from '@nativescript-community/ui-chart';
-    import { ScatterShape } from '@nativescript-community/ui-chart/charts/ScatterChart';
-    import { LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
-    import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
-    import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
-    import { LineData } from '@nativescript-community/ui-chart/data/LineData';
-    import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
-    import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
+    import { Align, Canvas, FontMetrics, Paint } from '@nativescript-community/ui-canvas';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { Application, ApplicationSettings, Color, EventData, ImageSource, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
-    import dayjs from 'dayjs';
+    import { Application, ApplicationSettings, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { convertWeatherValueToUnit, toImperialUnit, windIcon } from '~/helpers/formatter';
-    import { getLocalTime, lc } from '~/helpers/locale';
-    import { onThemeChanged } from '~/helpers/theme';
-    import { CommonWeatherData, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import { lc } from '~/helpers/locale';
+    import { WeatherData } from '~/services/providers/weather';
     import { showError } from '~/utils/error';
-    import { colors, fontScale, screenWidthDips, sunnyColor } from '~/variables';
+    import { colors, screenWidthDips } from '~/variables';
 
-    import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
-    import { BarData } from '@nativescript-community/ui-chart/data/BarData';
-    import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
     import { NavigatedData, Page } from '@nativescript/core';
     import { onDestroy, onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
+    import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { FavoriteLocation } from '~/helpers/favorites';
     import { l } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
-    import { iconService } from '~/services/icon';
-    import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { generateGradient, loadImage, tempColor } from '~/utils/utils';
+    import { WeatherProps, weatherDataService } from '~/services/weatherData';
     import { actionBarButtonHeight } from '~/variables';
-    import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import HourlyChartView from './HourlyChartView.svelte';
 
     const legendIconPaint = new Paint();
@@ -46,11 +29,6 @@
     const labelPaint = new Paint();
     labelPaint.textSize = 13;
     labelPaint.setTextAlign(Align.CENTER);
-
-    const bitmapPaint = new Paint();
-    bitmapPaint.setAntiAlias(true);
-    // bitmapPaint.setFilterBitmap(true);
-    // bitmapPaint.setDither(true);
 
     const mFontMetricsBuffer = new FontMetrics();
 </script>

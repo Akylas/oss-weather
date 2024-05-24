@@ -8,6 +8,7 @@
     import { l, lc } from '~/helpers/locale';
     import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
+    import { onMount } from 'svelte';
 
     $: ({ colorBackground } = $colors);
 
@@ -18,10 +19,13 @@
     networkService.start(); // ensure it is started
 
     async function refresh(location: WeatherLocation = weatherLocation) {
+        if (loading) {
+            return;
+        }
         loading = true;
         try {
             const data = await getProvider().getWeather(location);
-            DEV_LOG && console.log('refresh', name, typeof name, location);
+            DEV_LOG && console.log('BottomSheet', 'refresh', name, typeof name, location, new Error().stack);
             if (!name || !location.sys.city) {
                 try {
                     const r = await geocodeAddress(location.coord);
@@ -47,10 +51,15 @@
             loading = false;
         }
     }
-    $: refresh(weatherLocation);
     let provider = getProviderType();
 
+    onMount(() => {
+        DEV_LOG && console.log('BottomSheet', 'onMount`');
+        refresh(weatherLocation);
+    });
+
     onProviderChanged((event) => {
+        DEV_LOG && console.log('BottomSheet', 'onProviderChanged');
         provider = getProviderType();
         refresh();
     });

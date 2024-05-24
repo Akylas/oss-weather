@@ -115,7 +115,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         superFunc.call(activity);
 
         if (Trace.isEnabled()) {
-            Trace.write('NativeScriptActivity.onStart();', Trace.categories.NativeLifecycle);
+            Trace.write('FloatingActivity.onStart();', Trace.categories.NativeLifecycle);
         }
 
         const rootView = this._rootView;
@@ -128,7 +128,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         superFunc.call(activity);
 
         if (Trace.isEnabled()) {
-            Trace.write('NativeScriptActivity.onStop();', Trace.categories.NativeLifecycle);
+            Trace.write('FloatingActivity.onStop();', Trace.categories.NativeLifecycle);
         }
 
         const rootView = this._rootView;
@@ -141,14 +141,14 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         superFunc.call(activity);
 
         if (Trace.isEnabled()) {
-            Trace.write('NativeScriptActivity.onPostResume();', Trace.categories.NativeLifecycle);
+            Trace.write('FloatingActivity.onPostResume();', Trace.categories.NativeLifecycle);
         }
     }
 
     public onDestroy(activity: any, superFunc: Function): void {
         try {
             if (Trace.isEnabled()) {
-                Trace.write('NativeScriptActivity.onDestroy();', Trace.categories.NativeLifecycle);
+                Trace.write('FloatingActivity.onDestroy();', Trace.categories.NativeLifecycle);
             }
 
             const rootView = this._rootView;
@@ -165,7 +165,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
     public onBackPressed(activity: any, superFunc: Function): void {
         if (Trace.isEnabled()) {
-            Trace.write('NativeScriptActivity.onBackPressed;', Trace.categories.NativeLifecycle);
+            Trace.write('FloatingActivity.onBackPressed;', Trace.categories.NativeLifecycle);
         }
 
         const args = {
@@ -204,7 +204,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
     public onRequestPermissionsResult(activity: any, requestCode: number, permissions: String[], grantResults: number[], superFunc: Function): void {
         if (Trace.isEnabled()) {
-            Trace.write('NativeScriptActivity.onRequestPermissionsResult;', Trace.categories.NativeLifecycle);
+            Trace.write('FloatingActivity.onRequestPermissionsResult;', Trace.categories.NativeLifecycle);
         }
 
         Application.android.notify({
@@ -220,7 +220,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
     public onActivityResult(activity: any, requestCode: number, resultCode: number, data: android.content.Intent, superFunc: Function): void {
         superFunc.call(activity, requestCode, resultCode, data);
         if (Trace.isEnabled()) {
-            Trace.write(`NativeScriptActivity.onActivityResult(${requestCode}, ${resultCode}, ${data})`, Trace.categories.NativeLifecycle);
+            Trace.write(`FloatingActivity.onActivityResult(${requestCode}, ${resultCode}, ${data})`, Trace.categories.NativeLifecycle);
         }
 
         Application.android.notify({
@@ -315,7 +315,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 @JavaProxy('__PACKAGE__.FloatingActivity')
 @NativeClass
 class Activity extends androidx.appcompat.app.AppCompatActivity {
-    isNativeScriptActivity: boolean;
+    isFloatingActivity: boolean;
     private _callbacks: AndroidActivityCallbacks;
     constructor() {
         super();
@@ -332,8 +332,8 @@ class Activity extends androidx.appcompat.app.AppCompatActivity {
         // wont do anything is already done
         Application.android.init(this.getApplication());
 
-        // Set isNativeScriptActivity in onCreate.
-        this.isNativeScriptActivity = false;
+        // Set isFloatingActivity in onCreate.
+        this.isFloatingActivity = false;
 
         if (!this._callbacks) {
             setActivityCallbacks(this);

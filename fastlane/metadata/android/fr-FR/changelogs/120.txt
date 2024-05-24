@@ -1,0 +1,8 @@
+### Features
+- Meteoblue share image + follow user metric settings
+
+### Bug fixes
+- enable chart popover in hourly chart
+- pollutants/pollens layout fix
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Russian)

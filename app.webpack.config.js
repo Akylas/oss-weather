@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 const webpackConfig = require('./webpack.config.js');
 const webpack = require('webpack');
 const { readFileSync, readdirSync } = require('fs');

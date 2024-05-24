@@ -243,6 +243,11 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     if (requestParams.offlineSupport !== true && !networkService.connected) {
         throw new NoNetworkError();
     }
+    if (requestParams.cookiesEnabled === undefined) {
+        requestParams.cookiesEnabled = false;
+
+    }
+
     if (requestParams.queryParams) {
         requestParams.url = queryString(requestParams.queryParams, requestParams.url);
         delete requestParams.queryParams;

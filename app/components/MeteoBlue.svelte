@@ -1,16 +1,32 @@
 <script context="module" lang="ts">
+    import { ImageSource, Screen, path } from '@nativescript/core';
     import { FailureEventData, FinalEventData, getImagePipeline } from '@nativescript-community/ui-image';
+    import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { ZoomImg } from '@nativescript-community/ui-zoomimage';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';
-    import { lang, lu } from '~/helpers/locale';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, request } from '~/services/api';
+    import { lang, lc, lu } from '~/helpers/locale';
+    import { isDarkTheme } from '~/helpers/theme';
+    import { request as permRequest } from '@nativescript-community/perms';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, queryString, request } from '~/services/api';
     import { showError } from '~/utils/error';
-    import { openLink } from '~/utils/ui';
-    import { actionBarButtonHeight, colors } from '~/variables';
+    import { share } from '~/utils/share';
+    import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
+    import { actionBarButtonHeight, actionBarHeight, colors, imperial, imperialUnits, systemFontScale } from '~/variables';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+
+    function parseUrl(str) {
+        const [url, query] = str.split('?');
+        const queryParams: Record<string, string | number | boolean> = {};
+        query?.split('&').forEach(function (part) {
+            const item = part.split('=');
+            queryParams[item[0]] = decodeURIComponent(item[1]);
+        });
+        return { url, queryParams };
+    }
 </script>
 
 <script lang="ts">
@@ -35,7 +51,8 @@
                 offlineSupport: true, // not to throw error when no network
                 headers: {
                     'Cache-Control': networkConnected ? 'max-age=60*60' : 'only-if-cached',
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0' // meteoblue wants this
+                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0', // meteoblue wants this
+                    Cookie: $imperial ? 'temp=FAHRENHEIT;speed=MILE_PER_HOUR;precip=INCH' : 'temp=CELSIUS;speed=KILOMETER_PER_HOUR;precip=MILLIMETER'
                 },
                 noJSON: true
             })
@@ -55,6 +72,25 @@
             const match = result.match(/(?:data-(?:href|original)=)["'](\/\/my\.meteoblue\.com\/images\/.*?["'])/);
             if (match) {
                 const newImageSrc = 'https:' + match[1].slice(0, -1).replace(/&amp;/g, '&');
+
+                // const parsed = parseUrl(newImageSrc);
+                // DEV_LOG && console.log('parsed', parsed);
+                // if ($imperial) {
+                //     Object.assign(parsed.queryParams, {
+                //         temperature_units: 'F',
+                //         wind_units: 'mph',
+                //         precipitation_units: 'inch'
+                //     });
+                // } else {
+                //     Object.assign(parsed.queryParams, {
+                //         temperature_units: 'C',
+                //         wind_units: 'kmh',
+                //         precipitation_units: 'mm'
+                //     });
+                // }
+                // parsed.queryParams.tz = weatherLocation.timezone;
+                // parsed.queryParams.darkmode = isDarkTheme();
+                // newImageSrc = queryString(parsed.queryParams, parsed.url);
                 DEV_LOG && console.log('newImageSrc', newImageSrc);
                 if (networkConnected) {
                     getImagePipeline().evictFromCache(newImageSrc);
@@ -140,6 +176,69 @@
             showError(error);
         }
     }
+    async function showOptions(event) {
+        try {
+            const options = [
+                {
+                    icon: 'mdi-share-variant',
+                    id: 'share',
+                    name: lc('share')
+                }
+            ] as any;
+            // ).concat(
+            //     __ANDROID__
+            //         ? [
+            //               {
+            //                   icon: 'mdi-export',
+            //                   id: 'save',
+            //                   name: lc('export')
+            //               }
+            //           ]
+            //         : []
+            await showPopoverMenu({
+                options,
+                anchor: event.object,
+                vertPos: VerticalPosition.BELOW,
+                props: {
+                    width: 220 * $systemFontScale,
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+                    // autoSizeListItem: true
+                },
+                onClose: async (item) => {
+                    try {
+                        if (item) {
+                            switch (item.id) {
+                                case 'share':
+                                    showLoading();
+                                    DEV_LOG && console.log('share', currentImageSrc);
+                                    await share({
+                                        image: await ImageSource.fromUrl(currentImageSrc)
+                                    });
+                                    break;
+                                // case 'save':
+                                //     await permRequest('storage');
+                                //     const name = `${weatherLocation?.name}_${tabs[tabIndex].urlId}.jpg`;
+                                //     const imageSource = await ImageSource.fromUrl(currentImageSrc);
+                                //     await imageSource.saveToFileAsync(
+                                //         path.join(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS).getAbsolutePath(), name),
+                                //         'jpg',
+                                //         80
+                                //     );
+                                //     showSnack({ message: lc('image_save_in_download', name) });
+                                //     break;
+                            }
+                        }
+                    } catch (error) {
+                        showError(error);
+                    } finally {
+                        hideLoading();
+                    }
+                }
+            });
+        } catch (error) {
+            showError(error);
+        }
+    }
 </script>
 
 <page actionBarHidden={true} on:navigatedTo={onNavigatedTo}>
@@ -150,6 +249,14 @@
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
             <mdbutton class="actionBarButton" text="mdi-refresh" variant="text" verticalAlignment="middle" on:tap={refresh} />
             <mdbutton class="actionBarButton" text="mdi-web" variant="text" verticalAlignment="middle" on:tap={openInBrowser} />
+            <mdbutton
+                id="menu_button"
+                class="actionBarButton"
+                text="mdi-dots-vertical"
+                variant="text"
+                verticalAlignment="middle"
+                visibility={currentImageSrc && !loading ? 'visible' : 'collapsed'}
+                on:tap={showOptions} />
         </CActionBar>
         <gridlayout colSpan={3} columns={new Array(tabs.length).fill('*').join(',')} height={48} row={1}>
             {#each tabs as tab, index}

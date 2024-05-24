@@ -26,7 +26,10 @@
         showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
     });
     $: {
-        topHeight = Math.max(Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - windowInsetBottom - windowInsetTop - 100, showHourlyChart ? 450 : 500), 370);
+        topHeight = Math.max(
+            Math.min(Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - windowInsetBottom - windowInsetTop - 100, showHourlyChart ? (__IOS__ ? 450 : 400) : __IOS__ ? 500 : 450),
+            370
+        );
         collectionView?.nativeView?.refresh();
     }
 

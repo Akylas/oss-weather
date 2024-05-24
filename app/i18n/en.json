@@ -108,6 +108,7 @@
     "heavy_snow_shower": "Heavy snow shower",
     "icon_pack": "icon pack",
     "icons_settings": "icons and animations settings",
+    "image_save_in_download": "image was saved in Download folder: %1$s",
     "imperial_units": "Imperial units(°F, mPh, …)",
     "import_settings": "import settings",
     "import_settings_desc": "import all settings from a previous backup",
@@ -207,6 +208,7 @@
         "title": "Settings"
     },
     "seven_days": "7 days",
+    "share": "share",
     "share_application": "Share the app",
     "show_current_day_daily": "show current day in daily list",
     "show_daily_in_currently": "show current day data (like precipitation) in current weather",

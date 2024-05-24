@@ -607,7 +607,7 @@
                     </mdbutton>
                 </stacklayout>
             {/if}
-            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation && weatherLocation.name} on:swipe={onSwipe}>
+            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation?.name} on:swipe={onSwipe}>
                 <mdbutton
                     slot="left"
                     class="actionBarButton"

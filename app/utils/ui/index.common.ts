@@ -138,7 +138,6 @@ export async function showPopoverMenu<T = any>({
     const { colorSurfaceContainer } = get(colors);
     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
     const rowHeight = (props?.rowHeight || 58) * get(fontScale);
-    DEV_LOG && console.log('showPopoverMenu', props?.maxHeight, rowHeight, rowHeight * options.length);
     const result: T = await showPopover({
         backgroundColor: colorSurfaceContainer,
         view: OptionSelect,

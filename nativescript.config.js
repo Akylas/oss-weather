@@ -3,7 +3,7 @@ const sentryEnabled = !!process.env['NS_SENTRY'];
 const loggingEnabled = !!process.env['NS_LOGGING'];
 
 module.exports = {
-    ignoredNativeDependencies: ['@nativescript/detox'].concat(sentryEnabled ? [] : ['@nativescript-community/sentry']),
+    ignoredNativeDependencies: [].concat(sentryEnabled ? [] : ['@nativescript-community/sentry']),
     id: 'com.akylas.weather',
     appResourcesPath: 'App_Resources',
     buildPath: 'platforms',

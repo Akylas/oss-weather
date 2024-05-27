@@ -136,13 +136,19 @@ function getRootViewStyle() {
     return rootView?.style;
 }
 
-const onInitRootView = function () {
+let initRootViewCalled = false;
+export function onInitRootView() {
+    if (initRootViewCalled) {
+        return;
+    }
     // we need a timeout to read rootView css variable. not 100% sure why yet
     if (__ANDROID__) {
         // setTimeout(() => {
         const rootViewStyle = getRootViewStyle();
         const rootView = Application.getRootView();
+        DEV_LOG && console.log('onInitRootView', rootView);
         if (rootView) {
+            initRootViewCalled = true;
             (rootView.nativeViewProtected as android.view.View).setOnApplyWindowInsetsListener(
                 new android.view.View.OnApplyWindowInsetsListener({
                     onApplyWindowInsets(view, insets) {
@@ -198,6 +204,7 @@ const onInitRootView = function () {
 
     if (__IOS__) {
         const rootView = Application.getRootView();
+        initRootViewCalled = !!rootView;
         const rootViewStyle = rootView?.style;
         DEV_LOG && console.log('initRootView', rootView);
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
@@ -212,7 +219,7 @@ const onInitRootView = function () {
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));
     Application.off(Application.initRootViewEvent, onInitRootView);
     // getRealThemeAndUpdateColors();
-};
+}
 
 function updateIOSWindowInset() {
     if (__IOS__) {

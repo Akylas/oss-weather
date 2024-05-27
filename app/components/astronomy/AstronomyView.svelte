@@ -14,7 +14,7 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { formatTime, getLocalTime, l, lc, lu } from '~/helpers/locale';
     import { showError } from '~/utils/error';
-    import { pickDate } from '~/utils/utils';
+    import { pickDate } from '~/utils/utils.common';
     import { colors, fonts } from '~/variables';
     import { WeatherLocation } from '~/services/api';
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';

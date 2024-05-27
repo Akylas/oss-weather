@@ -1,7 +1,7 @@
 <script lang="ts">
     import { GPS } from '@nativescript-community/gps';
     import { getFile } from '@nativescript-community/https';
-    import { request } from '@nativescript-community/perms';
+    import { isPermResultAuthorized, request } from '@nativescript-community/perms';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
@@ -30,7 +30,7 @@
     import { alert, showError } from '~/utils/error';
     import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
     import { hideLoading, isLandscape, showLoading, showPopoverMenu } from '~/utils/ui';
-    import { isBRABounds } from '~/utils/utils';
+    import { isBRABounds } from '~/utils/utils.common';
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
     import { DATA_VERSION } from '~/helpers/constants';
@@ -317,7 +317,7 @@
     async function getLocationAndWeather() {
         try {
             const result = await request('location');
-            if (Array.isArray(result) && result[0] !== 'authorized') {
+            if (!isPermResultAuthorized(result)) {
                 return alert(l('missing_location_perm'));
             }
             if (!gps) {

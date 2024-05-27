@@ -3,7 +3,7 @@
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
-    import { ApplicationSettings, ObservableArray, Page, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { ApplicationSettings, File, ObservableArray, Page, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -39,13 +39,17 @@
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
     import { navigate } from '~/utils/svelte/ui';
-    import { createView, hideLoading, isLandscape, openLink, showAlertOptionSelect } from '~/utils/ui';
+    import { createView, hideLoading, isLandscape, openLink, showAlertOptionSelect, showLoading } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     import { TextField } from '@nativescript-community/ui-material-textfield';
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { Sentry } from '~/utils/sentry';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
+    import dayjs from 'dayjs';
+    import { restartApp } from '~/utils/utils';
+    import { isPermResultAuthorized, request } from '@nativescript-community/perms';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -686,6 +690,89 @@
                     }
                     break;
                 }
+                case 'export_settings':
+                    const permRes = await request('storage');
+                    if (!isPermResultAuthorized(permRes)) {
+                        throw new Error(lc('missing_storage_perm'));
+                    }
+                    const jsonStr = ApplicationSettings.getAllJSON();
+                    if (jsonStr) {
+                        const result = await saveFile({
+                            name: `${__APP_ID__}_settings_${dayjs().format('YYYY-MM-DD')}.json`,
+                            data: jsonStr
+                        });
+                        DEV_LOG && console.log('export_settings done', result, jsonStr);
+                    }
+                    break;
+                case 'import_settings':
+                    const result = await openFilePicker({
+                        extensions: ['application/json'],
+                        multipleSelection: false,
+                        pickerMode: 0
+                    });
+                    const filePath = result.files[0];
+                    if (filePath && File.exists(filePath)) {
+                        showLoading();
+                        const text = await File.fromPath(filePath).readText();
+                        DEV_LOG && console.log('import_settings', text);
+                        const json = JSON.parse(text);
+                        const nativePref = ApplicationSettings.getNative();
+                        if (__ANDROID__) {
+                            const editor = (nativePref as android.content.SharedPreferences).edit();
+                            editor.clear();
+                            Object.keys(json).forEach((k) => {
+                                if (k.startsWith('_')) {
+                                    return;
+                                }
+                                const value = json[k];
+                                const type = typeof value;
+                                switch (type) {
+                                    case 'boolean':
+                                        editor.putBoolean(k, value);
+                                        break;
+                                    case 'number':
+                                        editor.putLong(k, java.lang.Double.doubleToRawLongBits(double(value)));
+                                        break;
+                                    case 'string':
+                                        editor.putString(k, value);
+                                        break;
+                                }
+                            });
+                            editor.apply();
+                        } else {
+                            const userDefaults = nativePref as NSUserDefaults;
+                            const domain = NSBundle.mainBundle.bundleIdentifier;
+                            userDefaults.removePersistentDomainForName(domain);
+                            Object.keys(json).forEach((k) => {
+                                if (k.startsWith('_')) {
+                                    return;
+                                }
+                                const value = json[k];
+                                const type = typeof value;
+                                switch (type) {
+                                    case 'boolean':
+                                        userDefaults.setBoolForKey(value, k);
+                                        break;
+                                    case 'number':
+                                        userDefaults.setDoubleForKey(value, k);
+                                        break;
+                                    case 'string':
+                                        userDefaults.setObjectForKey(value, k);
+                                        break;
+                                }
+                            });
+                        }
+                        hideLoading();
+                        const result = await confirm({
+                            message: lc('restart_app'),
+                            okButtonText: lc('restart'),
+                            cancelButtonText: lc('later')
+                        });
+                        if (result) {
+                            restartApp();
+                        }
+                    }
+                    break;
                 case 'setting': {
                     if (item.type === 'prompt') {
                         const result = await prompt({

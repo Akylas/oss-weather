@@ -10,7 +10,7 @@
     import { Hourly } from '~/services/providers/weather';
     import { WeatherProps, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { showError } from '~/utils/error';
-    import { generateGradient } from '~/utils/utils';
+    import { generateGradient } from '~/utils/utils.common';
     import { colors, fontScale } from '~/variables';
 
     const textPaint = new Paint();

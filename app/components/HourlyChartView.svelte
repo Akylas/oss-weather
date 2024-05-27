@@ -45,7 +45,7 @@
     import { iconService } from '~/services/icon';
     import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     // import { fade } from '~/utils/svelte/ui';
-    import { generateGradient, loadImage } from '~/utils/utils';
+    import { generateGradient, loadImage } from '~/utils/utils.common';
     import { fade, fly, slide } from 'svelte-native/transitions';
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { CollectionView } from '@nativescript-community/ui-collectionview';

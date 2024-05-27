@@ -1,0 +1,9 @@
+### Features
+- import/export settings
+
+### Bug fixes
+- Translated using Weblate (Spanish)
+- Translated using Weblate (Russian)
+- Translated using Weblate (Hindi)
+- timezone issues in daily page
+- many hourly chart fixes

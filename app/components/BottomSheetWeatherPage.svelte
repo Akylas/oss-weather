@@ -4,7 +4,7 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
-    import { colors } from '~/variables';
+    import { actionBarButtonHeight, colors } from '~/variables';
     import { l, lc } from '~/helpers/locale';
     import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
@@ -77,7 +77,7 @@
 
 <gesturerootview class="weatherpage" height="100%" rows="auto,*">
     <CActionBar title={name} on:swipe={onSwipe}>
-        <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
+        <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
     </CActionBar>
     <label
         backgroundColor={new Color(colorBackground).setAlpha(100).hex}

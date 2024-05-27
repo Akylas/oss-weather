@@ -480,16 +480,20 @@
         try {
             const item = event as DailyData;
             const component = (await import('~/components/DailyPage.svelte')).default;
-            const startOfDay = dayjs(item.time).startOf('d').valueOf();
-            const endOfDay = dayjs(item.time).endOf('d').valueOf();
+            const startOfDay = getLocalTime(item.time, item.timezoneOffset).startOf('d').valueOf();
+            const endOfDay = getLocalTime(item.time, item.timezoneOffset).endOf('d').valueOf();
             const hourly = items[0].hourly as Hourly[];
             const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
-            const endIndex = hourly.findIndex((h) => h.time > endOfDay);
+            let endIndex = hourly.findIndex((h) => h.time > endOfDay);
+            if (endIndex === -1) {
+                endIndex = hourly.length;
+            }
             DEV_LOG && console.log('show daily page', item.time, startOfDay, endOfDay, startIndex, endIndex);
             navigate({
                 page: component,
                 props: {
-                    item: { ...item, hourly: startIndex >= 0 ? hourly.slice(startIndex, endIndex === -1 ? hourly.length : endIndex + 1) : [] },
+                    // we dont show hourly if there is only one hour left. Would not look good
+                    item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
                     location: weatherLocation,
                     weatherLocation,
                     timezoneOffset: item.timezoneOffset

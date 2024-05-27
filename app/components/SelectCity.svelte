@@ -9,7 +9,7 @@
     import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
     import { showError } from '~/utils/error';
-    import { colors } from '~/variables';
+    import { actionBarButtonHeight, colors } from '~/variables';
     import ListItem from './common/ListItem.svelte';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
@@ -100,7 +100,7 @@
 <page actionBarHidden={true}>
     <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
         <CActionBar modalWindow title={lc('search_city')}>
-            <activityIndicator busy={loading} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} />
+            <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} />
         <collectionview items={searchResults} row={2}>

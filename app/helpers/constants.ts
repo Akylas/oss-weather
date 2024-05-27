@@ -1,5 +1,7 @@
 export const DATA_VERSION = 1;
 
+export const SETTINGS_LANGUAGE = 'language';
+export const SETTINGS_IMPERIAL = 'imperial';
 export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
 export const DAILY_PAGE_HOURLY_CHART = false;

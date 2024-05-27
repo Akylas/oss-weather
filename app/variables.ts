@@ -7,7 +7,7 @@ import { getRealTheme, theme } from './helpers/theme';
 import { prefs } from './services/preferences';
 import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
-import { DECIMAL_METRICS_TEMP, WEATHER_DATA_LAYOUT } from './helpers/constants';
+import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, WEATHER_DATA_LAYOUT } from './helpers/constants';
 import { SDK_VERSION } from '@nativescript/core/utils';
 
 export const colors = writable({
@@ -71,7 +71,7 @@ export const cloudyColor = new Color('#929292');
 export const rainColor = new Color('#4681C3');
 export const snowColor = new Color('#43b4e0');
 
-export let imperialUnits = ApplicationSettings.getBoolean('imperial', false);
+export let imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL, false);
 export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
 export const weatherDataLayout = writable(ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
@@ -79,22 +79,22 @@ let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale);
 export const isRTL = writable(false);
 
-export const onImperialChanged = createGlobalEventListener('imperial');
+export const onImperialChanged = createGlobalEventListener(SETTINGS_IMPERIAL);
 export const onFontScaleChanged = createGlobalEventListener('fontscale');
 export function onSettingsChanged(key: string, callback) {
     return createGlobalEventListener(key)(callback);
 }
-prefs.on('key:imperial', () => {
-    imperialUnits = ApplicationSettings.getBoolean('imperial');
+prefs.on(`key:${SETTINGS_IMPERIAL}`, () => {
+    imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL);
     imperial.set(imperialUnits);
     DEV_LOG && console.log('key:imperial', imperialUnits);
-    globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
+    globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
 });
 prefs.on('key:metric_temp_decimal', () => {
     metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
     DEV_LOG && console.log('key:metric_temp_decimal', imperialUnits, metricDecimalTemp);
     // we notify imperial to update ui
-    globalObservable.notify({ eventName: 'imperial', data: imperialUnits });
+    globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
 });
 prefs.on('key:weather_data_layout', () => {
     weatherDataLayout.set(ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT));

@@ -21,6 +21,8 @@
         NB_HOURS_FORECAST,
         NB_MINUTES_FORECAST,
         SETTINGS_DAILY_PAGE_HOURLY_CHART,
+        SETTINGS_IMPERIAL,
+        SETTINGS_LANGUAGE,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
@@ -122,7 +124,7 @@
                 return () => [
                     {
                         type: 'switch',
-                        id: 'imperial',
+                        id: SETTINGS_IMPERIAL,
                         title: lc('imperial_units'),
                         value: $imperial
                     },
@@ -357,7 +359,7 @@
                     title: lc('general')
                 },
                 {
-                    id: 'language',
+                    id: SETTINGS_LANGUAGE,
                     description: () => getLocaleDisplayName(),
                     title: lc('language')
                 },
@@ -594,7 +596,7 @@
                 case 'github':
                     openLink(GIT_URL);
                     break;
-                case 'language':
+                case SETTINGS_LANGUAGE:
                     await selectLanguage();
                     break;
                 case 'dark_mode':

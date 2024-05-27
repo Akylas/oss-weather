@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    import { ApplicationSettings, Page } from '@nativescript/core';
+    import { ApplicationSettings, Page, fontSizeProperty } from '@nativescript/core';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from './HourlyView.svelte';
     import { colors, fontScale, fonts, weatherDataLayout } from '~/variables';
@@ -60,6 +60,10 @@
         const h = canvas.getHeight();
         const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
         const w2 = w / 2;
+
+        textPaint.setColor(colorOutline);
+        canvas.drawLine(0, h, w, h - 1, textPaint);
+
         const iconsTop = (topViewHeight * $fontScale) / 2 - 5 * $fontScale;
         // canvas.translate(26, 0);
         switch ($weatherDataLayout) {
@@ -185,54 +189,30 @@
                 }
             ]
         });
-        canvas.save();
         const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
-        canvas.translate(10, 11 * $fontScale);
+        canvas.translate(10, 0);
         staticLayout.draw(canvas);
-        canvas.restore();
-
-        // canvas.save();
-        // canvas.translate(10, h - 8 - 14 * $fontScale);
-        // textPaint.textSize = 14 * $fontScale;
-        // staticLayout = new StaticLayout(
-        //     createNativeAttributedString({
-        //         spans: [
-        //             {
-        //                 color: '#ffa500',
-        //                 fontFamily: $fonts.wi,
-        //                 text: 'wi-sunrise '
-        //             },
-        //             {
-        //                 text: formatTime(item.sunriseTime, undefined, item.timezoneOffset)
-        //             },
-        //             {
-        //                 color: '#ff7200',
-        //                 fontFamily: $fonts.wi,
-        //                 text: '  wi-sunset '
-        //             },
-        //             {
-        //                 text: formatTime(item.sunsetTime, undefined, item.timezoneOffset)
-        //             }
-        //         ]
-        //     }),
-        //     textPaint,
-        //     w - 10,
-        //     LayoutAlignment.ALIGN_NORMAL,
-        //     1,
-        //     0,
-        //     false
-        // );
-        // staticLayout.draw(canvas);
-        // canvas.restore();
-
-        textPaint.setTextAlign(Align.RIGHT);
-        textPaint.textSize = 20 * $fontScale;
-        canvas.drawText(formatDate(item.time, 'dddd, LL'), w - 10, 30 * $fontScale, textPaint);
-        textPaint.textSize = 14 * $fontScale;
-        // canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
-
-        textPaint.setColor(colorOutline);
-        canvas.drawLine(0, h, w, h - 1, textPaint);
+        canvas.translate(-10, 0);
+        new StaticLayout(
+            createNativeAttributedString({
+                spans: [
+                    {
+                        text: formatDate(item.time, 'dddd', 0) + '\n',
+                        fontSize: 20 * $fontScale
+                    },
+                    {
+                        text: formatDate(item.time, 'LL', 0),
+                        fontSize: 16 * $fontScale
+                    }
+                ]
+            }),
+            textPaint,
+            w - 10,
+            LayoutAlignment.ALIGN_OPPOSITE,
+            1,
+            0,
+            false
+        ).draw(canvas);
     }
 
     function onChartConfigure(chart: CombinedChart): void {

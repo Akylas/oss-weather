@@ -245,7 +245,6 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     }
     if (requestParams.cookiesEnabled === undefined) {
         requestParams.cookiesEnabled = false;
-
     }
 
     if (requestParams.queryParams) {
@@ -255,7 +254,7 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     requestParams.headers = getRequestHeaders(requestParams);
 
     const requestStartTime = Date.now();
-    DEV_LOG && console.info('request', JSON.stringify(requestParams));
+    DEV_LOG && console.info('request', JSON.stringify(requestParams), new Error().stack);
     try {
         const response = await https.request<T>(requestParams);
         return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);

@@ -10,6 +10,7 @@
     import { prefs } from '~/services/preferences';
     import { onMount } from 'svelte';
 
+    let { colorBackground } = $colors;
     $: ({ colorBackground } = $colors);
 
     let items = [];
@@ -25,7 +26,7 @@
         loading = true;
         try {
             const data = await getProvider().getWeather(location);
-            DEV_LOG && console.log('BottomSheet', 'refresh', name, typeof name, location, new Error().stack);
+            DEV_LOG && console.error('BottomSheet', 'refresh', JSON.stringify(location));
             if (!name || !location.sys.city) {
                 try {
                     const r = await geocodeAddress(location.coord);

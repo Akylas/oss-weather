@@ -18,6 +18,8 @@ import { WeatherLocation } from '~/services/api';
 import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { isLandscape } from '~/utils/ui';
+import { fonts, onInitRootView } from '~/variables';
+import { get } from 'svelte/store';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -271,11 +273,14 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
         // setup view as styleScopeHost
         rootView._setupAsRootView(activity);
+        // sets root classes once rootView is ready...
+        Application.initRootView(rootView);
 
         activity.setContentView(rootView.nativeViewProtected, new org.nativescript.widgets.CommonLayoutParams());
 
         try {
             //ensure theme is started
+            onInitRootView();
             startThemeHelper();
             const uri = intent.getData();
             const lat = parseFloat(uri.getQueryParameter('lat'));
@@ -288,9 +293,10 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const name = uri.getQueryParameter('name');
             const address = JSON.parse(uri.getQueryParameter('address') || '{}');
             const BottomSheetWeatherPage = (await import('~/components/BottomSheetWeatherPage.svelte')).default;
+            DEV_LOG && console.log('about to show BottomSheetWeatherPage', get(fonts));
             await showBottomSheet({
                 parent: rootView,
-                view: BottomSheetWeatherPage as any,
+                view: BottomSheetWeatherPage,
                 peekHeight: 400,
                 // skipCollapsedState: isLandscape(),
                 dismissOnBackgroundTap: true,

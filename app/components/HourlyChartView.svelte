@@ -133,6 +133,9 @@
             iconCache = null;
         }
     });
+
+    let lastIconX: number;
+    let lastDrawnValueIndex = {};
     function updateLineChart(setData = true) {
         try {
             const chart = chartView?.nativeView;
@@ -168,7 +171,6 @@
                     leftAxis.spaceBottom = rightAxis.spaceBottom = 5;
                     leftAxis.spaceTop = rightAxis.spaceTop = 5;
                     chart.data = combinedChartData;
-                    let lastIconX: number;
                     chart.customRenderer = {
                         drawIcon(canvas: Canvas, chart: CombinedChart, dataSet, dataSetIndex, entry, entryIndex, icon: any, x: number, y: number) {
                             if (dataSet.label === WeatherProps.iconId) {
@@ -176,7 +178,9 @@
                                 const iconSize = 30;
                                 const date = getLocalTime(startTimestamp + entry['deltaHours'] * 3600 * 1000, timezoneOffset);
                                 // if (date.get('m') === 0) {
-                                if (x - lastIconX > iconSize || date.get('h') % Math.round(4 / chart.scaleX) === 0) {
+                                const scaleX = chart.viewPortHandler.scaleX;
+                                const modulo = Math.max(Math.round(6 / scaleX), 1);
+                                if (x - lastIconX > iconSize || date.get('h') % modulo === 0) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
@@ -201,47 +205,30 @@
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {
                             const yProperty = dataSet.yProperty;
-                            // if (entryIndex !== 0 && entryIndex < dataSet.entryCount - 1) {
-                            const value = entry[yProperty];
-                            const prevValue = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1)[yProperty] : null;
-                            const nextValue = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1)[yProperty] : null;
-                            // DEV_LOG && console.log('test', value, prevValue, nextValue);
-                            if (nextValue === null || prevValue === null || (prevValue !== value && !(prevValue < value && value < nextValue) && !(prevValue > value && value > nextValue))) {
-                                const showUnder = value < prevValue;
-                                // if (yProperty === WeatherProps.temperature) {
-                                //     const entryTempColor = tempColor(value, temperatureData.min, temperatureData.max);
-                                //     paint.setColor(color);
-                                //     paint.getTextBounds(valueText, 0, valueText.length, textBounds);
-                                //     const height = textBounds.height();
-                                //     const width = textBounds.width();
-                                //     const deltaY = -height - 2;
-                                //     paint.setColor(entryTempColor);
-                                //     paint.setAlpha(210);
-                                //     c.drawRoundRect(x + (-width / 2 - 4), y + deltaY, x + (width / 2 + 4), y + deltaY + (height + 5), 4, 4, paint);
-                                //     paint.setAlpha(255);
-                                //     paint.setColor(color);
-                                //     c.drawText(valueText, x, y, paint);
-                                // } else {
+                            const value = entry as CommonWeatherData;
+                            const prevValue: CommonWeatherData = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1) : null;
+                            const nextValue: CommonWeatherData = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1) : null;
+                            const current = convertWeatherValueToUnit(value, yProperty);
+                            const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty) : null;
+                            const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty) : null;
+                            const scaleX = chart.viewPortHandler.scaleX;
+                            const modulo = Math.max(Math.round(6 / scaleX), 1);
+                            if (
+                                next === null ||
+                                prev === null ||
+                                ((!lastDrawnValueIndex[yProperty] || entryIndex - lastDrawnValueIndex[yProperty] > 4 / scaleX) && entryIndex % modulo === 0) ||
+                                (prev[0] !== current[0] && !(prev[0] < current[0] && current[0] < next[0]) && !(prev[0] > current[0] && current[0] > next[0]))
+                            ) {
+                                const showUnder = prev && current[0] < prev[0];
                                 paint.setColor(color);
-                                c.drawText(valueText, x, y + (showUnder ? 14 : 0), paint);
-                                // }
+                                c.drawText(current.join(''), x, y + (showUnder ? 14 : 0), paint);
+                                lastDrawnValueIndex[yProperty] = entryIndex;
                             }
-                            // }
                         },
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
                             const precipProbability = e.precipProbability;
-                            //                     let precipitationHeight;
-                            //                     if (e.precipShowSnow) {
-                            //     precipitationHeight = e.snowfall > 1 ? Math.sqrt(e.snowfall / 10) : e.snowfall / 10;
-                            // } else {
-                            //     precipitationHeight = e.precipAccumulation > 1 ? Math.sqrt(e.precipAccumulation) : e.precipAccumulation;
-                            // }
-                            // const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - 10);
                             paint.setColor(e.precipColor);
                             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
-                            // if (e.precipColor) {
-                            //     paint.color = e.precipColor;
-                            // }
                             c.drawRect(left, top, right, bottom, paint);
                         },
                         drawHighlight(c: Canvas, h: Highlight<Entry>) {
@@ -258,7 +245,6 @@
                                 highlightPaint.setTextAlign(Align.RIGHT);
                             }
                             c.drawText(text, x, 50, highlightPaint);
-                            // bottomLabel?.nativeView?.redraw();
                         }
                     };
                     onChartConfigure?.(chart);
@@ -341,13 +327,13 @@
                             if (k === WeatherProps.iconId || k === WeatherProps.windBearing) {
                                 result['setFakeKey'] = 1;
                             } else if (k === WeatherProps.precipAccumulation) {
-                                result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
+                                // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                             } else if (k === WeatherProps.temperature) {
-                                result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
-                                tempMin = Math.min(tempMin, result[k]);
-                                tempMax = Math.max(tempMin, result[k]);
+                                // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
+                                tempMin = Math.min(tempMin, d[k]);
+                                tempMax = Math.max(tempMax, d[k]);
                             } else {
-                                result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
+                                // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                             }
                         }
                     });
@@ -455,6 +441,12 @@
                                         return windIcon(entry.windBearing);
                                     };
                                     set.drawIconsEnabled = true;
+                                    set.mode = Mode.CUBIC_BEZIER;
+                                    // set.cubicIntensity = 0.4;
+                                    set.spaceBottom = 2; // ensure lowest value label can be seen
+                                    set.drawValuesEnabled = true;
+                                    set.valueTextColor = colorOnSurface;
+                                    set.valueTextSize = 10;
                                     break;
                                 case WeatherProps.windBearing:
                                     set.lineWidth = 0;
@@ -470,17 +462,17 @@
                                     }
                                     set.shader = lastGradient?.gradient;
                                     set.lineWidth = temperatureLineWidth;
-                                    set.spaceBottom = 2; // ensure lowest value label can be seen
                                     set.mode = Mode.CUBIC_BEZIER;
                                     // set.cubicIntensity = 0.4;
+                                    set.spaceBottom = 2; // ensure lowest value label can be seen
                                     set.drawValuesEnabled = true;
                                     set.valueTextColor = colorOnSurface;
                                     set.valueTextSize = 10;
-                                    set.valueFormatter = {
-                                        getFormattedValue(value: number, entry?: CommonWeatherData) {
-                                            return Math.round(value) + toImperialUnit(UNITS.Celcius);
-                                        }
-                                    } as any;
+                                    // set.valueFormatter = {
+                                    //     getFormattedValue(value: number, entry?: CommonWeatherData) {
+                                    //         return Math.round(value) + toImperialUnit(UNITS.Celcius);
+                                    //     }
+                                    // } as any;
                                     break;
 
                                 case WeatherProps.iconId:
@@ -581,8 +573,9 @@
 
     function updateGradient() {
         const chart = chartView?.nativeView;
-        if (temperatureData && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
-            lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, chart.viewPortHandler.contentRect.height(), 0);
+        const height = chart.viewPortHandler.contentRect.height();
+        if (temperatureData && height && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
+            lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, height, 0);
             const dataSet = chart.lineData?.getDataSetByLabel(WeatherProps.temperature, false);
             if (dataSet) {
                 dataSet.shader = lastGradient.gradient;
@@ -607,6 +600,10 @@
             }
         }, 2);
     }
+    function onChartDraw() {
+        lastIconX = undefined;
+        lastDrawnValueIndex = {};
+    }
     const onHighlight = throttle(async function onHighlight({ object, highlight }: { object: CombinedChart; highlight: Highlight }) {
         // if (highlight.xPx > Utils.layout.toDeviceIndependentPixels(object.getMeasuredWidth()) - highlightViewWidth) {
         //     highlight.xPx -= highlightViewWidth;
@@ -616,7 +613,7 @@
 
         try {
             await showHourlyPopover(
-                highlight.entry as CommonWeatherData,
+                hourly[highlight.x] as CommonWeatherData,
                 {},
                 {
                     anchor: chartView.nativeView,
@@ -771,6 +768,7 @@
             failOffsetYStart: -40,
             failOffsetYEnd: 40
         }}
+        on:draw={onChartDraw}
         on:layoutChanged={onLayoutChanged}
         on:highlight={onHighlight}
         on:pan={onPan}>

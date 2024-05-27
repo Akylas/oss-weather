@@ -74,8 +74,8 @@
     <absolutelayout
         background={`linear-gradient(to right, ${new Color(colorBackground).setAlpha(0)}, ${colorBackground})`}
         height="100%"
-        isUserInteractionEnabled={false}
         horizontalAlignment="right"
+        isUserInteractionEnabled={false}
         opacity={showRightShadowOpacity}
         width={40} />
 </gridlayout>

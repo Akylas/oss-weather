@@ -61,7 +61,7 @@ export function tempColor(t, min, max) {
     return new Color(255, h, 75, 90, 'hsv');
 }
 export function generateGradient(nbColor, min, max, h, posOffset) {
-    // console.log('generateGradient', min, max)
+    // console.log('generateGradient', min, max, h, posOffset);
     const tmin = -20;
     const tmax = 30;
     // const tmin = Math.min(min, -30);

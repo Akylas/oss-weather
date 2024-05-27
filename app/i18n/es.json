@@ -108,6 +108,7 @@
     "heavy_snow_shower": "Fuerte chaparrón de nieve",
     "icon_pack": "paquete de iconos",
     "icons_settings": "Configuración de iconos y animaciones",
+    "image_save_in_download": "la imagen se guardó en la carpeta descargas: %1$s",
     "imperial_units": "Unidades imperiales (°F, mPh, ...)",
     "import_settings": "Importar los ajustes",
     "import_settings_desc": "importar todos los ajustes de una copia de seguridad antigua",
@@ -207,6 +208,7 @@
         "title": "Ajustes"
     },
     "seven_days": "Una semana",
+    "share": "compartir",
     "share_application": "Compartir la aplicación",
     "show_current_day_daily": "mostrar el día actual en la lista diaria",
     "show_daily_in_currently": "mostrar los datos del día actual (como la precipitación) en el tiempo actual",

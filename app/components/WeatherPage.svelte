@@ -20,7 +20,7 @@
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
-    import { getLocalTime, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
@@ -480,8 +480,9 @@
         try {
             const item = event as DailyData;
             const component = (await import('~/components/DailyPage.svelte')).default;
-            const startOfDay = getLocalTime(item.time, item.timezoneOffset).startOf('d').valueOf();
-            const endOfDay = getLocalTime(item.time, item.timezoneOffset).endOf('d').valueOf();
+            //we need to offset back the startOf/endOf to correctly get local utc values
+            const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
+            const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
             const hourly = items[0].hourly as Hourly[];
             const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
             let endIndex = hourly.findIndex((h) => h.time > endOfDay);
@@ -495,6 +496,7 @@
                     // we dont show hourly if there is only one hour left. Would not look good
                     item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
                     location: weatherLocation,
+                    startTime: dayjs(item.time).isSame(Date.now(), 'day') ? Date.now() : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')).valueOf(),
                     weatherLocation,
                     timezoneOffset: item.timezoneOffset
                 }

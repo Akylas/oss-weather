@@ -204,6 +204,7 @@ const ICONS_SIZE_FACTOR = {
     [WeatherProps.windSpeed]: 0.8,
     [WeatherProps.uvIndex]: 1,
     [WeatherProps.cloudCover]: 0.9,
+    [WeatherProps.windGust]: 0.8,
     [WeatherProps.relativeHumidity]: 0.8
 };
 

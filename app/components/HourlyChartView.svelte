@@ -97,6 +97,7 @@
     export let onChartConfigure: (chart: CombinedChart) => void = null;
     export let maxDatalength = 0;
     export const legends = new ObservableArray([]);
+    export let startTime: number = null;
 
     let chartView: NativeViewElementNode<CombinedChart>;
     let highlightCanvas: NativeViewElementNode<CanvasView>;
@@ -180,7 +181,7 @@
                                 // if (date.get('m') === 0) {
                                 const scaleX = chart.viewPortHandler.scaleX;
                                 const modulo = Math.max(Math.round(6 / scaleX), 1);
-                                if (x - lastIconX > iconSize || date.get('h') % modulo === 0) {
+                                if (lastIconX === undefined || x - lastIconX > iconSize || date.get('h') % modulo === 0) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
@@ -189,8 +190,8 @@
                                         new Rect(drawOffsetX, drawOffsetY, drawOffsetX + iconSize, drawOffsetY + iconSize),
                                         null
                                     );
+                                    lastIconX = x;
                                 }
-                                lastIconX = x;
 
                                 // canvas.save();
                                 // canvas.scale(0.5, 0.5, x, y);
@@ -232,13 +233,11 @@
                             c.drawRect(left, top, right, bottom, paint);
                         },
                         drawHighlight(c: Canvas, h: Highlight<Entry>) {
-                            const hours = Math.min(Math.floor(h.x / 6), 23);
-                            const minutes = (h.x * 10) % 60;
-                            const startTime = dayjs().set('h', hours).set('m', minutes);
+                            const date = getLocalTime(startTimestamp + h.entry['deltaHours'] * 3600 * 1000, timezoneOffset);
                             c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                             highlightPaint.setTextAlign(Align.LEFT);
                             let x = h.drawX + 4;
-                            const text = formatTime(startTime);
+                            const text = formatTime(date);
                             const size = ChartUtils.calcTextSize(highlightPaint, text);
                             if (x > c.getWidth() - size.width) {
                                 x = h.drawX - 4;
@@ -518,6 +517,9 @@
                     combinedChartData.barData = null;
                 }
                 chart.data = combinedChartData;
+                if (startTime !== null) {
+                    highlightOnDate(startTime);
+                }
             }
         } catch (error) {
             showError(error);
@@ -603,6 +605,15 @@
     function onChartDraw() {
         lastIconX = undefined;
         lastDrawnValueIndex = {};
+    }
+
+    function highlightOnDate(timestamp: number) {
+        const chart = chartView?.nativeView;
+        if (chart) {
+            const x = dayjs(timestamp).diff(startTimestamp) / (3600 * 1000);
+            const highlights = chart.getHighlightByXValue(x);
+            chart.highlight(highlights);
+        }
     }
     const onHighlight = throttle(async function onHighlight({ object, highlight }: { object: CombinedChart; highlight: Highlight }) {
         // if (highlight.xPx > Utils.layout.toDeviceIndependentPixels(object.getMeasuredWidth()) - highlightViewWidth) {

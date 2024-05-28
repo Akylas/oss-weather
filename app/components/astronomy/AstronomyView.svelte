@@ -12,7 +12,7 @@
     import { Utils } from '@nativescript-community/ui-chart/utils/Utils';
     import dayjs, { Dayjs } from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { formatTime, getLocalTime, l, lc, lu } from '~/helpers/locale';
+    import { formatTime, getLocalTime, getStartOfDay, l, lc, lu } from '~/helpers/locale';
     import { showError } from '~/utils/error';
     import { pickDate } from '~/utils/utils.common';
     import { colors, fonts } from '~/variables';
@@ -148,9 +148,9 @@
 
     let chartInitialized = false;
     export let location: WeatherLocation;
-    export let timezoneOffset;
     export let selectableDate = true;
-    export let startTime = getLocalTime(undefined, timezoneOffset);
+    export let startTime = Date.now();
+    export let timezoneOffset;
     // let limitLine: LimitLine;
     let illumination: GetMoonIlluminationResult; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
@@ -200,7 +200,8 @@
         if (!chartView) {
             return;
         }
-        const computeStartTime = getLocalTime(startTime.startOf('d').valueOf(), timezoneOffset);
+        const computeStartTime = getStartOfDay(startTime, timezoneOffset);
+        DEV_LOG && console.log('updateChartData', startTime, timezoneOffset, computeStartTime);
         const chart = chartView.nativeView;
         const sets = [];
         sunPoses = [];
@@ -230,11 +231,11 @@
 
                     const hours = Math.min(Math.floor(h.x / 6), 23);
                     const minutes = (h.x * 10) % 60;
-                    startTime = startTime.set('h', hours).set('m', minutes);
+                    const date = dayjs(startTime).set('h', hours).set('m', minutes);
                     c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                     highlightPaint.setTextAlign(Align.LEFT);
                     let x = h.drawX + 4;
-                    const text = formatTime(startTime);
+                    const text = formatTime(date);
                     const size = Utils.calcTextSize(highlightPaint, text);
                     if (x > c.getWidth() - size.width) {
                         x = h.drawX - 4;
@@ -259,8 +260,8 @@
             xAxis.drawLabels = true;
             xAxis.valueFormatter = {
                 getAxisLabel(value: any, axis: AxisBase) {
-                    const time = computeStartTime.add(value * 10, 'minutes');
-                    return formatTime(time);
+                    const time = computeStartTime.add(value * 10, 'minutes').valueOf();
+                    return formatTime(time, undefined, timezoneOffset);
                 }
             };
             // if (!limitLine) {
@@ -295,7 +296,7 @@
             const lineData = new LineData(sets);
             chart.data = lineData;
 
-            const nowMinutes = startTime.diff(computeStartTime, 'minutes');
+            const nowMinutes = dayjs(startTime).diff(computeStartTime, 'minutes');
             const h = chart.getHighlightByXValue(nowMinutes / 10);
             chart.highlight(h[0]);
         } else {
@@ -311,9 +312,9 @@
 
     async function selectDate() {
         try {
-            const date = await pickDate(startTime);
+            const date = await pickDate(dayjs(startTime));
             if (date && startTime.valueOf() !== date) {
-                updateStartTime(getLocalTime(date, timezoneOffset));
+                updateStartTime(date);
             }
         } catch (error) {
             showError(error);
@@ -330,7 +331,7 @@
         }
     }
 
-    function updateStartTime(time: Dayjs) {
+    function updateStartTime(time: number) {
         startTime = time;
         updateChartData();
     }
@@ -357,7 +358,7 @@
     }
     $: {
         try {
-            const date = startTime.toDate();
+            const date = getStartOfDay(startTime, 0).toDate();
             illumination = getMoonIllumination(date);
             moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
@@ -442,13 +443,13 @@
         text="mdi-chevron-left"
         variant="text"
         visibility={selectableDate ? 'visible' : 'hidden'}
-        on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
+        on:tap={() => updateStartTime(dayjs(startTime).subtract(1, 'd').valueOf())} />
     <label
         colSpan={2}
         fontSize={17}
         marginLeft={50}
         marginRight={50}
-        text={startTime.format('LL')}
+        text={formatTime(startTime, 'LL', timezoneOffset)}
         textAlignment="center"
         verticalTextAlignment="center"
         visibility={selectableDate ? 'visible' : 'hidden'}
@@ -460,13 +461,13 @@
         text="mdi-chevron-right"
         variant="text"
         visibility={selectableDate ? 'visible' : 'hidden'}
-        on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
+        on:tap={() => updateStartTime(dayjs(startTime).add(1, 'd').valueOf())} />
     <linechart bind:this={chartView} colSpan={3} row={1} />
     {#if sunTimes}
         <canvaslabel bind:this={bottomLabel} colSpan={3} fontSize={18} padding="0 10 0 10" row={2} on:draw={drawMoonPosition}>
             <cgroup color="#ffa500" verticalAlignment="middle">
                 <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-up" />
-                <cspan text={' ' + formatTime(dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf(), undefined, timezoneOffset)} />
+                <cspan text={' ' + formatTime(dayjs.utc(sunTimes.sunrise.valueOf()).valueOf(), undefined, timezoneOffset)} />
             </cgroup>
             <cgroup color="#ff7200" textAlignment="center" verticalAlignment="middle">
                 <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-down" />

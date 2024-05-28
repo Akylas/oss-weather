@@ -125,6 +125,13 @@ export function getLocalTime(timestamp?: number | string | dayjs.Dayjs | Date, t
     return timezoneOffset !== undefined ? dayjs.utc(timestamp).utcOffset(timezoneOffset) : dayjs(timestamp);
 }
 
+export function getStartOfDay(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
+    return getLocalTime(timestamp, 0).startOf('d').add(-timezoneOffset, 'h');
+}
+export function getEndOfDay(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
+    return getLocalTime(timestamp, 0).endOf('d').add(-timezoneOffset, 'h');
+}
+
 export function formatDate(date: number | string | dayjs.Dayjs | Date, formatStr: string = 'dddd LT', timezoneOffset?: number) {
     if (date) {
         if (!date['format']) {

@@ -276,6 +276,7 @@
             case 'line': {
                 textPaint.setTextAlign(Align.LEFT);
                 textIconPaint.setTextAlign(Align.CENTER);
+                textIconPaint.color = colorOutline;
                 const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
                 const lineHeight = 20 * $fontScale;
                 const lineWidth = 100 * $fontScale;

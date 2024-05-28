@@ -1,0 +1,5 @@
+### Bug fixes
+- Translated using Weblate (German)
+- potential issue on theme change
+- main page hourly chart not readable enough
+- hourly chart popover not showing correct date

@@ -83,7 +83,8 @@
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors);
 
     const currentData = weatherDataService.currentWeatherData;
-    const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
+    // const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
+    const screenOrientation = undefined;
     const combinedChartData = new CombinedData();
     const hidden: string[] = [];
 
@@ -382,7 +383,6 @@
                 //     }
                 //     DEV_LOG && console.log('daily', d.time, index, lastTimestamp);
                 // });
-                // DEV_LOG && console.log('updateLineChart', screenOrientation, Application.orientation(), screenWidthDips, maxDatalength);
                 if (!screenOrientation && Application.orientation() !== 'landscape') {
                     chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
                 } else {
@@ -588,7 +588,7 @@
     function onLayoutChanged(event: EventData) {
         updateGradient();
         //use a timeout to ensure we are called after chart layout changed was called
-        DEV_LOG && console.log('onOrientationChanged', screenOrientation, Application.orientation());
+        DEV_LOG && console.log('onLayoutChanged', screenOrientation, Application.orientation(), chartNeedsZoomUpdate);
         const chart = event.object as CombinedChart;
         setTimeout(() => {
             if (chartNeedsZoomUpdate) {

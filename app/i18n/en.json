@@ -142,7 +142,7 @@
     "metric_temp_decimal": "use decimal for temperature",
     "min_uv_index": "UV index below won't be shown",
     "missing_location_perm": "Location permission missing",
-    "missing_storage_perm": "storage permission is needed to export settings",
+    "missing_storage_perm_settings": "storage permission is needed to export settings",
     "models": "models",
     "mold": "mold",
     "moon": "Moon",

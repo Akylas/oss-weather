@@ -50,6 +50,7 @@
     import dayjs from 'dayjs';
     import { restartApp } from '~/utils/utils';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
+    import { SDK_VERSION } from '@akylas/nativescript/utils';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -691,9 +692,11 @@
                     break;
                 }
                 case 'export_settings':
-                    const permRes = await request('storage');
-                    if (!isPermResultAuthorized(permRes)) {
-                        throw new Error(lc('missing_storage_perm'));
+                    if (__ANDROID__ && SDK_VERSION < 29) {
+                        const permRes = await request('storage');
+                        if (!isPermResultAuthorized(permRes)) {
+                            throw new Error(lc('missing_storage_perm_settings'));
+                        }
                     }
                     const jsonStr = ApplicationSettings.getAllJSON();
                     if (jsonStr) {
@@ -706,7 +709,7 @@
                     break;
                 case 'import_settings':
                     const result = await openFilePicker({
-                        extensions: ['application/json'],
+                        extensions: ['json'],
                         multipleSelection: false,
                         pickerMode: 0
                     });

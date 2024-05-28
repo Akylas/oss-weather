@@ -542,14 +542,15 @@
 
             xAxis.gridColor = leftAxis.gridColor = rightAxis.gridColor = colorOnSurfaceVariant + '33';
             leftAxis.limitLines.forEach((l) => (l.lineColor = newColor));
-            const dataSets = chart.data.dataSets;
-            dataSets.forEach((d) => {
-                if (d.drawValuesEnabled) {
-                    d.valueTextColor = newColor;
-                }
-            });
-            // chart.getLegend().textColor = (newColor);
-            chart.invalidate();
+            const dataSets = chart.data?.dataSets;
+            if (dataSets) {
+                dataSets.forEach((d) => {
+                    if (d.drawValuesEnabled) {
+                        d.valueTextColor = newColor;
+                    }
+                });
+                chart.invalidate();
+            }
         }
         highlightCanvas?.nativeElement.redraw();
     });

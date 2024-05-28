@@ -185,13 +185,15 @@
             const leftAxis = chart.leftAxis;
             const xAxis = chart.xAxis;
             leftAxis.textColor = xAxis.textColor = highlightPaint.color = newColor;
-            const dataSets = chart.data.dataSets;
-            dataSets.forEach((d) => {
-                if (d.drawValuesEnabled) {
-                    d.valueTextColor = newColor;
-                }
-            });
-            chart.invalidate();
+            const dataSets = chart.data?.dataSets;
+            if (dataSets) {
+                dataSets.forEach((d) => {
+                    if (d.drawValuesEnabled) {
+                        d.valueTextColor = newColor;
+                    }
+                });
+                chart.invalidate();
+            }
         }
     });
 

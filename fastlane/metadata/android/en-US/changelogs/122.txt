@@ -1,0 +1,8 @@
+### Bug fixes
+- floating activity fix
+- Translated using Weblate (Chinese (Traditional))
+- Translated using Weblate (Russian)
+- Translated using Weblate (Hindi)
+- Translated using Weblate (Spanish)
+- permission issue on export settings
+- multiple daily/chart fixes related to timezone offset

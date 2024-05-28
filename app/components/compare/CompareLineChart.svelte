@@ -178,9 +178,9 @@
                 const dataSets = item.weatherData.map((wData) => {
                     const key = item.id;
                     const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
-                    const startTimestamp = sourceData[0].time;
+                    const startTimestamp = sourceData[0]?.time;
                     if (timezoneOffset === undefined) {
-                        timezoneOffset = sourceData[0].timezoneOffset;
+                        timezoneOffset = sourceData[0]?.timezoneOffset;
                     }
                     const data = sourceData.map((d: DailyData | Hourly) => ({
                         ...d,

@@ -143,6 +143,7 @@
     "min_uv_index": "El índice UV inferior no se mostrará",
     "missing_location_perm": "Falta el permiso de ubicación",
     "missing_storage_perm": "se necesita permiso de almacenamiento para exportar la configuración",
+    "missing_storage_perm_settings": "se necesita permiso de acceso al almacenamiento para exportar la configuración",
     "models": "modelos",
     "mold": "Moho",
     "moon": "Luna",

@@ -19,6 +19,7 @@ const zoom = parseFloat(GetURLParameter('zoom') || '8');
 const colors = GetURLParameter('colors') || '4';
 
 const map = L.map('map', { zoomControl: false }).setView(position, zoom);
+map.attributionControl.setPrefix('`<a href="https://github.com/Leaflet/Leaflet" title="A JavaScript library for interactive maps">Leaflet</a>');
 const circle = L.circleMarker(position, { radius: 8, fillColor: '#3388ff', color: 'white', weight: 2, fillOpacity: 1 }).addTo(map);
 
 // @class TileLayer

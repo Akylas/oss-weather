@@ -4,8 +4,10 @@ export const SETTINGS_LANGUAGE = 'language';
 export const SETTINGS_IMPERIAL = 'imperial';
 export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
+export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
 export const DAILY_PAGE_HOURLY_CHART = false;
 export const MAIN_PAGE_HOURLY_CHART = false;
+export const SWIPE_ACTION_BAR_PROVIDER = false;
 
 export const ANIMATIONS_ENABLED = false;
 export const CHARTS_LANDSCAPE = false;

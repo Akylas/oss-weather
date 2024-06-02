@@ -24,8 +24,10 @@
         SETTINGS_IMPERIAL,
         SETTINGS_LANGUAGE,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
+        SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
+        SWIPE_ACTION_BAR_PROVIDER,
         WEATHER_DATA_LAYOUT,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES
@@ -214,6 +216,13 @@
                         values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
                         currentValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST),
                         rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+                        title: lc('swipe_actionbar_provider'),
+                        description: lc('swipe_actionbar_provider_desc'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER)
                     },
                     {
                         type: 'sectionheader',

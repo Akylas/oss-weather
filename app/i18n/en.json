@@ -228,6 +228,8 @@
     "source_code": "Source code",
     "source_code_desc": "Get the source code on GitHub",
     "spanish": "Spanish",
+    "swipe_actionbar_provider": "actionbar swipe gesture",
+    "swipe_actionbar_provider_desc": "swipe left or right on the actionbar to quickly change provider",
     "theme": {
         "auto": "Auto",
         "black": "Black",

@@ -33,7 +33,7 @@
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { DATA_VERSION } from '~/helpers/constants';
+    import { DATA_VERSION, SETTINGS_DAILY_PAGE_HOURLY_CHART, SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER } from '~/helpers/constants';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -564,13 +564,16 @@
     }
 
     function onSwipe(e) {
-        const currentProviderIndex = providers.indexOf(provider);
-        let newIndex = currentProviderIndex + (e.direction === 1 ? -1 : 1);
-        if (newIndex < 0) {
-            newIndex += providers.length;
+        const enabled = ApplicationSettings.getBoolean(SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER);
+        if (enabled) {
+            const currentProviderIndex = providers.indexOf(provider);
+            let newIndex = currentProviderIndex + (e.direction === 1 ? -1 : 1);
+            if (newIndex < 0) {
+                newIndex += providers.length;
+            }
+            const newProvider = providers[newIndex % providers.length];
+            ApplicationSettings.setString('provider', newProvider);
         }
-        const newProvider = providers[newIndex % providers.length];
-        ApplicationSettings.setString('provider', newProvider);
     }
 </script>
 

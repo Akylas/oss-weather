@@ -66,6 +66,7 @@
     "drizzle": "Llovizna",
     "email": "Correo electrónico",
     "email_required": "Se requiere una dirección de correo electrónico válida",
+    "enabled_small_weather_data": "datos meteorológicos habilitados representados con un pequeño icono (cuando sea posible)",
     "enabled_weather_data": "Información meteorológica activada",
     "english": "Inglés",
     "error": "Error",
@@ -229,6 +230,8 @@
     "source_code": "Código fuente",
     "source_code_desc": "Obtenga el código fuente en GitHub",
     "spanish": "Español",
+    "swipe_actionbar_provider": "gesto de deslizar la barra de acciones",
+    "swipe_actionbar_provider_desc": "desliza el dedo a izquierda o derecha en la barra de acciones para cambiar rápidamente de proveedor",
     "theme": {
         "auto": "Auto",
         "black": "Negro",

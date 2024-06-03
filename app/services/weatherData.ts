@@ -541,7 +541,6 @@ export class DataService extends Observable {
                             const width = staticLayout.getLineWidth(0);
                             if (data.backgroundColor) {
                                 const oldColor = textPaint.getColor();
-                                DEV_LOG && console.log('width', width);
                                 // this fixes a current issue with the Paint getDrawTextAttribs is set on Paint in getHeight
                                 // if we change the paint color to draw the rect
                                 // then if we do it too soon the paint getDrawTextAttribs is going to use that new

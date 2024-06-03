@@ -512,7 +512,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
     }
     if (type !== WeatherDataType.HOURLY) {
         // we ask the moon phase at around 8pm so that it corresponds to the day
-        const moonPhase = getMoonPhase(new Date(d.time + 20 * 3600000));
+        const moonPhase = getMoonPhase(new Date(d.time));
         d['moon'] = Math.round((28 / moonPhase) * 100);
         d['moonIcon'] = moonIcon(moonPhase);
     }

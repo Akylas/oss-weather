@@ -19,6 +19,7 @@
     import { WeatherLocation } from '~/services/api';
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
     import { Color } from '@akylas/nativescript';
+    import { getMoonPhase, moonIcon } from '~/helpers/formatter';
 
     const nightPaint = new Paint();
     const nightLiinePaint = new Paint();
@@ -152,7 +153,7 @@
     export let startTime = Date.now();
     export let timezoneOffset;
     // let limitLine: LimitLine;
-    let illumination: GetMoonIlluminationResult; // MoonPhase;
+    let moonPhase: number; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
     let sunAzimuth: CompassInfo; // SunTimes;
     let sunriseEndAzimuth: CompassInfo; // SunTimes;
@@ -338,30 +339,10 @@
         updateChartData();
     }
 
-    function getMoonPhaseIcon(illumination: any /* MoonPhase */) {
-        switch (Math.round(illumination.phase * 7)) {
-            case 0:
-                return 'mdi-moon-new';
-            case 1:
-                return 'mdi-moon-waxing-crescent';
-            case 2:
-                return 'mdi-moon-first-quarter';
-            case 3:
-                return 'mdi-moon-waxing-gibbous';
-            case 4:
-                return 'mdi-moon-full';
-            case 5:
-                return 'mdi-moon-waning-gibbous';
-            case 6:
-                return 'mdi-moon-last-quarter';
-            case 7:
-                return 'mdi-moon-waning-crescent';
-        }
-    }
     $: {
         try {
             const date = getStartOfDay(startTime, 0).toDate();
-            illumination = getMoonIllumination(date);
+            moonPhase = getMoonPhase(date);
             moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
             sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
@@ -477,7 +458,7 @@
             </cgroup>
             <cgroup textAlignment="right" verticalAlignment="middle">
                 <!-- <cspan text={moonAzimuth.exact + '(' + Math.round(illumination.fraction * 100) + '%) '} /> -->
-                <cspan fontFamily={$fonts.mdi} text={getMoonPhaseIcon(illumination)} />
+                <cspan fontFamily={$fonts.wi} text={moonIcon(moonPhase)} />
             </cgroup>
         </canvaslabel>
     {/if}

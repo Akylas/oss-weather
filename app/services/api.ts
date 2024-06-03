@@ -6,7 +6,7 @@ import { connectionType, getConnectionType, startMonitoring, stopMonitoring } fr
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
 import { lang } from '~/helpers/locale';
-import { CustomError, HTTPError, NoNetworkError, wrapNativeException } from '~/utils/error';
+import { CustomError, HTTPError, NoNetworkError, TimeoutError, wrapNativeException } from '~/utils/error';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { Photon, PhotonProperties } from '../../typings/photon';
 import { NominatimResult } from '../../typings/nominatim';
@@ -259,15 +259,25 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
         const response = await https.request<T>(requestParams);
         return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
     } catch (error) {
-        throw wrapNativeException(
-            error,
-            (message) =>
-                new HTTPError({
-                    message,
+        throw wrapNativeException(error, (message) => {
+            if (message.indexOf('UnknownHostException')) {
+                return new NoNetworkError({
                     statusCode: -1,
                     requestParams
-                })
-        );
+                });
+            }
+            if (message.indexOf('SocketTimeoutException')) {
+                return new TimeoutError({
+                    statusCode: -1,
+                    requestParams
+                });
+            }
+            return new HTTPError({
+                message,
+                statusCode: -1,
+                requestParams
+            });
+        });
     }
 }
 

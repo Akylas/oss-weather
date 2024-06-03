@@ -60,7 +60,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
+        const centeredItemsToDraw = weatherDataService.getAllIconsData(item, ['windBeaufort']);
         const w2 = w / 2;
 
         const nbLines = Math.round(centeredItemsToDraw.length / 2);
@@ -152,6 +152,7 @@
                 centeredItemsToDraw.forEach((c, index) => {
                     const x = index * 45 * $fontScale + iconsLeft;
                     const paint = c.paint || textIconPaint;
+                    paint.setTextAlign(Align.CENTER);
                     paint.textSize = c.iconFontSize;
                     paint.setColor(c.color || colorOnSurface);
                     if (c.customDraw) {
@@ -220,6 +221,24 @@
             0,
             false
         ).draw(canvas);
+
+        // const smallItemsToDraw = weatherDataService.getSmallIconsData(item);
+        // let iconRight = 10;
+        // for (let index = 0; index < smallItemsToDraw.length; index++) {
+        //     const c = smallItemsToDraw[index];
+
+        //     const paint = c.paint || textIconPaint;
+        //     paint.setTextAlign(Align.LEFT);
+        //     paint.setTextSize(c.iconFontSize);
+        //     paint.setColor(c.color || colorOnSurface);
+        //     if (c.customDraw) {
+        //         const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - 7 - 15 * $fontScale, false);
+        //         iconRight += result;
+        //     } else if (c.icon) {
+        //         canvas.drawText(c.icon, iconRight, h - 7, paint);
+        //         iconRight += 24 * $fontScale;
+        //     }
+        // }
     }
 
     function onChartConfigure(chart: CombinedChart): void {

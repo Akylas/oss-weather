@@ -269,7 +269,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
+        const centeredItemsToDraw = weatherDataService.getAllIconsData(item, ['windBeaufort']);
         const w2 = Utils.layout.toDeviceIndependentPixels(lineChart.nativeElement.getMeasuredWidth()) / 2;
         // canvas.translate(26, 0);
         switch ($weatherDataLayout) {
@@ -356,23 +356,24 @@
                     const paint = c.paint || textIconPaint;
                     paint.textSize = c.iconFontSize;
                     paint.setColor(c.color || colorOnSurface);
-                    if (c.customDraw) {
-                        c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);
-                    } else {
-                        if (c.icon) {
-                            canvas.drawText(c.icon, x, iconsTop + 20, paint);
-                        }
-                        if (c.value) {
-                            textIconPaint.textSize = 12 * $fontScale;
-                            textIconPaint.setColor(c.color || colorOnSurface);
-                            canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
-                        }
-                        if (c.subvalue) {
-                            textIconPaint.textSize = 9 * $fontScale;
-                            textIconPaint.setColor(c.color || colorOnSurface);
-                            canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
-                        }
+                    paint.setTextAlign(Align.CENTER);
+                    // if (c.customDraw) {
+                    //     c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);
+                    // } else {
+                    if (c.icon) {
+                        canvas.drawText(c.icon, x, iconsTop + 20, paint);
                     }
+                    if (c.value) {
+                        textIconPaint.textSize = 12 * $fontScale;
+                        textIconPaint.setColor(c.color || colorOnSurface);
+                        canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
+                    }
+                    if (c.subvalue) {
+                        textIconPaint.textSize = 9 * $fontScale;
+                        textIconPaint.setColor(c.color || colorOnSurface);
+                        canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
+                    }
+                    // }
                 });
                 break;
             }

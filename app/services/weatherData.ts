@@ -1,5 +1,5 @@
-import { Align, Cap, Paint, Style } from '@nativescript-community/ui-canvas';
-import { ApplicationSettings, Color, Observable } from '@nativescript/core';
+import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
+import { ApplicationSettings, Color, Observable, verticalAlignmentProperty } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
 import { colorForAqi, convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
@@ -13,6 +13,7 @@ import { PopoverOptions, showPopover } from '@nativescript-community/ui-popover/
 import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
 import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
 import { ComponentProps } from 'svelte';
+import { createNativeAttributedString } from '@nativescript-community/text';
 
 export enum UNITS {
     // InchHg = 'InchHg',
@@ -213,12 +214,13 @@ export interface CommonData {
     iconColor?: string | Color;
     color?: string | Color;
     textColor?: string | Color;
+    backgroundColor?: string | Color;
     paint?: Paint;
     iconFontSize?: number;
     icon?: string;
     value?: string | number;
     subvalue?: string;
-    customDraw?(...args);
+    customDraw?(canvas: Canvas, fontScale: number, paint: Paint, c: CommonData, x: number, y: number, ...args);
 }
 export interface CommonDataOptions {
     id: string;
@@ -271,7 +273,6 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
 }
 
 export class DataService extends Observable {
-    // currentWeatherDataOptions: { [k: string]: CommonDataOptions };
     minUVIndexToShow = MIN_UV_INDEX;
     constructor() {
         super();
@@ -281,10 +282,13 @@ export class DataService extends Observable {
             this.minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
         };
         setminUVIndexToShow();
-        prefs.on('key:common_data', this.load, this);
+        // prefs.on('key:common_data', this.load, this);
         prefs.on('key:min_uv_index', setminUVIndexToShow);
     }
     currentWeatherData: WeatherProps[] = [];
+    currentSmallWeatherData: WeatherProps[] = [];
+    allWeatherData: WeatherProps[] = [];
+
     getWeatherDataOptions(key: WeatherProps) {
         return {
             id: key,
@@ -293,8 +297,11 @@ export class DataService extends Observable {
             // getData: this.getItemData
         };
     }
-    updateCurrentWeatherData(data: WeatherProps[], save = true) {
+    updateCurrentWeatherData(data: WeatherProps[], smallData: WeatherProps[], save = true) {
+        DEV_LOG && console.log('updateCurrentWeatherData', data, smallData);
         this.currentWeatherData = data;
+        this.currentSmallWeatherData = smallData;
+        this.allWeatherData = data.concat(smallData);
         // this.currentWeatherDataOptions = data.reduce((acc, key) => {
         //     acc[key] = {
         //         id: key,
@@ -306,16 +313,28 @@ export class DataService extends Observable {
         // }, {});
         if (save) {
             ApplicationSettings.setString('common_data', JSON.stringify(data));
-            globalObservable.notify({ eventName: 'weatherData', data });
+            ApplicationSettings.setString('common_small_data', JSON.stringify(smallData));
+            globalObservable.notify({ eventName: 'weatherData', data, smallData });
         }
     }
     load() {
         this.updateCurrentWeatherData(
             JSON.parse(ApplicationSettings.getString('common_data', '["windSpeed", "precipAccumulation", "cloudCover", "uvIndex", "windGust", "windBeaufort", "moon"]')),
+            JSON.parse(ApplicationSettings.getString('common_small_data', '[]')),
             false
         );
     }
+    isDataEnabled(key) {
+        return this.allWeatherData.indexOf(key) !== -1;
+    }
 
+    getAllIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
+        let keys = addedBefore.concat(this.allWeatherData).concat(addedAfter);
+        if (filter.length) {
+            keys = keys.filter((k) => filter.indexOf(k) === -1);
+        }
+        return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
+    }
     getIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
         let keys = addedBefore.concat(this.currentWeatherData).concat(addedAfter);
         if (filter.length) {
@@ -323,9 +342,16 @@ export class DataService extends Observable {
         }
         return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
     }
+    getSmallIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
+        let keys = addedBefore.concat(this.currentSmallWeatherData).concat(addedAfter);
+        if (filter.length) {
+            keys = keys.filter((k) => filter.indexOf(k) === -1);
+        }
+        return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
+    }
 
     getItemData(key: WeatherProps, item: CommonWeatherData, options = this.getWeatherDataOptions(key)): CommonData {
-        if (!options || !item.hasOwnProperty(key) || item[key] === null) {
+        if (!options || this.allWeatherData.indexOf(key) === -1 || !item.hasOwnProperty(key) || item[key] === null) {
             return null;
         }
         let icon: string = options.icon as any;
@@ -462,11 +488,85 @@ export class DataService extends Observable {
                         key,
                         iconFontSize,
                         paint: wiPaint,
-                        color: item.windGust > 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
-                        textColor: item.windGust > 80 ? '#ffffff' : item.windGust > 50 ? '#222' : '#FFBC03',
+                        backgroundColor: item.windGust > 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
+                        color: item.windGust > 80 ? '#ffffff' : item.windGust > 50 ? '#222' : '#FFBC03',
                         icon,
                         value: data[0],
-                        subvalue: data[1]
+                        subvalue: data[1],
+                        customDraw(canvas: Canvas, fontScale: number, textPaint: Paint, data: CommonData, x: number, y: number, withIcon = false) {
+                            textPaint.setTextSize(11 * fontScale);
+                            textPaint.setColor(data.color);
+                            const staticLayout = new StaticLayout(
+                                withIcon
+                                    ? createNativeAttributedString(
+                                          {
+                                              spans: [
+                                                  {
+                                                      fontFamily: data.paint.fontFamily,
+                                                      fontSize: data.iconFontSize * 0.9,
+                                                      color: data.color,
+                                                      text: data.icon,
+                                                      verticalAlignment: 'center'
+                                                  },
+                                                  {
+                                                      text: ` ${data.value} ${data.subvalue}`,
+                                                      verticalAlignment: 'center'
+                                                  }
+                                              ]
+                                          },
+                                          null
+                                      )
+                                    : `${data.value} ${data.subvalue}`,
+                                textPaint,
+                                canvas.getWidth(),
+                                LayoutAlignment.ALIGN_NORMAL,
+                                1,
+                                0,
+                                false
+                            );
+
+                            canvas.save();
+                            let result = 0;
+                            switch (textPaint.getTextAlign()) {
+                                case Align.CENTER:
+                                    canvas.translate(x, y);
+                                    break;
+                                case Align.LEFT:
+                                    canvas.translate(x + 4, y);
+                                    break;
+                                case Align.RIGHT:
+                                    canvas.translate(x - 4, y);
+                                    break;
+                            }
+                            const width = staticLayout.getLineWidth(0);
+                            if (data.backgroundColor) {
+                                const oldColor = textPaint.getColor();
+                                DEV_LOG && console.log('width', width);
+                                // this fixes a current issue with the Paint getDrawTextAttribs is set on Paint in getHeight
+                                // if we change the paint color to draw the rect
+                                // then if we do it too soon the paint getDrawTextAttribs is going to use that new
+                                // color and thus we loose the color set before for the text
+                                const height = staticLayout.getHeight();
+                                textPaint.setColor(data.backgroundColor);
+                                switch (textPaint.getTextAlign()) {
+                                    case Align.CENTER:
+                                        canvas.drawRoundRect(-width / 2 - 4, -1, width / 2 + 4, height - 0, 4, 4, textPaint);
+                                        break;
+                                    case Align.LEFT:
+                                        canvas.drawRoundRect(-4, -1, width + 4, height - 0, 4, 4, textPaint);
+                                        break;
+                                    case Align.RIGHT:
+                                        canvas.drawRoundRect(-width - 4, -1, -4, height - 0, 4, 4, textPaint);
+                                        break;
+                                }
+                                textPaint.setColor(oldColor);
+                            }
+                            result = width + 16;
+
+                            staticLayout.draw(canvas);
+                            canvas.restore();
+                            return result;
+                        }
                     };
                 }
                 break;
@@ -513,6 +613,7 @@ export class DataService extends Observable {
                     paint: wiPaint,
                     iconFontSize,
                     icon,
+                    color: getWeatherDataColor(key),
                     value: l('moon')
                 };
             case WeatherProps.windBeaufort:

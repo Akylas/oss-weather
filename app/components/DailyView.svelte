@@ -51,7 +51,11 @@
         paint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, paint);
 
-        // textPaint.setTextAlign(Align.LEFT);
+        textPaint.setTextAlign(Align.RIGHT);
+        textPaint.setTextSize(13 * $fontScale);
+        textPaint.setColor(colorOnSurfaceVariant);
+        canvas.drawText(item.description, w - 10, h - 10, textPaint);
+        textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor(colorOnSurface);
         // item.time is in UTC which will always be the starting time of the day. If we offset we might get the wrong date.
@@ -61,7 +65,7 @@
         canvas.drawText(formatDate(item.time, 'DD/MM', 0), 10, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
-        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['moon', 'windBeaufort']);
+        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
         // centeredItemsToDraw.push({
         //     paint: wiPaint,
         //     color: nightColor,
@@ -90,6 +94,8 @@
                     const y = iconsTop + lineHeight * lineIndex;
                     const c = centeredItemsToDraw[index];
                     const paint = c.paint || textIconPaint;
+                    paint.setTextAlign(Align.CENTER);
+
                     if (c.icon) {
                         // paint.setColor(c.color || colorOnSurface);
                         // canvas.drawText(c.icon, columnIndex === 0 ? w2 - 20 : w2 + 20, y + lineHeight + lineHeight / 2 - paint.textSize / 2, paint);
@@ -172,25 +178,26 @@
 
                     const x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
                     const paint = c.paint || textIconPaint;
-                    if (c.customDraw) {
-                        c.customDraw(canvas, $fontScale, paint, c, x, iconsTop + 20, 40);
-                    } else {
-                        paint.setTextSize(c.iconFontSize);
-                        paint.setColor(c.color || colorOnSurface);
-                        if (c.icon) {
-                            canvas.drawText(c.icon, x, iconsTop + 20, paint);
-                        }
-                        if (c.value) {
-                            textIconSubPaint.setTextSize(12 * $fontScale);
-                            textIconSubPaint.setColor(c.color || colorOnSurface);
-                            canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
-                        }
-                        if (c.subvalue) {
-                            textIconSubPaint.setTextSize(9 * $fontScale);
-                            textIconSubPaint.setColor(c.color || colorOnSurface);
-                            canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
-                        }
+                    paint.setTextAlign(Align.CENTER);
+                    // if (c.customDraw) {
+                    //     c.customDraw(canvas, $fontScale, paint, c, x, iconsTop + 20, 40);
+                    // } else {
+                    paint.setTextSize(c.iconFontSize);
+                    paint.setColor(c.color || colorOnSurface);
+                    if (c.icon) {
+                        canvas.drawText(c.icon, x, iconsTop + 20, paint);
                     }
+                    if (c.value) {
+                        textIconSubPaint.setTextSize(12 * $fontScale);
+                        textIconSubPaint.setColor(c.color || colorOnSurface);
+                        canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconSubPaint);
+                    }
+                    if (c.subvalue) {
+                        textIconSubPaint.setTextSize(9 * $fontScale);
+                        textIconSubPaint.setColor(c.color || colorOnSurface);
+                        canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconSubPaint);
+                    }
+                    // }
                 }
                 break;
             }
@@ -225,19 +232,33 @@
             canvas.drawText(item.windBeaufortIcon, 50, h - 1.4 * windBeaufortData.iconFontSize, windBeaufortData.paint);
         }
 
-        textPaint.setTextSize(13 * $fontScale);
-        textPaint.setColor(colorOnSurfaceVariant);
-        canvas.drawText(item.description, 10, h - 10, textPaint);
+        // const moonData = weatherDataService.getItemData(WeatherProps.moon, item);
+        // if (moonData) {
+        //     moonData.paint.setColor(moonData.color);
+        //     moonData.paint.setTextSize(moonData.iconFontSize);
+        //     canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
+        // }
 
-        const moonData = weatherDataService.getItemData(WeatherProps.moon, item);
-        if (moonData) {
-            moonData.paint.setColor(moonData.color);
-            moonData.paint.setTextSize(moonData.iconFontSize);
-            canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
+        const smallItemsToDraw = weatherDataService.getSmallIconsData(item);
+        let iconRight = 10;
+        for (let index = 0; index < smallItemsToDraw.length; index++) {
+            const c = smallItemsToDraw[index];
+
+            const paint = c.paint || textIconPaint;
+            paint.setTextAlign(Align.LEFT);
+            paint.setTextSize(c.iconFontSize);
+            paint.setColor(c.color || colorOnSurface);
+            if (c.customDraw) {
+                const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - 7 - 15 * $fontScale, false);
+                iconRight += result;
+            } else if (c.icon) {
+                canvas.drawText(c.icon, iconRight, h - 7, paint);
+                iconRight += 24 * $fontScale;
+            }
         }
     }
 </script>
 
 <canvasview bind:this={canvasView} height={($weatherDataLayout === 'line' ? 110 : 100) * $fontScale} on:draw={drawOnCanvas} on:tap={(event) => dispatch('tap', event)}>
-    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight="10" marginTop={16 * $fontScale} size={60 * $fontScale} />
+    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight="10" size={60 * $fontScale} />
 </canvasview>

@@ -265,7 +265,9 @@
             case 'weather_data':
                 return () => {
                     const currentData = weatherDataService.currentWeatherData;
-                    const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => currentData.indexOf(d) === -1);
+                    const currentSmallData = weatherDataService.currentSmallWeatherData;
+                    const allData = currentData.concat(currentSmallData);
+                    const disabledData = AVAILABLE_WEATHER_DATA.filter((d) => allData.indexOf(d) === -1);
                     return [
                         {
                             id: 'setting',
@@ -313,6 +315,22 @@
                     ]
                         .concat(
                             currentData.map((k) => ({
+                                id: k,
+                                reorder: true,
+                                type: 'reorder',
+                                title: getWeatherDataTitle(k)
+                            })) as any
+                        )
+                        .concat([
+                            {
+                                type: 'sectionheader',
+                                id: 'enabled_small',
+                                reorder: true,
+                                title: lc('enabled_small_weather_data')
+                            }
+                        ] as any)
+                        .concat(
+                            currentSmallData.map((k) => ({
                                 id: k,
                                 reorder: true,
                                 type: 'reorder',
@@ -575,17 +593,22 @@
             } else if (item.type === 'reorder') {
                 const position = items.indexOf(item);
                 let disabledPosition = items.findIndex((d) => d.id === 'disabled');
+                let enabledSmallPosition = items.findIndex((d) => d.id === 'enabled_small');
                 let enabledPosition = items.findIndex((d) => d.id === 'enabled');
                 if (position > disabledPosition) {
                     items.splice(position, 1);
-                    items.splice(disabledPosition, 0, item);
+                    items.splice(enabledSmallPosition, 0, item);
                 } else if (position > enabledPosition) {
                     items.splice(position, 1);
-                    items.push(item);
+                    items.splice(disabledPosition, 0, item);
                 }
                 disabledPosition = items.findIndex((d) => d.id === 'disabled');
+                enabledSmallPosition = items.findIndex((d) => d.id === 'enabled_small');
                 enabledPosition = items.findIndex((d) => d.id === 'enabled');
-                weatherDataService.updateCurrentWeatherData([...items.slice(enabledPosition + 1, disabledPosition)].map((d) => d.id));
+                weatherDataService.updateCurrentWeatherData(
+                    [...items.slice(enabledPosition + 1, enabledSmallPosition)].map((d) => d.id),
+                    [...items.slice(enabledSmallPosition + 1, disabledPosition)].map((d) => d.id)
+                );
                 return;
             }
             switch (item.id) {
@@ -909,8 +932,12 @@
         try {
             const newIndex = e.data.targetIndex;
             const disabledPosition = items.findIndex((d) => d.id === 'disabled');
+            const enabledSmallPosition = items.findIndex((d) => d.id === 'enabled_small');
             const enabledPosition = items.findIndex((d) => d.id === 'enabled');
-            weatherDataService.updateCurrentWeatherData([...items.slice(enabledPosition + 1, disabledPosition)].map((d) => d.id));
+            weatherDataService.updateCurrentWeatherData(
+                [...items.slice(enabledPosition + 1, enabledSmallPosition)].map((d) => d.id),
+                [...items.slice(enabledSmallPosition + 1, disabledPosition)].map((d) => d.id)
+            );
         } catch (error) {
             showError(error);
         }
@@ -978,7 +1005,7 @@
                 </gridlayout>
             </Template>
             <Template key="sectionheader" let:item>
-                <label class="sectionHeader" text={item.title} />
+                <label class="sectionHeader" {...item.additionalProps || {}} text={item.title} />
             </Template>
             <Template key="switch" let:item>
                 <ListItemAutoSize fontSize={20} leftIcon={item.icon} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>

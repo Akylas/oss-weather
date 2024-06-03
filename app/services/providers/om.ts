@@ -203,7 +203,7 @@ export class OMProvider extends WeatherProvider {
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
         const forecast_minutely_15 = Math.round(ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15);
-        const currentData = weatherDataService.currentWeatherData.concat(weatherProps || []);
+        const currentData = weatherDataService.allWeatherData.concat(weatherProps || []);
         const apikeyValues = API_KEY_VALUES[apiName]({ feelsLikeTemperatures, current, minutely, currentData });
         return request<T>({
             url: `https://${subdomain}.open-meteo.com/v1/${apiName}`,

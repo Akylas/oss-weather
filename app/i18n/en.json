@@ -66,6 +66,7 @@
     "drizzle": "Drizzle",
     "email": "E-mail",
     "email_required": "A valid e-mail address is required",
+    "enabled_small_weather_data": "enabled weather data represented with a small icon (when possible)",
     "enabled_weather_data": "enabled weather data",
     "english": "English",
     "error": "Error",

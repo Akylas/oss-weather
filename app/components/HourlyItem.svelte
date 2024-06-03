@@ -195,27 +195,28 @@
         iconDeltaY += 18;
         const windGustData = weatherDataService.getItemData(WeatherProps.windGust, item);
         if (windGustData) {
-            textPaint.setTextSize(11 * $fontScale);
-            textPaint.setColor(windGustData.textColor);
-            const staticLayout = new StaticLayout(`${windGustData.value} ${windGustData.subvalue}`, textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
+            windGustData.customDraw(canvas, $fontScale, paint, windGustData, w2, iconDecale + 4 - 18 + iconDeltaY);
+            // textPaint.setTextSize(11 * $fontScale);
+            // textPaint.setColor(windGustData.textColor);
+            // const staticLayout = new StaticLayout(`${windGustData.value} ${windGustData.subvalue}`, textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
 
-            canvas.save();
-            canvas.translate(w2, iconDecale + 4 - 18 + iconDeltaY);
-            if (windGustData.color) {
-                const oldColor = textPaint.getColor();
-                const width = staticLayout.getWidth();
-                // this fixes a current issue with the Paint getDrawTextAttribs is set on Paint in getHeight
-                // if we change the paint color to draw the rect
-                // then if we do it too soon the paint getDrawTextAttribs is going to use that new
-                // color and thus we loose the color set before for the text
-                const height = staticLayout.getHeight();
-                textPaint.setColor(windGustData.color);
-                canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, height - 0, 4, 4, textPaint);
-                textPaint.setColor(oldColor);
-            }
+            // canvas.save();
+            // canvas.translate(w2, iconDecale + 4 - 18 + iconDeltaY);
+            // if (windGustData.color) {
+            //     const oldColor = textPaint.getColor();
+            //     const width = staticLayout.getWidth();
+            //     // this fixes a current issue with the Paint getDrawTextAttribs is set on Paint in getHeight
+            //     // if we change the paint color to draw the rect
+            //     // then if we do it too soon the paint getDrawTextAttribs is going to use that new
+            //     // color and thus we loose the color set before for the text
+            //     const height = staticLayout.getHeight();
+            //     textPaint.setColor(windGustData.color);
+            //     canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, height - 0, 4, 4, textPaint);
+            //     textPaint.setColor(oldColor);
+            // }
 
-            staticLayout.draw(canvas);
-            canvas.restore();
+            // staticLayout.draw(canvas);
+            // canvas.restore();
         }
     }
     async function onTap() {

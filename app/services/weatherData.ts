@@ -2,7 +2,7 @@ import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from 
 import { ApplicationSettings, Color, Observable, verticalAlignmentProperty } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
-import { colorForAqi, convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
+import { colorForAqi, convertValueToUnit, convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
 import { l, lc } from '~/helpers/locale';
 import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
@@ -477,7 +477,8 @@ export class DataService extends Observable {
                         color: item.uvIndexColor,
                         iconFontSize,
                         icon,
-                        value: formatWeatherValue(item, key)
+                        value: convertWeatherValueToUnit(item, key)[0],
+                        // subvalue: 'uv'
                     };
                 }
                 break;

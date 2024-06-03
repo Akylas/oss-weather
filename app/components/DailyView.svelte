@@ -260,5 +260,5 @@
 </script>
 
 <canvasview bind:this={canvasView} height={($weatherDataLayout === 'line' ? 110 : 100) * $fontScale} on:draw={drawOnCanvas} on:tap={(event) => dispatch('tap', event)}>
-    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight="10" size={60 * $fontScale} />
+    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight={10} marginTop={5} size={60 * $fontScale} />
 </canvasview>

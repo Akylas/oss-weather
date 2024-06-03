@@ -1,0 +1,11 @@
+### Features
+- new way of showing data. You can now select weather datas to show as "small" icon in daily view.You can do in settings/weatherdata by dragging data in the correct section
+
+### Bug fixes
+- change map leaflet attribution to point to the github repo
+- Translated using Weblate (German)
+- Translated using Weblate (Russian)
+- Translated using Weblate (Hindi)
+- Translated using Weblate (Spanish)
+- the actionbar swipe gesture is now a setting disabled by default (in settings/providers)
+- 

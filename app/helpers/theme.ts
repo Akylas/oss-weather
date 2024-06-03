@@ -28,7 +28,7 @@ export const currentTheme = writable('auto');
 
 let started = false;
 let autoDarkToBlack = getBoolean('auto_black', false);
-const ThemeBlack = 'ns-black';
+const ThemeBlack = 'black';
 
 Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanceChangedEventData) => {
     DEV_LOG && console.log('systemAppearanceChangedEvent', theme, event.newValue, autoDarkToBlack);

@@ -155,22 +155,18 @@
                     paint.setTextAlign(Align.CENTER);
                     paint.textSize = c.iconFontSize;
                     paint.setColor(c.color || colorOnSurface);
-                    if (c.customDraw) {
-                        c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);
-                    } else {
-                        if (c.icon) {
-                            canvas.drawText(c.icon, x, iconsTop + 20, paint);
-                        }
-                        if (c.value) {
-                            textIconPaint.textSize = 12 * $fontScale;
-                            textIconPaint.setColor(c.color || colorOnSurface);
-                            canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
-                        }
-                        if (c.subvalue) {
-                            textIconPaint.textSize = 9 * $fontScale;
-                            textIconPaint.setColor(c.color || colorOnSurface);
-                            canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
-                        }
+                    if (c.icon) {
+                        canvas.drawText(c.icon, x, iconsTop + 20, paint);
+                    }
+                    if (c.value) {
+                        textIconPaint.textSize = 12 * $fontScale;
+                        textIconPaint.setColor(c.color || colorOnSurface);
+                        canvas.drawText(c.value + '', x, iconsTop + 20 + 19 * $fontScale, textIconPaint);
+                    }
+                    if (c.subvalue) {
+                        textIconPaint.textSize = 9 * $fontScale;
+                        textIconPaint.setColor(c.color || colorOnSurface);
+                        canvas.drawText(c.subvalue + '', x, iconsTop + 20 + 30 * $fontScale, textIconPaint);
                     }
                 });
                 break;

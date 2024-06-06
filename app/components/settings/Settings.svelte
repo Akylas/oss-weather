@@ -591,6 +591,10 @@
                 }, 10);
                 return;
             } else if (item.type === 'reorder') {
+                if (ignoreNextReorderTap) {
+                    ignoreNextReorderTap = false;
+                    return;
+                }
                 const position = items.indexOf(item);
                 let disabledPosition = items.findIndex((d) => d.id === 'disabled');
                 let enabledSmallPosition = items.findIndex((d) => d.id === 'enabled_small');
@@ -927,9 +931,13 @@
         collectionView?.nativeView?.refresh();
     }
     onThemeChanged(refreshCollectionView);
+    let ignoreNextReorderTap = false;
 
     async function onItemReordered(e) {
         try {
+            if (__IOS__) {
+                ignoreNextReorderTap = true;
+            }
             const newIndex = e.data.targetIndex;
             const disabledPosition = items.findIndex((d) => d.id === 'disabled');
             const enabledSmallPosition = items.findIndex((d) => d.id === 'enabled_small');
@@ -951,6 +959,7 @@
 
     function startReordering(item, event: TouchGestureEventData) {
         if (event.action === 'down') {
+            ignoreNextReorderTap = false;
             const index = items.indexOf(item);
             collectionView.nativeView.startDragging(index, event.getActivePointers()[0]);
         }

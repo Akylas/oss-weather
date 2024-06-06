@@ -66,6 +66,7 @@
     "drizzle": "बूंदा बांदी",
     "email": "ई-मेल",
     "email_required": "एक मान्य ई-मेल पता जरूरी है",
+    "enabled_small_weather_data": "सक्षम मौसम डेटा को एक छोटे आइकन के साथ दर्शाया गया (जब संभव हो)",
     "enabled_weather_data": "सक्षम मौसम डेटा",
     "english": "अंग्रेज़ी",
     "error": "त्रुटि",
@@ -229,6 +230,8 @@
     "source_code": "स्रोत कोड",
     "source_code_desc": "GitHub पर स्रोत कोड प्राप्त करें",
     "spanish": "स्पैनिश",
+    "swipe_actionbar_provider": "एक्शनबार स्वाइप जेस्चर",
+    "swipe_actionbar_provider_desc": "प्रदाता को तुरंत बदलने के लिए एक्शनबार पर बाएं या दाएं स्वाइप करें",
     "theme": {
         "auto": "स्वतः",
         "black": "काली",

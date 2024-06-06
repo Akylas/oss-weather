@@ -209,11 +209,13 @@
                         if (item) {
                             switch (item.id) {
                                 case 'share':
-                                    showLoading();
-                                    DEV_LOG && console.log('share', currentImageSrc);
-                                    await share({
-                                        image: await ImageSource.fromUrl(currentImageSrc)
-                                    });
+                                    if (currentImageSrc) {
+                                        showLoading();
+                                        DEV_LOG && console.log('share', currentImageSrc);
+                                        await share({
+                                            image: await ImageSource.fromUrl(currentImageSrc)
+                                        });
+                                    }
                                     break;
                                 // case 'save':
                                 //     await permRequest('storage');

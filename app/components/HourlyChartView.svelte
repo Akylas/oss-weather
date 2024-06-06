@@ -443,9 +443,9 @@
                                     set.mode = Mode.CUBIC_BEZIER;
                                     // set.cubicIntensity = 0.4;
                                     set.spaceBottom = 2; // ensure lowest value label can be seen
-                                    set.drawValuesEnabled = true;
-                                    set.valueTextColor = colorOnSurface;
-                                    set.valueTextSize = 10;
+                                    // set.drawValuesEnabled = true;
+                                    // set.valueTextColor = colorOnSurface;
+                                    // set.valueTextSize = 10;
                                     break;
                                 case WeatherProps.windBearing:
                                     set.lineWidth = 0;
@@ -577,6 +577,7 @@
     function updateGradient() {
         const chart = chartView?.nativeView;
         const height = chart.viewPortHandler.contentRect.height();
+
         if (temperatureData && height && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, height, 0);
             const dataSet = chart.lineData?.getDataSetByLabel(WeatherProps.temperature, false);
@@ -602,6 +603,16 @@
                 chart.invalidate();
             }
         }, 2);
+    }
+    function onChartPostDraw(event) {
+        if (!lastGradient) {
+            // we need to wait for offsets to be calculated before we can compute the gradient
+            const chart = event.object as CombinedChart;
+            updateGradient();
+            setTimeout(() => {
+                chart.invalidate();
+            }, 0);
+        }
     }
     function onChartDraw() {
         lastIconX = undefined;
@@ -781,6 +792,7 @@
             failOffsetYEnd: 40
         }}
         on:draw={onChartDraw}
+        on:firstOffsetsCalculated={updateGradient}
         on:layoutChanged={onLayoutChanged}
         on:highlight={onHighlight}
         on:pan={onPan}>

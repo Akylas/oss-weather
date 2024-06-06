@@ -477,7 +477,7 @@ export class DataService extends Observable {
                         color: item.uvIndexColor,
                         iconFontSize,
                         icon,
-                        value: convertWeatherValueToUnit(item, key)[0],
+                        value: convertWeatherValueToUnit(item, key)[0]
                         // subvalue: 'uv'
                     };
                 }

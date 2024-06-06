@@ -70,7 +70,7 @@ export function updateLoadingProgress(msg: Partial<ShowLoadingOptions>) {
     if (showingLoading()) {
         const loadingIndicator = getLoadingIndicator();
         const props = {
-            progress: msg.progress
+            // progress: msg.progress
         };
         if (msg.text) {
             props['text'] = msg.text;

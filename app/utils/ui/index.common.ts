@@ -12,6 +12,12 @@ import { colors, fontScale } from '~/variables';
 import { showError } from '../error';
 import type OptionSelect__SvelteComponent_ from '~/components/common/OptionSelect.svelte';
 import { ComponentProps } from 'svelte';
+import type LoadingIndicator__SvelteComponent_ from '~/components/common/LoadingIndicator.svelte';
+import LoadingIndicator from '~/components/common/LoadingIndicator.svelte';
+
+export function timeout(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export async function openLink(url) {
     const { colorPrimary } = get(colors);
@@ -38,48 +44,79 @@ export async function openLink(url) {
     }
 }
 
-let loadingIndicator: AlertDialog & { label?: Label };
+export interface ShowLoadingOptions {
+    title?: string;
+    text: string;
+    progress?: number;
+    onButtonTap?: () => void;
+}
+
+let loadingIndicator: AlertDialog & { instance?: LoadingIndicator__SvelteComponent_ };
 let showLoadingStartTime: number = null;
 function getLoadingIndicator() {
     if (!loadingIndicator) {
-        const stack = new StackLayout();
-        stack.padding = 10;
-        stack.orientation = 'horizontal';
-        const activityIndicator = new ActivityIndicator();
-        activityIndicator.className = 'activity-indicator';
-        activityIndicator.busy = true;
-        stack.addChild(activityIndicator);
-        const label = new Label();
-        label.paddingLeft = 15;
-        label.textWrap = true;
-        label.verticalAlignment = 'middle';
-        label.fontSize = 16;
-        stack.addChild(label);
+        const componentInstanceInfo = resolveComponentElement(LoadingIndicator, {});
+        const view: View = componentInstanceInfo.element.nativeView;
+        // const stack = new StackLayout()
         loadingIndicator = new AlertDialog({
-            view: stack,
+            view,
             cancelable: false
         });
-        loadingIndicator.label = label;
+        loadingIndicator.instance = componentInstanceInfo.viewInstance as LoadingIndicator__SvelteComponent_;
     }
     return loadingIndicator;
 }
-export function showLoading(msg: string = lc('loading')) {
-    const loadingIndicator = getLoadingIndicator();
-    // console.log('showLoading', msg, !!loadingIndicator);
-    loadingIndicator.label.text = msg + '...';
-    showLoadingStartTime = Date.now();
-    loadingIndicator.show();
+export function updateLoadingProgress(msg: Partial<ShowLoadingOptions>) {
+    if (showingLoading()) {
+        const loadingIndicator = getLoadingIndicator();
+        const props = {
+            progress: msg.progress
+        };
+        if (msg.text) {
+            props['text'] = msg.text;
+        }
+        loadingIndicator.instance.$set(props);
+    }
 }
-export function hideLoading() {
+export async function showLoading(msg?: string | ShowLoadingOptions) {
+    try {
+        const text = (msg as any)?.text || (typeof msg === 'string' && msg) || lc('loading');
+        const indicator = getLoadingIndicator();
+        indicator.instance.onButtonTap = msg?.['onButtonTap'];
+        const props = {
+            showButton: !!msg?.['onButtonTap'],
+            text,
+            title: (msg as any)?.title,
+            progress: null
+        };
+        if (msg && typeof msg !== 'string' && msg?.hasOwnProperty('progress')) {
+            props.progress = msg.progress;
+        } else {
+            props.progress = null;
+        }
+        indicator.instance.$set(props);
+        if (showLoadingStartTime === null) {
+            showLoadingStartTime = Date.now();
+            indicator.show();
+        }
+    } catch (error) {
+        showError(error, { silent: true });
+    }
+}
+export function showingLoading() {
+    return showLoadingStartTime !== null;
+}
+export async function hideLoading() {
     if (!loadingIndicator) {
         return;
     }
     const delta = showLoadingStartTime ? Date.now() - showLoadingStartTime : -1;
-    if (delta >= 0 && delta < 1000) {
-        setTimeout(() => hideLoading(), 1000 - delta);
-        return;
+    if (__IOS__ && delta >= 0 && delta < 1000) {
+        await timeout(1000 - delta);
+        // setTimeout(() => hideLoading(), 1000 - delta);
+        // return;
     }
-    // log('hideLoading', !!loadingIndicator);
+    showLoadingStartTime = null;
     if (loadingIndicator) {
         loadingIndicator.hide();
     }
@@ -146,7 +183,7 @@ export async function showPopoverMenu<T = any>({
         vertPos: vertPos ?? VerticalPosition.CENTER,
         props: {
             borderRadius: 10,
-            elevation: __IOS__ ? 0: 3,
+            elevation: __IOS__ ? 0 : 3,
             margin: 4,
             fontWeight: 500,
             backgroundColor: colorSurfaceContainer,

@@ -178,7 +178,7 @@ lane :build_flavor do |params|
   #     )
   #   end
   when 'alpha','beta','production'
-    upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor)
+    upload_store(changelog:changelog, version: version, versionCode: versionCode, flavor:flavor, options:options)
   end
   
   if !git_tag_exists(tag: tag)
@@ -202,8 +202,9 @@ lane :get_changelog  do |params|
     ignorePlatform = "android"
   end
   isReleasable = analyze_commits(match: "#{platform}/#{flavor}*", ignore_scopes: [ignorePlatform])
-  logs = conventional_changelog(format: 'markdown', title: "#{platform.capitalize} Beta", display_title:false, display_links:display_links, order:["feat", "fix", "refactor", "perf"], ignore_scopes: [ignorePlatform]).split(/[\n]/).uniq
-  logs = logs.map {|l| 
+  logs = conventional_changelog(format: 'markdown', title: "#{platform.capitalize} Beta", display_title:false, display_links:display_links, display_scopes:false, order:["feat", "fix", "refactor", "perf"], ignore_scopes: [ignorePlatform]).split(/[\n]/).uniq
+  translateLogs = logs.select {|v| v =~ /Translated using Weblate/ }
+  logs = (logs - translateLogs).map {|l| 
     if (!display_links)
       # remove github issues
       l = l.gsub(/\s\#\d*/, '')
@@ -213,7 +214,11 @@ lane :get_changelog  do |params|
     # remove sentry references
     l = l.gsub(/[A-Z]+-[A-Z0-9]+(?=$|\s\()/, '')
     l
-  }.join("\n")
+  }
+  if (!translateLogs.empty?)
+    logs.push("- Translations update")
+  end
+  logs = logs.join("\n")
   puts logs
   logs
 end
@@ -322,6 +327,7 @@ platform :android do
   end
 
   lane :upload_store   do |params| 
+    options = params[:options]
     track = params[:flavor]
     if (track == 'beta') 
       track = 'internal'
@@ -329,7 +335,10 @@ platform :android do
     upload_to_play_store(
       track: track,
       track_promote_to: track,
-      aab: File.expand_path("../platforms/android/app/build/outputs/bundle/release/app-release.aab")
+      aab: File.expand_path("../platforms/android/app/build/outputs/bundle/release/app-release.aab"),
+      skip_upload_screenshots: !options[:upload_screenshots],
+      skip_upload_images: !options[:upload_images],
+      skip_upload_metadata: !options[:upload_metadata]
     )
   end
 

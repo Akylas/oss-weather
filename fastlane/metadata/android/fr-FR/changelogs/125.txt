@@ -1,0 +1,9 @@
+### Bug fixes
+- black status bar fix in black mode
+- ensure charts are showing correct temperature gradient
+- move the full SAF to remove need for permissions
+- floating weather activity fixed (would break reactivity in the app after close)
+- allow to set favorite from floating activity
+- small layout improvement for daily view
+- prevent error on partial meteo-france response
+- Translations update

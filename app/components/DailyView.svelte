@@ -14,6 +14,8 @@
     let textIconPaint: Paint;
     let textIconSubPaint: Paint;
     let paint: Paint;
+
+    const PADDING_LEFT = 7;
 </script>
 
 <script lang="ts">
@@ -54,15 +56,15 @@
         textPaint.setTextAlign(Align.RIGHT);
         textPaint.setTextSize(13 * $fontScale);
         textPaint.setColor(colorOnSurfaceVariant);
-        canvas.drawText(item.description, w - 10, h - 10, textPaint);
+        canvas.drawText(item.description, w - 10, h - 7, textPaint);
         textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor(colorOnSurface);
         // item.time is in UTC which will always be the starting time of the day. If we offset we might get the wrong date.
-        canvas.drawText(formatDate(item.time, 'ddd', 0), 10, 26 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd', 0), PADDING_LEFT, 26 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(15 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'DD/MM', 0), 10, 46 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'DD/MM', 0), PADDING_LEFT, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
         const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
@@ -240,7 +242,7 @@
         // }
 
         const smallItemsToDraw = weatherDataService.getSmallIconsData(item);
-        let iconRight = 10;
+        let iconRight = PADDING_LEFT;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];
 
@@ -260,5 +262,5 @@
 </script>
 
 <canvasview bind:this={canvasView} height={($weatherDataLayout === 'line' ? 110 : 100) * $fontScale} on:draw={drawOnCanvas} on:tap={(event) => dispatch('tap', event)}>
-    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight={10} marginTop={5} size={60 * $fontScale} />
+    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight={10} marginTop={7} size={60 * $fontScale} />
 </canvasview>

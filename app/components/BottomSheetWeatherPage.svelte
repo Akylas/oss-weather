@@ -8,7 +8,8 @@
     import { l, lc } from '~/helpers/locale';
     import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
+    import { FavoriteLocation, favoriteIcon, favoriteIconColor, toggleFavorite } from '~/helpers/favorites';
 
     let { colorBackground } = $colors;
     $: ({ colorBackground } = $colors);
@@ -18,7 +19,7 @@
     export let weatherLocation: WeatherLocation;
     export let name;
     networkService.start(); // ensure it is started
-
+    DEV_LOG && console.log('BottomSheetWeatherPage');
     async function refresh(location: WeatherLocation = weatherLocation) {
         if (loading) {
             return;
@@ -26,7 +27,7 @@
         loading = true;
         try {
             const data = await getProvider().getWeather(location);
-            DEV_LOG && console.error('BottomSheet', 'refresh', JSON.stringify(location));
+            DEV_LOG && console.error('BottomSheet', 'refresh',loading, JSON.stringify(location), new Error().stack);
             if (!name || !location.sys.city) {
                 try {
                     const r = await geocodeAddress(location.coord);
@@ -58,6 +59,9 @@
         DEV_LOG && console.log('BottomSheet', 'onMount`');
         refresh(weatherLocation);
     });
+    onDestroy(() => {
+        DEV_LOG && console.log('BottomSheet', 'onDestroy`');
+    });
 
     onProviderChanged((event) => {
         DEV_LOG && console.log('BottomSheet', 'onProviderChanged');
@@ -74,10 +78,24 @@
         const newProvider = providers[newIndex % providers.length];
         ApplicationSettings.setString('provider', newProvider);
     }
+    function toggleItemFavorite(item: FavoriteLocation) {
+        weatherLocation = toggleFavorite(item);
+    }
 </script>
 
 <gesturerootview class="weatherpage" height="100%" rows="auto,*">
     <CActionBar title={name} on:swipe={onSwipe}>
+        <mdbutton
+            slot="left"
+            class="actionBarButton"
+            col={1}
+            color={favoriteIconColor(weatherLocation)}
+            rippleColor="#EFB644"
+            text={favoriteIcon(weatherLocation)}
+            variant="text"
+            verticalAlignment="middle"
+            visibility={weatherLocation ? 'visible' : 'collapse'}
+            on:tap={() => toggleItemFavorite(weatherLocation)} />
         <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
     </CActionBar>
     <label

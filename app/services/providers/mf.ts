@@ -36,30 +36,32 @@ export class MFProvider extends WeatherProvider {
         const dayEndTime = dayjs(dailyForecast.time * 1000)
             .endOf('d')
             .valueOf();
-        for (const hour of hourly) {
-            const time = hour.time;
-            if (time >= dayStartTime && time < dayEndTime) {
-                // Precipitation
-                snowfallTotal += hour.snowfall;
-                rainTotal += hour.rain;
-                if (hour.precipAccumulation) {
-                    precipitationTotal += hour.precipAccumulation;
-                    // Precipitation probability
-                }
+        if (hourly) {
+            for (const hour of hourly) {
+                const time = hour.time;
+                if (time >= dayStartTime && time < dayEndTime) {
+                    // Precipitation
+                    snowfallTotal += hour.snowfall;
+                    rainTotal += hour.rain;
+                    if (hour.precipAccumulation) {
+                        precipitationTotal += hour.precipAccumulation;
+                        // Precipitation probability
+                    }
 
-                if (hour.precipProbability) {
-                    precipProbability = Math.max(precipProbability, hour.precipProbability);
-                    probPrecipitationTotal.count++;
-                    probPrecipitationTotal.total += hour.precipProbability;
-                }
+                    if (hour.precipProbability) {
+                        precipProbability = Math.max(precipProbability, hour.precipProbability);
+                        probPrecipitationTotal.count++;
+                        probPrecipitationTotal.total += hour.precipProbability;
+                    }
 
-                if (hour.rainSnowLimit) {
-                    rainSnowLimitTotal.count++;
-                    rainSnowLimitTotal.total += hour.rainSnowLimit;
-                }
-                if (hour.iso) {
-                    isoTotal.count++;
-                    isoTotal.total += hour.iso;
+                    if (hour.rainSnowLimit) {
+                        rainSnowLimitTotal.count++;
+                        rainSnowLimitTotal.total += hour.rainSnowLimit;
+                    }
+                    if (hour.iso) {
+                        isoTotal.count++;
+                        isoTotal.total += hour.iso;
+                    }
                 }
             }
         }
@@ -69,27 +71,29 @@ export class MFProvider extends WeatherProvider {
         // const windSpeeds = [];
         const windDegree = { count: 0, total: 0 };
         let windGust = null;
+        if (hourlyForecast) {
+            for (const hourForecast of hourlyForecast) {
+                const time = hourForecast.time * 1000;
+                if (time >= dayStartTime && time < dayEndTime) {
+                    cloudCover.count++;
+                    cloudCover.total += hourForecast.total_cloud_cover;
+                    if (hourForecast.wind_speed) {
+                        windSpeed.count++;
+                        windSpeed.total += hourForecast.wind_speed;
+                        // windSpeeds.push(hourForecast.wind.speed);
+                    }
+                    if (hourForecast.wind_direction !== -1) {
+                        windDegree.count++;
+                        windDegree.total += hourForecast.wind_direction;
+                    }
 
-        for (const hourForecast of hourlyForecast) {
-            const time = hourForecast.time * 1000;
-            if (time >= dayStartTime && time < dayEndTime) {
-                cloudCover.count++;
-                cloudCover.total += hourForecast.total_cloud_cover;
-                if (hourForecast.wind_speed) {
-                    windSpeed.count++;
-                    windSpeed.total += hourForecast.wind_speed;
-                    // windSpeeds.push(hourForecast.wind.speed);
-                }
-                if (hourForecast.wind_direction !== -1) {
-                    windDegree.count++;
-                    windDegree.total += hourForecast.wind_direction;
-                }
-
-                if (windGust == null || hourForecast.wind_speed_gust > windGust) {
-                    windGust = hourForecast.wind_speed_gust;
+                    if (windGust == null || hourForecast.wind_speed_gust > windGust) {
+                        windGust = hourForecast.wind_speed_gust;
+                    }
                 }
             }
         }
+
         const d = {
             time: dailyForecast.time * 1000,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
@@ -314,56 +318,59 @@ export class MFProvider extends WeatherProvider {
         // DEV_LOG && console.log('current', JSON.stringify(current));
         // DEV_LOG && console.log('warningsData', JSON.stringify(warningsData));
         const now = Date.now();
-        const startOfHour = dayjs(now).startOf('h').valueOf() / 1000;
         const forecastData = forecast.properties.forecast;
-        const firstHourIndex = forecastData.findIndex((d) => d.time > startOfHour);
-        let hourlyLastIndex = forecastData.findIndex((d) => d.weather_icon === null || d.T === null || (d.time - now / 1000) / 3600 > forecast_hours);
-        if (hourlyLastIndex === -1) {
-            hourlyLastIndex = forecastData.length - 1;
+        let hourlyData: Hourly[];
+        if (forecastData) {
+            const startOfHour = dayjs(now).startOf('h').valueOf() / 1000;
+            const firstHourIndex = forecastData.findIndex((d) => d.time > startOfHour);
+            let hourlyLastIndex = forecastData.findIndex((d) => d.weather_icon === null || d.T === null || (d.time - now / 1000) / 3600 > forecast_hours);
+            if (hourlyLastIndex === -1) {
+                hourlyLastIndex = forecastData.length - 1;
+            }
+            hourlyData = forecastData?.slice(Math.max(firstHourIndex - 1, 0), hourlyLastIndex).map((data, index) => {
+                const d = {} as Hourly;
+                d.time = data.time * 1000;
+                const icon = data.weather_icon;
+
+                d.isDay = icon.endsWith('j');
+                d.iconId = this.convertMFICon(icon);
+                d.description = titlecase(data.weather_description);
+                d.temperature = feelsLikeTemperatures ? data.T_windchill : data.T;
+
+                d.windBearing = data.wind_direction;
+                d.sealevelPressure = data.P_sea;
+                d.relativeHumidity = data.relative_humidity;
+
+                d.snowfall = data.snow_1h || data.snow_3h || data.snow_6h || data.snow_12h || data.snow_24h || 0;
+                d.rain = data.rain_1h || data.rain_3h || data.rain_6h || data.rain_12h || data.rain_24h || 0;
+
+                const acc = (d.snowfall * 10) / 7 + d.rain;
+                if (acc > 0) {
+                    d.precipAccumulation = acc;
+                }
+
+                const probabilities = this.getHourlyPrecipitationProbability(forecast.properties.probability_forecast || [], data.time);
+                const prob = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
+                d.precipProbability = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
+                if (d.precipAccumulation && prob === 0) {
+                    d.precipProbability = -1;
+                }
+                if (prob >= 0) {
+                    d.precipProbability = prob;
+                }
+                // d.precipProbabilities = probabilities;
+                d.cloudCover = data.total_cloud_cover;
+                d.windGust = data.wind_speed_gust * 3.6;
+                d.windSpeed = data.wind_speed * 3.6;
+                d.iso = data.iso0;
+                if (typeof data.rain_snow_limit === 'number') {
+                    d.rainSnowLimit = data.rain_snow_limit;
+                }
+                // d.pressure = data.pressure;
+                // console.log('hourly', data.weather_icon, dayjs(d.time).format('ddd DD/MM'), d.rain, d.snowfall, d.precipAccumulation);
+                return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.rain, d.snowfall);
+            });
         }
-        const hourlyData = forecastData?.slice(Math.max(firstHourIndex - 1, 0), hourlyLastIndex).map((data, index) => {
-            const d = {} as Hourly;
-            d.time = data.time * 1000;
-            const icon = data.weather_icon;
-
-            d.isDay = icon.endsWith('j');
-            d.iconId = this.convertMFICon(icon);
-            d.description = titlecase(data.weather_description);
-            d.temperature = feelsLikeTemperatures ? data.T_windchill : data.T;
-
-            d.windBearing = data.wind_direction;
-            d.sealevelPressure = data.P_sea;
-            d.relativeHumidity = data.relative_humidity;
-
-            d.snowfall = data.snow_1h || data.snow_3h || data.snow_6h || data.snow_12h || data.snow_24h || 0;
-            d.rain = data.rain_1h || data.rain_3h || data.rain_6h || data.rain_12h || data.rain_24h || 0;
-
-            const acc = (d.snowfall * 10) / 7 + d.rain;
-            if (acc > 0) {
-                d.precipAccumulation = acc;
-            }
-
-            const probabilities = this.getHourlyPrecipitationProbability(forecast.properties.probability_forecast || [], data.time);
-            const prob = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
-            d.precipProbability = Math.round(Math.max(probabilities.rain, probabilities.snow, probabilities.ice));
-            if (d.precipAccumulation && prob === 0) {
-                d.precipProbability = -1;
-            }
-            if (prob >= 0) {
-                d.precipProbability = prob;
-            }
-            // d.precipProbabilities = probabilities;
-            d.cloudCover = data.total_cloud_cover;
-            d.windGust = data.wind_speed_gust * 3.6;
-            d.windSpeed = data.wind_speed * 3.6;
-            d.iso = data.iso0;
-            if (typeof data.rain_snow_limit === 'number') {
-                d.rainSnowLimit = data.rain_snow_limit;
-            }
-            // d.pressure = data.pressure;
-            // console.log('hourly', data.weather_icon, dayjs(d.time).format('ddd DD/MM'), d.rain, d.snowfall, d.precipAccumulation);
-            return weatherDataIconColors(d, WeatherDataType.HOURLY, weatherLocation.coord, d.rain, d.snowfall);
-        });
 
         const currentConditions = currentData?.properties?.gridded;
         // DEV_LOG && console.log('current', JSON.stringify(currentData));
@@ -414,7 +421,7 @@ export class MFProvider extends WeatherProvider {
                   }, [])
                 : []
         } as WeatherData;
-        r.hourly = hourlyData;
+        r.hourly = hourlyData || [];
         return r;
     }
 

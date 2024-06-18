@@ -73,7 +73,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
         if (intent && intent.getAction()) {
             Application.android.notify({
-                eventName: AndroidApplication.activityNewIntentEvent,
+                eventName: Application.android.activityNewIntentEvent,
                 object: Application.android,
                 activity,
                 intent
@@ -100,17 +100,11 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         superSetIntentFunc.call(activity, intent);
 
         Application.android.notify({
-            eventName: AndroidApplication.activityNewIntentEvent,
+            eventName: Application.android.activityNewIntentEvent,
             object: Application.android,
             activity,
             intent
         } as AndroidActivityNewIntentEventData);
-
-        // const data = JSON.parse(intent.getStringExtra('data'));
-        // if (this.navEntryInstance) {
-        //     const floating = this.navEntryInstance.$children[0] ;
-        //     floating.handleFloatingQRData(data);
-        // }
     }
 
     public onStart(activity: any, superFunc: Function): void {
@@ -158,8 +152,10 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
                 rootView._tearDownUI(true);
             }
 
-            const exitArgs = { eventName: Application.exitEvent, object: Application.android, android: activity };
-            Application.notify(exitArgs);
+            // const exitArgs = { eventName: Application.exitEvent, object: Application.android, android: activity };
+            // Application.notify(exitArgs);
+        } catch (error) {
+            console.error(error, error.stack);
         } finally {
             superFunc.call(activity);
         }
@@ -261,12 +257,6 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             this._rootView = rootView;
 
             activityRootViewsMap.set(rootView._domId, new WeakRef(rootView));
-
-            // const deviceType = Device.deviceType.toLowerCase();
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${deviceType}`);
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.orientation}`);
-            // CSSUtils.pushToSystemCssClasses(`${CSSUtils.CLASS_PREFIX}${Application.android.systemAppearance}`);
-            // this._rootView.cssClasses.add(CSSUtils.ROOT_VIEW_CSS_CLASS);
             const rootViewCssClasses = CSSUtils.getSystemCssClasses();
             rootViewCssClasses.forEach((c) => this._rootView.cssClasses.add(c));
         }
@@ -313,7 +303,10 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         } catch (err) {
             console.error('error retreiving data', err, err.stack);
         } finally {
-            activity.finish();
+            // timeout to let the bottomsheet hide animation go
+            setTimeout(() => {
+                activity.finishAndRemoveTask();
+            }, 300);
         }
     }
 }

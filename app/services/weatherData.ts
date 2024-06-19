@@ -100,7 +100,9 @@ export const AVAILABLE_WEATHER_DATA = [
     WeatherProps.aqi,
     WeatherProps.sealevelPressure,
     WeatherProps.relativeHumidity,
-    WeatherProps.dewpoint
+    WeatherProps.dewpoint,
+    WeatherProps.iso,
+    WeatherProps.rainSnowLimit
 ];
 export const AVAILABLE_COMPARE_WEATHER_DATA = [
     WeatherProps.precipProbability,
@@ -206,7 +208,9 @@ const ICONS_SIZE_FACTOR = {
     [WeatherProps.uvIndex]: 1,
     [WeatherProps.cloudCover]: 0.9,
     [WeatherProps.windGust]: 0.8,
-    [WeatherProps.relativeHumidity]: 0.8
+    [WeatherProps.relativeHumidity]: 0.8,
+    [WeatherProps.iso]: 0.9,
+    [WeatherProps.rainSnowLimit]: 0.8
 };
 
 export interface CommonData {
@@ -329,21 +333,21 @@ export class DataService extends Observable {
     }
 
     getAllIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
-        let keys = addedBefore.concat(this.allWeatherData).concat(addedAfter);
+        let keys = [...new Set(addedBefore.concat(this.allWeatherData).concat(addedAfter))];
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
         return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
     }
     getIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
-        let keys = addedBefore.concat(this.currentWeatherData).concat(addedAfter);
+        let keys = [...new Set(addedBefore.concat(this.currentWeatherData).concat(addedAfter))];
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
         return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
     }
     getSmallIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
-        let keys = addedBefore.concat(this.currentSmallWeatherData).concat(addedAfter);
+        let keys = [...new Set(addedBefore.concat(this.currentSmallWeatherData).concat(addedAfter))];
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
@@ -389,7 +393,7 @@ export class DataService extends Observable {
                 return {
                     key,
                     iconFontSize,
-                    iconColor: rainColor,
+                    iconColor: getWeatherDataColor(key),
                     paint: appPaint,
                     icon,
                     value: data[0],
@@ -401,7 +405,7 @@ export class DataService extends Observable {
                 return {
                     key,
                     iconFontSize,
-                    iconColor: snowColor,
+                    iconColor: getWeatherDataColor(key),
                     paint: mdiPaint,
                     icon,
                     value: data[0],

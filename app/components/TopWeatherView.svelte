@@ -301,7 +301,7 @@
                                 spans: [
                                     {
                                         fontSize: c.iconFontSize,
-                                        color: c.color || colorOnSurface,
+                                        color: c.iconColor || c.color || colorOnSurface,
                                         fontFamily: paint.fontFamily,
                                         text: c.icon
                                     }
@@ -355,7 +355,7 @@
                     const x = index * 45 * $fontScale + iconsLeft;
                     const paint = c.paint || textIconPaint;
                     paint.textSize = c.iconFontSize;
-                    paint.setColor(c.color || colorOnSurface);
+                    paint.setColor(c.iconColor || c.color || colorOnSurface);
                     paint.setTextAlign(Align.CENTER);
                     // if (c.customDraw) {
                     //     c.customDraw(canvas, $fontScale, textIconPaint, c, x, iconsTop + 20, 40);

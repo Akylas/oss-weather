@@ -100,7 +100,7 @@
                                 spans: [
                                     {
                                         fontSize: c.iconFontSize,
-                                        color: c.color || colorOnSurface,
+                                        color: c.iconColor || c.color || colorOnSurface,
                                         fontFamily: paint.fontFamily,
                                         text: c.icon
                                     }
@@ -154,7 +154,7 @@
                     const paint = c.paint || textIconPaint;
                     paint.setTextAlign(Align.CENTER);
                     paint.textSize = c.iconFontSize;
-                    paint.setColor(c.color || colorOnSurface);
+                    paint.setColor(c.iconColor || c.color || colorOnSurface);
                     if (c.icon) {
                         canvas.drawText(c.icon, x, iconsTop + 20, paint);
                     }

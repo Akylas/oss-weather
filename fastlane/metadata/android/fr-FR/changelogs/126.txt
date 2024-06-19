@@ -1,0 +1,7 @@
+### Features
+- added iso and rainSnowLimit as weatherData (only available with Meteo-France right now)
+- more moon/sun data. Inverse moon phase in south hemisphere
+
+### Bug fixes
+- floating activity theme fix
+- sun/moon azimuth correction. Will now show the position for current time. And you can change the time an see the position using the chart

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
 // import Timezone from 'dayjs/plugin/timezone';
 import { derived, get, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
@@ -14,15 +15,16 @@ import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
 import { imperialUnits } from '~/variables';
 const supportedLanguages = SUPPORTED_LOCALES;
-dayjs.extend(LocalizedFormat);
 dayjs.extend(duration);
+dayjs.extend(relativeTime);
+dayjs.extend(LocalizedFormat);
 dayjs.extend(utc);
 // dayjs.extend(Timezone);
 export let lang;
 export const $lang = writable(null);
 let default24Clock = false;
 if (__ANDROID__) {
-    default24Clock = android.text.format.DateFormat.is24HourFormat(Utils.ad.getApplicationContext());
+    default24Clock = android.text.format.DateFormat.is24HourFormat(Utils.android.getApplicationContext());
 }
 export let clock_24 = ApplicationSettings.getBoolean('clock_24', default24Clock) || default24Clock;
 export const clock_24Store = writable(null);

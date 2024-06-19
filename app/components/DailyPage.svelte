@@ -306,7 +306,7 @@
                         rightAxisSuggestedMaximum={8}
                         row={2}
                         showCurrentTimeLimitLine={false}
-                        startTime={dayjs(startTime).isSame(dayjs(), 'd') ? startTime : undefined}
+                        startTime={dayjs(startTime).isSame(dayjs(), 'd') ? startTime.valueOf() : undefined}
                         temperatureLineWidth={3}
                         visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
                 {:else}

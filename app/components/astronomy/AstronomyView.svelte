@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { GetMoonIlluminationResult, GetTimesResult, getMoonIllumination, getMoonPosition, getPosition, getTimes } from 'suncalc';
-    import { Align, Canvas, DashPathEffect, Paint, Style } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, DashPathEffect, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
     import { CanvasLabel } from '@nativescript-community/ui-canvaslabel/canvaslabel.common';
     import { LineChart } from '@nativescript-community/ui-chart';
     import { AxisBase } from '@nativescript-community/ui-chart/components/AxisBase';
@@ -19,10 +19,12 @@
     import { WeatherLocation } from '~/services/api';
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
     import { Color } from '@akylas/nativescript';
-    import { getMoonPhase, moonIcon } from '~/helpers/formatter';
+    import { getMoonPhase, getMoonPhaseName, moonIcon } from '~/helpers/formatter';
+    import { createNativeAttributedString } from '@nativescript-community/text';
 
     const nightPaint = new Paint();
     const nightLiinePaint = new Paint();
+    const subCanvasTextPaint = new Paint();
 
     const PI = Math.PI;
     const PI_DIV2 = PI / 2;
@@ -156,8 +158,8 @@
     let moonPhase: number; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
     let sunAzimuth: CompassInfo; // SunTimes;
-    let sunriseEndAzimuth: CompassInfo; // SunTimes;
-    let sunsetStartAzimuth: CompassInfo; // SunTimes;
+    let sunriseEnd: number;
+    let sunsetStart: number;
     let moonAzimuth: CompassInfo;
     let sunPoses: any[]; // SunPosition[];
     let moonPoses: any[]; // MoonPosition[];
@@ -345,8 +347,9 @@
             //   const date = getStartOfDay(startTime, 0).toDate();
             moonPhase = getMoonPhase(date);
             moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
-            DEV_LOG && console.log('moonAzimuth', startTime, date, location.coord.lat, location.coord.lon);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
+            sunriseEnd = dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf();
+            sunsetStart = dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf();
             sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunriseEndAzimuth = getCompassInfo(getPosition(sunTimes.sunriseEnd, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunsetStartAzimuth = getCompassInfo(getPosition(sunTimes.sunsetStart, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
@@ -419,9 +422,115 @@
         center = getCenter(sunAzimuth.bearing);
         canvas.drawCircle(center[0], center[1], 5, moonPaint);
     }
+
+    function onSubCanvasDraw({ canvas }: { canvas: Canvas }) {
+        const w = canvas.getWidth();
+        const padding = 10;
+
+        subCanvasTextPaint.setTextAlign(Align.LEFT);
+        subCanvasTextPaint.textSize = 13;
+        subCanvasTextPaint.color = colorOnSurface;
+        function drawOnSubCanvas(spans, paddingTop) {
+            const nString = createNativeAttributedString({
+                spans
+            });
+            const staticLayout = new StaticLayout(nString, subCanvasTextPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
+            canvas.translate(padding, 2 * padding + paddingTop);
+            staticLayout.draw(canvas);
+        }
+
+        // canvas.save();
+        // drawOnSubCanvas(
+        //     [
+        //         {
+        //             color: '#ffa500',
+        //             fontFamily: $fonts.mdi,
+        //             text: 'mdi-weather-sunset-up',
+        //             verticalAlignment: 'center'
+        //         },
+        //         {
+        //             text: ' ' + lc('sunrise') + ':',
+        //             verticalAlignment: 'center'
+        //         }
+        //     ],
+        //     0
+        // );
+        // subCanvasTextPaint.setTextAlign(Align.RIGHT);
+        // canvas.drawText(formatTime(sunriseEnd, undefined, timezoneOffset), w - 2 * padding, 13, subCanvasTextPaint);
+        // subCanvasTextPaint.setTextAlign(Align.LEFT);
+        // canvas.restore();
+        // canvas.save();
+        // drawOnSubCanvas(
+        //     [
+        //         {
+        //             color: '#ff7200',
+        //             fontFamily: $fonts.mdi,
+        //             text: 'mdi-weather-sunset-down',
+        //             verticalAlignment: 'center'
+        //         },
+        //         {
+        //             text: ' ' + lc('sunset') + ':',
+        //             verticalAlignment: 'center'
+        //         }
+        //     ],
+        //     30
+        // );
+        // subCanvasTextPaint.setTextAlign(Align.RIGHT);
+        // canvas.drawText(formatTime(sunsetStart, undefined, timezoneOffset), w - 2 * padding, 13, subCanvasTextPaint);
+        // canvas.restore();
+        (
+            [
+                [
+                    [
+                        {
+                            color: '#ffa500',
+                            fontFamily: $fonts.mdi,
+                            text: 'mdi-weather-sunset-up',
+                            verticalAlignment: 'center'
+                        },
+                        {
+                            text: ' ' + lc('sunrise') + ':',
+                            verticalAlignment: 'center'
+                        }
+                    ],
+                    formatTime(sunriseEnd, undefined, timezoneOffset)
+                ],
+                [
+                    [
+                        {
+                            color: '#ff7200',
+                            fontFamily: $fonts.mdi,
+                            text: 'mdi-weather-sunset-down',
+                            verticalAlignment: 'center'
+                        },
+                        {
+                            text: ' ' + lc('sunset') + ':',
+                            verticalAlignment: 'center'
+                        }
+                    ],
+                    formatTime(sunsetStart, undefined, timezoneOffset)
+                ],
+                [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()],
+                [lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()],
+                [lc('moon_phase'), getMoonPhaseName(moonPhase)]
+            ] as [any, string][]
+        ).forEach((e, index) => {
+            const y = 30 + 30 * index;
+            subCanvasTextPaint.setTextAlign(Align.LEFT);
+            if (Array.isArray(e[0])) {
+                canvas.save();
+                drawOnSubCanvas(e[0], y - 35);
+                canvas.restore();
+            } else {
+                canvas.drawText(e[0] + ':', padding, y, subCanvasTextPaint);
+            }
+            subCanvasTextPaint.setTextAlign(Align.RIGHT);
+            canvas.drawText(e[1], w - padding, y, subCanvasTextPaint);
+        });
+    }
 </script>
 
-<gesturerootview columns="*,*" rows={`${selectableDate ? 50 : 0},200,50,auto`} {...$$restProps}>
+<gesturerootview columns="*,*" rows={`${selectableDate ? 50 : 0},200,50,250`} {...$$restProps}>
     <mdbutton
         class="icon-btn"
         horizontalAlignment="left"
@@ -452,21 +561,21 @@
         <canvaslabel bind:this={bottomLabel} colSpan={3} fontSize={18} padding="0 10 0 10" row={2} on:draw={drawMoonPosition}>
             <cgroup color="#ffa500" verticalAlignment="middle">
                 <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-up" />
-                <cspan text={' ' + formatTime(dayjs.utc(sunTimes.sunrise.valueOf()).valueOf(), undefined, timezoneOffset)} />
+                <cspan text={' ' + formatTime(sunriseEnd, undefined, timezoneOffset)} />
             </cgroup>
             <cgroup color="#ff7200" textAlignment="center" verticalAlignment="middle">
                 <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-down" />
-                <cspan text={' ' + formatTime(dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf(), undefined, timezoneOffset)} />
+                <cspan text={' ' + formatTime(sunsetStart, undefined, timezoneOffset)} />
             </cgroup>
             <cgroup textAlignment="right" verticalAlignment="middle">
                 <!-- <cspan text={moonAzimuth.exact + '(' + Math.round(illumination.fraction * 100) + '%) '} /> -->
-                <cspan fontFamily={$fonts.wi} text={moonIcon(moonPhase)} />
+                <cspan fontFamily={$fonts.wi} text={moonIcon(moonPhase, location.coord)} />
             </cgroup>
         </canvaslabel>
     {/if}
-
-    <!-- <CompassView row={3} {location} updateWithSensor={false} date={startTime} /> -->
-    <!-- <canvaslabel row={3} col={1} fontSize={13} padding={10} height={200}>
+    <canvasview colSpan={2} fontSize={13} padding={10} row={3} on:draw={onSubCanvasDraw}>
+        <!-- <CompassView row={3} {location} updateWithSensor={false} date={startTime} /> -->
+        <!-- <canvaslabel row={3} col={1} fontSize={13} padding={10} height={200}>
         <cgroup paddingTop={10}>
             <cspan fontFamily={$fonts.mdi} text="mdi-weather-sunset-up" color="#ffa500" />
             <cspan text={lc('sunrise')} />
@@ -478,4 +587,4 @@
         </cgroup>
         <cspan text={formatTime(sunTimes.sunsetStart) + ' ' + sunsetStartAzimuth.exact} textAlignment="right" paddingTop={40} />
     </canvaslabel> -->
-</gesturerootview>
+    </canvasview></gesturerootview>

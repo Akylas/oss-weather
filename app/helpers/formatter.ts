@@ -357,19 +357,41 @@ const windIcons = [
     'wi-wind-beaufort-12'
 ];
 
-const ccMoonIcons = {
-    new_moon: 'wi-moon-new',
-    new: 'wi-moon-new',
-    waxing_crescent: 'wi-moon-waxing-crescent-4',
-    first_quarter: 'wi-moon-first-quarter',
-    waxing_gibbous: 'wi-moon-waxing-gibbous-4',
-    full: 'wi-moon-full',
-    waning_gibbous: 'wi-moon-waxing-gibbous-4',
-    third_quarter: 'wi-moon-third-quarter',
-    waning_crescent: 'wi-moon-waning-crescent-4',
-    last_quarter: 'wi-moon-first-quarter'
-};
+// const ccMoonIcons = {
+//     new_moon: 'wi-moon-new',
+//     new: 'wi-moon-new',
+//     waxing_crescent: 'wi-moon-waxing-crescent-4',
+//     first_quarter: 'wi-moon-first-quarter',
+//     waxing_gibbous: 'wi-moon-waxing-gibbous-4',
+//     full: 'wi-moon-full',
+//     waning_gibbous: 'wi-moon-waxing-gibbous-4',
+//     third_quarter: 'wi-moon-third-quarter',
+//     waning_crescent: 'wi-moon-waning-crescent-4',
+//     last_quarter: 'wi-moon-first-quarter'
+// };
 
+const LunarPhase = {
+    NEW: lc('new_moon'),
+    WAXING_CRESCENT: lc('waxing_crescent'),
+    FIRST_QUARTER: lc('first_quarter'),
+    WAXING_GIBBOUS: lc('waxing_gibbous'),
+    FULL: lc('full'),
+    WANING_GIBBOUS: lc('waning_gibbous'),
+    LAST_QUARTER: lc('last_quarter'),
+    WANING_CRESCENT: lc('waning_crescent')
+};
+export function getMoonPhaseName(age: number) {
+    if (age < 1.84566173161) return LunarPhase.NEW;
+    else if (age < 5.53698519483) return LunarPhase.WAXING_CRESCENT;
+    else if (age < 9.22830865805) return LunarPhase.FIRST_QUARTER;
+    else if (age < 12.91963212127) return LunarPhase.WAXING_GIBBOUS;
+    else if (age < 16.61095558449) return LunarPhase.FULL;
+    else if (age < 20.30227904771) return LunarPhase.WANING_GIBBOUS;
+    else if (age < 23.99360251093) return LunarPhase.LAST_QUARTER;
+    else if (age < 27.68492597415) return LunarPhase.WANING_CRESCENT;
+
+    return LunarPhase.NEW;
+}
 // const new_moon = new Date(1970, 0, 7, 20, 35, 0).valueOf();
 
 // const MINUTES_IN_DAY = 24 * 60;
@@ -401,12 +423,15 @@ export function getMoonPhase(date: Date) {
     // const phase = calculateMoon(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
     return Math.round(illumination.phase * 28);
 }
-export function moonIcon(moonPhase: number) {
+export function moonIcon(moonPhase: number, coord: { lat: number; lon: number }) {
+    if (coord.lat < 0) {
+        moonPhase = 29 - moonPhase;
+    }
     return moonIcons[moonPhase % 29];
 }
-export function ccMoonIcon(moonPhase: string) {
-    return ccMoonIcons[moonPhase];
-}
+// export function ccMoonIcon(moonPhase: string) {
+//     return ccMoonIcons[moonPhase];
+// }
 
 export function windBeaufortIcon(windSpeed) {
     if (windSpeed < 29) {
@@ -511,10 +536,9 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         d['uvIndexColor'] = colorForUV(d['uvIndex']);
     }
     if (type !== WeatherDataType.HOURLY) {
-        // we ask the moon phase at around 8pm so that it corresponds to the day
         const moonPhase = getMoonPhase(new Date(d.time));
         d['moon'] = Math.round((28 / moonPhase) * 100);
-        d['moonIcon'] = moonIcon(moonPhase);
+        d['moonIcon'] = moonIcon(moonPhase, coord);
     }
     if (cloudCover) {
         d.cloudColor = cloudyColor.setAlpha(cloudCover * 2.55).hex;

@@ -593,7 +593,7 @@
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if weatherLocation}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
-                    <WeatherComponent {items} {weatherLocation} on:tap={onTap} paddingBottom={14}/>
+                    <WeatherComponent {items} paddingBottom={14} {weatherLocation} on:tap={onTap} />
                 </pullrefresh>
                 <label
                     backgroundColor={new Color(colorBackground).setAlpha(100).hex}

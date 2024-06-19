@@ -17,7 +17,7 @@
     import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
     import { CombinedChart } from '@nativescript-community/ui-chart';
     import { CommonWeatherData, Hourly } from '~/services/providers/weather';
-    import dayjs from 'dayjs';
+    import dayjs, { Dayjs } from 'dayjs';
     const weatherIconSize = 100;
 
     const textIconPaint = new Paint();
@@ -42,7 +42,7 @@
     export let location: WeatherLocation;
     export let weatherLocation: WeatherLocation;
     export let timezoneOffset;
-    export let startTime: number;
+    export let startTime: Dayjs;
     DEV_LOG && console.log('startTime', startTime, dayjs(startTime).isSame(dayjs(), 'd'));
     let page: NativeViewElementNode<Page>;
     let animated = iconService.animated;

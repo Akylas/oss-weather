@@ -150,8 +150,8 @@
     let chartInitialized = false;
     export let location: WeatherLocation;
     export let selectableDate = true;
-    export let startTime = Date.now();
     export let timezoneOffset;
+    export let startTime = getLocalTime(undefined, timezoneOffset);
     // let limitLine: LimitLine;
     let moonPhase: number; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
@@ -234,11 +234,11 @@
 
                     const hours = Math.min(Math.floor(h.x / 6), 23);
                     const minutes = (h.x * 10) % 60;
-                    const date = dayjs(startTime).set('h', hours).set('m', minutes);
+                    startTime = startTime.set('h', hours).set('m', minutes);
                     c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                     highlightPaint.setTextAlign(Align.LEFT);
                     let x = h.drawX + 4;
-                    const text = formatTime(date);
+                    const text = formatTime(startTime);
                     const size = Utils.calcTextSize(highlightPaint, text);
                     if (x > c.getWidth() - size.width) {
                         x = h.drawX - 4;
@@ -317,7 +317,7 @@
         try {
             const date = await pickDate(dayjs(startTime));
             if (date && startTime.valueOf() !== date) {
-                updateStartTime(date);
+                updateStartTime(getLocalTime(date, timezoneOffset));
             }
         } catch (error) {
             showError(error);
@@ -334,16 +334,18 @@
         }
     }
 
-    function updateStartTime(time: number) {
+    function updateStartTime(time: Dayjs) {
         startTime = time;
         updateChartData();
     }
 
     $: {
         try {
-            const date = getStartOfDay(startTime, 0).toDate();
+            const date = startTime.toDate();
+            //   const date = getStartOfDay(startTime, 0).toDate();
             moonPhase = getMoonPhase(date);
             moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+            DEV_LOG && console.log('moonAzimuth', startTime, date, location.coord.lat, location.coord.lon);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
             sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunriseEndAzimuth = getCompassInfo(getPosition(sunTimes.sunriseEnd, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
@@ -426,7 +428,7 @@
         text="mdi-chevron-left"
         variant="text"
         visibility={selectableDate ? 'visible' : 'hidden'}
-        on:tap={() => updateStartTime(dayjs(startTime).subtract(1, 'd').valueOf())} />
+        on:tap={() => updateStartTime(startTime.subtract(1, 'd'))} />
     <label
         colSpan={2}
         fontSize={17}
@@ -444,7 +446,7 @@
         text="mdi-chevron-right"
         variant="text"
         visibility={selectableDate ? 'visible' : 'hidden'}
-        on:tap={() => updateStartTime(dayjs(startTime).add(1, 'd').valueOf())} />
+        on:tap={() => updateStartTime(startTime.add(1, 'd'))} />
     <linechart bind:this={chartView} colSpan={3} row={1} />
     {#if sunTimes}
         <canvaslabel bind:this={bottomLabel} colSpan={3} fontSize={18} padding="0 10 0 10" row={2} on:draw={drawMoonPosition}>

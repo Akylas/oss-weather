@@ -496,7 +496,7 @@
                     // we dont show hourly if there is only one hour left. Would not look good
                     item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
                     location: weatherLocation,
-                    startTime: dayjs(item.time).isSame(Date.now(), 'day') ? Date.now() : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')).valueOf(),
+                    startTime: dayjs(item.time).isSame(Date.now(), 'day') ? getLocalTime(undefined, item.timezoneOffset) : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')),
                     weatherLocation,
                     timezoneOffset: item.timezoneOffset
                 }

@@ -270,8 +270,8 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
 
         try {
             //ensure theme is started
-            onInitRootView();
-            startThemeHelper();
+            startThemeHelper(true);
+            onInitRootView(true);
             const uri = intent.getData();
             const lat = parseFloat(uri.getQueryParameter('lat'));
             const lon = parseFloat(uri.getQueryParameter('lon'));

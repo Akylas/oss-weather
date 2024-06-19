@@ -180,8 +180,9 @@ export function getRealThemeAndUpdateColors() {
     updateThemeColors(realTheme);
 }
 
-export function start() {
-    if (started) {
+export function start(force = false) {
+    DEV_LOG && console.log('start theme helper', force, started);
+    if (!force && started) {
         return;
     }
     started = true;

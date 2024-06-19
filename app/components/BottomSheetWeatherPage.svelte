@@ -27,7 +27,7 @@
         loading = true;
         try {
             const data = await getProvider().getWeather(location);
-            DEV_LOG && console.error('BottomSheet', 'refresh',loading, JSON.stringify(location), new Error().stack);
+            DEV_LOG && console.log('BottomSheet', 'refresh',loading, JSON.stringify(location));
             if (!name || !location.sys.city) {
                 try {
                     const r = await geocodeAddress(location.coord);
@@ -58,9 +58,6 @@
     onMount(() => {
         DEV_LOG && console.log('BottomSheet', 'onMount`');
         refresh(weatherLocation);
-    });
-    onDestroy(() => {
-        DEV_LOG && console.log('BottomSheet', 'onDestroy`');
     });
 
     onProviderChanged((event) => {

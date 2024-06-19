@@ -137,8 +137,12 @@ function getRootViewStyle() {
 }
 
 let initRootViewCalled = false;
-export function onInitRootView() {
-    if (initRootViewCalled) {
+export function onInitRootViewFromEvent() {
+    onInitRootView();
+}
+export function onInitRootView(force = false) {
+    DEV_LOG && console.log('onInitRootView', force, initRootViewCalled);
+    if (!force && initRootViewCalled) {
         return;
     }
     // we need a timeout to read rootView css variable. not 100% sure why yet
@@ -217,7 +221,7 @@ export function onInitRootView() {
     }
     updateThemeColors(getRealTheme());
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));
-    Application.off(Application.initRootViewEvent, onInitRootView);
+    Application.off(Application.initRootViewEvent, onInitRootViewFromEvent);
     // getRealThemeAndUpdateColors();
 }
 
@@ -253,7 +257,7 @@ function onOrientationChanged() {
         updateIOSWindowInset();
     }
 }
-Application.on(Application.initRootViewEvent, onInitRootView);
+Application.on(Application.initRootViewEvent, onInitRootViewFromEvent);
 Application.on(Application.orientationChangedEvent, onOrientationChanged);
 Application.on('activity_started', () => {
     if (__ANDROID__) {

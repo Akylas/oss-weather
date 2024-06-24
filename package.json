@@ -140,7 +140,6 @@
     "resolutions": {
         "webpack": "5.89.0",
         "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "svelte-native": "portal:/home/mguillon/dev/nativescript/svelte-native/dist",
-        "@akylas/address-formatter": "portal:../../address-formatter"
+        "svelte-native": "portal:../svelte-native/dist"
     }
 }

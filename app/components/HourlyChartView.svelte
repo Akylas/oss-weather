@@ -26,7 +26,7 @@
         fontWeightProperty
     } from '@nativescript/core';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { convertWeatherValueToUnit, toImperialUnit, windIcon } from '~/helpers/formatter';
+    import { toImperialUnit, windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
@@ -43,7 +43,7 @@
     import { onDestroy, onMount } from 'svelte';
     import { CHARTS_LANDSCAPE } from '~/helpers/constants';
     import { iconService } from '~/services/icon';
-    import { UNITS, WeatherProps, appPaint, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     // import { fade } from '~/utils/svelte/ui';
     import { generateGradient, loadImage } from '~/utils/utils.common';
     import { fade, fly, slide } from 'svelte-native/transitions';

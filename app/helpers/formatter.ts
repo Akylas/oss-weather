@@ -1,10 +1,30 @@
+import addressFormatter from '@akylas/address-formatter';
 import { Color } from '@nativescript/core';
 import { getMoonIllumination } from 'suncalc';
-import { iconService } from '~/services/icon';
-import { CommonAirQualityData, CommonWeatherData, Currently, DailyData, Hourly } from '~/services/providers/weather';
-import { PROP_TO_UNIT, UNITS, WeatherProps } from '~/services/weatherData';
+import { CommonAirQualityData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { cloudyColor, imperialUnits, metricDecimalTemp, rainColor, snowColor, sunnyColor } from '~/variables';
-import { formatDate, lc } from './locale';
+import { formatDate, lang, lc } from './locale';
+
+export enum UNITS {
+    // InchHg = 'InchHg',
+    // MMHg = 'MMHg',
+    // kPa = 'kPa',
+    // hPa = 'hPa',
+    // Inch = 'inch',
+    IconId = 'iconId',
+    UV = '',
+    MM = 'mm',
+    CM = 'cm',
+    Percent = '%',
+    Celcius = '°',
+    Pressure = 'hPa',
+    Duration = 'duration',
+    Date = 'date',
+    Distance = 'm',
+    DistanceKm = 'km',
+    Speed = 'km/h',
+    SpeedM = 'm/h'
+}
 
 export function kelvinToCelsius(kelvinTemp) {
     return kelvinTemp - 273.15;
@@ -119,16 +139,6 @@ export function convertValueToUnit(value: any, unit: UNITS, options: { round?: b
         default:
             return [round ? Math.round(value) : value, toImperialUnit(unit, imperialUnits)];
     }
-}
-
-export function convertWeatherValueToUnit(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean; round?: boolean }) {
-    return convertValueToUnit(item[key], PROP_TO_UNIT[key], options);
-}
-export function formatWeatherValue(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
-    if (key === WeatherProps.iconId) {
-        return iconService.getIcon(item.iconId, item.isDay, false);
-    }
-    return formatValueToUnit(item[key], PROP_TO_UNIT[key], options);
 }
 
 export function formatValueToUnit(value: any, unit: UNITS, options: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean } = {}) {
@@ -552,41 +562,35 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
     return d;
 }
 
-export function formatAddress(address, part = 0) {
-    let result = '';
-    // if ((properties.layer === 'housenumber' || properties.name || properties.osm_value || properties.osm_key || properties.class) && address && address.houseNumber) {
-    if (address && address.houseNumber) {
-        result += address.houseNumber + ' ';
+function langToCountryCode(lang) {
+    switch (lang) {
+        case 'en':
+            return 'us';
+        default:
+            return lang;
     }
-    if (address.street) {
-        result += address.street + ' ';
-    }
-
-    if (part === 1 && result.length > 0) {
-        return result;
-    }
-    if (part === 2) {
-        if (result.length === 0) {
-            return undefined;
+}
+export function formatAddress(address, startIndex = undefined, endIndex = undefined) {
+    if (!address.country_code && address.country) {
+        const array = address.country.split(/(?:,| |-|_)+/);
+        if (array.length > 1) {
+            address.country_code = array
+                .map((s) => s[0])
+                .join('')
+                .toUpperCase();
         } else {
-            result = '';
+            address.country_code = address.country.slice(0, 2).toUpperCase();
         }
     }
-    // if (address.postcode) {
-    //     result += address.postcode + ' ';
-    // }
-    if (address.city) {
-        result += address.city;
-        if (address.county && address.county !== address.city) {
-            result += '(' + address.county + ')';
-        }
-        result += ' ';
+    if (address.postcode?.indexOf(';') >= 0) {
+        address.postcode = address.postcode.split(';')[0];
     }
-    // if (address.county) {
-    //     result += address.county + ' ';
-    // }
-    // if (address.state) {
-    //     result += address.state + ' ';
-    // }
-    return result.trim();
+    const { locality, county, ...cleanedUp } = address;
+    const result = addressFormatter.format(cleanedUp, {
+        fallbackCountryCode: langToCountryCode(lang)
+    });
+    if (startIndex !== undefined || endIndex !== undefined) {
+        return result?.split('\n').slice(startIndex, endIndex);
+    }
+    return result?.split('\n');
 }

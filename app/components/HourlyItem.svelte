@@ -1,14 +1,12 @@
 <script context="module" lang="ts">
-    import { Align, LayoutAlignment, LinearGradient, Paint, Path, Rect, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
-    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { Align, LinearGradient, Paint, Path, Style } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
-    import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
+    import { formatValueToUnit } from '~/helpers/formatter';
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/providers/weather';
-    import { WeatherProps, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { generateGradient } from '~/utils/utils.common';
     import { colors, fontScale } from '~/variables';

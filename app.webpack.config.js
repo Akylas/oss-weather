@@ -1,7 +1,7 @@
 const webpackConfig = require('./webpack.config.js');
 const webpack = require('webpack');
 const { readFileSync, readdirSync } = require('fs');
-const { dirname, join, isAbsolute, relative, resolve } = require('path');
+const { basename, dirname, join, isAbsolute, relative, resolve } = require('path');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const nsWebpack = require('@akylas/nativescript-webpack');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -171,6 +171,12 @@ module.exports = (env, params = {}) => {
         .filter((s) => s.endsWith('.json'))
         .map((s) => s.replace('.json', ''));
     config.externals.push('~/licenses.json');
+    config.externals.push(function ({ context, request }, cb) {
+        if (/address-formatter/i.test(context)) {
+            return cb(null, join('~/address-formatter/templates', basename(request)));
+        }
+        cb();
+    });
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
             return cb(null, join('~/i18n/', request));
@@ -418,6 +424,14 @@ module.exports = (env, params = {}) => {
     const globOptions = { dot: false, ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
 
     const context = nsWebpack.Utils.platform.getEntryDirPath();
+    const allowedAddressFormatterCountries = supportedLocales.map((s) => s.toUpperCase()).concat(['default']);
+
+    function filterObject(raw, allowed) {
+        Object.keys(raw)
+            .filter((key) => !allowed.includes(key))
+            .forEach((key) => delete raw[key]);
+        return raw;
+    }
     // folders need to exist (app/fonts, app/fonts/android... ) or it will trigger webpack unwanted changes
     const copyPatterns = [
         { context, from: 'fonts/!(ios|android)/**/*', to: 'fonts/[name][ext]', noErrorOnMissing: true, globOptions },
@@ -481,6 +495,19 @@ module.exports = (env, params = {}) => {
                       }
                   }
                 : undefined
+        },
+        {
+            context: 'node_modules/@akylas/address-formatter/src/templates',
+            from: '*.json',
+            to: 'address-formatter/templates',
+            globOptions,
+            transform: {
+                cache: !production,
+                transformer(buffer, path) {
+                    const data = JSON.parse(buffer.toString());
+                    return Buffer.from(JSON.stringify(path.endsWith('aliases.json') ? data : filterObject(data, allowedAddressFormatterCountries)));
+                }
+            }
         }
     ];
     config.plugins.unshift(new CopyPlugin({ patterns: copyPatterns }));
@@ -503,7 +530,7 @@ module.exports = (env, params = {}) => {
             cancelAnimationFrame: [require.resolve(coreModulesPackageName + '/animation-frame'), 'cancelAnimationFrame']
         })
     );
-    config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.join('|')}).\js`)));
+    config.plugins.push(new webpack.ContextReplacementPlugin(/dayjs[\/\\]locale$/, new RegExp(`(${supportedLocales.map((l) => l.replace('_', '-').toLowerCase()).join('|')}).\js`)));
 
     // config.optimization.splitChunks.cacheGroups.defaultVendor.test = /[\\/](node_modules|ui-carto|ui-chart|NativeScript[\\/]dist[\\/]packages[\\/]core)[\\/]/;
     config.optimization.splitChunks.cacheGroups.defaultVendor.test = function (module) {

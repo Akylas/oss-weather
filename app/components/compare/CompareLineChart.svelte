@@ -23,11 +23,10 @@
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
-    import { convertWeatherValueToUnit } from '~/helpers/formatter';
     import { formatDate, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
-    import { PROP_TO_UNIT } from '~/services/weatherData';
+    import { PROP_TO_UNIT, convertWeatherValueToUnit } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { colors, fontScale, screenWidthDips } from '~/variables';
 

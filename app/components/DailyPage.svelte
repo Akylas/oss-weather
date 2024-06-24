@@ -7,9 +7,9 @@
     import WeatherIcon from './WeatherIcon.svelte';
     import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
-    import { weatherDataService } from '~/services/weatherData';
+    import { formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { POLLENS_POLLUTANTS_TITLES, formatWeatherValue } from '~/helpers/formatter';
+    import { POLLENS_POLLUTANTS_TITLES } from '~/helpers/formatter';
     import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { WeatherLocation } from '~/services/api';
     import CActionBar from './common/CActionBar.svelte';

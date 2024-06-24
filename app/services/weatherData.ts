@@ -2,7 +2,7 @@ import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from 
 import { ApplicationSettings, Color, Observable, verticalAlignmentProperty } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
-import { colorForAqi, convertValueToUnit, convertWeatherValueToUnit, formatValueToUnit, formatWeatherValue } from '~/helpers/formatter';
+import { UNITS, colorForAqi, convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
 import { l, lc } from '~/helpers/locale';
 import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
@@ -14,27 +14,8 @@ import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui
 import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
 import { ComponentProps } from 'svelte';
 import { createNativeAttributedString } from '@nativescript-community/text';
+import { iconService } from './icon';
 
-export enum UNITS {
-    // InchHg = 'InchHg',
-    // MMHg = 'MMHg',
-    // kPa = 'kPa',
-    // hPa = 'hPa',
-    // Inch = 'inch',
-    IconId = 'iconId',
-    UV = '',
-    MM = 'mm',
-    CM = 'cm',
-    Percent = '%',
-    Celcius = '°',
-    Pressure = 'hPa',
-    Duration = 'duration',
-    Date = 'date',
-    Distance = 'm',
-    DistanceKm = 'km',
-    Speed = 'km/h',
-    SpeedM = 'm/h'
-}
 
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
@@ -655,4 +636,14 @@ export async function showHourlyPopover(
         },
         ...(options || {})
     });
+}
+
+export function convertWeatherValueToUnit(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean; round?: boolean }) {
+    return convertValueToUnit(item[key], PROP_TO_UNIT[key], options);
+}
+export function formatWeatherValue(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
+    if (key === WeatherProps.iconId) {
+        return iconService.getIcon(item.iconId, item.isDay, false);
+    }
+    return formatValueToUnit(item[key], PROP_TO_UNIT[key], options);
 }

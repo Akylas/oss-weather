@@ -387,7 +387,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
     return newItems;
 }
 
-const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism'];
+const supportedOSMKeys = ['moutain_pass', 'natural', 'place', 'tourism', 'shop', 'amenity'];
 const supportedOSMValues = ['winter_sports'];
 
 export interface WeatherLocation {
@@ -401,6 +401,8 @@ export interface WeatherLocation {
     };
 }
 const PHOTON_SUPPORTED_LANGUAGES = ['en', 'de', 'fr'];
+import { formatAddress } from '~/helpers/formatter';
+
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
     DEV_LOG && console.log('photonSearch', q, lat, lon, queryParams);
     let actualLang = lang.split('-')[0];
@@ -425,7 +427,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
         .map(
             (f) =>
                 ({
-                    name: f.properties.name,
+                    name: f.properties.name || formatAddress(f.properties, 0, 1).join(' '),
                     sys: f.properties,
                     coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
                 }) as WeatherLocation

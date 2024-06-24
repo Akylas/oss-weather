@@ -12,6 +12,7 @@
     import { actionBarButtonHeight, colors } from '~/variables';
     import ListItem from './common/ListItem.svelte';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
+    import { formatAddress } from '~/helpers/formatter';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface } = $colors);
 
@@ -92,7 +93,8 @@
     }
 
     function getItemSubtitle(item) {
-        return (item.sys.state || item.sys.country) + (item.sys.postcode ? ` (${item.sys.postcode})` : '') + (item.sys.state ? '\n' + item.sys.country : '');
+        // const result = (item.sys.state || item.sys.country) + (item.sys.postcode ? ` (${item.sys.postcode})` : '') + (item.sys.state ? '\n' + item.sys.country : '');
+        return formatAddress(item.sys, item.sys.name ? 0 : 1).join('\n');
     }
 </script>
 

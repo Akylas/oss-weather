@@ -3,10 +3,9 @@
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { formatWeatherValue } from '~/helpers/formatter';
     import { formatDate, getLocalTime } from '~/helpers/locale';
     import { DailyData } from '~/services/providers/weather';
-    import { WeatherProps, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, weatherDataLayout } from '~/variables';
 

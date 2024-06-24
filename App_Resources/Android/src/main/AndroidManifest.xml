@@ -41,7 +41,7 @@
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode"/> -->
         <activity android:name=".FloatingActivity" android:theme="@style/FloatingActivityTheme"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode"
-            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:launchMode="singleTop" android:noHistory="true" android:taskAffinity=""
             android:excludeFromRecents="true" tools:ignore="ExportedActivity"
             android:exported="true" android:autoRemoveFromRecents="true">

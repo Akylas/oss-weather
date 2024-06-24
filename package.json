@@ -141,5 +141,6 @@
         "webpack": "5.89.0",
         "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
         "svelte-native": "portal:../svelte-native/dist"
-    }
+    },
+    "packageManager": "yarn@4.3.1"
 }

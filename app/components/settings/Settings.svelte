@@ -741,17 +741,22 @@
                             data: jsonStr,
                             forceSAF: true
                         });
+                        if (!result) {
+                            throw new Error(lc('failed_to_export_settings'));
+                        }
                         DEV_LOG && console.log('export_settings done', result, jsonStr);
                     }
                     break;
                 case 'import_settings':
                     const result = await openFilePicker({
                         extensions: ['json'],
+
                         multipleSelection: false,
                         pickerMode: 0,
                         forceSAF: true
                     });
                     const filePath = result.files[0];
+                    DEV_LOG && console.log('import_settings from file picker', filePath, File.exists(filePath));
                     if (filePath && File.exists(filePath)) {
                         showLoading();
                         const text = await File.fromPath(filePath).readText();
@@ -803,14 +808,18 @@
                                 }
                             });
                         }
-                        hideLoading();
-                        const result = await confirm({
-                            message: lc('restart_app'),
-                            okButtonText: lc('restart'),
-                            cancelButtonText: lc('later')
-                        });
-                        if (result) {
-                            restartApp();
+                        await hideLoading();
+                        if (__ANDROID__) {
+                            const result = await confirm({
+                                message: lc('restart_app'),
+                                okButtonText: lc('restart'),
+                                cancelButtonText: lc('later')
+                            });
+                            if (result) {
+                                restartApp();
+                            }
+                        } else {
+                            showSnack({ message: lc('please_restart_app') });
                         }
                     }
                     break;

@@ -591,7 +591,6 @@ export function formatAddress(address, startIndex = undefined, endIndex = undefi
         fallbackCountryCode: langToCountryCode(lang)
     });
     if (startIndex !== undefined || endIndex !== undefined) {
-        DEV_LOG && console.log('formatAddress', result, JSON.stringify(address));
         return result?.split('\n').slice(startIndex, endIndex);
     }
     return result?.split('\n');

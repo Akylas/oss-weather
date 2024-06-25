@@ -1,0 +1,4 @@
+### Bug fixes
+- better location naming and address format
+- untranslated strings are now using english instead of translation key
+- Translations update

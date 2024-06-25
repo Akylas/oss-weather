@@ -427,7 +427,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
         .map(
             (f) =>
                 ({
-                    name: f.properties.name || formatAddress(f.properties, 0, 1).join(' '),
+                    name: f.properties.name,
                     sys: f.properties,
                     coord: { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] }
                 }) as WeatherLocation

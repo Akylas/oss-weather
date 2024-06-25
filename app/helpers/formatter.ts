@@ -4,6 +4,7 @@ import { getMoonIllumination } from 'suncalc';
 import { CommonAirQualityData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { cloudyColor, imperialUnits, metricDecimalTemp, rainColor, snowColor, sunnyColor } from '~/variables';
 import { formatDate, lang, lc } from './locale';
+import { WeatherLocation } from '~/services/api';
 
 export enum UNITS {
     // InchHg = 'InchHg',
@@ -590,7 +591,30 @@ export function formatAddress(address, startIndex = undefined, endIndex = undefi
         fallbackCountryCode: langToCountryCode(lang)
     });
     if (startIndex !== undefined || endIndex !== undefined) {
+        DEV_LOG && console.log('formatAddress', result, JSON.stringify(address));
         return result?.split('\n').slice(startIndex, endIndex);
     }
     return result?.split('\n');
+}
+
+export function getLocationName(weatherLocation: WeatherLocation) {
+    if (!weatherLocation) {
+        return null;
+    }
+    return weatherLocation.name || weatherLocation.sys.name || formatAddress(weatherLocation.sys, 0, 1).join(' ');
+}
+export function getLocationSubtitle(weatherLocation: WeatherLocation) {
+    if (!weatherLocation) {
+        return null;
+    }
+    const name = weatherLocation.name || weatherLocation.sys.name;
+    let startIndex = 0;
+    if (name === weatherLocation.sys.city) {
+        startIndex++;
+    }
+    let data = formatAddress(weatherLocation.sys, weatherLocation.name || weatherLocation.sys.name ? startIndex : 1);
+    if (data.length > 2) {
+        data = data.slice(data.length - 3);
+    }
+    return data.filter((s) => !!s).join('\n');
 }

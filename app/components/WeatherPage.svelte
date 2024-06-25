@@ -34,6 +34,7 @@
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
     import { DATA_VERSION, SETTINGS_DAILY_PAGE_HOURLY_CHART, SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER } from '~/helpers/constants';
+    import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -616,7 +617,7 @@
                     </mdbutton>
                 </stacklayout>
             {/if}
-            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={weatherLocation?.name} on:swipe={onSwipe}>
+            <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={getLocationName(weatherLocation)} on:swipe={onSwipe}>
                 <mdbutton
                     slot="left"
                     class="actionBarButton"
@@ -660,12 +661,7 @@
                         openAnimationDuration={100}
                         startingSide={item.startingSide}
                         translationFunction={swipeMenuTranslationFunction}>
-                        <ListItemAutoSize
-                            prop:mainContent
-                            backgroundColor={colorBackground}
-                            subtitle={(item.sys.state || item.sys.country) + (item.sys.state ? '\n' + item.sys.country : '')}
-                            title={item.name}
-                            on:tap={() => saveLocation(item)} />
+                        <ListItemAutoSize prop:mainContent backgroundColor={colorBackground} subtitle={getLocationSubtitle(item)} title={getLocationName(item)} on:tap={() => saveLocation(item)} />
                         <!-- <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
 
                             <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />

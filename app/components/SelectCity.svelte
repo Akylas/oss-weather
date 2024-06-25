@@ -12,7 +12,7 @@
     import { actionBarButtonHeight, colors } from '~/variables';
     import ListItem from './common/ListItem.svelte';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { formatAddress } from '~/helpers/formatter';
+    import { formatAddress, getLocationName, getLocationSubtitle } from '~/helpers/formatter';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface } = $colors);
 
@@ -91,11 +91,6 @@
             showError(error);
         }
     }
-
-    function getItemSubtitle(item) {
-        // const result = (item.sys.state || item.sys.country) + (item.sys.postcode ? ` (${item.sys.postcode})` : '') + (item.sys.state ? '\n' + item.sys.country : '');
-        return formatAddress(item.sys, item.sys.name ? 0 : 1).join('\n');
-    }
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
@@ -107,7 +102,7 @@
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} />
         <collectionview items={searchResults} row={2}>
             <Template let:item>
-                <ListItemAutoSize disableCss={false} subtitle={getItemSubtitle(item)} title={item.name} on:tap={() => close(item)}>
+                <ListItemAutoSize disableCss={false} subtitle={getLocationSubtitle(item)} title={getLocationName(item)} on:tap={() => close(item)}>
                     <mdbutton
                         class="icon-btn"
                         col={2}

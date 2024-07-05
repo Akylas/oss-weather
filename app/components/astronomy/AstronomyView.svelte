@@ -173,7 +173,7 @@
     highlightPaint.setPathEffect(new DashPathEffect([3, 3], 0));
     highlightPaint.setTextAlign(Align.LEFT);
     highlightPaint.setTextSize(10);
-    // let chartBackgroundColor =
+
     function updateTheme() {
         nightPaint.color = new Color($colors.colorBackground).setAlpha(170);
         nightLiinePaint.color = new Color($colors.colorOnSurface).setAlpha(150);
@@ -587,4 +587,5 @@
         </cgroup>
         <cspan text={formatTime(sunTimes.sunsetStart) + ' ' + sunsetStartAzimuth.exact} textAlignment="right" paddingTop={40} />
     </canvaslabel> -->
-    </canvasview></gesturerootview>
+    </canvasview>
+</gesturerootview>

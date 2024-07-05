@@ -93,6 +93,20 @@ export function queryString(params, location) {
     return parts.splice(0, 2).join('?') + (parts.length > 0 ? '&' + parts.join('&') : '');
 }
 
+export function wrapNativeHttpException(error, requestParams: HttpRequestOptions) {
+    return wrapNativeException(error, (message) => {
+        if (/(SocketTimeout|SocketException|UnknownHost)/.test(message)) {
+            return new TimeoutError();
+        } else {
+            return new HTTPError({
+                message,
+                statusCode: -1,
+                requestParams
+            });
+        }
+    });
+}
+
 interface NetworkService extends Observable {
     on(eventNames: 'connected', callback: (data: NetworkConnectionStateEventData) => void, thisArg?: any);
     on(eventNames: 'connection', callback: (e: EventData & { connectionType: connectionType; connected: boolean }) => void, thisArg?: any);
@@ -259,25 +273,7 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
         const response = await https.request<T>(requestParams);
         return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);
     } catch (error) {
-        throw wrapNativeException(error, (message) => {
-            if (message.indexOf('UnknownHostException')) {
-                return new NoNetworkError({
-                    statusCode: -1,
-                    requestParams
-                });
-            }
-            if (message.indexOf('SocketTimeoutException')) {
-                return new TimeoutError({
-                    statusCode: -1,
-                    requestParams
-                });
-            }
-            return new HTTPError({
-                message,
-                statusCode: -1,
-                requestParams
-            });
-        });
+        throw wrapNativeHttpException(error, requestParams);
     }
 }
 

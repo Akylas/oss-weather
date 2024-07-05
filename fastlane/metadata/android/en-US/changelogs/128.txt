@@ -1,0 +1,4 @@
+### Bug fixes
+- prevent error on settings import
+- more reactive highlight popover on day chart view
+- Translations update

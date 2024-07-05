@@ -34,6 +34,7 @@
         "variant"
     ],
     "svelte.plugin.svelte.compilerWarnings": {
+        "missing-declaration": "ignore",
         "a11y-aria-attributes": "ignore",
         "a11y-incorrect-aria-attribute-type": "ignore",
         "a11y-unknown-aria-attribute": "ignore",

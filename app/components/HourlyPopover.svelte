@@ -1,74 +1,40 @@
 <script lang="ts">
     import { Color } from '@akylas/nativescript';
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
-    import dayjs from 'dayjs';
+    import { Align, Canvas, CanvasView, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
+    import { formatTime } from '~/helpers/locale';
+    import { iconService } from '~/services/icon';
     import { CommonWeatherData } from '~/services/providers/weather';
     import { CommonData, WeatherProps, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale } from '~/variables';
-    import WeatherPage from './WeatherPage.svelte';
     import WeatherIcon from './WeatherIcon.svelte';
-    import { iconService } from '~/services/icon';
-    import { formatTime } from '~/helpers/locale';
-    import { closePopover } from '@nativescript-community/ui-popover/svelte';
+    import { NativeViewElementNode } from 'svelte-native/dom';
 
     const labelPaint = new Paint();
+    let canvas: NativeViewElementNode<CanvasView>;
 
     let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors);
     export let item: CommonWeatherData;
+    export let isUserInteractionEnabled: boolean;
 
     $: updateNativeTexts(item);
     let height;
-    let iconsNativeString;
-    let textNativeString;
     const animated = iconService.animated;
 
     let data: CommonData[];
     function updateNativeTexts(item: CommonWeatherData) {
+        if (!item) {
+            return;
+        }
         data = weatherDataService.getIconsData(item, [WeatherProps.windBeaufort], [WeatherProps.temperature], [WeatherProps.rainSnowLimit, WeatherProps.iso]);
         height = data.length * 19 * $fontScale;
-        // iconsNativeString = createNativeAttributedString({
-        //     spans: data
-        //         .map((c) => [
-        //             {
-        //                 fontSize: c.iconFontSize * 0.7,
-        //                 color: c.iconColor || c.color || colorOnSurface,
-        //                 fontFamily: c.paint?.fontFamily,
-        //                 text: c.icon + '\n'
-        //             }
-        //         ])
-        //         .flat()
-        // });
-        // textNativeString = createNativeAttributedString({
-        //     spans: data
-        //         .map((c) =>
-        //             [
-        //                 c.value
-        //                     ? {
-        //                           fontSize: 12 * $fontScale,
-        //                           //   verticalAlignment: 'center',
-        //                           color: c.color || colorOnSurface,
-        //                           text: c.value + (c.subvalue ? ' ' : '\n')
-        //                       }
-        //                     : undefined,
-        //                 c.subvalue
-        //                     ? {
-        //                           fontSize: 9 * $fontScale,
-        //                           color: c.color || colorOnSurface,
-        //                           //   verticalAlignment: 'center',
-        //                           text: c.subvalue + '\n'
-        //                       }
-        //                     : undefined
-        //             ].filter((s) => !!s)
-        //         )
-        //         .flat() as any
-        // });
+        canvas?.nativeView?.invalidate();
     }
 
     function onDraw({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
-        const dx = 0;
         let dy = 0;
 
         const addedDy = 19;
@@ -113,21 +79,24 @@
     }
 </script>
 
-<gesturerootview columns="auto" rows="auto">
+<gesturerootview columns="auto" rows="auto" {...$$restProps}>
     <gridlayout
         backgroundColor={new Color(colorBackground).setAlpha(240)}
         borderColor={colorOutline}
         borderRadius={__IOS__ ? 14 : 8}
         borderWidth={1}
         columns={`${100 * $fontScale},${50 * $fontScale}`}
+        {isUserInteractionEnabled}
         padding={5}
         rows={`auto,auto,${height}`}
         on:tap={() => closePopover()}>
-        <WeatherIcon {animated} col={1} iconData={[item.iconId, item.isDay]} verticalAlignment="top" />
-        <label colSpan={2} fontSize={14 * $fontScale} fontWeight="bold" text={formatTime(item.time, 'LT', item.timezoneOffset) + '\n' + formatTime(item.time, 'DD/MM', item.timezoneOffset)} />
+        <WeatherIcon {animated} col={1} iconData={[item.iconId, item.isDay]} {isUserInteractionEnabled} verticalAlignment="top" />
+        {#if __ANDROID__}
+            <label colSpan={2} fontSize={14 * $fontScale} fontWeight="bold" text={formatTime(item.time, 'LT', item.timezoneOffset) + '\n' + formatTime(item.time, 'DD/MM', item.timezoneOffset)} />
+        {/if}
         <label colSpan={2} fontSize={14 * $fontScale} marginBottom={10} row={1} text={item.description} />
         <!-- <label lineHeight={18 * $fontScale} row={1} text={iconsNativeString} textAlignment="center" verticalTextAlignment="center" /> -->
         <!-- <label col={1} lineHeight={18 * $fontScale} row={1} text={textNativeString} /> -->
-        <canvasView colSpan={2} row={2} on:draw={onDraw} />
+        <canvasView bind:this={canvas} colSpan={2} row={2} on:draw={onDraw} />
     </gridlayout>
 </gesturerootview>

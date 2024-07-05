@@ -1,7 +1,7 @@
 <svelte:options accessors />
 
 <script context="module" lang="ts">
-    import { Align, Canvas, CanvasView, DashPathEffect, FontMetrics, LayoutAlignment, LinearGradient, Paint, Rect, RectF, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, CanvasView, DashPathEffect, LinearGradient, Paint, Rect, RectF } from '@nativescript-community/ui-canvas';
     import { CombinedChart } from '@nativescript-community/ui-chart';
     import { ScatterShape } from '@nativescript-community/ui-chart/charts/ScatterChart';
     import { LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
@@ -12,21 +12,9 @@
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
-    import {
-        Application,
-        ApplicationSettings,
-        Color,
-        EventData,
-        ImageSource,
-        ObservableArray,
-        OrientationChangedEventData,
-        TouchGestureEventData,
-        Utils,
-        View,
-        fontWeightProperty
-    } from '@nativescript/core';
+    import { Application, Color, CoreTypes, EventData, HorizontalAlignment, ImageSource, ObservableArray, OrientationChangedEventData, Utils } from '@nativescript/core';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { toImperialUnit, windIcon } from '~/helpers/formatter';
+    import { windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
@@ -38,21 +26,13 @@
     import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
     import { Entry } from '@nativescript-community/ui-chart/data/Entry';
     import { Utils as ChartUtils } from '@nativescript-community/ui-chart/utils/Utils';
-    import { Page } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
-    import { CHARTS_LANDSCAPE } from '~/helpers/constants';
     import { iconService } from '~/services/icon';
     import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     // import { fade } from '~/utils/svelte/ui';
-    import { generateGradient, loadImage } from '~/utils/utils.common';
-    import { fade, fly, slide } from 'svelte-native/transitions';
-    import { createNativeAttributedString } from '@nativescript-community/text';
-    import { CollectionView } from '@nativescript-community/ui-collectionview';
-    import { showPopover } from '@nativescript-community/ui-popover/svelte';
-    import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
-    import WeatherComponent from './WeatherComponent.svelte';
     import { debounce, throttle } from '@nativescript/core/utils';
+    import { generateGradient, loadImage } from '~/utils/utils.common';
 
     // const labelPaint = new Paint();
     // labelPaint.textSize = 13;
@@ -79,6 +59,8 @@
 </script>
 
 <script lang="ts">
+    import HourlyPopover from './HourlyPopover.svelte';
+
     let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors);
 
@@ -107,9 +89,11 @@
     let startTimestamp = 0;
     let timezoneOffset;
     let chartNeedsZoomUpdate = false;
-    let currentHighlight: Highlight = null;
     let iconCache: { [k: string]: ImageSource } = {};
     let chartInitialized = false;
+    let highlightedItem: CommonWeatherData;
+    let highlightedMargin: string;
+    let highlightedAlignment: CoreTypes.HorizontalAlignmentType;
 
     export function getChart() {
         return chartView?.nativeElement;
@@ -159,6 +143,7 @@
                     chart.setExtraOffsets(0, 30, 0, 0);
                     chart.highlightsFilterByAxis = false;
                     chart.highlightPerTapEnabled = true;
+                    chart.highlightPerDragEnabled = true;
                     chart.pinchZoomEnabled = true;
                     chart.dragEnabled = true;
                     chart.scaleXEnabled = true;
@@ -627,28 +612,17 @@
             chart.highlight(highlights);
         }
     }
-    const onHighlight = throttle(async function onHighlight({ object, highlight }: { object: CombinedChart; highlight: Highlight }) {
-        // if (highlight.xPx > Utils.layout.toDeviceIndependentPixels(object.getMeasuredWidth()) - highlightViewWidth) {
-        //     highlight.xPx -= highlightViewWidth;
-        // }
-        // currentHighlight = highlight;
-        // highlightCanvas?.nativeElement.redraw();
-
-        try {
-            await showHourlyPopover(
-                hourly[highlight.x] as CommonWeatherData,
-                {},
-                {
-                    anchor: chartView.nativeView,
-                    x: Utils.layout.toDevicePixels(highlight.xPx)
-                }
-            );
-        } catch (error) {
-            showError(error);
-        }
-    }, 200);
-    function onPan() {
-        currentHighlight = null;
+    function onHighlight({ object, highlight }: { object: CombinedChart; highlight: Highlight }) {
+        const popoverWidth = 150 * $fontScale;
+        const fullWidth = Utils.layout.toDeviceIndependentPixels(chartView.nativeView.getMeasuredWidth());
+        const highlightedX = highlight.xPx;
+        highlightedAlignment = highlightedX >= fullWidth - popoverWidth ? 'right' : 'left';
+        highlightedMargin = highlightedAlignment === 'left' ? `40 0 0 ${highlightedX}` : `40 ${fullWidth - highlightedX} 0 0`;
+        highlightedItem = hourly[highlight.x] as CommonWeatherData;
+    }
+    function clearHighlight() {
+        highlightedItem = null;
+        // currentHighlight = null;
     }
     // function onDrawHighlight({ canvas }: { canvas: Canvas }) {
     //     const entry = currentHighlight?.entry as CommonWeatherData;
@@ -795,8 +769,12 @@
         on:firstOffsetsCalculated={updateGradient}
         on:layoutChanged={onLayoutChanged}
         on:highlight={onHighlight}
-        on:pan={onPan}>
+        on:pan={clearHighlight}
+        on:zoom={clearHighlight}>
     </combinedchart>
+    {#if highlightedItem}
+        <HourlyPopover horizontalAlignment={highlightedAlignment} isPassThroughParentEnabled={true} isUserInteractionEnabled={false} item={highlightedItem} margin={highlightedMargin} />
+    {/if}
     <!-- {#if currentHighlight}
         <nestedscrollview
             backgroundColor={new Color(colorBackground).setAlpha(220)}

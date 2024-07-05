@@ -24,6 +24,7 @@ module.exports = {
         markingMode: 'none',
         codeCache: true,
         enableMultithreadedJavascript: false,
+        handleTimeZoneChanges: true,
         ...(loggingEnabled
             ? {
                   forceLog: true,

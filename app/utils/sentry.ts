@@ -21,7 +21,7 @@ export async function startSentry() {
                 disabledNativeIntegrations: ['io.sentry.UncaughtExceptionHandlerIntegration', 'io.sentry.android.fragment.FragmentLifecycleIntegration'],
                 flushSendEvent: true,
                 enableNativeCrashHandling: true,
-                attachScreenshot: true,
+                attachScreenshot: false,
                 enableUIViewControllerTracing: false,
                 enableUserInteractionTracing: false,
                 enableAutoBreadcrumbTracking: false,

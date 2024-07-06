@@ -17,7 +17,7 @@
     let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors);
     export let item: CommonWeatherData;
-    export let isUserInteractionEnabled: boolean;
+    export let isUserInteractionEnabled: boolean = true;
 
     $: updateNativeTexts(item);
     let height;

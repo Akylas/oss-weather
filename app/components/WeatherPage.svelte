@@ -38,7 +38,8 @@
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
-    let gps: GPS;
+    const gps: GPS = new GPS();
+    const gpsAvailable = gps.hasGPS();
     let loading = false;
     let lastUpdate = ApplicationSettings.getNumber('lastUpdate', -1);
     let provider = getProviderType();
@@ -60,12 +61,17 @@
     let page: NativeViewElementNode<Page>;
     async function showOptions(event) {
         try {
-            const options = [
-                {
-                    icon: 'mdi-crosshairs-gps',
-                    id: 'gps_location',
-                    name: l('gps_location')
-                },
+            const options = (
+                gpsAvailable
+                    ? [
+                          {
+                              icon: 'mdi-crosshairs-gps',
+                              id: 'gps_location',
+                              name: l('gps_location')
+                          }
+                      ]
+                    : []
+            ).concat([
                 {
                     icon: 'mdi-cogs',
                     id: 'preferences',
@@ -76,10 +82,10 @@
                 //     id: 'about',
                 //     text: l('about')
                 // }
-            ] as any;
+            ] as any);
             if (weatherLocation) {
                 options.push(
-                    ...[
+                    ...([
                         {
                             icon: 'mdi-refresh',
                             id: 'refresh',
@@ -106,7 +112,7 @@
                             id: 'meteo_blue',
                             name: 'meteoblue'
                         }
-                    ]
+                    ] as any)
                 );
                 if (isBRABounds(weatherLocation)) {
                     options.push({
@@ -321,9 +327,6 @@
             if (!isPermResultAuthorized(result)) {
                 return alert(l('missing_location_perm'));
             }
-            if (!gps) {
-                gps = new GPS();
-            }
             if (!gps.isEnabled()) {
                 if (__IOS__) {
                     throw new Error(lc('gps_off'));
@@ -359,7 +362,7 @@
             }
             loading = true;
             const refreshLocationOnPull = ApplicationSettings.getBoolean('refresh_location_on_pull', false);
-            if (refreshLocationOnPull) {
+            if (gpsAvailable && refreshLocationOnPull) {
                 await getLocationAndWeather();
             } else {
                 await refreshWeather();
@@ -607,10 +610,12 @@
             {:else}
                 <stacklayout columns="auto" horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle">
                     <label fontSize={16} marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
-                    <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={2}>
-                        <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
-                        <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
-                    </mdbutton>
+                    {#if gpsAvailable}
+                        <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={2}>
+                            <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
+                            <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
+                        </mdbutton>
+                    {/if}
                     <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />

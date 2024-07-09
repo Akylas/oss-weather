@@ -3,11 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools">
     <supports-screens android:smallScreens="true" android:normalScreens="true"
         android:largeScreens="true" android:xlargeScreens="true" />
-    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature android:name="android.hardware.location.gps"
+        android:required="false" />
     <uses-permission android:name="akylas.alpi.maps.broadcast" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:requiredFeature="false" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:requiredFeature="false" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <!-- <uses-permission
@@ -26,6 +29,7 @@
         android:icon="@mipmap/ic_launcher" android:label="@string/app_name"
         android:theme="@style/AppTheme" android:supportsRtl="true">
         <activity android:name=".MainActivity" android:label="@string/title_activity_kimera"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|locale|uiMode"
             android:theme="@style/LaunchScreenTheme"
             android:launchMode="singleTask" android:exported="true">

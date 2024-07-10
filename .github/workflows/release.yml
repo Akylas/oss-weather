@@ -70,7 +70,7 @@ jobs:
       - name: Install deps
         uses: bahmutov/npm-install@v1
         with:
-          install-command: corepack enable && yarn install --immutable --silent
+          install-command: yarn install --immutable --silent
 
       - name: update Version
         if: github.event.inputs.release_type != 'none'
@@ -83,6 +83,7 @@ jobs:
            npm run build.android.production.fdroid
 
   release-ios:
+    needs: release-android
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -96,7 +97,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'yarn'
+      
+      - name: Enable CorePack
+        run: corepack enable
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v3
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
 
       - name: Install Python
         uses: actions/setup-python@v4
@@ -114,7 +129,7 @@ jobs:
       - name: Install deps
         uses: bahmutov/npm-install@v1
         with:
-          install-command: corepack enable && yarn install --immutable --silent
+          install-command: yarn install --immutable --silent
 
       - name: update Version
         if: github.event.inputs.release_type != 'none'

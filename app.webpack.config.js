@@ -9,7 +9,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./scripts/IgnoreNotFoundExportPlugin');
-const Fontmin = require('@akylas/fontmin');
+const Fontmin = require('@nativescript-community/fontmin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
 function fixedFromCharCode(codePt) {

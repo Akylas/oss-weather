@@ -12,12 +12,12 @@ on:
         - patch
         - minor
         - major
-      iOS:
+      ios:
         description: 'Release for iOS'
         required: true
         default: true
         type: boolean
-      Android:
+      android:
         description: 'Release for Android'
         required: true
         default: true
@@ -25,6 +25,7 @@ on:
 
 jobs:
   release-android:
+    if: github.event.inputs.android == true
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -106,6 +107,7 @@ jobs:
            npm run build.android.production.fdroid
 
   release-ios:
+    if: github.event.inputs.ios == true
     needs: release-android
     runs-on: macos-latest
     steps:
@@ -132,12 +134,11 @@ jobs:
           npm i -g @nativescript/nativescript-cli --ignore-scripts --legacy-peer-deps
           ns usage-reporting disable
           ns error-reporting disable
-          ns doctor
 
       - name: Install deps
         uses: bahmutov/npm-install@v1
         with:
-          install-command: yarn install --immutable --silent
+          install-command: yarn install --silent
 
       - name: update Version
         if: github.event.inputs.release_type != 'none'

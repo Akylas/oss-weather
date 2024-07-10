@@ -61,7 +61,7 @@ jobs:
       - name: Install NativeScript
         run: |
           python3 -m pip install --upgrade pip six
-          npm i -g @nativescript/nativescript-cli --ignore-scripts --legacy-peer-deps
+          npm i -g @akylas/nativescript-cli --ignore-scripts --legacy-peer-deps
           ns usage-reporting disable
           ns error-reporting disable
           ns doctor

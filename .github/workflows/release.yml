@@ -86,7 +86,7 @@ jobs:
 
       - name: Get gem cache directory path
         id: gem-cache-dir-path
-        run: echo "::set-output name=vendor"
+        run: echo "::set-output name=$(echo "vendor")"
 
       - uses: actions/cache@v3
         id: gem-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)

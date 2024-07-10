@@ -1,0 +1,127 @@
+name: 'release'
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        type: choice
+        default: none
+        description: What kind of version upgrade
+        options: 
+        - none
+        - patch
+        - minor
+        - major
+      iOS:
+        description: 'Release for iOS'
+        required: true
+        default: true
+        type: boolean
+      Android:
+        description: 'Release for Android'
+        required: true
+        default: true
+        type: boolean
+
+jobs:
+  release-android:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          cache: gradle
+          java-version: 17
+          distribution: 'temurin'
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r25c
+          local-cache: true
+
+      - name: Install NativeScript
+        run: |
+          python3 -m pip install --upgrade pip six
+          npm i -g @nativescript/nativescript-cli --ignore-scripts --legacy-peer-deps
+          ns usage-reporting disable
+          ns error-reporting disable
+          ns doctor
+
+      - name: Install deps
+        uses: bahmutov/npm-install@v1
+        with:
+          install-command: yarn install --immutable --silent
+
+      - name: update Version
+        if: github.event.inputs.release_type != 'none'
+        run: |
+          ./node_modules/.bin/set-version android {{ github.event.inputs.release_type }}
+          ./node_modules/.bin/get-version android version
+      
+      - name: Build
+        run: |
+           npm run build.android.production.fdroid
+
+  release-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: maxim-lobanov/setup-xcode@v1
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'yarn'
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install NativeScript
+        run: |
+          python3 -m pip install --upgrade pip six
+          npm i -g @nativescript/nativescript-cli --ignore-scripts --legacy-peer-deps
+          ns usage-reporting disable
+          ns error-reporting disable
+          ns doctor
+
+      - name: Install deps
+        uses: bahmutov/npm-install@v1
+        with:
+          install-command: yarn install --immutable --silent
+
+      - name: update Version
+        if: github.event.inputs.release_type != 'none'
+        run: |
+          ./node_modules/.bin/set-version ios {{ github.event.inputs.release_type }}
+          ./node_modules/.bin/get-version ios version
+      
+      - name: Build
+        run: |
+           npm run build.ios.production

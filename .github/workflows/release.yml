@@ -81,6 +81,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
+      - name: install jq
+        run: brew install jq
+
+      - name: install gems
+        run: bundle install
+
+      - name: Remove package.json resolutions
+        run: echo "`jq 'delpaths([["resolutions","@akylas/nativescript"],["resolutions","svelte-native"]])' package.json`" > package.json
+
       - name: Install deps
         uses: bahmutov/npm-install@v1
         with:

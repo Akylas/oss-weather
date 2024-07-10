@@ -131,7 +131,8 @@
         "svelte-preprocess": "^5.1.4",
         "terser-webpack-plugin": "^5.3.10",
         "typescript": "~5.4.5",
-        "typescript-eslint": "^7.13.0"
+        "typescript-eslint": "^7.13.0",
+        "webpack": "5.92.1"
     },
     "commitlint": {
         "extends": [
@@ -139,7 +140,7 @@
         ]
     },
     "resolutions": {
-        "webpack": "5.89.0",
+        "webpack": "5.92.1",
         "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
         "svelte-native": "portal:../svelte-native/dist"
     },

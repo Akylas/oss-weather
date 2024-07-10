@@ -25,7 +25,7 @@ on:
 
 jobs:
   release-android:
-    if: github.event.inputs.android == true
+    if: github.event.inputs.android == 'true'
     runs-on: macos-latest
     steps:
       - name: Checkout repository
@@ -107,7 +107,7 @@ jobs:
            npm run build.android.production.fdroid
 
   release-ios:
-    if: github.event.inputs.ios == true
+    if: github.event.inputs.ios == 'true'
     needs: release-android
     runs-on: macos-latest
     steps:

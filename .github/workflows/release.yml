@@ -70,7 +70,7 @@ jobs:
       - name: Install deps
         uses: bahmutov/npm-install@v1
         with:
-          install-command: yarn install --immutable --silent
+          install-command: corepack enable && yarn install --immutable --silent
 
       - name: update Version
         if: github.event.inputs.release_type != 'none'
@@ -114,7 +114,7 @@ jobs:
       - name: Install deps
         uses: bahmutov/npm-install@v1
         with:
-          install-command: yarn install --immutable --silent
+          install-command: corepack enable && yarn install --immutable --silent
 
       - name: update Version
         if: github.event.inputs.release_type != 'none'

@@ -85,7 +85,7 @@
         "@babel/core": "^7.24.6",
         "@eslint/js": "^9.3.0",
         "@nativescript-community/fontmin": "^0.9.9",
-        "@nativescript-community/set-version": "1.0.0",
+        "@nativescript-community/set-version": "1.0.1",
         "@nativescript/core": "8.7.2",
         "@nativescript/types-android": "8.7.0",
         "@nativescript/types-ios": "8.7.0",

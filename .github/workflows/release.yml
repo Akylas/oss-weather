@@ -66,6 +66,9 @@ jobs:
           ns usage-reporting disable
           ns error-reporting disable
       
+      - name: install jq
+        run: brew install jq
+      
       - name: Enable CorePack
         run: corepack enable
 
@@ -81,12 +84,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: install jq
-        run: brew install jq
 
       - name: Get gem cache directory path
         id: gem-cache-dir-path
-        run: echo "::set-output name=$(echo "vendor")"
+        run: echo "::set-output name=dir::$(echo "vendor ")"
 
       - uses: actions/cache@v3
         id: gem-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)

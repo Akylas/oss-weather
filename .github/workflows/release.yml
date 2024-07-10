@@ -90,7 +90,7 @@ jobs:
         run: echo "::set-output name=vendor"
 
       - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: gem-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.gem-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}

@@ -54,8 +54,6 @@ tmp/
 !.vscode/launch.json
 !.vscode/i18n-ally-custom-framework.yml
 .sentryclirc
-pnpm-lock.yaml
-yarn.lock
 /fastlane/report.xml
 *.zip
 dist

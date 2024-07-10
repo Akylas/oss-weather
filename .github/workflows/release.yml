@@ -113,7 +113,7 @@ jobs:
       - name: update Version
         if: github.event.inputs.release_type != 'none'
         run: |
-          ./node_modules/.bin/set-version android {{ github.event.inputs.release_type }}
+          ./node_modules/@nativescript-community/set-version/lib/set_version.js android {{ github.event.inputs.release_type }}
           ./node_modules/.bin/get-version android version
       
       - name: Build

@@ -116,7 +116,7 @@ jobs:
       - name: update Version
         if: github.event.inputs.release_type != 'none'
         run: |
-          ls .
+          ls -la .
           ls ./node_modules/.bin
           ./node_modules/@nativescript-community/set-version/lib/set_version.js android {{ github.event.inputs.release_type }}
           ./node_modules/@nativescript-community/set-version/lib/get_version.js android version

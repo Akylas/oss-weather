@@ -99,12 +99,12 @@ jobs:
         run: echo "`jq 'delpaths([["resolutions","@akylas/nativescript"],["resolutions","svelte-native"]])' package.json`" > package.json
 
       - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        id: yarn-node_moduels # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-node_moduels-
 
       - name: Install deps
         uses: bahmutov/npm-install@v1

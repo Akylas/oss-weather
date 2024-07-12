@@ -72,11 +72,11 @@ jobs:
       - name: Enable CorePack
         run: |
           corepack enable 
-          yarn cache dir # the yarn command will ensure the correct yarn version is downloaded and installed
+          yarn config get globalFolder # the yarn command will ensure the correct yarn version is downloaded and installed
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "::set-output name=dir::$(yarn config get globalFolder)"
 
       - uses: actions/cache@v3
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)

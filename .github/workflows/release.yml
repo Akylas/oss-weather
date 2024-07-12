@@ -70,7 +70,7 @@ jobs:
         run: brew install jq
       
       - name: Enable CorePack
-        run: corepack enable & yarn cache dir # the yarn command will ensure the correct yarn version is downloaded and installed
+        run: corepack enable ; yarn cache dir # the yarn command will ensure the correct yarn version is downloaded and installed
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path

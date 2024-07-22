@@ -444,7 +444,10 @@ export async function getTimezone(location: FavoriteLocation) {
             }
         })
     ).content;
-    return { timezone: result.timeZone, timezoneOffset: result.currentUtcOffset.seconds / 3600 };
+    // we round the timezone offset because in some countries it can be 5.5 (like india)
+    // and thus we would show weather for 5:30 instead of 5:00
+    const timezoneOffset = Math.floor(result.currentUtcOffset.seconds / 3600);
+    return { timezone: result.timeZone, timezoneOffset };
 }
 export async function requestNominatimReverse(coord: { lat: number; lon: number }) {
     const result = (

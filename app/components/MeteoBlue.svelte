@@ -1,22 +1,19 @@
 <script context="module" lang="ts">
-    import { ImageSource, Screen, path } from '@nativescript/core';
     import { FailureEventData, FinalEventData, getImagePipeline } from '@nativescript-community/ui-image';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { ZoomImg } from '@nativescript-community/ui-zoomimage';
+    import { ImageSource, Screen } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onMount } from 'svelte';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';
     import { lang, lc, lu } from '~/helpers/locale';
-    import { isDarkTheme } from '~/helpers/theme';
-    import { request as permRequest } from '@nativescript-community/perms';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, queryString, request } from '~/services/api';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, request } from '~/services/api';
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
     import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
-    import { actionBarButtonHeight, actionBarHeight, colors, imperial, imperialUnits, systemFontScale } from '~/variables';
-    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { actionBarButtonHeight, actionBarHeight, colors, imperial, systemFontScale } from '~/variables';
 
     function parseUrl(str) {
         const [url, query] = str.split('?');
@@ -144,10 +141,10 @@
             name: lu('all_in_one'),
             urlId: 'meteogramone'
         },
-        {
-            name: lu('seven_days'),
-            urlId: 'meteogramextended'
-        }
+        // {
+        //     name: lu('seven_days'),
+        //     urlId: 'meteogramextended'
+        // }
     ];
     function setTabIndex(value: number) {
         if (tabIndex !== value) {

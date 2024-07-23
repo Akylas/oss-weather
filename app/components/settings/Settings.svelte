@@ -850,32 +850,33 @@
                             updateItem(item);
                         }
                     } else {
+                        let selectedIndex = -1;
+                        const currentValue = item.currentValue?.() ?? item.currentValue;
+                        const options = item.values.map((k, index) => {
+                            const selected = currentValue === k.value;
+                            if (selected) {
+                                selectedIndex = index;
+                            }
+                            return {
+                                name: k.title|| k.name,
+                                data: k.value,
+                                boxType: 'circle',
+                                type: 'checkbox',
+                                value: selected
+                            };
+                        });
                         const result = await showAlertOptionSelect(
                             {
                                 height: Math.min(item.values.length * 56, 400),
                                 rowHeight: 56,
-                                options: item.values.map((k) => ({
-                                    name: k.title,
-                                    data: k.value,
-                                    boxType: 'circle',
-                                    type: 'checkbox',
-                                    value: (item.currentValue?.() ?? item.currentValue) === k.value
-                                }))
+                                selectedIndex,
+                                options
                             },
                             {
                                 title: item.title,
                                 message: item.full_description
                             }
                         );
-                        // const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
-                        // const result = await showBottomSheet<any>({
-                        //     parent: null,
-                        //     view: OptionSelect,
-                        //     props: {
-                        //         options: item.values.map((k) => ({ name: k.title, data: k.value }))
-                        //     },
-                        //     trackingScrollView: 'collectionView'
-                        // });
                         if (result?.data !== undefined) {
                             if (item.valueType === 'string') {
                                 ApplicationSettings.setString(item.key, result.data);

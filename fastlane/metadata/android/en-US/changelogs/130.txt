@@ -1,0 +1,9 @@
+### Features
+- new weather radar map with legend and time animation
+
+### Bug fixes
+- GPS is now optional
+- fix for IST timezone showing weather times like 5:30PM instead of 5:00PM
+- removed 7 days meteogram for MB as we can't get it anymore
+- correctly show feedback comment field on small devices
+- Translations update

@@ -68,3 +68,4 @@ mf_icons
 vendor
 test
 **/*.old
+app/assets/map/**

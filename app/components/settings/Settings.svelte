@@ -3,7 +3,7 @@
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
-    import { ApplicationSettings, File, ObservableArray, Page, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -25,6 +25,7 @@
         SETTINGS_LANGUAGE,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+        SETTINGS_WEATHER_MAP_COLORS,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
         SWIPE_ACTION_BAR_PROVIDER,
@@ -357,12 +358,12 @@
             case 'map':
                 return () => [
                     {
-                        key: 'weather_map_colors',
+                        key: SETTINGS_WEATHER_MAP_COLORS,
                         id: 'setting',
                         title: lc('weather_map_colors'),
-                        currentValue: () => ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS),
+                        currentValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS),
                         values: WEATHER_MAP_COLOR_SCHEMES,
-                        description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber('weather_map_colors', WEATHER_MAP_COLORS)].title
+                        description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS)].title
                     }
                 ];
             case 'geolocation':
@@ -725,7 +726,7 @@
                             showSnack({ message: l('feedback_sent') });
                         }
                     } else {
-                        openLink(GIT_URL + 'issues');
+                        openLink(GIT_URL + '/issues');
                     }
                     break;
                 }
@@ -858,7 +859,7 @@
                                 selectedIndex = index;
                             }
                             return {
-                                name: k.title|| k.name,
+                                name: k.title || k.name,
                                 data: k.value,
                                 boxType: 'circle',
                                 type: 'checkbox',

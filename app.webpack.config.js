@@ -753,7 +753,7 @@ module.exports = (env, params = {}) => {
         })
     ];
     if (buildweathermap) {
-        return [require('./weathermap.webpack.config.js')(env, params), config];
+        return [require('./map/webpack.config.js')(env, params), config];
     } else {
         return config;
     }

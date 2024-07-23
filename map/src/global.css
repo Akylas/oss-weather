@@ -1,0 +1,23 @@
+html,
+body {
+    background-color: #eef1ef;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.map {
+    width: 100%;
+    height: 100%;
+}
+
+
+.marker {
+    width: 15px;
+    height: 15px;
+    background-color: rgb(17, 134, 243);
+    display: block;
+    border: none;
+    border-radius: 50%;
+    border: 2px solid white;
+    padding: 0;
+}

@@ -5,6 +5,7 @@ export const SETTINGS_IMPERIAL = 'imperial';
 export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
 export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
+export const SETTINGS_WEATHER_MAP_COLORS = 'weather_map_colors';
 export const DAILY_PAGE_HOURLY_CHART = false;
 export const MAIN_PAGE_HOURLY_CHART = false;
 export const SWIPE_ACTION_BAR_PROVIDER = false;
@@ -47,10 +48,10 @@ export const WEATHER_MAP_COLOR_SCHEMES = [
         value: 4,
         title: 'The Weather Channel'
     },
-    {
-        value: 5,
-        title: 'Meteored'
-    },
+    // {
+    //     value: 5,
+    //     title: 'Meteored'
+    // },
     {
         value: 6,
         title: 'NEXRAD Level-III'

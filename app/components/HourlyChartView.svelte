@@ -773,7 +773,7 @@
         on:zoom={clearHighlight}>
     </combinedchart>
     {#if highlightedItem}
-        <HourlyPopover horizontalAlignment={highlightedAlignment} isPassThroughParentEnabled={true} isUserInteractionEnabled={false} item={highlightedItem} margin={highlightedMargin} />
+        <HourlyPopover horizontalAlignment={highlightedAlignment} item={highlightedItem} margin={highlightedMargin} on:tap={clearHighlight} />
     {/if}
     <!-- {#if currentHighlight}
         <nestedscrollview

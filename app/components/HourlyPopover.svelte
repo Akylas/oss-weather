@@ -79,7 +79,7 @@
     }
 </script>
 
-<gesturerootview columns="auto" rows="auto" {...$$restProps}>
+<gesturerootview columns="auto" rows="auto" {...$$restProps} on:tap>
     <gridlayout
         backgroundColor={new Color(colorBackground).setAlpha(240)}
         borderColor={colorOutline}

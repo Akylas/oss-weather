@@ -1,0 +1,2 @@
+### Bug fixes
+- hide hourly chart popover on tap

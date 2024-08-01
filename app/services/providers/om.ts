@@ -11,6 +11,7 @@ import { WeatherProvider } from './weatherprovider';
 import { AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { WeatherProps, weatherDataService } from '../weatherData';
+import { AirQualityProvider } from './airqualityprovider';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
@@ -100,7 +101,7 @@ export const API_MAX_VALUES = {
     }
 };
 
-export class OMProvider extends WeatherProvider {
+export class OMProvider extends WeatherProvider implements AirQualityProvider {
     static id = 'openmeteo';
     id = OMProvider.id;
     getModels() {

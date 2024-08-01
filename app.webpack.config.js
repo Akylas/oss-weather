@@ -252,6 +252,7 @@ module.exports = (env, params = {}) => {
         TEST_LOG: !!devlog || !!testlog,
         DEFAULT_PROVIDER: '"openmeteo"',
         OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
+        ATMO_DEFAULT_KEY: `"${process.env.ATMO_DEFAULT_KEY}"`,
         MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',
         OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',
         DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',

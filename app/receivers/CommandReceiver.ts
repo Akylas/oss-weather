@@ -1,5 +1,5 @@
 import { geocodeAddress, networkService, prepareItems } from '~/services/api';
-import { getProvider } from '~/services//providers/weatherproviderfactory';
+import { getWeatherProvider } from '~/services//providers/weatherproviderfactory';
 
 @JavaProxy('com.akylas.weather.CommandReceiver')
 @NativeClass
@@ -15,7 +15,7 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             const receivingPackage = intent.getStringExtra('package');
             networkService.start(); // ensure it is started
             const weatherLocation = await geocodeAddress({ lat, lon });
-            const data = await getProvider().getWeather(weatherLocation);
+            const data = await getWeatherProvider().getWeather(weatherLocation);
             const responseIntent = new android.content.Intent('com.akylas.weather.QUERY_WEATHER_RESULT');
             responseIntent.putExtra('id', id);
             responseIntent.putExtra('weather', JSON.stringify(prepareItems(weatherLocation, data)));

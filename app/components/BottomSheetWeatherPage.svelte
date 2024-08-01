@@ -6,7 +6,7 @@
     import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { actionBarButtonHeight, colors } from '~/variables';
     import { l, lc } from '~/helpers/locale';
-    import { getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import { getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { prefs } from '~/services/preferences';
     import { onDestroy, onMount } from 'svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, toggleFavorite } from '~/helpers/favorites';
@@ -26,8 +26,8 @@
         }
         loading = true;
         try {
-            const data = await getProvider().getWeather(location);
-            DEV_LOG && console.log('BottomSheet', 'refresh',loading, JSON.stringify(location));
+            const data = await getWeatherProvider().getWeather(location);
+            DEV_LOG && console.log('BottomSheet', 'refresh', loading, JSON.stringify(location));
             if (!name || !location.sys.city) {
                 try {
                     const r = await geocodeAddress(location.coord);

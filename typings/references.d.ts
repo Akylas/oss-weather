@@ -20,6 +20,7 @@ declare const PRODUCTION: boolean;
 declare const SENTRY_ENABLED: boolean;
 declare const SENTRY_DSN: string;
 declare const SENTRY_PREFIX: string;
+declare const ATMO_DEFAULT_KEY: string;
 declare const OWM_DEFAULT_KEY: string;
 declare const MF_DEFAULT_KEY: string;
 declare const OWM_MY_KEY: string;

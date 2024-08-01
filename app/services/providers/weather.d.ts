@@ -1,7 +1,8 @@
 import { Color } from '@nativescript/core';
-import { providers } from './weatherproviderfactory';
+import { api_providers, providers } from './weatherproviderfactory';
 
 export type ProviderType = (typeof providers)[number];
+export type AqiProviderType = (typeof api_providers)[number];
 
 export interface WeatherData {
     time: number;

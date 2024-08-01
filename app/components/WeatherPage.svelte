@@ -25,7 +25,7 @@
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
     import { Daily, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
-    import { getAqiProvider, getProvider, getProviderType, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import { getAqiProvider, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { DEFAULT_COMMON_WEATHER_DATA, WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { alert, showError } from '~/utils/error';
     import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
@@ -259,7 +259,7 @@
             const usedWeatherData = weatherDataService.allWeatherData;
             let timezoneData;
             [weatherData, timezoneData] = await Promise.all([
-                getProvider().getWeather(weatherLocation),
+                getWeatherProvider().getWeather(weatherLocation),
                 !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
             ]);
             if (timezoneData) {

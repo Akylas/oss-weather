@@ -84,3 +84,25 @@ The Translations are hosted by [Weblate.org](https://hosted.weblate.org/engage/o
 
 
 Feature Graphic generated with [hotpot.ai](https://hotpot.ai/design/google-play-feature-graphic)
+
+## Building Setup
+
+### Nativescript
+
+First [setup Nativescript](https://docs.nativescript.org/setup/linux)
+
+This project is optimized to be built with [Akylas Fork](https://github.com/Akylas/NativeScript). Though it would work with main it is best to use this fork. The `package.json` defines a resolution to `../NativeScript/dist/packages/core` so clone the fork and build it using `npm run setup:yarn && npm run ui-mobile-base:build && npm run core:build`
+
+### Yarn
+
+You need to use yarn with this project as it uses the `portal:` protocol for some dependencies.
+Note that the project has some `yarn link` for easy local dev for me. The best is for you to remove the `resolutions` part of the `package.json`
+
+### Building
+
+Now that all is setup and that you prepared the 3rd party libraries you can actually build and run the app:
+
+* `yarn`
+* `ns run android --no-hmr --env.devlog` (replace by `ios` for iOS...)
+
+This should run the app on the first discovered device or emulator.

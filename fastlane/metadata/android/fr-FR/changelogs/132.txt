@@ -1,0 +1,3 @@
+### Bug fixes
+- error while taping on hourly schedule
+- Translations update

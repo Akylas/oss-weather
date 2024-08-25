@@ -2604,7 +2604,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/gesturehandler@npm:2.0.31, @nativescript-community/gesturehandler@npm:^2.0.31, @nativescript-community/gesturehandler@npm:^2.0.8":
+"@nativescript-community/gesturehandler@npm:2.0.32":
+  version: 2.0.32
+  resolution: "@nativescript-community/gesturehandler@npm:2.0.32"
+  dependencies:
+    "@nativescript-community/observable": "npm:^2.0.10"
+  checksum: 10c0/8f6c1b2fbb3e8ba12acaf6d472eb7c25f8dd6be32f025635c4f8ca3c04af2ba9d3db1204003cff4b93859d854c87e2d66a86cbf71d9365a58f6c42109d8696c0
+  languageName: node
+  linkType: hard
+
+"@nativescript-community/gesturehandler@npm:^2.0.31, @nativescript-community/gesturehandler@npm:^2.0.8":
   version: 2.0.31
   resolution: "@nativescript-community/gesturehandler@npm:2.0.31"
   dependencies:
@@ -12683,7 +12692,7 @@ __metadata:
     "@nativescript-community/extendedinfo": "npm:1.3.1"
     "@nativescript-community/fontmin": "npm:^0.9.11"
     "@nativescript-community/geocoding": "npm:3.2.1"
-    "@nativescript-community/gesturehandler": "npm:2.0.31"
+    "@nativescript-community/gesturehandler": "npm:2.0.32"
     "@nativescript-community/gps": "npm:3.1.10"
     "@nativescript-community/https": "npm:4.1.16"
     "@nativescript-community/l": "npm:4.3.10"
@@ -13845,14 +13854,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-native@portal:../svelte-native/dist::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "svelte-native@portal:../svelte-native/dist::locator=root-workspace-0b6124%40workspace%3A."
+"svelte-native@npm:1.0.27":
+  version: 1.0.27
+  resolution: "svelte-native@npm:1.0.27"
   peerDependencies:
     "@nativescript/core": ^8.5.9
     svelte: ^4.2.8
+  checksum: 10c0/23da3ea39d9439c0d8ebcf6d91b5cad60b6965e500c2517387e2301d722ccdc87a7d97112c3414701790f56dc315e0b44e5878123eb8ca30eb46bc7632a7db4b
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "svelte-preprocess@npm:^5.1.3, svelte-preprocess@npm:^5.1.4":
   version: 5.1.4

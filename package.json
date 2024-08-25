@@ -144,8 +144,7 @@
     ],
     "resolutions": {
         "webpack": "5.92.1",
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "svelte-native": "portal:../svelte-native/dist"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     },
     "packageManager": "yarn@4.3.1"
 }

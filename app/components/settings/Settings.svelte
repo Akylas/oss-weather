@@ -495,7 +495,7 @@
                     }
                 ] as any)
                 .concat(
-                    SENTRY_ENABLED
+                    SENTRY_ENABLED || !PRODUCTION
                         ? [
                               {
                                   id: 'feedback',
@@ -679,14 +679,13 @@
                     });
                     break;
                 case 'feedback': {
-                    if (SENTRY_ENABLED) {
+                    if (SENTRY_ENABLED || !PRODUCTION) {
                         const view = createView(ScrollView);
-                        const stackLayout = createView(StackLayout, {
-                            padding: 10
-                        });
+                        const stackLayout = createView(StackLayout, {});
                         const commentsTF = createView(TextView, {
                             hint: lc('comments'),
                             variant: 'outline',
+                            margin: 10,
                             height: 150,
                             returnKeyType: 'done'
                         });
@@ -694,12 +693,14 @@
                             hint: lc('email'),
                             variant: 'outline',
                             autocapitalizationType: 'none',
+                            margin: 10,
                             autocorrect: false,
                             keyboardType: 'email',
                             returnKeyType: 'next'
                         });
                         const nameTF = createView(TextField, {
                             hint: lc('name'),
+                            margin: 10,
                             variant: 'outline',
                             returnKeyType: 'next'
                         });

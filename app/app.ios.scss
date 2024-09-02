@@ -11,6 +11,7 @@ label,
 button,
 textfield,
 mdtextfield,
+mdtextview,
 checkbox,
 mdbutton {
     ios-a11y-adjusts-font-size: true;
@@ -32,4 +33,9 @@ mdcardview {
 
 mdtextfield[variant=none] {
     padding:0;
+}
+
+mdtextfield, mdtextview {
+    floating-color: var(--colorPrimary);
+    floating-inactive-color: var(--colorOutline);
 }

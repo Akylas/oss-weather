@@ -67,11 +67,19 @@ export const API_KEY_VALUES = {
             (currentData.includes(WeatherProps.iso) ? ',freezinglevel_height' : '') +
             (currentData.includes(WeatherProps.sealevelPressure) ? ',pressure_msl' : '') +
             (currentData.includes(WeatherProps.relativeHumidity) ? ',relative_humidity_2m' : '') +
-            (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m'),
+            (currentData.includes(WeatherProps.apparentTemperature) && !feelsLikeTemperatures
+                ? ',apparent_temperature,temperature_2m'
+                : feelsLikeTemperatures
+                  ? ',apparent_temperature'
+                  : ',temperature_2m'),
         current:
             current !== false
                 ? 'weathercode,is_day' +
-                  (feelsLikeTemperatures ? ',apparent_temperature' : ',temperature_2m') +
+                  (currentData.includes(WeatherProps.apparentTemperature) && !feelsLikeTemperatures
+                      ? ',apparent_temperature,temperature_2m'
+                      : feelsLikeTemperatures
+                        ? ',apparent_temperature'
+                        : ',temperature_2m') +
                   (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m,winddirection_10m' : '') +
                   (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m' : '') +
                   (currentData.includes(WeatherProps.cloudCover) ? ',cloudcover' : '') +
@@ -81,7 +89,11 @@ export const API_KEY_VALUES = {
         minutely_15: minutely !== false ? 'precipitation' : undefined,
         daily:
             'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,rain_sum,snowfall_sum,showers_sum' +
-            (feelsLikeTemperatures ? ',apparent_temperature_max,apparent_temperature_min' : ',temperature_2m_max,temperature_2m_min') +
+            (currentData.includes(WeatherProps.apparentTemperature) && !feelsLikeTemperatures
+                ? ',apparent_temperature_max,apparent_temperature_min,temperature_2m_max,temperature_2m_min'
+                : feelsLikeTemperatures
+                  ? ',apparent_temperature_max,apparent_temperature_min'
+                  : ',temperature_2m_max,temperature_2m_min') +
             (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m_max,winddirection_10m_dominant' : '') +
             (currentData.includes(WeatherProps.relativeHumidity) ? ',relative_humidity_2m_mean' : '') +
             (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m_max' : '')
@@ -286,6 +298,10 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             d.isDay = !!this.getDataArray(hourly, 'is_day', model)[index];
             d.iconId = this.convertWeatherCodeToIcon(code);
             d.description = OMProvider.weatherCodeDescription[code];
+            const apparentTemperature = this.getDataArray(hourly, 'apparent_temperature', model);
+            if (apparentTemperature) {
+                d.apparentTemperature = apparentTemperature[index];
+            }
             d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', model)[index];
             d.usingFeelsLike = feelsLikeTemperatures;
             const windBearing = this.getDataArray(hourly, 'winddirection_10m', model);
@@ -379,6 +395,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                       {
                           time: currentData.time * 1000,
                           temperature: feelsLikeTemperatures ? currentData.apparent_temperature : currentData.temperature_2m,
+                          apparentTemperature: currentData.apparent_temperature,
                           usingFeelsLike: feelsLikeTemperatures,
                           windSpeed: currentData.windspeed_10m,
                           relativeHumidity: currentData.relative_humidity_2m,

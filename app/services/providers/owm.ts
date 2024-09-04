@@ -51,6 +51,7 @@ export class OWMProvider extends WeatherProvider {
                 {
                     time: forecast.current.dt * 1000,
                     temperature: feelsLikeTemperatures ? forecast.current.feels_like : forecast.current.temp,
+                    apparentTemperature: forecast.current.feels_like,
                     usingFeelsLike: feelsLikeTemperatures,
                     sealevelPressure: forecast.current.pressure,
                     relativeHumidity: forecast.current.humidity,
@@ -84,6 +85,7 @@ export class OWMProvider extends WeatherProvider {
                     d.temperatureMin = data.temp.min;
                     d.temperatureMax = data.temp.max;
                     d.temperatureNight = data.temp.night;
+                    d.apparentTemperature = data.feels_like.day;
 
                     d.precipProbability = Math.round(data.pop * 100);
                     d.cloudCover = data.clouds;
@@ -125,6 +127,7 @@ export class OWMProvider extends WeatherProvider {
                 d.windSpeed = Math.round(data.wind_speed * 3.6); // max value
                 d.windGust = Math.round(data.wind_gust * 3.6);
                 d.temperature = feelsLikeTemperatures ? data.feels_like : data.temp;
+                d.apparentTemperature = data.feels_like;
                 d.usingFeelsLike = feelsLikeTemperatures;
 
                 d.windBearing = data.wind_deg;

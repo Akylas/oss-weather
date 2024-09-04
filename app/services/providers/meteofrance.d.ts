@@ -121,6 +121,7 @@ interface CurrentProperties {
 interface Gridded {
     time: number;
     T: number;
+    T_windchill?: number;
     wind_speed: number;
     wind_direction: number;
     wind_icon: string;

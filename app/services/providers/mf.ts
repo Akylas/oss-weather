@@ -336,6 +336,7 @@ export class MFProvider extends WeatherProvider {
                 d.iconId = this.convertMFICon(icon);
                 d.description = titlecase(data.weather_description);
                 d.temperature = feelsLikeTemperatures ? data.T_windchill : data.T;
+                d.apparentTemperature = data.T_windchill;
 
                 d.windBearing = data.wind_direction;
                 d.sealevelPressure = data.P_sea;
@@ -381,6 +382,7 @@ export class MFProvider extends WeatherProvider {
                       {
                           time: currentConditions.time * 1000,
                           temperature: currentConditions.T,
+                        //   apparentTemperature: currentConditions.T_windchill,
                           windSpeed: currentConditions.wind_speed,
                           //   windGust: currentConditions.wind,
                           windBearing: currentConditions.wind_direction,

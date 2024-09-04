@@ -29,6 +29,7 @@
     "app": {
         "name": "OSS Weather"
     },
+    "apparent": "apparent",
     "aqi": "Air Quality Index",
     "artemisia": "mugwort",
     "authorize": "Authorize",
@@ -80,6 +81,7 @@
     "failed_to_export_settings": "failed to export settings",
     "favorites": "Favorites",
     "feedback_sent": "feedback sent",
+    "feels_like": "feels like",
     "feels_like_temperatures": "show feels like temperature when available",
     "file": "File",
     "first_quarter": "first quarter",

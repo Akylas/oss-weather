@@ -99,6 +99,7 @@ export interface CommonWeatherData extends CommonAirQualityData {
     windSpeed?: number;
     windGust?: number;
     temperature?: number;
+    apparentTemperature?: number;
     usingFeelsLike?: boolean;
     temperatureMin?: number;
     temperatureMax?: number;

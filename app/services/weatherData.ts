@@ -16,7 +16,6 @@ import { ComponentProps } from 'svelte';
 import { createNativeAttributedString } from '@nativescript-community/text';
 import { iconService } from './icon';
 
-
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
     precipProbability = 'precipProbability',
@@ -38,6 +37,7 @@ export enum WeatherProps {
     rainSnowLimit = 'rainSnowLimit',
     aqi = 'aqi',
     sealevelPressure = 'sealevelPressure',
+    apparentTemperature = 'apparentTemperature',
     relativeHumidity = 'relativeHumidity',
     dewpoint = 'dewpoint'
 }
@@ -46,6 +46,7 @@ export const PROP_TO_UNIT = {
     [WeatherProps.windSpeed]: UNITS.Speed,
     [WeatherProps.windGust]: UNITS.Speed,
     [WeatherProps.temperature]: UNITS.Celcius,
+    [WeatherProps.apparentTemperature]: UNITS.Celcius,
     [WeatherProps.temperatureMin]: UNITS.Celcius,
     [WeatherProps.temperatureMax]: UNITS.Celcius,
     [WeatherProps.dewpoint]: UNITS.Celcius,
@@ -79,6 +80,7 @@ export const AVAILABLE_WEATHER_DATA = [
     WeatherProps.snowDepth,
     WeatherProps.windBeaufort,
     WeatherProps.aqi,
+    WeatherProps.apparentTemperature,
     WeatherProps.sealevelPressure,
     WeatherProps.relativeHumidity,
     WeatherProps.dewpoint,
@@ -94,6 +96,7 @@ export const AVAILABLE_COMPARE_WEATHER_DATA = [
     WeatherProps.uvIndex,
     WeatherProps.windGust,
     WeatherProps.temperature,
+    WeatherProps.apparentTemperature,
     WeatherProps.temperatureMin,
     WeatherProps.temperatureMax,
     WeatherProps.snowDepth,
@@ -126,6 +129,7 @@ const WEATHER_DATA_ICONS = {
     [WeatherProps.sealevelPressure]: 'wi-barometer',
     [WeatherProps.relativeHumidity]: 'wi-humidity',
     [WeatherProps.dewpoint]: 'mdi-thermometer-water',
+    [WeatherProps.apparentTemperature]: 'mdi-thermometer',
     [WeatherProps.temperature]: 'mdi-thermometer',
     [WeatherProps.rainSnowLimit]: 'app-rain-snow',
     [WeatherProps.iso]: 'mdi-snowflake-thermometer',
@@ -148,6 +152,7 @@ const WEATHER_DATA_TITLES = {
     [WeatherProps.rainSnowLimit]: lc('rain_snow_limit'),
     [WeatherProps.iso]: lc('freezing_level'),
     [WeatherProps.precipAccumulation]: lc('precipitation'),
+    [WeatherProps.apparentTemperature]: lc('feels_like'),
     [WeatherProps.aqi]: lc('aqi'),
     [WeatherProps.sealevelPressure]: lc('sealevel_pressure'),
     [WeatherProps.dewpoint]: lc('dewpoint'),
@@ -157,6 +162,7 @@ const WEATHER_DATA_COLORS = {
     [WeatherProps.moon]: '#845987',
     [WeatherProps.dewpoint]: '#0cafeb',
     [WeatherProps.relativeHumidity]: '#1e88e2',
+    // [WeatherProps.apparentTemperature]: cloudyColor,
     [WeatherProps.cloudCover]: cloudyColor,
     [WeatherProps.windGust]: scatteredCloudyColor,
     [WeatherProps.windBeaufort]: scatteredCloudyColor,
@@ -345,6 +351,18 @@ export class DataService extends Observable {
         }
         const iconFontSize = 20 * get(fontScale) * options.iconFactor;
         switch (key) {
+            case WeatherProps.apparentTemperature:
+                if (item.apparentTemperature) {
+                    return {
+                        key,
+                        iconFontSize,
+                        paint: mdiPaint,
+                        icon,
+                        value: formatWeatherValue(item, key),
+                        subvalue:lc('apparent')
+                    };
+                }
+                break;
             case WeatherProps.windSpeed:
                 if (item.windSpeed) {
                     const data = convertWeatherValueToUnit(item, key);

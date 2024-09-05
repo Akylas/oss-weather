@@ -1,10 +1,11 @@
 <script context="module" lang="ts">
     import { FailureEventData, FinalEventData, getImagePipeline } from '@nativescript-community/ui-image';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
+    import { AWebView } from '@nativescript-community/ui-webview';
     import { ZoomImg } from '@nativescript-community/ui-zoomimage';
-    import { ImageSource, Screen } from '@nativescript/core';
+    import { AndroidActivityBackPressedEventData, Application, ImageSource, Page, Screen } from '@nativescript/core';
     import dayjs from 'dayjs';
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';
@@ -12,7 +13,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, request } from '~/services/api';
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
-    import { hideLoading, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
+    import { hideLoading, onBackButton, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
     import { actionBarButtonHeight, actionBarHeight, colors, imperial, systemFontScale } from '~/variables';
 
     function parseUrl(str) {
@@ -32,15 +33,20 @@
     let currentUrl = null;
     let currentImageSrc = null;
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
+    let page: NativeViewElementNode<Page>;
     let zoomImageView: NativeViewElementNode<ZoomImg>;
+    let webView: NativeViewElementNode<AWebView>;
     let loading = false;
     let tabIndex = 0;
     let networkConnected = networkService.connected;
     export let weatherLocation: FavoriteLocation;
     export const maxAge = dayjs.duration({ days: 1 }).asSeconds();
 
+    function getUrl(tabIndex) {
+        return `https://www.meteoblue.com/${lang}/weather/forecast/${tabs[tabIndex].urlId}/${weatherLocation.coord.lat.toFixed(3)}N${weatherLocation.coord.lon.toFixed(3)}E`;
+    }
     async function internalFetch(lang: string) {
-        currentUrl = `https://www.meteoblue.com/${lang}/weather/forecast/${tabs[tabIndex].urlId}/${weatherLocation.coord.lat.toFixed(3)}N${weatherLocation.coord.lon.toFixed(3)}E`;
+        currentUrl = getUrl(tabIndex);
         return (
             await request<string>({
                 url: currentUrl,
@@ -58,6 +64,9 @@
 
     async function refresh() {
         try {
+            if (tabIndex === 0) {
+                return;
+            }
             loading = true;
             let result: string;
             try {
@@ -106,6 +115,13 @@
         } finally {
         }
     }
+    const onAndroidBackButton = (data: AndroidActivityBackPressedEventData) =>
+        onBackButton(page?.nativeView, () => {
+            if (tabIndex === 0 && webView.nativeView?.canGoBack) {
+                data.cancel = true;
+                webView.nativeView.goBack();
+            }
+        });
     onMount(() => {
         networkService.on(NetworkConnectionStateEvent, (event: NetworkConnectionStateEventData) => {
             try {
@@ -116,7 +132,18 @@
                 showError(error);
             }
         });
+        if (__ANDROID__) {
+            Application.android.on(Application.android.activityBackPressedEvent, onAndroidBackButton);
+        }
     });
+    onDestroy(() => {
+        if (__ANDROID__) {
+            Application.android.off(Application.android.activityBackPressedEvent, onAndroidBackButton);
+        }
+    });
+    function onWebViewLoaded(e) {
+        (e.object as AWebView).autoExecuteJavaScript('window.nsWebViewBridge.injectStyleSheet("meteoblue", "#display_mobile_ad_in_header {display:none;}\\n.intro{display:none;}", false);', 'css');
+    }
 
     // async function onPullToRefresh() {
     //     try {
@@ -134,13 +161,17 @@
 
     const tabs = [
         {
+            name: lu('weather'),
+            urlId: 'week'
+        },
+        {
             name: lu('meteogram'),
             urlId: 'meteogram'
         },
         {
             name: lu('all_in_one'),
             urlId: 'meteogramone'
-        },
+        }
         // {
         //     name: lu('seven_days'),
         //     urlId: 'meteogramextended'
@@ -240,7 +271,7 @@
     }
 </script>
 
-<page actionBarHidden={true} on:navigatedTo={onNavigatedTo}>
+<page bind:this={page} actionBarHidden={true} on:navigatedTo={onNavigatedTo}>
     <gridlayout rows="auto,auto,*">
         <CActionBar titleProps={{ visibility: 'visible' }}>
             <span slot="subtitle" text={'meteoblue'} />
@@ -273,6 +304,18 @@
             <absolutelayout backgroundColor={colorOnSurface} col={tabIndex} height={3} verticalAlignment="bottom" width="50%" />
         </gridlayout>
         <!-- <pullrefresh bind:this={pullRefresh} row={2} on:refresh={onPullToRefresh}> -->
+
+        <webview
+            bind:this={webView}
+            builtInZoomControls={false}
+            debugMode={true}
+            displayZoomControls={false}
+            normalizeUrls={false}
+            row={2}
+            src={getUrl(tabIndex)}
+            visibility={tabIndex === 0 ? 'visible' : 'hidden'}
+            webConsoleEnabled={true}
+            on:loaded={onWebViewLoaded} />
         <zoomimage
             bind:this={zoomImageView}
             height="100%"
@@ -280,6 +323,7 @@
             noCache={networkConnected}
             row={2}
             src={currentImageSrc}
+            visibility={tabIndex !== 0 ? 'visible' : 'hidden'}
             android:stretch="fitStart"
             ios:stretch="aspectFit"
             width="100%"

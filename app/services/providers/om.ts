@@ -1,28 +1,26 @@
-import { titlecase } from '@nativescript-community/l';
-import { getString } from '@nativescript/core/application-settings';
-import dayjs from 'dayjs';
-import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
-import { l, lang } from '~/helpers/locale';
-import { WeatherLocation, request } from '../api';
-import { Forecast } from './openmeteo';
-import { GetTimesResult, getTimes } from 'suncalc';
 import { ApplicationSettings } from '@nativescript/core';
-import { WeatherProvider } from './weatherprovider';
-import { AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
+import dayjs from 'dayjs';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
+import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
+import { l } from '~/helpers/locale';
+import { Pollutants, getAqiFromPollutants, prepareAirQualityData } from '../airQualityData';
+import { WeatherLocation, request } from '../api';
 import { WeatherProps, weatherDataService } from '../weatherData';
 import { AirQualityProvider } from './airqualityprovider';
+import { Forecast } from './openmeteo';
+import { AirQualityCurrently, AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
+import { WeatherProvider } from './weatherprovider';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 
 const KEY_MAPPING = {
     european_aqi: 'aqi',
-    ozone: 'o3',
-    sulphur_dioxide: 'so2',
-    nitrogen_dioxide: 'co',
-    carbon_monoxide: 'no2',
-    ammonia: 'nh3'
+    ozone: Pollutants.O3,
+    sulphur_dioxide: Pollutants.SO2,
+    nitrogen_dioxide: Pollutants.NO2,
+    carbon_monoxide: Pollutants.CO,
+    ammonia: Pollutants.NH3
 };
 
 export const OM_MODELS = {
@@ -99,8 +97,8 @@ export const API_KEY_VALUES = {
             (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m_max' : '')
     }),
     'air-quality': ({ current }) => ({
-        hourly: 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen,european_aqi',
-        current: current !== false ? 'european_aqi' : undefined
+        hourly: 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone,alder_pollen,birch_pollen,grass_pollen,mugwort_pollen,olive_pollen,ragweed_pollen',
+        current: current !== false ? 'pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,sulphur_dioxide,ozone' : undefined
         // daily: 'european_aqi'
     })
 };
@@ -414,7 +412,9 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 data: daily.time.slice(0, dailyLastIndex).map((time, index) => {
                     const code = daily_weathercodes[index];
                     const d = {
-                        time: time * 1000,
+                        time: dayjs(time * 1000)
+                            .startOf('d')
+                            .valueOf(),
                         description: OMProvider.weatherCodeDescription[code],
                         isDay: true,
                         iconId: this.convertWeatherCodeToIcon(code),
@@ -489,9 +489,10 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 const value = this.getDataArray(hourly, k)[index];
                 let actualKey: string = KEY_MAPPING[k] || k;
                 let path;
-                if (actualKey === 'aqi') {
-                    d.aqi = value;
-                } else if (actualKey.endsWith('_pollen')) {
+                // if (actualKey === 'aqi') {
+                //     d.aqi = value;
+                // } else
+                if (actualKey.endsWith('_pollen')) {
                     actualKey = actualKey.slice(0, -7);
                     path = 'pollens';
                     d.pollens = d.pollens || {};
@@ -506,7 +507,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 lastDay.tempDatas[actualKey].sum += value;
                 lastDay.tempDatas[actualKey].count += 1;
             });
-            return aqiDataIconColors(d);
+            return prepareAirQualityData(d, lastDay);
         });
 
         const currentData = result.content.current;
@@ -515,15 +516,24 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const r = {
             time: result.time,
             currently: currentData
-                ? aqiDataIconColors({
-                      time: currentData.time * 1000,
-                      aqi: (currentData as any).european_aqi
-                  } as Currently)
+                ? prepareAirQualityData(
+                      Object.keys(currentData).reduce(
+                          (d, k) => {
+                              if (k !== 'time') {
+                                  const actualKey: string = KEY_MAPPING[k] || k;
+                                  d.pollutants = d.pollutants || {};
+                                  d.pollutants[actualKey] = { value: currentData[k], unit: units[k] };
+                              }
+                              return d;
+                          },
+                          { time: currentData.time * 1000 } as Partial<Currently>
+                      ) as AirQualityCurrently
+                  )
                 : {},
             daily: {
                 data: daily.slice(0, lastDailyIndex >= 0 ? lastDailyIndex : daily.length).map((d) =>
                     aqiDataIconColors({
-                        time: d.time,
+                        time: dayjs(d.time).startOf('d').valueOf(),
                         ...Object.keys(d.tempDatas).reduce((acc, val) => {
                             const tempData = d.tempDatas[val];
                             let data = acc;
@@ -555,132 +565,3 @@ interface OMParams {
     longitude?: number;
     [k: string]: any;
 }
-
-// function round5(t) {
-//     return 5 * Math.ceil(t / 5);
-// }
-// const SixHours = 6 * 3600;
-// const ThirtyHours = 30 * 3600;
-// function getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: Forecast[], dailyForecast: Dailyforecast) {
-//     let precipitationTotal = 0;
-//     const probPrecipitationTotal = { count: 0, total: 0 };
-//     const probRainPrecipitationTotal = { count: 0, total: 0 };
-//     const probSnowPrecipitationTotal = { count: 0, total: 0 };
-//     const rainSnowLimitTotal = { count: 0, total: 0 };
-//     const isoTotal = { count: 0, total: 0 };
-
-//     let precipProbability = 0;
-
-//     const dayStartTime = dayjs(dailyForecast.dt * 1000)
-//         .startOf('d')
-//         .valueOf();
-//     const dayEndTime = dayjs(dailyForecast.dt * 1000)
-//         .endOf('d')
-//         .valueOf();
-//     for (const hour of hourly) {
-//         const time = hour.time;
-//         if (time >= dayStartTime && time < dayEndTime) {
-//             // Precipitation
-//             if (hour.precipAccumulation) {
-//                 precipitationTotal += hour.precipAccumulation;
-//                 // Precipitation probability
-//                 if (hour.precipProbability) {
-//                     precipProbability = Math.max(precipProbability, hour.precipProbability);
-//                     probPrecipitationTotal.count++;
-//                     probPrecipitationTotal.total += hour.precipProbability;
-//                 }
-//                 if (hour.precipProbabilities) {
-//                     if (hour.precipProbabilities.rain) {
-//                         probRainPrecipitationTotal.count++;
-//                         probRainPrecipitationTotal.total += hour.precipProbabilities.rain;
-//                     }
-//                     if (hour.precipProbabilities.snow) {
-//                         probSnowPrecipitationTotal.count++;
-//                         probSnowPrecipitationTotal.total += hour.precipProbabilities.snow;
-//                     }
-//                 }
-//             }
-
-//             if (hour.rainSnowLimit) {
-//                 rainSnowLimitTotal.count++;
-//                 rainSnowLimitTotal.total += hour.rainSnowLimit;
-//             }
-//             if (hour.iso) {
-//                 isoTotal.count++;
-//                 isoTotal.total += hour.iso;
-//             }
-//         }
-//     }
-
-//     const cloudCover = { count: 0, total: 0 };
-//     const windSpeed = { count: 0, total: 0 };
-//     // const windSpeeds = [];
-//     const windDegree = { count: 0, total: 0 };
-//     let windGust = null;
-
-//     for (const hourForecast of hourlyForecast) {
-//         const time = hourForecast.dt * 1000;
-//         if (time >= dayStartTime && time < dayEndTime) {
-//             cloudCover.count++;
-//             cloudCover.total += hourForecast.clouds;
-//             if (hourForecast.wind.speed) {
-//                 windSpeed.count++;
-//                 windSpeed.total += hourForecast.wind.speed;
-//                 // windSpeeds.push(hourForecast.wind.speed);
-//             }
-//             if (hourForecast.wind.direction !== 'Variable') {
-//                 windDegree.count++;
-//                 windDegree.total += hourForecast.wind.direction;
-//             }
-
-//             if (windGust == null || hourForecast.wind.gust > windGust) {
-//                 windGust = hourForecast.wind.gust;
-//             }
-//         }
-//     }
-//     // console.log('day:', dayjs(dayStartTime).format('ddd DD/MM'), dayStartTime, dayEndTime, dailyForecast, cloudCover, windSpeed, windSpeeds, windDegree, rainSnowLimitTotal);
-//     const d = {
-//         time: dayStartTime,
-//         description: dailyForecast.weather12H == null ? '' : dailyForecast.weather12H.desc,
-//         icon: dailyForecast.weather12H == null ? '01d' : convertMFICon(dailyForecast.weather12H.icon),
-//         temperatureMax: Math.round(dailyForecast.T.max),
-//         temperatureMin: Math.round(dailyForecast.T.min),
-//         humidity: (dailyForecast.humidity.max + dailyForecast.humidity.min) / 2,
-//         uvIndex: dailyForecast.uv,
-//         windGust: Math.round(windGust * 3.6),
-//         windSpeed: windSpeed.count > 1 ? Math.round((windSpeed.total / (windSpeed.count || 1)) * 3.6) : 0,
-//         windBearing: windDegree.count > 1 ? Math.round((windDegree.total / windDegree.count) * 3.6) : -1,
-//         cloudCover: cloudCover.count > 1 ? Math.round(cloudCover.total / (cloudCover.count || 1)) : -1,
-//         sunriseTime: dailyForecast.sun.rise * 1000,
-//         sunsetTime: dailyForecast.sun.set * 1000
-//     } as DailyData;
-//     if (precipProbability > 0) {
-//         d.precipProbability = precipProbability;
-//     }
-//     const precipAccumulation = Math.max(precipitationTotal, dailyForecast.precipitation['24h']);
-//     if (precipAccumulation > 0) {
-//         d.precipAccumulation = precipAccumulation;
-//     }
-
-//     if (rainSnowLimitTotal.count > 0) {
-//         d.rainSnowLimit = Math.round(rainSnowLimitTotal.total / rainSnowLimitTotal.count);
-//     }
-//     if (isoTotal.count > 0) {
-//         d.iso = Math.round(isoTotal.total / isoTotal.count);
-//     }
-
-//     const propRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-//     const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-//     weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, propRain > propSnow ? d.precipAccumulation : 0, propRain < propSnow ? d.precipAccumulation : 0);
-//     d.hourly = [];
-//     return d;
-//     // return new HalfDay(
-//     //     dailyForecast.weather12H == null ? WeatherCode.CLEAR : getWeatherCode(dailyForecast.weather12H.icon),
-//     //     new Temperature(temp, null, null, null, tempWindChill, null, null),
-//     //     new Precipitation(precipitationTotal, null, precipitationRain, precipitationSnow, null),
-//     //     new PrecipitationProbability(probPrecipitationTotal, null, probPrecipitationRain, probPrecipitationSnow, probPrecipitationIce),
-//     //     new PrecipitationDuration(null, null, null, null, null),
-//     //     new Wind(windDirection, windDegree, windSpeed, windLevel),
-//     //     cloudCover
-//     // );
-// }

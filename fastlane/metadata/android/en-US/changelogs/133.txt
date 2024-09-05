@@ -1,0 +1,8 @@
+### Features
+- new Atmo Air Quality provider
+
+### Bug fixes
+- basic "apparentTemperature" weather data. For now will only show in "current"
+- Air Quality Index computation fix. Now based on pollutants (instead of based on provider result) to be more consistent
+- MeteoBlue weather page cleanup
+- Translations update

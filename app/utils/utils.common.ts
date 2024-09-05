@@ -80,3 +80,25 @@ export function generateGradient(nbColor, min, max, h, posOffset) {
         gradient: new LinearGradient(0, 0, 0, h, colors, positions, TileMode.CLAMP)
     };
 }
+
+export function nearest(arr: number[], n: number) {
+    let low = 0;
+    let index = 0;
+    while (n > arr[index + 1]) {
+        low++;
+        index++;
+    }
+    return [low, low < arr.length - 1 ? low + 1 : low];
+}
+export function getIndexedColor(value: number, indexes: number[], colors: string[], mix = false) {
+    if (isNaN(value)) {
+        return null;
+    }
+    const [low, high] = nearest(indexes, value);
+
+    if (mix) {
+        return Color.mix(new Color(colors[low]), new Color(colors[high]), ((value - indexes[low]) / (indexes[high] - indexes[low])) * 100).hex;
+    } else {
+        return colors[low];
+    }
+}

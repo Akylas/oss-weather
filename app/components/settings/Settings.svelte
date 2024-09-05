@@ -37,7 +37,7 @@
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
     import { OM_MODELS } from '~/services/providers/om';
-    import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { share } from '~/utils/share';
@@ -193,6 +193,15 @@
                         title: lc('provider.title'),
                         currentValue: getProviderType,
                         values: providers.map((t) => ({ value: t, title: lc(t) }))
+                    },
+                    {
+                        key: 'provider_aqi',
+                        id: 'setting',
+                        valueType: 'string',
+                        description: () => lc('provider.' + getProviderType()),
+                        title: lc('provider_aqi.title'),
+                        currentValue: getAqiProviderType,
+                        values: aqi_providers.map((t) => ({ value: t, title: lc(t) }))
                     },
                     {
                         key: 'forecast_nb_days',

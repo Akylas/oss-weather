@@ -1,13 +1,12 @@
-import { WeatherProvider } from './weatherprovider';
+import { ApplicationSettings } from '@nativescript/core';
+import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { prefs } from '../preferences';
+import { AirQualityProvider } from './airqualityprovider';
 import { MFProvider } from './mf';
 import { OMProvider } from './om';
 import { OWMProvider } from './owm';
 import { AqiProviderType, ProviderType } from './weather';
-import { ApplicationSettings } from '@nativescript/core';
-import { prefs } from '../preferences';
-import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { AirQualityProvider } from './airqualityprovider';
-import { Provider } from './provider';
+import { WeatherProvider } from './weatherprovider';
 import { AtmoProvider } from './atmo';
 
 export enum Providers {
@@ -22,7 +21,7 @@ export enum AirQualityProviders {
 }
 
 export const providers = Object.values(Providers);
-export const api_providers = Object.values(AirQualityProviders);
+export const aqi_providers = Object.values(AirQualityProviders);
 
 let currentProvider: WeatherProvider;
 let currentAirQualityProvider: AirQualityProvider;
@@ -69,13 +68,13 @@ export function getProviderForType(newType: ProviderType): WeatherProvider {
     }
 }
 export function getAqiProviderForType(newType: AqiProviderType): AirQualityProvider {
-    // switch (newType) {
-    // case AirQualityProviders.Atmo:
-    // return AtmoProvider.getInstance();
-    // case AirQualityProviders.OpenMeteo:
-    // default:
-    return OMProvider.getInstance();
-    // }
+    switch (newType) {
+        case AirQualityProviders.Atmo:
+            return AtmoProvider.getInstance();
+        case AirQualityProviders.OpenMeteo:
+        default:
+            return OMProvider.getInstance();
+    }
 }
 
 function setWeatherProvider(newType: ProviderType): WeatherProvider {

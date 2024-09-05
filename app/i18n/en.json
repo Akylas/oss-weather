@@ -191,6 +191,11 @@
         "openweathermap": "OpenWeather",
         "title": "Provider"
     },
+    "provider_aqi": {
+        "atmo": "ATMO Auvergne-Rhône-Alpes",
+        "openmeteo": "Open-Meteo",
+        "title": "Air Quality Provider"
+    },
     "providers": "providers",
     "providers_settings": "provider selection and settings",
     "quit": "Quit",

@@ -2,19 +2,20 @@ import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from 
 import { ApplicationSettings, Color, Observable, verticalAlignmentProperty } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { MIN_UV_INDEX } from '~/helpers/constants';
-import { UNITS, colorForAqi, convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
-import { l, lc } from '~/helpers/locale';
-import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
+import { UNITS, convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
+import type { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
 import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowColor, sunnyColor } from '~/variables';
 import { prefs } from './preferences';
-import { tempColor } from '~/utils/utils';
+import { getIndexedColor, tempColor } from '~/utils/utils';
 import { PopoverOptions, showPopover } from '@nativescript-community/ui-popover/svelte';
 import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
 import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
 import { ComponentProps } from 'svelte';
 import { createNativeAttributedString } from '@nativescript-community/text';
 import { iconService } from './icon';
+import { lc } from '@nativescript-community/l';
+import { colorForAqi } from './airQualityData';
 
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
@@ -62,6 +63,9 @@ export const PROP_TO_UNIT = {
     [WeatherProps.snowfall]: UNITS.CM,
     [WeatherProps.cloudCeiling]: UNITS.Distance
 };
+
+const UV_LEVEL_INDEXES = [0, 3, 6, 8, 11];
+const UV_LEVEL_COLORS = ['#9BC600', '#FFBC03', '#FE8F00', '#F55023', '#9E47CC'];
 
 export const DEFAULT_COMMON_WEATHER_DATA = '["windSpeed", "precipAccumulation", "cloudCover", "uvIndex", "windGust", "windBeaufort", "moon"]';
 
@@ -226,7 +230,6 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
         Object.keys(addedData).forEach((k) => {
             const mainDataK = mainData[k]?.data || mainData[k];
             const addedDataK = addedData[k]?.data || addedData[k];
-            // DEV_LOG && console.log('mergeWeatherData key', k, mainDataK?.length, addedDataK?.length);
             if (!Array.isArray(mainDataK) && !Array.isArray(addedDataK)) {
                 // DEV_LOG && console.log('mergeWeatherData object', k);
                 Object.assign(mainDataK, addedDataK);
@@ -237,9 +240,9 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
             }
             const originalFirstTime = mainDataK[0].time;
             const addedDataFirstTime = addedDataK[0].time;
+
             if (addedDataFirstTime >= originalFirstTime) {
                 let index = mainDataK.findIndex((d) => d.time === addedDataFirstTime);
-                // DEV_LOG && console.log('assigning test', k, index, mainDataK[0].time, addedDataK[0].time);
                 if (index !== -1) {
                     for (index; index < mainDataK.length; index++) {
                         if (index < mainDataK.length && index < addedDataK.length && mainDataK[index].time === addedDataK[index].time) {
@@ -359,7 +362,7 @@ export class DataService extends Observable {
                         paint: mdiPaint,
                         icon,
                         value: formatWeatherValue(item, key),
-                        subvalue:lc('apparent')
+                        subvalue: lc('apparent')
                     };
                 }
                 break;
@@ -617,7 +620,7 @@ export class DataService extends Observable {
                     iconFontSize,
                     icon,
                     color: getWeatherDataColor(key),
-                    value: l('moon')
+                    value: lc('moon')
                 };
             case WeatherProps.windBeaufort:
                 if (item.windBeaufortIcon) {
@@ -664,4 +667,19 @@ export function formatWeatherValue(item: CommonWeatherData, key: string, options
         return iconService.getIcon(item.iconId, item.isDay, false);
     }
     return formatValueToUnit(item[key], PROP_TO_UNIT[key], options);
+}
+
+export function colorForUV(value) {
+    return getIndexedColor(value, UV_LEVEL_INDEXES, UV_LEVEL_COLORS);
+    // if (uvIndex >= 11) {
+    //     return '#9E47CC';
+    // } else if (uvIndex >= 8) {
+    //     return '#F55023';
+    // } else if (uvIndex >= 6) {
+    //     return '#FE8F00';
+    // } else if (uvIndex >= 3) {
+    //     return '#FFBC03';
+    // } else {
+    //     return '#9BC600';
+    // }
 }

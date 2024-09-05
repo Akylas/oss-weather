@@ -95,7 +95,7 @@ export class MFProvider extends WeatherProvider {
         }
 
         const d = {
-            time: dailyForecast.time * 1000,
+            time: dayStartTime,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
             iconId: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: dailyForecast.T_max,
@@ -382,7 +382,7 @@ export class MFProvider extends WeatherProvider {
                       {
                           time: currentConditions.time * 1000,
                           temperature: currentConditions.T,
-                        //   apparentTemperature: currentConditions.T_windchill,
+                          //   apparentTemperature: currentConditions.T_windchill,
                           windSpeed: currentConditions.wind_speed,
                           //   windGust: currentConditions.wind,
                           windBearing: currentConditions.wind_direction,

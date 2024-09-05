@@ -16,7 +16,6 @@
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
-    import SelectCity from '~/components/SelectCity.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
@@ -311,6 +310,7 @@
 
     async function searchCity() {
         try {
+            const SelectCity = (await import('~/components/SelectCity.svelte')).default;
             // TODO: for now we dont lazy load SelectCity
             // it would crash in production because imported toggleFavorite would be undefined ...
             const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true });

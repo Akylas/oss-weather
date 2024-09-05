@@ -409,6 +409,7 @@ export async function photonSearch(q, lat?, lon?, queryParams = {}) {
         url: 'https://photon.komoot.io/api',
 
         method: 'GET',
+        timeout: 30000,
         queryParams: {
             q,
             lat,

@@ -9,7 +9,6 @@
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
     import { formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { POLLENS_POLLUTANTS_TITLES } from '~/helpers/formatter';
     import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { WeatherLocation } from '~/services/api';
     import CActionBar from './common/CActionBar.svelte';
@@ -18,6 +17,7 @@
     import { CombinedChart } from '@nativescript-community/ui-chart';
     import { CommonWeatherData, Hourly } from '~/services/providers/weather';
     import dayjs, { Dayjs } from 'dayjs';
+    import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     const weatherIconSize = 100;
 
     const textIconPaint = new Paint();

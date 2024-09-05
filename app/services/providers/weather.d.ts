@@ -1,8 +1,10 @@
 import { Color } from '@nativescript/core';
-import { api_providers, providers } from './weatherproviderfactory';
+import { aqi_providers, providers } from './weatherproviderfactory';
+// import { Pollutants } from '../airQualityData';
 
+// export { Pollutants };
 export type ProviderType = (typeof providers)[number];
-export type AqiProviderType = (typeof api_providers)[number];
+export type AqiProviderType = (typeof aqi_providers)[number];
 
 export interface WeatherData {
     time: number;
@@ -47,37 +49,10 @@ export interface CommonAirQualityData {
     aqi: number;
     aqiColor?: string;
     pollutants?: {
-        co?: {
+        [k in Pollutants]?: {
             unit: string;
             value: number;
-        };
-        no?: {
-            unit: string;
-            value: number;
-        };
-        no2?: {
-            unit: string;
-            value: number;
-        };
-        o3?: {
-            unit: string;
-            value: number;
-        };
-        so2?: {
-            unit: string;
-            value: number;
-        };
-        pm2_5?: {
-            unit: string;
-            value: number;
-        };
-        pm10?: {
-            unit: string;
-            value: number;
-        };
-        nh3?: {
-            unit: string;
-            value: number;
+            color?: string;
         };
     };
     pollens?: {

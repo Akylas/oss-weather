@@ -29,6 +29,7 @@
     "app": {
         "name": "Cuaca OSS"
     },
+    "apparent": "Nampak",
     "aqi": "Index Kualitas Udara",
     "artemisia": "mugwort",
     "authorize": "Pengesahan",
@@ -80,6 +81,7 @@
     "failed_to_export_settings": "Gagal mengekspor pengaturan",
     "favorites": "Favorit",
     "feedback_sent": "Umpan balik terkirim",
+    "feels_like": "Terasa seperti",
     "feels_like_temperatures": "Tampilkan prediksi temperatur jika tersedia",
     "file": "File",
     "first_quarter": "Kuartal pertama",
@@ -188,6 +190,11 @@
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",
         "title": "Penyedia"
+    },
+    "provider_aqi": {
+        "atmo": "ATMO Auvergne-Rhône-Alpes",
+        "openmeteo": "Open-Meteo",
+        "title": "Penyedia kualitas udara"
     },
     "providers": "Penyedia",
     "providers_settings": "pemilihan dan pengaturan penyedia",

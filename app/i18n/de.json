@@ -29,6 +29,7 @@
     "app": {
         "name": "OSS Wetter"
     },
+    "apparent": "sichtbar",
     "aqi": "Luftqualitäts-Index",
     "artemisia": "Artemisia",
     "authorize": "Autorisieren",
@@ -39,7 +40,7 @@
     "be_vigilant": "Vorsicht geboten",
     "behavioral_tips": "Verhaltenshinweise",
     "betula": "Birke",
-    "blocks": "Blockiert",
+    "blocks": "Blöcke",
     "bra": "BRA",
     "bug_report_sent": "Fehlerbericht gesendet",
     "cancel": "Abbrechen",
@@ -80,6 +81,7 @@
     "failed_to_export_settings": "Einstellungen konnten nicht exportiert werden",
     "favorites": "Favoriten",
     "feedback_sent": "Rückmeldung gesendet",
+    "feels_like": "gefühlt",
     "feels_like_temperatures": "gefühlte Temperatur anzeigen, wenn verfügbar",
     "file": "Datei",
     "first_quarter": "Erstes Viertel",
@@ -189,6 +191,11 @@
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",
         "title": "Wetterdaten-Anbieter"
+    },
+    "provider_aqi": {
+        "atmo": "ATMO Auvergne-Rhône-Alpes",
+        "openmeteo": "Open-Meteo",
+        "title": "Luftqualitätsdaten-Anbieter"
     },
     "providers": "Anbieter",
     "providers_settings": "Anbieterauswahl und -Einstellungen",

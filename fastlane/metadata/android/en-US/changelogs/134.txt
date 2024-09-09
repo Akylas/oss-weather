@@ -1,0 +1,3 @@
+### Bug fixes
+- regression fix for wrong dates being shown in list
+- Translations update

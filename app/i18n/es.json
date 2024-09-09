@@ -29,6 +29,7 @@
     "app": {
         "name": "OSS Tiempo"
     },
+    "apparent": "evidente",
     "aqi": "Índice de calidad del aire",
     "artemisia": "Artemisa",
     "authorize": "Autorizar",
@@ -80,6 +81,7 @@
     "failed_to_export_settings": "no se pudo exportar la configuración",
     "favorites": "Favoritos",
     "feedback_sent": "comentarios enviados",
+    "feels_like": "se siente como",
     "feels_like_temperatures": "mostrar se siente como temperatura cuando está disponible",
     "file": "Archivo",
     "first_quarter": "primer cuarto",
@@ -189,6 +191,11 @@
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",
         "title": "Proveedor"
+    },
+    "provider_aqi": {
+        "atmo": "ATMO Auvergne-Rhône-Alpes",
+        "openmeteo": "Open-Meteo",
+        "title": "Proveedor de datos de calidad del aire"
     },
     "providers": "proveedores",
     "providers_settings": "selección y ajustes del proveedor",

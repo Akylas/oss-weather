@@ -29,6 +29,7 @@
     "app": {
         "name": "OSS Погода"
     },
+    "apparent": "Ощущается",
     "aqi": "Индекс качества воздуха",
     "artemisia": "Полынь",
     "authorize": "Авторизация",
@@ -80,6 +81,7 @@
     "failed_to_export_settings": "Не удалось экспортировать настройки",
     "favorites": "Избранное",
     "feedback_sent": "Отзыв отправлен",
+    "feels_like": "Ощущаемая температура",
     "feels_like_temperatures": "Отображение ощущаемой температуры, если доступно",
     "file": "Файл",
     "first_quarter": "Первая четверть",
@@ -189,6 +191,11 @@
         "openmeteo": "Open‐Meteo",
         "openweathermap": "OpenWeather",
         "title": "Источник погоды"
+    },
+    "provider_aqi": {
+        "atmo": "ATMO Auvergne-Rhône-Alpes",
+        "openmeteo": "Open-Meteo",
+        "title": "Источник качества воздуха"
     },
     "providers": "Источники погоды",
     "providers_settings": "Выбор источника погоды и другие настройки",

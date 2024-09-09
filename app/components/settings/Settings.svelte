@@ -198,7 +198,7 @@
                         key: 'provider_aqi',
                         id: 'setting',
                         valueType: 'string',
-                        description: () => lc('provider.' + getProviderType()),
+                        description: () => lc('provider_aqi.' + getAqiProviderType()),
                         title: lc('provider_aqi.title'),
                         currentValue: getAqiProviderType,
                         values: aqi_providers.map((t) => ({ value: t, title: lc(t) }))

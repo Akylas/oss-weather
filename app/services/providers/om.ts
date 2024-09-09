@@ -412,9 +412,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 data: daily.time.slice(0, dailyLastIndex).map((time, index) => {
                     const code = daily_weathercodes[index];
                     const d = {
-                        time: dayjs(time * 1000)
-                            .startOf('d')
-                            .valueOf(),
+                        time: time * 1000,
                         description: OMProvider.weatherCodeDescription[code],
                         isDay: true,
                         iconId: this.convertWeatherCodeToIcon(code),
@@ -533,7 +531,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             daily: {
                 data: daily.slice(0, lastDailyIndex >= 0 ? lastDailyIndex : daily.length).map((d) =>
                     aqiDataIconColors({
-                        time: dayjs(d.time).startOf('d').valueOf(),
+                        time: d.time,
                         ...Object.keys(d.tempDatas).reduce((acc, val) => {
                             const tempData = d.tempDatas[val];
                             let data = acc;

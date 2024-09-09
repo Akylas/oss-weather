@@ -95,7 +95,7 @@ export class MFProvider extends WeatherProvider {
         }
 
         const d = {
-            time: dayStartTime,
+            time: dailyForecast.time * 1000,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
             iconId: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: dailyForecast.T_max,

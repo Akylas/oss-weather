@@ -266,14 +266,15 @@
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             }
             if (weatherData) {
+                lastUpdate = weatherData.time;
+                await updateView();
                 if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
                     const aqiData = await getAqiProvider().getAirQuality(weatherLocation);
                     if (aqiData) {
                         mergeWeatherData(weatherData, aqiData);
+                        await updateView();
                     }
                 }
-                lastUpdate = weatherData.time;
-                await updateView();
             }
         } catch (err) {
             if (err.statusCode === 403) {

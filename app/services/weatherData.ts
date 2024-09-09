@@ -241,6 +241,7 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
             const originalFirstTime = mainDataK[0].time;
             const addedDataFirstTime = addedDataK[0].time;
 
+            // DEV_LOG && console.log('mergeWeatherData test', originalFirstTime, addedDataFirstTime);
             if (addedDataFirstTime >= originalFirstTime) {
                 let index = mainDataK.findIndex((d) => d.time === addedDataFirstTime);
                 if (index !== -1) {

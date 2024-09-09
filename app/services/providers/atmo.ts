@@ -45,6 +45,7 @@ export class AtmoProvider extends AirQualityProvider {
         });
     }
     async getAirQuality(weatherLocation: WeatherLocation, options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean }) {
+
         const result = await this.fetch(weatherLocation);
 
         const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];
@@ -55,7 +56,8 @@ export class AtmoProvider extends AirQualityProvider {
             const d = {} as Hourly;
             const date = dayjs(data.datetime_echeance);
             d.time = date.valueOf();
-            const currentDay = date.startOf('d').valueOf();
+            const currentDay = date.utc().startOf('d').valueOf();
+            DEV_LOG && console.log('test', d.time, currentDay);
             if (!lastDay || currentDay !== lastDay.time) {
                 lastDay = {
                     time: currentDay,

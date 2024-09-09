@@ -45,7 +45,6 @@ export class AtmoProvider extends AirQualityProvider {
         });
     }
     async getAirQuality(weatherLocation: WeatherLocation, options?: { model?: string; warnings?: boolean; minutely?: boolean; hourly?: boolean; current?: boolean; forceModel?: boolean }) {
-
         const result = await this.fetch(weatherLocation);
 
         const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];

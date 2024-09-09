@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { ApplicationSettings, Color, Utils } from '@nativescript/core';
     import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import { ApplicationSettings, Color, Utils } from '@nativescript/core';
+    import { onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
-    import { WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
-    import { actionBarButtonHeight, colors } from '~/variables';
-    import { l, lc } from '~/helpers/locale';
-    import { getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
-    import { prefs } from '~/services/preferences';
-    import { onDestroy, onMount } from 'svelte';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, toggleFavorite } from '~/helpers/favorites';
+    import { l, lc } from '~/helpers/locale';
+    import { WeatherLocation, getTimezone, networkService, prepareItems } from '~/services/api';
+    import { getAqiProvider, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import { WeatherProps, mergeWeatherData, weatherDataService } from '~/services/weatherData';
+    import { actionBarButtonHeight, colors } from '~/variables';
 
     let { colorBackground } = $colors;
     $: ({ colorBackground } = $colors);
@@ -20,32 +20,42 @@
     export let name;
     networkService.start(); // ensure it is started
     DEV_LOG && console.log('BottomSheetWeatherPage');
+
+    async function updateView(weatherData) {
+        if (weatherLocation && weatherData) {
+            items = prepareItems(weatherLocation, weatherData, Date.now());
+        }
+    }
+
     async function refresh(location: WeatherLocation = weatherLocation) {
         if (loading) {
             return;
         }
         loading = true;
         try {
-            const data = await getWeatherProvider().getWeather(location);
-            DEV_LOG && console.log('BottomSheet', 'refresh', loading, JSON.stringify(location));
-            if (!name || !location.sys.city) {
-                try {
-                    const r = await geocodeAddress(location.coord);
-                    if (!location.sys) {
-                        location.sys = r.sys;
+            const usedWeatherData = weatherDataService.allWeatherData;
+            const [weatherData, timezoneData] = await Promise.all([
+                getWeatherProvider().getWeather(weatherLocation),
+                !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
+            ]);
+            if (timezoneData) {
+                Object.assign(weatherLocation, timezoneData);
+                ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+            }
+            if (weatherData) {
+                await updateView(weatherData);
+                if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
+                    const aqiData = await getAqiProvider().getAirQuality(weatherLocation);
+                    if (aqiData) {
+                        mergeWeatherData(weatherData, aqiData);
+                        await updateView(weatherData);
                     }
-                    if (!name) {
-                        name = location.name = location.sys.name = r.name;
-                    }
-                } catch (error) {
-                    console.error(error);
                 }
             }
 
             if (!name) {
                 name = location.coord.lat.toFixed(2) + ',' + location.coord.lon.toFixed(2);
             }
-            items = prepareItems(location, data, Date.now());
         } catch (err) {
             android.widget.Toast.makeText(Utils.android.getApplicationContext(), err.toString(), android.widget.Toast.LENGTH_LONG);
             closeBottomSheet();

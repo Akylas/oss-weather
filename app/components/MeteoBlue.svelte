@@ -199,7 +199,7 @@
     }
     function openInBrowser() {
         try {
-            openLink(currentUrl);
+            openLink(getUrl(0));
         } catch (error) {
             showError(error);
         }

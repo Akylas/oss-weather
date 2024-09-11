@@ -29,6 +29,7 @@
     "app": {
         "name": "OSS Météo"
     },
+    "apparent": "Ressentie",
     "aqi": "Index de Qualité de l'Air",
     "artemisia": "armoise",
     "authorize": "Autoriser",

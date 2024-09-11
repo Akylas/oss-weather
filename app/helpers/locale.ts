@@ -193,19 +193,19 @@ prefs.on('key:clock_24', () => {
     globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
 });
 
-let currentLocale = null;
-export function getLocaleDisplayName(locale?) {
+let currentLocale: any = null;
+export function getLocaleDisplayName(locale?, canReturnEmpty = false) {
     if (__IOS__) {
         if (!currentLocale) {
             currentLocale = NSLocale.alloc().initWithLocaleIdentifier(lang);
         }
-        const localeStr = currentLocale.displayNameForKeyForValue(NSLocaleIdentifier, locale || lang);
-        return localeStr ? capitalize(localeStr) : locale || lang;
+        const localeStr = (currentLocale as NSLocale).displayNameForKeyValue(NSLocaleIdentifier, locale || lang);
+        return localeStr ? capitalize(localeStr) : canReturnEmpty ? undefined : locale || lang;
     } else {
         if (!currentLocale) {
             currentLocale = java.util.Locale.forLanguageTag(lang);
         }
-        return capitalize(java.util.Locale.forLanguageTag(locale || lang).getDisplayName(currentLocale));
+        return capitalize(java.util.Locale.forLanguageTag(locale || lang).getDisplayName(currentLocale as java.util.Locale));
     }
 }
 export function getCurrentISO3Language() {

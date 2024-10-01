@@ -26,7 +26,7 @@
     "repository": "https://github.com/Akylas/oss-weather",
     "dependencies": {
         "@akylas/address-formatter": "5.3.1",
-        "@akylas/nativescript": "8.8.2",
+        "@akylas/nativescript": "8.8.3",
         "@akylas/nativescript-inappbrowser": "3.1.8",
         "@mapbox/to-color": "^2.1.1",
         "@mdi/font": "7.4.47",

@@ -56,7 +56,7 @@ $lang.subscribe((newLang: string) => {
     loadDayjsLang(lang);
     try {
         // const localeData = require(`~/i18n/${lang}.json`);
-        loadLocaleJSON(`~/i18n/${lang}.json`, '~/i18n/en.json');
+        loadLocaleJSON(`~/i18n/${lang}.json`, `~/i18n/${DEFAULT_LOCALE}.json`);
     } catch (err) {
         console.error(lang, `~/i18n/${lang}.json`, File.exists(`~/i18n/${lang}.json`), err, err.stack);
     }
@@ -99,7 +99,7 @@ function setLang(newLang) {
     $lang.set(actualNewLang);
 }
 
-const deviceLanguage = getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
+const deviceLanguage = getString(SETTINGS_LANGUAGE, 'auto');
 function getActualLanguage(language) {
     if (language === 'auto') {
         if (__ANDROID__) {
@@ -219,7 +219,7 @@ export function getCurrentISO3Language() {
 async function internalSelectLanguage() {
     // try {
     const actions = SUPPORTED_LOCALES;
-    const currentLanguage = getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
+    const currentLanguage = getString(SETTINGS_LANGUAGE, 'auto');
     let selectedIndex = -1;
     const options = [{ name: lc('auto'), data: 'auto' }].concat(actions.map((k) => ({ name: getLocaleDisplayName(k.replace('_', '-')), data: k }))).map((d, index) => {
         const selected = currentLanguage === d.data;

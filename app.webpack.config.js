@@ -97,7 +97,7 @@ module.exports = (env, params = {}) => {
         fork = true, // --env.fakeall
         adhoc, // --env.adhoc
         timeline, // --env.timeline
-        locale = 'auto', // --env.locale
+        locale = 'en', // --env.locale
         theme = 'auto', // --env.theme
         keep_classnames_functionnames = false,
         accessibility = true,

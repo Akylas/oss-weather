@@ -754,9 +754,9 @@
                             data: jsonStr,
                             forceSAF: true
                         });
-                        if (!result) {
-                            throw new Error(lc('failed_to_export_settings'));
-                        }
+                        // if (!result) {
+                        //     throw new Error(lc('failed_to_export_settings'));
+                        // }
                         DEV_LOG && console.log('export_settings done', result, jsonStr);
                     }
                     break;

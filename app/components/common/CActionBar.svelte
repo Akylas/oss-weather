@@ -4,6 +4,7 @@
     import { closeModal, goBack } from '~/utils/svelte/ui';
     import { conditionalEvent } from '~/utils/svelte/ui';
     import { actionBarHeight, fontScale } from '~/variables';
+    import { windowInset } from '~/variables';
 
     export let title: string = null;
     export let height = null;
@@ -47,7 +48,7 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapse';
 </script>
 
-<gridlayout class="actionBar" columns="auto,*,auto" rows={`${height || $actionBarHeight},auto`} on:swipe {...$$restProps} on:tap={() => {}}>
+<gridlayout class="actionBar" columns="auto,*,auto" rows={`${height || $actionBarHeight},auto`} on:swipe {...$$restProps} on:tap={() => {}} android:marginTop={$windowInset.top}>
     <label
         id="actionBarTitle"
         class="actionBarTitle"

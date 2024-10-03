@@ -11,7 +11,11 @@
     <style name="LaunchScreenTheme" parent="LaunchScreenThemeBase"></style>
 
     <style name="AppThemeBase" parent="Theme.Material3.DynamicColors.DayNight">
-        <item name="windowActionBar">false</item>
+       
+    </style>
+
+    <style name="AppTheme" parent="AppThemeBase">
+     <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="switchPreferenceCompatStyle">
             @style/Preference.SwitchPreferenceCompat.Material3
@@ -21,9 +25,6 @@
         <!-- <item name="android:windowTranslucentStatus">true</item> -->
         <!-- <item name="android:windowActionBarOverlay">true</item>   -->
         <!-- <item name="android:windowTranslucentNavigation">true</item> -->
-    </style>
-
-    <style name="AppTheme" parent="AppThemeBase">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/onPrimary</item>
         <item name="colorPrimaryContainer">@color/primaryContainer</item>

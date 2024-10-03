@@ -18,11 +18,6 @@ export class MainActivity extends androidx.appcompat.app.AppCompatActivity {
     public onCreate(savedInstanceState: android.os.Bundle): void {
         DEV_LOG && console.log(TAG, 'onCreate');
         // Handle the splash screen transition.
-        //@ts-ignore
-        androidx.core.splashscreen.SplashScreen.installSplashScreen(this);
-        // DynamicColors
-        com.akylas.weather.Utils.applyDynamicColors(this);
-        this.getWindow().setStatusBarColor(getThemeColor(this, 'colorPrimaryDark'));
         Application.android.init(this.getApplication());
         // Set the isNativeScriptActivity in onCreate (as done in the original NativeScript activity code)
         // The JS constructor might not be called because the activity is created from Android.
@@ -46,8 +41,6 @@ export class MainActivity extends androidx.appcompat.app.AppCompatActivity {
     public onStart(): void {
         DEV_LOG && console.log(TAG, 'onStart');
         this._callbacks.onStart(this, super.onStart);
-        com.akylas.weather.Utils.applyDynamicColors(this);
-        Application.notify({ eventName: 'activity_started' });
     }
 
     public onStop(): void {

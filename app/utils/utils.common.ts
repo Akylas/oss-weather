@@ -3,6 +3,9 @@ import { Application, Color, Device, Frame, ImageSource, Utils } from '@nativesc
 import { Dayjs } from 'dayjs';
 import { FavoriteLocation } from '~/helpers/favorites';
 import { lc } from '~/helpers/locale';
+
+export { restartApp } from '@akylas/nativescript-app-utils';
+
 export const sdkVersion = parseInt(Device.sdkVersion, 10);
 
 declare module '@nativescript/core/ui/frame' {

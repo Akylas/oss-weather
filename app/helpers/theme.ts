@@ -10,6 +10,7 @@ import { writable } from 'svelte/store';
 import { SDK_VERSION } from '@nativescript/core/utils';
 import { showAlertOptionSelect } from '~/utils/ui';
 import { closePopover } from '@nativescript-community/ui-popover/svelte';
+import { AppUtilsAndroid } from '@akylas/nativescript-app-utils';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
 
@@ -40,8 +41,7 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
         }
         if (__ANDROID__) {
             if (Application.android.startActivity) {
-                com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
-
+                AppUtilsAndroid.applyDayNight(Application.android.startActivity, true);
             }
         }
         Theme.setMode(Theme.Auto, undefined, realTheme, false);
@@ -218,7 +218,7 @@ export function start(force = false) {
         updateThemeColors(realTheme);
         sTheme.set(newTheme);
         if (__ANDROID__) {
-            com.akylas.weather.Utils.applyDayNight(Application.android.startActivity, true);
+            AppUtilsAndroid.applyDayNight(Application.android.startActivity, true);
         }
         setTimeout(() => {
             globalObservable.notify({ eventName: 'theme', data: realTheme });
@@ -241,11 +241,9 @@ export function start(force = false) {
 
         // we need to update the theme on every activity start
         // to get dynamic colors
-        Application.on('activity_started', () => {
-            DEV_LOG && console.log('activity_started');
-            if (Application.getRootView()) {
-                getRealThemeAndUpdateColors();
-            }
+        Application.android.on(Application.android.activityStartedEvent, (event) => {
+            AppUtilsAndroid.applyDynamicColors(event.activity);
+            getRealThemeAndUpdateColors();
         });
     } else {
         // without rootController systemAppearance will be null

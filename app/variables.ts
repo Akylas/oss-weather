@@ -1,5 +1,5 @@
 import { isSimulator } from '@nativescript-community/extendedinfo';
-import { Application, ApplicationSettings, Color, Observable, Screen, Utils } from '@nativescript/core';
+import { Application, ApplicationSettings, Color, Frame, Observable, Page, Screen, Utils } from '@nativescript/core';
 import { get, writable } from 'svelte/store';
 import { themer } from '@nativescript-community/ui-material-core';
 import { onDestroy } from 'svelte';
@@ -9,6 +9,7 @@ import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
 import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, WEATHER_DATA_LAYOUT } from './helpers/constants';
 import { SDK_VERSION } from '@nativescript/core/utils';
+import { AppUtilsAndroid } from '@akylas/nativescript-app-utils';
 
 export const colors = writable({
     colorPrimary: '',
@@ -136,6 +137,17 @@ function getRootViewStyle() {
     return rootView?.style;
 }
 
+if (__ANDROID__) {
+    Application.android.on(Application.android.activityCreateEvent, (event) => {
+        AppUtilsAndroid.prepareActivity(event.activity);
+    });
+    Page.on('shownModally', function (event) {
+        AppUtilsAndroid.prepareWindow(event.object['_dialogFragment'].getDialog().getWindow());
+    });
+    Frame.on('shownModally', function (event) {
+        AppUtilsAndroid.prepareWindow(event.object['_dialogFragment'].getDialog().getWindow());
+    });
+}
 let initRootViewCalled = false;
 export function onInitRootViewFromEvent() {
     onInitRootView();
@@ -152,35 +164,18 @@ export function onInitRootView(force = false) {
         const rootView = Application.getRootView();
         DEV_LOG && console.log('onInitRootView', rootView);
         if (rootView) {
-            initRootViewCalled = true;
-            (rootView.nativeViewProtected as android.view.View).setOnApplyWindowInsetsListener(
-                new android.view.View.OnApplyWindowInsetsListener({
-                    onApplyWindowInsets(view, insets) {
-                        if (SDK_VERSION >= 29) {
-                            const inset = insets.getSystemWindowInsets();
-                            windowInset.set({
-                                top: Utils.layout.toDeviceIndependentPixels(inset.top),
-                                bottom: Utils.layout.toDeviceIndependentPixels(inset.bottom),
-                                left: Utils.layout.toDeviceIndependentPixels(inset.left),
-                                right: Utils.layout.toDeviceIndependentPixels(inset.right)
-                            });
-                        } else {
-                            windowInset.set({
-                                top: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetTop()),
-                                bottom: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetBottom()),
-                                left: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetLeft()),
-                                right: Utils.layout.toDeviceIndependentPixels(insets.getSystemWindowInsetRight())
-                            });
-                        }
-                        return insets;
-                    }
-                })
-            );
+            AppUtilsAndroid.listenForWindowInsets((inset) => {
+                windowInset.set({
+                    top: Utils.layout.toDeviceIndependentPixels(inset[0]),
+                    bottom: Utils.layout.toDeviceIndependentPixels(Math.max(inset[1], inset[4])),
+                    left: Utils.layout.toDeviceIndependentPixels(inset[2]),
+                    right: Utils.layout.toDeviceIndependentPixels(inset[3])
+                });
+            });
         }
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
 
         const context = Utils.android.getApplicationContext();
-        const nUtils = com.akylas.weather.Utils;
 
         const resources = context.getResources();
         updateSystemFontScale(resources.getConfiguration().fontScale);
@@ -188,7 +183,7 @@ export function onInitRootView(force = false) {
 
         // ActionBar
         // resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
-        let nActionBarHeight = Utils.layout.toDeviceIndependentPixels(nUtils.getDimensionFromInt(context, 16843499 /* actionBarSize */));
+        let nActionBarHeight = Utils.layout.toDeviceIndependentPixels(AppUtilsAndroid.getDimensionFromInt(context, 16843499 /* actionBarSize */));
         // let nActionBarHeight = 0;
         // if (resourceId > 0) {
         //     nActionBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
@@ -243,9 +238,8 @@ function onOrientationChanged() {
     if (__ANDROID__) {
         const rootViewStyle = getRootViewStyle();
         const context = Utils.android.getApplicationContext();
-        const nUtils = com.akylas.weather.Utils;
 
-        const nActionBarHeight = Utils.layout.toDeviceIndependentPixels(nUtils.getDimensionFromInt(context, 16843499 /* actionBarSize */));
+        const nActionBarHeight = Utils.layout.toDeviceIndependentPixels(AppUtilsAndroid.getDimensionFromInt(context, 16843499 /* actionBarSize */));
         if (nActionBarHeight > 0) {
             actionBarHeight.set(nActionBarHeight);
             rootViewStyle?.setUnscopedCssVariable('--actionBarHeight', nActionBarHeight + '');
@@ -259,12 +253,12 @@ function onOrientationChanged() {
 }
 Application.on(Application.initRootViewEvent, onInitRootViewFromEvent);
 Application.on(Application.orientationChangedEvent, onOrientationChanged);
-Application.on('activity_started', () => {
-    if (__ANDROID__) {
+if (__ANDROID__) {
+    Application.android.on(Application.android.activityStartedEvent, () => {
         const resources = Utils.android.getApplicationContext().getResources();
         isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
-    }
-});
+    });
+}
 
 let lastThemeColor: string;
 export function updateThemeColors(theme: string, force = false) {
@@ -284,7 +278,6 @@ export function updateThemeColors(theme: string, force = false) {
     const currentColors = get(colors);
     // rootViewStyle?.setUnscopedCssVariable('--systemFontScale', systemFontScale + '');
     if (__ANDROID__) {
-        const nUtils = com.akylas.weather.Utils;
         const activity = Application.android.startActivity;
         // we also update system font scale so that our UI updates correcly
         updateSystemFontScale(Utils.android.getApplicationContext().getResources().getConfiguration().fontScale);
@@ -293,11 +286,11 @@ export function updateThemeColors(theme: string, force = false) {
                 return;
             }
             if (c === 'colorBackground') {
-                currentColors.colorBackground = new Color(nUtils.getColorFromInt(activity, 16842801)).hex;
+                currentColors.colorBackground = new Color(AppUtilsAndroid.getColorFromInt(activity, 16842801)).hex;
             } else if (c === 'popupMenuBackground') {
-                currentColors.popupMenuBackground = new Color(nUtils.getColorFromInt(activity, 16843126)).hex;
+                currentColors.popupMenuBackground = new Color(AppUtilsAndroid.getColorFromInt(activity, 16843126)).hex;
             } else {
-                currentColors[c] = new Color(nUtils.getColorFromName(activity, c)).hex;
+                currentColors[c] = new Color(AppUtilsAndroid.getColorFromName(activity, c)).hex;
             }
         });
     } else {

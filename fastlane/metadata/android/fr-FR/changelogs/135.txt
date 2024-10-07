@@ -1,0 +1,8 @@
+### Features
+- You can now specify custom units on a per data basis
+
+### Bug fixes
+- differentiate languages variants based on the locale
+- dont misleading message on export settings cancelled
+- Carbon Monoxide was giving wrong AQI values
+- Translations update

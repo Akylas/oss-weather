@@ -184,7 +184,7 @@
                     const data = sourceData.map((d: DailyData | Hourly) => ({
                         ...d,
                         deltaHours: (d.time - startTimestamp) / (3600 * 1000),
-                        [key]: convertWeatherValueToUnit(d, key, { round: false })[0]
+                        [key]: convertWeatherValueToUnit(d, key as any, { round: false })[0]
                     }));
                     maxDatalength = Math.max(maxDatalength, data.length);
                     xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);

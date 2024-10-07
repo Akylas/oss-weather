@@ -4,7 +4,7 @@ import { Dayjs } from 'dayjs';
 import { FavoriteLocation } from '~/helpers/favorites';
 import { lc } from '~/helpers/locale';
 
-export { restartApp } from '@akylas/nativescript-app-utils';
+export { restartApp, loadImageSync as loadImage } from '@akylas/nativescript-app-utils';
 
 export const sdkVersion = parseInt(Device.sdkVersion, 10);
 
@@ -39,15 +39,6 @@ export function isBRABounds(location: FavoriteLocation) {
     DEV_LOG && console.log('isBRABounds', coords);
     return coords.lon >= BRA_BOUNDS[0] && coords.lon <= BRA_BOUNDS[2] && coords.lat >= BRA_BOUNDS[1] && coords.lat <= BRA_BOUNDS[3];
 }
-export function loadImage(imagePath, loadOptions: { width?; height?; resizeThreshold?; sourceWidth?; sourceHeight?; jpegQuality? } = {}) {
-    loadOptions.resizeThreshold ??= 4500;
-    if (__IOS__) {
-        return new ImageSource(ImageUtils.readImageFromFileStringOptions(imagePath, JSON.stringify(loadOptions)));
-    } else {
-        return new ImageSource(com.akylas.weather.ImageUtils.Companion.readBitmapFromFile(Utils.android.getApplicationContext(), imagePath, JSON.stringify(loadOptions)));
-    }
-}
-
 export function tempColor(t, min, max) {
     // Map the temperature to a 0-1 range
     let a = (t - min) / (max - min);

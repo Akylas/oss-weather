@@ -56,7 +56,6 @@ export class AtmoProvider extends AirQualityProvider {
             const date = dayjs(data.datetime_echeance);
             d.time = date.valueOf();
             const currentDay = date.utc().startOf('d').valueOf();
-            DEV_LOG && console.log('test', d.time, currentDay);
             if (!lastDay || currentDay !== lastDay.time) {
                 lastDay = {
                     time: currentDay,

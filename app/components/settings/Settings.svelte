@@ -1,9 +1,14 @@
 <script context="module" lang="ts">
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
+    import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
@@ -25,6 +30,7 @@
         SETTINGS_LANGUAGE,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+        SETTINGS_UNITS,
         SETTINGS_WEATHER_MAP_COLORS,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
@@ -35,25 +41,19 @@
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
+    import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
     import { iconService } from '~/services/icon';
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { showError } from '~/utils/error';
+    import { Sentry } from '~/utils/sentry';
     import { share } from '~/utils/share';
     import { navigate } from '~/utils/svelte/ui';
-    import { createView, hideLoading, isLandscape, openLink, showAlertOptionSelect, showLoading } from '~/utils/ui';
-    import { colors, fonts, iconColor, imperial, windowInset } from '~/variables';
-    import IconButton from '../common/IconButton.svelte';
-    import { TextField } from '@nativescript-community/ui-material-textfield';
-    import { TextView } from '@nativescript-community/ui-material-textview';
-    import { Sentry } from '~/utils/sentry';
-    import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
-    import dayjs from 'dayjs';
+    import { createView, hideLoading, openLink, showAlertOptionSelect, showLoading } from '~/utils/ui';
     import { restartApp } from '~/utils/utils';
-    import { isPermResultAuthorized, request } from '@nativescript-community/perms';
-    import { SDK_VERSION } from '@akylas/nativescript/utils';
+    import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
+    import IconButton from '../common/IconButton.svelte';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -134,6 +134,7 @@
                         type: 'switch',
                         id: SETTINGS_IMPERIAL,
                         title: lc('imperial_units'),
+                        description: lc('imperial_units_desc'),
                         value: $imperial
                     },
                     {
@@ -141,6 +142,65 @@
                         id: 'metric_temp_decimal',
                         title: lc('metric_temp_decimal'),
                         value: ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP)
+                    },
+                    {
+                        type: 'sectionheader',
+                        title: lc('custom_units')
+                    },
+                    {
+                        id: 'store_setting',
+                        store: unitsSettings,
+                        storeKey: SETTINGS_UNITS,
+                        key: UNIT_FAMILIES.Temperature,
+                        valueType: 'string',
+                        title: lc('temperature_unit'),
+                        rightValue: () => unitsSettings[UNIT_FAMILIES.Temperature],
+                        currentValue: () => unitsSettings[UNIT_FAMILIES.Temperature],
+                        values: [UNITS.Celcius, UNITS.Fahrenheit].map((u) => ({ title: u, value: u }))
+                    },
+                    {
+                        id: 'store_setting',
+                        store: unitsSettings,
+                        storeKey: SETTINGS_UNITS,
+                        key: UNIT_FAMILIES.Distance,
+                        valueType: 'string',
+                        title: lc('distance_unit'),
+                        rightValue: () => unitsSettings[UNIT_FAMILIES.Distance],
+                        currentValue: () => unitsSettings[UNIT_FAMILIES.Distance],
+                        values: [UNITS.Kilometers, UNITS.Miles, UNITS.Meters, UNITS.Feet, UNITS.Inch].map((u) => ({ title: u, value: u }))
+                    },
+                    {
+                        id: 'store_setting',
+                        store: unitsSettings,
+                        storeKey: SETTINGS_UNITS,
+                        key: UNIT_FAMILIES.Precipitation,
+                        valueType: 'string',
+                        title: lc('precipitation_unit'),
+                        rightValue: () => unitsSettings[UNIT_FAMILIES.Precipitation],
+                        currentValue: () => unitsSettings[UNIT_FAMILIES.Precipitation],
+                        values: [UNITS.Inch, UNITS.MM, UNITS.CM].map((u) => ({ title: u, value: u }))
+                    },
+                    {
+                        id: 'store_setting',
+                        store: unitsSettings,
+                        storeKey: SETTINGS_UNITS,
+                        key: UNIT_FAMILIES.Speed,
+                        valueType: 'string',
+                        title: lc('speed_unit'),
+                        rightValue: () => unitsSettings[UNIT_FAMILIES.Speed],
+                        currentValue: () => unitsSettings[UNIT_FAMILIES.Speed],
+                        values: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.MPH, UNITS.FPH].map((u) => ({ title: u, value: u }))
+                    },
+                    {
+                        id: 'store_setting',
+                        store: unitsSettings,
+                        storeKey: SETTINGS_UNITS,
+                        key: UNIT_FAMILIES.Pressure,
+                        valueType: 'string',
+                        title: lc('pressure_unit'),
+                        rightValue: () => unitsSettings[UNIT_FAMILIES.Pressure],
+                        currentValue: () => unitsSettings[UNIT_FAMILIES.Pressure],
+                        values: [UNITS.PressureHpa].map((u) => ({ title: u, value: u }))
                     }
                 ];
             case 'icons':
@@ -443,7 +503,7 @@
                         title: lc('units'),
                         description: lc('units_settings'),
                         icon: 'mdi-temperature-celsius',
-                        options: getSubSettings('units')
+                        subSettingsOptions: 'units'
                     }
                 ] as any)
                 .concat([
@@ -634,6 +694,7 @@
                             title: item.title,
                             reorderEnabled: item.reorderEnabled,
                             options: item.options,
+                            subSettingsOptions: item.subSettingsOptions,
                             actionBarButtons: item.actionBarButtons?.() || []
                         }
                     });
@@ -836,6 +897,7 @@
                         }
                     }
                     break;
+                case 'store_setting':
                 case 'setting': {
                     if (item.type === 'prompt') {
                         const result = await prompt({
@@ -848,15 +910,21 @@
                             defaultText: typeof item.rightValue === 'function' ? item.rightValue() : item.default
                         });
                         Utils.dismissSoftInput();
-                        if (result) {
-                            if (result.result && result.text.length > 0) {
+                        if (result && !!result.result && result.text.length > 0) {
+                            if (item.id === 'store_setting') {
+                                const store = item.store || getStoreSetting(item.storeKey, item.storeDefault);
+                                if (item.valueType === 'string') {
+                                    store[item.key] = result.text;
+                                } else {
+                                    store[item.key] = parseInt(result.text, 10);
+                                }
+                                ApplicationSettings.setString(item.storeKey, JSON.stringify(store));
+                            } else {
                                 if (item.valueType === 'string') {
                                     ApplicationSettings.setString(item.key, result.text);
                                 } else {
                                     ApplicationSettings.setNumber(item.key, parseInt(result.text, 10));
                                 }
-                            } else {
-                                ApplicationSettings.remove(item.key);
                             }
                             updateItem(item);
                         }
@@ -889,12 +957,26 @@
                             }
                         );
                         if (result?.data !== undefined) {
-                            if (item.valueType === 'string') {
-                                ApplicationSettings.setString(item.key, result.data);
+                            if (item.onResult) {
+                                item.onResult(result.data);
                             } else {
-                                ApplicationSettings.setNumber(item.key, parseInt(result.data, 10));
+                                if (item.id === 'store_setting') {
+                                    const store = item.store || getStoreSetting(item.storeKey, item.storeDefault);
+                                    if (item.valueType === 'string') {
+                                        store[item.key] = result.data;
+                                    } else {
+                                        store[item.key] = parseInt(result.data, 10);
+                                    }
+                                    ApplicationSettings.setString(item.storeKey, JSON.stringify(store));
+                                } else {
+                                    if (item.valueType === 'string') {
+                                        ApplicationSettings.setString(item.key, result.data);
+                                    } else {
+                                        ApplicationSettings.setNumber(item.key, parseInt(result.data, 10));
+                                    }
+                                }
+                                updateItem(item);
                             }
-                            updateItem(item);
                         }
                     }
 
@@ -956,6 +1038,12 @@
         collectionView?.nativeView?.refresh();
     }
     onThemeChanged(refreshCollectionView);
+    onUnitsChanged(() => {
+        DEV_LOG && console.info('onUnitsChanged', subSettingsOptions, unitsSettings);
+        if (subSettingsOptions === 'units') {
+            refreshCollectionView();
+        }
+    });
     let ignoreNextReorderTap = false;
 
     async function onItemReordered(e) {

@@ -74,9 +74,9 @@
                 textPaint.setColor(colorOnSurface);
                 textPaint.setAlpha(150);
                 if (precipProbability > 0) {
-                    canvas.drawText(formatWeatherValue(item, 'precipProbability'), w2, h - 22 * $fontScale, textPaint);
+                    canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - 22 * $fontScale, textPaint);
                 }
-                canvas.drawText(formatValueToUnit(item.precipShowSnow ? item.snowfall : item.precipAccumulation, item.precipUnit), w2, h - 12 * $fontScale, textPaint);
+                canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation ), w2, h - 12 * $fontScale, textPaint);
             }
         }
         canvas.save();
@@ -142,7 +142,7 @@
             textPaint.setColor(color);
             textPaint.setTextSize(10 * $fontScale);
             textPaint.setAlpha((item.cloudCover / 100) * heightProb * 255);
-            canvas.drawText(formatWeatherValue(item, 'cloudCeiling'), w2, top + 20 * $fontScale, textPaint);
+            canvas.drawText(formatWeatherValue(item, WeatherProps.cloudCeiling), w2, top + 20 * $fontScale, textPaint);
             textPaint.setAlpha(255);
             paint.setAlpha(255);
         }

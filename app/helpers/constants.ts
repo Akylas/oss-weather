@@ -6,6 +6,9 @@ export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
 export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
 export const SETTINGS_WEATHER_MAP_COLORS = 'weather_map_colors';
+export const SETTINGS_UNITS = 'units';
+
+
 export const DAILY_PAGE_HOURLY_CHART = false;
 export const MAIN_PAGE_HOURLY_CHART = false;
 export const SWIPE_ACTION_BAR_PROVIDER = false;

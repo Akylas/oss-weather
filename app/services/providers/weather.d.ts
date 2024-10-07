@@ -1,5 +1,6 @@
 import { Color } from '@nativescript/core';
 import { aqi_providers, providers } from './weatherproviderfactory';
+import { UNIT_FAMILIES } from '~/helpers/units';
 // import { Pollutants } from '../airQualityData';
 
 // export { Pollutants };
@@ -80,7 +81,7 @@ export interface CommonWeatherData extends CommonAirQualityData {
     temperatureMax?: number;
     precipProbability?: number;
     precipAccumulation?: number;
-    precipUnit?: UNITS;
+    precipUnitFamily?: UNIT_FAMILIES;
     precipIcon?: string;
     precipFontUseApp?: boolean;
     precipShowSnow?: boolean;
@@ -131,8 +132,8 @@ export interface Currently extends CommonWeatherData {
     sunsetTime?: number;
 }
 
-export interface AirQualityCurrently extends CommonAirQualityData {}
+export type AirQualityCurrently = CommonAirQualityData
 export interface AirQualityDaily {
     data: CommonAirQualityData[];
 }
-export interface AirQualityMinutely extends CommonAirQualityData {}
+export type AirQualityMinutely = CommonAirQualityData

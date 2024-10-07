@@ -11,7 +11,7 @@
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import { prefs } from '~/services/preferences';
     import { createEventDispatcher } from '~/utils/svelte/ui';
-    import { actionBarHeight, fontScale, onFontScaleChanged, onImperialChanged, screenHeightDips, screenWidthDips, windowInset } from '~/variables';
+    import { actionBarHeight, onFontScaleChanged, onUnitsChanged, screenHeightDips, screenWidthDips, windowInset } from '~/variables';
 
     export let items: any[];
     export let weatherLocation: WeatherLocation;
@@ -47,7 +47,7 @@
     }
 
     onThemeChanged(refreshVisibleItems);
-    onImperialChanged(refreshVisibleItems);
+    onUnitsChanged(refreshVisibleItems);
     onIconAnimationsChanged(refreshVisibleItems);
     onFontScaleChanged(refreshVisibleItems);
 

@@ -1,15 +1,13 @@
-import { isSimulator } from '@nativescript-community/extendedinfo';
-import { Application, ApplicationSettings, Color, Frame, Observable, Page, Screen, Utils } from '@nativescript/core';
-import { get, writable } from 'svelte/store';
+import { AppUtilsAndroid } from '@akylas/nativescript-app-utils';
 import { themer } from '@nativescript-community/ui-material-core';
-import { onDestroy } from 'svelte';
-import { getRealTheme, theme } from './helpers/theme';
+import { Application, ApplicationSettings, Color, Frame, Page, Screen, Utils } from '@nativescript/core';
+import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
+import { get, writable } from 'svelte/store';
+import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, SETTINGS_UNITS, WEATHER_DATA_LAYOUT } from './helpers/constants';
+import { getRealTheme } from './helpers/theme';
 import { prefs } from './services/preferences';
 import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
-import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
-import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, WEATHER_DATA_LAYOUT } from './helpers/constants';
-import { SDK_VERSION } from '@nativescript/core/utils';
-import { AppUtilsAndroid } from '@akylas/nativescript-app-utils';
+import { DEFAULT_IMPERIAL_UINTS, DEFAULT_METRIC_UINTS } from './helpers/units';
 
 export const colors = writable({
     colorPrimary: '',
@@ -80,16 +78,47 @@ let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale);
 export const isRTL = writable(false);
 
-export const onImperialChanged = createGlobalEventListener(SETTINGS_IMPERIAL);
+export const onUnitsChanged = createGlobalEventListener(SETTINGS_UNITS);
 export const onFontScaleChanged = createGlobalEventListener('fontscale');
 export function onSettingsChanged(key: string, callback) {
     return createGlobalEventListener(key)(callback);
+}
+
+function getUintSettingsData() {
+    const defaultData = imperialUnits ? DEFAULT_IMPERIAL_UINTS : DEFAULT_METRIC_UINTS;
+    const unitsSettingsStr = ApplicationSettings.getString(SETTINGS_UNITS);
+    DEV_LOG && console.log('getUintSettingsData', unitsSettingsStr, new Error().stack);
+
+    const newData = JSON.parse(unitsSettingsStr || JSON.stringify(defaultData));
+    Object.keys(defaultData).forEach((k) => {
+        if (!newData[k]) {
+            newData[k] = defaultData[k];
+        }
+    });
+    // ApplicationSettings.setString(SETTINGS_UNITS, JSON.stringify(newData));
+    DEV_LOG && console.log('getUintSettingsData', newData);
+    return newData;
+}
+export const unitsSettings = getUintSettingsData();
+export const unitsSettingsStore = writable(unitsSettings);
+
+function updateUnits() {
+    Object.assign(unitsSettings, getUintSettingsData());
+    unitsSettingsStore.set(unitsSettings);
+    DEV_LOG && console.log('updateUnits', unitsSettings);
+
+    globalObservable.notify({ eventName: SETTINGS_UNITS, data: unitsSettings });
 }
 prefs.on(`key:${SETTINGS_IMPERIAL}`, () => {
     imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL);
     imperial.set(imperialUnits);
     DEV_LOG && console.log('key:imperial', imperialUnits);
-    globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
+    ApplicationSettings.remove(SETTINGS_UNITS);
+    updateUnits();
+});
+prefs.on(`key:${SETTINGS_UNITS}`, () => {
+    DEV_LOG && console.warn('key:units', imperialUnits);
+    updateUnits();
 });
 prefs.on('key:metric_temp_decimal', () => {
     metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);

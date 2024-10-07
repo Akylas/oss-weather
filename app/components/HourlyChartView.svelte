@@ -195,9 +195,9 @@
                             const value = entry as CommonWeatherData;
                             const prevValue: CommonWeatherData = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1) : null;
                             const nextValue: CommonWeatherData = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1) : null;
-                            const current = convertWeatherValueToUnit(value, yProperty);
-                            const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty) : null;
-                            const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty) : null;
+                            const current = convertWeatherValueToUnit(value, yProperty as WeatherProps);
+                            const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty as WeatherProps) : null;
+                            const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty as WeatherProps) : null;
                             const scaleX = chart.viewPortHandler.scaleX;
                             const modulo = Math.max(Math.round(6 / scaleX), 1);
                             if (

@@ -26,7 +26,7 @@
     import { formatDate, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
-    import { PROP_TO_UNIT, convertWeatherValueToUnit } from '~/services/weatherData';
+    import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
     import { showError } from '~/utils/error';
     import { colors, fontScale, screenWidthDips } from '~/variables';
 
@@ -374,7 +374,8 @@
         }
     }
     function getUnit(prop) {
-        return PROP_TO_UNIT[prop];
+        const result = propToUnit(prop);
+        return typeof result === 'function' ? result() : result;
     }
     // let highlighted: any[] = [];
     function onChartHighlight({ object: chart, entry, highlight, highlights }: { object: CombinedChart; entry: Entry; highlight: Highlight; highlights: Highlight[] }) {

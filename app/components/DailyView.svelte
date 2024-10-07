@@ -209,12 +209,12 @@
                     {
                         fontSize: 17 * $fontScale,
                         color: colorOnSurfaceVariant,
-                        text: formatWeatherValue(item, 'temperatureMin')
+                        text: formatWeatherValue(item, WeatherProps.temperatureMin)
                     },
                     {
                         fontSize: 20 * $fontScale,
                         color: colorOnSurface,
-                        text: ' ' + formatWeatherValue(item, 'temperatureMax')
+                        text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
                     }
                 ]
             },

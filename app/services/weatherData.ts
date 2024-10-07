@@ -1,21 +1,22 @@
+import { lc } from '@nativescript-community/l';
+import { createNativeAttributedString } from '@nativescript-community/text';
 import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
-import { ApplicationSettings, Color, Observable, verticalAlignmentProperty } from '@nativescript/core';
+import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
+import { PopoverOptions, showPopover } from '@nativescript-community/ui-popover/svelte';
+import { ApplicationSettings, Color, Observable } from '@nativescript/core';
+import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
+import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
 import { MIN_UV_INDEX } from '~/helpers/constants';
-import { UNITS, convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
+import { convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
+import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
 import type { CommonWeatherData, WeatherData } from '~/services/providers/weather';
 import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowColor, sunnyColor } from '~/variables';
-import { prefs } from './preferences';
 import { getIndexedColor, tempColor } from '~/utils/utils';
-import { PopoverOptions, showPopover } from '@nativescript-community/ui-popover/svelte';
-import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
-import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
-import { ComponentProps } from 'svelte';
-import { createNativeAttributedString } from '@nativescript-community/text';
-import { iconService } from './icon';
-import { lc } from '@nativescript-community/l';
+import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowColor, sunnyColor, unitsSettings } from '~/variables';
 import { colorForAqi } from './airQualityData';
+import { iconService } from './icon';
+import { prefs } from './preferences';
 
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
@@ -43,26 +44,75 @@ export enum WeatherProps {
     dewpoint = 'dewpoint'
 }
 
-export const PROP_TO_UNIT = {
-    [WeatherProps.windSpeed]: UNITS.Speed,
-    [WeatherProps.windGust]: UNITS.Speed,
-    [WeatherProps.temperature]: UNITS.Celcius,
-    [WeatherProps.apparentTemperature]: UNITS.Celcius,
-    [WeatherProps.temperatureMin]: UNITS.Celcius,
-    [WeatherProps.temperatureMax]: UNITS.Celcius,
-    [WeatherProps.dewpoint]: UNITS.Celcius,
-    [WeatherProps.sealevelPressure]: UNITS.Pressure,
-    [WeatherProps.iso]: UNITS.Distance,
-    [WeatherProps.rainSnowLimit]: UNITS.Distance,
-    [WeatherProps.cloudCover]: UNITS.Percent,
-    [WeatherProps.uvIndex]: UNITS.UV,
-    [WeatherProps.precipProbability]: UNITS.Percent,
-    [WeatherProps.relativeHumidity]: UNITS.Percent,
-    [WeatherProps.precipAccumulation]: UNITS.MM,
-    [WeatherProps.snowDepth]: UNITS.CM,
-    [WeatherProps.snowfall]: UNITS.CM,
-    [WeatherProps.cloudCeiling]: UNITS.Distance
-};
+export function propToUnit(prop: WeatherProps, item?: CommonWeatherData) {
+    switch (prop) {
+        case WeatherProps.windSpeed:
+        case WeatherProps.windGust:
+            return unitsSettings[UNIT_FAMILIES.Speed];
+        case WeatherProps.temperature:
+        case WeatherProps.apparentTemperature:
+        case WeatherProps.temperatureMax:
+        case WeatherProps.temperatureMin:
+        case WeatherProps.dewpoint:
+            return unitsSettings[UNIT_FAMILIES.Temperature];
+        case WeatherProps.sealevelPressure:
+            return unitsSettings[UNIT_FAMILIES.Pressure];
+        case WeatherProps.iso:
+        case WeatherProps.cloudCeiling:
+            return unitsSettings[UNIT_FAMILIES.Distance];
+        case WeatherProps.cloudCover:
+        case WeatherProps.precipProbability:
+        case WeatherProps.relativeHumidity:
+            return unitsSettings[UNIT_FAMILIES.Percent];
+        case WeatherProps.cloudCover:
+        case WeatherProps.precipProbability:
+        case WeatherProps.uvIndex:
+            return unitsSettings[UNIT_FAMILIES.Uv];
+        case WeatherProps.precipAccumulation:
+            if (item?.precipUnitFamily) {
+                return item?.precipUnitFamily;
+            }
+            return unitsSettings[UNIT_FAMILIES.Precipitation];
+        case WeatherProps.snowfall:
+        case WeatherProps.snowDepth:
+            return unitsSettings[UNIT_FAMILIES.DistanceSmall];
+        default:
+            break;
+    }
+}
+export function defaultPropUnit(prop: WeatherProps) {
+    switch (prop) {
+        case WeatherProps.windSpeed:
+        case WeatherProps.windGust:
+            return UNITS.SpeedKm;
+        case WeatherProps.temperature:
+        case WeatherProps.apparentTemperature:
+        case WeatherProps.temperatureMax:
+        case WeatherProps.temperatureMin:
+        case WeatherProps.dewpoint:
+            return UNITS.Celcius;
+        case WeatherProps.sealevelPressure:
+            return UNITS.PressureHpa;
+        case WeatherProps.iso:
+        case WeatherProps.cloudCeiling:
+            return UNITS.Meters;
+        case WeatherProps.cloudCover:
+        case WeatherProps.precipProbability:
+        case WeatherProps.relativeHumidity:
+            return UNITS.Percent;
+        case WeatherProps.cloudCover:
+        case WeatherProps.precipProbability:
+        case WeatherProps.uvIndex:
+            return UNITS.UV;
+        case WeatherProps.precipAccumulation:
+            return UNITS.MM;
+        case WeatherProps.snowfall:
+        case WeatherProps.snowDepth:
+            return UNITS.CM;
+        default:
+            break;
+    }
+}
 
 const UV_LEVEL_INDEXES = [0, 3, 6, 8, 11];
 const UV_LEVEL_COLORS = ['#9BC600', '#FFBC03', '#FE8F00', '#F55023', '#9E47CC'];
@@ -457,7 +507,7 @@ export class DataService extends Observable {
                         color: item.precipColor,
                         iconFontSize,
                         icon: item.precipIcon,
-                        value: formatValueToUnit(item.precipAccumulation, item.precipUnit),
+                        value: formatWeatherValue(item, key),
                         subvalue: item.precipProbability > 0 && formatWeatherValue(item, WeatherProps.precipProbability)
                     };
                 }
@@ -660,14 +710,14 @@ export async function showHourlyPopover(
     });
 }
 
-export function convertWeatherValueToUnit(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean; round?: boolean }) {
-    return convertValueToUnit(item[key], PROP_TO_UNIT[key], options);
+export function convertWeatherValueToUnit(item: CommonWeatherData, key: WeatherProps, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean; round?: boolean }) {
+    return convertValueToUnit(item[key], propToUnit(key, item), defaultPropUnit(key), options);
 }
-export function formatWeatherValue(item: CommonWeatherData, key: string, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
+export function formatWeatherValue(item: CommonWeatherData, key: WeatherProps, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean }) {
     if (key === WeatherProps.iconId) {
         return iconService.getIcon(item.iconId, item.isDay, false);
     }
-    return formatValueToUnit(item[key], PROP_TO_UNIT[key], options);
+    return formatValueToUnit(item[key], propToUnit(key, item), defaultPropUnit(key), options);
 }
 
 export function colorForUV(value) {

@@ -6,7 +6,7 @@
     import HourlyItem from '~/components/HourlyItem.svelte';
     import { onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
-    import { colors, fontScale, onImperialChanged } from '~/variables';
+    import { colors, fontScale, onUnitsChanged } from '~/variables';
 
     $: ({ colorBackground } = $colors);
 
@@ -30,7 +30,7 @@
         collectionView?.nativeView?.refreshVisibleItems();
     }
 
-    onImperialChanged(refreshVisibleItems);
+    onUnitsChanged(refreshVisibleItems);
     onThemeChanged(refreshVisibleItems);
 
     function selectTemplate(item, index, items) {

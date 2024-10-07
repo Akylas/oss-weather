@@ -19,7 +19,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { prefs } from '~/services/preferences';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
-    import { formatWeatherValue, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
     import HourlyChartView from './HourlyChartView.svelte';
@@ -382,19 +382,19 @@
         textPaint.setTextAlign(Align.LEFT);
         if (item.temperature) {
             textPaint.textSize = 36 * $fontScale;
-            canvas.drawText(formatWeatherValue(item, 'temperature'), 10, 36 * $fontScale, textPaint);
+            canvas.drawText(formatWeatherValue(item, WeatherProps.temperature), 10, 36 * $fontScale, textPaint);
         }
         const nString = createNativeAttributedString({
             spans: [
                 {
                     fontSize: 17 * $fontScale,
                     color: colorOnSurfaceVariant,
-                    text: formatWeatherValue(item, 'temperatureMin')
+                    text: formatWeatherValue(item, WeatherProps.temperatureMin)
                 },
                 {
                     fontSize: 20 * $fontScale,
                     color: colorOnSurface,
-                    text: ' ' + formatWeatherValue(item, 'temperatureMax')
+                    text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
                 }
             ]
         });

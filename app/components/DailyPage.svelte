@@ -7,7 +7,7 @@
     import WeatherIcon from './WeatherIcon.svelte';
     import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
-    import { formatWeatherValue, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { WeatherLocation } from '~/services/api';
@@ -184,12 +184,12 @@
                 {
                     fontSize: 17 * $fontScale,
                     color: colorOnSurfaceVariant,
-                    text: formatWeatherValue(item, 'temperatureMin')
+                    text: formatWeatherValue(item, WeatherProps.temperatureMin)
                 },
                 {
                     fontSize: 20 * $fontScale,
                     color: colorOnSurface,
-                    text: ' ' + formatWeatherValue(item, 'temperatureMax')
+                    text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
                 }
             ]
         });

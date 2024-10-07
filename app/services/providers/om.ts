@@ -484,12 +484,13 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             }
 
             keys.forEach((k) => {
-                const value = this.getDataArray(hourly, k)[index];
+                let value = this.getDataArray(hourly, k)[index];
                 let actualKey: string = KEY_MAPPING[k] || k;
                 let path;
                 // if (actualKey === 'aqi') {
                 //     d.aqi = value;
                 // } else
+                let unit = units[k];
                 if (actualKey.endsWith('_pollen')) {
                     actualKey = actualKey.slice(0, -7);
                     path = 'pollens';
@@ -498,10 +499,14 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 } else {
                     path = 'pollutants';
                     d.pollutants = d.pollutants || {};
-                    d.pollutants[actualKey] = { value, unit: units[k] };
+                    if (k === 'carbon_monoxide') {
+                        unit = 'mg/m³';
+                        value /= 1000;
+                    }
+                    d.pollutants[actualKey] = { value, unit };
                 }
 
-                lastDay.tempDatas[actualKey] = lastDay.tempDatas[actualKey] || { sum: 0, count: 0, unit: units[k], path };
+                lastDay.tempDatas[actualKey] = lastDay.tempDatas[actualKey] || { sum: 0, count: 0, unit, path };
                 lastDay.tempDatas[actualKey].sum += value;
                 lastDay.tempDatas[actualKey].count += 1;
             });
@@ -520,7 +525,11 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                               if (k !== 'time') {
                                   const actualKey: string = KEY_MAPPING[k] || k;
                                   d.pollutants = d.pollutants || {};
-                                  d.pollutants[actualKey] = { value: currentData[k], unit: units[k] };
+                                  if (k === 'carbon_monoxide') {
+                                      d.pollutants[actualKey] = { value: currentData[k] / 1000, unit: units[k].slice(1) };
+                                  } else {
+                                      d.pollutants[actualKey] = { value: currentData[k], unit: units[k] };
+                                  }
                               }
                               return d;
                           },

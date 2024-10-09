@@ -241,25 +241,27 @@ platform :ios do
   end
 
   private_lane :fastlane_match do |params| 
-    # if (ENV["GITHUB_ACTIONS"] != 'true')
-    #   match(
-    #     type:params[:type], 
-    #     clone_branch_directly:true,
-    #     generate_apple_certs: false,
-    #     keychain_name: "action_keychain",
-    #     keychain_password: "githubaction"
-    #     readonly: true,
-    #     git_basic_authorization: git_basic_authorization,
-    #     api_key: api_key
-    #     )
-    # else
+    if (ENV["GITHUB_ACTIONS"] != 'true')
       match(
         type:params[:type], 
         clone_branch_directly:true,
         generate_apple_certs: false,
+        # keychain_name: "action_keychain",
+        # keychain_password: "githubaction"
+        readonly: true,
+        shallow_clone: true,
+        git_basic_authorization: git_basic_authorization,
+        api_key: api_key
+        )
+    else
+      match(
+        type:params[:type], 
+        clone_branch_directly:true,
+        shallow_clone: true,
+        generate_apple_certs: false,
         api_key: params[:api_key]
         )
-    # end
+    end
   end
 
   private_lane :setup_project do

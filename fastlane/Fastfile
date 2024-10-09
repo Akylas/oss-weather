@@ -333,12 +333,13 @@ platform :ios do
         fastlane_match(type: 'appstore', api_key: api_key)
       end
       prepare(platform:'ios')
-      # if (ENV["GITHUB_ACTIONS"] == 'true')
+      if (ENV["GITHUB_ACTIONS"] == 'true')
       #    # automatic code signing
-      #   update_code_signing_settings(
-      #     use_automatic_signing: true,
-      #     path: "./platforms/ios/#{$ios_scheme}.xcworkspace"
-      #   )
+        update_code_signing_settings(
+          use_automatic_signing: false,
+          path: "./platforms/ios/#{$ios_scheme}.xcworkspace"
+        )
+      end
       #   build_ios_app(
       #     output_directory:"dist",
       #     scheme: $ios_scheme,
@@ -346,9 +347,12 @@ platform :ios do
       #   )
       # else
         build_ios_app(
+          export_xcargs: '-allowProvisioningUpdates',
+          xcargs: "-allowProvisioningUpdates",
           output_directory:"dist",
           scheme: $ios_scheme,
           workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace",
+          export_method: "app-store",
           export_options: {
             provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
           }

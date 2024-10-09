@@ -55,7 +55,9 @@ lane :test do
 end
 desc 'Check Git Status'
 lane :checkGitStatus do
-    Dir.chdir("..") do
+    # we dont test for git status in ci cause we modify files
+    if (ENV["GITHUB_ACTIONS"] != 'true')
+      Dir.chdir("..") do
         repo_status = Actions.sh("git status --porcelain -uno")
         repo_clean = repo_status.empty?
         if repo_clean
@@ -64,6 +66,7 @@ lane :checkGitStatus do
           error_message = "Git repository is dirty! Please ensure the repo is in a clean state by committing/stashing/discarding all changes first."
           UI.user_error!(error_message)
         end
+      end
     end
 end
 desc 'Check Sentry Cli Status'

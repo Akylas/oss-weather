@@ -347,7 +347,6 @@ platform :ios do
     checkSentryClitatus
     checkGitStatus
     setup_project
-    end
     npm_installl(platform:'ios')
     build_flavor(platform:'ios', flavor:'alpha', options:options)
   end

@@ -350,7 +350,8 @@ platform :ios do
           scheme: $ios_scheme,
           workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace"
           export_options: {
-          provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
+            provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
+          }
         )
 
       # end

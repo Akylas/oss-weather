@@ -143,7 +143,6 @@
         "./map"
     ],
     "resolutions": {
-        "webpack": "5.92.1",
         "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
         "@akylas/nativescript-app-utils": "portal:../app-utils/packages/app-utils"
     },

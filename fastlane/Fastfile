@@ -241,36 +241,38 @@ platform :ios do
   end
 
   private_lane :fastlane_match do |params| 
-    if (ENV["GITHUB_ACTIONS"] != 'true')
+    # if (ENV["GITHUB_ACTIONS"] != 'true')
+    #   match(
+    #     type:params[:type], 
+    #     clone_branch_directly:true,
+    #     generate_apple_certs: false,
+    #     keychain_name: "action_keychain",
+    #     keychain_password: "githubaction"
+    #     readonly: true,
+    #     git_basic_authorization: git_basic_authorization,
+    #     api_key: api_key
+    #     )
+    # else
       match(
         type:params[:type], 
         clone_branch_directly:true,
         generate_apple_certs: false,
-        keychain_name: "action_keychain",
-        keychain_password: "githubaction"
-        git_basic_authorization: git_basic_authorization,
         api_key: api_key
         )
-    else
-      match(
-        type:params[:type], 
-        clone_branch_directly:true,
-        generate_apple_certs: false,
-        api_key: api_key
-        )
-    end
+    # end
   end
 
   private_lane :setup_project do
     if (ENV["GITHUB_ACTIONS"] != 'true')
-      create_keychain(
-        name: "action_keychain",
-        password: "githubaction",
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600,
-        lock_when_sleeps: false
-      )
+      setup_ci
+      # create_keychain(
+      #   name: "action_keychain",
+      #   password: "githubaction",
+      #   default_keychain: true,
+      #   unlock: true,
+      #   timeout: 3600,
+      #   lock_when_sleeps: false
+      # )
     end
   end
   lane :upload_store  do |params| 

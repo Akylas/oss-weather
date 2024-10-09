@@ -337,6 +337,8 @@ platform :ios do
       #    # automatic code signing
         update_code_signing_settings(
           use_automatic_signing: false,
+          bundleIdentier: app_identifier,
+          profile_name: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'][app_identifier],
           path: "./platforms/ios/#{$ios_scheme}.xcodeproj"
         )
       end

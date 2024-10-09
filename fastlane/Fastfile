@@ -334,6 +334,7 @@ platform :ios do
       end
       prepare(platform:'ios')
       build_ios_app(
+        export_xcargs: '-allowProvisioningUpdates',
         xcargs: "-allowProvisioningUpdates",
         output_directory:"dist",
         scheme: $ios_scheme,

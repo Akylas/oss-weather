@@ -4,7 +4,7 @@ const loggingEnabled = !!process.env['NS_LOGGING'];
 
 module.exports = {
     ignoredNativeDependencies: [].concat(sentryEnabled ? [] : ['@nativescript-community/sentry']),
-    id: 'com.akylas.weather',
+    id: process.env['APP_ID'],
     appResourcesPath: 'App_Resources',
     buildPath: 'platforms',
     webpackPackageName: '@akylas/nativescript-webpack',

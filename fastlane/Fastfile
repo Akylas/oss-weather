@@ -254,6 +254,7 @@ platform :ios do
           changelog:params[:changelog],
           distribute_external: true,
           groups: [params[:flavor]],
+          # skip_waiting_for_build_processing: true
           notify_external_testers: true
         )
     end
@@ -261,17 +262,51 @@ platform :ios do
   end
   desc 'Fetch certificates and provisioning profiles'
   lane :certificates do
-      match(type: 'development', clone_branch_directly:true, generate_apple_certs: false)
-      match(type: "appstore", clone_branch_directly:true, generate_apple_certs: false)
+      api_key = app_store_connect_api_key(
+        key_id: ENV['APPLE_KEY_ID'],
+        issuer_id: ENV['APPLE_ISSUER_ID'],
+        key_content: ENV['APPLE_KEY_CONTENT']
+      )
+      match(
+        type: 'development', 
+        clone_branch_directly:true,
+        generate_apple_certs: false,
+        git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+        api_key: api_key
+        )
+      match(
+        type: "appstore",
+        clone_branch_directly:true,
+        generate_apple_certs: false,
+        git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+        api_key: api_key
+        )
   end
 
   desc 'Build the iOS application.'
   lane :build do |params| 
+      api_key = app_store_connect_api_key(
+        key_id: ENV['APPLE_KEY_ID'],
+        issuer_id: ENV['APPLE_ISSUER_ID'],
+        key_content: ENV['APPLE_KEY_CONTENT']
+      )
       if (params[:flavor] == "appcenter")
         register_devices(devices_file: "./fastlane/devices.txt")
-        match(type: "adhoc", force_for_new_devices: true, generate_apple_certs: false)
+        match(
+          type: "adhoc",
+          force_for_new_devices: true,
+          generate_apple_certs: false,
+          git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+          api_key: api_key
+        )
       else
-        match(type: "appstore", clone_branch_directly:true, generate_apple_certs: false)
+        match(
+          type: "appstore",
+          clone_branch_directly:true,
+          generate_apple_certs: false,
+          git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+          api_key: api_key
+        )
       end
       prepare(platform:'ios')
       build_ios_app(

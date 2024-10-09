@@ -18,7 +18,7 @@
         tools:replace="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" /> -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
-    <permission android:name="com.akylas.weather.broadcast"
+    <permission android:name="__PACKAGE__.broadcast"
         android:protectionLevel="signatureOrSystem"></permission>
     <application android:requestLegacyExternalStorage="true"
         android:name="com.tns.NativeScriptApplication" android:allowBackup="true"
@@ -68,9 +68,9 @@
         <meta-data android:name="io.sentry.breadcrumbs.app-components" android:value="false" />
         <meta-data android:name="io.sentry.breadcrumbs.user-interaction" android:value="false" />
         <receiver android:name=".CommandReceiver" android:enabled="true" android:exported="true"
-            android:permission="com.akylas.weather.broadcast">
+            android:permission="__PACKAGE__.broadcast">
             <intent-filter>
-                <action android:name="com.akylas.weather.QUERY_WEATHER" />
+                <action android:name="__PACKAGE__.QUERY_WEATHER" />
             </intent-filter>
         </receiver>
     </application>

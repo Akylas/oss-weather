@@ -1,11 +1,11 @@
 import { geocodeAddress, networkService, prepareItems } from '~/services/api';
 import { getWeatherProvider } from '~/services//providers/weatherproviderfactory';
 
-@JavaProxy('com.akylas.weather.CommandReceiver')
+@JavaProxy('__PACKAGE__.CommandReceiver')
 @NativeClass
 export class CommandReceiver extends android.content.BroadcastReceiver {
     async onReceive(context: android.content.Context, intent: android.content.Intent) {
-        if (intent.getAction() !== 'com.akylas.weather.QUERY_WEATHER') {
+        if (intent.getAction() !== `${__APP_ID__}.QUERY_WEATHER`) {
             return;
         }
         const id = intent.getStringExtra('id');
@@ -16,7 +16,7 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             networkService.start(); // ensure it is started
             const weatherLocation = await geocodeAddress({ lat, lon });
             const data = await getWeatherProvider().getWeather(weatherLocation);
-            const responseIntent = new android.content.Intent('com.akylas.weather.QUERY_WEATHER_RESULT');
+            const responseIntent = new android.content.Intent(`${__APP_ID__}.QUERY_WEATHER_RESULT`);
             responseIntent.putExtra('id', id);
             responseIntent.putExtra('weather', JSON.stringify(prepareItems(weatherLocation, data)));
             responseIntent.setPackage(receivingPackage);
@@ -27,7 +27,7 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
     }
 
     sendErrorMessage(context: android.content.Context, id, error) {
-        const intent = new android.content.Intent('com.akylas.weather.QUERY_WEATHER_RESULT');
+        const intent = new android.content.Intent(`${__APP_ID__}.QUERY_WEATHER_RESULT`);
         intent.putExtra('id', id);
         intent.putExtra('error', error.toString());
         // androidx.localbroadcastmanager.content.LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

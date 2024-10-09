@@ -2,5 +2,5 @@ git_url "git@github.com:Akylas/ios_certs.git"
 git_branch "akylas"
 storage_mode("git")
 type("appstore") # The default type, can be: appstore, adhoc, enterprise or devel
-app_identifier("com.akylas.weather")
-username("martin.guillon@akylas.fr")
+app_identifier(ENV["APP_ID"])
+username(ENV["APPLE_IDENTITY_ID"])

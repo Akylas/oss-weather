@@ -9,6 +9,7 @@ on:
         description: What kind of version upgrade
         options: 
         - none
+        - code
         - patch
         - minor
         - major
@@ -58,6 +59,10 @@ jobs:
         with:
           ndk-version: r25c
           local-cache: true
+      
+      - uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
 
       - name: Install NativeScript
         run: |
@@ -128,9 +133,12 @@ jobs:
           ./node_modules/.bin/set-version android ${{ github.event.inputs.release_type }}
           ./node_modules/.bin/get-version android version
       
-      - name: publish
+      - name: publish beta
         run: |
            bundle exec fastlane android beta
+
+      - name: publish github
+        run: |
            bundle exec fastlane android github
 
   release-ios:
@@ -154,6 +162,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
+      
+      - uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
 
       - name: Install NativeScript
         run: |

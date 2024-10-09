@@ -341,8 +341,8 @@ platform :ios do
         )
       end
       build_ios_app(
-        # export_xcargs: '-allowProvisioningUpdates',
-        # xcargs: "-allowProvisioningUpdates",
+        export_xcargs: '-allowProvisioningUpdates',
+        xcargs: "-allowProvisioningUpdates",
         output_directory:"dist",
         scheme: $ios_scheme,
         workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace"

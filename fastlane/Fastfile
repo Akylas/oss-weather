@@ -314,6 +314,7 @@ platform :ios do
       end
       prepare(platform:'ios')
       build_ios_app(
+        xcargs: "-allowProvisioningUpdates",
         output_directory:"dist",
         scheme: $ios_scheme,
         workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace"

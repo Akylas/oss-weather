@@ -337,7 +337,7 @@ platform :ios do
       #    # automatic code signing
         update_code_signing_settings(
           use_automatic_signing: false,
-          path: "./platforms/ios/#{$ios_scheme}.xcworkspace"
+          path: "./platforms/ios/#{$ios_scheme}.xcodeproj"
         )
       end
       #   build_ios_app(

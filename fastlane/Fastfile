@@ -348,7 +348,7 @@ platform :ios do
         build_ios_app(
           output_directory:"dist",
           scheme: $ios_scheme,
-          workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace"
+          workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace",
           export_options: {
             provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
           }

@@ -235,6 +235,19 @@ platform :ios do
       app_identifier: app_identifier,
     )
   end
+
+  private_lane :setup_project do
+    if (ENV["GITHUB_ACTIONS"] != 'true')
+      create_keychain(
+        name: "action_keychain",
+        password: "githubaction",
+        default_keychain: true,
+        unlock: true,
+        timeout: 3600,
+        lock_when_sleeps: false
+      )
+    end
+  end
   lane :upload_store  do |params| 
     if (params[:flavor] == "production")
       upload_to_app_store(
@@ -325,6 +338,7 @@ platform :ios do
   lane :beta do |options|
     checkSentryClitatus
     checkGitStatus
+    setup_project
     npm_installl(platform:'ios')
     build_flavor(platform:'ios', flavor:'beta', options:options)
   end
@@ -332,6 +346,8 @@ platform :ios do
   lane :alpha do |options|
     checkSentryClitatus
     checkGitStatus
+    setup_project
+    end
     npm_installl(platform:'ios')
     build_flavor(platform:'ios', flavor:'alpha', options:options)
   end
@@ -339,7 +355,8 @@ platform :ios do
   desc 'Ship iOS build to AppStore.'
   lane :production do |options|
     checkSentryClitatus
-    # checkGitStatus
+    checkGitStatus
+    setup_project
     npm_installl(platform:'ios')
     build_flavor(platform:'ios', flavor:'production', options:options)
   end

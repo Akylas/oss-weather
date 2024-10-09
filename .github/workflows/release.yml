@@ -237,4 +237,4 @@ jobs:
       
       - name: publish
         run: |
-          bundle exec fastlane ios alpha
+          bundle exec fastlane ios alpha --verbose

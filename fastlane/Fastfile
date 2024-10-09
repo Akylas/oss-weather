@@ -240,6 +240,27 @@ platform :ios do
     )
   end
 
+  private_lane :fastlane_match do |params| 
+    if (ENV["GITHUB_ACTIONS"] != 'true')
+      match(
+        type:params[:type], 
+        clone_branch_directly:true,
+        generate_apple_certs: false,
+        keychain_name: "action_keychain",
+        keychain_password: "githubaction"
+        git_basic_authorization: git_basic_authorization,
+        api_key: api_key
+        )
+    else
+      match(
+        type:params[:type], 
+        clone_branch_directly:true,
+        generate_apple_certs: false,
+        api_key: api_key
+        )
+    end
+  end
+
   private_lane :setup_project do
     if (ENV["GITHUB_ACTIONS"] != 'true')
       create_keychain(
@@ -283,51 +304,31 @@ platform :ios do
   end
   desc 'Fetch certificates and provisioning profiles'
   lane :certificates do
-      api_key = app_store_connect_api_key(
-        key_id: ENV['APPLE_KEY_ID'],
-        issuer_id: ENV['APPLE_ISSUER_ID'],
-        key_content: ENV['APPLE_KEY_CONTENT']
-      )
-      match(
-        type: 'development', 
-        clone_branch_directly:true,
-        generate_apple_certs: false,
-        git_basic_authorization: git_basic_authorization,
-        api_key: api_key
+      if (ENV["GITHUB_ACTIONS"] != 'true')
+        api_key = app_store_connect_api_key(
+          key_id: ENV['APPLE_KEY_ID'],
+          issuer_id: ENV['APPLE_ISSUER_ID'],
+          key_content: ENV['APPLE_KEY_CONTENT']
         )
-      match(
-        type: "appstore",
-        clone_branch_directly:true,
-        generate_apple_certs: false,
-        git_basic_authorization: git_basic_authorization,
-        api_key: api_key
-        )
+      end
+      fastlane_match(type: 'development')
+      fastlane_match(type: 'appstore')
   end
 
   desc 'Build the iOS application.'
   lane :build do |params| 
-      api_key = app_store_connect_api_key(
-        key_id: ENV['APPLE_KEY_ID'],
-        issuer_id: ENV['APPLE_ISSUER_ID'],
-        key_content: ENV['APPLE_KEY_CONTENT']
-      )
+      if (ENV["GITHUB_ACTIONS"] != 'true')
+        api_key = app_store_connect_api_key(
+          key_id: ENV['APPLE_KEY_ID'],
+          issuer_id: ENV['APPLE_ISSUER_ID'],
+          key_content: ENV['APPLE_KEY_CONTENT']
+        )
+      end
       if (params[:flavor] == "appcenter")
         register_devices(devices_file: "./fastlane/devices.txt")
-        match(
-          type: "adhoc",
-          force_for_new_devices: true,
-          generate_apple_certs: false,
-          git_basic_authorization: git_basic_authorization,
-          api_key: api_key
-        )
+        fastlane_match(type: 'adhoc')
       else
-        match(
-          type: "appstore",
-          clone_branch_directly:true,
-          generate_apple_certs: false,
-          git_basic_authorization: git_basic_authorization,
-          api_key: api_key
-        )
+        fastlane_match(type: 'appstore')
       end
       prepare(platform:'ios')
       build_ios_app(

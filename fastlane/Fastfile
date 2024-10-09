@@ -240,7 +240,7 @@ platform :ios do
   end
 
   private_lane :fastlane_match do |params| 
-    if (ENV["GITHUB_ACTIONS"] != 'true')
+    if (ENV["GITHUB_ACTIONS"] == 'true')
       match(
         type:params[:type], 
         clone_branch_directly:true,
@@ -249,7 +249,7 @@ platform :ios do
         # keychain_password: "githubaction"
         readonly: true,
         shallow_clone: true,
-        api_key: api_key
+        api_key: params[:api_key]
         )
     else
       match(
@@ -263,7 +263,7 @@ platform :ios do
   end
 
   private_lane :setup_project do
-    if (ENV["GITHUB_ACTIONS"] != 'true')
+    if (ENV["GITHUB_ACTIONS"] == 'true')
       setup_ci
       # create_keychain(
       #   name: "action_keychain",
@@ -306,7 +306,7 @@ platform :ios do
   end
   desc 'Fetch certificates and provisioning profiles'
   lane :certificates do
-      if (ENV["GITHUB_ACTIONS"] != 'true')
+      if (ENV["GITHUB_ACTIONS"] == 'true')
         api_key = app_store_connect_api_key(
           key_id: ENV['APPLE_KEY_ID'],
           issuer_id: ENV['APPLE_ISSUER_ID'],
@@ -319,7 +319,7 @@ platform :ios do
 
   desc 'Build the iOS application.'
   lane :build do |params| 
-      if (ENV["GITHUB_ACTIONS"] != 'true')
+      if (ENV["GITHUB_ACTIONS"] == 'true')
         api_key = app_store_connect_api_key(
           key_id: ENV['APPLE_KEY_ID'],
           issuer_id: ENV['APPLE_ISSUER_ID'],

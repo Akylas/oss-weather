@@ -257,7 +257,7 @@ platform :ios do
         type:params[:type], 
         clone_branch_directly:true,
         generate_apple_certs: false,
-        api_key: api_key
+        api_key: params[:api_key]
         )
     # end
   end
@@ -313,8 +313,8 @@ platform :ios do
           key_content: ENV['APPLE_KEY_CONTENT']
         )
       end
-      fastlane_match(type: 'development')
-      fastlane_match(type: 'appstore')
+      fastlane_match(type: 'development', api_key: api_key)
+      fastlane_match(type: 'appstore', api_key: api_key)
   end
 
   desc 'Build the iOS application.'
@@ -328,9 +328,9 @@ platform :ios do
       end
       if (params[:flavor] == "appcenter")
         register_devices(devices_file: "./fastlane/devices.txt")
-        fastlane_match(type: 'adhoc')
+        fastlane_match(type: 'adhoc', api_key: api_key)
       else
-        fastlane_match(type: 'appstore')
+        fastlane_match(type: 'appstore', api_key: api_key)
       end
       prepare(platform:'ios')
       build_ios_app(

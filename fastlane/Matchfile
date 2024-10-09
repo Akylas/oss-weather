@@ -1,5 +1,5 @@
-git_url "git@github.com:Akylas/ios_certs.git"
-git_branch "akylas"
+git_url(ENV["MATCH_REPO"])
+git_branch(ENV["MATCH_BRANCH"])
 storage_mode("git")
 type("appstore") # The default type, can be: appstore, adhoc, enterprise or devel
 app_identifier(ENV["APP_ID"])

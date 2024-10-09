@@ -31,7 +31,6 @@ app_identifier = ENV["APP_ID"] || CredentialsManager::AppfileConfig.try_fetch_va
 app_name = i18nEnJSON['app']['name']
 sentry_project_slug = ENV["SENTRY_PROJECT_SLUG"]
 app_build_path = ENV["APP_BUILD_PATH"] || "platforms" # based on nativescript.config.js !!!
-git_basic_authorization = Base64.strict_encode64(ENV["GIT_AUTHORIZATION"])
 
 desc 'test lane'
 lane :test do
@@ -250,7 +249,6 @@ platform :ios do
         # keychain_password: "githubaction"
         readonly: true,
         shallow_clone: true,
-        git_basic_authorization: git_basic_authorization,
         api_key: api_key
         )
     else

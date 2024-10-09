@@ -334,7 +334,11 @@ platform :ios do
       end
       prepare(platform:'ios')
       if (ENV["GITHUB_ACTIONS"] == 'true')
-        enable_automatic_code_signing
+         # automatic code signing
+        update_code_signing_settings(
+          use_automatic_signing: true,
+          path: "./platforms/ios/#{$ios_scheme}.xcodeproj"
+        )
       end
       build_ios_app(
         # export_xcargs: '-allowProvisioningUpdates',

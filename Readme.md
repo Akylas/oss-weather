@@ -27,6 +27,12 @@
 |[<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/Akylas/oss-weather/releases)|<div><a href="https://apps.apple.com/fr/app/oss-weather/id1499117252"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1496188800" alt="Download on the App Store" height="58"></a></div>|
 </div>
  
+#### AppVerifier hashes 
+**OSS Weather**: 
+```
+com.akylas.weather
+68:70:80:D4:CF:6F:CF:FE:8D:82:FD:1D:78:3C:90:C2:95:94:80:AA:13:C3:8A:D8:D0:4E:C3:40:66:FC:13:F1
+```
 <!-- <p align="center">
 <br>You can get the <a href="https://github.com/oss-weather/releases/latest">latest release on GitHub</a>
 </p>

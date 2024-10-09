@@ -143,7 +143,6 @@ jobs:
 
   release-ios:
     if: github.event.inputs.ios == 'true'
-    needs: release-android
     runs-on: macos-latest
     steps:
       - name: Checkout repository

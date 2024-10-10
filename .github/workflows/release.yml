@@ -135,11 +135,11 @@ jobs:
       
       - name: publish beta
         run: |
-           bundle exec fastlane android beta
+           bundle exec fastlane android beta sentry:false --verbose
 
       - name: publish github
         run: |
-           bundle exec fastlane android github
+           bundle exec fastlane android github sentry:false --verbose
 
   release-ios:
     if: github.event.inputs.ios == 'true'

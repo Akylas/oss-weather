@@ -65,6 +65,9 @@ jobs:
           secrets: ${{ toJSON(secrets) }}
       
       - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
         run: |
           echo $KEYSTORE_BASE64 > keystore-b64.txt
           base64 -d keystore-b64.txt > $KEYSTORE_PATH

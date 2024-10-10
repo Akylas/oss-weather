@@ -142,7 +142,10 @@ jobs:
            bundle exec fastlane android github sentry:false --verbose
 
   release-ios:
-    if: github.event.inputs.ios == 'true'
+    needs: [release-android]
+    if: |
+      github.event.inputs.ios == 'true' &&
+      (needs.release-android.result == 'success' || needs.release-android.result == 'skipped')
     runs-on: macos-latest
     steps:
       - name: Checkout repository

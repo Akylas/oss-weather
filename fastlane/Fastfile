@@ -239,16 +239,18 @@ end
 platform :ios do
   desc 'Upload Dsyms to Sentry'
   lane :sentry_upload do 
-    sentry_debug_files_upload(
-      api_host: ENV["SENTRY_URL"],
-      auth_token: ENV["SENTRY_AUTH_TOKEN"],
-      org_slug: ENV["SENTRY_ORG"],
-      project_slug: ENV["SENTRY_PROJECT_SLUG"],
-      wait: true,
-      derived_data: true,
-      include_sources: true,
-      upload_symbol_maps: true
-    )
+    # disable for now as it uses too much storage
+    # sentry_debug_files_upload(
+    #   url: ENV["SENTRY_URL"],
+    #   org_slug: ENV["SENTRY_ORG"],
+    #   project_slug: ENV["SENTRY_PROJECT"],
+    #   wait: true,
+    #   derived_data: false,
+    #   include_sources: false,
+    #   no_unwind: true,
+    #   no_sources: true,
+    #   upload_symbol_maps: true
+    # )
   end
 
   private_lane :fastlane_match do |params| 

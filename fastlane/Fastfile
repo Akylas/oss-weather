@@ -338,7 +338,7 @@ platform :ios do
         update_code_signing_settings(
           use_automatic_signing: false,
           bundleIdentier: app_identifier,
-          profile_name: ENV['MATCH_PROVISIONING_PROFILE_MAPPING'][app_identifier],
+          profile_name: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING][app_identifier],
           path: "./platforms/ios/#{$ios_scheme}.xcodeproj"
         )
       end
@@ -356,7 +356,7 @@ platform :ios do
           workspace: "./platforms/ios/#{$ios_scheme}.xcworkspace",
           export_method: "app-store",
           export_options: {
-            provisioningProfiles: ENV['MATCH_PROVISIONING_PROFILE_MAPPING']
+            provisioningProfiles: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING]
           }
         )
 

@@ -1,6 +1,7 @@
 {
     "scripts": {
         "prepare": "ts-patch install -s",
+        "prepare.ios": "PLAY_STORE_BUILD=1 ns prepare ios --release --env.adhoc",
         "prepare.ios.sentry": "NS_SENTRY=1 PLAY_STORE_BUILD=1 ns prepare ios --release --env.adhoc_sentry",
         "run.ios.production": "PLAY_STORE_BUILD=1 ns run ios --release --env.production --env.adhoc",
         "run.ios.production.sentry": "NS_SENTRY=1 PLAY_STORE_BUILD=1 ns run ios --release --env.production --env.adhoc_sentry",

@@ -89,12 +89,17 @@ end
 desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
+  options = params[:options]
   if (Dir.exist?("../platforms/#{platform}"))
     puts "deleting: "  + "platforms/#{platform}"
     FileUtils.remove_dir("../platforms/#{platform}")
   end
   if (platform == 'ios')
-    sh("npm", "run", "prepare.ios.sentry")
+    if (options[:sentry] != false)
+      sh("npm", "run", "prepare.ios.sentry")
+    else
+      sh("npm", "run", "prepare.ios")
+    end
   else
     sh("ns", "prepare", platform, "--release", "--env.adhoc")
   end
@@ -134,9 +139,15 @@ lane :build_flavor do |params|
 
   svelteCheck
   build(flavor: flavor, options: options)
-  push_to_git_remote(tags:false)
+  if (ENV["GITHUB_ACTIONS"] != 'true')
+    # push anything standing
+    push_to_git_remote(tags:false)
+  end
 
-  if (options[:sentry])
+  # commit version changes
+  git_commit(path: ["./*.plist", "./*.gradle"], message: "chore: new build", allow_nothing_to_commit: true)
+
+  if (options[:sentry] != false)
     sh("npm", "run", "sentry-set-commits", "#{sentry_version}")
     sentry_upload(
       project_slug: sentry_project_slug,
@@ -319,6 +330,7 @@ platform :ios do
 
   desc 'Build the iOS application.'
   lane :build do |params| 
+      options = params[:options]
       if (ENV["GITHUB_ACTIONS"] == 'true')
         api_key = app_store_connect_api_key(
           key_id: ENV['APPLE_KEY_ID'],
@@ -332,7 +344,7 @@ platform :ios do
       else
         fastlane_match(type: 'appstore', api_key: api_key)
       end
-      prepare(platform:'ios')
+      prepare(platform:'ios', options: options)
       if (ENV["GITHUB_ACTIONS"] == 'true')
       #    # automatic code signing
         update_code_signing_settings(
@@ -408,7 +420,9 @@ platform :android do
     writeFileIfNotExist("#{metadata_dir}/fr-FR/changelogs/#{version}.txt", changelog)
     writeFileIfNotExist("#{metadata_dir}/en-US/changelogs/#{version}.txt", changelog)
     # Create a new branch and upload a PR for it.
-    sh("git add #{metadata_dir}; git commit -m '#{version} release notes' --allow-empty")
+    # git_add(path: metadata_dir)
+    git_commit(path: metadata_dir, message: "#{version} release notes", allow_nothing_to_commit: true)
+    # sh("git add #{metadata_dir}; git commit -m '#{version} release notes' --allow-empty")
   end
 
   lane :upload_store   do |params| 

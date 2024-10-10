@@ -63,6 +63,11 @@ jobs:
       - uses: oNaiPs/secrets-to-env-action@v1
         with:
           secrets: ${{ toJSON(secrets) }}
+      
+      - name: Decode Keystore
+        run: |
+          echo $KEYSTORE_BASE64 > keystore-b64.txt
+          base64 -d keystore-b64.txt > $KEYSTORE_PATH
 
       - name: Install NativeScript
         run: |

@@ -467,7 +467,11 @@ platform :android do
       end
     else
       # for now we build sentry releases for playstore to get bug reports
-      sh("npm", "run", "build.android.production.sentry")    
+      if (options[:sentry])
+        sh("npm", "run", "build.android.production.sentry")    
+      else 
+        sh("npm", "run", "build.android.production")
+      end
     end
   end
 

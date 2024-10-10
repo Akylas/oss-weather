@@ -304,8 +304,10 @@ platform :ios do
         release_notes: {
           'default' => params[:changelog]
         },
-        submission_information: { export_compliance_uses_encryption: false,
-                              add_id_info_uses_idfa: false }
+        submission_information: { 
+          export_compliance_uses_encryption: false,
+          add_id_info_uses_idfa: false 
+        }
       )
     else
       upload_to_testflight(
@@ -509,5 +511,3 @@ platform :android do
     build_flavor(platform:'android', flavor:'alpha', options: options)
   end
 end
-
-

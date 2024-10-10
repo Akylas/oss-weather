@@ -350,6 +350,7 @@ platform :ios do
         update_code_signing_settings(
           use_automatic_signing: false,
           bundle_identifier: app_identifier,
+          code_sign_identity: "iPhone Distribution",
           profile_name: lane_context[SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING][app_identifier],
           path: "./platforms/ios/#{$ios_scheme}.xcodeproj"
         )

@@ -232,8 +232,8 @@ jobs:
         if: github.event.inputs.release_type != 'none'
         run: |
           echo "change version to ${{ github.event.inputs.release_type }}"
-          ./node_modules/.bin/set-version android ${{ github.event.inputs.release_type }}
-          ./node_modules/.bin/get-version android version
+          ./node_modules/.bin/set-version ios ${{ github.event.inputs.release_type }}
+          ./node_modules/.bin/get-version ios version
       
       - name: publish
         run: |

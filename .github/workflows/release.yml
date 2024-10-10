@@ -5,7 +5,7 @@ on:
     inputs:
       release_type:
         type: choice
-        default: none
+        default: code
         description: What kind of version upgrade
         options: 
         - none
@@ -21,7 +21,7 @@ on:
       android:
         description: 'Release for Android'
         required: true
-        default: true
+        default: false
         type: boolean
 
 jobs:
@@ -232,9 +232,9 @@ jobs:
         if: github.event.inputs.release_type != 'none'
         run: |
           echo "change version to ${{ github.event.inputs.release_type }}"
-          ./node_modules/.bin/set-version android ${{ github.event.inputs.release_type }}
-          ./node_modules/.bin/get-version android version
+          ./node_modules/.bin/set-version ios ${{ github.event.inputs.release_type }}
+          ./node_modules/.bin/get-version ios version
       
       - name: publish
         run: |
-          bundle exec fastlane ios alpha
+          bundle exec fastlane ios alpha sentry:false --verbose

@@ -12,7 +12,7 @@ android {
   defaultConfig {  
     multiDexEnabled false
     minSdkVersion 24
-    versionCode 136
+    versionCode 137
     versionName "2.8.0"
 
     // if (project.hasProperty('resConfigs')) {

@@ -70,7 +70,7 @@ jobs:
           KEYSTORE_PATH: ${{ secrets.KEYSTORE_PATH }}
         run: |
           mkdir -p "$(dirname "$KEYSTORE_PATH")"
-          echo $KEYSTORE_BASE64 | base64 -di keystore-b64.txt > $KEYSTORE_PATH
+          echo $KEYSTORE_BASE64 | base64 -di > $KEYSTORE_PATH
 
       - name: Install NativeScript
         run: |

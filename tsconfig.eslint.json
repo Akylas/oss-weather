@@ -1,4 +1,5 @@
 {
-    "extends": "./tsconfig.json",
-    "include": [".*.js", "*.js", "scripts/*.js", "*.mjs", "app/**/*.ts", "app/**/*.svelte", "map/**/*.ts", "map/**/*.svelte", "typings/*.d.ts"]
+    "extends": "./tools/tsconfig.eslint.json",
+    "include": [".*.js", "*.js", "*.mjs", "tools/*.mjs", "app/**/*.ts", "app/**/*.svelte", "typings/*.d.ts"]
+
 }

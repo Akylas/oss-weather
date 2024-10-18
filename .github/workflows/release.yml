@@ -5,7 +5,7 @@ on:
     inputs:
       release_type:
         type: choice
-        default: code
+        default: patch
         description: What kind of version upgrade
         options: 
         - none
@@ -21,7 +21,7 @@ on:
       android:
         description: 'Release for Android'
         required: true
-        default: false
+        default: true
         type: boolean
 
 jobs:
@@ -143,11 +143,11 @@ jobs:
       
       - name: publish beta
         run: |
-           bundle exec fastlane android beta sentry:false --verbose
+           bundle exec fastlane android beta
 
       - name: publish github
         run: |
-           bundle exec fastlane android github sentry:false --verbose
+           bundle exec fastlane android github
 
   release-ios:
     needs: [release-android]
@@ -248,4 +248,4 @@ jobs:
       
       - name: publish
         run: |
-          bundle exec fastlane ios alpha sentry:false --verbose
+          bundle exec fastlane ios alpha

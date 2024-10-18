@@ -87,7 +87,6 @@ export function onSettingsChanged(key: string, callback) {
 function getUintSettingsData() {
     const defaultData = imperialUnits ? DEFAULT_IMPERIAL_UINTS : DEFAULT_METRIC_UINTS;
     const unitsSettingsStr = ApplicationSettings.getString(SETTINGS_UNITS);
-    DEV_LOG && console.log('getUintSettingsData', unitsSettingsStr, new Error().stack);
 
     const newData = JSON.parse(unitsSettingsStr || JSON.stringify(defaultData));
     Object.keys(defaultData).forEach((k) => {

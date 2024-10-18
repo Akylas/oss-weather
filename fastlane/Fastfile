@@ -17,8 +17,9 @@ end
 
 fastlane_version '2.135.2'
 opt_out_usage
+
 $ios_scheme = File.basename(File.expand_path('..')).gsub(/[^a-zA-Z0-9]/, "")
-sentry_cli_path = './node_modules/.bin/sentry-cli'
+sentry_cli_path = '../node_modules/.bin/sentry-cli'
 
 i18nEnJSON = JSON.parse(File.read('../app/i18n/en.json'))
 packageJSON = JSON.parse(File.read('../package.json'))
@@ -33,9 +34,7 @@ app_build_path = ENV["APP_BUILD_PATH"] || "platforms" # based on nativescript.co
 
 desc 'test lane'
 lane :test do
-    Dir.chdir("..") do
-        print "TEST SUCCESSFUL!"
-    end
+    print "TEST SUCCESSFUL!"
     if (fastlaneOptions['sftp'])
       server_url = fastlaneOptions['sftp']['url']
       server_user = fastlaneOptions['sftp']['user']
@@ -48,7 +47,7 @@ lane :test do
         server_user: server_user,
         server_key: server_key,
         target_dir:  target_dir, 
-        file_paths: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk")),
+        file_paths: Dir.glob(File.expand_path("./platforms/android/app/build/outputs/apk/release/*.apk")),
       )
     end
 end
@@ -56,15 +55,13 @@ desc 'Check Git Status'
 lane :checkGitStatus do
     # we dont test for git status in ci cause we modify files
     if (ENV["GITHUB_ACTIONS"] != 'true')
-      Dir.chdir("..") do
-        repo_status = Actions.sh("git status --porcelain -uno")
-        repo_clean = repo_status.empty?
-        if repo_clean
-          UI.success('Git status is clean, all good! 💪')
-        else
-          error_message = "Git repository is dirty! Please ensure the repo is in a clean state by committing/stashing/discarding all changes first."
-          UI.user_error!(error_message)
-        end
+      repo_status = Actions.sh("git status --porcelain -uno")
+      repo_clean = repo_status.empty?
+      if repo_clean
+        UI.success('Git status is clean, all good! 💪')
+      else
+        error_message = "Git repository is dirty! Please ensure the repo is in a clean state by committing/stashing/discarding all changes first."
+        UI.user_error!(error_message)
       end
     end
 end
@@ -81,17 +78,39 @@ lane :checkSentryClitatus do
 end
 
 desc 'Ensure deps are installed'
-lane :npm_installl do |params| 
+lane :ns_install do |params| 
   sh("ns", "install")
+end
+
+desc 'Setup'
+lane :setup do |params| 
+  options = params[:options]
+  if (ENV["GITHUB_ACTIONS"] == 'true')
+    setup_ci
+    # create_keychain(
+    #   name: "action_keychain",
+    #   password: "githubaction",
+    #   default_keychain: true,
+    #   unlock: true,
+    #   timeout: 3600,
+    #   lock_when_sleeps: false
+    # )
+  end
+  # we are in fastlane folder let s move up
+  if (options[:sentry])
+    checkSentryClitatus
+  end
+  checkGitStatus
+  ns_install
 end
 
 desc 'Prepare the application.'
 lane :prepare do |params| 
   platform = params[:platform]
   options = params[:options]
-  if (Dir.exist?("../platforms/#{platform}"))
+  if (Dir.exist?("./platforms/#{platform}"))
     puts "deleting: "  + "platforms/#{platform}"
-    FileUtils.remove_dir("../platforms/#{platform}")
+    FileUtils.remove_dir("./platforms/#{platform}")
   end
   if (platform == 'ios')
     if (options[:sentry] != false)
@@ -104,6 +123,16 @@ lane :prepare do |params|
   end
 end
 
+lane :build_and_publish do |params|
+  platform = params[:platform]
+  flavor = params[:flavor]
+  options = params[:options]
+  Dir.chdir("..") do
+    setup(options: options)
+    build_flavor(platform:platform, flavor:flavor, options: options)
+  end
+end
+
 lane :build_flavor do |params| 
   platform = params[:platform]
   flavor = params[:flavor]
@@ -111,10 +140,8 @@ lane :build_flavor do |params|
   version = ""
   versionCode = ""
   
-  Dir.chdir("..") do
-    version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
-    versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
-  end
+  version  =  sh("./node_modules/.bin/get-version", platform, "version").gsub(/\n/,'')
+  versionCode  =  sh("./node_modules/.bin/get-version", platform, "code").gsub(/\n/,'')
   
   # there we add the platform to the dist paramater. The idea is to have different dist for ios android
   # this is because we generate different sources for android and ios so we have different sourceMaps
@@ -168,7 +195,7 @@ lane :build_flavor do |params|
       tag_name: tag,
       description: changelog,
       commitish: "master",
-      upload_assets: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk"))
+      upload_assets: Dir.glob(File.expand_path("./platforms/android/app/build/outputs/apk/release/*.apk"))
     )
   # when 'fdroid'
   #   if (fastlaneOptions['sftp'])
@@ -183,7 +210,7 @@ lane :build_flavor do |params|
   #       server_user: server_user,
   #       server_key: server_key,
   #       target_dir:  target_dir, 
-  #       file_paths: Dir.glob(File.expand_path("../platforms/android/app/build/outputs/apk/release/*.apk")),
+  #       file_paths: Dir.glob(File.expand_path("./platforms/android/app/build/outputs/apk/release/*.apk")),
   #     )
   #   end
   when 'alpha','beta','production'
@@ -277,17 +304,7 @@ platform :ios do
   end
 
   private_lane :setup_project do
-    if (ENV["GITHUB_ACTIONS"] == 'true')
-      setup_ci
-      # create_keychain(
-      #   name: "action_keychain",
-      #   password: "githubaction",
-      #   default_keychain: true,
-      #   unlock: true,
-      #   timeout: 3600,
-      #   lock_when_sleeps: false
-      # )
-    end
+    
   end
   lane :upload_store  do |params| 
     if (params[:flavor] == "production")
@@ -383,28 +400,16 @@ platform :ios do
 
   desc 'Ship iOS build to Testflight.'
   lane :beta do |options|
-    checkSentryClitatus
-    checkGitStatus
-    setup_project
-    npm_installl(platform:'ios')
-    build_flavor(platform:'ios', flavor:'beta', options:options)
+    build_and_publish(platform:'ios', flavor:'beta', options: options)
   end
   desc 'Ship iOS build to Testflight.'
   lane :alpha do |options|
-    checkSentryClitatus
-    checkGitStatus
-    setup_project
-    npm_installl(platform:'ios')
-    build_flavor(platform:'ios', flavor:'alpha', options:options)
+    build_and_publish(platform:'ios', flavor:'alpha', options: options)
   end
 
   desc 'Ship iOS build to AppStore.'
   lane :production do |options|
-    checkSentryClitatus
-    checkGitStatus
-    setup_project
-    npm_installl(platform:'ios')
-    build_flavor(platform:'ios', flavor:'production', options:options)
+    build_and_publish(platform:'ios', flavor:'production', options: options)
   end
 end
 
@@ -440,7 +445,7 @@ platform :android do
     upload_to_play_store(
       track: track,
       track_promote_to: track,
-      aab: File.expand_path("../platforms/android/app/build/outputs/bundle/release/app-release.aab"),
+      aab: File.expand_path("./platforms/android/app/build/outputs/bundle/release/app-release.aab"),
       skip_upload_screenshots: !options[:upload_screenshots],
       skip_upload_images: !options[:upload_images],
       skip_upload_metadata: !options[:upload_metadata]
@@ -449,13 +454,13 @@ platform :android do
 
   desc 'Build the Android application.'
   lane :build do |params|
-    if (Dir.exist?("../platforms/android"))
+    if (Dir.exist?("./platforms/android"))
       puts "deleting: "  + "platforms/android"
-      FileUtils.remove_dir("../platforms/android")
+      FileUtils.remove_dir("./platforms/android")
     end
-    if (Dir.exist?("../platforms/tempPlugin"))
+    if (Dir.exist?("./platforms/tempPlugin"))
       puts "deleting: "  + "platforms/tempPlugin"
-      FileUtils.remove_dir("../platforms/tempPlugin")
+      FileUtils.remove_dir("./platforms/tempPlugin")
     end
     options = params[:options]
     puts "build flavor:"  + params[:flavor]
@@ -470,44 +475,31 @@ platform :android do
     else
       # for now we build sentry releases for playstore to get bug reports
       if (options[:sentry])
-        sh("npm", "run", "build.android.production.sentry")    
+        sh("npm", "run", "build.android.production.playstore.sentry")
       else 
-        sh("npm", "run", "build.android.production")
+        sh("npm", "run", "build.android.production.playstore")
       end
     end
   end
 
+
   desc 'Ship to Github.'
   lane :github do |options|
-    if (options[:sentry])
-      checkSentryClitatus
-    end
-    checkGitStatus
-    build_flavor(platform:'android', flavor:'github', options: options)
+    build_and_publish(platform:'android', flavor:'github', options: options)
   end
 
   desc 'build for fdroid.'
   lane :fdroid do |options|
-    if (options[:sentry])
-      checkSentryClitatus
-    end
-    checkGitStatus
-    build_flavor(platform:'android', flavor:'fdroid', options: options)
+    build_and_publish(platform:'android', flavor:'fdroid', options: options)
   end
 
   desc 'Ship to Android Playstore Beta.'
   lane :beta do |options|
-    checkSentryClitatus
-    checkGitStatus
-    npm_installl(platform:'android')
-    build_flavor(platform:'android', flavor:'beta', options: options)
+    build_and_publish(platform:'android', flavor:'beta', options: options)
   end
 
   desc 'Ship to Android Playstore Alpha.'
   lane :alpha do |options|
-    checkSentryClitatus
-    checkGitStatus
-    npm_installl(platform:'android')
-    build_flavor(platform:'android', flavor:'alpha', options: options)
+    build_and_publish(platform:'android', flavor:'alpha', options: options)
   end
 end

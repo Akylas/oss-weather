@@ -196,7 +196,7 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
         }
     }
 
-    public onRequestPermissionsResult(activity: any, requestCode: number, permissions: String[], grantResults: number[], superFunc: Function): void {
+    public onRequestPermissionsResult(activity: any, requestCode: number, permissions: string[], grantResults: number[], superFunc: Function): void {
         if (Trace.isEnabled()) {
             Trace.write('FloatingActivity.onRequestPermissionsResult;', Trace.categories.NativeLifecycle);
         }

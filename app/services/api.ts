@@ -30,7 +30,7 @@ export interface NetworkConnectionStateEventData extends EventData {
 export interface HttpRequestOptions extends HTTPSOptions {
     noJSON?: boolean;
     offlineSupport?: boolean;
-    queryParams?: {};
+    queryParams?: object;
 }
 
 export function getCacheControl(maxAge = 60, stale = 59) {
@@ -95,7 +95,7 @@ export function queryString(params, location) {
 
 export function wrapNativeHttpException(error, requestParams: HttpRequestOptions) {
     return wrapNativeException(error, (message) => {
-        if (/(SocketTimeout|SocketException|UnknownHost)/.test(message)) {
+        if (/(SocketTimeout|ConnectException|SocketException|SSLException|UnknownHost)/.test(message)) {
             return new TimeoutError();
         } else {
             return new HTTPError({

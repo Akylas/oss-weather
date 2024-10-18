@@ -10,7 +10,7 @@ import type { HttpsRequestOptions as HTTPSOptions } from '@nativescript-communit
 
 Error.stackTraceLimit = Infinity;
 
-function evalTemplateString(resource: string, obj: {}) {
+function evalTemplateString(resource: string, obj: object) {
     if (!obj) {
         return resource;
     }
@@ -102,7 +102,7 @@ export class TimeoutError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'timeout_error'
+                    message: lc('timeout_error')
                 },
                 props
             ),
@@ -115,7 +115,7 @@ export class PermissionError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'permission_error'
+                    message: lc('permission_error')
                 },
                 props
             ),
@@ -129,7 +129,7 @@ export class NoNetworkError extends CustomError {
         super(
             Object.assign(
                 {
-                    message: 'no_network'
+                    message: lc('no_network')
                 },
                 props
             ),

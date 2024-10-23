@@ -13,7 +13,7 @@
     import dayjs, { Dayjs } from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { formatTime, getLocalTime, getStartOfDay, l, lc, lu } from '~/helpers/locale';
-    import { showError } from '~/utils/error';
+    import { showError } from '@shared/utils/showError';
     import { pickDate } from '~/utils/utils.common';
     import { colors, fonts } from '~/variables';
     import { WeatherLocation } from '~/services/api';
@@ -573,7 +573,7 @@
             </cgroup>
         </canvaslabel>
     {/if}
-    <canvasview colSpan={2} fontSize={13} padding={10} row={3} on:draw={onSubCanvasDraw}>
+    <canvasview colSpan={2} padding={10} row={3} on:draw={onSubCanvasDraw}>
         <!-- <CompassView row={3} {location} updateWithSensor={false} date={startTime} /> -->
         <!-- <canvaslabel row={3} col={1} fontSize={13} padding={10} height={200}>
         <cgroup paddingTop={10}>

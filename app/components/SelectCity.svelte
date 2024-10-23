@@ -1,20 +1,20 @@
 <script lang="ts">
     import { ObservableArray, TextField } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import { closeModal } from 'svelte-native';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
+    import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
     import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
-    import { showError } from '~/utils/error';
     import { actionBarButtonHeight, colors } from '~/variables';
-    import ListItem from './common/ListItem.svelte';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { formatAddress, getLocationName, getLocationSubtitle } from '~/helpers/formatter';
 
-    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface } = $colors);
+    // let { colorOnSurfaceVariant } = $colors;
+    // $: ({ colorOnSurfaceVariant } = $colors);
 
     let textField: NativeViewElementNode<TextField>;
     let loading = false;

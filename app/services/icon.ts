@@ -1,6 +1,6 @@
 import { ApplicationSettings, File, Folder, Observable, knownFolders, path } from '@nativescript/core';
 import { prefs } from './preferences';
-import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { ANIMATIONS_ENABLED } from '~/helpers/constants';
 
 const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');

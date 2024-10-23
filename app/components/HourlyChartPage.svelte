@@ -2,11 +2,11 @@
     import { Align, Canvas, FontMetrics, Paint } from '@nativescript-community/ui-canvas';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { Application, ApplicationSettings, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { lc } from '~/helpers/locale';
+    import { l, lc } from '~/helpers/locale';
     import { WeatherData } from '~/services/providers/weather';
-    import { showError } from '~/utils/error';
     import { colors, screenWidthDips } from '~/variables';
 
     import { NavigatedData, Page } from '@nativescript/core';
@@ -14,7 +14,6 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { CHARTS_LANDSCAPE, CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { FavoriteLocation } from '~/helpers/favorites';
-    import { l } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
     import { WeatherProps, weatherDataService } from '~/services/weatherData';
     import { actionBarButtonHeight } from '~/variables';

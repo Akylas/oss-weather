@@ -37,7 +37,7 @@
         <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={1}>
             <WeatherComponent {fakeNow} {items} {weatherLocation} />
         </gridlayout>
-        <gridlayout columns="*,auto,auto" orientation="horizontal" row={2}>
+        <gridlayout columns="*,auto,auto" row={2}>
             <slider maxValue={2} minValue={0.5} value={fontScale} on:valueChange={(e) => setFontScale(e.value)} />
             <label col={1} text={fontScale.toFixed(1)} verticalTextAlignment="middle" />
             <mdbutton col={2} text={lc('reset')} variant="text" verticalAlignment="middle" on:tap={() => setFontScale(1)} />

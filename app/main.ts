@@ -13,11 +13,11 @@ import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
 import { Application, Frame, NavigatedData, Page, Trace } from '@nativescript/core';
+import { startSentry } from '@shared/utils/sentry';
 import { svelteNative } from 'svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
-import { startSentry } from '~/utils/sentry';
 
 try {
     startSentry();

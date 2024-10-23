@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { CombinedChart, LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
@@ -8,6 +8,7 @@
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ApplicationSettings, Color, Utils } from '@nativescript/core';
+    import { createEventDispatcher } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
@@ -20,7 +21,6 @@
     import { prefs } from '~/services/preferences';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
     import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
     import HourlyChartView from './HourlyChartView.svelte';
     const dispatch = createEventDispatcher();

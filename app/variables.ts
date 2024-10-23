@@ -2,12 +2,12 @@ import { AppUtilsAndroid } from '@akylas/nativescript-app-utils';
 import { themer } from '@nativescript-community/ui-material-core';
 import { Application, ApplicationSettings, Color, Frame, Page, Screen, Utils } from '@nativescript/core';
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
+import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { get, writable } from 'svelte/store';
-import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, SETTINGS_UNITS, WEATHER_DATA_LAYOUT } from './helpers/constants';
-import { getRealTheme } from './helpers/theme';
-import { prefs } from './services/preferences';
-import { createGlobalEventListener, globalObservable } from './utils/svelte/ui';
-import { DEFAULT_IMPERIAL_UINTS, DEFAULT_METRIC_UINTS } from './helpers/units';
+import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, SETTINGS_UNITS, WEATHER_DATA_LAYOUT } from '~/helpers/constants';
+import { getRealTheme } from '~/helpers/theme';
+import { DEFAULT_IMPERIAL_UINTS, DEFAULT_METRIC_UINTS } from '~/helpers/units';
+import { prefs } from '~/services/preferences';
 
 export const colors = writable({
     colorPrimary: '',

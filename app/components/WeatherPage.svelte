@@ -9,8 +9,10 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Application, ApplicationSettings, Color, CoreTypes, EventData, File, Frame, Page, Screen, knownFolders, path } from '@nativescript/core';
+    import { Application, ApplicationSettings, Color, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
     import { openFile, throttle } from '@nativescript/core/utils';
+    import { alert, showError } from '@shared/utils/showError';
+    import { globalObservable, navigate, showModal } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
     import type { FeatureCollection, MultiPolygon } from 'geojson';
     import { onDestroy, onMount } from 'svelte';
@@ -18,22 +20,20 @@
     import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
+    import { DATA_VERSION, SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
+    import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
     import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
-    import { Daily, DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { getAqiProvider, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
-    import { DEFAULT_COMMON_WEATHER_DATA, WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
-    import { alert, showError } from '~/utils/error';
-    import { globalObservable, navigate, showModal } from '~/utils/svelte/ui';
-    import { hideLoading, isLandscape, showLoading, showPopoverMenu } from '~/utils/ui';
+    import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
+    import { hideLoading, showLoading, showPopoverMenu } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-    import { DATA_VERSION, SETTINGS_DAILY_PAGE_HOURLY_CHART, SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER } from '~/helpers/constants';
-    import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
 
     $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
 
@@ -609,7 +609,7 @@
                     text={$slc('powered_by', l(`provider.${provider}`))}
                     verticalAlignment="bottom" />
             {:else}
-                <stacklayout columns="auto" horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle">
+                <stackLayout horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle" android:paddingTop={2}>
                     <label fontSize={16} marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
                     {#if gpsAvailable}
                         <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={2}>
@@ -621,7 +621,7 @@
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
-                </stacklayout>
+                </stackLayout>
             {/if}
             <CActionBar onMenuIcon={toggleDrawer} showMenuIcon title={getLocationName(weatherLocation)} on:swipe={onSwipe}>
                 <mdbutton
@@ -691,7 +691,7 @@
                             variant="text"
                             verticalTextAlignment="middle"
                             width="100"
-                            on:tap={toggleFavorite(item)} />
+                            on:tap={() => toggleFavorite(item)} />
                         <!-- </stacklayout> -->
                     </swipemenu>
                 </Template>

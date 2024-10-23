@@ -1,10 +1,9 @@
 <script lang="ts">
+    import { CoreTypes } from '@nativescript/core';
     import { Frame } from '@nativescript/core/ui/frame';
+    import { closeModal, goBack } from '@shared/utils/svelte/ui';
     import { onMount } from 'svelte';
-    import { closeModal, goBack } from '~/utils/svelte/ui';
-    import { conditionalEvent } from '~/utils/svelte/ui';
-    import { actionBarHeight, fontScale } from '~/variables';
-    import { windowInset } from '~/variables';
+    import { actionBarHeight, fontScale, windowInset } from '~/variables';
 
     export let title: string = null;
     export let height = null;
@@ -15,7 +14,7 @@
     export let onMenuIcon: Function = null;
     let menuIcon: string;
     let menuIconVisible: boolean;
-    let menuIconVisibility: string;
+    let menuIconVisibility: CoreTypes.VisibilityType;
 
     onMount(() => {
         const frame = Frame.topmost();

@@ -1,19 +1,18 @@
 import { getFromLocation } from '@nativescript-community/geocoding';
 import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
-import { Application, ApplicationEventData, ApplicationSettings, Folder, Utils, knownFolders } from '@nativescript/core';
+import { Application, ApplicationEventData, ApplicationSettings, Folder, knownFolders } from '@nativescript/core';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
+import { HTTPError, NoNetworkError, wrapNativeHttpException } from '@shared/utils/error';
+import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
-import { lang } from '~/helpers/locale';
-import { CustomError, HTTPError, NoNetworkError, TimeoutError, wrapNativeException } from '~/utils/error';
-import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
-import { Photon, PhotonProperties } from '../../typings/photon';
-import { NominatimResult } from '../../typings/nominatim';
-import { WeatherData } from './providers/weather';
-import { iconService } from './icon';
 import { SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
 import { FavoriteLocation } from '~/helpers/favorites';
+import { lang } from '~/helpers/locale';
+import { NominatimResult } from '../../typings/nominatim';
+import { Photon, PhotonProperties } from '../../typings/photon';
+import { WeatherData } from './providers/weather';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -91,20 +90,6 @@ export function queryString(params, location) {
     }
 
     return parts.splice(0, 2).join('?') + (parts.length > 0 ? '&' + parts.join('&') : '');
-}
-
-export function wrapNativeHttpException(error, requestParams: HttpRequestOptions) {
-    return wrapNativeException(error, (message) => {
-        if (/(SocketTimeout|ConnectException|SocketException|SSLException|UnknownHost)/.test(message)) {
-            return new TimeoutError();
-        } else {
-            return new HTTPError({
-                message,
-                statusCode: -1,
-                requestParams
-            });
-        }
-    });
 }
 
 interface NetworkService extends Observable {
@@ -397,7 +382,6 @@ export interface WeatherLocation {
     };
 }
 const PHOTON_SUPPORTED_LANGUAGES = ['en', 'de', 'fr'];
-import { formatAddress } from '~/helpers/formatter';
 
 export async function photonSearch(q, lat?, lon?, queryParams = {}) {
     DEV_LOG && console.log('photonSearch', q, lat, lon, queryParams);

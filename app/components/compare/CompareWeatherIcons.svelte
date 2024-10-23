@@ -19,7 +19,7 @@
 
 <script lang="ts">
     import { Template } from 'svelte-native/components';
-    import { showError } from '~/utils/error';
+    import { showError } from '@shared/utils/showError';
     import { loadImage } from '~/utils/utils.common';
 
     let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors;

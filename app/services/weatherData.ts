@@ -11,7 +11,7 @@ import { MIN_UV_INDEX } from '~/helpers/constants';
 import { convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
 import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
 import type { CommonWeatherData, WeatherData } from '~/services/providers/weather';
-import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { getIndexedColor, tempColor } from '~/utils/utils';
 import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowColor, sunnyColor, unitsSettings } from '~/variables';
 import { colorForAqi } from './airQualityData';

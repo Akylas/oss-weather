@@ -27,7 +27,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
-    import { showError } from '~/utils/error';
+    import { showError } from '@shared/utils/showError';
     import { colors, fontScale, screenWidthDips } from '~/variables';
 
     const legendIconPaint = new Paint();

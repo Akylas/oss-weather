@@ -10,7 +10,7 @@
     import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import { prefs } from '~/services/preferences';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { createEventDispatcher } from '@shared/utils/svelte/ui';
     import { actionBarHeight, onFontScaleChanged, onUnitsChanged, screenHeightDips, screenWidthDips, windowInset } from '~/variables';
 
     export let items: any[];

@@ -12,13 +12,13 @@
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
     import { ScatterDataSet } from '@nativescript-community/ui-chart/data/ScatterDataSet';
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
-    import { Application, Color, CoreTypes, EventData, HorizontalAlignment, ImageSource, ObservableArray, OrientationChangedEventData, Utils } from '@nativescript/core';
+    import { Application, Color, CoreTypes, EventData, ImageSource, ObservableArray, OrientationChangedEventData, Utils } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
-    import { showError } from '~/utils/error';
     import { colors, fontScale, screenWidthDips } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
@@ -29,9 +29,8 @@
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { iconService } from '~/services/icon';
-    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
-    // import { fade } from '~/utils/svelte/ui';
-    import { debounce, throttle } from '@nativescript/core/utils';
+    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    // import { fade } from '@shared/utils/svelte/ui';
     import { generateGradient, loadImage } from '~/utils/utils.common';
 
     // const labelPaint = new Paint();

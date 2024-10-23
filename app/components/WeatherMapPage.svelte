@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
-    import { getString } from '@nativescript/core/application-settings';
-    import { lc } from '~/helpers/locale';
-    import CActionBar from '~/components/common/CActionBar.svelte';
+    import { AWebView } from '@nativescript-community/ui-webview';
     import { ApplicationSettings } from '@nativescript/core';
-    import { SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
-    import { showAlertOptionSelect } from '~/utils/ui';
-    import { showError } from '~/utils/error';
+    import { getString } from '@nativescript/core/application-settings';
+    import { showError } from '@shared/utils/showError';
     import { NativeViewElementNode } from 'svelte-native/dom';
-    import { AWebView, LoadFinishedEventData } from '@nativescript-community/ui-webview';
+    import CActionBar from '~/components/common/CActionBar.svelte';
+    import { SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
+    import { lc } from '~/helpers/locale';
+    import { showAlertOptionSelect } from '~/utils/ui';
 </script>
 
 <script lang="ts">
@@ -77,6 +77,6 @@
         <CActionBar title={lc('weather_map')}>
             <mdbutton class="actionBarButton" text="mdi-palette" variant="text" verticalAlignment="middle" on:tap={seletMapColors} />
         </CActionBar>
-        <webview bind:this={webView} debugMode={consoleEnabled} displayZoomControls={false} normalizeUrls={false} ref="webview" row={1} src={url} webConsoleEnabled={consoleEnabled} />
+        <webview bind:this={webView} debugMode={consoleEnabled} displayZoomControls={false} normalizeUrls={false} row={1} src={url} webConsoleEnabled={consoleEnabled} />
     </gridlayout>
 </page>

@@ -1,5 +1,5 @@
 import { ApplicationSettings } from '@nativescript/core';
-import { createGlobalEventListener, globalObservable } from '~/utils/svelte/ui';
+import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { prefs } from '../preferences';
 import { AirQualityProvider } from './airqualityprovider';
 import { MFProvider } from './mf';

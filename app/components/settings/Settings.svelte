@@ -8,6 +8,10 @@
     import { TextField } from '@nativescript-community/ui-material-textfield';
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { Sentry } from '@shared/utils/sentry';
+    import { share } from '@shared/utils/share';
+    import { showError } from '@shared/utils/showError';
+    import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
@@ -46,10 +50,6 @@
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { showError } from '~/utils/error';
-    import { Sentry } from '~/utils/sentry';
-    import { share } from '~/utils/share';
-    import { navigate } from '~/utils/svelte/ui';
     import { createView, hideLoading, openLink, showAlertOptionSelect, showLoading } from '~/utils/ui';
     import { restartApp } from '~/utils/utils';
     import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';

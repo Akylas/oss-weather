@@ -515,7 +515,7 @@ module.exports = (env, params = {}) => {
 
     config.plugins.unshift(
         new webpack.ProvidePlugin({
-            svN: '~/svelteNamespace'
+            svN: '@shared/svelteNamespace'
         })
     );
 

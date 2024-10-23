@@ -11,8 +11,8 @@
     import { FavoriteLocation } from '~/helpers/favorites';
     import { lang, lc, lu } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService, request } from '~/services/api';
-    import { showError } from '~/utils/error';
-    import { share } from '~/utils/share';
+    import { showError } from '@shared/utils/showError';
+    import { share } from '@shared/utils/share';
     import { hideLoading, onBackButton, openLink, showLoading, showPopoverMenu } from '~/utils/ui';
     import { actionBarButtonHeight, actionBarHeight, colors, imperial, systemFontScale } from '~/variables';
 

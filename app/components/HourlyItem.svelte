@@ -1,13 +1,12 @@
 <script context="module" lang="ts">
     import { Align, LinearGradient, Paint, Path, Style } from '@nativescript-community/ui-canvas';
     import { Color } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { formatValueToUnit } from '~/helpers/formatter';
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
-    import { showError } from '~/utils/error';
     import { generateGradient } from '~/utils/utils.common';
     import { colors, fontScale } from '~/variables';
 
@@ -76,7 +75,7 @@
                 if (precipProbability > 0) {
                     canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - 22 * $fontScale, textPaint);
                 }
-                canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation ), w2, h - 12 * $fontScale, textPaint);
+                canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation), w2, h - 12 * $fontScale, textPaint);
             }
         }
         canvas.save();

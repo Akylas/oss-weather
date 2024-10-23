@@ -3,7 +3,7 @@ import { WeatherLocation } from '~/services/api';
 import { prefs } from '~/services/preferences';
 import { colors } from '~/variables';
 import { get } from 'svelte/store';
-import { globalObservable } from '~/utils/svelte/ui';
+import { globalObservable } from '@shared/utils/svelte/ui';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;

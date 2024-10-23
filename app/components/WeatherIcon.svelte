@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { iconService } from '~/services/icon';
-    import { createEventDispatcher } from '~/utils/svelte/ui';
+    import { createEventDispatcher } from '@shared/utils/svelte/ui';
 </script>
 
 <script lang="ts">

@@ -23,7 +23,7 @@
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
     import { CHARTS_LANDSCAPE } from '~/helpers/constants';
 
-    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
+    $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorPrimary, colorSurface } = $colors);
 
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
     let dataToCompare: any = JSON.parse(ApplicationSettings.getString('compare_data_single', '{"id":"temperature","type":"linechart","forecast":"hourly"}'));
@@ -341,14 +341,11 @@
                     <ListItem
                         borderLeftColor={item.color}
                         borderLeftWidth={6}
-                        color={item.color}
                         columns="*,auto"
                         fontWeight="normal"
+                        item={{ ...item, subtitleColor: item.color }}
                         padding="0 0 0 10"
                         rows="50"
-                        subtitle={item.subtitle || null}
-                        subtitleColor={item.color}
-                        title={item.title || item.name}
                         titleProps={{
                             paddingTop: 0,
                             paddingBottom: 0
@@ -378,11 +375,10 @@
                     <ListItem
                         columns="*,auto,auto"
                         fontWeight="normal"
+                        {item}
                         mainCol={0}
                         padding="0 0 0 16"
                         rows="50"
-                        subtitle={item.subtitle || null}
-                        title={item.title || item.name}
                         titleProps={{
                             paddingTop: 0,
                             paddingBottom: 0

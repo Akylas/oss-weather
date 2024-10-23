@@ -22,7 +22,7 @@
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
 
-    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError, colorPrimary } = $colors);
+    $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorPrimary, colorSurface } = $colors);
 
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
     const dataToCompare: any[] = JSON.parse(ApplicationSettings.getString('compare_data', '[{"id":"temperature","type":"linechart","forecast":"hourly"}]'));
@@ -335,12 +335,9 @@
                     <ListItemAutoSize
                         borderLeftColor={item.color}
                         borderLeftWidth={6}
-                        color={item.color}
+                        item={{ ...item, subtitleColor: item.color }}
                         padding="0 0 0 10"
                         rows="50"
-                        subtitle={item.subtitle || null}
-                        subtitleColor={item.color}
-                        title={item.title || item.name}
                         titleProps={{
                             paddingTop: 0,
                             paddingBottom: 0
@@ -369,11 +366,10 @@
                 <Template let:item>
                     <ListItemAutoSize
                         columns="*,auto,auto"
+                        {item}
                         mainCol={0}
                         padding="0 0 0 10"
                         rows="50"
-                        subtitle={item.subtitle || null}
-                        title={item.title || item.name}
                         titleProps={{
                             paddingTop: 0,
                             paddingBottom: 0

@@ -2,13 +2,14 @@ import { MDCAlertControlerOptions, alert } from '@nativescript-community/ui-mate
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
 import { AlertOptions, Application, GridLayout, View } from '@nativescript/core';
+import { debounce } from '@nativescript/core/utils';
 import { showError } from '@shared/utils/showError';
 import { ComponentInstanceInfo, hideLoading, resolveComponentElement } from '@shared/utils/ui';
 import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
 import type OptionSelect__SvelteComponent_ from '~/components/common/OptionSelect.svelte';
 import { lc } from '~/helpers/locale';
-import { colors, fontScale } from '~/variables';
+import { colors, fontScale, screenWidthDips } from '~/variables';
 
 export * from '@shared/utils/ui';
 
@@ -43,18 +44,20 @@ export async function showAlertOptionSelect<T>(props?: ComponentProps<OptionSele
 }
 
 export async function showPopoverMenu<T = any>({
-    options,
     anchor,
+    closeOnClose = true,
+    horizPos,
+    onChange,
     onClose,
     onLongPress,
+    options,
     props,
-    horizPos,
-    vertPos,
-    closeOnClose = true
-}: { options; anchor; onClose?; onLongPress?; props?; closeOnClose? } & Partial<PopoverOptions>) {
+    vertPos
+}: { options; anchor; onClose?; onLongPress?; props?; closeOnClose?; onChange? } & Partial<PopoverOptions>) {
     const { colorSurfaceContainer } = get(colors);
     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
-    const rowHeight = (props?.rowHeight || 58) * get(fontScale);
+    const rowHeight = (props?.rowHeight ?? 58) * get(fontScale);
+    DEV_LOG && console.log('rowHeight', rowHeight);
     const result: T = await showPopover({
         backgroundColor: colorSurfaceContainer,
         view: OptionSelect,
@@ -73,6 +76,7 @@ export async function showPopoverMenu<T = any>({
             width: 200 * get(fontScale),
             options,
             onLongPress,
+            onChange,
             onClose: async (item) => {
                 if (closeOnClose) {
                     if (__IOS__) {
@@ -107,4 +111,61 @@ export function createView<T extends View>(claz: new () => T, props: Partial<Pic
         Object.keys(events).forEach((k) => view.on(k, events[k]));
     }
     return view;
+}
+
+export async function showSliderPopover({
+    anchor,
+    debounceDuration = 100,
+    formatter,
+    horizPos = HorizontalPosition.ALIGN_LEFT,
+    icon,
+    max = 100,
+    min = 0,
+    onChange,
+    step = 1,
+    title,
+    value,
+    valueFormatter,
+    vertPos = VerticalPosition.CENTER,
+    width = 0.8 * screenWidthDips
+}: {
+    title?;
+    debounceDuration?;
+    icon?;
+    min?;
+    max?;
+    step?;
+    formatter?;
+    valueFormatter?;
+    horizPos?;
+    anchor;
+    vertPos?;
+    width?;
+    value?;
+    onChange?;
+}) {
+    const component = (await import('~/components/common/SliderPopover.svelte')).default;
+    const { colorSurfaceContainer } = get(colors);
+
+    return showPopover({
+        backgroundColor: colorSurfaceContainer,
+        view: component,
+        anchor,
+        horizPos,
+        vertPos,
+        props: {
+            title,
+            icon,
+            min,
+            max,
+            step,
+            width,
+            formatter,
+            valueFormatter,
+            value,
+            onChange: debounceDuration ? debounce(onChange, debounceDuration) : onChange
+        }
+
+        // trackingScrollView: 'collectionView'
+    });
 }

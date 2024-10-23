@@ -145,8 +145,8 @@
 </script>
 
 <script lang="ts">
-    let { colorOnSurface, colorBackground, colorOnSurfaceVariant } = $colors;
-    $: ({ colorOnSurface, colorBackground, colorOnSurfaceVariant } = $colors);
+    let { colorBackground, colorOnSurface, colorOnSurfaceVariant } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
     let chartView: NativeViewElementNode<LineChart>;
 
     let chartInitialized = false;

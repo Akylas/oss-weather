@@ -35,7 +35,7 @@
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
-    $: ({ colorBackground, colorOnSurfaceVariant, colorSurface, colorError, colorOnError } = $colors);
+    $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorSurface } = $colors);
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -667,7 +667,11 @@
                         openAnimationDuration={100}
                         startingSide={item.startingSide}
                         translationFunction={swipeMenuTranslationFunction}>
-                        <ListItemAutoSize prop:mainContent backgroundColor={colorBackground} subtitle={getLocationSubtitle(item)} title={getLocationName(item)} on:tap={() => saveLocation(item)} />
+                        <ListItemAutoSize
+                            prop:mainContent
+                            backgroundColor={colorBackground}
+                            item={{ subtitle: getLocationSubtitle(item), title: getLocationName(item) }}
+                            on:tap={() => saveLocation(item)} />
                         <!-- <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
 
                             <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />

@@ -6,6 +6,7 @@ export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
 export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
 export const SETTINGS_WEATHER_MAP_COLORS = 'weather_map_colors';
+export const SETTINGS_WEATHER_MAP_ANIMATION_SPEED = 'weather_map_animation_speed';
 export const SETTINGS_UNITS = 'units';
 
 
@@ -30,6 +31,7 @@ export const NB_MINUTES_FORECAST = 60;
 export const MIN_UV_INDEX = 1;
 
 export const WEATHER_MAP_COLORS = 4;
+export const WEATHER_MAP_ANIMATION_SPEED = 100;
 export const WEATHER_MAP_COLOR_SCHEMES = [
     {
         value: 0,

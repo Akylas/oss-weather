@@ -10,27 +10,28 @@
     import RainViewerLegend from './RainViewerLegend.svelte';
     import RangeSlider from 'svelte-range-slider-pips';
 
-    function GetURLParameter(sParam) {
+    function GetURLParameters() {
         const sPageURL = window.location.search.substring(1);
         const sURLVariables = sPageURL.split('&');
-        for (let i = 0; i < sURLVariables.length; i++) {
-            const sParameterName = sURLVariables[i].split('=');
-            if (sParameterName[0] === sParam) {
-                return sParameterName[1];
-            }
-        }
+        return sURLVariables.reduce((acc, val)=>{
+            const sParameterName = val.split('=');
+            acc[sParameterName[0]]= sParameterName[1];
+            return acc;
+        }, {})
     }
+    const urlParamers = GetURLParameters();
     let map: Map;
 
-    const position = (GetURLParameter('position') || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike;
-    const zoom = parseFloat(GetURLParameter('zoom') || '8');
-    const animationSpeed = parseFloat(GetURLParameter('animationSpeed') || '100');
-    const colors = GetURLParameter('colors') || '1';
+    const position = (urlParamers['position'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike;
+    const mapCenter = (urlParamers['mapCenter'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike;
+    const zoom = parseFloat(urlParamers['zoom'] || '8');
+    let animationSpeed = parseFloat(urlParamers['animationSpeed'] || '100');
+    const animated = (urlParamers['animated'] || 'false') === 'true';
+    const colors = urlParamers['colors'] || '1';
     const optionSmoothData = 1; // 0 - not smooth, 1 - smooth
     const optionSnowColors = 1; // 0 - do not show snow colors, 1 - show snow colors
     const optionTileSize = 256; // can be 256 or 512.
     const optionKind: string = 'radar'; // can be 'radar' or 'satellite'
-
     let apiData: any = {};
     let data: any[] = [];
     let dataLength: number = 0;
@@ -65,7 +66,7 @@
             //  refreshExpiredTiles:false,
             container,
             style,
-            center: position,
+            center: mapCenter,
             zoom
         });
         const el = document.createElement('div');
@@ -80,11 +81,9 @@
             .then((response) => response.text())
             .then((response) => {
                 apiData = JSON.parse(response);
-                console.log('apiData', apiData);
                 data = apiData.radar.past.concat(apiData.radar.nowcast);
                 dataLength = data.length;
                 data.forEach((frame) => {
-                    console.log('addLayer', frame.path);
                     map.addLayer({
                         id: `rainviewer_${frame.path}`,
                         type: 'raster',
@@ -103,7 +102,9 @@
                     });
                 });
                 setIndex(apiData.radar.past.length - 1);
-                // startStopAnimation();
+                if (animated) {
+                    startStopAnimation();
+                }
             });
     }
     let currentIndex = 0;
@@ -184,10 +185,25 @@
     }
 
     const handleFormatter = (value) => getFormattedDate(data, value);
-
     //@ts-ignore
     window.getZoom = function () {
         return map.getZoom();
+    };
+    //@ts-ignore
+    window.getParameters = function () {
+        return {
+            animated:!!animationInterval,
+            zoom:map.getZoom(),
+            mapCenter: map.getCenter()
+        };
+    };
+    //@ts-ignore
+    window.setAnimationSpeed = function (value) {
+        animationSpeed = value;
+        if (!!animationInterval){
+            stopAnimation();
+            startStopAnimation()
+        }
     };
 </script>
 

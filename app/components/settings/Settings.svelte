@@ -35,11 +35,13 @@
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
         SETTINGS_UNITS,
+        SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
         SWIPE_ACTION_BAR_PROVIDER,
         WEATHER_DATA_LAYOUT,
+        WEATHER_MAP_ANIMATION_SPEED,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES
     } from '~/helpers/constants';
@@ -50,7 +52,7 @@
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { createView, hideLoading, openLink, showAlertOptionSelect, showLoading } from '~/utils/ui';
+    import { createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
     import { restartApp } from '~/utils/utils';
     import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
@@ -60,8 +62,8 @@
 
 <script lang="ts">
     // technique for only specific properties to get updated on store change
-    let { colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors;
-    $: ({ colorPrimary, colorOutlineVariant, colorOnSurface, colorOnSurfaceVariant } = $colors);
+    let { colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors;
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors);
     $: ({ bottom: windowInsetBottom } = $windowInset);
 
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -433,6 +435,18 @@
                         currentValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS),
                         values: WEATHER_MAP_COLOR_SCHEMES,
                         description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS)].title
+                    }
+                    ,{
+                        id: 'setting',
+                        key: SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
+                        min: 50,
+                        max: 1000,
+                        step: 1,
+                        formatter: (value) => value.toFixed(),
+                        title: lc('animation_speed'),
+                        type: 'slider',
+                        rightValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED),
+                        currentValue: () => Math.round(ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED))
                     }
                 ];
             case 'geolocation':
@@ -928,6 +942,35 @@
                             }
                             updateItem(item);
                         }
+                    } else if (item.type === 'slider') {
+                        await showSliderPopover({
+                            anchor: event.object,
+                            value: item.currentValue(),
+                            ...item,
+                            onChange(value) {
+                                if (item.transformValue) {
+                                    value = item.transformValue(value, item);
+                                } else {
+                                    value = Math.round(value / item.step) * item.step;
+                                }
+                                if (item.id === 'store_setting') {
+                                    const store = getStoreSetting(item.storeKey, item.storeDefault);
+                                    if (item.valueType === 'string') {
+                                        store[item.key] = value + '';
+                                    } else {
+                                        store[item.key] = value;
+                                    }
+                                    ApplicationSettings.setString(item.storeKey, JSON.stringify(store));
+                                } else {
+                                    if (item.valueType === 'string') {
+                                        ApplicationSettings.setString(item.key, value + '');
+                                    } else {
+                                        ApplicationSettings.setNumber(item.key, value);
+                                    }
+                                }
+                                updateItem(item);
+                            }
+                        });
                     } else {
                         let selectedIndex = -1;
                         const currentValue = item.currentValue?.() ?? item.currentValue;
@@ -1130,22 +1173,22 @@
                 <label class="sectionHeader" {...item.additionalProps || {}} text={item.title} />
             </Template>
             <Template key="switch" let:item>
-                <ListItemAutoSize fontSize={20} leftIcon={item.icon} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} leftIcon={item.icon} on:tap={(event) => onTap(item, event)}>
                     <switch id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
                 </ListItemAutoSize>
             </Template>
             <Template key="checkbox" let:item>
-                <ListItemAutoSize fontSize={20} leftIcon={item.icon} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} leftIcon={item.icon} on:tap={(event) => onTap(item, event)}>
                     <checkbox id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} />
                 </ListItemAutoSize>
             </Template>
             <Template key="rightIcon" let:item>
-                <ListItemAutoSize fontSize={20} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
                     <IconButton col={1} text={item.rightBtnIcon} on:tap={(event) => onRightIconTap(item, event)} />
                 </ListItemAutoSize>
             </Template>
             <Template key="reorder" let:item>
-                <ListItemAutoSize fontSize={20} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
                     <label col={1} fontFamily={$fonts.mdi} fontSize={24} padding={4} text="mdi-dots-grid" verticalAlignment="center" on:touch={(event) => startReordering(item, event)} />
                 </ListItemAutoSize>
             </Template>
@@ -1153,23 +1196,20 @@
                 <ListItemAutoSize
                     columns="auto,*,auto"
                     fontSize={20}
-                    leftIcon={item.icon}
+                    item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }}
                     mainCol={1}
-                    rightValue={item.rightValue}
                     showBottomLine={false}
-                    subtitle={getDescription(item)}
-                    title={getTitle(item)}
                     on:tap={(event) => onTap(item, event)}>
                     <label col={0} fontFamily={$fonts.mdi} fontSize={24} padding="0 10 0 0" text={item.icon} verticalAlignment="center" />
                 </ListItemAutoSize>
             </Template>
             <Template key="image" let:item>
-                <ListItemAutoSize fontSize={20} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
                     <image col={1} height={45} src={item.image()} />
                 </ListItemAutoSize>
             </Template>
             <Template let:item>
-                <ListItemAutoSize fontSize={20} rightValue={item.rightValue} showBottomLine={false} subtitle={getDescription(item)} title={getTitle(item)} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
                 </ListItemAutoSize>
             </Template>
         </collectionview>

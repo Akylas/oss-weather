@@ -39,6 +39,7 @@ module.exports = (env, params = {}) => {
                 devlog: true,
                 noconsole: false,
                 sourceMap: true,
+                buildweathermap: true,
                 uglify: true
             },
             env

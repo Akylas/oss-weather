@@ -94,10 +94,11 @@
                     icon: 'mdi-animation',
                     id: SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
                     title: lc('animation_speed'),
-                    value: animationSpeed,
-                    step: 1,
-                    min: 50,
-                    max: 1000
+                    value: WEATHER_MAP_ANIMATION_SPEED / ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED),
+                    min: 0.1,
+                    max: 2,
+                    valueFormatter: (value) => value.toFixed(2),
+                    transformValue: (value) => Math.round(WEATHER_MAP_ANIMATION_SPEED / value)
                 }
                 // {
                 //     icon: 'mdi-information-outline',
@@ -116,6 +117,13 @@
                     height: 'auto'
                 },
                 onChange: debounce(async (item, value) => {
+                    DEV_LOG && console.log('onChange', value);
+                    if (item.transformValue) {
+                        value = item.transformValue(value, item);
+                    } else {
+                        value = Math.round(value / item.step) * item.step;
+                    }
+                    DEV_LOG && console.log('onChange1', value);
                     try {
                         switch (item.id) {
                             case SETTINGS_WEATHER_MAP_ANIMATION_SPEED:

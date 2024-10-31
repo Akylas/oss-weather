@@ -78,7 +78,7 @@
         color={colorOnSurfaceVariant}
         fontSize={14}
         paddingLeft={10}
-            row={1}
+        row={1}
         text={subtitle}
         verticalTextAlignment="center"
         visibility={subtitle && subtitle.length > 0 ? 'visible' : 'collapse'} />

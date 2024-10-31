@@ -228,7 +228,7 @@
                     }} />
             </gridlayout>
         {/if}
-        <collectionView  {itemTemplateSelector} items={filteredOptions} row={2} {rowHeight} on:dataPopulated={onDataPopulated} ios:contentInsetAdjustmentBehavior={2}>
+        <collectionView {itemTemplateSelector} items={filteredOptions} row={2} {rowHeight} on:dataPopulated={onDataPopulated} ios:contentInsetAdjustmentBehavior={2}>
             <Template key="checkbox" let:item>
                 <svelte:component
                     this={component}

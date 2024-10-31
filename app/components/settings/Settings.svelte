@@ -157,7 +157,6 @@
                         valueType: 'string',
                         title: lc('temperature_unit'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Temperature],
-                        currentValue: () => unitsSettings[UNIT_FAMILIES.Temperature],
                         values: [UNITS.Celcius, UNITS.Fahrenheit].map((u) => ({ title: u, value: u }))
                     },
                     {
@@ -168,7 +167,6 @@
                         valueType: 'string',
                         title: lc('distance_unit'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Distance],
-                        currentValue: () => unitsSettings[UNIT_FAMILIES.Distance],
                         values: [UNITS.Kilometers, UNITS.Miles, UNITS.Meters, UNITS.Feet, UNITS.Inch].map((u) => ({ title: u, value: u }))
                     },
                     {
@@ -179,7 +177,6 @@
                         valueType: 'string',
                         title: lc('precipitation_unit'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Precipitation],
-                        currentValue: () => unitsSettings[UNIT_FAMILIES.Precipitation],
                         values: [UNITS.Inch, UNITS.MM, UNITS.CM].map((u) => ({ title: u, value: u }))
                     },
                     {
@@ -190,7 +187,6 @@
                         valueType: 'string',
                         title: lc('speed_unit'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Speed],
-                        currentValue: () => unitsSettings[UNIT_FAMILIES.Speed],
                         values: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.MPH, UNITS.FPH].map((u) => ({ title: u, value: u }))
                     },
                     {
@@ -201,7 +197,6 @@
                         valueType: 'string',
                         title: lc('pressure_unit'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Pressure],
-                        currentValue: () => unitsSettings[UNIT_FAMILIES.Pressure],
                         values: [UNITS.PressureHpa].map((u) => ({ title: u, value: u }))
                     }
                 ];
@@ -270,7 +265,6 @@
                         id: 'setting',
                         title: lc('forecast_nb_days'),
                         values: Array.from(Array(15), (_, index) => ({ value: index + 1, title: index + 1 })),
-                        currentValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST),
                         rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
                     },
                     {
@@ -278,7 +272,6 @@
                         id: 'setting',
                         title: lc('forecast_nb_hours'),
                         values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
-                        currentValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST),
                         rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
                     },
                     {
@@ -286,7 +279,6 @@
                         id: 'setting',
                         title: lc('forecast_nb_minutes'),
                         values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
-                        currentValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST),
                         rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
                     },
                     {
@@ -330,7 +322,6 @@
                             { value: '2.5', title: '2.5' },
                             { value: '3.0', title: '3.0' }
                         ],
-                        currentValue: () => ApplicationSettings.getString('owm_one_call_version', '3.0'),
                         rightValue: () => ApplicationSettings.getString('owm_one_call_version', '3.0')
                     }
                 ];
@@ -350,7 +341,6 @@
                                 { value: 'default', title: lc('blocks') },
                                 { value: 'line', title: lc('lines') }
                             ],
-                            currentValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT),
                             rightValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT)
                         },
                         {
@@ -376,7 +366,6 @@
                             id: 'setting',
                             title: lc('min_uv_index'),
                             values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
-                            currentValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX),
                             rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
                         },
                         {
@@ -435,18 +424,18 @@
                         currentValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS),
                         values: WEATHER_MAP_COLOR_SCHEMES,
                         description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS)].title
-                    }
-                    ,{
+                    },
+                    {
                         id: 'setting',
                         key: SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
-                        min: 50,
-                        max: 1000,
-                        step: 1,
-                        formatter: (value) => value.toFixed(),
+                        min: 0.1,
+                        max: 2,
+                        step: null,
                         title: lc('animation_speed'),
                         type: 'slider',
-                        rightValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED),
-                        currentValue: () => Math.round(ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED))
+                        valueFormatter: (value) => value.toFixed(2),
+                        transformValue: (value) => Math.round(WEATHER_MAP_ANIMATION_SPEED / value),
+                        rightValue: () => Math.round((WEATHER_MAP_ANIMATION_SPEED / ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED)) * 100) / 100
                     }
                 ];
             case 'geolocation':
@@ -945,7 +934,7 @@
                     } else if (item.type === 'slider') {
                         await showSliderPopover({
                             anchor: event.object,
-                            value: item.currentValue(),
+                            value: (item.currentValue || item.rightValue)?.(),
                             ...item,
                             onChange(value) {
                                 if (item.transformValue) {
@@ -973,7 +962,7 @@
                         });
                     } else {
                         let selectedIndex = -1;
-                        const currentValue = item.currentValue?.() ?? item.currentValue;
+                        const currentValue = (item.currentValue || item.rightValue)?.();
                         const options = item.values.map((k, index) => {
                             const selected = currentValue === k.value;
                             if (selected) {

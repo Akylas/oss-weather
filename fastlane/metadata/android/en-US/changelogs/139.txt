@@ -1,0 +1,12 @@
+Features:
+- new eink icon style
+
+Bug fixes:
+- map animation speed is now between 0.1 and 2 and default to 1
+- crash while trying to open github
+- show apparent min/max in daily forecast if available (Open-Meteo only)
+- preciptation showing 0 for < 1mm
+- Weather Data option to always show precipitation percentage
+- settings icon not updating correctly on dark mode change
+- colors theme support
+- Translations update

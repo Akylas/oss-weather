@@ -151,6 +151,8 @@ module.exports = (env, params = {}) => {
     const projectRoot = params.projectRoot || __dirname;
     const dist = nsWebpack.Utils.platform.getDistPath();
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
+    const isIOS = platform === 'ios';
+    const isAndroid = platform === 'android';
 
     if (profile) {
         const StatsPlugin = require('stats-webpack-plugin');
@@ -225,8 +227,6 @@ module.exports = (env, params = {}) => {
     }
 
     const package = require('./package.json');
-    const isIOS = platform === 'ios';
-    const isAndroid = platform === 'android';
     const APP_STORE_ID = process.env.IOS_APP_ID;
     const defines = {
         PRODUCTION: !!production,

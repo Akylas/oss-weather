@@ -7,7 +7,7 @@ import { HTTPError, NoNetworkError, wrapNativeHttpException } from '@shared/util
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
-import { SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
+import { SETTINGS_SHOW_CURRENT_DAY_DAILY, SETTINGS_SHOW_DAILY_IN_CURRENTLY, SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
 import { FavoriteLocation } from '~/helpers/favorites';
 import { lang } from '~/helpers/locale';
 import { NominatimResult } from '../../typings/nominatim';
@@ -270,13 +270,13 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
     const firstHourIndex = weatherData.hourly.findIndex((h) => h.time >= startOfHour);
     const firstMinuteIndex = weatherData.minutely?.data ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
     const hours = firstHourIndex >= 0 ? weatherData.hourly.slice(firstHourIndex) : [];
-    const showCurrentInDaily = ApplicationSettings.getBoolean('show_current_day_daily', SHOW_CURRENT_DAY_DAILY);
-    const showDayDataInCurrent = ApplicationSettings.getBoolean('show_daily_in_currently', SHOW_DAILY_IN_CURRENTLY);
+    const showCurrentInDaily = ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY);
+    const showDayDataInCurrent = ApplicationSettings.getBoolean(SETTINGS_SHOW_DAILY_IN_CURRENTLY, SHOW_DAILY_IN_CURRENTLY);
     weatherData.daily.data.forEach((d, index) => {
         if (index === 0) {
             const dailyData = weatherData.daily.data[index];
             // eslint-disable-next-line prefer-const
-            let { precipAccumulation, cloudCover, cloudCeiling, iso, isDay, uvIndex, windGust, ...current } = dailyData;
+            let { cloudCeiling, cloudCover, isDay, iso, precipAccumulation, uvIndex, windGust, ...current } = dailyData;
             if (showDayDataInCurrent) {
                 Object.assign(current, { precipAccumulation, cloudCover, cloudCeiling, iso, uvIndex, windGust });
             }

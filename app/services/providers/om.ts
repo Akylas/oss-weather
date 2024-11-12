@@ -54,7 +54,7 @@ export const OM_MODELS = {
 };
 
 export const API_KEY_VALUES = {
-    forecast: ({ feelsLikeTemperatures, current, minutely, currentData }: { currentData: WeatherProps[]; feelsLikeTemperatures: boolean; current: boolean; minutely: boolean }) => ({
+    forecast: ({ current, currentData, feelsLikeTemperatures, minutely }: { currentData: WeatherProps[]; feelsLikeTemperatures: boolean; current: boolean; minutely: boolean }) => ({
         hourly:
             'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,is_day' +
             (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m,winddirection_10m' : '') +
@@ -207,7 +207,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
     private async fetch<T = any>(
         apiName: string = 'forecast',
         queryParams: OMParams = {},
-        { current, warnings, minutely, weatherProps }: { warnings?: boolean; minutely?: boolean; current?: boolean; weatherProps?: WeatherProps[] } = {},
+        { current, minutely, warnings, weatherProps }: { warnings?: boolean; minutely?: boolean; current?: boolean; weatherProps?: WeatherProps[] } = {},
         subdomain = 'api'
     ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
@@ -259,11 +259,11 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         weatherLocation: WeatherLocation,
         {
             current,
-            warnings,
-            minutely,
             forceModel,
-            weatherProps,
-            model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')
+            minutely,
+            model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
+            warnings,
+            weatherProps
         }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean; weatherProps?: WeatherProps[] } = {}
     ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);

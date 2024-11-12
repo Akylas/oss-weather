@@ -4,7 +4,18 @@ import { Application, ApplicationSettings, Color, Frame, Page, Screen, Utils } f
 import { getCurrentFontScale } from '@nativescript/core/accessibility/font-scale';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { get, writable } from 'svelte/store';
-import { DECIMAL_METRICS_TEMP, SETTINGS_IMPERIAL, SETTINGS_UNITS, WEATHER_DATA_LAYOUT } from '~/helpers/constants';
+import {
+    ALWAYS_SHOW_PRECIP_PROB,
+    DECIMAL_METRICS_TEMP,
+    SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
+    SETTINGS_FEELS_LIKE_TEMPERATURES,
+    SETTINGS_IMPERIAL,
+    SETTINGS_METRIC_TEMP_DECIMAL,
+    SETTINGS_SHOW_CURRENT_DAY_DAILY,
+    SETTINGS_UNITS,
+    SETTINGS_WEATHER_DATA_LAYOUT,
+    WEATHER_DATA_LAYOUT
+} from '~/helpers/constants';
 import { getRealTheme } from '~/helpers/theme';
 import { DEFAULT_IMPERIAL_UINTS, DEFAULT_METRIC_UINTS } from '~/helpers/units';
 import { prefs } from '~/services/preferences';
@@ -71,8 +82,9 @@ export const rainColor = new Color('#4681C3');
 export const snowColor = new Color('#43b4e0');
 
 export let imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL, false);
-export let metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
-export const weatherDataLayout = writable(ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT));
+export let metricDecimalTemp = ApplicationSettings.getBoolean(SETTINGS_METRIC_TEMP_DECIMAL, DECIMAL_METRICS_TEMP);
+export const alwaysShowPrecipProb = writable(ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB));
+export const weatherDataLayout = writable(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
 let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
 export const fontScale = writable(storedFontScale);
@@ -111,31 +123,35 @@ function updateUnits() {
 prefs.on(`key:${SETTINGS_IMPERIAL}`, () => {
     imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL);
     imperial.set(imperialUnits);
-    DEV_LOG && console.log('key:imperial', imperialUnits);
+    DEV_LOG && console.log(`key:${SETTINGS_IMPERIAL}`, imperialUnits);
     ApplicationSettings.remove(SETTINGS_UNITS);
     updateUnits();
 });
 prefs.on(`key:${SETTINGS_UNITS}`, () => {
-    DEV_LOG && console.warn('key:units', imperialUnits);
+    DEV_LOG && console.warn(`key:${SETTINGS_UNITS}`, imperialUnits);
     updateUnits();
 });
-prefs.on('key:metric_temp_decimal', () => {
-    metricDecimalTemp = ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP);
-    DEV_LOG && console.log('key:metric_temp_decimal', imperialUnits, metricDecimalTemp);
+prefs.on(`key:${SETTINGS_METRIC_TEMP_DECIMAL}`, () => {
+    metricDecimalTemp = ApplicationSettings.getBoolean(SETTINGS_METRIC_TEMP_DECIMAL, DECIMAL_METRICS_TEMP);
+    DEV_LOG && console.log(`key:${SETTINGS_METRIC_TEMP_DECIMAL}`, imperialUnits, metricDecimalTemp);
     // we notify imperial to update ui
     globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
 });
-prefs.on('key:weather_data_layout', () => {
-    weatherDataLayout.set(ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT));
-    DEV_LOG && console.log('key:weather_data_layout', weatherDataLayout);
+prefs.on(`key:${SETTINGS_WEATHER_DATA_LAYOUT}`, () => {
+    weatherDataLayout.set(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
+    DEV_LOG && console.log(`key:${SETTINGS_WEATHER_DATA_LAYOUT}`, weatherDataLayout);
     // we notify imperial to update ui
-    globalObservable.notify({ eventName: 'weather_data_layout', data: weatherDataLayout });
+    globalObservable.notify({ eventName: SETTINGS_WEATHER_DATA_LAYOUT, data: weatherDataLayout });
 });
-prefs.on('key:feels_like_temperatures', () => {
-    globalObservable.notify({ eventName: 'feels_like_temperatures', data: ApplicationSettings.getBoolean('feels_like_temperatures') });
+prefs.on(`key:${SETTINGS_ALWAYS_SHOW_PRECIP_PROB}`, () => {
+    alwaysShowPrecipProb.set(ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB));
+    DEV_LOG && console.log(`key:${SETTINGS_ALWAYS_SHOW_PRECIP_PROB}`, get(alwaysShowPrecipProb));
 });
-prefs.on('key:show_current_day_daily', () => {
-    globalObservable.notify({ eventName: 'show_current_day_daily', data: ApplicationSettings.getBoolean('show_current_day_daily') });
+prefs.on(`key:${SETTINGS_FEELS_LIKE_TEMPERATURES}`, () => {
+    globalObservable.notify({ eventName: SETTINGS_FEELS_LIKE_TEMPERATURES, data: ApplicationSettings.getBoolean(SETTINGS_FEELS_LIKE_TEMPERATURES) });
+});
+prefs.on(`key:${SETTINGS_SHOW_CURRENT_DAY_DAILY}`, () => {
+    globalObservable.notify({ eventName: SETTINGS_SHOW_CURRENT_DAY_DAILY, data: ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY) });
 });
 prefs.on('key:fontscale', () => {
     storedFontScale = ApplicationSettings.getNumber('fontscale', 1);

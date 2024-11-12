@@ -18,6 +18,7 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import {
+        ALWAYS_SHOW_PRECIP_PROB,
         ANIMATIONS_ENABLED,
         CHARTS_LANDSCAPE,
         CHARTS_PORTRAIT_FULLSCREEN,
@@ -29,12 +30,18 @@
         NB_DAYS_FORECAST,
         NB_HOURS_FORECAST,
         NB_MINUTES_FORECAST,
+        SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
         SETTINGS_DAILY_PAGE_HOURLY_CHART,
+        SETTINGS_FEELS_LIKE_TEMPERATURES,
         SETTINGS_IMPERIAL,
         SETTINGS_LANGUAGE,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
+        SETTINGS_METRIC_TEMP_DECIMAL,
+        SETTINGS_SHOW_CURRENT_DAY_DAILY,
+        SETTINGS_SHOW_DAILY_IN_CURRENTLY,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
         SETTINGS_UNITS,
+        SETTINGS_WEATHER_DATA_LAYOUT,
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
         SHOW_CURRENT_DAY_DAILY,
@@ -141,9 +148,9 @@
                     },
                     {
                         type: 'switch',
-                        id: 'metric_temp_decimal',
+                        id: SETTINGS_METRIC_TEMP_DECIMAL,
                         title: lc('metric_temp_decimal'),
-                        value: ApplicationSettings.getBoolean('metric_temp_decimal', DECIMAL_METRICS_TEMP)
+                        value: ApplicationSettings.getBoolean(SETTINGS_METRIC_TEMP_DECIMAL, DECIMAL_METRICS_TEMP)
                     },
                     {
                         type: 'sectionheader',
@@ -335,31 +342,38 @@
                         {
                             id: 'setting',
                             valueType: 'string',
-                            key: 'weather_data_layout',
+                            key: SETTINGS_WEATHER_DATA_LAYOUT,
                             title: lc('weather_data_layout'),
                             values: [
                                 { value: 'default', title: lc('blocks') },
                                 { value: 'line', title: lc('lines') }
                             ],
-                            rightValue: () => ApplicationSettings.getString('weather_data_layout', WEATHER_DATA_LAYOUT)
+                            rightValue: () => ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT)
                         },
                         {
                             type: 'switch',
-                            id: 'show_current_day_daily',
+                            id: SETTINGS_SHOW_CURRENT_DAY_DAILY,
                             title: lc('show_current_day_daily'),
-                            value: ApplicationSettings.getBoolean('show_current_day_daily', SHOW_CURRENT_DAY_DAILY)
+                            value: ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY)
                         },
                         {
                             type: 'switch',
-                            id: 'show_daily_in_currently',
+                            id: SETTINGS_SHOW_DAILY_IN_CURRENTLY,
                             title: lc('show_daily_in_currently'),
-                            value: ApplicationSettings.getBoolean('show_daily_in_currently', SHOW_DAILY_IN_CURRENTLY)
+                            value: ApplicationSettings.getBoolean(SETTINGS_SHOW_DAILY_IN_CURRENTLY, SHOW_DAILY_IN_CURRENTLY)
                         },
                         {
                             type: 'switch',
-                            id: 'feels_like_temperatures',
+                            id: SETTINGS_FEELS_LIKE_TEMPERATURES,
                             title: lc('feels_like_temperatures'),
-                            value: ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE)
+                            value: ApplicationSettings.getBoolean(SETTINGS_FEELS_LIKE_TEMPERATURES, FEELS_LIKE_TEMPERATURE)
+                        },
+                        {
+                            type: 'switch',
+                            id: SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
+                            title: lc('always_show_precip_prob'),
+                            description: lc('always_show_precip_prob_desc'),
+                            value: ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB)
                         },
                         {
                             key: 'min_uv_index',

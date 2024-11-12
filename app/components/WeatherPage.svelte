@@ -20,7 +20,14 @@
     import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
-    import { DATA_VERSION, SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER } from '~/helpers/constants';
+    import {
+        DATA_VERSION,
+        SETTINGS_FEELS_LIKE_TEMPERATURES,
+        SETTINGS_SHOW_CURRENT_DAY_DAILY,
+        SETTINGS_SHOW_DAILY_IN_CURRENTLY,
+        SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+        SWIPE_ACTION_BAR_PROVIDER
+    } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
     import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
@@ -446,9 +453,9 @@
 
     onWeatherDataChanged(updateView);
     onIconPackChanged(updateView);
-    onSettingsChanged('feels_like_temperatures', refreshWeather);
-    onSettingsChanged('show_current_day_daily', updateView);
-    onSettingsChanged('show_daily_in_currently', updateView);
+    onSettingsChanged(SETTINGS_FEELS_LIKE_TEMPERATURES, refreshWeather);
+    onSettingsChanged(SETTINGS_SHOW_CURRENT_DAY_DAILY, updateView);
+    onSettingsChanged(SETTINGS_SHOW_DAILY_IN_CURRENTLY, updateView);
 
     async function showAlerts() {
         if (!weatherData.alerts) {

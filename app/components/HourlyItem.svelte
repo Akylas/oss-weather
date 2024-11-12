@@ -8,7 +8,7 @@
     import { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient } from '~/utils/utils.common';
-    import { colors, fontScale } from '~/variables';
+    import { alwaysShowPrecipProb, colors, fontScale } from '~/variables';
 
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
@@ -68,14 +68,28 @@
             paint.setColor(item.precipColor);
             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
             canvas.drawRect(0, precipTop, w, h - 10, paint);
-            if ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1) {
-                textPaint.setTextSize(10 * $fontScale);
-                textPaint.setColor(colorOnSurface);
-                textPaint.setAlpha(150);
-                if (precipProbability > 0) {
-                    canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - 22 * $fontScale, textPaint);
-                }
-                canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation), w2, h - 12 * $fontScale, textPaint);
+            // if ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1) {
+            //     textPaint.setTextSize(10 * $fontScale);
+            //     textPaint.setColor(colorOnSurface);
+            //     textPaint.setAlpha(150);
+            //     if (precipProbability > 0) {
+            //         canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - 22 * $fontScale, textPaint);
+            //     }
+            //     canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation), w2, h - 12 * $fontScale, textPaint);
+            // }
+        }
+        if (($alwaysShowPrecipProb && (precipProbability > 0 || item.precipAccumulation >= 0.1)) || ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1)) {
+            let deltaY = 12;
+            textPaint.setTextSize(10 * $fontScale);
+            textPaint.setColor(colorOnSurface);
+            textPaint.setAlpha(150);
+
+            if (item.precipAccumulation >= 0.1) {
+                canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation), w2, h - deltaY * $fontScale, textPaint);
+                deltaY += 10;
+            }
+            if (precipProbability > 0) {
+                canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - deltaY * $fontScale, textPaint);
             }
         }
         canvas.save();

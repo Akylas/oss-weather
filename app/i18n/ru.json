@@ -20,6 +20,8 @@
     "absolute_vigilance": "Абсолютная бдительность",
     "all_in_one": "Всё в одном",
     "alnus": "Ольха",
+    "always_show_precip_prob": "Всегда отображать вероятность осадков",
+    "always_show_precip_prob_desc": "Отображение вероятности осадков в часовом графике прогноза",
     "ambrosia": "Амброзия",
     "animation_speed": "Скорость анимации",
     "animations": "Анимация",
@@ -57,6 +59,12 @@
     "cloudy": "Облачно",
     "co": "Угарный газ (CO)",
     "coastal_flooding": "Наводнение",
+    "color_theme": {
+        "default": "По умолчанию",
+        "dynamic": "Динамические цвета",
+        "eink": "Eink",
+        "title": "Цветовая тема"
+    },
     "comments": "Комментарии",
     "compare_models": "Сравнение метеомоделей",
     "custom_units": "Настраиваемые единицы измерения",

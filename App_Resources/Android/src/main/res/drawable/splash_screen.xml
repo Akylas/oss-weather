@@ -3,12 +3,12 @@
     <!-- <item><bitmap android:gravity="fill" android:src="@drawable/background" /></item> -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/background" />
+            <solid android:color="@color/md_theme_background" />
         </shape>
     </item>
     <item android:gravity="center" >
         <shape android:shape="oval">
-            <solid android:color="@color/seed"/>
+            <solid android:color="@color/md_theme_primary"/>
             <size  android:width="120dp" android:height="120dp"/>
         </shape>
     </item>

@@ -1,5 +1,5 @@
 import Theme from '@nativescript-community/css-theme';
-import { Application, Device, EventData, SystemAppearanceChangedEventData, Utils } from '@nativescript/core';
+import { Application, ApplicationSettings, Device, EventData, SystemAppearanceChangedEventData, Utils } from '@nativescript/core';
 import { getBoolean, getString, setString } from '@nativescript/core/application-settings';
 import { prefs } from '~/services/preferences';
 import { showError } from '@shared/utils/showError';
@@ -10,12 +10,18 @@ import { writable } from 'svelte/store';
 import { SDK_VERSION } from '@nativescript/core/utils';
 import { showAlertOptionSelect } from '~/utils/ui';
 import { closePopover } from '@nativescript-community/ui-popover/svelte';
-import { AppUtilsAndroid } from '@akylas/nativescript-app-utils';
+import { AppUtilsAndroid, restartApp } from '@akylas/nativescript-app-utils';
+import { ALERT_OPTION_MAX_HEIGHT, DEFAULT_COLOR_THEME, SETTINGS_COLOR_THEME } from './constants';
+import { confirm } from '@nativescript-community/ui-material-dialogs';
+import { setCustomCssRootClass } from '@shared/utils';
 
 export type Themes = 'auto' | 'light' | 'dark' | 'black';
+export type ColorThemes = 'default' | 'eink' | 'dynamic';
 
 export const onThemeChanged = createGlobalEventListener('theme');
+export const onColorThemeChanged = createGlobalEventListener('color_theme');
 export let theme: Themes;
+export let colorTheme: ColorThemes;
 if (__IOS__ && SDK_VERSION < 13) {
     theme = 'light';
 } else {
@@ -26,6 +32,11 @@ if (theme.length === 0) {
 }
 export const sTheme = writable('auto');
 export const currentTheme = writable('auto');
+export const currentColorTheme = writable('default');
+
+colorTheme = getString(SETTINGS_COLOR_THEME, DEFAULT_COLOR_THEME) as ColorThemes;
+
+export let useDynamicColors = colorTheme === 'dynamic';
 
 let started = false;
 let autoDarkToBlack = getBoolean('auto_black', false);
@@ -41,11 +52,11 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
         }
         if (__ANDROID__) {
             if (Application.android.startActivity) {
-                AppUtilsAndroid.applyDayNight(Application.android.startActivity, true);
+                AppUtilsAndroid.applyDayNight(Application.android.startActivity, useDynamicColors);
             }
         }
         Theme.setMode(Theme.Auto, undefined, realTheme, false);
-        updateThemeColors(realTheme);
+        updateThemeColors(realTheme, colorTheme);
         //close any popover as they are not updating with theme yet
         closePopover();
         globalObservable.notify({ eventName: 'theme', data: realTheme });
@@ -62,6 +73,16 @@ export function getThemeDisplayName(toDisplay = theme) {
             return lc('theme.black');
         case 'light':
             return lc('theme.light');
+    }
+}
+export function getColorThemeDisplayName(toDisplay = colorTheme) {
+    switch (toDisplay) {
+        case 'default':
+            return lc('color_theme.default');
+        case 'dynamic':
+            return lc('color_theme.dynamic');
+        case 'eink':
+            return lc('color_theme.eink');
     }
 }
 
@@ -91,6 +112,37 @@ export async function selectTheme() {
         );
         if (result && actions.indexOf(result.data) !== -1) {
             setString('theme', result.data);
+        }
+    } catch (err) {
+        showError(err);
+    }
+}
+
+export async function selectColorTheme() {
+    try {
+        const actions: ColorThemes[] = ['default', 'eink'];
+        if (__ANDROID__ && SDK_VERSION >= 31) {
+            actions.push('dynamic');
+        }
+        const result = await showAlertOptionSelect(
+            {
+                height: Math.min(actions.length * 56, ALERT_OPTION_MAX_HEIGHT),
+                rowHeight: 56,
+                options: actions
+                    .map((k) => ({ name: getColorThemeDisplayName(k), data: k }))
+                    .map((d) => ({
+                        ...d,
+                        boxType: 'circle',
+                        type: 'checkbox',
+                        value: colorTheme === d.data
+                    }))
+            },
+            {
+                title: lc('select_color_theme')
+            }
+        );
+        if (result && actions.indexOf(result.data) !== -1) {
+            setString('color_theme', result.data);
         }
     } catch (err) {
         showError(err);
@@ -177,7 +229,7 @@ export function isDarkTheme(th = getRealTheme(theme)) {
 
 export function getRealThemeAndUpdateColors() {
     const realTheme = getRealTheme(theme);
-    updateThemeColors(realTheme);
+    updateThemeColors(realTheme, colorTheme);
 }
 
 export function start(force = false) {
@@ -193,9 +245,45 @@ export function start(force = false) {
         if (theme === 'auto') {
             const realTheme = getRealTheme(theme);
             currentTheme.set(realTheme);
-            updateThemeColors(realTheme);
+            updateThemeColors(realTheme, colorTheme);
             globalObservable.notify({ eventName: 'theme', data: realTheme });
         }
+    });
+
+    prefs.on(`key:${SETTINGS_COLOR_THEME}`, async () => {
+        const newColorTheme = getString(SETTINGS_COLOR_THEME) as ColorThemes;
+        const oldColorTheme = colorTheme;
+        colorTheme = newColorTheme;
+        useDynamicColors = colorTheme === 'dynamic';
+        currentColorTheme.set(colorTheme);
+        if (__ANDROID__) {
+            if (colorTheme !== DEFAULT_COLOR_THEME) {
+                const context = Utils.android.getApplicationContext();
+                let nativeTheme = 'AppTheme';
+                switch (colorTheme) {
+                    case 'eink':
+                        nativeTheme = 'AppTheme.EInk';
+                        break;
+                }
+                const themeId = context.getResources().getIdentifier(nativeTheme, 'style', context.getPackageName());
+                DEV_LOG && console.log(SETTINGS_COLOR_THEME, nativeTheme, themeId);
+                ApplicationSettings.setNumber('SET_THEME_ON_LAUNCH', themeId);
+            } else {
+                ApplicationSettings.remove('SET_THEME_ON_LAUNCH');
+            }
+            const result = await confirm({
+                message: lc('restart_app'),
+                okButtonText: lc('restart'),
+                cancelButtonText: lc('later')
+            });
+            if (result) {
+                restartApp();
+            }
+        } else {
+            setCustomCssRootClass(colorTheme, oldColorTheme);
+        }
+        updateThemeColors(getRealTheme(theme), colorTheme);
+        globalObservable.notify({ eventName: 'color_theme', data: colorTheme });
     });
 
     prefs.on('key:theme', () => {
@@ -215,10 +303,10 @@ export function start(force = false) {
         currentTheme.set(realTheme);
 
         applyTheme(newTheme);
-        updateThemeColors(realTheme);
+        updateThemeColors(realTheme, colorTheme);
         sTheme.set(newTheme);
         if (__ANDROID__) {
-            AppUtilsAndroid.applyDayNight(Application.android.startActivity, true);
+            AppUtilsAndroid.applyDayNight(Application.android.startActivity, useDynamicColors);
         }
         setTimeout(() => {
             globalObservable.notify({ eventName: 'theme', data: realTheme });
@@ -226,10 +314,14 @@ export function start(force = false) {
     });
 
     function onReady() {
+        setCustomCssRootClass(colorTheme);
         DEV_LOG && console.log('onReady', theme);
         applyTheme(theme);
-        currentTheme.set(getRealTheme(theme));
-        // updateThemeColors(realTheme);
+        const realTheme = getRealTheme(theme);
+        currentTheme.set(realTheme);
+        if (__IOS__) {
+            updateThemeColors(realTheme, colorTheme);
+        }
     }
     if (__ANDROID__) {
         const context = Utils.android.getApplicationContext();
@@ -243,7 +335,9 @@ export function start(force = false) {
         // to get dynamic colors
         Application.android.on(Application.android.activityStartedEvent, (event) => {
             if (event.activity['isNativeScriptActivity'] === true) {
-                AppUtilsAndroid.applyDynamicColors(event.activity);
+                if (useDynamicColors) {
+                    AppUtilsAndroid.applyDynamicColors(event.activity);
+                }
                 getRealThemeAndUpdateColors();
             }
         });

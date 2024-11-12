@@ -59,6 +59,12 @@
     "cloudy": "Cloudy",
     "co": "CO",
     "coastal_flooding": "Coastal flooding",
+    "color_theme": {
+        "default": "default",
+        "dynamic": "dynamic colors",
+        "eink": "eink",
+        "title": "color theme"
+    },
     "comments": "comments",
     "compare_models": "compare models",
     "custom_units": "custom units",

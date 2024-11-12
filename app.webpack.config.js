@@ -171,6 +171,9 @@ module.exports = (env, params = {}) => {
     const supportedLocales = readdirSync(join(projectRoot, appPath, 'i18n'))
         .filter((s) => s.endsWith('.json'))
         .map((s) => s.replace('.json', ''));
+    const supportedColorThemes = readdirSync(join(projectRoot, appPath, 'themes'))
+        .filter((s) => s.endsWith('.json'))
+        .map((s) => s.replace('.json', ''));
     config.externals.push('~/licenses.json');
     config.externals.push(function ({ context, request }, cb) {
         if (/address-formatter/i.test(context)) {
@@ -178,6 +181,11 @@ module.exports = (env, params = {}) => {
         }
         cb();
     });
+    if (isIOS) {
+        supportedColorThemes.forEach((l) => {
+            config.externals.push(`~/themes/${l}.json`);
+        });
+    }
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
             return cb(null, join('~/i18n/', request));
@@ -237,6 +245,7 @@ module.exports = (env, params = {}) => {
         __APP_VERSION__: `"${appVersion}"`,
         __APP_BUILD_NUMBER__: `"${buildNumber}"`,
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
+        SUPPORTED_COLOR_THEMES: JSON.stringify(supportedColorThemes),
         DEFAULT_LOCALE: `"${locale}"`,
         DEFAULT_THEME: `"${theme}"`,
         SENTRY_ENABLED: !!sentry,

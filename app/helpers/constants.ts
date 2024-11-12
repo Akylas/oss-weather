@@ -1,7 +1,12 @@
+import { Screen } from '@nativescript/core';
+
 export const DATA_VERSION = 1;
+
+export const ALERT_OPTION_MAX_HEIGHT = Screen.mainScreen.heightDIPs * 0.47;
 
 export const SETTINGS_LANGUAGE = 'language';
 export const SETTINGS_IMPERIAL = 'imperial';
+export const SETTINGS_COLOR_THEME = 'color_theme';
 export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
 export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
@@ -14,6 +19,8 @@ export const SETTINGS_FEELS_LIKE_TEMPERATURES = 'feels_like_temperatures';
 export const SETTINGS_SHOW_DAILY_IN_CURRENTLY = 'show_daily_in_currently';
 export const SETTINGS_SHOW_CURRENT_DAY_DAILY = 'show_current_day_daily';
 export const SETTINGS_WEATHER_DATA_LAYOUT = 'weather_data_layout';
+
+export const DEFAULT_COLOR_THEME = 'default';
 
 export const DAILY_PAGE_HOURLY_CHART = false;
 export const MAIN_PAGE_HOURLY_CHART = false;

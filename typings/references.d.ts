@@ -10,6 +10,7 @@
 /// <reference path="../node_modules/@nativescript-community/https/typings/okhttp3.d.ts" />
 
 declare const SUPPORTED_LOCALES: string[];
+declare const SUPPORTED_COLOR_THEMES: string[];
 declare const DEFAULT_LOCALE: string;
 declare const DEFAULT_THEME: string;
 declare const TNS_ENV: string;

@@ -41,7 +41,7 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
     if (value === undefined || value === null) {
         return [null, unit];
     }
-    const round = options.round ?? true;
+    const round = options.round ?? false;
     let digits = 1;
     let shouldRound = round;
 

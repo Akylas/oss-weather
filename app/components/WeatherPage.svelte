@@ -17,7 +17,7 @@
     import type { FeatureCollection, MultiPolygon } from 'geojson';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
-    import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from 'svelte-native/dom';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import {
@@ -31,6 +31,7 @@
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
     import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
     import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
@@ -42,7 +43,8 @@
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
-    $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorSurface } = $colors);
+    let { colorBackground, colorError, colorOnError, colorSurface } = $colors;
+    $: ({ colorBackground, colorError, colorOnError, colorSurface } = $colors);
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -533,7 +535,7 @@
     });
 
     let drawer: DrawerElement;
-    let favoriteCollectionView: NativeElementNode<CollectionViewWithSwipeMenu>;
+    let favoriteCollectionView: NativeViewElementNode<CollectionViewWithSwipeMenu>;
     function toggleDrawer() {
         drawer?.toggle();
     }
@@ -587,6 +589,12 @@
             ApplicationSettings.setString('provider', newProvider);
         }
     }
+
+    function refreshFavoritesVisibleItems() {
+        favoriteCollectionView?.nativeView?.refreshVisibleItems();
+    }
+
+    onThemeChanged(refreshFavoritesVisibleItems);
 </script>
 
 <page bind:this={page} actionBarHidden={true}>

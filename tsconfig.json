@@ -12,5 +12,4 @@
         }
     },
     "include": ["app/**/*", "tools/app/**/*", "typings/*.d.ts"],
-    "exclude": ["node_modules", "tools/app/db"]
 }

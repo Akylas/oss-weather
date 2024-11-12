@@ -66,7 +66,7 @@
         canvas.drawText(formatDate(item.time, 'DD/MM', 0), PADDING_LEFT, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
-        const centeredItemsToDraw = weatherDataService.getIconsData(item, ['windBeaufort']);
+        const centeredItemsToDraw = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], type: 'daily' });
         // centeredItemsToDraw.push({
         //     paint: wiPaint,
         //     color: nightColor,
@@ -240,7 +240,7 @@
         //     canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
         // }
 
-        const smallItemsToDraw = weatherDataService.getSmallIconsData(item);
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
         let iconRight = PADDING_LEFT;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];

@@ -60,7 +60,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getAllIconsData(item, ['windBeaufort']);
+        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, filter: [WeatherProps.windBeaufort] });
         const w2 = w / 2;
 
         const nbLines = Math.round(centeredItemsToDraw.length / 2);

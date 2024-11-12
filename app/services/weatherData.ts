@@ -373,30 +373,70 @@ export class DataService extends Observable {
         return this.allWeatherData.indexOf(key) !== -1;
     }
 
-    getAllIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
+    getAllIconsData({
+        addedAfter = [],
+        addedBefore = [],
+        filter = [],
+        item,
+        type
+    }: {
+        item: CommonWeatherData;
+        filter?: WeatherProps[];
+        addedBefore?: WeatherProps[];
+        addedAfter?: WeatherProps[];
+        type?: 'daily' | 'hourly' | 'currently';
+    }) {
         let keys = [...new Set(addedBefore.concat(this.allWeatherData).concat(addedAfter))];
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
-        return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
+        return keys.map((k) => this.getItemData(k, item, type)).filter((d) => !!d);
     }
-    getIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
+    getIconsData({
+        addedAfter = [],
+        addedBefore = [],
+        filter = [],
+        item,
+        type
+    }: {
+        item: CommonWeatherData;
+        filter?: WeatherProps[];
+        addedBefore?: WeatherProps[];
+        addedAfter?: WeatherProps[];
+        type?: 'daily' | 'hourly' | 'currently';
+    }) {
         let keys = [...new Set(addedBefore.concat(this.currentWeatherData).concat(addedAfter))];
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
-        return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
+        return keys.map((k) => this.getItemData(k, item, type)).filter((d) => !!d);
     }
-    getSmallIconsData(item: CommonWeatherData, filter = [], addedBefore = [], addedAfter = []) {
+    getSmallIconsData({
+        addedAfter = [],
+        addedBefore = [],
+        filter = [],
+        item,
+        type
+    }: {
+        item: CommonWeatherData;
+        filter?: WeatherProps[];
+        addedBefore?: WeatherProps[];
+        addedAfter?: WeatherProps[];
+        type?: 'daily' | 'hourly' | 'currently';
+    }) {
         let keys = [...new Set(addedBefore.concat(this.currentSmallWeatherData).concat(addedAfter))];
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
-        return keys.map((k) => this.getItemData(k, item)).filter((d) => !!d);
+        return keys.map((k) => this.getItemData(k, item, type)).filter((d) => !!d);
     }
 
-    getItemData(key: WeatherProps, item: CommonWeatherData, options = this.getWeatherDataOptions(key)): CommonData {
-        if (!options || this.allWeatherData.indexOf(key) === -1 || !item.hasOwnProperty(key) || item[key] === null) {
+    getItemData(key: WeatherProps, item: CommonWeatherData, type?: 'daily' | 'hourly' | 'currently', options = this.getWeatherDataOptions(key)): CommonData {
+        if (!options || this.allWeatherData.indexOf(key) === -1) {
+            return null;
+        }
+        const toCheck = (type === 'daily' && key === WeatherProps.apparentTemperature ? item['apparentTemperatureMin'] : item[key]) ?? null;
+        if (toCheck === null) {
             return null;
         }
         let icon: string = options.icon as any;
@@ -406,7 +446,21 @@ export class DataService extends Observable {
         const iconFontSize = 20 * get(fontScale) * options.iconFactor;
         switch (key) {
             case WeatherProps.apparentTemperature:
-                if (item.apparentTemperature) {
+                if (type === 'daily') {
+                    if (item.apparentTemperatureMin) {
+                        return {
+                            key,
+                            iconFontSize,
+                            paint: mdiPaint,
+                            icon,
+                            value:
+                                formatValueToUnit(item.apparentTemperatureMin, propToUnit(key, item), defaultPropUnit(key)) +
+                                '/' +
+                                formatValueToUnit(item.apparentTemperatureMax, propToUnit(key, item), defaultPropUnit(key)),
+                            subvalue: lc('apparent')
+                        };
+                    }
+                } else if (item.apparentTemperature) {
                     return {
                         key,
                         iconFontSize,
@@ -416,6 +470,7 @@ export class DataService extends Observable {
                         subvalue: lc('apparent')
                     };
                 }
+
                 break;
             case WeatherProps.windSpeed:
                 if (item.windSpeed) {

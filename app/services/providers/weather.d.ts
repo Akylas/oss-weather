@@ -79,6 +79,8 @@ export interface CommonWeatherData extends CommonAirQualityData {
     usingFeelsLike?: boolean;
     temperatureMin?: number;
     temperatureMax?: number;
+    apparentTemperatureMin?: number;
+    apparentTemperatureMax?: number;
     precipProbability?: number;
     precipAccumulation?: number;
     precipUnitFamily?: UNIT_FAMILIES;

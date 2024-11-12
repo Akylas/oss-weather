@@ -268,7 +268,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getAllIconsData(item, ['windBeaufort']);
+        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, filter: [WeatherProps.windBeaufort] });
         const w2 = Utils.layout.toDeviceIndependentPixels(lineChart.nativeElement.getMeasuredWidth()) / 2;
         // canvas.translate(26, 0);
         switch ($weatherDataLayout) {

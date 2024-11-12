@@ -416,6 +416,8 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                         description: OMProvider.weatherCodeDescription[code],
                         isDay: true,
                         iconId: this.convertWeatherCodeToIcon(code),
+                        apparentTemperatureMax: this.getDataArray(daily, 'apparent_temperature_max', model)?.[index],
+                        apparentTemperatureMin: this.getDataArray(daily, 'apparent_temperature_min', model)?.[index],
                         temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model)?.[index],
                         temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', model)?.[index],
                         usingFeelsLike: feelsLikeTemperatures,

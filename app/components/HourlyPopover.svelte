@@ -14,8 +14,8 @@
     const labelPaint = new Paint();
     let canvas: NativeViewElementNode<CanvasView>;
 
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors);
+    let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
     export let item: CommonWeatherData;
     export let isUserInteractionEnabled: boolean = true;
 
@@ -28,7 +28,7 @@
         if (!item) {
             return;
         }
-        data = weatherDataService.getIconsData(item, [WeatherProps.windBeaufort], [WeatherProps.temperature], [WeatherProps.rainSnowLimit, WeatherProps.iso]);
+        data = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], addedBefore: [WeatherProps.temperature], addedAfter: [WeatherProps.rainSnowLimit, WeatherProps.iso] });
         height = data.length * 19 * $fontScale;
         canvas?.nativeView?.invalidate();
     }

@@ -53,7 +53,7 @@
         WEATHER_MAP_COLOR_SCHEMES
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
-    import { getThemeDisplayName, onThemeChanged, selectTheme } from '~/helpers/theme';
+    import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
     import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
     import { iconService } from '~/services/icon';
     import { OM_MODELS } from '~/services/providers/om';
@@ -69,8 +69,8 @@
 
 <script lang="ts">
     // technique for only specific properties to get updated on store change
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors);
+    let { colorOnBackground, colorPrimary } = $colors;
+    $: ({ colorOnBackground, colorPrimary } = $colors);
     $: ({ bottom: windowInsetBottom } = $windowInset);
 
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -483,9 +483,14 @@
                     title: lc('language')
                 },
                 {
-                    id: 'dark_mode',
+                    id: 'theme',
                     description: () => getThemeDisplayName(),
                     title: lc('theme.title')
+                },
+                {
+                    id: 'color_theme',
+                    description: () => getColorThemeDisplayName(),
+                    title: lc('color_theme.title')
                 },
                 {
                     type: 'switch',
@@ -728,8 +733,11 @@
                 case SETTINGS_LANGUAGE:
                     await selectLanguage();
                     break;
-                case 'dark_mode':
+                case 'theme':
                     await selectTheme();
+                    break;
+                case 'color_theme':
+                    await selectColorTheme();
                     break;
                 case 'share':
                     await share({
@@ -1203,7 +1211,7 @@
                     mainCol={1}
                     showBottomLine={false}
                     on:tap={(event) => onTap(item, event)}>
-                    <label col={0} fontFamily={$fonts.mdi} fontSize={24} padding="0 10 0 0" text={item.icon} verticalAlignment="center" />
+                    <label col={0} color={colorOnBackground} fontFamily={$fonts.mdi} fontSize={24} padding="0 10 0 0" text={item.icon} verticalAlignment="center" />
                 </ListItemAutoSize>
             </Template>
             <Template key="image" let:item>

@@ -2,8 +2,13 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="Preference.SwitchPreferenceCompat.Material3" parent="@style/Preference.SwitchPreferenceCompat.Material">
     </style>
-    <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
-        <!-- <item name="android:background">@color/colorBackground</item> -->
+
+    <style name="ThemeOverlay.App.EinkBottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalEInkBottomSheetDialog</item>
+    </style>
+    <style name="ModalEInkBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="android:elevation">0dp</item>
+        <item name="backgroundTint">@color/md_theme_eink_background</item>
     </style>
 
     <style name="FloatingActivityTheme.WindowTransition">

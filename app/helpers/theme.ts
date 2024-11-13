@@ -32,7 +32,7 @@ if (theme.length === 0) {
 }
 export const sTheme = writable('auto');
 export const currentTheme = writable('auto');
-export const currentColorTheme = writable('default');
+export const currentColorTheme = writable(DEFAULT_COLOR_THEME);
 
 colorTheme = getString(SETTINGS_COLOR_THEME, DEFAULT_COLOR_THEME) as ColorThemes;
 
@@ -259,15 +259,19 @@ export function start(force = false) {
         if (__ANDROID__) {
             if (colorTheme !== DEFAULT_COLOR_THEME) {
                 const context = Utils.android.getApplicationContext();
-                let nativeTheme = 'AppTheme';
+                let nativeTheme;
                 switch (colorTheme) {
                     case 'eink':
                         nativeTheme = 'AppTheme.EInk';
                         break;
                 }
-                const themeId = context.getResources().getIdentifier(nativeTheme, 'style', context.getPackageName());
-                DEV_LOG && console.log(SETTINGS_COLOR_THEME, nativeTheme, themeId);
-                ApplicationSettings.setNumber('SET_THEME_ON_LAUNCH', themeId);
+                if (nativeTheme) {
+                    const themeId = context.getResources().getIdentifier(nativeTheme, 'style', context.getPackageName());
+                    DEV_LOG && console.log(SETTINGS_COLOR_THEME, nativeTheme, themeId);
+                    ApplicationSettings.setNumber('SET_THEME_ON_LAUNCH', themeId);
+                } else {
+                    ApplicationSettings.remove('SET_THEME_ON_LAUNCH');
+                }
             } else {
                 ApplicationSettings.remove('SET_THEME_ON_LAUNCH');
             }
@@ -315,7 +319,7 @@ export function start(force = false) {
 
     function onReady() {
         setCustomCssRootClass(colorTheme);
-        DEV_LOG && console.log('onReady', theme);
+        DEV_LOG && console.log('onReady', theme, colorTheme);
         applyTheme(theme);
         const realTheme = getRealTheme(theme);
         currentTheme.set(realTheme);

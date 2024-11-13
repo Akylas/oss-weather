@@ -10,21 +10,12 @@
     </style>
     <style name="LaunchScreenTheme" parent="LaunchScreenThemeBase"></style>
 
-    <style name="AppThemeBase" parent="Theme.Material3.DynamicColors.DayNight">
+    <style name="AppThemeBase" parent="Theme.Material3.DynamicColors.DayNight">`
        
     </style>
-
     <style name="AppTheme" parent="AppThemeBase">
-     <item name="windowActionBar">false</item>
+        <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <!-- <item name="switchPreferenceCompatStyle">
-            @style/Preference.SwitchPreferenceCompat.Material3
-        </item> -->
-
-        <!-- <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item> -->
-        <!-- <item name="android:windowTranslucentStatus">true</item> -->
-        <!-- <item name="android:windowActionBarOverlay">true</item>   -->
-        <!-- <item name="android:windowTranslucentNavigation">true</item> -->
 
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_onPrimary</item>

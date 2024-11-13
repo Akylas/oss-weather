@@ -20,6 +20,8 @@
     "absolute_vigilance": "Una vigilancia absoluta",
     "all_in_one": "Todo en uno",
     "alnus": "Alnus",
+    "always_show_precip_prob": "mostrar siempre la probabilidad de precipitación",
+    "always_show_precip_prob_desc": "Siempre mostrar la probabilidad de precipitación en el gráfico del pronóstico por horas",
     "ambrosia": "Ambrosia",
     "animation_speed": "Velocidad de la animación",
     "animations": "Animaciones",
@@ -57,6 +59,11 @@
     "cloudy": "Nublado",
     "co": "CO",
     "coastal_flooding": "Inundaciones en la costa",
+    "color_theme": {
+        "default": "por defecto",
+        "dynamic": "colores dinámicos",
+        "title": "Color del tema"
+    },
     "comments": "comentarios",
     "compare_models": "comparar modelos",
     "custom_units": "unidades personalizadas",

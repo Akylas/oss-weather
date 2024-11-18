@@ -342,7 +342,6 @@ export function updateThemeColors(theme: string, colorTheme: ColorThemes = Appli
         });
     } else {
         const themeColors = require(`~/themes/${colorTheme}.json`);
-        // TODO: define all color themes for iOS
         if (theme === 'dark' || theme === 'black') {
             Object.assign(currentColors, themeColors.dark);
             if (theme === 'black') {
@@ -359,18 +358,10 @@ export function updateThemeColors(theme: string, colorTheme: ColorThemes = Appli
         themer.setSecondaryColor(currentColors.colorSecondary);
         themer.setSurfaceColor(currentColors.colorSurface);
         themer.setOnSurfaceColor(currentColors.colorOnSurface);
-
-        Object.keys(currentColors).forEach((c) => {
-            currentColors[c] = rootViewStyle.getCssVariable('--' + c);
-        });
     }
 
     currentColors.colorWidgetBackground = new Color(currentColors.colorSurfaceContainer).setAlpha(230).hex;
     currentColors.colorOnSurfaceDisabled = new Color(currentColors.colorOnSurface).setAlpha(50).hex;
-
-    if (theme === 'black') {
-        currentColors.colorBackground = '#000000';
-    }
 
     if (theme === 'dark') {
         currentColors.colorSurfaceContainerHigh = new Color(currentColors.colorSurfaceContainer).lighten(3).hex;

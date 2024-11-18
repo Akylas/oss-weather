@@ -9,7 +9,7 @@
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Sentry } from '@shared/utils/sentry';
-    import { share } from '@shared/utils/share';
+    import { share } from '@akylas/nativescript-app-utils/share';
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';

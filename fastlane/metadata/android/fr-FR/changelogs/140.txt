@@ -1,0 +1,4 @@
+Bug fixes:
+- regression fix on precipitation showing too many digits
+- clip weather data to prevent overlapping. Still won't look nice if too many weather data
+- Translations update

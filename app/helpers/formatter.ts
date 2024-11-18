@@ -41,7 +41,7 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
     if (value === undefined || value === null) {
         return [null, unit];
     }
-    const round = options.round ?? false;
+    const round = options.round ?? true;
     let digits = 1;
     let shouldRound = round;
 
@@ -56,11 +56,11 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
             }
             break;
         case UNITS.MM:
+            digits = 10;
             if (unit === UNITS.Inch) {
                 digits = 100;
                 value *= 0.03937008;
             } else if (unit === UNITS.CM) {
-                digits = 10;
                 value /= 10;
             }
             break;

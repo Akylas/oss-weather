@@ -15,6 +15,7 @@
     let paint: Paint;
 
     const PADDING_LEFT = 7;
+    const ICON_WIDTH = 60;
 </script>
 
 <script lang="ts">
@@ -66,17 +67,64 @@
         canvas.drawText(formatDate(item.time, 'DD/MM', 0), PADDING_LEFT, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
-        const centeredItemsToDraw = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], type: 'daily' });
-        // centeredItemsToDraw.push({
-        //     paint: wiPaint,
-        //     color: nightColor,
-        //     iconFontSize: 20,
-        //     icon: item.moonIcon,
-        //     value: l('moon')
-        // });
-        const count = centeredItemsToDraw.length;
-        // const count = Math.max(4, centeredItemsToDraw.length);
+        const nString = createNativeAttributedString(
+            {
+                spans: [
+                    {
+                        fontSize: 17 * $fontScale,
+                        color: colorOnSurfaceVariant,
+                        text: formatWeatherValue(item, WeatherProps.temperatureMin)
+                    },
+                    {
+                        fontSize: 20 * $fontScale,
+                        color: colorOnSurface,
+                        text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
+                    }
+                ]
+            },
+            null
+        );
+        canvas.save();
+        const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, true);
+        canvas.translate(0, 5);
+        staticLayout.draw(canvas);
+        canvas.restore();
 
+        const windBeaufortData = weatherDataService.getItemData(WeatherProps.windBeaufort, item);
+        if (windBeaufortData) {
+            windBeaufortData.paint.setColor(windBeaufortData.color || colorOnSurface);
+            windBeaufortData.paint.setTextSize(windBeaufortData.iconFontSize);
+            canvas.drawText(item.windBeaufortIcon, 50, h - 1.4 * windBeaufortData.iconFontSize, windBeaufortData.paint);
+        }
+
+        // const moonData = weatherDataService.getItemData(WeatherProps.moon, item);
+        // if (moonData) {
+        //     moonData.paint.setColor(moonData.color);
+        //     moonData.paint.setTextSize(moonData.iconFontSize);
+        //     canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
+        // }
+
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
+        let iconRight = PADDING_LEFT;
+        for (let index = 0; index < smallItemsToDraw.length; index++) {
+            const c = smallItemsToDraw[index];
+
+            const paint = c.paint || textIconPaint;
+            paint.setTextAlign(Align.LEFT);
+            paint.setTextSize(c.iconFontSize);
+            paint.setColor(c.color || colorOnSurface);
+            if (c.customDraw) {
+                const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - 7 - 15 * $fontScale, false);
+                iconRight += result;
+            } else if (c.icon) {
+                canvas.drawText(c.icon, iconRight, h - 7, paint);
+                iconRight += 24 * $fontScale;
+            }
+        }
+
+        const centeredItemsToDraw = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], type: 'daily' });
+        const count = centeredItemsToDraw.length;
+        canvas.clipRect(60 * $fontScale, 0, w - ICON_WIDTH * $fontScale - 10, h);
         switch ($weatherDataLayout) {
             case 'line': {
                 const iconsTop = 7 * $fontScale;
@@ -203,63 +251,9 @@
                 break;
             }
         }
-        const nString = createNativeAttributedString(
-            {
-                spans: [
-                    {
-                        fontSize: 17 * $fontScale,
-                        color: colorOnSurfaceVariant,
-                        text: formatWeatherValue(item, WeatherProps.temperatureMin)
-                    },
-                    {
-                        fontSize: 20 * $fontScale,
-                        color: colorOnSurface,
-                        text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
-                    }
-                ]
-            },
-            null
-        );
-        canvas.save();
-        const staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, true);
-        canvas.translate(0, 5);
-        staticLayout.draw(canvas);
-        canvas.restore();
-
-        const windBeaufortData = weatherDataService.getItemData(WeatherProps.windBeaufort, item);
-        if (windBeaufortData) {
-            windBeaufortData.paint.setColor(windBeaufortData.color || colorOnSurface);
-            windBeaufortData.paint.setTextSize(windBeaufortData.iconFontSize);
-            canvas.drawText(item.windBeaufortIcon, 50, h - 1.4 * windBeaufortData.iconFontSize, windBeaufortData.paint);
-        }
-
-        // const moonData = weatherDataService.getItemData(WeatherProps.moon, item);
-        // if (moonData) {
-        //     moonData.paint.setColor(moonData.color);
-        //     moonData.paint.setTextSize(moonData.iconFontSize);
-        //     canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
-        // }
-
-        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
-        let iconRight = PADDING_LEFT;
-        for (let index = 0; index < smallItemsToDraw.length; index++) {
-            const c = smallItemsToDraw[index];
-
-            const paint = c.paint || textIconPaint;
-            paint.setTextAlign(Align.LEFT);
-            paint.setTextSize(c.iconFontSize);
-            paint.setColor(c.color || colorOnSurface);
-            if (c.customDraw) {
-                const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - 7 - 15 * $fontScale, false);
-                iconRight += result;
-            } else if (c.icon) {
-                canvas.drawText(c.icon, iconRight, h - 7, paint);
-                iconRight += 24 * $fontScale;
-            }
-        }
     }
 </script>
 
 <canvasview bind:this={canvasView} height={($weatherDataLayout === 'line' ? 110 : 100) * $fontScale} on:draw={drawOnCanvas} on:tap={(event) => dispatch('tap', event)}>
-    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight={10} marginTop={7} size={60 * $fontScale} />
+    <WeatherIcon {animated} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginRight={10} marginTop={7} size={ICON_WIDTH * $fontScale} />
 </canvasview>

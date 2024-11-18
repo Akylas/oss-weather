@@ -268,9 +268,80 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, filter: [WeatherProps.windBeaufort] });
         const w2 = Utils.layout.toDeviceIndependentPixels(lineChart.nativeElement.getMeasuredWidth()) / 2;
         // canvas.translate(26, 0);
+
+        textPaint.setColor(colorOnSurface);
+        textPaint.setTextAlign(Align.LEFT);
+        if (item.temperature) {
+            textPaint.textSize = 36 * $fontScale;
+            canvas.drawText(formatWeatherValue(item, WeatherProps.temperature), 10, 36 * $fontScale, textPaint);
+        }
+        const nString = createNativeAttributedString({
+            spans: [
+                {
+                    fontSize: 17 * $fontScale,
+                    color: colorOnSurfaceVariant,
+                    text: formatWeatherValue(item, WeatherProps.temperatureMin)
+                },
+                {
+                    fontSize: 20 * $fontScale,
+                    color: colorOnSurface,
+                    text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
+                }
+            ]
+        });
+        canvas.save();
+        let staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+        canvas.translate(0, 30 * $fontScale);
+        staticLayout.draw(canvas);
+        canvas.restore();
+
+        canvas.save();
+        canvas.translate(10, h - 8 - 14 * $fontScale);
+        textPaint.textSize = 14 * $fontScale;
+        staticLayout = new StaticLayout(
+            createNativeAttributedString({
+                spans: [
+                    {
+                        color: '#ffa500',
+                        fontFamily: $fonts.wi,
+                        text: 'wi-sunrise '
+                    },
+                    {
+                        text: formatTime(item.sunriseTime, undefined, item.timezoneOffset)
+                    },
+                    {
+                        color: '#ff7200',
+                        fontFamily: $fonts.wi,
+                        text: '  wi-sunset '
+                    },
+                    {
+                        text: formatTime(item.sunsetTime, undefined, item.timezoneOffset)
+                    }
+                ]
+            }),
+            textPaint,
+            w - 10,
+            LayoutAlignment.ALIGN_NORMAL,
+            1,
+            0,
+            false
+        );
+        staticLayout.draw(canvas);
+        canvas.restore();
+
+        textPaint.setTextAlign(Align.RIGHT);
+        textPaint.textSize = 20 * $fontScale;
+        canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22 * $fontScale, textPaint);
+        textPaint.textSize = 14 * $fontScale;
+        canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
+
+        textPaint.setColor(colorOutline);
+        canvas.drawLine(0, h, w, h - 1, textPaint);
+
+        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, filter: [WeatherProps.windBeaufort] });
+        canvas.clipRect(0, 0, w - weatherIconSize * (2 - $fontScale), h);
         switch ($weatherDataLayout) {
             case 'line': {
                 textPaint.setTextAlign(Align.LEFT);
@@ -377,75 +448,6 @@
                 break;
             }
         }
-
-        textPaint.setColor(colorOnSurface);
-        textPaint.setTextAlign(Align.LEFT);
-        if (item.temperature) {
-            textPaint.textSize = 36 * $fontScale;
-            canvas.drawText(formatWeatherValue(item, WeatherProps.temperature), 10, 36 * $fontScale, textPaint);
-        }
-        const nString = createNativeAttributedString({
-            spans: [
-                {
-                    fontSize: 17 * $fontScale,
-                    color: colorOnSurfaceVariant,
-                    text: formatWeatherValue(item, WeatherProps.temperatureMin)
-                },
-                {
-                    fontSize: 20 * $fontScale,
-                    color: colorOnSurface,
-                    text: ' ' + formatWeatherValue(item, WeatherProps.temperatureMax)
-                }
-            ]
-        });
-        canvas.save();
-        let staticLayout = new StaticLayout(nString, textPaint, w - 10, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-        canvas.translate(0, 30 * $fontScale);
-        staticLayout.draw(canvas);
-        canvas.restore();
-
-        canvas.save();
-        canvas.translate(10, h - 8 - 14 * $fontScale);
-        textPaint.textSize = 14 * $fontScale;
-        staticLayout = new StaticLayout(
-            createNativeAttributedString({
-                spans: [
-                    {
-                        color: '#ffa500',
-                        fontFamily: $fonts.wi,
-                        text: 'wi-sunrise '
-                    },
-                    {
-                        text: formatTime(item.sunriseTime, undefined, item.timezoneOffset)
-                    },
-                    {
-                        color: '#ff7200',
-                        fontFamily: $fonts.wi,
-                        text: '  wi-sunset '
-                    },
-                    {
-                        text: formatTime(item.sunsetTime, undefined, item.timezoneOffset)
-                    }
-                ]
-            }),
-            textPaint,
-            w - 10,
-            LayoutAlignment.ALIGN_NORMAL,
-            1,
-            0,
-            false
-        );
-        staticLayout.draw(canvas);
-        canvas.restore();
-
-        textPaint.setTextAlign(Align.RIGHT);
-        textPaint.textSize = 20 * $fontScale;
-        canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22 * $fontScale, textPaint);
-        textPaint.textSize = 14 * $fontScale;
-        canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
-
-        textPaint.setColor(colorOutline);
-        canvas.drawLine(0, h, w, h - 1, textPaint);
     }
 
     function toggleItemFavorite(item: FavoriteLocation) {

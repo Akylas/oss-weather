@@ -1,0 +1,3 @@
+Bug fixes:
+- bottom inset for navigation controls
+- snow fall showing wrong unit and using cm when should be using mm

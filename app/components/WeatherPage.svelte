@@ -40,7 +40,7 @@
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { hideLoading, showLoading, showPopoverMenu } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
-    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale } from '~/variables';
+    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale, windowInset } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
     let { colorBackground, colorError, colorOnError, colorSurface } = $colors;
@@ -619,6 +619,7 @@
                     backgroundColor={new Color(colorBackground).setAlpha(100).hex}
                     fontSize={10}
                     horizontalAlignment="right"
+                    marginBottom={$windowInset.bottom}
                     marginRight={6}
                     row="1"
                     text={$slc('powered_by', l(`provider.${provider}`))}

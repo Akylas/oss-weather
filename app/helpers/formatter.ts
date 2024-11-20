@@ -44,7 +44,6 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
     const round = options.round ?? true;
     let digits = 1;
     let shouldRound = round;
-
     switch (defaultUnit) {
         case UNITS.Celcius:
             shouldRound = true;
@@ -61,17 +60,26 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
                 digits = 100;
                 value *= 0.03937008;
             } else if (unit === UNITS.CM) {
-                value /= 10;
+                if (value < 1) {
+                    unit = UNITS.MM;
+                } else {
+                    value /= 10;
+                }
             }
             break;
-        // case UNITS.CM:
-        //     if (unit === UNITS.Inch) {
-        //         digits = 10;
-        //         value *= 0.3937008;
-        //     } else if (unit === UNITS.MM) {
-        //         value *= 10;
-        //     }
-        //     break;
+        case UNITS.CM:
+            digits = 10;
+            if (unit === UNITS.CM && value < 1) {
+                unit = UNITS.MM;
+                value *= 10;
+            }
+            //     if (unit === UNITS.Inch) {
+            //         digits = 10;
+            //         value *= 0.3937008;
+            //     } else if (unit === UNITS.MM) {
+            //         value *= 10;
+            //     }
+            break;
         case UNITS.Meters:
             shouldRound = true;
             if (unit === UNITS.Feet) {
@@ -528,7 +536,7 @@ export function formatAddress(address, startIndex = undefined, endIndex = undefi
     if (address.postcode?.indexOf(';') >= 0) {
         address.postcode = address.postcode.split(';')[0];
     }
-    const { locality, county, ...cleanedUp } = address;
+    const { county, locality, ...cleanedUp } = address;
     const result = addressFormatter.format(cleanedUp, {
         fallbackCountryCode: langToCountryCode(lang)
     });

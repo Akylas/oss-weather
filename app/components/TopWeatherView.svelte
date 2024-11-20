@@ -340,7 +340,7 @@
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
 
-        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, filter: [WeatherProps.windBeaufort] });
+        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, type: 'currently' });
         canvas.clipRect(0, 0, w - weatherIconSize * (2 - $fontScale), h);
         switch ($weatherDataLayout) {
             case 'line': {

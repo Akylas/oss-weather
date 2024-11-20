@@ -36,8 +36,8 @@ export enum UNIT_FAMILIES {
 }
 
 export const DEFAULT_IMPERIAL_UINTS = {
-    [UNIT_FAMILIES.DistanceSmall]: UNITS.CM,
-    [UNIT_FAMILIES.DistanceVerySmall]: UNITS.MM,
+    [UNIT_FAMILIES.DistanceSmall]: UNITS.Inch,
+    [UNIT_FAMILIES.DistanceVerySmall]: UNITS.Inch,
     [UNIT_FAMILIES.Uv]: UNITS.UV,
     [UNIT_FAMILIES.Percent]: UNITS.Percent,
     [UNIT_FAMILIES.Temperature]: UNITS.Fahrenheit,
@@ -48,8 +48,8 @@ export const DEFAULT_IMPERIAL_UINTS = {
 };
 
 export const DEFAULT_METRIC_UINTS = {
-    [UNIT_FAMILIES.DistanceSmall]: UNITS.Inch,
-    [UNIT_FAMILIES.DistanceVerySmall]: UNITS.Inch,
+    [UNIT_FAMILIES.DistanceSmall]: UNITS.CM,
+    [UNIT_FAMILIES.DistanceVerySmall]: UNITS.MM,
     [UNIT_FAMILIES.Uv]: UNITS.UV,
     [UNIT_FAMILIES.Percent]: UNITS.Percent,
     [UNIT_FAMILIES.Temperature]: UNITS.Celcius,

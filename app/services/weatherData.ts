@@ -70,7 +70,7 @@ export function propToUnit(prop: WeatherProps, item?: CommonWeatherData) {
             return unitsSettings[UNIT_FAMILIES.Uv];
         case WeatherProps.precipAccumulation:
             if (item?.precipUnitFamily) {
-                return item?.precipUnitFamily;
+                return unitsSettings[item?.precipUnitFamily];
             }
             return unitsSettings[UNIT_FAMILIES.Precipitation];
         case WeatherProps.snowfall:

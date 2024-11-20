@@ -85,7 +85,7 @@
             textPaint.setAlpha(150);
 
             if (item.precipAccumulation >= 0.1) {
-                canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation), w2, h - deltaY * $fontScale, textPaint);
+                canvas.drawText(formatWeatherValue(item, WeatherProps.precipAccumulation), w2, h - deltaY * $fontScale, textPaint);
                 deltaY += 10;
             }
             if (precipProbability > 0) {

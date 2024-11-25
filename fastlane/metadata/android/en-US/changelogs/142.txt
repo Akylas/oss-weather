@@ -1,0 +1,4 @@
+Bug fixes:
+- draw using small icons in Daily Page since we dont show minutely forecast (so we have room for it)
+- ran snow limit was not showing unit (nor was it converted in the correct custom unit)
+- regression fix for true black theme

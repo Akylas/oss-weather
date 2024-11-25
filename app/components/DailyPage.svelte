@@ -19,6 +19,7 @@
     import dayjs, { Dayjs } from 'dayjs';
     import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     const weatherIconSize = 100;
+    const PADDING_LEFT = 7;
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
@@ -60,10 +61,24 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, filter: [WeatherProps.windBeaufort] });
-        const w2 = w / 2;
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
+        let iconRight = PADDING_LEFT;
+        for (let index = 0; index < smallItemsToDraw.length; index++) {
+            const c = smallItemsToDraw[index];
 
-        const nbLines = Math.round(centeredItemsToDraw.length / 2);
+            const paint = c.paint || textIconPaint;
+            paint.setTextAlign(Align.LEFT);
+            paint.setTextSize(c.iconFontSize);
+            paint.setColor(c.color || colorOnSurface);
+            if (c.customDraw) {
+                const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - 7 - 15 * $fontScale, false);
+                iconRight += result;
+            } else if (c.icon) {
+                canvas.drawText(c.icon, iconRight, h - 7, paint);
+                iconRight += 24 * $fontScale;
+            }
+        }
+        const centeredItemsToDraw = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], type: 'daily' });
 
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);

@@ -17,6 +17,7 @@ import { cloudyColor, fontScale, fonts, rainColor, scatteredCloudyColor, snowCol
 import { colorForAqi } from './airQualityData';
 import { iconService } from './icon';
 import { prefs } from './preferences';
+import { isEInk } from '~/helpers/theme';
 
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
@@ -59,6 +60,7 @@ export function propToUnit(prop: WeatherProps, item?: CommonWeatherData) {
             return unitsSettings[UNIT_FAMILIES.Pressure];
         case WeatherProps.iso:
         case WeatherProps.cloudCeiling:
+        case WeatherProps.rainSnowLimit:
             return unitsSettings[UNIT_FAMILIES.Distance];
         case WeatherProps.cloudCover:
         case WeatherProps.precipProbability:
@@ -602,7 +604,7 @@ export class DataService extends Observable {
                         iconFontSize,
                         paint: wiPaint,
                         backgroundColor: item.windGust > 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
-                        color: item.windGust > 80 ? '#ffffff' : item.windGust > 50 ? '#222' : '#FFBC03',
+                        color: item.windGust > 80 ? (isEInk ? '#000000' : '#ffffff') : item.windGust > 50 ? '#222' : '#FFBC03',
                         icon,
                         value: data[0],
                         subvalue: data[1],
@@ -659,7 +661,11 @@ export class DataService extends Observable {
                                 // then if we do it too soon the paint getDrawTextAttribs is going to use that new
                                 // color and thus we loose the color set before for the text
                                 const height = staticLayout.getHeight();
-                                textPaint.setColor(data.backgroundColor);
+                                if (isEInk) {
+                                    textPaint.setStyle(Style.STROKE);
+                                } else {
+                                    textPaint.setColor(data.backgroundColor);
+                                }
                                 switch (textPaint.getTextAlign()) {
                                     case Align.CENTER:
                                         canvas.drawRoundRect(-width / 2 - 4, -1, width / 2 + 4, height - 0, 4, 4, textPaint);
@@ -670,6 +676,9 @@ export class DataService extends Observable {
                                     case Align.RIGHT:
                                         canvas.drawRoundRect(-width - 4, -1, -4, height - 0, 4, 4, textPaint);
                                         break;
+                                }
+                                if (isEInk) {
+                                    textPaint.setStyle(Style.FILL);
                                 }
                                 textPaint.setColor(oldColor);
                             }

@@ -8,6 +8,7 @@
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '@shared/utils/svelte/ui';
     import { colors, fontScale, weatherDataLayout } from '~/variables';
+    import { isEInk } from '~/helpers/theme';
 
     let textPaint: Paint;
     let textIconPaint: Paint;
@@ -49,7 +50,9 @@
         const w2 = w / 2;
         const h = canvas.getHeight();
         paint.setColor(item.color);
-        canvas.drawRect(w - 5, 0, w, h, paint);
+        if (!isEInk) {
+            canvas.drawRect(w - 5, 0, w, h, paint);
+        }
         paint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, paint);
 

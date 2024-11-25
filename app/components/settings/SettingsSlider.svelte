@@ -68,7 +68,7 @@
     // }
 </script>
 
-<gridlayout {...$$restProps} columns="auto,*,auto" padding="10 10 10 10" rows="auto,auto, auto">
+<gridlayout {...$$restProps} columns="auto,*,auto" padding="10 10 10 10" rows="auto,auto,auto">
     <!-- <canvasview bind:this={canvas} on:draw={onDraw} /> -->
 
     <label color={colorOnSurface} fontFamily={$fonts.mdi} fontSize={24} text={icon} verticalTextAlignment="center" visibility={icon ? 'visible' : 'collapse'} />
@@ -82,7 +82,7 @@
         text={subtitle}
         verticalTextAlignment="center"
         visibility={subtitle && subtitle.length > 0 ? 'visible' : 'collapse'} />
-    <label col={2} color={colorOnSurface} fontSize={15} text={valueFormatter(actualValue)} textAlignment="right" verticalTextAlignment="center" />
+    <label col={2} color={colorOnSurface} fontSize={15} text={valueFormatter(actualValue)} textAlignment="right" verticalTextAlignment="center" ios:margin={4} />
     <label col={2} color={colorOnSurface} fontSize={15} row={2} text={formatter(max)} textAlignment="right" verticalTextAlignment="center" />
     <label color={colorOnSurface} fontSize={15} row={2} text={formatter(min)} verticalTextAlignment="center" />
     <slider
@@ -91,7 +91,8 @@
         maxValue={max}
         minValue={min}
         row={2}
-        stepSize={step}
+        android:stepSize={step}
+        ios:margin={10}
         trackBackgroundColor="#aaaaaa88"
         value={actualValue}
         verticalAlignment="bottom"

@@ -619,7 +619,7 @@
                     backgroundColor={new Color(colorBackground).setAlpha(100).hex}
                     fontSize={10}
                     horizontalAlignment="right"
-                    marginBottom={$windowInset.bottom}
+                    android:marginBottom={$windowInset.bottom}
                     marginRight={6}
                     row="1"
                     text={$slc('powered_by', l(`provider.${provider}`))}

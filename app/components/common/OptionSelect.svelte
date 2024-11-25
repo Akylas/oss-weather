@@ -33,6 +33,9 @@
     export let borderRadius = 8;
     export let rowHeight = null;
     export let autofocus = false;
+    export let estimatedItemSize = true;
+    export let autoSize = false;
+    export let isScrollEnabled = false;
     export let width: string | number = '*';
     export let containerColumns: string = '*';
     export let autoSizeListItem: boolean = false;
@@ -228,7 +231,7 @@
                     }} />
             </gridlayout>
         {/if}
-        <collectionView {itemTemplateSelector} items={filteredOptions} row={2} {rowHeight} on:dataPopulated={onDataPopulated} ios:contentInsetAdjustmentBehavior={2}>
+        <collectionView {itemTemplateSelector} items={filteredOptions} row={2} {rowHeight} on:dataPopulated={onDataPopulated} ios:contentInsetAdjustmentBehavior={2} {estimatedItemSize} {isScrollEnabled} {autoSize}>
             <Template key="checkbox" let:item>
                 <svelte:component
                     this={component}

@@ -7,11 +7,12 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { SETTINGS_WEATHER_MAP_ANIMATION_SPEED, SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES } from '~/helpers/constants';
-    import { lc } from '~/helpers/locale';
+    import { l, lc } from '~/helpers/locale';
     import { hideLoading, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
     import { actionBarHeight, screenWidthDips, systemFontScale } from '~/variables';
     import { debounce } from '@nativescript/core/utils';
     import { rowHeightProperty } from '@akylas/nativescript/ui/list-view';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
 </script>
 
 <script lang="ts">
@@ -41,7 +42,7 @@
         }
     }
 
-    async function seletMapColors() {
+    async function seletMapColors(event) {
         const values = WEATHER_MAP_COLOR_SCHEMES;
         const currentValue = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS);
         let selectedIndex = -1;
@@ -58,22 +59,23 @@
                 value: selected
             };
         });
-        const result = await showAlertOptionSelect(
-            {
-                height: Math.min(values.length * 56, 400),
-                rowHeight: 56,
-                selectedIndex,
-                options
-            },
-            {
-                title: lc('weather_map_colors')
+        const result = await showPopoverMenu({
+            options,
+            anchor: event.object,
+            vertPos: VerticalPosition.BELOW,
+            props: {
+                async onCheckBox(item, value, e) {
+                    closePopover();
+                    DEV_LOG && console.log('onCheckBox', item, value);
+                    if (item !== undefined) {
+                        await saveCurrentMapParameters();
+                        colors = parseInt(item.data, 10);
+                        ApplicationSettings.setNumber(SETTINGS_WEATHER_MAP_COLORS, colors);
+                    }
+                },
+                selectedIndex
             }
-        );
-        if (result?.data !== undefined) {
-            await saveCurrentMapParameters();
-            colors = parseInt(result.data, 10);
-            ApplicationSettings.setNumber(SETTINGS_WEATHER_MAP_COLORS, colors);
-        }
+        });
     }
 
     async function saveCurrentMapParameters() {
@@ -112,9 +114,12 @@
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
                 props: {
+                    height: 'auto',
+                    estimatedItemSize: false,
+                    autoSize: true,
+                    isScrollEnabled: false,
                     width: screenWidthDips * 0.7,
-                    autoSizeListItem: true,
-                    height: 'auto'
+                    autoSizeListItem: true
                 },
                 onChange: debounce(async (item, value) => {
                     DEV_LOG && console.log('onChange', value);

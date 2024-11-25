@@ -342,15 +342,7 @@ export function updateThemeColors(theme: string, colorTheme: ColorThemes = Appli
         });
     } else {
         const themeColors = require(`~/themes/${colorTheme}.json`);
-        if (theme === 'dark' || theme === 'black') {
-            Object.assign(currentColors, themeColors.dark);
-            if (theme === 'black') {
-                currentColors.colorBackground = '#000000';
-                currentColors.colorSurfaceContainer = '#000000';
-            }
-        } else {
-            Object.assign(currentColors, themeColors.light);
-        }
+        Object.assign(currentColors, theme === 'dark' || theme === 'black' ? themeColors.dark : themeColors.light);
 
         themer.setPrimaryColor(currentColors.colorPrimary);
         themer.setOnPrimaryColor(currentColors.colorOnPrimary);
@@ -358,6 +350,11 @@ export function updateThemeColors(theme: string, colorTheme: ColorThemes = Appli
         themer.setSecondaryColor(currentColors.colorSecondary);
         themer.setSurfaceColor(currentColors.colorSurface);
         themer.setOnSurfaceColor(currentColors.colorOnSurface);
+    }
+
+    if (theme === 'black') {
+        currentColors.colorBackground = '#000000';
+        currentColors.colorSurfaceContainer = '#000000';
     }
 
     currentColors.colorWidgetBackground = new Color(currentColors.colorSurfaceContainer).setAlpha(230).hex;

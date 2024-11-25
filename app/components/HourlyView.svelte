@@ -4,11 +4,12 @@
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyItem from '~/components/HourlyItem.svelte';
-    import { onThemeChanged } from '~/helpers/theme';
+    import { isEInk, onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
     import { colors, fontScale, onUnitsChanged } from '~/variables';
 
-    $: ({ colorBackground } = $colors);
+    let { colorBackground, colorOutline } = $colors;
+    $: ({ colorBackground, colorOutline } = $colors);
 
     export let items: any[];
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -41,7 +42,7 @@
     }
 </script>
 
-<gridlayout {...$$restProps}>
+<gridlayout borderBottomColor={colorOutline} borderBottomWidth={isEInk ? 1 : 0} {...$$restProps}>
     <collectionview
         bind:this={collectionView}
         id="hourly"

@@ -32,11 +32,12 @@ if (theme.length === 0) {
 }
 export const sTheme = writable('auto');
 export const currentTheme = writable('auto');
-export const currentColorTheme = writable(DEFAULT_COLOR_THEME);
 
 colorTheme = getString(SETTINGS_COLOR_THEME, DEFAULT_COLOR_THEME) as ColorThemes;
+export const currentColorTheme = writable(colorTheme);
 
 export let useDynamicColors = colorTheme === 'dynamic';
+export let isEInk = colorTheme === 'eink';
 
 let started = false;
 let autoDarkToBlack = getBoolean('auto_black', false);
@@ -255,6 +256,7 @@ export function start(force = false) {
         const oldColorTheme = colorTheme;
         colorTheme = newColorTheme;
         useDynamicColors = colorTheme === 'dynamic';
+        isEInk = colorTheme === 'eink';
         currentColorTheme.set(colorTheme);
         if (__ANDROID__) {
             if (colorTheme !== DEFAULT_COLOR_THEME) {

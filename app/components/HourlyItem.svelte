@@ -1,20 +1,43 @@
 <script context="module" lang="ts">
-    import { Align, LinearGradient, Paint, Path, Style } from '@nativescript-community/ui-canvas';
-    import { Color } from '@nativescript/core';
+    import {
+        Align,
+        BitmapShader,
+        LayoutAlignment,
+        LinearGradient,
+        Paint,
+        Path,
+        PorterDuff,
+        PorterDuffMode,
+        PorterDuffXfermode,
+        StaticLayout,
+        Style,
+        TileMode
+    } from '@nativescript-community/ui-canvas';
+    import { Color, ImageSource } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
+    import { isEInk } from '~/helpers/theme';
     import { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient } from '~/utils/utils.common';
     import { alwaysShowPrecipProb, colors, fontScale } from '~/variables';
 
+    const einkBmpShader = isEInk ? new BitmapShader(ImageSource.fromFileSync('~/assets/images/pattern.png'), TileMode.REPEAT, TileMode.REPEAT) : null;
+
+    const BOTTOM_INSET = isEInk ? 0 : 10;
+
     const textPaint = new Paint();
     textPaint.setTextAlign(Align.CENTER);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
+    const whitePaint = isEInk ? new Paint() : null;
     const pathPaint = new Paint();
+    if (isEInk) {
+        whitePaint.setColor('#ffffff');
+        pathPaint.setColor('#7f7f7f');
+    }
     pathPaint.setStrokeWidth(5);
     pathPaint.setStyle(Style.STROKE);
     const curvePath = new Path();
@@ -50,6 +73,17 @@
         redraw();
     }
     const weatherIconSize = 40;
+
+    function drawEInkText(canvas, text, x, y) {
+        canvas.save();
+        const staticLayout = new StaticLayout(text, textPaint, canvas.getWidth(), LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
+        const width = staticLayout.getLineWidth(0);
+        const height = staticLayout.getHeight();
+        canvas.translate(x, y - height);
+        canvas.drawRoundRect(-width / 2 - 2, -1, width / 2 + 4, height - 0, 4, 4, whitePaint);
+        staticLayout.draw(canvas);
+        canvas.restore();
+    }
     function drawOnCanvas(event) {
         const endDay = getLocalTime(undefined, item.timezoneOffset).endOf('d').valueOf();
         const canvas = getCanvas(event.canvas); // simple trick to get typings
@@ -58,38 +92,46 @@
         const h = canvas.getHeight();
         textPaint.setFontWeight('normal');
 
-        if (item.odd) {
+        if (!isEInk && item.odd) {
             canvas.drawColor(oddColor);
         }
         let color;
         const precipProbability = item.precipProbability;
         if ((precipProbability === -1 || precipProbability > 0) && precipitationHeight > 0) {
-            const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - 10);
+            const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - BOTTOM_INSET);
             paint.setColor(item.precipColor);
             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
-            canvas.drawRect(0, precipTop, w, h - 10, paint);
-            // if ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1) {
-            //     textPaint.setTextSize(10 * $fontScale);
-            //     textPaint.setColor(colorOnSurface);
-            //     textPaint.setAlpha(150);
-            //     if (precipProbability > 0) {
-            //         canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - 22 * $fontScale, textPaint);
-            //     }
-            //     canvas.drawText(formatWeatherValue(item, item.precipShowSnow ? WeatherProps.snowfall : WeatherProps.precipAccumulation), w2, h - 12 * $fontScale, textPaint);
-            // }
+            if (isEInk) {
+                paint.setShader(einkBmpShader);
+                canvas.drawRect(0, precipTop, w, h - BOTTOM_INSET, paint);
+                paint.setShader(null);
+                paint.setStyle(Style.STROKE);
+            }
+            canvas.drawRect(0, precipTop, w, h - BOTTOM_INSET, paint);
+            if (isEInk) {
+                paint.setStyle(Style.FILL);
+            }
         }
         if (($alwaysShowPrecipProb && (precipProbability > 0 || item.precipAccumulation >= 0.1)) || ((precipProbability === -1 || precipProbability > 10) && item.precipAccumulation >= 0.1)) {
-            let deltaY = 12;
+            let deltaY = BOTTOM_INSET + 2;
             textPaint.setTextSize(10 * $fontScale);
             textPaint.setColor(colorOnSurface);
             textPaint.setAlpha(150);
 
             if (item.precipAccumulation >= 0.1) {
-                canvas.drawText(formatWeatherValue(item, WeatherProps.precipAccumulation), w2, h - deltaY * $fontScale, textPaint);
+                if (isEInk) {
+                    drawEInkText(canvas, formatWeatherValue(item, WeatherProps.precipAccumulation), w2, h);
+                } else {
+                    canvas.drawText(formatWeatherValue(item, WeatherProps.precipAccumulation), w2, h - deltaY * $fontScale, textPaint);
+                }
                 deltaY += 10;
             }
             if (precipProbability > 0) {
-                canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - deltaY * $fontScale, textPaint);
+                if (isEInk) {
+                    drawEInkText(canvas, formatWeatherValue(item, WeatherProps.precipProbability), w2, h - deltaY * $fontScale);
+                } else {
+                    canvas.drawText(formatWeatherValue(item, WeatherProps.precipProbability), w2, h - deltaY * $fontScale, textPaint);
+                }
             }
         }
         canvas.save();
@@ -99,10 +141,12 @@
 
         canvas.translate(0, lineOffset);
         if (item.curveTempPoints) {
-            if (!lastGradient || lastGradient.min !== item.min || lastGradient.max !== item.max) {
-                lastGradient = generateGradient(5, item.min, item.max, pHeight + 33, 0);
+            if (!isEInk) {
+                if (!lastGradient || lastGradient.min !== item.min || lastGradient.max !== item.max) {
+                    lastGradient = generateGradient(5, item.min, item.max, pHeight + 33, 0);
+                }
+                pathPaint.setShader(lastGradient.gradient);
             }
-            pathPaint.setShader(lastGradient.gradient);
             const points: number[] = item.curveTempPoints.slice();
             if (item.index === 0) {
                 points.unshift(points[0], points[0], points[0]);
@@ -175,7 +219,7 @@
         //     textPaint.setAlpha(255);
         //     paint.setAlpha(255);
         // }
-        if (item.aqi && item.aqiColor) {
+        if (!isEInk && item.aqi && item.aqiColor) {
             paint.setColor(item.aqiColor);
             canvas.drawRect(0, 0, w, 3, paint);
             // paint.setColor(item.color);
@@ -183,7 +227,9 @@
             // } else {
         }
         paint.setColor(item.color);
-        canvas.drawRect(0, h - 10, w, h, paint);
+        if (!isEInk) {
+            canvas.drawRect(0, h - BOTTOM_INSET, w, h, paint);
+        }
 
         textPaint.setFontWeight('bold');
         textPaint.setColor(colorOnSurface);
@@ -207,27 +253,6 @@
         const windGustData = weatherDataService.getItemData(WeatherProps.windGust, item);
         if (windGustData) {
             windGustData.customDraw(canvas, $fontScale, paint, windGustData, w2, iconDecale + 4 - 18 + iconDeltaY);
-            // textPaint.setTextSize(11 * $fontScale);
-            // textPaint.setColor(windGustData.textColor);
-            // const staticLayout = new StaticLayout(`${windGustData.value} ${windGustData.subvalue}`, textPaint, w, LayoutAlignment.ALIGN_NORMAL, 1, 0, false);
-
-            // canvas.save();
-            // canvas.translate(w2, iconDecale + 4 - 18 + iconDeltaY);
-            // if (windGustData.color) {
-            //     const oldColor = textPaint.getColor();
-            //     const width = staticLayout.getWidth();
-            //     // this fixes a current issue with the Paint getDrawTextAttribs is set on Paint in getHeight
-            //     // if we change the paint color to draw the rect
-            //     // then if we do it too soon the paint getDrawTextAttribs is going to use that new
-            //     // color and thus we loose the color set before for the text
-            //     const height = staticLayout.getHeight();
-            //     textPaint.setColor(windGustData.color);
-            //     canvas.drawRoundRect(-width / 2 + 8, -1, width / 2 - 8, height - 0, 4, 4, textPaint);
-            //     textPaint.setColor(oldColor);
-            // }
-
-            // staticLayout.draw(canvas);
-            // canvas.restore();
         }
     }
     async function onTap() {

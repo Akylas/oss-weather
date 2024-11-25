@@ -60,6 +60,7 @@ export function propToUnit(prop: WeatherProps, item?: CommonWeatherData) {
             return unitsSettings[UNIT_FAMILIES.Pressure];
         case WeatherProps.iso:
         case WeatherProps.cloudCeiling:
+        case WeatherProps.rainSnowLimit:
             return unitsSettings[UNIT_FAMILIES.Distance];
         case WeatherProps.cloudCover:
         case WeatherProps.precipProbability:

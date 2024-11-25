@@ -2117,7 +2117,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/perms@npm:2.3.4, @nativescript-community/perms@npm:^2.2.21, @nativescript-community/perms@npm:^2.3.0":
+"@nativescript-community/perms@npm:2.3.5":
+  version: 2.3.5
+  resolution: "@nativescript-community/perms@npm:2.3.5"
+  checksum: 3e304cfa8134ae4c572688b76549163d748928f26196b4824f2e84457a72e0f7edc630d14f33b3585c832c4cef709b4d45c39143a42839bdebf211fc37b24b98
+  languageName: node
+  linkType: hard
+
+"@nativescript-community/perms@npm:^2.2.21, @nativescript-community/perms@npm:^2.3.0":
   version: 2.3.4
   resolution: "@nativescript-community/perms@npm:2.3.4"
   checksum: 82d75cebc29064e7fad19670e83610a347756d5ae40b039f933dd4fd9b3c1fa404ce448693fa34b54df16e470672568f9692f43aa8bfbfe26e563c5f4b9ff8fb
@@ -2222,23 +2229,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-collectionview-swipemenu@npm:6.0.1":
-  version: 6.0.1
-  resolution: "@nativescript-community/ui-collectionview-swipemenu@npm:6.0.1"
+"@nativescript-community/ui-collectionview-swipemenu@npm:6.0.2":
+  version: 6.0.2
+  resolution: "@nativescript-community/ui-collectionview-swipemenu@npm:6.0.2"
   dependencies:
     "@nativescript-community/class-mixins": "npm:^1.0.0"
-    "@nativescript-community/ui-collectionview": "npm:^6.0.1"
+    "@nativescript-community/ui-collectionview": "npm:^6.0.2"
     "@nativescript-community/ui-drawer": "npm:^0.1.27"
-  checksum: bba3526fcf225f188f505bde5c8cfd71a5f24bd8f60a6a67d05e2b480c60e323cf53e063147729c7bafb37018c5750811859c2e561468f59e307e0ceac63c11f
+  checksum: 516869774ea8a65d2c4701f2f2eb4045fdb0cd4344ca86bb0d54e9b383e9d1a91f77bde0c575432a46936e9d0fd93bf1e5545149cb57f7fb11eb3bd773d5548b
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-collectionview@npm:6.0.1, @nativescript-community/ui-collectionview@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "@nativescript-community/ui-collectionview@npm:6.0.1"
+"@nativescript-community/ui-collectionview@npm:6.0.2, @nativescript-community/ui-collectionview@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "@nativescript-community/ui-collectionview@npm:6.0.2"
   dependencies:
     "@nativescript-community/arraybuffers": "npm:^1.1.5"
-  checksum: 5473291f4ad5610e40a20a61776d894d295e9550a8a2590d300193cf45ae1d1b99eb90f6edce35681a169f600aeed590eca5b369c25fd620d42e5e65925c9178
+  checksum: 431b862c2eb551fbff45197b82088f73e0f3c9b756f92b0a21938823c48802ffd2d36febc582e8c1c164a93db7865cab254b483620b3787fea4059ac04c58a18
   languageName: node
   linkType: hard
 
@@ -12047,7 +12054,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@akylas/address-formatter": "npm:5.3.1"
-    "@akylas/nativescript": "npm:8.8.8"
+    "@akylas/nativescript": "npm:8.8.9"
     "@akylas/nativescript-android-runtime": "npm:8.8.5"
     "@akylas/nativescript-app-tools": "file:tools"
     "@akylas/nativescript-app-utils": "npm:2.2.0"
@@ -12065,7 +12072,7 @@ __metadata:
     "@nativescript-community/https": "npm:4.1.19"
     "@nativescript-community/l": "npm:4.3.10"
     "@nativescript-community/licenses": "npm:2.0.9"
-    "@nativescript-community/perms": "npm:2.3.4"
+    "@nativescript-community/perms": "npm:2.3.5"
     "@nativescript-community/preferences": "npm:1.3.2"
     "@nativescript-community/sentry": "npm:4.6.38"
     "@nativescript-community/systemui": "npm:1.1.23"
@@ -12074,8 +12081,8 @@ __metadata:
     "@nativescript-community/ui-canvaslabel": "npm:1.2.38"
     "@nativescript-community/ui-chart": "npm:2.0.21"
     "@nativescript-community/ui-checkbox": "npm:^2.0.12"
-    "@nativescript-community/ui-collectionview": "npm:6.0.1"
-    "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.1"
+    "@nativescript-community/ui-collectionview": "npm:6.0.2"
+    "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.2"
     "@nativescript-community/ui-document-picker": "npm:1.1.26"
     "@nativescript-community/ui-drawer": "npm:0.1.28"
     "@nativescript-community/ui-image": "npm:4.5.4"

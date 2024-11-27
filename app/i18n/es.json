@@ -62,6 +62,7 @@
     "color_theme": {
         "default": "por defecto",
         "dynamic": "colores dinámicos",
+        "eink": "eink",
         "title": "Color del tema"
     },
     "comments": "comentarios",
@@ -233,6 +234,7 @@
     "search_city": "Buscar",
     "search_location": "Buscar ubicación",
     "select": "Seleccionar",
+    "select_color_theme": "seleccione el color del tema",
     "select_data": "seleccionar datos",
     "select_language": "seleccionar el idioma",
     "select_location": "Seleccionar una ubicación",

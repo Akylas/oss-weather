@@ -5,7 +5,7 @@
     import { onMount } from 'svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { WeatherLocation, prepareItems } from '~/services/api';
-    import { colors } from '~/variables';
+    import { colors, windowInset } from '~/variables';
     import CActionBar from '../common/CActionBar.svelte';
     import dayjs from 'dayjs';
     import { WeatherData } from '~/services/providers/weather';
@@ -26,6 +26,7 @@
     let fontScale = ApplicationSettings.getNumber('fontscale', 1);
     onMount(async () => {});
     function setFontScale(value) {
+        DEV_LOG && console.log('setFontScale', value);
         fontScale = value;
         ApplicationSettings.setNumber('fontscale', fontScale);
     }
@@ -33,13 +34,13 @@
 </script>
 
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,*,auto">
+    <gridlayout rows="auto,*,auto" android:paddingBottom={$windowInset.bottom}>
         <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={1}>
             <WeatherComponent {fakeNow} {items} {weatherLocation} />
         </gridlayout>
         <gridlayout columns="*,auto,auto" row={2}>
             <slider maxValue={2} minValue={0.5} value={fontScale} on:valueChange={(e) => setFontScale(e.value)} />
-            <label col={1} text={fontScale.toFixed(1)} verticalTextAlignment="middle" />
+            <label col={1} text={fontScale.toFixed(2)} verticalTextAlignment="middle" />
             <mdbutton col={2} text={lc('reset')} variant="text" verticalAlignment="middle" on:tap={() => setFontScale(1)} />
         </gridlayout>
         <CActionBar title={lc('font_scale')} />

@@ -1,0 +1,8 @@
+Features:
+- option to change layer opacity in weather map
+- hourly uvIndex when provided by the provider (MeteoFrance does not provide it)
+
+Bug fixes:
+- layout fix for font size setting screen
+- allow small icons in current weather view
+- Translations update

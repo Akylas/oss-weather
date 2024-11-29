@@ -1,4 +1,4 @@
-<script lang="ts">
+<script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { CombinedChart, LineChart } from '@nativescript-community/ui-chart';
@@ -8,7 +8,6 @@
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ApplicationSettings, Color, Utils } from '@nativescript/core';
-    import { createEventDispatcher } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
@@ -23,8 +22,11 @@
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
     import HourlyChartView from './HourlyChartView.svelte';
-    const dispatch = createEventDispatcher();
 
+    const PADDING_LEFT = 7;
+</script>
+
+<script lang="ts">
     let showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
     prefs.on(`key:${SETTINGS_MAIN_PAGE_HOURLY_CHART}`, () => {
         showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
@@ -60,7 +62,7 @@
     }
     let lineChart: NativeViewElementNode<LineChart>;
     const weatherIconSize = 140;
-    const topViewHeight = 210 * $fontScale;
+    const topViewHeight = 230 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -340,7 +342,25 @@
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
 
-        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, type: 'currently' });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'currently' });
+        let iconRight = PADDING_LEFT;
+        const iconsBottom = 30;
+        for (let index = 0; index < smallItemsToDraw.length; index++) {
+            const c = smallItemsToDraw[index];
+
+            const paint = c.paint || textIconPaint;
+            paint.setTextAlign(Align.LEFT);
+            paint.setTextSize(c.iconFontSize);
+            paint.setColor(c.color || colorOnSurface);
+            if (c.customDraw) {
+                const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - iconsBottom - 15 * $fontScale, false);
+                iconRight += result;
+            } else if (c.icon) {
+                canvas.drawText(c.icon, iconRight, h - iconsBottom, paint);
+                iconRight += 24 * $fontScale;
+            }
+        }
+        const centeredItemsToDraw = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], type: 'currently' });
         canvas.clipRect(0, 0, w - weatherIconSize * (2 - $fontScale), h);
         switch ($weatherDataLayout) {
             case 'line': {
@@ -489,18 +509,10 @@
         horizontalAlignment="left"
     /> -->
     <!-- the gridlayout is there to ensure a max width for the chart -->
-    <gridlayout height={90} marginBottom={30} verticalAlignment="bottom" width={300}>
+    <gridlayout height={90} marginBottom={60} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon
-        {animated}
-        col={1}
-        horizontalAlignment="right"
-        iconData={[item.iconId, item.isDay]}
-        marginTop={15}
-        size={weatherIconSize * (2 - $fontScale)}
-        verticalAlignment="middle"
-        on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}

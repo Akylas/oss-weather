@@ -7,7 +7,7 @@ import { ApplicationSettings, Color, Observable } from '@nativescript/core';
 import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
 import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
-import { MIN_UV_INDEX } from '~/helpers/constants';
+import { MIN_UV_INDEX, SETTINGS_MIN_UV_INDEX } from '~/helpers/constants';
 import { convertValueToUnit, formatValueToUnit } from '~/helpers/formatter';
 import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
 import type { CommonWeatherData, WeatherData } from '~/services/providers/weather';
@@ -326,11 +326,11 @@ export class DataService extends Observable {
         this.load();
 
         const setminUVIndexToShow = () => {
-            this.minUVIndexToShow = ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX);
+            this.minUVIndexToShow = ApplicationSettings.getNumber(SETTINGS_MIN_UV_INDEX, MIN_UV_INDEX);
         };
         setminUVIndexToShow();
         // prefs.on('key:common_data', this.load, this);
-        prefs.on('key:min_uv_index', setminUVIndexToShow);
+        prefs.on(`key:${SETTINGS_MIN_UV_INDEX}`, setminUVIndexToShow);
     }
     currentWeatherData: WeatherProps[] = [];
     currentSmallWeatherData: WeatherProps[] = [];

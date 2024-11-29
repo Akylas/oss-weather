@@ -126,6 +126,7 @@ export class OWMProvider extends WeatherProvider {
                 d.temperature = feelsLikeTemperatures ? data.feels_like : data.temp;
                 d.apparentTemperature = data.feels_like;
                 d.usingFeelsLike = feelsLikeTemperatures;
+                d.uvIndex = data.uvi;
 
                 d.windBearing = data.wind_deg;
                 const nextData = hasNext ? forecast.hourly[index + 1] : undefined;

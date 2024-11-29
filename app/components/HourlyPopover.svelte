@@ -10,6 +10,7 @@
     import { colors, fontScale } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
     import { NativeViewElementNode } from 'svelte-native/dom';
+    import { WeatherDataType } from '~/helpers/formatter';
 
     const labelPaint = new Paint();
     let canvas: NativeViewElementNode<CanvasView>;
@@ -28,7 +29,13 @@
         if (!item) {
             return;
         }
-        data = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], addedBefore: [WeatherProps.temperature], addedAfter: [WeatherProps.rainSnowLimit, WeatherProps.iso] });
+        data = weatherDataService.getAllIconsData({
+            item,
+            filter: [WeatherProps.windBeaufort],
+            addedBefore: [WeatherProps.temperature],
+            addedAfter: [WeatherProps.rainSnowLimit, WeatherProps.iso],
+            type: 'hourly'
+        });
         height = data.length * 19 * $fontScale;
         canvas?.nativeView?.invalidate();
     }
@@ -48,7 +55,7 @@
 
             const nativeText = createNativeAttributedString({
                 spans: [
-                    c.value
+                    c.value !== undefined
                         ? {
                               fontSize: 14 * $fontScale,
                               //   verticalAlignment: 'center',
@@ -56,7 +63,7 @@
                               text: c.value + (c.subvalue ? ' ' : '\n')
                           }
                         : undefined,
-                    c.subvalue
+                    c.subvalue !== undefined
                         ? {
                               fontSize: 11 * $fontScale,
                               color: c.color || colorOnSurface,

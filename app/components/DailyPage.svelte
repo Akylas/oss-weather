@@ -61,7 +61,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'daily' });
         let iconRight = PADDING_LEFT;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];

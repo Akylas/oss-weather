@@ -56,7 +56,7 @@ export const OM_MODELS = {
 export const API_KEY_VALUES = {
     forecast: ({ current, currentData, feelsLikeTemperatures, minutely }: { currentData: WeatherProps[]; feelsLikeTemperatures: boolean; current: boolean; minutely: boolean }) => ({
         hourly:
-            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,is_day' +
+            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,is_day,uv_index' +
             (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m,winddirection_10m' : '') +
             (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m' : '') +
             (currentData.includes(WeatherProps.cloudCover) ? ',cloudcover' : '') +
@@ -301,6 +301,8 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 d.apparentTemperature = apparentTemperature[index];
             }
             d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', model)[index];
+            d.uvIndex = this.getDataArray(hourly, 'uv_index', model)[index];
+
             d.usingFeelsLike = feelsLikeTemperatures;
             const windBearing = this.getDataArray(hourly, 'winddirection_10m', model);
             if (windBearing) {

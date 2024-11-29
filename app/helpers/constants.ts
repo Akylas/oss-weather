@@ -20,6 +20,7 @@ export const SETTINGS_FEELS_LIKE_TEMPERATURES = 'feels_like_temperatures';
 export const SETTINGS_SHOW_DAILY_IN_CURRENTLY = 'show_daily_in_currently';
 export const SETTINGS_SHOW_CURRENT_DAY_DAILY = 'show_current_day_daily';
 export const SETTINGS_WEATHER_DATA_LAYOUT = 'weather_data_layout';
+export const SETTINGS_MIN_UV_INDEX = 'min_uv_index';
 
 export const DEFAULT_COLOR_THEME = 'default';
 
@@ -42,7 +43,7 @@ export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;
 export const NB_MINUTES_FORECAST = 60;
 
-export const MIN_UV_INDEX = 1;
+export const MIN_UV_INDEX = 0;
 
 export const WEATHER_MAP_COLORS = 4;
 export const WEATHER_MAP_ANIMATION_SPEED = 100;

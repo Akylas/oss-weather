@@ -107,7 +107,7 @@
         //     canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
         // }
 
-        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'daily' });
         let iconRight = PADDING_LEFT;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];

@@ -25,6 +25,7 @@
     const position = (urlParamers['position'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike;
     const mapCenter = (urlParamers['mapCenter'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike;
     const zoom = parseFloat(urlParamers['zoom'] || '8');
+    let layerOpacity = parseFloat(urlParamers['opacity'] || '0.8');
     let animationSpeed = parseFloat(urlParamers['animationSpeed'] || '100');
     const animated = (urlParamers['animated'] || 'false') === 'true';
     const colors = urlParamers['colors'] || '1';
@@ -135,7 +136,7 @@
             // }, 50);
             // }, 400);
         }
-        map.setPaintProperty(`rainviewer_${frame.path}`, 'raster-opacity', 1, { validate: false });
+        map.setPaintProperty(`rainviewer_${frame.path}`, 'raster-opacity', layerOpacity, { validate: false });
     }
     function startStopAnimation() {
         if (animationInterval) {
@@ -204,6 +205,11 @@
             stopAnimation();
             startStopAnimation()
         }
+    };
+    //@ts-ignore
+    window.setLayerOpacity = function (value) {
+        layerOpacity = value;
+        refreshMap();
     };
 </script>
 

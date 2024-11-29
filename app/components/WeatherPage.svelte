@@ -135,7 +135,7 @@
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
                 props: {
-                    width: 220 * $systemFontScale,
+                    width: 220 * $fontScale,
                     maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
                     // autoSizeListItem: true
                 },

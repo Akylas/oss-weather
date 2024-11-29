@@ -34,7 +34,7 @@
         <cgroup paddingBottom={item.subtitle ? 10 : 0} verticalAlignment="middle">
             <cspan fontFamily={leftIconFonFamily} fontSize={iconFontSize * $fontScale} paddingLeft="8" text={item.icon} visibility={item.icon ? 'visible' : 'hidden'} width={iconFontSize * 2} />
         </cgroup>
-        <cgroup paddingLeft={(item.icon ? 38 : 0) + extraPaddingLeft} textAlignment="left" verticalAlignment="middle">
+        <cgroup paddingLeft={(item.icon ? 38 * $fontScale : 0) + extraPaddingLeft} textAlignment="left" verticalAlignment="middle">
             <cspan fontSize={(item.fontSize || fontSize) * $fontScale} {fontWeight} text={item.title || item.name} />
             <cspan
                 color={item.subtitleColor || subtitleColor || colorOnSurfaceVariant}

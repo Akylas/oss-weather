@@ -231,7 +231,16 @@
                     }} />
             </gridlayout>
         {/if}
-        <collectionView {itemTemplateSelector} items={filteredOptions} row={2} {rowHeight} on:dataPopulated={onDataPopulated} ios:contentInsetAdjustmentBehavior={2} {estimatedItemSize} {isScrollEnabled} {autoSize}>
+        <collectionView
+            {autoSize}
+            {estimatedItemSize}
+            {isScrollEnabled}
+            {itemTemplateSelector}
+            items={filteredOptions}
+            row={2}
+            {rowHeight}
+            on:dataPopulated={onDataPopulated}
+            ios:contentInsetAdjustmentBehavior={2}>
             <Template key="checkbox" let:item>
                 <svelte:component
                     this={component}

@@ -62,7 +62,7 @@
     }
     let lineChart: NativeViewElementNode<LineChart>;
     const weatherIconSize = 140;
-    const topViewHeight = 230 * $fontScale;
+    $: topViewHeight = 220 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -342,21 +342,21 @@
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
 
-        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'currently' });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'currently' }).reverse();
         let iconRight = PADDING_LEFT;
-        const iconsBottom = 30;
+        const iconsBottom = 26 * $fontScale;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];
 
             const paint = c.paint || textIconPaint;
-            paint.setTextAlign(Align.LEFT);
+            paint.setTextAlign(Align.RIGHT);
             paint.setTextSize(c.iconFontSize);
             paint.setColor(c.color || colorOnSurface);
             if (c.customDraw) {
-                const result = c.customDraw(canvas, $fontScale, paint, c, iconRight, h - iconsBottom - 15 * $fontScale, false);
+                const result = c.customDraw(canvas, $fontScale, paint, c, w - iconRight, h - iconsBottom - 15 * $fontScale, false);
                 iconRight += result;
             } else if (c.icon) {
-                canvas.drawText(c.icon, iconRight, h - iconsBottom, paint);
+                canvas.drawText(c.icon, w - iconRight, h - iconsBottom, paint);
                 iconRight += 24 * $fontScale;
             }
         }
@@ -367,7 +367,7 @@
                 textPaint.setTextAlign(Align.LEFT);
                 textIconPaint.setTextAlign(Align.CENTER);
                 textIconPaint.color = colorOutline;
-                const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
+                const iconsTop = (hasPrecip ? 45 : topViewHeight / 2 - 20) * $fontScale;
                 const lineHeight = 20 * $fontScale;
                 const lineWidth = 100 * $fontScale;
                 const nbLines = Math.ceil(centeredItemsToDraw.length / 2);
@@ -439,7 +439,7 @@
             }
             default:
             case 'default': {
-                const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
+                const iconsTop = (hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20) * $fontScale;
                 const iconsLeft = 26;
                 centeredItemsToDraw.forEach((c, index) => {
                     const x = index * 45 * $fontScale + iconsLeft;
@@ -509,7 +509,7 @@
         horizontalAlignment="left"
     /> -->
     <!-- the gridlayout is there to ensure a max width for the chart -->
-    <gridlayout height={90} marginBottom={60} verticalAlignment="bottom" width={300}>
+    <gridlayout height={90} marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
     <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />

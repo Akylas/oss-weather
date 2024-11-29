@@ -6,7 +6,15 @@
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
-    import { SETTINGS_WEATHER_MAP_ANIMATION_SPEED, SETTINGS_WEATHER_MAP_COLORS, SETTINGS_WEATHER_MAP_LAYER_OPACITY, WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_COLORS, WEATHER_MAP_COLOR_SCHEMES, WEATHER_MAP_LAYER_OPACITY } from '~/helpers/constants';
+    import {
+        SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
+        SETTINGS_WEATHER_MAP_COLORS,
+        SETTINGS_WEATHER_MAP_LAYER_OPACITY,
+        WEATHER_MAP_ANIMATION_SPEED,
+        WEATHER_MAP_COLORS,
+        WEATHER_MAP_COLOR_SCHEMES,
+        WEATHER_MAP_LAYER_OPACITY
+    } from '~/helpers/constants';
     import { l, lc } from '~/helpers/locale';
     import { hideLoading, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
     import { actionBarHeight, screenWidthDips, systemFontScale, windowInset } from '~/variables';

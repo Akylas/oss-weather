@@ -147,6 +147,7 @@
     "last_quarter": "azken laurdena",
     "last_updated": "Eguneratua",
     "later": "beranduago",
+    "layer_opacity": "geruzaren opakotasuna",
     "light": "Arina",
     "light_drizzle": "Zirimiri arina",
     "light_freezing_drizzle": "Zirimiri arin izoztua",
@@ -276,5 +277,15 @@
         "title": "Gaia"
     },
     "third_parties": "Hirugarrengoen liburutegiak",
-    "third_parties_desc": "Maite eta erabiltzen dugun softwarea"
+    "third_parties_desc": "Maite eta erabiltzen dugun softwarea",
+    "thunderstorm": "Trumoi-ekaitza",
+    "thunderstorms": "Trumoi-ekaitzak",
+    "timeout_error": "eskaerak denbora-muga gainditu du. Mesedez, zure internet konexioa egiaztatu eta saiatu berriro",
+    "turkish": "Turkiera",
+    "ukrainian": "Ukrainera",
+    "units": "unitateak",
+    "uv_index": "uv indizea",
+    "version": "Bertsioa",
+    "weather_condition": "eguraldiaren egoera",
+    "weather_data": "eguraldiaren datuak"
 }

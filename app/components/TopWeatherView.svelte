@@ -177,7 +177,7 @@
             leftAxis.axisMaximum = 4;
             leftAxis.drawLimitLines = hasPrecip;
             if (hasPrecip) {
-                const color = isEInk ? '#7f7f7f': item.hourly?.[0]?.precipColor || rainColor.hex;
+                const color = isEInk ? '#7f7f7f' : item.hourly?.[0]?.precipColor || rainColor.hex;
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'intensity', 'time', 'intensity');

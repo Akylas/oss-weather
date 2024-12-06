@@ -770,7 +770,7 @@ module.exports = (env, params = {}) => {
     ];
     if (buildweathermap) {
         if (env.adhoc || env.adhoc_sentry) {
-            config.plugins.push(new WaitPlugin(join(projectRoot, appPath, 'assets', 'map', 'index.html')));
+            config.plugins.push(new WaitPlugin(join(projectRoot, appPath, 'assets', 'map', 'index.html'), 100, 60000));
         }
         return [require('./map/webpack.config.js')(env, params), config];
     } else {

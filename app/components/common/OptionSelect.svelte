@@ -35,7 +35,7 @@
     export let autofocus = false;
     export let estimatedItemSize = true;
     export let autoSize = false;
-    export let isScrollEnabled = false;
+    export let isScrollEnabled = true;
     export let width: string | number = '*';
     export let containerColumns: string = '*';
     export let autoSizeListItem: boolean = false;

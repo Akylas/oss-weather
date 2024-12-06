@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { Align, BitmapShader, Canvas, LayoutAlignment, Paint, StaticLayout, TileMode } from '@nativescript-community/ui-canvas';
     import { CombinedChart, LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { ApplicationSettings, Color, Utils } from '@nativescript/core';
+    import { ApplicationSettings, Color, ImageSource, Utils } from '@nativescript/core';
     import dayjs from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
@@ -16,7 +16,7 @@
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
-    import { onThemeChanged } from '~/helpers/theme';
+    import { isEInk, onThemeChanged } from '~/helpers/theme';
     import { prefs } from '~/services/preferences';
     import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
@@ -24,6 +24,7 @@
     import HourlyChartView from './HourlyChartView.svelte';
 
     const PADDING_LEFT = 7;
+    const einkBmpShader = isEInk ? new BitmapShader(ImageSource.fromFileSync('~/assets/images/pattern.png'), TileMode.REPEAT, TileMode.REPEAT) : null;
 </script>
 
 <script lang="ts">
@@ -176,7 +177,7 @@
             leftAxis.axisMaximum = 4;
             leftAxis.drawLimitLines = hasPrecip;
             if (hasPrecip) {
-                const color = item.hourly?.[0]?.precipColor || rainColor.hex;
+                const color = isEInk ? '#7f7f7f': item.hourly?.[0]?.precipColor || rainColor.hex;
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'intensity', 'time', 'intensity');
@@ -187,6 +188,9 @@
                     precipChartSet.fillAlpha = 150;
                     precipChartSet.mode = Mode.CUBIC_BEZIER;
                     precipChartSet.cubicIntensity = 0.4;
+                    if (einkBmpShader) {
+                        precipChartSet.fillShader = einkBmpShader;
+                    }
                 } else {
                     precipChartSet.values = data;
                     needsUpdate = true;

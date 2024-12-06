@@ -28,7 +28,7 @@
     import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
     import { showError } from '@shared/utils/showError';
-    import { colors, fontScale, screenWidthDips } from '~/variables';
+    import { colors, fontScale, screenWidthDips, windowInset } from '~/variables';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;
@@ -314,7 +314,7 @@
             },
             backDrop: {
                 // translateX: side === 'right' ? -delta : delta,
-                opacity: progress * 0.05
+                opacity: 0
             }
         } as any;
 
@@ -472,8 +472,8 @@
             {/each}
         </label> -->
     </gridlayout>
-    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
-        <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">
+    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40 + $windowInset.bottom} rows="*">
+        <collectionview colWidth={150} height="40" items={legends} orientation="horizontal" verticalAlignment="top">
             <Template let:item>
                 <canvasview rippleColor={item.color} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />
             </Template>

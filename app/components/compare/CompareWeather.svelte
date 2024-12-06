@@ -18,7 +18,7 @@
     import { getProviderForType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_COMPARE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
     import { showError } from '@shared/utils/showError';
-    import { actionBarButtonHeight, colors } from '~/variables';
+    import { actionBarButtonHeight, colors, windowInset } from '~/variables';
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
 
@@ -299,6 +299,7 @@
         }}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
+        
         on:close={onDrawerClose}
         on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>

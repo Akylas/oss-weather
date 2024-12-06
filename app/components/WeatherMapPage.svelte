@@ -16,7 +16,7 @@
         WEATHER_MAP_LAYER_OPACITY
     } from '~/helpers/constants';
     import { l, lc } from '~/helpers/locale';
-    import { hideLoading, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
+    import { hideLoading, openLink, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
     import { actionBarHeight, screenWidthDips, systemFontScale, windowInset } from '~/variables';
     import { debounce } from '@nativescript/core/utils';
     import { rowHeightProperty } from '@akylas/nativescript/ui/list-view';
@@ -184,6 +184,12 @@
             showError(error);
         }
     }
+    function shouldOverrideUrlLoading(e: { cancel; url }) {
+        if (/http(s):\/\//.test(e.url)) {
+            e.cancel = true;
+            openLink(e.url);
+        }
+    }
 </script>
 
 <page actionBarHidden={true}>
@@ -192,6 +198,14 @@
             <mdbutton class="actionBarButton" text="mdi-palette" variant="text" verticalAlignment="middle" on:tap={seletMapColors} />
             <mdbutton class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
         </CActionBar>
-        <webview bind:this={webView} debugMode={consoleEnabled} displayZoomControls={false} normalizeUrls={false} row={1} src={url} webConsoleEnabled={consoleEnabled} />
+        <webview
+            bind:this={webView}
+            debugMode={consoleEnabled}
+            displayZoomControls={false}
+            normalizeUrls={false}
+            row={1}
+            src={url}
+            webConsoleEnabled={consoleEnabled}
+            on:shouldOverrideUrlLoading={shouldOverrideUrlLoading} />
     </gridlayout>
 </page>

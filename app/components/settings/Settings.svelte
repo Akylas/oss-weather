@@ -440,7 +440,7 @@
                         title: lc('weather_map_colors'),
                         currentValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS),
                         values: WEATHER_MAP_COLOR_SCHEMES,
-                        description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS)]?.title
+                        description: () => WEATHER_MAP_COLOR_SCHEMES.find((d) => d.value === ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS))?.title
                     },
                     {
                         id: 'setting',

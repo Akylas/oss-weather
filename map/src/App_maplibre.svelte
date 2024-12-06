@@ -1,6 +1,3 @@
-<style>
-</style>
-
 <script lang="ts">
     import { type LngLatLike, Map, Marker, type StyleSpecification } from 'maplibre-gl';
     import 'maplibre-gl/dist/maplibre-gl.css';
@@ -48,7 +45,6 @@
                     type: 'raster',
                     tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
                     tileSize: 256,
-                    attribution: '&copy; OpenStreetMap Contributors',
                     maxzoom: 19
                 }
             },
@@ -64,6 +60,10 @@
         const map = new Map({
             fadeDuration: 0,
             validateStyle: false,
+            attributionControl:{
+                compact: true,
+                customAttribution:['<a href="https://maplibre.org/">MapLibre</a>', '<a href="https://www.openstreetmap.org">OpenStreetMap</a>', '<a href="https://www.rainviewer.com/api.html">RainViewer</a>']
+            },
             //  refreshExpiredTiles:false,
             container,
             style,
@@ -219,7 +219,7 @@
     <div style="height:100%;width:100%;" class="map" use:mapAction />
 
     <RainViewerLegend colorScheme={colors} />
-    <div style="position: absolute; bottom:25px; width: 90%; height: 80px;background-color:white;  align-content: center;flex-direction: row;display: flex;" class="popup">
+    <div style="position: absolute; bottom:5px; width: 90%; height: 80px;background-color:white;  align-content: center;flex-direction: row;display: flex;" class="popup">
         <div style="display: flex;flex-direction: column;flex-grow:1;">
             <div style="display: flex;flex-direction: row;flex-grow:1;">
                 <div style="text-align:center; height: 30px;flex-direction: row;flex-grow: 1;">

@@ -11,6 +11,8 @@ const SRC_FOLDER = path.resolve(__dirname, 'src/');
 const DIST_FOLDER = path.resolve(__dirname, '../app/assets/map');
 const ASSETS_FOLDER = path.resolve(__dirname, 'public/');
 
+console.log('DIST_FOLDER', DIST_FOLDER);
+
 const ENTRY = path.resolve(SRC_FOLDER, 'main.ts');
 module.exports = (env = {}, params = {}) => {
     Object.keys(env).forEach((k) => {

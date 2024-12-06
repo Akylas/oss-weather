@@ -208,6 +208,7 @@ lane :build_flavor do |params|
       FileUtils.mkdir dist_path
     end
     FileUtils.cp_r(Dir.glob(File.join(project_root_path, app_build_path, "android/app/build/outputs/apk/release/*.apk")),dist_path )
+    FileUtils.cp_r(Dir.glob(File.join(project_root_path, app_build_path, "android/app/build/outputs/bundle/release/*.aab")),dist_path )
   end
 
   if (ENV["GITHUB_ACTIONS"] != 'true')

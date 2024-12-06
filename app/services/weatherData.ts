@@ -262,6 +262,7 @@ export interface CommonData {
     color?: string | Color;
     textColor?: string | Color;
     backgroundColor?: string | Color;
+    customDrawColor?: string | Color;
     paint?: Paint;
     iconFontSize?: number;
     icon?: string;
@@ -604,13 +605,17 @@ export class DataService extends Observable {
                         iconFontSize,
                         paint: wiPaint,
                         backgroundColor: item.windGust > 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
-                        color: item.windGust > 80 ? (isEInk ? '#000000' : '#ffffff') : item.windGust > 50 ? '#222' : '#FFBC03',
+                        customDrawColor: item.windGust > 80 ? (isEInk ? '#000000' : '#ffffff') : item.windGust > 50 ? '#222' : '#FFBC03',
+                        color: item.windGust > 80 ? (isEInk ? '#000000' : '#ffffff') : item.windGust > 50 ? undefined : '#FFBC03',
                         icon,
                         value: data[0],
                         subvalue: data[1],
                         customDraw(canvas: Canvas, fontScale: number, textPaint: Paint, data: CommonData, x: number, y: number, withIcon = false) {
                             textPaint.setTextSize(11 * fontScale);
-                            textPaint.setColor(data.color);
+                            if (data.customDrawColor) {
+                                textPaint.setColor(data.customDrawColor);
+
+                            }
                             const staticLayout = new StaticLayout(
                                 withIcon
                                     ? createNativeAttributedString(
@@ -619,7 +624,7 @@ export class DataService extends Observable {
                                                   {
                                                       fontFamily: data.paint.fontFamily,
                                                       fontSize: data.iconFontSize * 0.9,
-                                                      color: data.color,
+                                                      color: data.customDrawColor,
                                                       text: data.icon,
                                                       verticalAlignment: 'center'
                                                   },

@@ -293,7 +293,7 @@ export function start(force = false) {
     });
 
     prefs.on('key:theme', () => {
-        let newTheme = getString('theme') as Themes;
+        let newTheme = getString('theme', DEFAULT_THEME) as Themes;
         DEV_LOG && console.log('key:theme', theme, newTheme, autoDarkToBlack);
         if (__IOS__ && SDK_VERSION < 13) {
             newTheme = 'light';

@@ -23,7 +23,7 @@ __metadata:
 
 "@akylas/nativescript-app-tools@file:tools::locator=root-workspace-0b6124%40workspace%3A.":
   version: 1.0.0
-  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=05bd62&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=fa8fd7&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@dotenvx/dotenvx": "npm:1.28.0"
     "@nativescript-community/fontmin": "npm:0.9.11"
@@ -78,7 +78,7 @@ __metadata:
     typescript: "npm:5.7.2"
     typescript-eslint: "npm:^8.17.0"
     webpack-bundle-analyzer: "npm:^4.10.2"
-  checksum: 10/c625f6e098f9e237a252c188d4acbb11844901cdf9e0cfa687e1d3cca3bcbecac25add9ce3d5839aa70c807be3f3b30c7d29b4363c1a9a7e096d4df082bbc383
+  checksum: 10/12e4d878643e87b96a7e782e16058fd9733e1d02a4263b99e5cdfabdf4250506fc4958a7cd25142c8e3b532cdf12a4928f593f9686bdafb8c676b157e4f09978
   languageName: node
   linkType: hard
 
@@ -2342,6 +2342,15 @@ __metadata:
     "@nativescript-community/ui-material-core": "npm:^7.2.68"
     "@nativescript-community/ui-material-textfield": "npm:^7.2.68"
   checksum: 10/842f7687e1f9416e1d761092dcc017497d2aba06379a106d092a0b275d38536270ba56ff244b0f738fb8caedf4f30e256805537909ceac3afac70ad6a0ff68a0
+  languageName: node
+  linkType: hard
+
+"@nativescript-community/ui-material-progress@npm:7.2.68":
+  version: 7.2.68
+  resolution: "@nativescript-community/ui-material-progress@npm:7.2.68"
+  dependencies:
+    "@nativescript-community/ui-material-core": "npm:^7.2.68"
+  checksum: 10/0072b2c1ba1bf2b6e0245e4d34392e365f73c8eb2f2b63b7bba780e91d693798d9c3f3cac483fcb09964d11553a380597bb0c0b74d01225bc3624857a98f91fd
   languageName: node
   linkType: hard
 
@@ -12079,6 +12088,7 @@ __metadata:
     "@nativescript-community/ui-material-bottomsheet": "npm:7.2.68"
     "@nativescript-community/ui-material-button": "npm:7.2.68"
     "@nativescript-community/ui-material-dialogs": "npm:7.2.68"
+    "@nativescript-community/ui-material-progress": "npm:7.2.68"
     "@nativescript-community/ui-material-slider": "npm:7.2.68"
     "@nativescript-community/ui-material-snackbar": "npm:7.2.68"
     "@nativescript-community/ui-material-switch": "npm:7.2.68"

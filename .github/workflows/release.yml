@@ -52,6 +52,7 @@ jobs:
       release_type: ${{ github.event.inputs.release_type }}
       publish: ${{ github.event.inputs.publish }}
       github: ${{ github.event.inputs.github }}
+      fakepublish: ${{ github.event.inputs.fakepublish }}
       sentry: ${{ github.event.inputs.sentry }}
     secrets: inherit
 

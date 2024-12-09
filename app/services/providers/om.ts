@@ -472,7 +472,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];
         let lastDay: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any };
         const units = result.content.hourly_units;
-        const keys = new Set(Object.keys(units));
+        const keys = new Set(Object.keys(units).filter((s) => !!s));
         keys.delete('time');
 
         const hourlyData = hourly.time.map((time, index) => {
@@ -526,7 +526,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 ? prepareAirQualityData(
                       Object.keys(currentData).reduce(
                           (d, k) => {
-                              if (k !== 'time') {
+                              if (k && k !== 'time') {
                                   const actualKey: string = KEY_MAPPING[k] || k;
                                   d.pollutants = d.pollutants || {};
                                   if (k === 'carbon_monoxide') {

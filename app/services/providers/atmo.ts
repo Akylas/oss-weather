@@ -53,7 +53,7 @@ export class AtmoProvider extends AirQualityProvider {
         if (polluants.length === 0) {
             return;
         }
-        const keys = polluants.map((p) => p.polluant);
+        const keys = polluants.map((p) => p.polluant).filter((s) => !!s);
         const hourlyData = polluants[0].horaires.map((data, index) => {
             const d = {} as Hourly;
             const date = dayjs(data.datetime_echeance);

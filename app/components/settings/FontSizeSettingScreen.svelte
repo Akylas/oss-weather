@@ -35,8 +35,10 @@
     }
 
     const updateFonscale = debounce((value) => {
-        const newValue = parseFloat(value);
-        setFontScale(newValue);
+        const newValue = Math.max(Math.min(parseFloat(value), 2), 0.5);
+        if (!isNaN(newValue)) {
+            setFontScale(newValue);
+        }
     }, 500);
     function onTextChange({ object, value }: PropertyChangeData<TextField>) {
         if (resetCursorPosition) {

@@ -473,7 +473,7 @@ export function weatherDataIconColors<T extends DailyData | Currently | Hourly>(
         // and we get rain with sub 0 temperatures...
         // DEV_LOG && console.log('snow', snow, rain, ratio, d.temperature);
         if (snow && rain && ratio > 0.2 && (d.temperature || 0) >= 0) {
-            d.precipColor = Color.mix(snowColor, rainColor, 50);
+            d.precipColor = Color.mix(snowColor, rainColor, 50).hex;
             d.color = Color.mix(Color.mix(sunnyColor, cloudyColor, cloudCover), snowColor, Math.min(d.precipAccumulation * 10, 100)).hex;
             d.mixedRainSnow = true;
             d.precipIcon = 'app-rain-snow';

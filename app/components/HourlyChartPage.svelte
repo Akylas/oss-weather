@@ -6,7 +6,7 @@
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { l, lc } from '~/helpers/locale';
-    import { WeatherData } from '~/services/providers/weather';
+    import type { WeatherData } from '~/services/providers/weather';
     import { colors, screenWidthDips, windowInset } from '~/variables';
 
     import { NavigatedData, Page } from '@nativescript/core';
@@ -33,8 +33,8 @@
 </script>
 
 <script lang="ts">
-    let { colorOnSurface, colorOutline, colorBackground } = $colors;
-    $: ({ colorOnSurface, colorOutline, colorBackground } = $colors);
+    let { colorBackground, colorOnSurface, colorOutline } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOutline } = $colors);
     export let weatherLocation: FavoriteLocation;
     export let weatherData: WeatherData;
     export let forecast = 'hourly';
@@ -93,7 +93,7 @@
 
         return result;
     }
-    function onDrawLegend({ id, name, shortName, color, enabled }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
+    function onDrawLegend({ color, enabled, id, name, shortName }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
         const h = canvas.getHeight();
         legendIconPaint.color = color || colorOnSurface;
         legendPaint.color = color || colorOnSurface;

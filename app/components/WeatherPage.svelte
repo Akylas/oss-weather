@@ -35,7 +35,7 @@
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
-    import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { getAqiProvider, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { hideLoading, showLoading, showPopoverMenu } from '~/utils/ui';

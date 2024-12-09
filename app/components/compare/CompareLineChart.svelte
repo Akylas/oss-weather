@@ -25,7 +25,7 @@
     import { CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { formatDate, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
     import { showError } from '@shared/utils/showError';
     import { colors, fontScale, screenWidthDips, windowInset } from '~/variables';
@@ -45,8 +45,8 @@
 </script>
 
 <script lang="ts">
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorPrimary } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorPrimary } = $colors);
+    let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary } = $colors);
 
     interface Item {
         weatherData: { weatherData: WeatherData; model: { id: string; name: string; shortName: string; color: string } }[];
@@ -320,7 +320,7 @@
 
         return result;
     }
-    function onDrawLegend({ id, name, shortName, color, enabled }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
+    function onDrawLegend({ color, enabled, id, name, shortName }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
         const h = canvas.getHeight();
         legendIconPaint.color = color;
         legendPaint.color = color;
@@ -378,7 +378,7 @@
         return typeof result === 'function' ? result() : result;
     }
     // let highlighted: any[] = [];
-    function onChartHighlight({ object: chart, entry, highlight, highlights }: { object: CombinedChart; entry: Entry; highlight: Highlight; highlights: Highlight[] }) {
+    function onChartHighlight({ entry, highlight, highlights, object: chart }: { object: CombinedChart; entry: Entry; highlight: Highlight; highlights: Highlight[] }) {
         // highlighted = highlights
         //     .sort((a, b) => a.dataSetIndex - b.dataSetIndex)
         //     .map((h) => {

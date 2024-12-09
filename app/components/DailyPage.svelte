@@ -15,7 +15,7 @@
     import HourlyChartView from './HourlyChartView.svelte';
     import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
     import { CombinedChart } from '@nativescript-community/ui-chart';
-    import { CommonWeatherData, Hourly } from '~/services/providers/weather';
+    import type { CommonWeatherData, Hourly } from '~/services/providers/weather';
     import dayjs, { Dayjs } from 'dayjs';
     import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     const weatherIconSize = 100;

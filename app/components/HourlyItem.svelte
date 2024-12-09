@@ -19,7 +19,7 @@
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { isEInk } from '~/helpers/theme';
-    import { Hourly } from '~/services/providers/weather';
+    import type { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient } from '~/utils/utils.common';
     import { alwaysShowPrecipProb, colors, fontScale } from '~/variables';

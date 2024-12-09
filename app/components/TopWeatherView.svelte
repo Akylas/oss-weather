@@ -18,7 +18,7 @@
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
     import { isEInk, onThemeChanged } from '~/helpers/theme';
     import { prefs } from '~/services/preferences';
-    import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
+    import type { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
     import HourlyChartView from './HourlyChartView.svelte';

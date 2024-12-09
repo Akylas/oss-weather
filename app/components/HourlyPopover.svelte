@@ -5,7 +5,7 @@
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
     import { formatTime } from '~/helpers/locale';
     import { iconService } from '~/services/icon';
-    import { CommonWeatherData } from '~/services/providers/weather';
+    import type { CommonWeatherData } from '~/services/providers/weather';
     import { CommonData, WeatherProps, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';

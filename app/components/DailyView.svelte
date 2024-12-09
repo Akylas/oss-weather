@@ -4,7 +4,7 @@
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatDate, getLocalTime } from '~/helpers/locale';
-    import { DailyData } from '~/services/providers/weather';
+    import type { DailyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '@shared/utils/svelte/ui';
     import { colors, fontScale, weatherDataLayout } from '~/variables';

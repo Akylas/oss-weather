@@ -2422,14 +2422,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-webview@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@nativescript-community/ui-webview@npm:1.5.0"
+"@nativescript-community/ui-webview@portal:../ui-webview/packages/webview::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@nativescript-community/ui-webview@portal:../ui-webview/packages/webview::locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     url: "npm:^0.11.0"
-  checksum: 10/9e77a5f7a56b537f8a9ad582c542a10193d832ba82c2096f0aacc0bb8469043f9caca979499047188b2f0c12d4a2f755c9aa4ee04fd6f79ffb5fb142bdeaf9b4
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@nativescript-community/ui-zoomimage@npm:4.5.4":
   version: 4.5.4

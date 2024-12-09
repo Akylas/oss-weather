@@ -1,6 +1,5 @@
 import { capitalize, l, lc, loadLocaleJSON, lt, lu, overrideNativeLocale, titlecase } from '@nativescript-community/l';
 import { Application, ApplicationSettings, Device, File, Utils } from '@nativescript/core';
-import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
@@ -12,7 +11,7 @@ import { prefs } from '~/services/preferences';
 import { showError } from '@shared/utils/showError';
 import { showAlertOptionSelect } from '~/utils/ui';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
-import { SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
+import { DEFAULT_LOCALE, SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
 import { imperialUnits } from '~/variables';
 import { getISO3Language } from '@akylas/nativescript-app-utils';
 const supportedLanguages = SUPPORTED_LOCALES;
@@ -57,7 +56,7 @@ $lang.subscribe((newLang: string) => {
     loadDayjsLang(lang);
     try {
         // const localeData = require(`~/i18n/${lang}.json`);
-        loadLocaleJSON(`~/i18n/${lang}.json`, `~/i18n/${DEFAULT_LOCALE}.json`);
+        loadLocaleJSON(`~/i18n/${lang}.json`, `~/i18n/${FALLBACK_LOCALE}.json`);
     } catch (err) {
         console.error(lang, `~/i18n/${lang}.json`, File.exists(`~/i18n/${lang}.json`), err, err.stack);
     }
@@ -100,7 +99,7 @@ function setLang(newLang) {
     $lang.set(actualNewLang);
 }
 
-const deviceLanguage = getString(SETTINGS_LANGUAGE, 'auto');
+const deviceLanguage = ApplicationSettings.getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
 function getActualLanguage(language) {
     if (language === 'auto') {
         if (__ANDROID__) {
@@ -176,7 +175,7 @@ export function formatTime(date: number | dayjs.Dayjs | string | Date, formatStr
 }
 
 prefs.on(`key:${SETTINGS_LANGUAGE}`, () => {
-    const newLanguage = getString(SETTINGS_LANGUAGE);
+    const newLanguage = ApplicationSettings.getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
     DEV_LOG && console.log('language changed', newLanguage);
     // on pref change we are updating
     if (newLanguage === lang) {
@@ -215,7 +214,7 @@ export function getCurrentISO3Language() {
 async function internalSelectLanguage() {
     // try {
     const actions = SUPPORTED_LOCALES;
-    const currentLanguage = getString(SETTINGS_LANGUAGE, 'auto');
+    const currentLanguage = ApplicationSettings.getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
     let selectedIndex = -1;
     const options = [{ name: lc('auto'), data: 'auto' }].concat(actions.map((k) => ({ name: getLocaleDisplayName(k.replace('_', '-')), data: k }))).map((d, index) => {
         const selected = currentLanguage === d.data;
@@ -260,7 +259,7 @@ if (__ANDROID__) {
     Application.android.on(Application.android.activityStartedEvent, () => {
         // on android after switching to auto we dont get the actual language
         // before an activity restart
-        const lang = ApplicationSettings.getString(SETTINGS_LANGUAGE);
+        const lang = ApplicationSettings.getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
         if (lang === 'auto') {
             const actualNewLang = getActualLanguage(lang);
             if (actualNewLang !== get($lang)) {

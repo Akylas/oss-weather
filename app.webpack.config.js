@@ -247,7 +247,7 @@ module.exports = (env, params = {}) => {
         __APP_BUILD_NUMBER__: `"${buildNumber}"`,
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
         SUPPORTED_COLOR_THEMES: JSON.stringify(supportedColorThemes),
-        DEFAULT_LOCALE: `"${locale}"`,
+        FALLBACK_LOCALE: `"${locale}"`,
         DEFAULT_THEME: `"${theme}"`,
         SENTRY_ENABLED: !!sentry,
         NO_CONSOLE: noconsole,

@@ -11,7 +11,7 @@
 
 declare const SUPPORTED_LOCALES: string[];
 declare const SUPPORTED_COLOR_THEMES: string[];
-declare const DEFAULT_LOCALE: string;
+declare const FALLBACK_LOCALE: string;
 declare const DEFAULT_THEME: string;
 declare const TNS_ENV: string;
 declare const DEV_LOG: boolean;

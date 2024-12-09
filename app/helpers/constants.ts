@@ -23,6 +23,7 @@ export const SETTINGS_WEATHER_DATA_LAYOUT = 'weather_data_layout';
 export const SETTINGS_MIN_UV_INDEX = 'min_uv_index';
 
 export const DEFAULT_COLOR_THEME = 'default';
+export const DEFAULT_LOCALE = 'auto';
 
 export const DAILY_PAGE_HOURLY_CHART = false;
 export const MAIN_PAGE_HOURLY_CHART = false;

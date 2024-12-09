@@ -23,7 +23,7 @@ __metadata:
 
 "@akylas/nativescript-app-tools@file:tools::locator=root-workspace-0b6124%40workspace%3A.":
   version: 1.0.0
-  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=775e40&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=43f0c0&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@dotenvx/dotenvx": "npm:1.28.0"
     "@nativescript-community/fontmin": "npm:0.9.11"
@@ -78,7 +78,7 @@ __metadata:
     typescript: "npm:5.7.2"
     typescript-eslint: "npm:^8.17.0"
     webpack-bundle-analyzer: "npm:^4.10.2"
-  checksum: 10/d5eab3cf4d7878af303036b784aae20582d88ea1ce5db10d04235f34ef58000dbb527c70a490ace272edfcba74a6ed35e74afe0e4f6ece692942fe243a722c1f
+  checksum: 10/063566b0413bc00178c7c78ca02d7793324e0f18fcab88c5d638141387937e8508201e7f2c343b4219f12e97f03f0d82549db18d857e08e7a000c1656422e201
   languageName: node
   linkType: hard
 
@@ -2422,13 +2422,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-webview@portal:../ui-webview/packages/webview::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@nativescript-community/ui-webview@portal:../ui-webview/packages/webview::locator=root-workspace-0b6124%40workspace%3A."
+"@nativescript-community/ui-webview@npm:1.5.1":
+  version: 1.5.1
+  resolution: "@nativescript-community/ui-webview@npm:1.5.1"
   dependencies:
     url: "npm:^0.11.0"
+  checksum: 10/d4d17f0e776fad093cf72a531d20ba6955b5446f9e1d3b976bed99e5388271f78864cb260406dcc2778acf7fee94514104c012fcc5fd7866cd45baebc0adf77d
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@nativescript-community/ui-zoomimage@npm:4.5.4":
   version: 4.5.4
@@ -12061,7 +12062,7 @@ __metadata:
     "@nativescript-community/ui-popover": "npm:0.1.20"
     "@nativescript-community/ui-pulltorefresh": "npm:2.5.3"
     "@nativescript-community/ui-share-file": "npm:1.3.3"
-    "@nativescript-community/ui-webview": "npm:1.5.0"
+    "@nativescript-community/ui-webview": "npm:1.5.1"
     "@nativescript-community/ui-zoomimage": "npm:4.5.4"
     "@nativescript/core": "npm:8.8.6"
     "@nativescript/iqkeyboardmanager": "npm:2.1.1"

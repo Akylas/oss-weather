@@ -1,18 +1,5 @@
 <script context="module" lang="ts">
-    import {
-        Align,
-        BitmapShader,
-        LayoutAlignment,
-        LinearGradient,
-        Paint,
-        Path,
-        PorterDuff,
-        PorterDuffMode,
-        PorterDuffXfermode,
-        StaticLayout,
-        Style,
-        TileMode
-    } from '@nativescript-community/ui-canvas';
+    import { Align, BitmapShader, LayoutAlignment, LinearGradient, Paint, Path, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
     import { Color, ImageSource } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
@@ -32,12 +19,9 @@
     textPaint.setTextAlign(Align.CENTER);
     const paint = new Paint();
     paint.setTextAlign(Align.CENTER);
-    const whitePaint = isEInk ? new Paint() : null;
+    const whitePaint = new Paint();
     const pathPaint = new Paint();
-    if (isEInk) {
-        whitePaint.setColor('#ffffff');
-        pathPaint.setColor('#7f7f7f');
-    }
+
     pathPaint.setStrokeWidth(5);
     pathPaint.setStyle(Style.STROKE);
     const curvePath = new Path();
@@ -63,6 +47,10 @@
 
     function redraw() {
         canvasView && canvasView.nativeView.invalidate();
+    }
+    $: if (isEInk) {
+        whitePaint.setColor('#ffffff');
+        pathPaint.setColor('#7f7f7f');
     }
     $: {
         if (item.precipShowSnow) {

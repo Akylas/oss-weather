@@ -62,6 +62,7 @@
     "color_theme": {
         "default": "por defecto",
         "dynamic": "colores dinámicos",
+        "eink": "eink",
         "title": "Color del tema"
     },
     "comments": "comentarios",
@@ -146,6 +147,7 @@
     "last_quarter": "Último cuarto",
     "last_updated": "Actualizado",
     "later": "más tarde",
+    "layer_opacity": "opacidad de la capa",
     "light": "Ligera",
     "light_drizzle": "Llovizna ligera",
     "light_freezing_drizzle": "Ligeras lloviznas heladas",
@@ -233,6 +235,7 @@
     "search_city": "Buscar",
     "search_location": "Buscar ubicación",
     "select": "Seleccionar",
+    "select_color_theme": "seleccione el color del tema",
     "select_data": "seleccionar datos",
     "select_language": "seleccionar el idioma",
     "select_location": "Seleccionar una ubicación",

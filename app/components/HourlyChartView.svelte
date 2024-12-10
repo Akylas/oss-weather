@@ -18,7 +18,7 @@
     import { windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
+    import type { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
     import { colors, fontScale, screenWidthDips } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
@@ -60,8 +60,8 @@
 <script lang="ts">
     import HourlyPopover from './HourlyPopover.svelte';
 
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorSurfaceContainer } = $colors);
+    let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
 
     const currentData = weatherDataService.currentWeatherData;
     // const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
@@ -611,7 +611,7 @@
             chart.highlight(highlights);
         }
     }
-    function onHighlight({ object, highlight }: { object: CombinedChart; highlight: Highlight }) {
+    function onHighlight({ highlight, object }: { object: CombinedChart; highlight: Highlight }) {
         const popoverWidth = 150 * $fontScale;
         const fullWidth = Utils.layout.toDeviceIndependentPixels(chartView.nativeView.getMeasuredWidth());
         const highlightedX = highlight.xPx;

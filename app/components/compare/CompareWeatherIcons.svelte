@@ -7,7 +7,7 @@
     import { lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
-    import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
+    import type { CommonWeatherData, WeatherData } from '~/services/providers/weather';
     import { colors, fontScale } from '~/variables';
 
     const paint = new Paint();
@@ -18,12 +18,12 @@
 </script>
 
 <script lang="ts">
-    import { Template } from 'svelte-native/components';
     import { showError } from '@shared/utils/showError';
+    import { Template } from 'svelte-native/components';
     import { loadImage } from '~/utils/utils.common';
 
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground } = $colors);
+    let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
     interface Item {
         weatherData: { weatherData: WeatherData; model: { id: string; name: string; shortName: string; color: string } }[];
@@ -37,7 +37,7 @@
     const COLUMN_HEIGHT = 50;
     const ICON_SIZE = 30;
     export let item: Item;
-    export let screenOrientation: string = null;
+    // export let screenOrientation: string = null;
 
     let width;
     let columns;

@@ -46,6 +46,7 @@ try {
     registerNativeViewElement('textview', () => require('@nativescript-community/ui-material-textview').TextView, null, {}, { override: true });
     registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
     registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
+    registerNativeViewElement('progress', () => require('@nativescript-community/ui-material-progress').Progress);
     registerNativeViewElement('Switch', () => require('@nativescript-community/ui-material-switch').Switch);
     registerNativeViewElement('label', () => Label as any, null, {}, { override: true });
     registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-material-activityindicator').ActivityIndicator);

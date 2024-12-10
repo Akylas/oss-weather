@@ -1,14 +1,13 @@
-<script lang="ts">
+<script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { Align, BitmapShader, Canvas, LayoutAlignment, Paint, StaticLayout, TileMode } from '@nativescript-community/ui-canvas';
     import { CombinedChart, LineChart } from '@nativescript-community/ui-chart';
     import { LimitLabelPosition, LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
-    import { ApplicationSettings, Color, Utils } from '@nativescript/core';
-    import { createEventDispatcher } from '@shared/utils/svelte/ui';
+    import { ApplicationSettings, Color, ImageSource, Utils } from '@nativescript/core';
     import dayjs from 'dayjs';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
@@ -17,14 +16,18 @@
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
-    import { onThemeChanged } from '~/helpers/theme';
+    import { isEInk, onThemeChanged } from '~/helpers/theme';
     import { prefs } from '~/services/preferences';
-    import { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
+    import type { Currently, Hourly, MinutelyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale, fonts, rainColor, weatherDataLayout } from '~/variables';
     import HourlyChartView from './HourlyChartView.svelte';
-    const dispatch = createEventDispatcher();
 
+    const PADDING_LEFT = 7;
+    const einkBmpShader = isEInk ? new BitmapShader(ImageSource.fromFileSync('~/assets/images/pattern.png'), TileMode.REPEAT, TileMode.REPEAT) : null;
+</script>
+
+<script lang="ts">
     let showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
     prefs.on(`key:${SETTINGS_MAIN_PAGE_HOURLY_CHART}`, () => {
         showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
@@ -60,7 +63,7 @@
     }
     let lineChart: NativeViewElementNode<LineChart>;
     const weatherIconSize = 140;
-    const topViewHeight = 210 * $fontScale;
+    $: topViewHeight = 220 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -174,7 +177,7 @@
             leftAxis.axisMaximum = 4;
             leftAxis.drawLimitLines = hasPrecip;
             if (hasPrecip) {
-                const color = item.hourly?.[0]?.precipColor || rainColor.hex;
+                const color = isEInk ? '#7f7f7f' : item.hourly?.[0]?.precipColor || rainColor.hex;
                 if (!precipChartSet) {
                     needsToSetData = true;
                     precipChartSet = new LineDataSet(data, 'intensity', 'time', 'intensity');
@@ -185,6 +188,9 @@
                     precipChartSet.fillAlpha = 150;
                     precipChartSet.mode = Mode.CUBIC_BEZIER;
                     precipChartSet.cubicIntensity = 0.4;
+                    if (einkBmpShader) {
+                        precipChartSet.fillShader = einkBmpShader;
+                    }
                 } else {
                     precipChartSet.values = data;
                     needsUpdate = true;
@@ -340,14 +346,32 @@
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
 
-        const centeredItemsToDraw = weatherDataService.getAllIconsData({ item, type: 'currently' });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'currently' }).reverse();
+        let iconRight = PADDING_LEFT;
+        const iconsBottom = 26 * $fontScale;
+        for (let index = 0; index < smallItemsToDraw.length; index++) {
+            const c = smallItemsToDraw[index];
+
+            const paint = c.paint || textIconPaint;
+            paint.setTextAlign(Align.RIGHT);
+            paint.setTextSize(c.iconFontSize);
+            paint.setColor(c.color || colorOnSurface);
+            if (c.customDraw) {
+                const result = c.customDraw(canvas, $fontScale, paint, c, w - iconRight, h - iconsBottom - 15 * $fontScale, false);
+                iconRight += result;
+            } else if (c.icon) {
+                canvas.drawText(c.icon, w - iconRight, h - iconsBottom, paint);
+                iconRight += 24 * $fontScale;
+            }
+        }
+        const centeredItemsToDraw = weatherDataService.getIconsData({ item, filter: [WeatherProps.windBeaufort], type: 'currently' });
         canvas.clipRect(0, 0, w - weatherIconSize * (2 - $fontScale), h);
         switch ($weatherDataLayout) {
             case 'line': {
                 textPaint.setTextAlign(Align.LEFT);
                 textIconPaint.setTextAlign(Align.CENTER);
                 textIconPaint.color = colorOutline;
-                const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
+                const iconsTop = (hasPrecip ? 45 : topViewHeight / 2 - 20) * $fontScale;
                 const lineHeight = 20 * $fontScale;
                 const lineWidth = 100 * $fontScale;
                 const nbLines = Math.ceil(centeredItemsToDraw.length / 2);
@@ -419,7 +443,7 @@
             }
             default:
             case 'default': {
-                const iconsTop = hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20 * $fontScale;
+                const iconsTop = (hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20) * $fontScale;
                 const iconsLeft = 26;
                 centeredItemsToDraw.forEach((c, index) => {
                     const x = index * 45 * $fontScale + iconsLeft;
@@ -489,18 +513,10 @@
         horizontalAlignment="left"
     /> -->
     <!-- the gridlayout is there to ensure a max width for the chart -->
-    <gridlayout height={90} marginBottom={30} verticalAlignment="bottom" width={300}>
+    <gridlayout height={90} marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon
-        {animated}
-        col={1}
-        horizontalAlignment="right"
-        iconData={[item.iconId, item.isDay]}
-        marginTop={15}
-        size={weatherIconSize * (2 - $fontScale)}
-        verticalAlignment="middle"
-        on:tap={(event) => dispatch('tap', event)} />
+    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}

@@ -9,6 +9,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./tools/scripts/IgnoreNotFoundExportPlugin');
+const WaitPlugin = require('./tools/scripts/WaitPlugin');
 const Fontmin = require('@nativescript-community/fontmin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
@@ -51,10 +52,10 @@ module.exports = (env, params = {}) => {
                 production: true,
                 sentry: false,
                 uploadSentry: false,
-                noconsole: true,
-                apiKeys: true,
-                sourceMap: false,
                 testlog: false,
+                devlog: false,
+                noconsole: true,
+                sourceMap: false,
                 buildweathermap: true,
                 uglify: true
             },
@@ -246,7 +247,7 @@ module.exports = (env, params = {}) => {
         __APP_BUILD_NUMBER__: `"${buildNumber}"`,
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
         SUPPORTED_COLOR_THEMES: JSON.stringify(supportedColorThemes),
-        DEFAULT_LOCALE: `"${locale}"`,
+        FALLBACK_LOCALE: `"${locale}"`,
         DEFAULT_THEME: `"${theme}"`,
         SENTRY_ENABLED: !!sentry,
         NO_CONSOLE: noconsole,
@@ -768,6 +769,9 @@ module.exports = (env, params = {}) => {
         })
     ];
     if (buildweathermap) {
+        if (env.adhoc || env.adhoc_sentry) {
+            config.plugins.push(new WaitPlugin(join(projectRoot, appPath, 'assets', 'map', 'index.html'), 100, 60000));
+        }
         return [require('./map/webpack.config.js')(env, params), config];
     } else {
         return config;

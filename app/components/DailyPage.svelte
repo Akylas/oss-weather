@@ -15,7 +15,7 @@
     import HourlyChartView from './HourlyChartView.svelte';
     import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
     import { CombinedChart } from '@nativescript-community/ui-chart';
-    import { CommonWeatherData, Hourly } from '~/services/providers/weather';
+    import type { CommonWeatherData, Hourly } from '~/services/providers/weather';
     import dayjs, { Dayjs } from 'dayjs';
     import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     const weatherIconSize = 100;
@@ -61,7 +61,7 @@
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
-        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'daily' });
         let iconRight = PADDING_LEFT;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];

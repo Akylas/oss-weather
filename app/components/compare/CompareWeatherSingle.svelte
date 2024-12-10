@@ -13,7 +13,7 @@
     import { FavoriteLocation } from '~/helpers/favorites';
     import { l, lc, slc } from '~/helpers/locale';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
-    import { ProviderType } from '~/services/providers/weather';
+    import type { ProviderType } from '~/services/providers/weather';
     import { getProviderForType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_COMPARE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
     import { showError } from '@shared/utils/showError';

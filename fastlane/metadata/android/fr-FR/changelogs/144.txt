@@ -1,0 +1,10 @@
+Bug fixes:
+- align small icons to right in the current weather data. better layout!
+- consider bottom inset in chart views
+- wind speed not visible in dark mode
+- menus not beeing scrollable
+- allow to set font scale with keyboard
+- map color style was showing wrong value
+- show rain/snow icon in more situations
+- improved eink theme
+- Translations update

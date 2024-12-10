@@ -37,6 +37,7 @@
         SETTINGS_LANGUAGE,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SETTINGS_METRIC_TEMP_DECIMAL,
+        SETTINGS_MIN_UV_INDEX,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
         SETTINGS_SHOW_DAILY_IN_CURRENTLY,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
@@ -44,13 +45,15 @@
         SETTINGS_WEATHER_DATA_LAYOUT,
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
+        SETTINGS_WEATHER_MAP_LAYER_OPACITY,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
         SWIPE_ACTION_BAR_PROVIDER,
         WEATHER_DATA_LAYOUT,
         WEATHER_MAP_ANIMATION_SPEED,
         WEATHER_MAP_COLORS,
-        WEATHER_MAP_COLOR_SCHEMES
+        WEATHER_MAP_COLOR_SCHEMES,
+        WEATHER_MAP_LAYER_OPACITY
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
@@ -376,11 +379,11 @@
                             value: ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB)
                         },
                         {
-                            key: 'min_uv_index',
+                            key: SETTINGS_MIN_UV_INDEX,
                             id: 'setting',
                             title: lc('min_uv_index'),
                             values: Array.from(Array(10), (_, index) => ({ value: index + 1, title: index + 1 })),
-                            rightValue: () => ApplicationSettings.getNumber('min_uv_index', MIN_UV_INDEX)
+                            rightValue: () => ApplicationSettings.getNumber(SETTINGS_MIN_UV_INDEX, MIN_UV_INDEX)
                         },
                         {
                             type: 'sectionheader',
@@ -437,7 +440,7 @@
                         title: lc('weather_map_colors'),
                         currentValue: () => ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS),
                         values: WEATHER_MAP_COLOR_SCHEMES,
-                        description: () => WEATHER_MAP_COLOR_SCHEMES[ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS)]?.title
+                        description: () => WEATHER_MAP_COLOR_SCHEMES.find((d) => d.value === ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS))?.title
                     },
                     {
                         id: 'setting',
@@ -450,6 +453,18 @@
                         valueFormatter: (value) => value.toFixed(2),
                         transformValue: (value) => Math.round(WEATHER_MAP_ANIMATION_SPEED / value),
                         rightValue: () => Math.round((WEATHER_MAP_ANIMATION_SPEED / ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED)) * 100) / 100
+                    },
+                    {
+                        id: 'setting',
+                        key: SETTINGS_WEATHER_MAP_LAYER_OPACITY,
+                        min: 0,
+                        max: 1,
+                        step: null,
+                        title: lc('layer_opacity'),
+                        type: 'slider',
+                        valueFormatter: (value) => value.toFixed(2),
+                        transformValue: (value) => value,
+                        rightValue: () => Math.round(ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_LAYER_OPACITY, WEATHER_MAP_LAYER_OPACITY) * 100) / 100
                     }
                 ];
             case 'geolocation':

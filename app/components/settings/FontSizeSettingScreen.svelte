@@ -1,14 +1,15 @@
 <script lang="ts">
     import { lc } from '@nativescript-community/l';
-    import { ApplicationSettings } from '@nativescript/core';
+    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { ApplicationSettings, PropertyChangeData } from '@nativescript/core';
     import { getNumber } from '@nativescript/core/application-settings';
-    import { onMount } from 'svelte';
+    import { debounce } from '@nativescript/core/utils';
+    import dayjs from 'dayjs';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import { WeatherLocation, prepareItems } from '~/services/api';
-    import { colors } from '~/variables';
+    import type { WeatherData } from '~/services/providers/weather';
+    import { colors, windowInset } from '~/variables';
     import CActionBar from '../common/CActionBar.svelte';
-    import dayjs from 'dayjs';
-    import { WeatherData } from '~/services/providers/weather';
 
     $: ({ colorOutline } = $colors);
 
@@ -24,22 +25,39 @@
     const fakeNow = weatherData.currently.time;
     const items = prepareItems(weatherLocation, weatherData, lastUpdate, dayjs.utc(fakeNow));
     let fontScale = ApplicationSettings.getNumber('fontscale', 1);
-    onMount(async () => {});
+    let resetCursorPosition = false;
     function setFontScale(value) {
-        fontScale = value;
-        ApplicationSettings.setNumber('fontscale', fontScale);
+        if (value !== fontScale) {
+            resetCursorPosition = true;
+            fontScale = value;
+            ApplicationSettings.setNumber('fontscale', fontScale);
+        }
     }
-    function onValueChange(e) {}
+
+    const updateFonscale = debounce((value) => {
+        const newValue = Math.max(Math.min(parseFloat(value), 2), 0.5);
+        if (!isNaN(newValue)) {
+            setFontScale(newValue);
+        }
+    }, 500);
+    function onTextChange({ object, value }: PropertyChangeData<TextField>) {
+        if (resetCursorPosition) {
+            object.setSelection(value.length);
+            resetCursorPosition = false;
+        }
+        updateFonscale(value);
+    }
 </script>
 
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,*,auto">
+    <gridlayout rows="auto,*,auto" android:paddingBottom={$windowInset.bottom}>
         <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={1}>
             <WeatherComponent {fakeNow} {items} {weatherLocation} />
         </gridlayout>
         <gridlayout columns="*,auto,auto" row={2}>
             <slider maxValue={2} minValue={0.5} value={fontScale} on:valueChange={(e) => setFontScale(e.value)} />
-            <label col={1} text={fontScale.toFixed(1)} verticalTextAlignment="middle" />
+
+            <textfield col={1} keyboardType="number" padding="4" text={fontScale.toFixed(2)} variant="outline" verticalTextAlignment="middle" width={70} on:textChange={onTextChange} />
             <mdbutton col={2} text={lc('reset')} variant="text" verticalAlignment="middle" on:tap={() => setFontScale(1)} />
         </gridlayout>
         <CActionBar title={lc('font_scale')} />

@@ -280,10 +280,11 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             if (showDayDataInCurrent) {
                 Object.assign(current, { precipAccumulation, cloudCover, cloudCeiling, iso, uvIndex, windGust });
             }
-
-            current = firstHourIndex >= 0 ? { ...hours[index] } : current;
+            if (firstHourIndex >= 0) {
+                Object.assign(current, hours[index]);
+            }
             if (firstHourIndex === 0 && firstMinuteIndex > 10) {
-                Object.assign(current, weatherData.minutely.data[firstMinuteIndex - 1]);
+                current = Object.assign(current, weatherData.minutely.data[firstMinuteIndex - 1]);
             }
             if (now.valueOf() - weatherData.currently.time <= 1000 * 60 * 20) {
                 Object.assign(current, weatherData.currently);
@@ -314,7 +315,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
                 isDay: now.valueOf() < sunsetTime && now.valueOf() > sunriseTime,
                 temperatureMin: dailyData.temperatureMin,
                 temperatureMax: dailyData.temperatureMax,
-                moonIcon: dailyData.moonIcon,
+                // moonIcon: dailyData.moonIcon,
                 // icon: iconService.getIcon(currentDaily.iconId, currentDaily.isDay),
                 sunriseTime,
                 sunsetTime,

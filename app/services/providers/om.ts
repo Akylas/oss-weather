@@ -56,7 +56,7 @@ export const OM_MODELS = {
 export const API_KEY_VALUES = {
     forecast: ({ current, currentData, feelsLikeTemperatures, minutely }: { currentData: WeatherProps[]; feelsLikeTemperatures: boolean; current: boolean; minutely: boolean }) => ({
         hourly:
-            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,is_day' +
+            'precipitation_probability,precipitation,rain,showers,snow_depth,snowfall,weathercode,is_day,uv_index' +
             (currentData.includes(WeatherProps.windSpeed) ? ',windspeed_10m,winddirection_10m' : '') +
             (currentData.includes(WeatherProps.windGust) ? ',windgusts_10m' : '') +
             (currentData.includes(WeatherProps.cloudCover) ? ',cloudcover' : '') +
@@ -301,6 +301,8 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 d.apparentTemperature = apparentTemperature[index];
             }
             d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', model)[index];
+            d.uvIndex = this.getDataArray(hourly, 'uv_index', model)[index];
+
             d.usingFeelsLike = feelsLikeTemperatures;
             const windBearing = this.getDataArray(hourly, 'winddirection_10m', model);
             if (windBearing) {
@@ -470,7 +472,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];
         let lastDay: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any };
         const units = result.content.hourly_units;
-        const keys = new Set(Object.keys(units));
+        const keys = new Set(Object.keys(units).filter((s) => !!s));
         keys.delete('time');
 
         const hourlyData = hourly.time.map((time, index) => {
@@ -524,7 +526,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 ? prepareAirQualityData(
                       Object.keys(currentData).reduce(
                           (d, k) => {
-                              if (k !== 'time') {
+                              if (k && k !== 'time') {
                                   const actualKey: string = KEY_MAPPING[k] || k;
                                   d.pollutants = d.pollutants || {};
                                   if (k === 'carbon_monoxide') {

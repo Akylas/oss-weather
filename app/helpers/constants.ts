@@ -12,6 +12,7 @@ export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';
 export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
 export const SETTINGS_WEATHER_MAP_COLORS = 'weather_map_colors';
 export const SETTINGS_WEATHER_MAP_ANIMATION_SPEED = 'weather_map_animation_speed';
+export const SETTINGS_WEATHER_MAP_LAYER_OPACITY = 'weather_map_layer_opacity';
 export const SETTINGS_UNITS = 'units';
 export const SETTINGS_METRIC_TEMP_DECIMAL = 'metric_temp_decimal';
 export const SETTINGS_ALWAYS_SHOW_PRECIP_PROB = 'always_show_precip_prob';
@@ -19,8 +20,10 @@ export const SETTINGS_FEELS_LIKE_TEMPERATURES = 'feels_like_temperatures';
 export const SETTINGS_SHOW_DAILY_IN_CURRENTLY = 'show_daily_in_currently';
 export const SETTINGS_SHOW_CURRENT_DAY_DAILY = 'show_current_day_daily';
 export const SETTINGS_WEATHER_DATA_LAYOUT = 'weather_data_layout';
+export const SETTINGS_MIN_UV_INDEX = 'min_uv_index';
 
 export const DEFAULT_COLOR_THEME = 'default';
+export const DEFAULT_LOCALE = 'auto';
 
 export const DAILY_PAGE_HOURLY_CHART = false;
 export const MAIN_PAGE_HOURLY_CHART = false;
@@ -41,10 +44,11 @@ export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;
 export const NB_MINUTES_FORECAST = 60;
 
-export const MIN_UV_INDEX = 1;
+export const MIN_UV_INDEX = 0;
 
 export const WEATHER_MAP_COLORS = 4;
 export const WEATHER_MAP_ANIMATION_SPEED = 100;
+export const WEATHER_MAP_LAYER_OPACITY = 0.8;
 export const WEATHER_MAP_COLOR_SCHEMES = [
     {
         value: 0,

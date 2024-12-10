@@ -89,6 +89,9 @@ export const alwaysShowPrecipProb = writable(ApplicationSettings.getBoolean(SETT
 export const weatherDataLayout = writable(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
 let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
+if (isNaN(storedFontScale)) {
+    storedFontScale = 1;
+}
 export const fontScale = writable(storedFontScale);
 export const isRTL = writable(false);
 

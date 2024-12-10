@@ -25,10 +25,10 @@
     import { CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { formatDate, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
+    import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
     import { showError } from '@shared/utils/showError';
-    import { colors, fontScale, screenWidthDips } from '~/variables';
+    import { colors, fontScale, screenWidthDips, windowInset } from '~/variables';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;
@@ -45,8 +45,8 @@
 </script>
 
 <script lang="ts">
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorPrimary } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorBackground, colorPrimary } = $colors);
+    let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary } = $colors;
+    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary } = $colors);
 
     interface Item {
         weatherData: { weatherData: WeatherData; model: { id: string; name: string; shortName: string; color: string } }[];
@@ -314,13 +314,13 @@
             },
             backDrop: {
                 // translateX: side === 'right' ? -delta : delta,
-                opacity: progress * 0.05
+                opacity: 0
             }
         } as any;
 
         return result;
     }
-    function onDrawLegend({ id, name, shortName, color, enabled }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
+    function onDrawLegend({ color, enabled, id, name, shortName }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
         const h = canvas.getHeight();
         legendIconPaint.color = color;
         legendPaint.color = color;
@@ -378,7 +378,7 @@
         return typeof result === 'function' ? result() : result;
     }
     // let highlighted: any[] = [];
-    function onChartHighlight({ object: chart, entry, highlight, highlights }: { object: CombinedChart; entry: Entry; highlight: Highlight; highlights: Highlight[] }) {
+    function onChartHighlight({ entry, highlight, highlights, object: chart }: { object: CombinedChart; entry: Entry; highlight: Highlight; highlights: Highlight[] }) {
         // highlighted = highlights
         //     .sort((a, b) => a.dataSetIndex - b.dataSetIndex)
         //     .map((h) => {
@@ -472,8 +472,8 @@
             {/each}
         </label> -->
     </gridlayout>
-    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
-        <collectionview colWidth={150} height="40" items={legends} orientation="horizontal">
+    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40 + $windowInset.bottom} rows="*">
+        <collectionview colWidth={150} height="40" items={legends} orientation="horizontal" verticalAlignment="top">
             <Template let:item>
                 <canvasview rippleColor={item.color} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />
             </Template>

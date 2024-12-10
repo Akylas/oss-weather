@@ -4,7 +4,7 @@
     import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatDate, getLocalTime } from '~/helpers/locale';
-    import { DailyData } from '~/services/providers/weather';
+    import type { DailyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '@shared/utils/svelte/ui';
     import { colors, fontScale, weatherDataLayout } from '~/variables';
@@ -107,7 +107,7 @@
         //     canvas.drawText(moonData.icon, 18, h - 1.4 * moonData.iconFontSize, moonData.paint);
         // }
 
-        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item });
+        const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'daily' });
         let iconRight = PADDING_LEFT;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];

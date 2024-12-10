@@ -21,3 +21,8 @@ body {
     border: 2px solid white;
     padding: 0;
 }
+
+
+.maplibregl-ctrl-bottom-right {
+    bottom: 100px;
+}

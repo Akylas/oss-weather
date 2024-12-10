@@ -28,6 +28,11 @@ on:
         required: true
         type: boolean
         default: true
+      fakepublish:
+        description: "build publish even if not publishing?"
+        required: false
+        type: boolean
+        default: false
       github:
         description: "Should we publish on Github?"
         default: true
@@ -47,6 +52,7 @@ jobs:
       release_type: ${{ github.event.inputs.release_type }}
       publish: ${{ github.event.inputs.publish }}
       github: ${{ github.event.inputs.github }}
+      fakepublish: ${{ github.event.inputs.fakepublish }}
       sentry: ${{ github.event.inputs.sentry }}
     secrets: inherit
 

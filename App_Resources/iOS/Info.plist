@@ -52,5 +52,14 @@
     </dict>
     <key>ITSAppUsesNonExemptEncryption</key>
     <false/>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>weather</string>
+        </array>
+      </dict>
+    </array>
   </dict>
 </plist>

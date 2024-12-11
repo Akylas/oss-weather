@@ -266,10 +266,8 @@
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
             let timezoneData;
-            [weatherData, timezoneData] = await Promise.all([
-                getWeatherProvider().getWeather(weatherLocation),
-                !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
-            ]);
+            [weatherData, timezoneData] = await Promise.all([getWeatherProvider().getWeather(weatherLocation), !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation)]);
+            DEV_LOG && console.log('refreshWeather', timezoneData);
             if (timezoneData) {
                 Object.assign(weatherLocation, timezoneData);
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));

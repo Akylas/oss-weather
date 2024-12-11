@@ -122,7 +122,7 @@
                         }
                     ] as any)
                 );
-                if (isBRABounds(weatherLocation)) {
+                if (weatherLocation.timezone === 'Europe/Paris' && isBRABounds(weatherLocation)) {
                     options.push({
                         icon: 'mdi-snowflake-alert',
                         id: 'bra',
@@ -492,6 +492,7 @@
         try {
             const item = event as DailyData;
             const component = (await import('~/components/DailyPage.svelte')).default;
+            DEV_LOG && console.log('onTap', item.time, item.timezoneOffset);
             //we need to offset back the startOf/endOf to correctly get local utc values
             const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
             const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();

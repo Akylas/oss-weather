@@ -7,6 +7,7 @@
     import { LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
+    import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
@@ -29,7 +30,7 @@
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { iconService } from '~/services/icon';
-    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     // import { fade } from '@shared/utils/svelte/ui';
     import { generateGradient, loadImage } from '~/utils/utils.common';
 
@@ -59,6 +60,7 @@
 
 <script lang="ts">
     import HourlyPopover from './HourlyPopover.svelte';
+    import { ComponentInstanceInfo } from '~/utils/ui';
 
     let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
@@ -321,7 +323,7 @@
                             if (k === WeatherProps.iconId || k === WeatherProps.windBearing) {
                                 result['setFakeKey'] = 1;
                             } else if (k === WeatherProps.precipAccumulation) {
-                                // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
+                                // result.snow = convertWeatherValueToUnit(d, k, { round: false })[0];
                             } else if (k === WeatherProps.temperature) {
                                 // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                                 tempMin = Math.min(tempMin, d[k]);
@@ -408,7 +410,6 @@
                             set.scatterShapeSize = 4;
                             // set.scatterShapeSize=(enabled ? 4 : 0);
                             set.color = setColor;
-                            set['hasValueTextColor'] = hasCustomColor;
                             // set.fillColor=(color);
                             scatterDataSets.push(set);
                             break;
@@ -447,7 +448,6 @@
                         default: {
                             const set = new LineDataSet(data, key, 'deltaHours', key === WeatherProps.iconId || key === WeatherProps.windBearing ? 'setFakeKey' : key);
                             set.color = setColor;
-                            set['hasValueTextColor'] = hasCustomColor;
                             switch (key) {
                                 case WeatherProps.windSpeed:
                                     set.getEntryIcon = function (entry) {
@@ -641,6 +641,33 @@
             chart.highlight(highlights);
         }
     }
+    let popoverInstance: HourlyPopover__SvelteComponent_;
+    async function showPopover(item, highlightedMargin) {
+        try {
+            if (popoverInstance) {
+                popoverInstance.$set({ item });
+                return;
+            }
+            DEV_LOG && console.log('showPopover', highlightedMargin);
+            await showHourlyPopover(
+                item,
+                {},
+                {
+                    anchor: chartView?.nativeView,
+                    onDismiss: () => {
+                        popoverInstance = null;
+                        highlightedItem = null;
+                    },
+                    x: highlightedMargin
+                },
+                (data: ComponentInstanceInfo) => {
+                    popoverInstance = data.viewInstance as any;
+                }
+            );
+        } catch (error) {
+            showError(error);
+        }
+    }
     function onHighlight({ highlight, object }: { object: CombinedChart; highlight: Highlight }) {
         const popoverWidth = 150 * $fontScale;
         const fullWidth = Utils.layout.toDeviceIndependentPixels(chartView.nativeView.getMeasuredWidth());
@@ -648,6 +675,7 @@
         highlightedAlignment = highlightedX >= fullWidth - popoverWidth ? 'right' : 'left';
         highlightedMargin = highlightedAlignment === 'left' ? `40 0 0 ${highlightedX}` : `40 ${fullWidth - highlightedX} 0 0`;
         highlightedItem = hourly[highlight.x] as CommonWeatherData;
+        showPopover(highlightedItem, highlightedX > fullWidth / 2 ? 0 : fullWidth * 2);
     }
     function clearHighlight() {
         highlightedItem = null;
@@ -801,9 +829,9 @@
         on:pan={clearHighlight}
         on:zoom={clearHighlight}>
     </combinedchart>
-    {#if highlightedItem}
+    <!-- {#if highlightedItem}
         <HourlyPopover horizontalAlignment={highlightedAlignment} item={highlightedItem} margin={highlightedMargin} on:tap={clearHighlight} />
-    {/if}
+    {/if} -->
     <!-- {#if currentHighlight}
         <nestedscrollview
             backgroundColor={new Color(colorBackground).setAlpha(220)}

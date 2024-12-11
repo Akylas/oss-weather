@@ -614,7 +614,6 @@ export class DataService extends Observable {
                             textPaint.setTextSize(11 * fontScale);
                             if (data.customDrawColor) {
                                 textPaint.setColor(data.customDrawColor);
-
                             }
                             const staticLayout = new StaticLayout(
                                 withIcon
@@ -762,21 +761,25 @@ export const weatherDataService = new DataService();
 export async function showHourlyPopover(
     item: CommonWeatherData,
     props?: Partial<ComponentProps<HourlyPopover__SvelteComponent_>>,
-    options?: Partial<PopoverOptions<ComponentProps<HourlyPopover__SvelteComponent_>>>
+    options?: Partial<PopoverOptions<ComponentProps<HourlyPopover__SvelteComponent_>>>,
+    onCreated?
 ) {
     const HourlyPopover = (await import('~/components/HourlyPopover.svelte')).default;
-    await showPopover({
-        view: HourlyPopover,
-        vertPos: VerticalPosition.ALIGN_TOP,
-        horizPos: HorizontalPosition.ALIGN_LEFT,
-        focusable: false,
-        hideArrow: true,
-        props: {
-            item,
-            ...(props || {})
+    return showPopover(
+        {
+            view: HourlyPopover,
+            vertPos: VerticalPosition.ALIGN_TOP,
+            horizPos: HorizontalPosition.ALIGN_LEFT,
+            focusable: false,
+            hideArrow: true,
+            props: {
+                item,
+                ...(props || {})
+            },
+            ...(options || {})
         },
-        ...(options || {})
-    });
+        onCreated
+    );
 }
 
 export function convertWeatherValueToUnit(item: CommonWeatherData, key: WeatherProps, options?: { prefix?: string; join?: string; unitScale?: number; roundedTo05?: boolean; round?: boolean }) {

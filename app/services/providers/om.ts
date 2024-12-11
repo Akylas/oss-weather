@@ -474,6 +474,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const units = result.content.hourly_units;
         const keys = new Set(Object.keys(units).filter((s) => !!s));
         keys.delete('time');
+        keys.delete('interval');
 
         const hourlyData = hourly.time.map((time, index) => {
             const d = {} as Hourly;

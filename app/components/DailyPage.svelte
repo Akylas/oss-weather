@@ -263,6 +263,7 @@
     }
 
     function drawPollOnCanvas(polls, title: string, canvas: Canvas) {
+        delete polls['interval'];
         const w = canvas.getWidth();
         const h = canvas.getHeight();
         let row, col, dx, dy, data;

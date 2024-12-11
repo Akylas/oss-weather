@@ -2183,7 +2183,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/text@npm:1.6.6, @nativescript-community/text@npm:^1.5.2, @nativescript-community/text@npm:^1.5.33, @nativescript-community/text@npm:^1.6.3":
+"@nativescript-community/text@npm:1.6.7":
+  version: 1.6.7
+  resolution: "@nativescript-community/text@npm:1.6.7"
+  checksum: 10/49fd2ee8ddadd010c4db40e75e6bbca26274131694f711e991ce4f9124fffe19cabb9dda5452bc911b8558575f220f18b30783cd85a54a47197e4718165dd45e
+  languageName: node
+  linkType: hard
+
+"@nativescript-community/text@npm:^1.5.2, @nativescript-community/text@npm:^1.5.33, @nativescript-community/text@npm:^1.6.3":
   version: 1.6.6
   resolution: "@nativescript-community/text@npm:1.6.6"
   checksum: 10/75504a5491cf111e6d3b6fb26c6d05f7e4a00b2513e8e67b4ff68adb2ace7b1fa436556ae77cb8dec8ebe852823ffc0c546ca5e469c40508babad31db5303018
@@ -2300,111 +2307,111 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-activityindicator@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-activityindicator@npm:7.2.68"
+"@nativescript-community/ui-material-activityindicator@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-activityindicator@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/f128d3703939bce5e9e8fcc40fddda5dee6910f0d111dbadae00e178079905d6d3a3ebbca9e852b3efccfe3cb442a390554ad61cab35269802e59e9425f7ed94
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/a294072b496551adbaac01abd3e44f6d18c19d16153acafd5bbe1c3bf31933797c91739cb511a2e146215ef5c5ba599be2787ecca9d00622be8a0aa81201b35f
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-bottomsheet@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-bottomsheet@npm:7.2.68"
+"@nativescript-community/ui-material-bottomsheet@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-bottomsheet@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/1e05d4a94162deb66405426633bf2fefa2f395ae5a5dc82a772b5527d5ed9fd097dbeb39d5391b988a9e6559fb659ddddd337da540ac69f627343fb8cb704f86
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/0a7afe29f03459f0bc1392c09396d5c752af7c53d51ecd2ac2b84c7629edf0c6550451141dfbe0338633ad761dfea6c5ca0d5da679b16b2128978202e44176df
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-button@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-button@npm:7.2.68"
+"@nativescript-community/ui-material-button@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-button@npm:7.2.69"
   dependencies:
     "@nativescript-community/text": "npm:^1.5.2"
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/ad6aa3a5f4529f0982dbed2992556d786f5014c016e5f10b7c1ac0ff1b110209b1f18acfce78bf2e5ac590be60bb494bc477d2781036ec2c99eee9b9bd1b7f06
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/66d6418435654b7d40d9ebad602aac88c6b6fb46132e913b3417049054efee2d1ae5b00d683e8cbdba12ffbde1a31bd784377a96e227c2e270ef3a7fdf891ac8
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-core@npm:^7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-core@npm:7.2.68"
-  checksum: 10/bbb77cc2a34cddd0c57cac1e228ad3159e1222fa6e4a961badb942bb1e403a01a82082dad6a75b68320a08551cfdf4ae67ff145ae33d7661768e139a8b75a5e5
+"@nativescript-community/ui-material-core@npm:^7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-core@npm:7.2.69"
+  checksum: 10/80370f79678e131829bf020934cfc85713aa17b1a8692e4e4eb84e85dc8830e90664982811630a77a90739d274a9a80c61cb0589432255a7bbb5ae5050375b5a
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-dialogs@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-dialogs@npm:7.2.68"
+"@nativescript-community/ui-material-dialogs@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-dialogs@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-    "@nativescript-community/ui-material-textfield": "npm:^7.2.68"
-  checksum: 10/842f7687e1f9416e1d761092dcc017497d2aba06379a106d092a0b275d38536270ba56ff244b0f738fb8caedf4f30e256805537909ceac3afac70ad6a0ff68a0
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+    "@nativescript-community/ui-material-textfield": "npm:^7.2.69"
+  checksum: 10/1cf36dcdf4864a3284174160f9fee897497ec333b628828c63f13bde81f10c91b9d3a10f07a01747aaf17d8d582657c66a679a26055269a8d424858d5e780b34
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-progress@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-progress@npm:7.2.68"
+"@nativescript-community/ui-material-progress@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-progress@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/0072b2c1ba1bf2b6e0245e4d34392e365f73c8eb2f2b63b7bba780e91d693798d9c3f3cac483fcb09964d11553a380597bb0c0b74d01225bc3624857a98f91fd
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/a4b94f7c9ae36e7093718f0f50c8293feb7ff8f9b5049f3ef4aa9fa0ee1ee68bf898e58cba6394dea863957b4d4618012a77e96a0609aafd17a7444a2429f690
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-slider@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-slider@npm:7.2.68"
+"@nativescript-community/ui-material-slider@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-slider@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/95267af224ef2458a0eea10b1a9dfb704ba229dc40ca81cc0f9b76d365bb2b563bd34a9d09d563411e0707e970c85e82da55251c0b0ff03ab2a67dee97fd2f5d
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/836db526fc8ef29ecb9749a4695a189ea5975a8d44f2a171117c50a3cfe1a94b6834a6fc9c6deee687f7ceb99c250c433e3a65b7dfaab9097542884f67cd631a
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-snackbar@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-snackbar@npm:7.2.68"
+"@nativescript-community/ui-material-snackbar@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-snackbar@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/6e82642d36c589f61b39687cfffdea1b478d3839723582f0b0de3fc14eb85ef2188a4298b091ad550519f79dd7f66a1ea418b8c72faca7ce81648ed4068efbb4
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/cbe1bc771b698c1f77181f89089378171b294e3d07b7b12f20e20030d4bbaaf7f3edf7ebb69b71c52977667e04e75747279878719d965e5389841fa115377e1b
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-switch@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-switch@npm:7.2.68"
+"@nativescript-community/ui-material-switch@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-switch@npm:7.2.69"
   dependencies:
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/71cb6408a5fe316b739c2a2e35740fee7a04de757358188508d610885ad456106dde72d6c663efd195add7e7dddff6ca37accfa39e4efec9ad92f86798d9d27d
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/f16bb35b9bf0aab8b6a1bbf130d65ef12f11ba9081655269285551ecb4b81cc9689edd7f8e476d994fc0e83d41755187794c5ac3d05b3f80a91d6d48a193dfa2
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-material-textfield@npm:7.2.68, @nativescript-community/ui-material-textfield@npm:^7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-textfield@npm:7.2.68"
-  dependencies:
-    "@nativescript-community/text": "npm:^1.5.33"
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/96d0ea1e98b765dcf5be45d672cfc61c14491caf323f148a66348e5a22e3078d23481e70fdb81da9ae8274280c033b8e36db4ee386ccbda1d57c7271ab609816
-  languageName: node
-  linkType: hard
-
-"@nativescript-community/ui-material-textview@npm:7.2.68":
-  version: 7.2.68
-  resolution: "@nativescript-community/ui-material-textview@npm:7.2.68"
+"@nativescript-community/ui-material-textfield@npm:7.2.69, @nativescript-community/ui-material-textfield@npm:^7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-textfield@npm:7.2.69"
   dependencies:
     "@nativescript-community/text": "npm:^1.5.33"
-    "@nativescript-community/ui-material-core": "npm:^7.2.68"
-  checksum: 10/32c4fd40d4540a3f6f46054ce4469e296e79f06c7e3fcbc564b1fbef7aeba97d6db656013672aac50f34450842d97dc75cb834bfb9055413ab92bf12f3756f5c
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/5f2c487a3980b1ba0763f3aff1aaa8bb2f34ba7b8c9e28f3801638856faff8172059b874e18dd56f54269b8715357a3a94328acc4bed779b24083cff923eba44
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-popover@npm:0.1.20":
-  version: 0.1.20
-  resolution: "@nativescript-community/ui-popover@npm:0.1.20"
-  checksum: 10/6d316ee2fc08758c910619e5bb81054dbe195ddd02d0009e4c15f730ea6f420d25ab4d7612507aad4d1c64675e007710172b2462f4651e26828694c6464158a3
+"@nativescript-community/ui-material-textview@npm:7.2.69":
+  version: 7.2.69
+  resolution: "@nativescript-community/ui-material-textview@npm:7.2.69"
+  dependencies:
+    "@nativescript-community/text": "npm:^1.5.33"
+    "@nativescript-community/ui-material-core": "npm:^7.2.69"
+  checksum: 10/032a8f077fbd634c2b41f87a8d42f2980a2c69612bf5623e326f22d05b95bea437e73733e5d0582817a440d0cbe783e41ff9a07771cabe6472cfe72f8cc7ecc4
+  languageName: node
+  linkType: hard
+
+"@nativescript-community/ui-popover@npm:0.1.21":
+  version: 0.1.21
+  resolution: "@nativescript-community/ui-popover@npm:0.1.21"
+  checksum: 10/102751caec940f02d7bdb0f0112118cd30a00eba48214df5cd9845c4498a4ee8b9890dfe46d11b56584a2afb044b9efd24ab678545d3df2616f4dd4c92701feb
   languageName: node
   linkType: hard
 
@@ -2422,12 +2429,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-webview@npm:1.5.1":
-  version: 1.5.1
-  resolution: "@nativescript-community/ui-webview@npm:1.5.1"
+"@nativescript-community/ui-webview@npm:1.5.2":
+  version: 1.5.2
+  resolution: "@nativescript-community/ui-webview@npm:1.5.2"
   dependencies:
     url: "npm:^0.11.0"
-  checksum: 10/d4d17f0e776fad093cf72a531d20ba6955b5446f9e1d3b976bed99e5388271f78864cb260406dcc2778acf7fee94514104c012fcc5fd7866cd45baebc0adf77d
+  checksum: 10/ae4d6c2ef2549364f8a2dfda234670d6368c610c5f2ea4b75fcbd222a20bae6bbef93859e47c8cd4aac1be7f4aaece699ac65eb84b7540e437bca71a1842bab0
   languageName: node
   linkType: hard
 
@@ -3414,15 +3421,6 @@ __metadata:
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 10/1a3c3e06236e4c4aab89499c428d585527ce50c24fe8259e8b3926d3df4cfbbbcf306cfc73ddfb66cbafc973116efd15967020b0f738f63e09e64c7d260519e7
-  languageName: node
-  linkType: hard
-
-"@types/leaflet@npm:1.9.12":
-  version: 1.9.12
-  resolution: "@types/leaflet@npm:1.9.12"
-  dependencies:
-    "@types/geojson": "npm:*"
-  checksum: 10/ff6dce2f613b97bdc3ceb929e6eeaaa8bef8bbafdf9758935b1d679cbaf76360e366080d77e42da58e41aac146434c5d18c70ec919d37e01e0592f0a4f2e967e
   languageName: node
   linkType: hard
 
@@ -9185,13 +9183,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"leaflet@npm:1.9.4":
-  version: 1.9.4
-  resolution: "leaflet@npm:1.9.4"
-  checksum: 10/7b6a74d503980961a85bdabebf9d1162c26db0e88195800ceea311682b653d621718f2ada3c9aab903a735af9862c9ae278ba550d4429acbd954d43449cd0d77
-  languageName: node
-  linkType: hard
-
 "levn@npm:^0.4.1":
   version: 0.4.1
   resolution: "levn@npm:0.4.1"
@@ -9494,12 +9485,10 @@ __metadata:
     "@tsconfig/svelte": "npm:^5.0.4"
     "@types/babel__core": "npm:^7"
     "@types/babel__preset-env": "npm:^7.9.7"
-    "@types/leaflet": "npm:1.9.12"
     "@types/svelte-range-slider-pips": "npm:^2.0.4"
     babel-loader: "npm:^9.1.3"
     css-minimizer-webpack-plugin: "npm:^7.0.0"
     html-webpack-plugin: "npm:^5.6.0"
-    leaflet: "npm:1.9.4"
     maplibre-gl: "npm:^4.5.0"
     mini-css-extract-plugin: "npm:^2.9.0"
     svelte: "npm:4.2.18"
@@ -12037,7 +12026,7 @@ __metadata:
     "@nativescript-community/preferences": "npm:1.3.2"
     "@nativescript-community/sentry": "npm:4.6.38"
     "@nativescript-community/systemui": "npm:1.1.23"
-    "@nativescript-community/text": "npm:1.6.6"
+    "@nativescript-community/text": "npm:1.6.7"
     "@nativescript-community/ui-canvas": "npm:4.6.36"
     "@nativescript-community/ui-canvaslabel": "npm:1.2.39"
     "@nativescript-community/ui-chart": "npm:2.0.21"
@@ -12049,20 +12038,20 @@ __metadata:
     "@nativescript-community/ui-image": "npm:4.5.4"
     "@nativescript-community/ui-label": "npm:1.3.32"
     "@nativescript-community/ui-lottie": "npm:5.0.11"
-    "@nativescript-community/ui-material-activityindicator": "npm:7.2.68"
-    "@nativescript-community/ui-material-bottomsheet": "npm:7.2.68"
-    "@nativescript-community/ui-material-button": "npm:7.2.68"
-    "@nativescript-community/ui-material-dialogs": "npm:7.2.68"
-    "@nativescript-community/ui-material-progress": "npm:7.2.68"
-    "@nativescript-community/ui-material-slider": "npm:7.2.68"
-    "@nativescript-community/ui-material-snackbar": "npm:7.2.68"
-    "@nativescript-community/ui-material-switch": "npm:7.2.68"
-    "@nativescript-community/ui-material-textfield": "npm:7.2.68"
-    "@nativescript-community/ui-material-textview": "npm:7.2.68"
-    "@nativescript-community/ui-popover": "npm:0.1.20"
+    "@nativescript-community/ui-material-activityindicator": "npm:7.2.69"
+    "@nativescript-community/ui-material-bottomsheet": "npm:7.2.69"
+    "@nativescript-community/ui-material-button": "npm:7.2.69"
+    "@nativescript-community/ui-material-dialogs": "npm:7.2.69"
+    "@nativescript-community/ui-material-progress": "npm:7.2.69"
+    "@nativescript-community/ui-material-slider": "npm:7.2.69"
+    "@nativescript-community/ui-material-snackbar": "npm:7.2.69"
+    "@nativescript-community/ui-material-switch": "npm:7.2.69"
+    "@nativescript-community/ui-material-textfield": "npm:7.2.69"
+    "@nativescript-community/ui-material-textview": "npm:7.2.69"
+    "@nativescript-community/ui-popover": "npm:0.1.21"
     "@nativescript-community/ui-pulltorefresh": "npm:2.5.3"
     "@nativescript-community/ui-share-file": "npm:1.3.3"
-    "@nativescript-community/ui-webview": "npm:1.5.1"
+    "@nativescript-community/ui-webview": "npm:1.5.2"
     "@nativescript-community/ui-zoomimage": "npm:4.5.4"
     "@nativescript/core": "npm:8.8.6"
     "@nativescript/iqkeyboardmanager": "npm:2.1.1"

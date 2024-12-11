@@ -25,44 +25,32 @@
     let layerOpacity = parseFloat(urlParamers['opacity'] || '0.8');
     let animationSpeed = parseFloat(urlParamers['animationSpeed'] || '100');
     const animated = (urlParamers['animated'] || 'false') === 'true';
+    const dark = (urlParamers['dark'] || 'light');
     const colors = urlParamers['colors'] || '1';
     const optionSmoothData = 1; // 0 - not smooth, 1 - smooth
     const optionSnowColors = 1; // 0 - do not show snow colors, 1 - show snow colors
     const optionTileSize = 256; // can be 256 or 512.
-    const optionKind: string = 'radar'; // can be 'radar' or 'satellite'
     let apiData: any = {};
     let data: any[] = [];
     let dataLength: number = 0;
-    const mapFrames: any[] = [];
-    const lastPastFramePosition = -1;
 
-    function createMap(container) {
-        console.log('container', position, zoom);
-        const style = {
-            version: 8,
-            sources: {
-                osm: {
-                    type: 'raster',
-                    tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                    tileSize: 256,
-                    maxzoom: 19
-                }
-            },
-            layers: [
-                {
-                    id: 'osm',
-                    type: 'raster',
-                    source: 'osm'
-                }
-            ]
-        } as StyleSpecification;
+    console.log(`dark ${dark}`)
+    document.documentElement.setAttribute("data-dark", dark === 'black' ? "dark": dark);
+    if (dark === 'dark'  || dark === 'black') {
+        document.documentElement.style.setProperty('--background-color', dark === 'black'? '#000': '#333');
+        document.documentElement.style.setProperty('--button-color', 'white');
+    }
+
+    async function createMap(container) {
         // Initialise the map
+        const style  = await import(`./${dark === 'light' ? 'light':'dark'}_theme.json`);
+        console.log('style', style)
         const map = new Map({
             fadeDuration: 0,
             validateStyle: false,
             attributionControl:{
                 compact: true,
-                customAttribution:['<a href="https://maplibre.org/">MapLibre</a>', '<a href="https://www.openstreetmap.org">OpenStreetMap</a>', '<a href="https://www.rainviewer.com/api.html">RainViewer</a>']
+                customAttribution:['<a href="https://maplibre.org/">MapLibre</a>', '<a href="https://www.openstreetmap.org">OpenStreetMap</a>', '<a href=\"https://carto.com/about-carto/\">CARTO</a>', '<a href="https://www.rainviewer.com/api.html">RainViewer</a>']
             },
             //  refreshExpiredTiles:false,
             container,
@@ -77,8 +65,9 @@
         return map;
     }
     function mapAction(container) {
-        map = createMap(container);
-        fetch('https://api.rainviewer.com/public/weather-maps.json')
+        createMap(container).then(result=>{
+            map = result
+            fetch('https://api.rainviewer.com/public/weather-maps.json')
             .then((response) => response.text())
             .then((response) => {
                 apiData = JSON.parse(response);
@@ -107,6 +96,8 @@
                     startStopAnimation();
                 }
             });
+        });
+        
     }
     let currentIndex = 0;
     let lastIndex = -1;
@@ -219,13 +210,13 @@
     <div style="height:100%;width:100%;" class="map" use:mapAction />
 
     <RainViewerLegend colorScheme={colors} />
-    <div style="position: absolute; bottom:5px; width: 90%; height: 80px;background-color:white;  align-content: center;flex-direction: row;display: flex;" class="popup">
+    <div style="position: absolute; bottom:5px; width: 90%; height: 80px;  align-content: center;flex-direction: row;display: flex;" class="popup">
         <div style="display: flex;flex-direction: column;flex-grow:1;">
             <div style="display: flex;flex-direction: row;flex-grow:1;">
                 <div style="text-align:center; height: 30px;flex-direction: row;flex-grow: 1;">
-                    <button id="prevBtn" style="width:30px;height:30px;" on:click={showPreviousFrame} />
-                    <button id={animationInterval ? 'pauseBtn' : 'playBtn'} style="width:30px;height:30px;" on:click={startStopAnimation} />
-                    <button id="nextBtn" style="width:30px;height:30px;" on:click={showNextFrame} />
+                    <button class="button" id="prevBtn" style="width:30px;height:30px;" on:click={showPreviousFrame} />
+                    <button class="button" id={animationInterval ? 'pauseBtn' : 'playBtn'} style="width:30px;height:30px;" on:click={startStopAnimation} />
+                    <button class="button" id="nextBtn" style="width:30px;height:30px;" on:click={showNextFrame} />
 
                     <!-- <li>
                         <select id="colors" onchange="setColors(); return;">
@@ -241,11 +232,11 @@
                         </select>
                     </li> -->
                 </div>
-                <div id="timestamp" style="text-align:center; font-weight:bold;padding:4px"></div>
+                <div class="label"  id="timestamp" style="text-align:center; font-weight:bold;padding:4px"></div>
             </div>
 
             <div style="padding: 0px 0px;">
-                <RangeSlider float {handleFormatter} max={dataLength - 1} min={0} pips values={[currentIndex]} on:start={stopAnimation} on:change={(e) => setIndex(e.detail.value)} />
+                <RangeSlider float {handleFormatter} max={dataLength - 1} min={0} pips values={[currentIndex]} on:start={stopAnimation} on:change={(e) => setIndex(e.detail.value)}/>
             </div>
         </div>
     </div>

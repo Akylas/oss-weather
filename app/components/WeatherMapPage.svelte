@@ -21,6 +21,7 @@
     import { debounce } from '@nativescript/core/utils';
     import { rowHeightProperty } from '@akylas/nativescript/ui/list-view';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
+    import { currentTheme, isDarkTheme, sTheme } from '~/helpers/theme';
 </script>
 
 <script lang="ts">
@@ -33,8 +34,10 @@
     let colors = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS);
     const animationSpeed = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED);
     $: {
-        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}`;
+        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&dark=${$currentTheme}`;
     }
+    $: DEV_LOG && console.log('currentTheme', $currentTheme);
+    $: DEV_LOG && console.log('url', url);
     const consoleEnabled = !PRODUCTION;
 
     function callJSFunction<T>(method: string, ...args) {

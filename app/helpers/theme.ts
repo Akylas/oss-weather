@@ -31,7 +31,7 @@ if (theme.length === 0) {
     theme = DEFAULT_THEME as Themes;
 }
 export const sTheme = writable('auto');
-export const currentTheme = writable('auto');
+export const currentTheme = writable<'dark' | 'black' | 'light'>('light');
 
 colorTheme = getString(SETTINGS_COLOR_THEME, DEFAULT_COLOR_THEME) as ColorThemes;
 export const currentColorTheme = writable(colorTheme);
@@ -47,7 +47,7 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
     DEV_LOG && console.log('systemAppearanceChangedEvent', theme, event.newValue, autoDarkToBlack);
     if (theme === 'auto') {
         event.cancel = true;
-        let realTheme = event.newValue as Themes;
+        let realTheme = event.newValue as 'dark' | 'black' | 'light';
         if (autoDarkToBlack && realTheme === 'dark') {
             realTheme = 'black';
         }
@@ -56,6 +56,7 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
                 AppUtilsAndroid.applyDayNight(Application.android.startActivity, useDynamicColors);
             }
         }
+        currentTheme.set(realTheme);
         Theme.setMode(Theme.Auto, undefined, realTheme, false);
         updateThemeColors(realTheme, colorTheme);
         //close any popover as they are not updating with theme yet
@@ -221,7 +222,7 @@ export function getRealTheme(th = theme) {
             console.error('getRealTheme', err, err.stack);
         }
     }
-    return th;
+    return th as 'light' | 'dark' | 'black';
 }
 
 export function isDarkTheme(th = getRealTheme(theme)) {

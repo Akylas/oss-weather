@@ -109,7 +109,7 @@
             } catch (err) {
                 close(null);
             }
-        } else if (item.type === 'checkbox') {
+        } else if (item.type === 'checkbox' || item.type === 'switch') {
             // we dont want duplicate events so let s timeout and see if we clicking diretly on the checkbox
             const checkboxView: CheckBox = ((event.object as View).parent as View).getViewById('checkbox');
             clearCheckboxTimer();
@@ -265,6 +265,25 @@
                         ios:marginRight={10}
                         verticalAlignment="center"
                         on:checkedChange={(e) => onCheckedChanged(item, e)} />
+                </svelte:component>
+            </Template>
+            <Template key="switch" let:item>
+                <svelte:component
+                    this={component}
+                    {borderRadius}
+                    columns="auto,*,auto"
+                    {fontSize}
+                    {fontWeight}
+                    {iconFontSize}
+                    {item}
+                    mainCol={1}
+                    showBottomLine={showBorders}
+                    {subtitleProps}
+                    {titleHolderProps}
+                    {titleProps}
+                    {...templateProps}
+                    on:tap={(event) => onTap(item, event)}>
+                    <switch id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckedChanged(item, e)} />
                 </svelte:component>
             </Template>
             <Template key="righticon" let:item>

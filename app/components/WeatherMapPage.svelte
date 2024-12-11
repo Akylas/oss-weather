@@ -10,10 +10,12 @@
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
         SETTINGS_WEATHER_MAP_LAYER_OPACITY,
+        SETTINGS_WEATHER_MAP_SHOW_SNOW,
         WEATHER_MAP_ANIMATION_SPEED,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES,
-        WEATHER_MAP_LAYER_OPACITY
+        WEATHER_MAP_LAYER_OPACITY,
+        WEATHER_MAP_SHOW_SNOW
     } from '~/helpers/constants';
     import { l, lc } from '~/helpers/locale';
     import { hideLoading, openLink, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
@@ -21,7 +23,7 @@
     import { debounce } from '@nativescript/core/utils';
     import { rowHeightProperty } from '@akylas/nativescript/ui/list-view';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
-    import { currentTheme, isDarkTheme, sTheme } from '~/helpers/theme';
+    import { currentTheme, isDarkTheme, onThemeChanged, sTheme } from '~/helpers/theme';
 </script>
 
 <script lang="ts">
@@ -29,15 +31,20 @@
     let webView: NativeViewElementNode<AWebView>;
     let url = '~/assets/map/index.html';
     let zoom = 8;
+    let snowColors = ApplicationSettings.getBoolean(SETTINGS_WEATHER_MAP_SHOW_SNOW, WEATHER_MAP_SHOW_SNOW);
     let mapCenter = focusPos;
     let animated = false;
+    const layerOpacity = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_LAYER_OPACITY, WEATHER_MAP_LAYER_OPACITY);
     let colors = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_COLORS, WEATHER_MAP_COLORS);
     const animationSpeed = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED);
-    $: {
-        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&dark=${$currentTheme}`;
+
+    function updateUrl() {
+        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&snowColors=${snowColors ? 1 : 0}&opacity=${layerOpacity}&dark=${$currentTheme}`;
     }
-    $: DEV_LOG && console.log('currentTheme', $currentTheme);
-    $: DEV_LOG && console.log('url', url);
+
+    onThemeChanged(updateUrl);
+
+    updateUrl();
     const consoleEnabled = !PRODUCTION;
 
     function callJSFunction<T>(method: string, ...args) {
@@ -81,6 +88,7 @@
                     if (item !== undefined) {
                         await saveCurrentMapParameters();
                         colors = parseInt(item.data, 10);
+                        updateUrl();
                         ApplicationSettings.setNumber(SETTINGS_WEATHER_MAP_COLORS, colors);
                     }
                 },
@@ -123,6 +131,13 @@
                     max: 1,
                     valueFormatter: (value) => value.toFixed(2),
                     transformValue: (value) => value
+                },
+                {
+                    type: 'switch',
+                    icon: 'mdi-snowflake',
+                    id: SETTINGS_WEATHER_MAP_SHOW_SNOW,
+                    title: lc('show_snow'),
+                    value: snowColors
                 }
                 // {
                 //     icon: 'mdi-information-outline',
@@ -143,24 +158,33 @@
                     width: screenWidthDips * 0.7,
                     autoSizeListItem: true
                 },
+                onCheckBox: (item, value, event) => {
+                    ApplicationSettings.setBoolean(item.key || item.id, value);
+                    switch (item.id) {
+                        case SETTINGS_WEATHER_MAP_SHOW_SNOW:
+                            snowColors = value;
+                            break;
+                    }
+                    DEV_LOG && console.log('onCheckBox', item.id, value);
+                    updateUrl();
+                },
                 onChange: debounce(async (item, value) => {
-                    DEV_LOG && console.log('onChange', value, item.step);
                     if (item.transformValue) {
                         value = item.transformValue(value, item);
                     } else {
                         value = Math.round(value / item.step) * item.step;
                     }
-                    DEV_LOG && console.log('onChange1', value);
                     try {
                         switch (item.id) {
                             case SETTINGS_WEATHER_MAP_ANIMATION_SPEED:
                                 ApplicationSettings.setNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, value);
-                                callJSFunction<any>('setAnimationSpeed', value);
+
+                                callJSFunction<any>('updateOption', 'animationSpeed', value);
                                 break;
 
                             case SETTINGS_WEATHER_MAP_LAYER_OPACITY:
                                 ApplicationSettings.setNumber(SETTINGS_WEATHER_MAP_LAYER_OPACITY, value);
-                                callJSFunction<any>('setLayerOpacity', value);
+                                callJSFunction<any>('updateOption', 'layerOpacity', value);
                                 break;
 
                             default:

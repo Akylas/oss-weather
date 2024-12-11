@@ -46,6 +46,7 @@
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
         SETTINGS_WEATHER_MAP_LAYER_OPACITY,
+        SETTINGS_WEATHER_MAP_SHOW_SNOW,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
         SWIPE_ACTION_BAR_PROVIDER,
@@ -53,7 +54,10 @@
         WEATHER_MAP_ANIMATION_SPEED,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES,
-        WEATHER_MAP_LAYER_OPACITY
+        WEATHER_MAP_LAYER_OPACITY,
+
+        WEATHER_MAP_SHOW_SNOW
+
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
@@ -465,6 +469,13 @@
                         valueFormatter: (value) => value.toFixed(2),
                         transformValue: (value) => value,
                         rightValue: () => Math.round(ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_LAYER_OPACITY, WEATHER_MAP_LAYER_OPACITY) * 100) / 100
+                    },
+                    {
+                        type: 'switch',
+                        icon: 'mdi-snowflake',
+                        id: SETTINGS_WEATHER_MAP_SHOW_SNOW,
+                        title: lc('show_snow'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_WEATHER_MAP_SHOW_SNOW, WEATHER_MAP_SHOW_SNOW)
                     }
                 ];
             case 'geolocation':

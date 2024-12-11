@@ -16,10 +16,10 @@
     import { showError } from '@shared/utils/showError';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { windIcon } from '~/helpers/formatter';
-    import { formatTime, getLocalTime } from '~/helpers/locale';
+    import { formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import type { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
-    import { colors, fontScale, screenWidthDips } from '~/variables';
+    import { colors, fontScale, rainColor, screenWidthDips, snowColor } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
@@ -48,7 +48,7 @@
     const LINE_WIDTH = 2;
 
     const CHART_TYPE = {
-        [WeatherProps.precipAccumulation]: 'barchart',
+        [WeatherProps.precipAccumulation]: 'precipitationchart',
         // [WeatherProps.windSpeed]: 'scatterchart',
         // [WeatherProps.windGust]: 'scatterchart',
         [WeatherProps.cloudCover]: 'scatterchart'
@@ -212,10 +212,16 @@
                             }
                         },
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
-                            const precipProbability = e.precipProbability;
-                            paint.setColor(e.precipColor);
-                            paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
-                            c.drawRect(left, top, right, bottom, paint);
+                            if (hasSnowFall) {
+                                const precipProbability = e.precipProbability;
+                                paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                                c.drawRect(left + 1, top + 1, right - 0.5, bottom - 0.5, paint);
+                            } else {
+                                const precipProbability = e.precipProbability;
+                                paint.setColor(e.precipColor);
+                                paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                                c.drawRect(left, top, right, bottom, paint);
+                            }
                         },
                         drawHighlight(c: Canvas, h: Highlight<Entry>) {
                             const date = getLocalTime(startTimestamp + h.entry['deltaHours'] * 3600 * 1000, timezoneOffset);
@@ -304,8 +310,12 @@
                 };
                 let tempMin = Number.MAX_SAFE_INTEGER;
                 let tempMax = Number.MIN_SAFE_INTEGER;
+                let hasSnowFall = false;
                 const data = sourceData.map((d: DailyData | Hourly, index) => {
                     const result = { ...d, deltaHours: (d.time - startTimestamp) / (3600 * 1000) };
+                    if (result['snowfall'] > 0) {
+                        hasSnowFall = true;
+                    }
                     dataToShow.forEach((k) => {
                         if (result.hasOwnProperty(k)) {
                             if (k === WeatherProps.iconId || k === WeatherProps.windBearing) {
@@ -407,7 +417,27 @@
                             const set = new BarDataSet(data, key, 'deltaHours', key);
                             set.visible = enabled;
                             set.color = setColor;
-                            set['hasValueTextColor'] = hasCustomColor;
+                            set.axisDependency = AxisDependency.RIGHT;
+                            // set.fillColor=(color);
+                            barDataSets.push(set);
+                            break;
+                        }
+                        case 'precipitationchart': {
+                            const values = hasSnowFall
+                                ? data.map((d) => ({
+                                      ...d,
+                                      yVals: [d['rain'] || 0, d['snowfall'] || 0]
+                                  }))
+                                : data;
+                            const set = new BarDataSet(values, key, 'deltaHours', hasSnowFall ? undefined : key);
+
+                            if (hasSnowFall) {
+                                set.stackLabels = [lc('rain'), lc('snow')];
+                                set.colors = [rainColor, snowColor];
+                            } else {
+                                set.color = setColor;
+                            }
+                            set.visible = enabled;
                             set.axisDependency = AxisDependency.RIGHT;
                             // set.fillColor=(color);
                             barDataSets.push(set);

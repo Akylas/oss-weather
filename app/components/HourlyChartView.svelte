@@ -218,7 +218,7 @@
                                 const precipProbability = e.precipProbability;
                                 paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
                                 c.drawRect(left + 1, top + 1, right - 0.5, bottom - 0.5, paint);
-                            } else {
+                            } else if (e.precipColor) {
                                 const precipProbability = e.precipProbability;
                                 paint.setColor(e.precipColor);
                                 paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);

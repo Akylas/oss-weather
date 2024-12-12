@@ -1,5 +1,6 @@
 <script lang="ts">
     export let expanded = false;
+    export let snow = false;
     export let colorScheme: string = '0';
 </script>
 
@@ -36,6 +37,26 @@
                 </li>
             </ul>
         </li>
+        {#if snow}
+            <li>
+                <p class="precipitation-name">Snow</p>
+                <div class="color-snow-gradient gradient"></div>
+                <ul class="color-scheme">
+                    <li>
+                        <div class="color-light-snow"></div>
+                        Light theme
+                    </li>
+                    <li>
+                        <div class="color-medium-snow"></div>
+                        Moderate
+                    </li>
+                    <li>
+                        <div class="color-heavy-snow"></div>
+                        Heavy
+                    </li>
+                </ul>
+            </li>
+        {/if}
         <!---->
     </ul>
 </div>

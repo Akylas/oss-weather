@@ -220,8 +220,8 @@
 <div style="height:100%;width:100%;display:flex;justify-content:center  ">
     <div style="height:100%;width:100%;" class="map" use:mapAction />
 
-    <RainViewerLegend colorScheme={options.colors} />
-    <div style="position: absolute; bottom:5px; width: 90%; height: 80px;  align-content: center;flex-direction: row;display: flex;" class="popup">
+    <RainViewerLegend colorScheme={options.colors} snow={options.snowColors === 1} />
+    <div style="position: absolute; bottom:5px; width: 90%; height: 60px;  align-content: center;flex-direction: row;display: flex;" class="popup">
         <div style="display: flex;flex-direction: column;flex-grow:1;">
             <div style="display: flex;flex-direction: row;flex-grow:1;">
                 <div style="text-align:center; height: 30px;flex-direction: row;flex-grow: 1;">

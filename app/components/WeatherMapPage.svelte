@@ -9,6 +9,7 @@
     import {
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
+        SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE,
         SETTINGS_WEATHER_MAP_LAYER_OPACITY,
         SETTINGS_WEATHER_MAP_SHOW_SNOW,
         WEATHER_MAP_ANIMATION_SPEED,
@@ -24,6 +25,7 @@
     import { rowHeightProperty } from '@akylas/nativescript/ui/list-view';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
     import { currentTheme, isDarkTheme, onThemeChanged, sTheme } from '~/helpers/theme';
+    import { networkService } from '~/services/api';
 </script>
 
 <script lang="ts">
@@ -31,6 +33,7 @@
     let webView: NativeViewElementNode<AWebView>;
     let url = '~/assets/map/index.html';
     let zoom = 8;
+    const customSource = ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, 'http://127.0.0.1:8080?source=data&x={x}&y={y}&z={z}');
     let snowColors = ApplicationSettings.getBoolean(SETTINGS_WEATHER_MAP_SHOW_SNOW, WEATHER_MAP_SHOW_SNOW);
     let mapCenter = focusPos;
     let animated = false;
@@ -39,7 +42,7 @@
     const animationSpeed = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED);
 
     function updateUrl() {
-        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&snowColors=${snowColors ? 1 : 0}&opacity=${layerOpacity}&dark=${$currentTheme}`;
+        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&snowColors=${snowColors ? 1 : 0}&hideAttribution=${networkService.devMode}&opacity=${layerOpacity}&dark=${$currentTheme}${customSource ? `&source=${encodeURIComponent(customSource)}` : ''}`;
     }
 
     onThemeChanged(updateUrl);

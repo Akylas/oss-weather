@@ -169,6 +169,16 @@ class NetworkService extends Observable {
     onConnectionStateChange(newConnectionType: connectionType) {
         this.connectionType = newConnectionType;
     }
+
+    mDevMode = ApplicationSettings.getBoolean('devMode', !PRODUCTION);
+
+    set devMode(value: boolean) {
+        this.mDevMode = value;
+        ApplicationSettings.setBoolean('devMode', value);
+    }
+    get devMode() {
+        return this.mDevMode;
+    }
 }
 
 export const networkService = new NetworkService();

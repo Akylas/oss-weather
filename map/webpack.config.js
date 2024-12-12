@@ -2,16 +2,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const PathsPlugin = require('tsconfig-paths-webpack-plugin').default;
 const TerserPlugin = require('terser-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const sveltePreprocess = require('svelte-preprocess');
-const { environments } = require('eslint-plugin-prettier');
 const SRC_FOLDER = path.resolve(__dirname, 'src/');
 const DIST_FOLDER = path.resolve(__dirname, '../app/assets/map');
 const ASSETS_FOLDER = path.resolve(__dirname, 'public/');
-
-console.log('DIST_FOLDER', DIST_FOLDER);
 
 const ENTRY = path.resolve(SRC_FOLDER, 'main.ts');
 module.exports = (env = {}, params = {}) => {
@@ -241,9 +238,10 @@ module.exports = (env = {}, params = {}) => {
             ]
         },
         plugins: [
+            new CopyPlugin({ patterns: [{ from: ASSETS_FOLDER, globOptions: { dot: false, ignore: [`**/*.html`] } }] }),
             new MiniCssExtractPlugin(),
             new HtmlWebpackPlugin({
-                template: path.resolve(__dirname, 'public/index.html'),
+                template: path.resolve(ASSETS_FOLDER, 'index.html'),
                 title: 'Svelte App'
             })
         ],

@@ -8,11 +8,12 @@
     import RangeSlider from 'svelte-range-slider-pips';
 
     function GetURLParameters() {
-        const sPageURL = window.location.search.substring(1);
+        console.log('GetURLParameters ' + window.location.search);
+        const sPageURL = decodeURI(window.location.search).substring(1);
         const sURLVariables = sPageURL.split('&');
         return sURLVariables.reduce((acc, val) => {
-            const sParameterName = val.split('=');
-            acc[sParameterName[0]] = sParameterName[1];
+            const sParameterName = decodeURIComponent(val).split('=');
+            acc[sParameterName[0]] = sParameterName.slice(1).join('=');
             return acc;
         }, {});
     }
@@ -20,12 +21,14 @@
     let map: Map;
 
     let options = {
+        source: urlParamers['source'],
         position: (urlParamers['position'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike,
         mapCenter: (urlParamers['mapCenter'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike,
         zoom: parseFloat(urlParamers['zoom'] || '8'),
         layerOpacity: parseFloat(urlParamers['opacity'] || '0.8'),
         animationSpeed: parseFloat(urlParamers['animationSpeed'] || '100'),
         animated: (urlParamers['animated'] || 'false') === 'true',
+        hideAttribution: (urlParamers['hideAttribution'] || 'false') === 'true',
         dark: urlParamers['dark'] || 'light',
         colors: urlParamers['colors'] || '1',
         smoothData: parseFloat(urlParamers['smoothData'] || '1'), // 0 - not smooth, 1 - smooth
@@ -45,19 +48,38 @@
 
     async function createMap(container) {
         // Initialise the map
-        const style = await import(`./${options.dark === 'light' ? 'light' : 'dark'}_theme.json`);
+        const style: StyleSpecification = await import(`./${options.dark === 'light' ? 'light' : 'dark'}_theme.json`);
+        if (options.source) {
+            try {
+                // we test if the custom tile source is available.
+                // if not we add the default
+                await fetch(options.source.replace(/\{(x|y|z)\}/g, '0'), {
+                    method: 'HEAD'
+                });
+                console.log('adding custom source ' + options.source);
+                style.sources.openmaptiles = {
+                    type: 'vector',
+                    tiles: [options.source],
+                    maxzoom: 14
+                };
+            } catch (error) {
+                console.error('error ' + error);
+            }
+        }
         const map = new Map({
             fadeDuration: 0,
             validateStyle: false,
-            attributionControl: {
-                compact: true,
-                customAttribution: [
-                    '<a href="https://maplibre.org/">MapLibre</a>',
-                    '<a href="https://www.openstreetmap.org">OpenStreetMap</a>',
-                    '<a href="https://carto.com/about-carto/">CARTO</a>',
-                    '<a href="https://www.rainviewer.com/api.html">RainViewer</a>'
-                ]
-            },
+            attributionControl: options.hideAttribution
+                ? false
+                : {
+                      compact: true,
+                      customAttribution: [
+                          '<a href="https://maplibre.org/">MapLibre</a>',
+                          '<a href="https://www.openstreetmap.org">OpenStreetMap</a>',
+                          '<a href="https://carto.com/about-carto/">CARTO</a>',
+                          '<a href="https://www.rainviewer.com/api.html">RainViewer</a>'
+                      ]
+                  },
             //  refreshExpiredTiles:false,
             container,
             style,

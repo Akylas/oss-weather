@@ -45,6 +45,7 @@
         SETTINGS_WEATHER_DATA_LAYOUT,
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
+        SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE,
         SETTINGS_WEATHER_MAP_LAYER_OPACITY,
         SETTINGS_WEATHER_MAP_SHOW_SNOW,
         SHOW_CURRENT_DAY_DAILY,
@@ -55,9 +56,7 @@
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES,
         WEATHER_MAP_LAYER_OPACITY,
-
         WEATHER_MAP_SHOW_SNOW
-
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
@@ -70,6 +69,7 @@
     import { restartApp } from '~/utils/utils';
     import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
+    import { networkService } from '~/services/api';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -476,6 +476,15 @@
                         id: SETTINGS_WEATHER_MAP_SHOW_SNOW,
                         title: lc('show_snow'),
                         value: ApplicationSettings.getBoolean(SETTINGS_WEATHER_MAP_SHOW_SNOW, WEATHER_MAP_SHOW_SNOW)
+                    },
+                    {
+                        type: 'prompt',
+                        icon: 'mdi-server',
+                        valueType: 'string',
+                        id: 'setting',
+                        key: SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE,
+                        description: ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, null),
+                        title: lc('custom_tile_server')
                     }
                 ];
             case 'geolocation':
@@ -491,6 +500,30 @@
                 break;
         }
     }
+
+    let nbDevModeTap = 0;
+    let devModeClearTimer;
+    function onTouch(item, event) {
+        if (event.action !== 'down') {
+            return;
+        }
+        nbDevModeTap += 1;
+        if (devModeClearTimer) {
+            clearTimeout(devModeClearTimer);
+        }
+        if (nbDevModeTap === 6) {
+            const devMode = (networkService.devMode = !networkService.devMode);
+            nbDevModeTap = 0;
+            showSnack({ message: devMode ? 'devmode on' : 'devmode off' });
+            refresh();
+            return;
+        }
+        devModeClearTimer = setTimeout(() => {
+            devModeClearTimer = null;
+            nbDevModeTap = 0;
+        }, 500);
+    }
+
     function refresh() {
         const newItems: any[] =
             options?.(page, updateItem) ||
@@ -1202,7 +1235,7 @@
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
                         <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50} />
-                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress('version', event)} />
+                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress('version', event)} on:touch={(e) => onTouch(item, e)} />
                     </stacklayout>
                 </gridlayout>
             </Template>

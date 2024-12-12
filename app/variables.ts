@@ -11,6 +11,7 @@ import {
     SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
     SETTINGS_COLOR_THEME,
     SETTINGS_FEELS_LIKE_TEMPERATURES,
+    SETTINGS_FONTSCALE,
     SETTINGS_IMPERIAL,
     SETTINGS_METRIC_TEMP_DECIMAL,
     SETTINGS_SHOW_CURRENT_DAY_DAILY,
@@ -88,7 +89,7 @@ export let metricDecimalTemp = ApplicationSettings.getBoolean(SETTINGS_METRIC_TE
 export const alwaysShowPrecipProb = writable(ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB));
 export const weatherDataLayout = writable(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
-let storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
+let storedFontScale = ApplicationSettings.getNumber(SETTINGS_FONTSCALE, 1);
 if (isNaN(storedFontScale)) {
     storedFontScale = 1;
 }
@@ -96,7 +97,7 @@ export const fontScale = writable(storedFontScale);
 export const isRTL = writable(false);
 
 export const onUnitsChanged = createGlobalEventListener(SETTINGS_UNITS);
-export const onFontScaleChanged = createGlobalEventListener('fontscale');
+export const onFontScaleChanged = createGlobalEventListener(SETTINGS_FONTSCALE);
 export function onSettingsChanged(key: string, callback) {
     return createGlobalEventListener(key)(callback);
 }
@@ -158,14 +159,14 @@ prefs.on(`key:${SETTINGS_FEELS_LIKE_TEMPERATURES}`, () => {
 prefs.on(`key:${SETTINGS_SHOW_CURRENT_DAY_DAILY}`, () => {
     globalObservable.notify({ eventName: SETTINGS_SHOW_CURRENT_DAY_DAILY, data: ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY) });
 });
-prefs.on('key:fontscale', () => {
-    storedFontScale = ApplicationSettings.getNumber('fontscale', 1);
+prefs.on(`key:${SETTINGS_FONTSCALE}`, () => {
+    storedFontScale = ApplicationSettings.getNumber(SETTINGS_FONTSCALE, 1);
     if (storedFontScale === 1) {
         fontScale.set(get(systemFontScale));
     } else {
         fontScale.set(storedFontScale);
     }
-    globalObservable.notify({ eventName: 'fontscale', data: get(fontScale) });
+    globalObservable.notify({ eventName: SETTINGS_FONTSCALE, data: get(fontScale) });
 });
 
 function updateSystemFontScale(value) {

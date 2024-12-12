@@ -603,10 +603,9 @@
     function onLayoutChanged(event: EventData) {
         updateGradient();
         //use a timeout to ensure we are called after chart layout changed was called
-        DEV_LOG && console.log('onLayoutChanged', screenOrientation, Application.orientation(), chartNeedsZoomUpdate);
-        const chart = event.object as CombinedChart;
         setTimeout(() => {
-            if (chartNeedsZoomUpdate) {
+            const chart = event.object as CombinedChart;
+            if (chart && chartNeedsZoomUpdate) {
                 chartNeedsZoomUpdate = false;
                 if (screenOrientation || Application.orientation() === 'landscape') {
                     chart.resetZoom();

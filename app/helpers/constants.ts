@@ -6,6 +6,7 @@ export const ALERT_OPTION_MAX_HEIGHT = Screen.mainScreen.heightDIPs * 0.47;
 
 export const SETTINGS_LANGUAGE = 'language';
 export const SETTINGS_IMPERIAL = 'imperial';
+export const SETTINGS_FONTSCALE = 'fontscale';
 export const SETTINGS_COLOR_THEME = 'color_theme';
 export const SETTINGS_DAILY_PAGE_HOURLY_CHART = 'daily_page_hourly_chart';
 export const SETTINGS_MAIN_PAGE_HOURLY_CHART = 'main_page_hourly_chart';

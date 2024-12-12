@@ -10,6 +10,7 @@
     import type { WeatherData } from '~/services/providers/weather';
     import { colors, windowInset } from '~/variables';
     import CActionBar from '../common/CActionBar.svelte';
+    import { SETTINGS_FONTSCALE } from '~/helpers/constants';
 
     $: ({ colorOutline } = $colors);
 
@@ -24,13 +25,13 @@
 
     const fakeNow = weatherData.currently.time;
     const items = prepareItems(weatherLocation, weatherData, lastUpdate, dayjs.utc(fakeNow));
-    let fontScale = ApplicationSettings.getNumber('fontscale', 1);
+    let fontScale = ApplicationSettings.getNumber(SETTINGS_FONTSCALE, 1);
     let resetCursorPosition = false;
     function setFontScale(value) {
         if (value !== fontScale) {
             resetCursorPosition = true;
-            fontScale = value;
-            ApplicationSettings.setNumber('fontscale', fontScale);
+            fontScale = Math.round(value * 1000) / 1000;
+            ApplicationSettings.setNumber(SETTINGS_FONTSCALE, fontScale);
         }
     }
 
@@ -44,15 +45,16 @@
         if (resetCursorPosition) {
             object.setSelection(value.length);
             resetCursorPosition = false;
+        } else {
+            updateFonscale(value);
         }
-        updateFonscale(value);
     }
 </script>
 
 <page actionBarHidden={true}>
     <gridlayout rows="auto,*,auto" android:paddingBottom={$windowInset.bottom}>
         <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={1}>
-            <WeatherComponent {fakeNow} {items} {weatherLocation} />
+            <WeatherComponent {fakeNow} fullRefresh={false} {items} {weatherLocation} />
         </gridlayout>
         <gridlayout columns="*,auto,auto" row={2}>
             <slider maxValue={2} minValue={0.5} value={fontScale} on:valueChange={(e) => setFontScale(e.value)} />

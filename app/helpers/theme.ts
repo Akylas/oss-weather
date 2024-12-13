@@ -8,7 +8,7 @@ import { updateThemeColors } from '~/variables';
 import { lc } from '~/helpers/locale';
 import { writable } from 'svelte/store';
 import { SDK_VERSION } from '@nativescript/core/utils';
-import { showAlertOptionSelect } from '~/utils/ui';
+import { confirmRestartApp, showAlertOptionSelect } from '~/utils/ui';
 import { closePopover } from '@nativescript-community/ui-popover/svelte';
 import { AppUtilsAndroid, restartApp } from '@akylas/nativescript-app-utils';
 import { ALERT_OPTION_MAX_HEIGHT, DEFAULT_COLOR_THEME, SETTINGS_COLOR_THEME } from './constants';
@@ -278,14 +278,7 @@ export function start(force = false) {
             } else {
                 ApplicationSettings.remove('SET_THEME_ON_LAUNCH');
             }
-            const result = await confirm({
-                message: lc('restart_app'),
-                okButtonText: lc('restart'),
-                cancelButtonText: lc('later')
-            });
-            if (result) {
-                restartApp();
-            }
+            confirmRestartApp();
         } else {
             setCustomCssRootClass(colorTheme, oldColorTheme);
         }

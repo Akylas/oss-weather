@@ -10,7 +10,7 @@
     import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
     import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
-    import { actionBarButtonHeight, colors } from '~/variables';
+    import { actionBarButtonHeight, colors, windowInset } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
     // let { colorOnSurfaceVariant } = $colors;
@@ -95,7 +95,7 @@
 
 <!-- <frame backgroundColor="transparent"> -->
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
+    <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange} paddingLeft={$windowInset.left} paddingRight={$windowInset.right}>
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>

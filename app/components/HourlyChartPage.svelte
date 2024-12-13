@@ -148,7 +148,7 @@
 </script>
 
 <page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
-    <gridlayout rows="auto,*">
+    <gridlayout rows="auto,*" paddingLeft={$windowInset.left} paddingRight={$windowInset.right}>
         {#if !networkConnected && !weatherData}
             <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
         {:else}

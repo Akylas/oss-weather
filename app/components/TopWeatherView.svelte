@@ -513,7 +513,7 @@
         horizontalAlignment="left"
     /> -->
     <!-- the gridlayout is there to ensure a max width for the chart -->
-    <gridlayout height={90} marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
+    <gridlayout height={90} horizontalAlignment="left" marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
     <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />

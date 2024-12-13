@@ -223,7 +223,7 @@
 </script>
 
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,*" android:paddingBottom={$windowInset.bottom}>
+    <gridlayout rows="auto,*" android:paddingBottom={$windowInset.bottom} paddingLeft={$windowInset.left} paddingRight={$windowInset.right}>
         <CActionBar title={lc('weather_map')}>
             <mdbutton class="actionBarButton" text="mdi-palette" variant="text" verticalAlignment="middle" on:tap={seletMapColors} />
             <mdbutton class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />

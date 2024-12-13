@@ -2,7 +2,7 @@
     import { ApplicationSettings, Page, fontSizeProperty } from '@nativescript/core';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from './HourlyView.svelte';
-    import { colors, fontScale, fonts, weatherDataLayout } from '~/variables';
+    import { colors, fontScale, fonts, weatherDataLayout, windowInset } from '~/variables';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import WeatherIcon from './WeatherIcon.svelte';
     import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
@@ -297,7 +297,7 @@
 
 <page bind:this={page} actionBarHidden={true}>
     <scrollview>
-        <gridlayout rows="auto,auto,auto,auto,auto,auto">
+        <gridlayout rows="auto,auto,auto,auto,auto,auto" paddingLeft={$windowInset.left} paddingRight={$windowInset.right}>
             <gridlayout columns="*,auto" height={topViewHeight} row={1}>
                 <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
                 <WeatherIcon

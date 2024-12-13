@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    import { share } from '@akylas/nativescript-app-utils/share';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
@@ -9,7 +10,6 @@
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Sentry } from '@shared/utils/sentry';
-    import { share } from '@akylas/nativescript-app-utils/share';
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
@@ -61,15 +61,14 @@
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
     import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
+    import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
-    import { restartApp } from '~/utils/utils';
+    import { confirmRestartApp, createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
-    import { networkService } from '~/services/api';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -766,6 +765,7 @@
                 );
                 return;
             }
+            DEV_LOG && console.log('onTap', item.id);
             switch (item.id) {
                 case 'sub_settings': {
                     const component = (await import('~/components/settings/Settings.svelte')).default;
@@ -806,7 +806,6 @@
                 case 'review':
                     openLink(STORE_REVIEW_LINK);
                     break;
-                case 'sponsor':
                 case 'sponsor':
                     switch (item.type) {
                         case 'librepay':
@@ -894,6 +893,11 @@
                     // }
                     const jsonStr = ApplicationSettings.getAllJSON();
                     if (jsonStr) {
+                        try {
+                            const data = JSON.parse(jsonStr);
+                        } catch (error) {
+                            throw new Error(lc('failed_to_export_settings'));
+                        }
                         const result = await saveFile({
                             name: `${__APP_ID__}_settings_${dayjs().format('YYYY-MM-DD')}.json`,
                             data: jsonStr,
@@ -967,18 +971,7 @@
                             });
                         }
                         await hideLoading();
-                        if (__ANDROID__) {
-                            const result = await confirm({
-                                message: lc('restart_app'),
-                                okButtonText: lc('restart'),
-                                cancelButtonText: lc('later')
-                            });
-                            if (result) {
-                                restartApp();
-                            }
-                        } else {
-                            showSnack({ message: lc('please_restart_app') });
-                        }
+                        confirmRestartApp();
                     }
                     break;
                 case 'store_setting':
@@ -1193,7 +1186,7 @@
 </script>
 
 <page bind:this={page} id={title || $slc('settings.title')} actionBarHidden={true}>
-    <gridlayout rows="auto,*">
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*">
         <collectionview
             bind:this={collectionView}
             accessibilityValue="settingsCV"

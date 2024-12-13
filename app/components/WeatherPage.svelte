@@ -42,6 +42,7 @@
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale, windowInset } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
+    import PolygonLookup from 'polygon-lookup';
 
     let { colorBackground, colorError, colorOnError, colorSurface } = $colors;
     $: ({ colorBackground, colorError, colorOnError, colorSurface } = $colors);
@@ -251,7 +252,15 @@
             showError(error);
         }
     }
-
+    let timezoneLookUp: PolygonLookup;
+    // async function queryTimezone(location: FavoriteLocation) {
+    //     DEV_LOG && console.time('queryTimezone');
+    //     if (!timezoneLookUp) {
+    //         timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
+    //     }
+    //     const result = timezoneLookUp.search(location.coord.lon,location.coord.lat);
+    //     DEV_LOG && console.timeEnd('queryTimezone');
+    // }
     async function refreshWeather() {
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
@@ -266,6 +275,8 @@
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
             let timezoneData;
+
+            // const test = queryTimezone(weatherLocation);
             [weatherData, timezoneData] = await Promise.all([getWeatherProvider().getWeather(weatherLocation), !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation)]);
             DEV_LOG && console.log('refreshWeather', timezoneData);
             if (timezoneData) {
@@ -606,6 +617,8 @@
         }}
         leftSwipeDistance={50}
         on:close={onDrawerClose}
+        android:paddingLeft={$windowInset.left}
+        android:paddingRight={$windowInset.right}
         on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}

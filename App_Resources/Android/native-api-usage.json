@@ -11,7 +11,8 @@
         "com.google.android.material.datepicker:MaterialDatePicker.Builder",
         "com.google.android.material.datepicker:MaterialDatePicker",
         "android.text.format:DateFormat",
-        "androidx.core.splashscreen:SplashScreen"
+        "androidx.core.splashscreen:SplashScreen",
+        "java.util:TimeZone"
     ],
     "blacklist": [
         "android.widget:DatePicker",

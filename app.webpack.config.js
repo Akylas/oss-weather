@@ -189,6 +189,7 @@ module.exports = (env, params = {}) => {
             config.externals.push(`~/themes/${l}.json`);
         });
     }
+    config.externals.push('~/timezone/timezonedb.json');
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
             return cb(null, join('~/i18n/', request));
@@ -524,6 +525,11 @@ module.exports = (env, params = {}) => {
                     return Buffer.from(JSON.stringify(path.endsWith('aliases.json') ? data : filterObject(data, allowedAddressFormatterCountries)));
                 }
             }
+        },
+        {
+            context,
+            from: 'timezone/*.json',
+            globOptions
         }
     ];
     config.plugins.unshift(new CopyPlugin({ patterns: copyPatterns }));

@@ -82,6 +82,7 @@
                   },
             //  refreshExpiredTiles:false,
             container,
+            // style:'https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json',
             style,
             center: options.mapCenter,
             zoom: options.zoom

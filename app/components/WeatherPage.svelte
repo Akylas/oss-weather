@@ -253,14 +253,30 @@
         }
     }
     let timezoneLookUp: PolygonLookup;
-    // async function queryTimezone(location: FavoriteLocation) {
-    //     DEV_LOG && console.time('queryTimezone');
-    //     if (!timezoneLookUp) {
-    //         timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
-    //     }
-    //     const result = timezoneLookUp.search(location.coord.lon,location.coord.lat);
-    //     DEV_LOG && console.timeEnd('queryTimezone');
-    // }
+    async function queryTimezone(location: FavoriteLocation) {
+        if (!timezoneLookUp) {
+            timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
+        }
+        const result = timezoneLookUp.search(-6.256523, 42.6002);
+        const timezone = result?.properties.tzid;
+
+        if (timezone) {
+            if (__ANDROID__) {
+                const nTimezone = java.util.TimeZone.getTimeZone(timezone);
+                return {
+                    timezone,
+                    timezoneOffset: nTimezone.getOffset(Date.now()) / 3600000
+                };
+            } else {
+                return {
+                    timezone,
+                    timezoneOffset: NSTimeZone.alloc().initWithName(timezone).daylightSavingTimeOffsetForDate(new Date()) / 3600
+                };
+            }
+        } else {
+            return getTimezone(weatherLocation);
+        }
+    }
     async function refreshWeather() {
         if (!weatherLocation) {
             showSnack({ message: l('no_location_set') });
@@ -276,9 +292,11 @@
             const usedWeatherData = weatherDataService.allWeatherData;
             let timezoneData;
 
-            // const test = queryTimezone(weatherLocation);
-            [weatherData, timezoneData] = await Promise.all([getWeatherProvider().getWeather(weatherLocation), !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation)]);
-            DEV_LOG && console.log('refreshWeather', timezoneData);
+            [weatherData, timezoneData] = await Promise.all([
+                getWeatherProvider().getWeather(weatherLocation),
+                !!weatherLocation.timezone ? Promise.resolve(undefined) : queryTimezone(weatherLocation)
+            ]);
+            DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
             if (timezoneData) {
                 Object.assign(weatherLocation, timezoneData);
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));

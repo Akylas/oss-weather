@@ -461,7 +461,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             alerts: []
         } as WeatherData;
         r.hourly = hourlyData;
-        DEV_LOG && console.log('om getWeather', JSON.stringify(r));
+        // DEV_LOG && console.log('om getWeather', JSON.stringify(r));
         return r;
     }
 

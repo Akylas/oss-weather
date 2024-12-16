@@ -225,6 +225,7 @@
     "refresh": "Refresh",
     "refresh_location_on_pull": "find location and weather on every pull-to-refresh",
     "relative_humidity": "relative humidity",
+    "remove": "remove",
     "reset": "Reset",
     "restart": "restart",
     "restart_app": "restart the app",

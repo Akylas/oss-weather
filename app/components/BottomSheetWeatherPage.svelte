@@ -85,8 +85,8 @@
         const newProvider = providers[newIndex % providers.length];
         ApplicationSettings.setString('provider', newProvider);
     }
-    function toggleItemFavorite(item: FavoriteLocation) {
-        weatherLocation = toggleFavorite(item);
+    async function toggleItemFavorite(item: FavoriteLocation) {
+        weatherLocation = await toggleFavorite(item);
     }
 </script>
 

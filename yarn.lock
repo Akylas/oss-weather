@@ -2183,14 +2183,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/text@npm:1.6.7":
+"@nativescript-community/text@npm:1.6.7, @nativescript-community/text@npm:^1.6.6":
   version: 1.6.7
   resolution: "@nativescript-community/text@npm:1.6.7"
   checksum: 10/49fd2ee8ddadd010c4db40e75e6bbca26274131694f711e991ce4f9124fffe19cabb9dda5452bc911b8558575f220f18b30783cd85a54a47197e4718165dd45e
   languageName: node
   linkType: hard
 
-"@nativescript-community/text@npm:^1.5.2, @nativescript-community/text@npm:^1.5.33, @nativescript-community/text@npm:^1.6.3":
+"@nativescript-community/text@npm:^1.5.2, @nativescript-community/text@npm:^1.5.33":
   version: 1.6.6
   resolution: "@nativescript-community/text@npm:1.6.6"
   checksum: 10/75504a5491cf111e6d3b6fb26c6d05f7e4a00b2513e8e67b4ff68adb2ace7b1fa436556ae77cb8dec8ebe852823ffc0c546ca5e469c40508babad31db5303018
@@ -2291,12 +2291,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-label@npm:1.3.32":
-  version: 1.3.32
-  resolution: "@nativescript-community/ui-label@npm:1.3.32"
+"@nativescript-community/ui-label@npm:1.3.33":
+  version: 1.3.33
+  resolution: "@nativescript-community/ui-label@npm:1.3.33"
   dependencies:
-    "@nativescript-community/text": "npm:^1.6.3"
-  checksum: 10/4719f245d25adbaf0865dcce341f4718dc99543e58f686ca7c9946a50ae2f2a47dec503813561d285cb286158befdafb0917bb941221a09a2a7116c6d8e3044a
+    "@nativescript-community/text": "npm:^1.6.6"
+  checksum: 10/59b81896e6ca3bbb43b4429e6fe9b2ea1abd0850e9e43247dfea8da47658ec1654ff6d22e1b58a575be2e2e974aee23f8551bcb97112cbe02c94eb3d25645da1
   languageName: node
   linkType: hard
 
@@ -12087,7 +12087,7 @@ __metadata:
     "@nativescript-community/ui-document-picker": "npm:1.1.26"
     "@nativescript-community/ui-drawer": "npm:0.1.28"
     "@nativescript-community/ui-image": "npm:4.5.4"
-    "@nativescript-community/ui-label": "npm:1.3.32"
+    "@nativescript-community/ui-label": "npm:1.3.33"
     "@nativescript-community/ui-lottie": "npm:5.0.11"
     "@nativescript-community/ui-material-activityindicator": "npm:7.2.69"
     "@nativescript-community/ui-material-bottomsheet": "npm:7.2.69"

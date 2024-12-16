@@ -62,7 +62,7 @@
         }
     }
     let lineChart: NativeViewElementNode<LineChart>;
-    const weatherIconSize = 140;
+    const weatherIconSize = 120;
     $: topViewHeight = 220 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
@@ -474,10 +474,6 @@
         }
     }
 
-    function toggleItemFavorite(item: FavoriteLocation) {
-        weatherLocation = toggleFavorite(item);
-    }
-
     function onChartConfigure(chart: CombinedChart): void {
         chart.leftAxis.drawAxisLine = false;
         chart.leftAxis.drawGridLines = false;
@@ -516,7 +512,7 @@
     <gridlayout height={90} horizontalAlignment="left" marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
+    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={5} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}

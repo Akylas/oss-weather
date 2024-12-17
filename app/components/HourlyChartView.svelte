@@ -214,12 +214,11 @@
                             }
                         },
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
+                            const precipProbability = e.precipProbability;
+                            paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
                             if (hasSnowFall) {
-                                const precipProbability = e.precipProbability;
-                                paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
                                 c.drawRect(left + 1, top + 1, right - 0.5, bottom - 0.5, paint);
                             } else if (e.precipColor) {
-                                const precipProbability = e.precipProbability;
                                 paint.setColor(e.precipColor);
                                 paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
                                 c.drawRect(left, top, right, bottom, paint);

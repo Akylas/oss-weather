@@ -123,6 +123,7 @@
 
     let lastIconX: number;
     let lastDrawnValueIndex = {};
+    let hasSnowFall = false;
     function updateLineChart(setData = true) {
         try {
             const chart = chartView?.nativeView;
@@ -311,7 +312,7 @@
                 };
                 let tempMin = Number.MAX_SAFE_INTEGER;
                 let tempMax = Number.MIN_SAFE_INTEGER;
-                let hasSnowFall = false;
+                hasSnowFall = false;
                 const data = sourceData.map((d: DailyData | Hourly, index) => {
                     const result = { ...d, deltaHours: (d.time - startTimestamp) / (3600 * 1000) };
                     if (result['snowfall'] > 0) {

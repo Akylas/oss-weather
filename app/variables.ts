@@ -189,7 +189,7 @@ function getRootViewStyle() {
 
 if (__ANDROID__) {
     Application.android.on(Application.android.activityCreateEvent, (event) => {
-        DEV_LOG && console.log('activityCreateEvent', useDynamicColors);
+        // DEV_LOG && console.log('activityCreateEvent', useDynamicColors);
         AppUtilsAndroid.prepareActivity(event.activity, useDynamicColors);
     });
     Page.on('shownModally', function (event) {
@@ -204,7 +204,7 @@ export function onInitRootViewFromEvent() {
     onInitRootView();
 }
 export function onInitRootView(force = false) {
-    DEV_LOG && console.log('onInitRootView', force, initRootViewCalled);
+    // DEV_LOG && console.log('onInitRootView', force, initRootViewCalled);
     if (!force && initRootViewCalled) {
         return;
     }
@@ -213,7 +213,7 @@ export function onInitRootView(force = false) {
         // setTimeout(() => {
         const rootViewStyle = getRootViewStyle();
         const rootView = Application.getRootView();
-        DEV_LOG && console.log('onInitRootView', rootView);
+        // DEV_LOG && console.log('onInitRootView', rootView);
         if (rootView) {
             AppUtilsAndroid.listenForWindowInsets((inset) => {
                 windowInset.set({
@@ -378,7 +378,7 @@ export function updateThemeColors(theme: string, colorTheme: ColorThemes = Appli
     colors.set(currentColors);
 
     Application.notify({ eventName: 'colorsChange', colors: currentColors });
-    DEV_LOG && console.log('changed colors', rootView, JSON.stringify(currentColors));
+    // DEV_LOG && console.log('changed colors', rootView, JSON.stringify(currentColors));
     rootView?._onCssStateChange();
     const rootModalViews = rootView?._getRootModalViews();
     rootModalViews.forEach((rootModalView) => rootModalView._onCssStateChange());

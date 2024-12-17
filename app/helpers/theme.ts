@@ -211,7 +211,7 @@ function getSystemAppearance() {
 }
 
 export function getRealTheme(th = theme) {
-    DEV_LOG && console.log('getRealTheme', th);
+    // DEV_LOG && console.log('getRealTheme', th);
     if (th === 'auto') {
         try {
             th = getSystemAppearance() as any;
@@ -315,7 +315,7 @@ export function start(force = false) {
 
     function onReady() {
         setCustomCssRootClass(colorTheme);
-        DEV_LOG && console.log('onReady', theme, colorTheme);
+        // DEV_LOG && console.log('onReady', theme, colorTheme);
         applyTheme(theme);
         const realTheme = getRealTheme(theme);
         currentTheme.set(realTheme);

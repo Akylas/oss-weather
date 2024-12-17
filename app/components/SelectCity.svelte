@@ -80,9 +80,9 @@
             }, 100);
         }
     }
-    function toggleItemFavorite(item: FavoriteLocation) {
+    async function toggleItemFavorite(item: FavoriteLocation) {
         try {
-            item = toggleFavorite(item);
+            item = await toggleFavorite(item);
             const index = searchResults.findIndex((s) => s.coord.lat === item.coord.lat && s.coord.lon === item.coord.lon);
             if (index > -1) {
                 searchResults.setItem(index, item);
@@ -95,7 +95,7 @@
 
 <!-- <frame backgroundColor="transparent"> -->
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange} paddingLeft={$windowInset.left} paddingRight={$windowInset.right}>
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>

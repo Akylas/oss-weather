@@ -41,7 +41,7 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
 }
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
-if (!favorites.getItem(0).timezone) {
+if (favorites.length && !favorites.getItem(0).timezone) {
     Promise.all(
         favorites.map((f, index) => {
             if (!f.timezone) {

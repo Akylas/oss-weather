@@ -44,7 +44,7 @@
                 <ul class="color-scheme">
                     <li>
                         <div class="color-light-snow"></div>
-                        Light theme
+                        Light
                     </li>
                     <li>
                         <div class="color-medium-snow"></div>

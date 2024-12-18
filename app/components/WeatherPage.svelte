@@ -272,6 +272,7 @@
             ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             refreshWeather();
         }
+        favoriteCollectionView?.nativeView?.refreshVisibleItems();
         drawer?.close();
     }
 
@@ -698,7 +699,6 @@
                 props: {
                     width: 180 * $fontScale,
                     maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
-                    // autoSizeListItem: true
                 },
                 onClose: async (item) => {
                     try {
@@ -757,7 +757,7 @@
 
         const name = item.name || item.sys.name;
         let startIndex = 0;
-        if (name === weatherLocation.sys.city) {
+        if (name === item.sys.city) {
             startIndex++;
         }
         const title = item.name || item.sys.name;
@@ -886,19 +886,6 @@
             <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />
             <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1} rowHeight={80}>
                 <Template let:item>
-                    <!-- <swipemenu
-                        closeAnimationDuration={100}
-                        gestureHandlerOptions={{
-                            activeOffsetXStart: item.startingSide ? -10 : -Number.MAX_SAFE_INTEGER,
-                            failOffsetXStart: item.startingSide ? Number.MIN_SAFE_INTEGER : 0,
-                            failOffsetYStart: -40,
-                            failOffsetYEnd: 40,
-                            minDist: 50
-                        }}
-                        leftSwipeDistance="300"
-                        openAnimationDuration={100}
-                        startingSide={item.startingSide}
-                        translationFunction={swipeMenuTranslationFunction}> -->
                     <canvasview borderBottomWidth={1} borderColor={colorOutlineVariant} rippleColor={colorOnSurface} on:draw={(event) => onFavoriteDraw(item, event)} on:tap={() => saveLocation(item)}>
                         <IconButton
                             col={1}
@@ -910,40 +897,6 @@
                             verticalAlignment="bottom"
                             on:tap={(event) => showFavMenu(item, event)} />
                     </canvasview>
-
-                    <!-- <ListItemAutoSize
-                            prop:mainContent
-                            backgroundColor={colorBackground}
-                            borderRightColor={colorPrimary}
-                            borderRightWidth={item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon ? 6 : 0}
-                            item={{ addedPadding: 14, html: getFavoriteHTML(item) }}
-                            on:tap={() => saveLocation(item)} /> -->
-                    <!-- <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
-
-                            <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />
-                            <label color={colorOnSurfaceVariant} fontSize={13} row={2}>
-                                <cspan text={item.sys.state || item.sys.country} />
-                                <cspan text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
-                            </label>
-                        </gridlayout> -->
-                    <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->
-                    <!-- <mdbutton
-                        prop:leftDrawer
-                        id="deleteBtn"
-                        backgroundColor={colorError}
-                        color={colorOnError}
-                        fontFamily={$fonts.mdi}
-                        fontSize={24}
-                        rippleColor={colorOnError}
-                        shape="none"
-                        text="mdi-trash-can"
-                        textAlignment="center"
-                        variant="text"
-                        verticalTextAlignment="middle"
-                        width="100"
-                        on:tap={() => toggleFavorite(item)} /> -->
-                    <!-- </stacklayout> -->
-                    <!-- </swipemenu> -->
                 </Template>
             </collectionview>
         </gridlayout>

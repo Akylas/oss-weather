@@ -21,6 +21,7 @@ function fixedFromCharCode(codePt) {
         return String.fromCharCode(codePt);
     }
 }
+
 module.exports = (env, params = {}) => {
     Object.keys(env).forEach((k) => {
         if (env[k] === 'false' || env[k] === '0') {

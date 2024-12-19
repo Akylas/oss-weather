@@ -2,10 +2,9 @@
     import { GPS } from '@nativescript-community/gps';
     import { getFile } from '@nativescript-community/https';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
-    import { Align, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { Paint } from '@nativescript-community/ui-canvas';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { createNativeAttributedString } from '@nativescript-community/ui-label';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
@@ -32,7 +31,7 @@
         SWIPE_ACTION_BAR_PROVIDER
     } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
-    import { formatAddress, getLocationName } from '~/helpers/formatter';
+    import { getLocationName } from '~/helpers/formatter';
     import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
@@ -555,54 +554,54 @@
 
     onThemeChanged(refreshFavoritesVisibleItems);
 
-    function getFavoriteHTML(item: FavoriteLocation) {
-        const name = item.name || item.sys.name;
-        let startIndex = 0;
-        if (name === weatherLocation.sys.city) {
-            startIndex++;
-        }
-        const title = item.name || item.sys.name;
-        let data = formatAddress(item.sys, title ? startIndex : 0);
-        const trueTitle = title || data.join(' ');
-        data.shift();
-        if (data.length > 2) {
-            data = data.slice(data.length - 3);
-        }
+    // function getFavoriteHTML(item: FavoriteLocation) {
+    //     const name = item.name || item.sys.name;
+    //     let startIndex = 0;
+    //     if (name === weatherLocation.sys.city) {
+    //         startIndex++;
+    //     }
+    //     const title = item.name || item.sys.name;
+    //     let data = formatAddress(item.sys, title ? startIndex : 0);
+    //     const trueTitle = title || data.join(' ');
+    //     data.shift();
+    //     if (data.length > 2) {
+    //         data = data.slice(data.length - 3);
+    //     }
 
-        const spans = [
-            {
-                text: trueTitle
-            },
-            {
-                text: '\n' + data.filter((s) => !!s).join('\n'),
-                fontSize: 14 * $fontScale,
-                color: colorOnSurfaceVariant
-            },
-            {
-                text: '\n' + `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`,
-                fontSize: 14 * $fontScale,
-                color: colorOnSurfaceVariant
-            }
-        ];
-        if (item.timezone) {
-            spans.push(
-                {
-                    text: ' | ',
-                    fontSize: 14 * $fontScale,
-                    color: colorOnSurface
-                },
-                {
-                    text: getLocalTime(undefined, item.timezoneOffset).format('LT'),
-                    fontSize: 14 * $fontScale,
-                    color: colorOnSurfaceVariant
-                }
-            );
-        }
-        // DEV_LOG && console.log('getFavoriteHTML', JSON.stringify(item));
-        return createNativeAttributedString({
-            spans
-        });
-    }
+    //     const spans = [
+    //         {
+    //             text: trueTitle
+    //         },
+    //         {
+    //             text: '\n' + data.filter((s) => !!s).join('\n'),
+    //             fontSize: 14 * $fontScale,
+    //             color: colorOnSurfaceVariant
+    //         },
+    //         {
+    //             text: '\n' + `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`,
+    //             fontSize: 14 * $fontScale,
+    //             color: colorOnSurfaceVariant
+    //         }
+    //     ];
+    //     if (item.timezone) {
+    //         spans.push(
+    //             {
+    //                 text: ' | ',
+    //                 fontSize: 14 * $fontScale,
+    //                 color: colorOnSurface
+    //             },
+    //             {
+    //                 text: getLocalTime(undefined, item.timezoneOffset).format('LT'),
+    //                 fontSize: 14 * $fontScale,
+    //                 color: colorOnSurfaceVariant
+    //             }
+    //         );
+    //     }
+    //     // DEV_LOG && console.log('getFavoriteHTML', JSON.stringify(item));
+    //     return createNativeAttributedString({
+    //         spans
+    //     });
+    // }
     let franceGeoJSON: FeatureCollection<MultiPolygon>;
     let franceGeoJSONLookup: PolygonLookup;
 
@@ -747,67 +746,15 @@
             showError(error);
         }
     }
-    function onFavoriteDraw(item: FavoriteLocation, { canvas }: { canvas: Canvas }) {
-        const w = canvas.getWidth();
-        const h = canvas.getHeight();
-        if (item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon) {
-            favPaint.color = colorPrimary;
-            canvas.drawRect(w - 6, 0, w, h, favPaint);
+    function getFavoriteSubtitle(item: FavoriteLocation) {
+        const data = [];
+        if (item.sys.state) {
+            data.push(item.sys.state);
         }
-
-        const name = item.name || item.sys.name;
-        let startIndex = 0;
-        if (name === item.sys.city) {
-            startIndex++;
+        if (item.sys.country) {
+            data.push(item.sys.country);
         }
-        const title = item.name || item.sys.name;
-        let data = formatAddress(item.sys, title ? startIndex : 0);
-        const trueTitle = title || data.join(' ');
-        data.shift();
-        if (data.length > 2) {
-            data = data.slice(data.length - 3);
-        }
-
-        const nativeStr = createNativeAttributedString({
-            spans: [
-                {
-                    text: trueTitle,
-                    fontSize: 17 * $fontScale,
-                    fontWeight: 'bold'
-                },
-                {
-                    text: '\n' + data.filter((s) => !!s).join('\n'),
-                    color: colorOnSurfaceVariant
-                },
-                {
-                    text: '\n\n',
-                    fontSize: 8 * $fontScale
-                },
-                {
-                    text: `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`,
-                    color: colorOnSurfaceVariant
-                }
-            ]
-        });
-
-        favPaint.color = colorOnBackground;
-        favPaint.textSize = 14 * $fontScale;
-        favPaint.setTextAlign(Align.LEFT);
-
-        const staticLayout = new StaticLayout(nativeStr, favPaint, w - 6, LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
-        canvas.translate(FAV_PADDING, 7);
-        staticLayout.draw(canvas);
-
-        if (item.timezone) {
-            favPaint.setTextAlign(Align.RIGHT);
-            canvas.drawText(getLocalTime(undefined, item.timezoneOffset).format('LT'), w - 20, 16, favPaint);
-        }
-        // canvas.drawText(nativeStr, 0, nativeStr.length -1, FAV_PADDING, 27, favPaint);
-
-        // favPaint.color = colorOnSurfaceVariant;
-        // favPaint.fontWeight = 'normal';
-        // favPaint.textSize = 14 * $fontScale;
-        // canvas.drawText(trueTitle, FAV_PADDING, 27, favPaint);
+        return data.join(', ') + '\n' + `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`;
     }
 </script>
 
@@ -884,19 +831,32 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300" android:marginTop={$windowInset.top}>
             <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />
-            <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1} rowHeight={80}>
+            <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1}>
                 <Template let:item>
-                    <canvasview borderBottomWidth={1} borderColor={colorOutlineVariant} rippleColor={colorOnSurface} on:draw={(event) => onFavoriteDraw(item, event)} on:tap={() => saveLocation(item)}>
-                        <IconButton
+                    <gridlayout
+                        borderBottomColor={colorOutlineVariant}
+                        borderBottomWidth={1}
+                        borderRightColor={colorPrimary}
+                        borderRightWidth={item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon ? 6 : 0}
+                        columns="*,auto"
+                        padding={10}
+                        rippleColor={colorOnSurface}
+                        on:tap={() => saveLocation(item)}>
+                        <stacklayout marginRight={30}>
+                            <label color={colorOnSurface} disableCss={true} fontSize={17 * $fontScale} fontWeight="bold" lineBreak="end" maxLines={2} text={getLocationName(item)} textWrap={true} />
+                            <label color={colorOnSurfaceVariant} disableCss={true} fontSize={14 * $fontScale} text={getFavoriteSubtitle(item)} textWrap={true} />
+                        </stacklayout>
+                        <label
                             col={1}
-                            gray={true}
-                            horizontalAlignment="right"
-                            marginRight={6}
-                            size={40}
-                            text="mdi-dots-vertical"
-                            verticalAlignment="bottom"
-                            on:tap={(event) => showFavMenu(item, event)} />
-                    </canvasview>
+                            color={colorOnSurfaceVariant}
+                            disableCss={true}
+                            fontSize={14 * $fontScale}
+                            paddingTop={3 * $fontScale}
+                            text={getLocalTime(undefined, item.timezoneOffset).format('LT')}
+                            textWrap={true}
+                            visibility={item.timezone ? 'visible' : 'hidden'} />
+                        <IconButton col={1} gray={true} horizontalAlignment="right" size={40} text="mdi-dots-vertical" verticalAlignment="bottom" on:tap={(event) => showFavMenu(item, event)} />
+                    </gridlayout>
                 </Template>
             </collectionview>
         </gridlayout>

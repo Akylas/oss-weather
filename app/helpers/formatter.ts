@@ -539,6 +539,7 @@ export function formatAddress(address, startIndex = undefined, endIndex = undefi
     }
     const { county, locality, ...cleanedUp } = address;
     const result = addressFormatter.format(cleanedUp, {
+        cleanupPostcode: true,
         fallbackCountryCode: langToCountryCode(lang)
     });
     if (startIndex !== undefined || endIndex !== undefined) {
@@ -553,18 +554,18 @@ export function getLocationName(weatherLocation: WeatherLocation) {
     }
     return weatherLocation.name || weatherLocation.sys.name || formatAddress(weatherLocation.sys, 0, 1).join(' ');
 }
-export function getLocationSubtitle(weatherLocation: WeatherLocation) {
-    if (!weatherLocation) {
-        return null;
-    }
-    const name = weatherLocation.name || weatherLocation.sys.name;
-    let startIndex = 0;
-    if (name === weatherLocation.sys.city) {
-        startIndex++;
-    }
-    let data = formatAddress(weatherLocation.sys, weatherLocation.name || weatherLocation.sys.name ? startIndex : 1);
-    if (data.length > 2) {
-        data = data.slice(data.length - 3);
-    }
-    return data.filter((s) => !!s).join('\n');
-}
+// export function getLocationSubtitle(weatherLocation: WeatherLocation) {
+//     if (!weatherLocation) {
+//         return null;
+//     }
+//     const name = weatherLocation.name || weatherLocation.sys.name;
+//     let startIndex = 0;
+//     if (name === weatherLocation.sys.city) {
+//         startIndex++;
+//     }
+//     let data = formatAddress(weatherLocation.sys, weatherLocation.name || weatherLocation.sys.name ? startIndex : 1);
+//     if (data.length > 2) {
+//         data = data.slice(data.length - 3);
+//     }
+//     return data.filter((s) => !!s).join('\n');
+// }

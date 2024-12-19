@@ -1,0 +1,4 @@
+Bug fixes:
+- select city results were hidden by the keyboard
+- another batch of layout fixes for the favorites drawer
+- error when no favorite yet

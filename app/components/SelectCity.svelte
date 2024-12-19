@@ -100,7 +100,7 @@
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} />
-        <collectionview items={searchResults} row={2}>
+        <collectionview items={searchResults} paddingBottom={$windowInset.bottom} row={2}>
             <Template let:item>
                 <ListItemAutoSize disableCss={false} item={{ subtitle: getLocationSubtitle(item), title: getLocationName(item) }} on:tap={() => close(item)}>
                     <mdbutton

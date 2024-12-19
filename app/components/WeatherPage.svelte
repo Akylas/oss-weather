@@ -837,7 +837,7 @@
                         borderBottomColor={colorOutlineVariant}
                         borderBottomWidth={1}
                         borderRightColor={colorPrimary}
-                        borderRightWidth={item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon ? 6 : 0}
+                        borderRightWidth={weatherLocation && item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon ? 6 : 0}
                         columns="*,auto"
                         padding={10}
                         rippleColor={colorOnSurface}

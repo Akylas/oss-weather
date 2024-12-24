@@ -50,12 +50,13 @@
     "color_theme": {
         "default": "звичайна",
         "dynamic": "авто-кольори",
-        "title": "колірна тема"
+        "title": "колір теми"
     },
     "comments": "коментарі",
     "daylight_duration": "тривалість світлового дня",
     "description": "опис",
     "description_required": "потрібен опис",
+    "distance_unit": "одиниця вимірювання",
     "divers": "Різне",
     "donate": "Будь ласка, зробіть невелику пожертву, щоб допомогти фінансувати проект",
     "drizzle": "мряка",
@@ -81,6 +82,7 @@
     "freezing_level": "рівень замерзання",
     "freezing_rain": "ожеледь",
     "french": "французька",
+    "geolocation": "геолокація",
     "german": "німецька",
     "gps_location": "знайти локацію GPS",
     "gps_not_authorized": "будь ласка увімкніть GPS і авторизуйтесь у OSS Погода щоб використовувати його для визначення вашого місцезнаходження",
@@ -96,6 +98,7 @@
     "heavy_snow": "сильний сніг",
     "heavy_snow_shower": "сильний сніжний порив",
     "imperial_units": "імперні одиниці(°F, mPh,...)",
+    "import_settings": "імпортувати налаштування",
     "ios": {
         "info": {
             "plist": {
@@ -107,6 +110,7 @@
     "japanese": "японський",
     "language": "мова",
     "last_updated": "оновлено",
+    "later": "пізніше",
     "light": "легка",
     "light_drizzle": "легка мряка",
     "light_freezing_drizzle": "легка крижана мряка",
@@ -117,6 +121,7 @@
     "list_used_third_parties": "список використаних третіми сторонами",
     "loading": "завантаження",
     "map": "мапа",
+    "map_settings": "налаштування мапи",
     "medium": "помірний",
     "metric_temp_decimal": "використовуйте десяткову дробу для температури",
     "missing_location_perm": "відсутній дозвіл GPS",

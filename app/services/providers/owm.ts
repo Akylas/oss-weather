@@ -134,7 +134,7 @@ export class OWMProvider extends WeatherProvider {
                 if (hasNext && nextData) {
                     d.snowfall = nextData.snow?.['1h'] || 0;
                     d.rain = nextData.rain?.['1h'] || 0;
-                    d.precipAccumulation = (d.snowfall * 10) / 7 + d.rain;
+                    d.precipAccumulation = d.snowfall + d.rain;
                 }
                 // d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
                 d.precipProbability = Math.round(data.pop * 100);

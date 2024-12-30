@@ -69,6 +69,7 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
             break;
         case UNITS.CM:
             digits = 10;
+            value /= 10;
             if (unit === UNITS.CM && value < 1) {
                 unit = UNITS.MM;
                 value *= 10;

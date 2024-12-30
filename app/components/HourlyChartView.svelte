@@ -647,7 +647,6 @@
                 popoverInstance.$set({ item });
                 return;
             }
-            DEV_LOG && console.log('showPopover', highlightedMargin);
             await showHourlyPopover(
                 item,
                 {},

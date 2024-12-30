@@ -323,7 +323,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 d.rain = (rain[index] || 0) + (showers?.[index] || 0);
             }
 
-            d.precipAccumulation = d.rain + d.snowfall / 7;
+            d.precipAccumulation = d.rain + d.snowfall;
             // const precipitation = this.getDataArray(hourly, 'precipitation', model);
             // if (hasNext && precipitation) {
             //     d.precipAccumulation = precipitation[index + 1] ?? 0;

@@ -345,7 +345,7 @@ export class MFProvider extends WeatherProvider {
                 d.snowfall = data.snow_1h || data.snow_3h || data.snow_6h || data.snow_12h || data.snow_24h || 0;
                 d.rain = data.rain_1h || data.rain_3h || data.rain_6h || data.rain_12h || data.rain_24h || 0;
 
-                const acc = (d.snowfall * 10) / 7 + d.rain;
+                const acc = d.snowfall * 10 + d.rain;
                 if (acc > 0) {
                     d.precipAccumulation = acc;
                 }

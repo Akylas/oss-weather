@@ -297,7 +297,7 @@
 
 <page bind:this={page} actionBarHidden={true}>
     <scrollview>
-        <gridlayout rows="auto,auto,auto,auto,auto,auto" paddingLeft={$windowInset.left} paddingRight={$windowInset.right}>
+        <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,auto,auto,auto,auto">
             <gridlayout columns="*,auto" height={topViewHeight} row={1}>
                 <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
                 <WeatherIcon

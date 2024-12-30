@@ -25,6 +25,7 @@
         DAILY_PAGE_HOURLY_CHART,
         DECIMAL_METRICS_TEMP,
         FEELS_LIKE_TEMPERATURE,
+        MAIN_CHART_NB_HOURS,
         MAIN_PAGE_HOURLY_CHART,
         MIN_UV_INDEX,
         NB_DAYS_FORECAST,
@@ -35,6 +36,7 @@
         SETTINGS_FEELS_LIKE_TEMPERATURES,
         SETTINGS_IMPERIAL,
         SETTINGS_LANGUAGE,
+        SETTINGS_MAIN_CHART_NB_HOURS,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SETTINGS_METRIC_TEMP_DECIMAL,
         SETTINGS_MIN_UV_INDEX,
@@ -141,6 +143,13 @@
                         id: SETTINGS_DAILY_PAGE_HOURLY_CHART,
                         title: lc('show_hourly_chart_on_daily'),
                         value: ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART)
+                    },
+                    {
+                        key: SETTINGS_MAIN_CHART_NB_HOURS,
+                        id: 'setting',
+                        title: lc('main_chart_nb_hours'),
+                        values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        rightValue: () => ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS)
                     }
                 ];
             case 'units':

@@ -284,7 +284,7 @@ export class MFProvider extends WeatherProvider {
         });
     }
 
-    public override async getWeather(weatherLocation: WeatherLocation, { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
+    public override async getWeather(weatherLocation: WeatherLocation, { current, minutely, warnings }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
         const coords = weatherLocation.coord;
 

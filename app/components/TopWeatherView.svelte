@@ -12,7 +12,7 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { MAIN_PAGE_HOURLY_CHART, SETTINGS_MAIN_PAGE_HOURLY_CHART } from '~/helpers/constants';
+    import { MAIN_CHART_NB_HOURS, MAIN_PAGE_HOURLY_CHART, SETTINGS_MAIN_CHART_NB_HOURS, SETTINGS_MAIN_PAGE_HOURLY_CHART } from '~/helpers/constants';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
@@ -483,6 +483,11 @@
         chart.rightAxis.drawLabels = false;
         chart.setExtraOffsets(0, 40, 0, 10);
     }
+
+    let hourlyChartNbHours = ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS);
+    prefs.on(`key:${SETTINGS_MAIN_CHART_NB_HOURS}`, () => {
+        hourlyChartNbHours = ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS);
+    });
 </script>
 
 <gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
@@ -520,7 +525,7 @@
             borderBottomWidth={1}
             colSpan={2}
             fixedBarScale={false}
-            hourly={item.hourly}
+            hourly={item.hourly.slice(0, hourlyChartNbHours)}
             {onChartConfigure}
             rightAxisSuggestedMaximum={8}
             row={1}

@@ -35,7 +35,7 @@ export class OWMProvider extends WeatherProvider {
         });
     }
 
-    public override async getWeather(weatherLocation: WeatherLocation, { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
+    public override async getWeather(weatherLocation: WeatherLocation, { current, minutely, warnings }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '3.0');

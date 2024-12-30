@@ -56,7 +56,6 @@
     $: ({ colorBackground, colorError, colorOnBackground, colorOnError, colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary, colorSurface } = $colors);
 
     let loading = false;
-    let lastUpdate = ApplicationSettings.getNumber('lastUpdate', -1);
     let provider = getProviderType();
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
@@ -231,7 +230,6 @@
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             }
             if (weatherData) {
-                lastUpdate = weatherData.time;
                 await updateView();
                 if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
                     const aqiData = await getAqiProvider().getAirQuality(weatherLocation);
@@ -258,8 +256,7 @@
 
     async function updateView() {
         if (weatherLocation && weatherData) {
-            items = prepareItems(weatherLocation, weatherData, lastUpdate);
-            ApplicationSettings.setNumber('lastUpdate', lastUpdate);
+            items = prepareItems(weatherLocation, weatherData);
             ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
         }
     }
@@ -377,7 +374,7 @@
             try {
                 if (networkConnected !== event.data.connected) {
                     networkConnected = event.data.connected;
-                    if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
+                    if ((event.data.connected && !weatherData) || Date.now() - weatherData.time > 10 * 60 * 1000) {
                         refreshWeather();
                     }
                 } else {
@@ -390,7 +387,7 @@
         networkService.start(); // should send connection event and then refresh
 
         if (weatherData) {
-            items = prepareItems(weatherLocation, weatherData, lastUpdate);
+            items = prepareItems(weatherLocation, weatherData);
         } else if (weatherLocation) {
             refreshWeather();
         }

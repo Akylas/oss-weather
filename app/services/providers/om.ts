@@ -389,7 +389,8 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const daily_weathercodes = this.getMixedDataArray(daily, 'weathercode', model);
         const dailyLastIndex = daily_weathercodes.findIndex((d) => d === null);
         const r = {
-            time: result.time,
+            time: Date.now(), // we use phone local current time as reference
+            // time: result.time,
             currently: currentData
                 ? weatherDataIconColors(
                       {

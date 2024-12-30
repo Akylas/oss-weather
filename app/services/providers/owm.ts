@@ -46,7 +46,8 @@ export class OWMProvider extends WeatherProvider {
         const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
         // console.log('test', JSON.stringify(result.daily));
         const r = {
-            time: result.time,
+            time: Date.now(), // we use phone local current time as reference
+            // time: result.time,
             currently: weatherDataIconColors(
                 {
                     time: forecast.current.dt * 1000,

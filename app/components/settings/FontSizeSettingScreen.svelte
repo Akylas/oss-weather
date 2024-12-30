@@ -14,8 +14,6 @@
 
     $: ({ colorOutline } = $colors);
 
-    const lastUpdate = getNumber('lastUpdate', -1);
-
     const weatherLocation: WeatherLocation = JSON.parse(
         '{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}'
     );
@@ -24,7 +22,7 @@
     );
 
     const fakeNow = weatherData.currently.time;
-    const items = prepareItems(weatherLocation, weatherData, lastUpdate, dayjs.utc(fakeNow));
+    const items = prepareItems(weatherLocation, weatherData, weatherData.time, dayjs.utc(fakeNow));
     let fontScale = ApplicationSettings.getNumber(SETTINGS_FONTSCALE, 1);
     let resetCursorPosition = false;
     function setFontScale(value) {

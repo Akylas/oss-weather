@@ -376,7 +376,8 @@ export class MFProvider extends WeatherProvider {
         const currentConditions = currentData?.properties?.gridded;
         // DEV_LOG && console.log('current', JSON.stringify(currentData));
         const r = {
-            time: result[0].time,
+            time: Date.now(), // we use phone local current time as reference
+            // time: result[0].time,
             currently: currentConditions
                 ? weatherDataIconColors(
                       {

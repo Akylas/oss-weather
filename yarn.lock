@@ -23,7 +23,7 @@ __metadata:
 
 "@akylas/nativescript-app-tools@file:tools::locator=root-workspace-0b6124%40workspace%3A.":
   version: 1.0.0
-  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=a519a9&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=da0344&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@dotenvx/dotenvx": "npm:1.28.0"
     "@nativescript-community/fontmin": "npm:0.9.11"
@@ -78,7 +78,7 @@ __metadata:
     typescript: "npm:5.7.2"
     typescript-eslint: "npm:^8.17.0"
     webpack-bundle-analyzer: "npm:^4.10.2"
-  checksum: 10/0c7e8641d54f7f08eb280ebd92c91e1f9e799d349650005431b1461ace1fe94d22f451d3d8b6903b996a40e75707789e92b75825cee6af129ada6050d5ed09e2
+  checksum: 10/8783ae73a8dbe67d42da1196262cc3e14b19387a2baa468e252f45f3a5bb84e218264def1adc2ef64b364fa28fd8159e09165aaf469a8168ab5ab05ff441ccd1
   languageName: node
   linkType: hard
 
@@ -12064,7 +12064,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@akylas/address-formatter": "npm:5.3.1"
-    "@akylas/nativescript": "npm:8.8.9"
+    "@akylas/nativescript": "npm:8.8.10"
     "@akylas/nativescript-android-runtime": "npm:8.8.5"
     "@akylas/nativescript-app-tools": "file:tools"
     "@akylas/nativescript-app-utils": "npm:2.2.0"

@@ -814,7 +814,6 @@
                     verticalAlignment="middle"
                     visibility={weatherLocation ? 'visible' : 'collapse'}
                     on:tap={() => toggleItemFavorite(weatherLocation)} />
-                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"
@@ -828,6 +827,7 @@
 
                 <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>
+            <progress backgroundColor="transparent" busy={loading} indeterminate={true} row={1} verticalAlignment="top" />
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300" android:marginTop={$windowInset.top}>
             <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />

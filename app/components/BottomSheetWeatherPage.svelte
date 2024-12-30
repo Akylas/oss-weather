@@ -103,7 +103,6 @@
             verticalAlignment="middle"
             visibility={weatherLocation ? 'visible' : 'collapse'}
             on:tap={() => toggleItemFavorite(weatherLocation)} />
-        <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
     </CActionBar>
     <label
         backgroundColor={new Color(colorBackground).setAlpha(100).hex}
@@ -114,4 +113,5 @@
         text={lc('powered_by', l(`provider.${provider}`))}
         verticalAlignment="top" />
     <WeatherComponent {items} row={1} {weatherLocation} />
+    <progress backgroundColor="transparent" busy={loading} indeterminate={true} row={1} verticalAlignment="top" />
 </gesturerootview>

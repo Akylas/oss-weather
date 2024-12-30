@@ -510,23 +510,24 @@
                     ],
                     formatTime(sunsetStart, undefined, timezoneOffset)
                 ],
-                [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()],
-                [lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()],
-                [lc('moon_phase'), getMoonPhaseName(moonPhase)]
+                [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()]
             ] as [any, string][]
-        ).forEach((e, index) => {
-            const y = 30 + 30 * index;
-            subCanvasTextPaint.setTextAlign(Align.LEFT);
-            if (Array.isArray(e[0])) {
-                canvas.save();
-                drawOnSubCanvas(e[0], y - 35);
-                canvas.restore();
-            } else {
-                canvas.drawText(e[0] + ':', padding, y, subCanvasTextPaint);
-            }
-            subCanvasTextPaint.setTextAlign(Align.RIGHT);
-            canvas.drawText(e[1], w - padding, y, subCanvasTextPaint);
-        });
+        )
+            .concat(startTime.isSame(dayjs(), 'd') ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
+            .concat([[lc('moon_phase'), getMoonPhaseName(moonPhase)]] as [any, string][])
+            .forEach((e, index) => {
+                const y = 30 + 30 * index;
+                subCanvasTextPaint.setTextAlign(Align.LEFT);
+                if (Array.isArray(e[0])) {
+                    canvas.save();
+                    drawOnSubCanvas(e[0], y - 35);
+                    canvas.restore();
+                } else {
+                    canvas.drawText(e[0] + ':', padding, y, subCanvasTextPaint);
+                }
+                subCanvasTextPaint.setTextAlign(Align.RIGHT);
+                canvas.drawText(e[1], w - padding, y, subCanvasTextPaint);
+            });
     }
 </script>
 

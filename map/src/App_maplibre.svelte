@@ -30,6 +30,7 @@
         animated: (urlParamers['animated'] || 'false') === 'true',
         hideAttribution: (urlParamers['hideAttribution'] || 'false') === 'true',
         dark: urlParamers['dark'] || 'light',
+        language: urlParamers['lang'] || 'en',
         colors: urlParamers['colors'] || '1',
         smoothData: parseFloat(urlParamers['smoothData'] || '1'), // 0 - not smooth, 1 - smooth
         snowColors: parseFloat(urlParamers['snowColors'] || '1'), // 0 - do not show snow colors, 1 - show snow colors
@@ -86,6 +87,15 @@
             style,
             center: options.mapCenter,
             zoom: options.zoom
+        });
+        map.on('styledata', () => {
+            const languageFieldName = `name:${options.language}`;
+            map?.getStyle()
+                ?.layers?.filter((layer) => layer.type === 'symbol' && layer.layout?.['text-field'])
+                .forEach(function (layer) {
+                    const result = ['coalesce', ['get', languageFieldName], ['get', 'name'], ['get', 'name:latin'], ['get', 'name']];
+                    map.setLayoutProperty(layer.id, 'text-field', result);
+                });
         });
         const el = document.createElement('div');
         el.className = 'marker';

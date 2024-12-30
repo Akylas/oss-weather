@@ -18,7 +18,7 @@
         WEATHER_MAP_LAYER_OPACITY,
         WEATHER_MAP_SHOW_SNOW
     } from '~/helpers/constants';
-    import { l, lc } from '~/helpers/locale';
+    import { l, lang, lc } from '~/helpers/locale';
     import { hideLoading, openLink, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
     import { actionBarHeight, screenWidthDips, systemFontScale, windowInset } from '~/variables';
     import { debounce } from '@nativescript/core/utils';
@@ -42,7 +42,7 @@
     const animationSpeed = ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_ANIMATION_SPEED, WEATHER_MAP_ANIMATION_SPEED);
 
     function updateUrl() {
-        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&snowColors=${snowColors ? 1 : 0}&hideAttribution=${networkService.devMode}&opacity=${layerOpacity}&dark=${$currentTheme}${customSource ? `&source=${encodeURIComponent(customSource)}` : ''}`;
+        url = `~/assets/map/index.html?zoom=${zoom}&animated=${animated}&animationSpeed=${animationSpeed}&colors=${colors}&position=${focusPos.lat},${focusPos.lon}&mapCenter=${mapCenter.lat},${mapCenter.lon}&snowColors=${snowColors ? 1 : 0}&lang=${lang}&hideAttribution=${networkService.devMode}&opacity=${layerOpacity}&dark=${$currentTheme}${customSource ? `&source=${encodeURIComponent(customSource)}` : ''}`;
     }
 
     onThemeChanged(updateUrl);

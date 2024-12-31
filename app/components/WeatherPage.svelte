@@ -10,7 +10,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Application, ApplicationSettings, Color, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
+    import { Application, ApplicationSettings, Color, ContentView, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
     import { openFile, throttle } from '@nativescript/core/utils';
     import { alert, showError } from '@shared/utils/showError';
     import { globalObservable, navigate, showModal } from '@shared/utils/svelte/ui';
@@ -753,6 +753,15 @@
         }
         return data.join(', ') + '\n' + `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`;
     }
+
+    function onItemReordered(e) {
+        console.log('onItemReordered', e.index);
+        (e.view as ContentView).content.opacity = 1;
+    }
+    function onItemReorderStarting(e) {
+        console.log('onItemReorderStarting', e.index, e.view, (e.view as ContentView).content);
+        (e.view as ContentView).content.opacity = 0.7;
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
@@ -828,7 +837,15 @@
         </gridlayout>
         <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300" android:marginTop={$windowInset.top}>
             <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />
-            <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1}>
+            <collectionview
+                bind:this={favoriteCollectionView}
+                id="favorite"
+                items={favorites}
+                reorderEnabled={true}
+                reorderLongPressEnabled={true}
+                row={1}
+                on:itemReorderStarting={onItemReorderStarting}
+                on:itemReordered={onItemReordered}>
                 <Template let:item>
                     <gridlayout
                         borderBottomColor={colorOutlineVariant}

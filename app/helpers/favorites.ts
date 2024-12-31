@@ -40,6 +40,11 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
     }
 }
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));
+
+favorites.on('change', (e) => {
+    DEV_LOG && console.log('on favorites changed1');
+    ApplicationSettings.setString('favorites', JSON.stringify(favorites));
+});
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 if (favorites.length && !favorites.getItem(0).timezone) {
     Promise.all(
@@ -108,7 +113,6 @@ export async function toggleFavorite(item: FavoriteLocation) {
         favoritesKeys.push(getFavoriteKey(item));
     }
     delete item.startingSide; //for swipemenu
-    ApplicationSettings.setString('favorites', JSON.stringify(favorites));
     globalObservable.notify({ eventName: 'favorite', data: item });
     return item;
 }

@@ -193,23 +193,6 @@
                             }
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {
-                            // const scaleX = chart.viewPortHandler.scaleX;
-                            // const modulo = Math.max(Math.round(6 / scaleX), 1);
-                            // if (
-                            //     next === null ||
-                            //     prev === null ||
-                            //     (!lastDrawnValueIndex[yProperty] && entryIndex % modulo === 0) ||
-                            //     (Math.abs(lastDrawnValue[yProperty] - current[0]) > 1 &&
-                            //         !(lastDrawnValue[yProperty] < current[0] && current[0] < next[0]) &&
-                            //         !(lastDrawnValue[yProperty] > current[0] && current[0] > next[0]))
-                            // ) {
-                            //     const showUnder = prev && current[0] < lastDrawnValue[yProperty];
-                            //     paint.setColor(color);
-                            //     c.drawText(current.join(''), x, y + (showUnder ? 14 : 0), paint);
-                            //     lastDrawnValueIndex[yProperty] = entryIndex;
-                            //     lastDrawnValue[yProperty] = current[0];
-                            // }
-
                             if (valuesToDraw.indexOf(entryIndex) !== -1) {
                                 const yProperty = dataSet.yProperty;
                                 const value = entry as CommonWeatherData;
@@ -323,7 +306,6 @@
                 let tempMax = Number.MIN_SAFE_INTEGER;
                 hasSnowFall = false;
 
-                let lastDrawnValueIndex: number;
                 let lastDrawnValue: number;
                 valuesToDraw = [];
                 const nbData = sourceData.length;
@@ -630,7 +612,6 @@
             if (dataSet) {
                 dataSet.shader = lastGradient.gradient;
             }
-            DEV_LOG && console.log('gradient updated');
             // chartView?.nativeView?.redraw()
         }
     }
@@ -663,10 +644,6 @@
     }
     function onChartDraw() {
         lastIconX = undefined;
-        DEV_LOG && console.log('onChartDraw');
-
-        // lastDrawnValueIndex = {};
-        // lastDrawnValue = {};
     }
 
     function highlightOnDate(timestamp: number) {

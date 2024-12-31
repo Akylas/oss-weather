@@ -42,10 +42,8 @@
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { hideLoading, showLoading, showPopoverMenu } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
-    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
+    import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
-    const favPaint = new Paint();
-    const FAV_PADDING = 10;
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -444,46 +442,38 @@
         }
     });
 
+    function getDailyPageProps(item: DailyData) {
+        //we need to offset back the startOf/endOf to correctly get local utc values
+        const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
+        const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
+        const hourly = items[0].hourly as Hourly[];
+        const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
+        let endIndex = hourly.findIndex((h) => h.time > endOfDay);
+        if (endIndex === -1) {
+            endIndex = hourly.length;
+        }
+        DEV_LOG && console.log('getDailyPageProps', item.time, startOfDay, endOfDay, startIndex, endIndex);
+        return {
+            getDailyPageProps,
+            itemIndex: items.indexOf(item),
+            items,
+            item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
+            location: weatherLocation,
+            startTime: dayjs(item.time).isSame(Date.now(), 'day') ? getLocalTime(undefined, item.timezoneOffset) : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')),
+            weatherLocation,
+            timezoneOffset: item.timezoneOffset
+        };
+    }
+
     const onTap = throttle(async function (event) {
         try {
             const item = event as DailyData;
             const component = (await import('~/components/DailyPage.svelte')).default;
             DEV_LOG && console.log('onTap', item.time, item.timezoneOffset);
-            //we need to offset back the startOf/endOf to correctly get local utc values
-            const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
-            const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
-            const hourly = items[0].hourly as Hourly[];
-            const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
-            let endIndex = hourly.findIndex((h) => h.time > endOfDay);
-            if (endIndex === -1) {
-                endIndex = hourly.length;
-            }
-            DEV_LOG && console.log('show daily page', item.time, startOfDay, endOfDay, startIndex, endIndex);
             navigate({
                 page: component,
-                props: {
-                    // we dont show hourly if there is only one hour left. Would not look good
-                    item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
-                    location: weatherLocation,
-                    startTime: dayjs(item.time).isSame(Date.now(), 'day') ? getLocalTime(undefined, item.timezoneOffset) : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')),
-                    weatherLocation,
-                    timezoneOffset: item.timezoneOffset
-                }
+                props: getDailyPageProps(item)
             });
-            // const AstronomyView = (await import('~/components/astronomy/AstronomyView.svelte')).default;
-            // const parent = Frame.topmost() || Application.getRootView();
-            // DEV_LOG && console.log('showAstronomyView', event.time, event.timezoneOffset);
-            // await showBottomSheet({
-            //     parent,
-            //     view: AstronomyView,
-            //     peekHeight: 400,
-            //     // skipCollapsedState: isLandscape(),
-            //     props: {
-            //         location: weatherLocation,
-            //         timezoneOffset: event.timezoneOffset,
-            //         // startTime: getLocalTime(event.time, event.timezoneOffset)
-            //     }
-            // });
         } catch (err) {
             showError(err);
         }
@@ -755,11 +745,9 @@
     }
 
     function onItemReordered(e) {
-        console.log('onItemReordered', e.index);
         (e.view as ContentView).content.opacity = 1;
     }
     function onItemReorderStarting(e) {
-        console.log('onItemReorderStarting', e.index, e.view, (e.view as ContentView).content);
         (e.view as ContentView).content.opacity = 0.7;
     }
 </script>

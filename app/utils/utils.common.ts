@@ -52,10 +52,10 @@ export function tempColor(t, min, max) {
     const h0 = 259;
     const h1 = 12;
     const h = h0 * (1 - a) + h1 * a;
+    // DEV_LOG && console.log('tempColor', t, min, max, h);
     return new Color(255, h, 75, 90, 'hsv');
 }
 export function generateGradient(nbColor, min, max, h, posOffset) {
-    // console.log('generateGradient', min, max, h, posOffset);
     const tmin = -20;
     const tmax = 30;
     // const tmin = Math.min(min, -30);
@@ -68,9 +68,14 @@ export function generateGradient(nbColor, min, max, h, posOffset) {
         colors.push(tempColor(max - index * tempDelta, tmin, tmax));
         positions.push(posOffset + posDelta * index);
     }
+
+    colors.push(tempColor(min, tmin, tmax));
+    positions.push(posOffset + 1);
+    // console.log('generateGradient', min, max, h, posOffset, colors, positions);
     return {
         min,
         max,
+        height: h,
         gradient: new LinearGradient(0, 0, 0, h, colors, positions, TileMode.CLAMP)
     };
 }

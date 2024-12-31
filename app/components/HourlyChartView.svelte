@@ -122,7 +122,7 @@
     });
 
     let lastIconX: number;
-    let lastDrawnValueIndex = {};
+    let valuesToDraw: number[] = [];
     let hasSnowFall = false;
     function updateLineChart(setData = true) {
         try {
@@ -193,25 +193,34 @@
                             }
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {
-                            const yProperty = dataSet.yProperty;
-                            const value = entry as CommonWeatherData;
-                            const prevValue: CommonWeatherData = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1) : null;
-                            const nextValue: CommonWeatherData = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1) : null;
-                            const current = convertWeatherValueToUnit(value, yProperty as WeatherProps);
-                            const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty as WeatherProps) : null;
-                            const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty as WeatherProps) : null;
-                            const scaleX = chart.viewPortHandler.scaleX;
-                            const modulo = Math.max(Math.round(6 / scaleX), 1);
-                            if (
-                                next === null ||
-                                prev === null ||
-                                ((!lastDrawnValueIndex[yProperty] || entryIndex - lastDrawnValueIndex[yProperty] > 4 / scaleX) && entryIndex % modulo === 0) ||
-                                (prev[0] !== current[0] && !(prev[0] < current[0] && current[0] < next[0]) && !(prev[0] > current[0] && current[0] > next[0]))
-                            ) {
+                            // const scaleX = chart.viewPortHandler.scaleX;
+                            // const modulo = Math.max(Math.round(6 / scaleX), 1);
+                            // if (
+                            //     next === null ||
+                            //     prev === null ||
+                            //     (!lastDrawnValueIndex[yProperty] && entryIndex % modulo === 0) ||
+                            //     (Math.abs(lastDrawnValue[yProperty] - current[0]) > 1 &&
+                            //         !(lastDrawnValue[yProperty] < current[0] && current[0] < next[0]) &&
+                            //         !(lastDrawnValue[yProperty] > current[0] && current[0] > next[0]))
+                            // ) {
+                            //     const showUnder = prev && current[0] < lastDrawnValue[yProperty];
+                            //     paint.setColor(color);
+                            //     c.drawText(current.join(''), x, y + (showUnder ? 14 : 0), paint);
+                            //     lastDrawnValueIndex[yProperty] = entryIndex;
+                            //     lastDrawnValue[yProperty] = current[0];
+                            // }
+
+                            if (valuesToDraw.indexOf(entryIndex) !== -1) {
+                                const yProperty = dataSet.yProperty;
+                                const value = entry as CommonWeatherData;
+                                const prevValue: CommonWeatherData = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1) : null;
+                                // const nextValue: CommonWeatherData = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1) : null;
+                                const current = convertWeatherValueToUnit(value, yProperty as WeatherProps);
+                                // const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty as WeatherProps) : null;
+                                const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty as WeatherProps) : null;
                                 const showUnder = prev && current[0] < prev[0];
                                 paint.setColor(color);
                                 c.drawText(current.join(''), x, y + (showUnder ? 14 : 0), paint);
-                                lastDrawnValueIndex[yProperty] = entryIndex;
                             }
                         },
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
@@ -313,6 +322,11 @@
                 let tempMin = Number.MAX_SAFE_INTEGER;
                 let tempMax = Number.MIN_SAFE_INTEGER;
                 hasSnowFall = false;
+
+                let lastDrawnValueIndex: number;
+                let lastDrawnValue: number;
+                valuesToDraw = [];
+                const nbData = sourceData.length;
                 const data = sourceData.map((d: DailyData | Hourly, index) => {
                     const result = { ...d, deltaHours: (d.time - startTimestamp) / (3600 * 1000) };
                     if (result['snowfall'] > 0) {
@@ -325,9 +339,27 @@
                             } else if (k === WeatherProps.precipAccumulation) {
                                 // result.snow = convertWeatherValueToUnit(d, k, { round: false })[0];
                             } else if (k === WeatherProps.temperature) {
+                                const value = d[k];
                                 // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
-                                tempMin = Math.min(tempMin, d[k]);
-                                tempMax = Math.max(tempMax, d[k]);
+                                tempMin = Math.min(tempMin, value);
+                                tempMax = Math.max(tempMax, value);
+
+                                // compute values to draw
+                                // TODO: still needs improvement. Some "peaks/trough" are not drawn
+                                const prevValue = index > 0 ? sourceData[index - 1] : null;
+                                const nextValue = index < nbData - 1 ? sourceData[index + 1] : null;
+                                const current = convertWeatherValueToUnit(d, k);
+                                const next = nextValue ? convertWeatherValueToUnit(nextValue, k) : null;
+                                const prev = prevValue ? convertWeatherValueToUnit(prevValue, k) : null;
+                                if (
+                                    next === null ||
+                                    prev === null ||
+                                    lastDrawnValue === null ||
+                                    (Math.abs(lastDrawnValue - current[0]) > 1 && !(lastDrawnValue < current[0] && current[0] < next[0]) && !(lastDrawnValue > current[0] && current[0] > next[0]))
+                                ) {
+                                    valuesToDraw.push(index);
+                                    lastDrawnValue = current[0];
+                                }
                             } else {
                                 // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                             }
@@ -470,9 +502,9 @@
                                     set.drawIconsEnabled = true;
                                     break;
                                 case WeatherProps.temperature:
-                                    if (!lastGradient) {
-                                        updateGradient();
-                                    }
+                                    // if (!lastGradient) {
+                                    updateGradient();
+                                    // }
                                     set.shader = lastGradient?.gradient;
                                     set.lineWidth = temperatureLineWidth;
                                     set.mode = Mode.CUBIC_BEZIER;
@@ -586,18 +618,20 @@
         DEV_LOG && console.log('onOrientationChanged');
         chartNeedsZoomUpdate = true;
     }
-    let lastGradient: { min; max; gradient: LinearGradient };
+    let lastGradient: { min; max; height; gradient: LinearGradient };
 
     function updateGradient() {
         const chart = chartView?.nativeView;
         const height = chart.viewPortHandler.contentRect.height();
 
-        if (temperatureData && height && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
+        if (temperatureData && height && (!lastGradient || lastGradient.height !== height || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, height, 0);
             const dataSet = chart.lineData?.getDataSetByLabel(WeatherProps.temperature, false);
             if (dataSet) {
                 dataSet.shader = lastGradient.gradient;
             }
+            DEV_LOG && console.log('gradient updated');
+            // chartView?.nativeView?.redraw()
         }
     }
     function onLayoutChanged(event: EventData) {
@@ -629,7 +663,10 @@
     }
     function onChartDraw() {
         lastIconX = undefined;
-        lastDrawnValueIndex = {};
+        DEV_LOG && console.log('onChartDraw');
+
+        // lastDrawnValueIndex = {};
+        // lastDrawnValue = {};
     }
 
     function highlightOnDate(timestamp: number) {

@@ -43,6 +43,11 @@ on:
         default: true
         required: true
         type: boolean
+      sentry_fdroid:
+        description: "Should we use sentry with fdroid build?"
+        default: false
+        required: true
+        type: boolean
 
 jobs:
   release-android:
@@ -54,6 +59,7 @@ jobs:
       github: ${{ github.event.inputs.github }}
       fakepublish: ${{ github.event.inputs.fakepublish }}
       sentry: ${{ github.event.inputs.sentry }}
+      sentry_fdroid: ${{ github.event.inputs.sentry_fdroid }}
     secrets: inherit
 
   release-ios:
@@ -63,6 +69,7 @@ jobs:
       release_type: ${{ github.event.inputs.release_type }}
       publish: ${{ github.event.inputs.publish }}
       github: ${{ github.event.inputs.github }}
+      fakepublish: ${{ github.event.inputs.fakepublish }}
       sentry: ${{ github.event.inputs.sentry }}
     secrets: inherit
     

@@ -18,7 +18,7 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime, lc } from '~/helpers/locale';
-    import { onThemeChanged } from '~/helpers/theme';
+    import { isEInk, onThemeChanged } from '~/helpers/theme';
     import type { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
     import { colors, fontScale, rainColor, screenWidthDips, snowColor } from '~/variables';
 
@@ -30,7 +30,17 @@
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { iconService } from '~/services/icon';
-    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
+    import {
+        WeatherProps,
+        appPaint,
+        convertWeatherValueToUnit,
+        getWeatherDataColor,
+        getWeatherDataIcon,
+        getWeatherDataTitle,
+        showHourlyPopover,
+        weatherDataService,
+        wiPaint
+    } from '~/services/weatherData';
     // import { fade } from '@shared/utils/svelte/ui';
     import { generateGradient, loadImage } from '~/utils/utils.common';
 
@@ -61,6 +71,7 @@
 <script lang="ts">
     import HourlyPopover from './HourlyPopover.svelte';
     import { ComponentInstanceInfo } from '~/utils/ui';
+    import DailyPage from './DailyPage.svelte';
 
     let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
@@ -186,10 +197,17 @@
                                 // canvas.drawBitmap(icon, drawOffsetX, drawOffsetY, null);
                                 // canvas.restore();
                             } else if (dataSet.label === WeatherProps.windSpeed || dataSet.label === WeatherProps.windBearing) {
+                                const item = entry as Hourly | DailyData;
                                 const drawOffsetY = 40;
-                                appPaint.color = dataSet.color;
                                 appPaint.setTextSize(10);
+                                appPaint.color = !isEInk ? (item.windSpeed >= 70 ? '#ff0353' : item.windSpeed > 40 ? '#FFBC03' : dataSet.color) : dataSet.color;
                                 canvas.drawText(icon as string, x, drawOffsetY, appPaint);
+
+                                // if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust >= 2 * item.windSpeed))) {
+                                //     wiPaint.setTextSize(6);
+                                //     wiPaint.color = !isEInk ? (item.windGust >= 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : dataSet.color) : dataSet.color;
+                                //     canvas.drawText(getWeatherDataIcon(WeatherProps.windGust), x, drawOffsetY + 8, wiPaint);
+                                // }
                             }
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {

@@ -160,6 +160,8 @@
     "lines": "linee",
     "list_used_third_parties": "elenco usato da terze parti",
     "loading": "Caricamento",
+    "main_chart_nb_hours": "numero di ore mostrate nel grafico orario della vista principale",
+    "main_chart_show_wind": "mostra la velocità del vento nel grafico orario della vista principale",
     "map": "Mappa",
     "map_settings": "impostazioni mappa",
     "medium": "Moderato",

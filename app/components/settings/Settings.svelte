@@ -340,6 +340,7 @@
                         valueType: 'string',
                         id: 'setting',
                         key: 'owmApiKey',
+                        default: () => ApplicationSettings.getString('owmApiKey'),
                         description: lc('api_key_required_description'),
                         title: lc('owm_api_key')
                     },
@@ -497,9 +498,10 @@
                         type: 'prompt',
                         icon: 'mdi-server',
                         valueType: 'string',
+                        default: () => ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, null),
                         id: 'setting',
                         key: SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE,
-                        description: ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, null),
+                        description: () => ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, null),
                         title: lc('custom_tile_server')
                     }
                 ];
@@ -1001,7 +1003,7 @@
                             cancelButtonText: l('cancel'),
                             textFieldProperties: item.textFieldProperties,
                             autoFocus: true,
-                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : item.default
+                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : typeof item.default === 'function' ? item.default() : item.default
                         });
                         Utils.dismissSoftInput();
                         if (result && !!result.result && result.text.length > 0) {

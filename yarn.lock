@@ -23,7 +23,7 @@ __metadata:
 
 "@akylas/nativescript-app-tools@file:tools::locator=root-workspace-0b6124%40workspace%3A.":
   version: 1.0.0
-  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=da0344&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=96949e&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@dotenvx/dotenvx": "npm:1.28.0"
     "@nativescript-community/fontmin": "npm:0.9.11"
@@ -78,16 +78,16 @@ __metadata:
     typescript: "npm:5.7.2"
     typescript-eslint: "npm:^8.17.0"
     webpack-bundle-analyzer: "npm:^4.10.2"
-  checksum: 10/8783ae73a8dbe67d42da1196262cc3e14b19387a2baa468e252f45f3a5bb84e218264def1adc2ef64b364fa28fd8159e09165aaf469a8168ab5ab05ff441ccd1
+  checksum: 10/5942d622caaeed385f8bbc1d0ab9708355fae7dadd62b45f7f2e24156f8ef59afea6e0bb478a6fa50b08fb47b8a2a8dccdb08d035c8768154fd7f654a1be7cf8
   languageName: node
   linkType: hard
 
-"@akylas/nativescript-app-utils@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@akylas/nativescript-app-utils@npm:2.2.0"
+"@akylas/nativescript-app-utils@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@akylas/nativescript-app-utils@npm:2.2.1"
   dependencies:
     "@nativescript-community/ui-share-file": "npm:1.3.3"
-  checksum: 10/aa26ce26341b09402fd9bfb7817ce6983318c5cac91db90d845dd52265b1daf001b3729a610002458dc39de146706e7c8e4ce38281ea6021cc68e7fa2f371959
+  checksum: 10/866dd5707123423d32aa80205946a70d789b32ab65764f716404a2fa8daf0a7f63d9b662d5350abe929fea91bb74f90890023041f041d847244838e6993682b0
   languageName: node
   linkType: hard
 
@@ -2246,23 +2246,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-collectionview-swipemenu@npm:6.0.3":
-  version: 6.0.3
-  resolution: "@nativescript-community/ui-collectionview-swipemenu@npm:6.0.3"
+"@nativescript-community/ui-collectionview-swipemenu@npm:6.0.4":
+  version: 6.0.4
+  resolution: "@nativescript-community/ui-collectionview-swipemenu@npm:6.0.4"
   dependencies:
     "@nativescript-community/class-mixins": "npm:^1.0.0"
-    "@nativescript-community/ui-collectionview": "npm:^6.0.3"
+    "@nativescript-community/ui-collectionview": "npm:^6.0.4"
     "@nativescript-community/ui-drawer": "npm:^0.1.27"
-  checksum: 10/49d1655e306b662ae5bf3c25bb5abcb7feaf98bce0b242a1c7de627b39d06607ac9387e9c5063b297b3ca7644df0aaef643338232409448be015483b4fb3f171
+  checksum: 10/5009de860dd169b2e0323c74b6a710cdbbea5f8760b4e263421cdc50839b363be4c9678de2778a521141b45aa4eac3ccc5a24c69a2ba3bd90ff89bbd23268e7d
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-collectionview@npm:6.0.3, @nativescript-community/ui-collectionview@npm:^6.0.3":
-  version: 6.0.3
-  resolution: "@nativescript-community/ui-collectionview@npm:6.0.3"
+"@nativescript-community/ui-collectionview@npm:6.0.4, @nativescript-community/ui-collectionview@npm:^6.0.4":
+  version: 6.0.4
+  resolution: "@nativescript-community/ui-collectionview@npm:6.0.4"
   dependencies:
     "@nativescript-community/arraybuffers": "npm:^1.1.5"
-  checksum: 10/5f6c3e6ffefd0c43b5d3e85d25d3ba06ccd9276d8a4ed88e10a66d38ef77e6b36de548ff3880becf845e3aa7de82a73c662b02656a6dd08a936332d88d352aba
+  checksum: 10/1d2bf0b9df13832dc3246c7185bf4b994497dde2086d6eb5555810404e199452cdd1dbe4e943b256cb2831b944c8525914370cf172483f69d1e2f8219fb5519f
   languageName: node
   linkType: hard
 
@@ -3492,7 +3492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/polygon-lookup@npm:^2":
+"@types/polygon-lookup@npm:^2.6.6":
   version: 2.6.6
   resolution: "@types/polygon-lookup@npm:2.6.6"
   dependencies:
@@ -3527,13 +3527,6 @@ __metadata:
   version: 0.12.2
   resolution: "@types/retry@npm:0.12.2"
   checksum: 10/e5675035717b39ce4f42f339657cae9637cf0c0051cf54314a6a2c44d38d91f6544be9ddc0280587789b6afd056be5d99dbe3e9f4df68c286c36321579b1bf4a
-  languageName: node
-  linkType: hard
-
-"@types/robust-point-in-polygon@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@types/robust-point-in-polygon@npm:1.0.4"
-  checksum: 10/bd4927fa2143027ee6eef5866dccdbb4d54fa38edd05aec2268227ac1a62d009b85bf57193081cef4fae100ddb1ab5b57435a08aaaff8977c46b450042b66eb3
   languageName: node
   linkType: hard
 
@@ -12014,51 +12007,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"robust-orientation@npm:^1.0.2":
-  version: 1.2.1
-  resolution: "robust-orientation@npm:1.2.1"
-  dependencies:
-    robust-scale: "npm:^1.0.2"
-    robust-subtract: "npm:^1.0.0"
-    robust-sum: "npm:^1.0.0"
-    two-product: "npm:^1.0.2"
-  checksum: 10/232008494e24d4ff8bced90aa245387075b437bb7c6ade11a91711d1542d9ab3faa6293519e5dfc7c53d06588ed53ee93106727f7d92a5e7f22a283953b0a191
-  languageName: node
-  linkType: hard
-
-"robust-point-in-polygon@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "robust-point-in-polygon@npm:1.0.3"
-  dependencies:
-    robust-orientation: "npm:^1.0.2"
-  checksum: 10/dc68ef96f6f2c6d2087f8e74583dc2e9add1a86aef402096fd1c9dde5c9ec1209f6710178a053cc48cbf4103488c382ae2a26302b2d27bb3dce4d81f0c4c5951
-  languageName: node
-  linkType: hard
-
-"robust-scale@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "robust-scale@npm:1.0.2"
-  dependencies:
-    two-product: "npm:^1.0.2"
-    two-sum: "npm:^1.0.0"
-  checksum: 10/4217f15c94bc803c0c78f6011507102cb603a4e9f71721d44e155c17c1fbe989382c8a150d20e23ca51164077395dab698498b9650d2377cc0a69902d73d0a1c
-  languageName: node
-  linkType: hard
-
-"robust-subtract@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "robust-subtract@npm:1.0.0"
-  checksum: 10/e9dcc39a1a802d4a34d338844d9382ad7e49f58c5d01ce0d66cd18d6477069475af11a80fba0c0e158211c2b272c1c05950e78cbfc29ea7005f4ecc9e9f9d492
-  languageName: node
-  linkType: hard
-
-"robust-sum@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "robust-sum@npm:1.0.0"
-  checksum: 10/b9f32829ba3d6fd9cffeee440e1fb93a7d42f264540bd631abf13d0e8737f3a15a16a15764fa8a2fe86d3db6a1970361cf7ad2ed536c858b59e45f6f493a454b
-  languageName: node
-  linkType: hard
-
 "root-workspace-0b6124@workspace:.":
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
@@ -12067,7 +12015,7 @@ __metadata:
     "@akylas/nativescript": "npm:8.8.10"
     "@akylas/nativescript-android-runtime": "npm:8.8.5"
     "@akylas/nativescript-app-tools": "file:tools"
-    "@akylas/nativescript-app-utils": "npm:2.2.0"
+    "@akylas/nativescript-app-utils": "npm:2.2.1"
     "@akylas/nativescript-inappbrowser": "npm:3.1.8"
     "@akylas/nativescript-ios-runtime": "npm:8.8.2"
     "@akylas/nativescript-webpack": "npm:5.0.22"
@@ -12091,8 +12039,8 @@ __metadata:
     "@nativescript-community/ui-canvaslabel": "npm:1.2.41"
     "@nativescript-community/ui-chart": "npm:2.0.22"
     "@nativescript-community/ui-checkbox": "npm:^2.0.12"
-    "@nativescript-community/ui-collectionview": "npm:6.0.3"
-    "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.3"
+    "@nativescript-community/ui-collectionview": "npm:6.0.4"
+    "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.4"
     "@nativescript-community/ui-document-picker": "npm:1.1.26"
     "@nativescript-community/ui-drawer": "npm:0.1.29"
     "@nativescript-community/ui-image": "npm:4.5.4"
@@ -12117,15 +12065,13 @@ __metadata:
     "@nativescript/iqkeyboardmanager": "npm:2.1.1"
     "@swc/core": "npm:1.6.13"
     "@types/geojson": "npm:^7946.0.14"
-    "@types/polygon-lookup": "npm:^2"
-    "@types/robust-point-in-polygon": "npm:^1.0.4"
+    "@types/polygon-lookup": "npm:^2.6.6"
     "@types/suncalc": "npm:^1.9.2"
     dayjs: "npm:1.11.13"
     make-error: "npm:1.3.6"
     merge-properties-files: "npm:^1.1.6"
     mini-css-extract-plugin: "npm:^2.9.2"
     polygon-lookup: "npm:^2.6.0"
-    robust-point-in-polygon: "npm:^1.0.3"
     suncalc: "npm:1.9.0"
     svelte-loader: "npm:3.2.4"
     svelte-native: "npm:1.0.29"
@@ -13538,20 +13484,6 @@ __metadata:
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10/3e2e043d5c2316461cb54e5c7fe02c30ef6dccb3384717ca22ae5c6b5bc95232a6241df19c622d9c73b809bea33b187f6dbc73030963e29950c2141bc32a79f7
-  languageName: node
-  linkType: hard
-
-"two-product@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "two-product@npm:1.0.2"
-  checksum: 10/b289814957df58b91c910c944e7e247aa01a0a70e8fafdf58f01baf7fa1f96c06dc1cbb6cdafb39525e9a5ac0a9566875f1a76a02ef1f736f26e56fca2f0c847
-  languageName: node
-  linkType: hard
-
-"two-sum@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "two-sum@npm:1.0.0"
-  checksum: 10/2c6a995b555233b989f473a5d039bd237d75f4824b9b54dc9d9ab28157f3e412b37156acbb48b322c817a26f3cc85e3da281c9aed4b06e892d2d27ae88db7d32
   languageName: node
   linkType: hard
 

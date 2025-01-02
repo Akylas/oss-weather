@@ -423,7 +423,6 @@
                     // }
                     const enabled = hidden.indexOf(key) === -1;
                     const color = getWeatherDataColor(key);
-                    const hasCustomColor = !!color;
                     const setColor = color || colorOnSurface;
                     newLegends.push({
                         name: getWeatherDataTitle(key),

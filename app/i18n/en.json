@@ -136,6 +136,19 @@
     "imperial_units_desc": "changing this setting will override custom defined units",
     "import_settings": "import settings",
     "import_settings_desc": "import all settings from a previous backup",
+    "in_app_failure": "there was an error during the inapp purchase process: %1$s",
+    "inapp":{
+        "smalltip": "a coffee",
+        "smalltip_desc": "everything helps to work at night!",
+        "mediumtip": "a big coffee",
+        "mediumtip_desc": "my eyes are open!",
+        "largetip": "a beer",
+        "largetip_desc": "chill out and go back to work!",
+        "largertip": "a pint",
+        "largertip_desc": "ideas are going to flow!",
+        "bigtip": "a very nice donation",
+        "bigtip_desc": "new features are coming!"
+    },
     "ios": {
         "info": {
             "plist": {
@@ -275,6 +288,8 @@
     "swipe_actionbar_provider": "actionbar swipe gesture",
     "swipe_actionbar_provider_desc": "swipe left or right on the actionbar to quickly change provider",
     "temperature_unit": "temperature unit",
+    "thank_you": "thank you !",
+    "thank_you_subtitle": "your donation will help the project grow and give me time to implement more features",
     "theme": {
         "auto": "Auto",
         "black": "Black",

@@ -73,6 +73,7 @@
     import { confirmRestartApp, createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
+    import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -87,6 +88,8 @@
     let page: NativeViewElementNode<Page>;
 
     let items: ObservableArray<any>;
+
+    const inAppAvailable = PLAY_STORE_BUILD && inappItems?.length > 0;
 
     export let title = null;
     export let reorderEnabled = false;
@@ -548,7 +551,7 @@
             [
                 {
                     type: 'header',
-                    title: __IOS__ ? lc('show_love') : lc('donate')
+                    title: __IOS__ && !inAppAvailable ? lc('show_love') : lc('donate')
                 },
                 {
                     type: 'sectionheader',
@@ -835,9 +838,13 @@
                             break;
 
                         default:
-                            // Apple wants us to use in-app purchase for donations => taking 30% ...
-                            // so lets just open github and ask for love...
-                            openLink(__IOS__ ? GIT_URL : SPONSOR_URL);
+                            if (inAppAvailable) {
+                                presentInAppSponsorBottomsheet();
+                            } else {
+                                // Apple wants us to use in-app purchase for donations => taking 30% ...
+                                // so lets just open github and ask for love...
+                                openLink(__IOS__ ? GIT_URL : SPONSOR_URL);
+                            }
                             break;
                     }
                     break;

@@ -66,6 +66,9 @@ try {
     DrawerElement.register();
     CollectionViewElement.register();
     SwipeMenuElement.register();
+    if (PLAY_STORE_BUILD) {
+        import('@shared/utils/inapp-purchase').then((r) => r.init());
+    }
 
     // Trace.addCategories(DomTraceCategory);
     // Trace.addCategories(Trace.categories.NativeLifecycle);

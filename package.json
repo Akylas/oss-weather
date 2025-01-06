@@ -40,6 +40,7 @@
         "@akylas/nativescript": "8.8.10",
         "@akylas/nativescript-app-tools": "file:tools",
         "@akylas/nativescript-app-utils": "2.2.1",
+        "@akylas/nativescript-inapp-purchase": "0.0.2",
         "@akylas/nativescript-inappbrowser": "3.1.8",
         "@mapbox/to-color": "^2.1.1",
         "@mdi/font": "7.4.47",
@@ -50,7 +51,6 @@
         "@nativescript-community/gesturehandler": "2.0.32",
         "@nativescript-community/gps": "3.1.10",
         "@nativescript-community/https": "4.1.19",
-        "@akylas/nativescript-inapp-purchase": "*",
         "@nativescript-community/l": "4.3.10",
         "@nativescript-community/licenses": "2.0.9",
         "@nativescript-community/perms": "2.3.6",
@@ -116,8 +116,7 @@
         "./map"
     ],
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
-        "@akylas/nativescript-inapp-purchase": "portal:../in-app-purchase/packages/inapp-purchase"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
     },
     "packageManager": "yarn@4.3.1"
 }

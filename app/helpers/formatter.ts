@@ -47,7 +47,7 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
     switch (defaultUnit) {
         case UNITS.Celcius:
             shouldRound = true;
-            options.roundedTo05 = true;
+            options.roundedTo05 = !metricDecimalTemp;
             if (unit === UNITS.Fahrenheit) {
                 value = celciusToFahrenheit(value);
             }

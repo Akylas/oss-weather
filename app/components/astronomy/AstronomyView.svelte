@@ -340,7 +340,7 @@
         startTime = time;
         updateChartData();
     }
-
+    let isCurrentDay = false;
     $: {
         try {
             const date = startTime.toDate();
@@ -351,6 +351,8 @@
             sunriseEnd = dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf();
             sunsetStart = dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf();
             sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+
+            isCurrentDay = dayjs(sunsetStart).isSame(dayjs(), 'd');
             // sunriseEndAzimuth = getCompassInfo(getPosition(sunTimes.sunriseEnd, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunsetStartAzimuth = getCompassInfo(getPosition(sunTimes.sunsetStart, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
         } catch (err) {
@@ -513,7 +515,7 @@
                 [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()]
             ] as [any, string][]
         )
-            .concat(startTime.isSame(dayjs(), 'd') ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
+            .concat(isCurrentDay ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
             .concat([[lc('moon_phase'), getMoonPhaseName(moonPhase)]] as [any, string][])
             .forEach((e, index) => {
                 const y = 30 + 30 * index;

@@ -50,6 +50,7 @@
         "@nativescript-community/gesturehandler": "2.0.32",
         "@nativescript-community/gps": "3.1.10",
         "@nativescript-community/https": "4.1.19",
+        "@akylas/nativescript-inapp-purchase": "*",
         "@nativescript-community/l": "4.3.10",
         "@nativescript-community/licenses": "2.0.9",
         "@nativescript-community/perms": "2.3.6",
@@ -115,7 +116,8 @@
         "./map"
     ],
     "resolutions": {
-        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core"
+        "@akylas/nativescript": "portal:../NativeScript/dist/packages/core",
+        "@akylas/nativescript-inapp-purchase": "portal:../in-app-purchase/packages/inapp-purchase"
     },
     "packageManager": "yarn@4.3.1"
 }

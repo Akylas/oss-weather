@@ -2088,6 +2088,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nativescript-community/inapp-purchase@portal:../in-app-purchase/packages/inapp-purchase::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@nativescript-community/inapp-purchase@portal:../in-app-purchase/packages/inapp-purchase::locator=root-workspace-0b6124%40workspace%3A."
+  languageName: node
+  linkType: soft
+
 "@nativescript-community/l@npm:4.3.10":
   version: 4.3.10
   resolution: "@nativescript-community/l@npm:4.3.10"
@@ -12028,6 +12034,7 @@ __metadata:
     "@nativescript-community/gesturehandler": "npm:2.0.32"
     "@nativescript-community/gps": "npm:3.1.10"
     "@nativescript-community/https": "npm:4.1.19"
+    "@nativescript-community/inapp-purchase": "npm:*"
     "@nativescript-community/l": "npm:4.3.10"
     "@nativescript-community/licenses": "npm:2.0.9"
     "@nativescript-community/perms": "npm:2.3.6"

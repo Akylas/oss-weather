@@ -469,7 +469,8 @@
             }
             default:
             case 'default': {
-                const iconsTop = (hasPrecip ? 45 : (topViewHeight * $fontScale) / 2 - 20) * $fontScale;
+                const iconsTop = hasPrecip ? 45 : topViewHeight / 2 - 20;
+                DEV_LOG && console.log('iconsTop', hasPrecip, topViewHeight, $fontScale, iconsTop);
                 const iconsLeft = 26;
                 centeredItemsToDraw.forEach((c, index) => {
                     const x = index * 45 * $fontScale + iconsLeft;

@@ -1,10 +1,11 @@
-import { MDCAlertControlerOptions, alert } from '@nativescript-community/ui-material-dialogs';
+import { restartApp } from '@akylas/nativescript-app-utils';
+import { MDCAlertControlerOptions, alert, confirm } from '@nativescript-community/ui-material-dialogs';
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
 import { AlertOptions, Application, GridLayout, View } from '@nativescript/core';
 import { debounce } from '@nativescript/core/utils';
 import { showError } from '@shared/utils/showError';
-import { ComponentInstanceInfo, hideLoading, resolveComponentElement } from '@shared/utils/ui';
+import { ComponentInstanceInfo, hideLoading, resolveComponentElement, showSnack } from '@shared/utils/ui';
 import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
 import type OptionSelect__SvelteComponent_ from '~/components/common/OptionSelect.svelte';
@@ -48,12 +49,13 @@ export async function showPopoverMenu<T = any>({
     closeOnClose = true,
     horizPos,
     onChange,
+    onCheckBox,
     onClose,
     onLongPress,
     options,
     props,
     vertPos
-}: { options; anchor; onClose?; onLongPress?; props?; closeOnClose?; onChange? } & Partial<PopoverOptions>) {
+}: { options; anchor; onClose?; onCheckBox?; onLongPress?; props?; closeOnClose?; onChange? } & Partial<PopoverOptions>) {
     const { colorSurfaceContainer } = get(colors);
     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
     const rowHeight = (props?.rowHeight ?? 58) * get(fontScale);
@@ -75,6 +77,7 @@ export async function showPopoverMenu<T = any>({
             width: 200 * get(fontScale),
             options,
             onLongPress,
+            onCheckBox,
             onChange,
             onClose: async (item) => {
                 if (closeOnClose) {
@@ -167,4 +170,28 @@ export async function showSliderPopover({
 
         // trackingScrollView: 'collectionView'
     });
+}
+let confirmingRestart = false;
+export async function confirmRestartApp() {
+    if (confirmingRestart) {
+        return;
+    }
+    try {
+        confirmingRestart = true;
+        if (__ANDROID__) {
+            DEV_LOG && console.log('confirm restart');
+            const result = await confirm({
+                message: lc('restart_app'),
+                okButtonText: lc('restart'),
+                cancelButtonText: lc('later')
+            });
+            if (result) {
+                restartApp();
+            }
+        } else {
+            await showSnack({ message: lc('please_restart_app') });
+        }
+    } finally {
+        confirmingRestart = false;
+    }
 }

@@ -1,0 +1,8 @@
+Features:
+- map not using vector tiles and supports dark/black theme
+- weather map show snow option
+- hourly chart now show stacked bars for rain/snow.
+
+Bug fixes:
+- error while opening daily page because of Open-Meteo pollutants format
+- hourly chart popover now drown "on top" so that you always see the full popover. Should also fix the popover not hiding

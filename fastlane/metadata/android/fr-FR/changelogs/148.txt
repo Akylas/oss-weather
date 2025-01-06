@@ -1,0 +1,6 @@
+Bug fixes:
+- prevent error on hourly chart
+- wrong in for map snow legend
+- favorites drawing issue
+- trying to prevent issues while closing the drawer menu
+- Translations update

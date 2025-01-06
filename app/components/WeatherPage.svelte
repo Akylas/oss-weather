@@ -1,7 +1,8 @@
-<script lang="ts">
+<script context="module" lang="ts">
     import { GPS } from '@nativescript-community/gps';
     import { getFile } from '@nativescript-community/https';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
+    import { Paint } from '@nativescript-community/ui-canvas';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
@@ -9,12 +10,13 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
-    import { Application, ApplicationSettings, Color, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
+    import { Application, ApplicationSettings, Color, ContentView, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
     import { openFile, throttle } from '@nativescript/core/utils';
     import { alert, showError } from '@shared/utils/showError';
     import { globalObservable, navigate, showModal } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
     import type { FeatureCollection, MultiPolygon } from 'geojson';
+    import PolygonLookup from 'polygon-lookup';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
@@ -28,11 +30,11 @@
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
         SWIPE_ACTION_BAR_PROVIDER
     } from '~/helpers/constants';
-    import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, toggleFavorite } from '~/helpers/favorites';
-    import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
+    import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
+    import { getLocationName } from '~/helpers/formatter';
     import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
-    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, getTimezone, networkService, prepareItems } from '~/services/api';
+    import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
     import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
@@ -40,16 +42,18 @@
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { hideLoading, showLoading, showPopoverMenu } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
-    import { actionBarButtonHeight, actionBarHeight, colors, fontScale, fonts, onSettingsChanged, systemFontScale, windowInset } from '~/variables';
-    import ListItemAutoSize from './common/ListItemAutoSize.svelte';
-
-    let { colorBackground, colorError, colorOnError, colorSurface } = $colors;
-    $: ({ colorBackground, colorError, colorOnError, colorSurface } = $colors);
+    import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
+    import IconButton from './common/IconButton.svelte';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
+</script>
+
+<script lang="ts">
+    let { colorBackground, colorError, colorOnBackground, colorOnError, colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary, colorSurface } = $colors;
+    $: ({ colorBackground, colorError, colorOnBackground, colorOnError, colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary, colorSurface } = $colors);
+
     let loading = false;
-    let lastUpdate = ApplicationSettings.getNumber('lastUpdate', -1);
     let provider = getProviderType();
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
@@ -122,7 +126,7 @@
                         }
                     ] as any)
                 );
-                if (isBRABounds(weatherLocation)) {
+                if (weatherLocation.timezone === 'Europe/Paris' && isBRABounds(weatherLocation)) {
                     options.push({
                         icon: 'mdi-snowflake-alert',
                         id: 'bra',
@@ -144,37 +148,7 @@
                         if (item) {
                             switch (item.id) {
                                 case 'bra':
-                                    const franceGeoJSON = JSON.parse(
-                                        await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()
-                                    ) as FeatureCollection<MultiPolygon>;
-                                    const options = franceGeoJSON.features
-                                        .map((feature) => ({
-                                            name: feature.properties.title as string,
-                                            subtitle: `${feature.properties.Departemen} (${feature.properties.mountain})`,
-                                            id: feature.properties.code
-                                        }))
-                                        .sort((a, b) => a.name.localeCompare(b.name));
-                                    await close();
-                                    const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
-                                    DEV_LOG && console.log('options', options);
-                                    const result = await showBottomSheet({
-                                        parent: null,
-                                        view: OptionSelect,
-                                        peekHeight: 400,
-                                        // skipCollapsedState: isLandscape(),
-                                        ignoreTopSafeArea: true,
-                                        props: {
-                                            options,
-                                            rowHeight: 58,
-                                            height: 400
-                                        }
-                                    });
-                                    if (result) {
-                                        showLoading();
-                                        const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
-                                        DEV_LOG && console.log('massifId', result.id, pdfFile.path);
-                                        openFile(pdfFile.path);
-                                    }
+                                    selectAndOpenBRA();
                             }
                         }
                     } catch (error) {
@@ -213,30 +187,10 @@
                                     const MeteoBlue = (await import('~/components/MeteoBlue.svelte')).default;
                                     navigate({ page: MeteoBlue, props: { weatherLocation } });
                                     break;
-                                // case 'about':
-                                //     const About = require('~/components/About.svelte').default;
-                                //     navigate({ page: About });
-                                //     break;
                                 case 'bra':
-                                    const franceGeoJSON = JSON.parse(
-                                        await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText()
-                                    ) as FeatureCollection<MultiPolygon>;
-                                    const classifyPoint = require('robust-point-in-polygon');
-                                    const coord = [weatherLocation.coord.lon, weatherLocation.coord.lat];
-                                    let massifId = -1;
-                                    franceGeoJSON.features.some((feature) => {
-                                        const result = classifyPoint(feature.geometry.coordinates[0][0], coord);
-                                        if (result <= 0) {
-                                            massifId = feature.properties.code;
-                                            return true;
-                                        }
-                                    });
-                                    if (massifId !== -1) {
-                                        showLoading();
-                                        const result = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
-                                        DEV_LOG && console.log('massifId', massifId, result.path);
-                                        openFile(result.path);
-                                    }
+                                    const lookup = await getFranceGeoJSONLookup();
+                                    const result = lookup.search(weatherLocation.coord.lon, weatherLocation.coord.lat);
+                                    const massifId = result?.properties.code ?? -1;
                                     break;
                             }
                         }
@@ -266,16 +220,14 @@
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
             let timezoneData;
-            [weatherData, timezoneData] = await Promise.all([
-                getWeatherProvider().getWeather(weatherLocation),
-                !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
-            ]);
+
+            [weatherData, timezoneData] = await Promise.all([getWeatherProvider().getWeather(weatherLocation), queryTimezone(weatherLocation)]);
+            DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
             if (timezoneData) {
                 Object.assign(weatherLocation, timezoneData);
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             }
             if (weatherData) {
-                lastUpdate = weatherData.time;
                 await updateView();
                 if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
                     const aqiData = await getAqiProvider().getAirQuality(weatherLocation);
@@ -302,8 +254,7 @@
 
     async function updateView() {
         if (weatherLocation && weatherData) {
-            items = prepareItems(weatherLocation, weatherData, lastUpdate);
-            ApplicationSettings.setNumber('lastUpdate', lastUpdate);
+            items = prepareItems(weatherLocation, weatherData);
             ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
         }
     }
@@ -315,6 +266,7 @@
             ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             refreshWeather();
         }
+        favoriteCollectionView?.nativeView?.refreshVisibleItems();
         drawer?.close();
     }
 
@@ -420,7 +372,7 @@
             try {
                 if (networkConnected !== event.data.connected) {
                     networkConnected = event.data.connected;
-                    if ((event.data.connected && !lastUpdate) || Date.now() - lastUpdate > 10 * 60 * 1000) {
+                    if ((event.data.connected && !weatherData) || Date.now() - weatherData.time > 10 * 60 * 1000) {
                         refreshWeather();
                     }
                 } else {
@@ -433,7 +385,7 @@
         networkService.start(); // should send connection event and then refresh
 
         if (weatherData) {
-            items = prepareItems(weatherLocation, weatherData, lastUpdate);
+            items = prepareItems(weatherLocation, weatherData);
         } else if (weatherLocation) {
             refreshWeather();
         }
@@ -490,45 +442,38 @@
         }
     });
 
+    function getDailyPageProps(item: DailyData) {
+        //we need to offset back the startOf/endOf to correctly get local utc values
+        const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
+        const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
+        const hourly = items[0].hourly as Hourly[];
+        const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
+        let endIndex = hourly.findIndex((h) => h.time > endOfDay);
+        if (endIndex === -1) {
+            endIndex = hourly.length;
+        }
+        DEV_LOG && console.log('getDailyPageProps', item.time, startOfDay, endOfDay, startIndex, endIndex);
+        return {
+            getDailyPageProps,
+            itemIndex: items.indexOf(item),
+            items,
+            item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
+            location: weatherLocation,
+            startTime: dayjs(item.time).isSame(Date.now(), 'day') ? getLocalTime(undefined, item.timezoneOffset) : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')),
+            weatherLocation,
+            timezoneOffset: item.timezoneOffset
+        };
+    }
+
     const onTap = throttle(async function (event) {
         try {
             const item = event as DailyData;
             const component = (await import('~/components/DailyPage.svelte')).default;
-            //we need to offset back the startOf/endOf to correctly get local utc values
-            const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
-            const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
-            const hourly = items[0].hourly as Hourly[];
-            const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
-            let endIndex = hourly.findIndex((h) => h.time > endOfDay);
-            if (endIndex === -1) {
-                endIndex = hourly.length;
-            }
-            DEV_LOG && console.log('show daily page', item.time, startOfDay, endOfDay, startIndex, endIndex);
+            DEV_LOG && console.log('onTap', item.time, item.timezoneOffset);
             navigate({
                 page: component,
-                props: {
-                    // we dont show hourly if there is only one hour left. Would not look good
-                    item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
-                    location: weatherLocation,
-                    startTime: dayjs(item.time).isSame(Date.now(), 'day') ? getLocalTime(undefined, item.timezoneOffset) : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')),
-                    weatherLocation,
-                    timezoneOffset: item.timezoneOffset
-                }
+                props: getDailyPageProps(item)
             });
-            // const AstronomyView = (await import('~/components/astronomy/AstronomyView.svelte')).default;
-            // const parent = Frame.topmost() || Application.getRootView();
-            // DEV_LOG && console.log('showAstronomyView', event.time, event.timezoneOffset);
-            // await showBottomSheet({
-            //     parent,
-            //     view: AstronomyView,
-            //     peekHeight: 400,
-            //     // skipCollapsedState: isLandscape(),
-            //     props: {
-            //         location: weatherLocation,
-            //         timezoneOffset: event.timezoneOffset,
-            //         // startTime: getLocalTime(event.time, event.timezoneOffset)
-            //     }
-            // });
         } catch (err) {
             showError(err);
         }
@@ -540,8 +485,8 @@
         drawer?.toggle();
     }
 
-    function toggleItemFavorite(item: FavoriteLocation) {
-        weatherLocation = toggleFavorite(item);
+    async function toggleItemFavorite(item: FavoriteLocation) {
+        weatherLocation = await toggleFavorite(item);
     }
     globalObservable.on('favorite', (item: EventData & { data: FavoriteLocation }) => {
         if (weatherLocation && getFavoriteKey(item.data) === getFavoriteKey(weatherLocation)) {
@@ -595,6 +540,216 @@
     }
 
     onThemeChanged(refreshFavoritesVisibleItems);
+
+    // function getFavoriteHTML(item: FavoriteLocation) {
+    //     const name = item.name || item.sys.name;
+    //     let startIndex = 0;
+    //     if (name === weatherLocation.sys.city) {
+    //         startIndex++;
+    //     }
+    //     const title = item.name || item.sys.name;
+    //     let data = formatAddress(item.sys, title ? startIndex : 0);
+    //     const trueTitle = title || data.join(' ');
+    //     data.shift();
+    //     if (data.length > 2) {
+    //         data = data.slice(data.length - 3);
+    //     }
+
+    //     const spans = [
+    //         {
+    //             text: trueTitle
+    //         },
+    //         {
+    //             text: '\n' + data.filter((s) => !!s).join('\n'),
+    //             fontSize: 14 * $fontScale,
+    //             color: colorOnSurfaceVariant
+    //         },
+    //         {
+    //             text: '\n' + `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`,
+    //             fontSize: 14 * $fontScale,
+    //             color: colorOnSurfaceVariant
+    //         }
+    //     ];
+    //     if (item.timezone) {
+    //         spans.push(
+    //             {
+    //                 text: ' | ',
+    //                 fontSize: 14 * $fontScale,
+    //                 color: colorOnSurface
+    //             },
+    //             {
+    //                 text: getLocalTime(undefined, item.timezoneOffset).format('LT'),
+    //                 fontSize: 14 * $fontScale,
+    //                 color: colorOnSurfaceVariant
+    //             }
+    //         );
+    //     }
+    //     // DEV_LOG && console.log('getFavoriteHTML', JSON.stringify(item));
+    //     return createNativeAttributedString({
+    //         spans
+    //     });
+    // }
+    let franceGeoJSON: FeatureCollection<MultiPolygon>;
+    let franceGeoJSONLookup: PolygonLookup;
+
+    async function getFranceGeoJSON() {
+        if (!franceGeoJSON) {
+            franceGeoJSON = JSON.parse(await File.fromPath(path.join(knownFolders.currentApp().path, 'assets/meteofrance/massifs.geojson')).readText());
+        }
+        return franceGeoJSON;
+    }
+    async function getFranceGeoJSONLookup() {
+        if (!franceGeoJSONLookup) {
+            franceGeoJSONLookup = new PolygonLookup(await getFranceGeoJSON());
+        }
+        return franceGeoJSONLookup;
+    }
+    async function selectAndOpenBRA() {
+        const geoJSON = await getFranceGeoJSON();
+        const options = geoJSON.features
+            .map((feature) => ({
+                name: feature.properties.title as string,
+                subtitle: `${feature.properties.Departemen} (${feature.properties.mountain})`,
+                id: feature.properties.code
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+        const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
+        DEV_LOG && console.log('options', options);
+        const result = await showBottomSheet({
+            parent: null,
+            view: OptionSelect,
+            peekHeight: 400,
+            // skipCollapsedState: isLandscape(),
+            ignoreTopSafeArea: true,
+            props: {
+                options,
+                rowHeight: 58,
+                height: 400
+            }
+        });
+        if (result) {
+            showLoading();
+            const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
+            DEV_LOG && console.log('massifId', result.id, pdfFile.path);
+            openFile(pdfFile.path);
+        }
+    }
+    async function showFavMenu(favItem: FavoriteLocation, event) {
+        try {
+            const options = [
+                {
+                    icon: 'mdi-refresh',
+                    id: 'refresh',
+                    name: l('refresh')
+                },
+                {
+                    icon: 'mdi-chart-bar',
+                    id: 'compare',
+                    name: l('compare_models')
+                },
+                {
+                    icon: 'mdi-chart-areaspline',
+                    id: 'chart',
+                    name: l('chart')
+                },
+                {
+                    icon: 'mdi-map',
+                    id: 'map',
+                    name: l('map')
+                },
+                {
+                    icon: 'mb',
+                    iconFontSize: 16,
+                    id: 'meteo_blue',
+                    name: 'meteoblue'
+                },
+                {
+                    icon: 'mdi-trash-can',
+                    id: 'delete',
+                    color: colorError,
+                    name: l('remove')
+                }
+            ];
+            if (favItem.timezone === 'Europe/Paris' && isBRABounds(favItem)) {
+                options.splice(options.length - 2, 0, {
+                    icon: 'mdi-snowflake-alert',
+                    id: 'bra',
+                    name: l('bra')
+                } as any);
+            }
+
+            await showPopoverMenu({
+                options,
+                anchor: event.object,
+                vertPos: VerticalPosition.BELOW,
+                props: {
+                    width: 180 * $fontScale,
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+                },
+                onClose: async (item) => {
+                    try {
+                        if (item) {
+                            switch (item.id) {
+                                case 'delete':
+                                    toggleFavorite(favItem);
+                                    break;
+                                case 'map':
+                                    const WeatherMapPage = (await import('~/components/WeatherMapPage.svelte')).default;
+                                    navigate({ page: WeatherMapPage, props: { focusPos: favItem.coord } });
+                                    break;
+                                case 'compare':
+                                    const CompareWeather = (await import('~/components/compare/CompareWeatherSingle.svelte')).default;
+                                    navigate({ page: CompareWeather, props: { weatherLocation: favItem } });
+                                    break;
+                                case 'chart':
+                                    const HourlyChart = (await import('~/components/HourlyChartPage.svelte')).default;
+                                    navigate({ page: HourlyChart, props: { weatherLocation: favItem, weatherData } });
+                                    break;
+                                case 'meteo_blue':
+                                    const MeteoBlue = (await import('~/components/MeteoBlue.svelte')).default;
+                                    navigate({ page: MeteoBlue, props: { weatherLocation: favItem } });
+                                    break;
+                                case 'bra':
+                                    const lookup = await getFranceGeoJSONLookup();
+                                    const result = lookup.search(favItem.coord.lon, favItem.coord.lat);
+                                    const massifId = result?.properties.code ?? -1;
+                                    if (massifId !== -1) {
+                                        showLoading();
+                                        const result = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        DEV_LOG && console.log('massifId', massifId, result.path);
+                                        openFile(result.path);
+                                    }
+                                    break;
+                            }
+                        }
+                    } catch (error) {
+                        showError(error);
+                    } finally {
+                        hideLoading();
+                    }
+                }
+            });
+        } catch (error) {
+            showError(error);
+        }
+    }
+    function getFavoriteSubtitle(item: FavoriteLocation) {
+        const data = [];
+        if (item.sys.state) {
+            data.push(item.sys.state);
+        }
+        if (item.sys.country) {
+            data.push(item.sys.country);
+        }
+        return data.join(', ') + '\n' + `${item.coord.lat.toFixed(3)},${item.coord.lon.toFixed(3)}`;
+    }
+
+    function onItemReordered(e) {
+        (e.view as ContentView).content.opacity = 1;
+    }
+    function onItemReorderStarting(e) {
+        (e.view as ContentView).content.opacity = 0.7;
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
@@ -607,13 +762,15 @@
         }}
         leftSwipeDistance={50}
         on:close={onDrawerClose}
+        android:paddingLeft={$windowInset.left}
+        android:paddingRight={$windowInset.right}
         on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if weatherLocation}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
-                    <WeatherComponent {items} paddingBottom={14} {weatherLocation} on:tap={onTap} />
+                    <WeatherComponent {items} {weatherLocation} on:tap={onTap} />
                 </pullrefresh>
                 <label
                     backgroundColor={new Color(colorBackground).setAlpha(100).hex}
@@ -651,7 +808,6 @@
                     verticalAlignment="middle"
                     visibility={weatherLocation ? 'visible' : 'collapse'}
                     on:tap={() => toggleItemFavorite(weatherLocation)} />
-                <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"
@@ -665,55 +821,44 @@
 
                 <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>
+            <progress backgroundColor="transparent" busy={loading} indeterminate={true} row={1} verticalAlignment="top" />
         </gridlayout>
-        <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300">
+        <gridlayout prop:leftDrawer class="drawer" rows="auto,*" width="300" android:marginTop={$windowInset.top}>
             <label class="actionBarTitle" margin="20 20 20 20" text={$slc('favorites')} />
-            <collectionview bind:this={favoriteCollectionView} id="favorite" items={favorites} row={1}>
+            <collectionview
+                bind:this={favoriteCollectionView}
+                id="favorite"
+                items={favorites}
+                reorderEnabled={true}
+                reorderLongPressEnabled={true}
+                row={1}
+                on:itemReorderStarting={onItemReorderStarting}
+                on:itemReordered={onItemReordered}>
                 <Template let:item>
-                    <swipemenu
-                        closeAnimationDuration={100}
-                        gestureHandlerOptions={{
-                            activeOffsetXStart: item.startingSide ? -10 : -Number.MAX_SAFE_INTEGER,
-                            failOffsetXStart: item.startingSide ? Number.MIN_SAFE_INTEGER : 0,
-                            failOffsetYStart: -40,
-                            failOffsetYEnd: 40,
-                            minDist: 50
-                        }}
-                        leftSwipeDistance="300"
-                        openAnimationDuration={100}
-                        startingSide={item.startingSide}
-                        translationFunction={swipeMenuTranslationFunction}>
-                        <ListItemAutoSize
-                            prop:mainContent
-                            backgroundColor={colorBackground}
-                            item={{ subtitle: getLocationSubtitle(item), title: getLocationName(item) }}
-                            on:tap={() => saveLocation(item)} />
-                        <!-- <gridlayout prop:mainContent class="drawer" columns="*,auto" padding="10 10 10 30" rippleColor="#aaa" rows="*,auto,auto,*" on:tap={() => saveLocation(item)}>
-
-                            <label fontSize={17} lineBreak="end" maxLines={1} row={1} text={item.name} />
-                            <label color={colorOnSurfaceVariant} fontSize={13} row={2}>
-                                <cspan text={item.sys.state || item.sys.country} />
-                                <cspan text={'\n' + item.sys.country} visibility={item.sys.state ? 'visible' : 'hidden'} />
-                            </label>
-                        </gridlayout> -->
-                        <!-- <stacklayout prop:leftDrawer orientation="horizontal" width={100} backgroundColor="blue" height="100"> -->
-                        <mdbutton
-                            prop:leftDrawer
-                            id="deleteBtn"
-                            backgroundColor={colorError}
-                            color={colorOnError}
-                            fontFamily={$fonts.mdi}
-                            fontSize={24}
-                            rippleColor={colorOnError}
-                            shape="none"
-                            text="mdi-trash-can"
-                            textAlignment="center"
-                            variant="text"
-                            verticalTextAlignment="middle"
-                            width="100"
-                            on:tap={() => toggleFavorite(item)} />
-                        <!-- </stacklayout> -->
-                    </swipemenu>
+                    <gridlayout
+                        borderBottomColor={colorOutlineVariant}
+                        borderBottomWidth={1}
+                        borderRightColor={colorPrimary}
+                        borderRightWidth={weatherLocation && item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon ? 6 : 0}
+                        columns="*,auto"
+                        padding={10}
+                        rippleColor={colorOnSurface}
+                        on:tap={() => saveLocation(item)}>
+                        <stacklayout marginRight={30}>
+                            <label color={colorOnSurface} disableCss={true} fontSize={17 * $fontScale} fontWeight="bold" lineBreak="end" maxLines={2} text={getLocationName(item)} textWrap={true} />
+                            <label color={colorOnSurfaceVariant} disableCss={true} fontSize={14 * $fontScale} text={getFavoriteSubtitle(item)} textWrap={true} />
+                        </stacklayout>
+                        <label
+                            col={1}
+                            color={colorOnSurfaceVariant}
+                            disableCss={true}
+                            fontSize={14 * $fontScale}
+                            paddingTop={3 * $fontScale}
+                            text={getLocalTime(undefined, item.timezoneOffset).format('LT')}
+                            textWrap={true}
+                            visibility={item.timezone ? 'visible' : 'hidden'} />
+                        <IconButton col={1} gray={true} horizontalAlignment="right" size={40} text="mdi-dots-vertical" verticalAlignment="bottom" on:tap={(event) => showFavMenu(item, event)} />
+                    </gridlayout>
                 </Template>
             </collectionview>
         </gridlayout>

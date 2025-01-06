@@ -35,7 +35,7 @@ export class OWMProvider extends WeatherProvider {
         });
     }
 
-    public override async getWeather(weatherLocation: WeatherLocation, { current, warnings, minutely }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
+    public override async getWeather(weatherLocation: WeatherLocation, { current, minutely, warnings }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '3.0');
@@ -46,7 +46,8 @@ export class OWMProvider extends WeatherProvider {
         const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
         // console.log('test', JSON.stringify(result.daily));
         const r = {
-            time: result.time,
+            time: Date.now(), // we use phone local current time as reference
+            // time: result.time,
             currently: weatherDataIconColors(
                 {
                     time: forecast.current.dt * 1000,
@@ -133,7 +134,7 @@ export class OWMProvider extends WeatherProvider {
                 if (hasNext && nextData) {
                     d.snowfall = nextData.snow?.['1h'] || 0;
                     d.rain = nextData.rain?.['1h'] || 0;
-                    d.precipAccumulation = (d.snowfall * 10) / 7 + d.rain;
+                    d.precipAccumulation = d.snowfall + d.rain;
                 }
                 // d.precipAccumulation = data.snow ? data.snow['1h'] : data.rain ? data.rain['1h'] : 0;
                 d.precipProbability = Math.round(data.pop * 100);

@@ -8,7 +8,7 @@ import { updateThemeColors } from '~/variables';
 import { lc } from '~/helpers/locale';
 import { writable } from 'svelte/store';
 import { SDK_VERSION } from '@nativescript/core/utils';
-import { showAlertOptionSelect } from '~/utils/ui';
+import { confirmRestartApp, showAlertOptionSelect } from '~/utils/ui';
 import { closePopover } from '@nativescript-community/ui-popover/svelte';
 import { AppUtilsAndroid, restartApp } from '@akylas/nativescript-app-utils';
 import { ALERT_OPTION_MAX_HEIGHT, DEFAULT_COLOR_THEME, SETTINGS_COLOR_THEME } from './constants';
@@ -31,7 +31,7 @@ if (theme.length === 0) {
     theme = DEFAULT_THEME as Themes;
 }
 export const sTheme = writable('auto');
-export const currentTheme = writable('auto');
+export const currentTheme = writable<'dark' | 'black' | 'light'>('light');
 
 colorTheme = getString(SETTINGS_COLOR_THEME, DEFAULT_COLOR_THEME) as ColorThemes;
 export const currentColorTheme = writable(colorTheme);
@@ -47,7 +47,7 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
     DEV_LOG && console.log('systemAppearanceChangedEvent', theme, event.newValue, autoDarkToBlack);
     if (theme === 'auto') {
         event.cancel = true;
-        let realTheme = event.newValue as Themes;
+        let realTheme = event.newValue as 'dark' | 'black' | 'light';
         if (autoDarkToBlack && realTheme === 'dark') {
             realTheme = 'black';
         }
@@ -56,6 +56,7 @@ Application.on(Application.systemAppearanceChangedEvent, (event: SystemAppearanc
                 AppUtilsAndroid.applyDayNight(Application.android.startActivity, useDynamicColors);
             }
         }
+        currentTheme.set(realTheme);
         Theme.setMode(Theme.Auto, undefined, realTheme, false);
         updateThemeColors(realTheme, colorTheme);
         //close any popover as they are not updating with theme yet
@@ -210,7 +211,7 @@ function getSystemAppearance() {
 }
 
 export function getRealTheme(th = theme) {
-    DEV_LOG && console.log('getRealTheme', th);
+    // DEV_LOG && console.log('getRealTheme', th);
     if (th === 'auto') {
         try {
             th = getSystemAppearance() as any;
@@ -221,7 +222,7 @@ export function getRealTheme(th = theme) {
             console.error('getRealTheme', err, err.stack);
         }
     }
-    return th;
+    return th as 'light' | 'dark' | 'black';
 }
 
 export function isDarkTheme(th = getRealTheme(theme)) {
@@ -277,14 +278,7 @@ export function start(force = false) {
             } else {
                 ApplicationSettings.remove('SET_THEME_ON_LAUNCH');
             }
-            const result = await confirm({
-                message: lc('restart_app'),
-                okButtonText: lc('restart'),
-                cancelButtonText: lc('later')
-            });
-            if (result) {
-                restartApp();
-            }
+            confirmRestartApp();
         } else {
             setCustomCssRootClass(colorTheme, oldColorTheme);
         }
@@ -321,7 +315,7 @@ export function start(force = false) {
 
     function onReady() {
         setCustomCssRootClass(colorTheme);
-        DEV_LOG && console.log('onReady', theme, colorTheme);
+        // DEV_LOG && console.log('onReady', theme, colorTheme);
         applyTheme(theme);
         const realTheme = getRealTheme(theme);
         currentTheme.set(realTheme);

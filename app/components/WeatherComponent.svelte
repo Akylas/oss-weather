@@ -45,8 +45,13 @@
             } catch (err) {}
         }
     }
+    export let fullRefresh = false;
     function refreshVisibleItems() {
-        collectionView?.nativeView?.refreshVisibleItems();
+        if (fullRefresh) {
+            collectionView?.nativeView?.refresh();
+        } else {
+            collectionView?.nativeView?.refreshVisibleItems();
+        }
     }
 
     onThemeChanged(refreshVisibleItems);

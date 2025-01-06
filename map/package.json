@@ -9,7 +9,6 @@
         "@babel/plugin-transform-optional-chaining": "^7.24.8",
         "@babel/preset-env": "^7.24.8",
         "babel-loader": "^9.1.3",
-        "leaflet": "1.9.4",
         "maplibre-gl": "^4.5.0",
         "svelte-range-slider-pips": "^2.3.1"
     },
@@ -17,7 +16,6 @@
         "@tsconfig/svelte": "^5.0.4",
         "@types/babel__core": "^7",
         "@types/babel__preset-env": "^7.9.7",
-        "@types/leaflet": "1.9.12",
         "@types/svelte-range-slider-pips": "^2.0.4",
         "css-minimizer-webpack-plugin": "^7.0.0",
         "html-webpack-plugin": "^5.6.0",

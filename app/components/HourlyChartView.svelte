@@ -7,6 +7,7 @@
     import { LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
+    import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
@@ -16,10 +17,10 @@
     import { showError } from '@shared/utils/showError';
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { windIcon } from '~/helpers/formatter';
-    import { formatTime, getLocalTime } from '~/helpers/locale';
-    import { onThemeChanged } from '~/helpers/theme';
+    import { formatTime, getLocalTime, lc } from '~/helpers/locale';
+    import { isEInk, onThemeChanged } from '~/helpers/theme';
     import type { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
-    import { colors, fontScale, screenWidthDips } from '~/variables';
+    import { colors, fontScale, rainColor, screenWidthDips, snowColor } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
@@ -29,7 +30,17 @@
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { iconService } from '~/services/icon';
-    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    import {
+        WeatherProps,
+        appPaint,
+        convertWeatherValueToUnit,
+        getWeatherDataColor,
+        getWeatherDataIcon,
+        getWeatherDataTitle,
+        showHourlyPopover,
+        weatherDataService,
+        wiPaint
+    } from '~/services/weatherData';
     // import { fade } from '@shared/utils/svelte/ui';
     import { generateGradient, loadImage } from '~/utils/utils.common';
 
@@ -48,7 +59,7 @@
     const LINE_WIDTH = 2;
 
     const CHART_TYPE = {
-        [WeatherProps.precipAccumulation]: 'barchart',
+        [WeatherProps.precipAccumulation]: 'precipitationchart',
         // [WeatherProps.windSpeed]: 'scatterchart',
         // [WeatherProps.windGust]: 'scatterchart',
         [WeatherProps.cloudCover]: 'scatterchart'
@@ -59,6 +70,8 @@
 
 <script lang="ts">
     import HourlyPopover from './HourlyPopover.svelte';
+    import { ComponentInstanceInfo } from '~/utils/ui';
+    import DailyPage from './DailyPage.svelte';
 
     let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
@@ -120,7 +133,8 @@
     });
 
     let lastIconX: number;
-    let lastDrawnValueIndex = {};
+    let valuesToDraw: number[] = [];
+    let hasSnowFall = false;
     function updateLineChart(setData = true) {
         try {
             const chart = chartView?.nativeView;
@@ -183,39 +197,43 @@
                                 // canvas.drawBitmap(icon, drawOffsetX, drawOffsetY, null);
                                 // canvas.restore();
                             } else if (dataSet.label === WeatherProps.windSpeed || dataSet.label === WeatherProps.windBearing) {
+                                const item = entry as Hourly | DailyData;
                                 const drawOffsetY = 40;
-                                appPaint.color = dataSet.color;
                                 appPaint.setTextSize(10);
+                                appPaint.color = !isEInk ? (item.windSpeed >= 70 ? '#ff0353' : item.windSpeed > 40 ? '#FFBC03' : dataSet.color) : dataSet.color;
                                 canvas.drawText(icon as string, x, drawOffsetY, appPaint);
+
+                                // if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust >= 2 * item.windSpeed))) {
+                                //     wiPaint.setTextSize(6);
+                                //     wiPaint.color = !isEInk ? (item.windGust >= 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : dataSet.color) : dataSet.color;
+                                //     canvas.drawText(getWeatherDataIcon(WeatherProps.windGust), x, drawOffsetY + 8, wiPaint);
+                                // }
                             }
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {
-                            const yProperty = dataSet.yProperty;
-                            const value = entry as CommonWeatherData;
-                            const prevValue: CommonWeatherData = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1) : null;
-                            const nextValue: CommonWeatherData = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1) : null;
-                            const current = convertWeatherValueToUnit(value, yProperty as WeatherProps);
-                            const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty as WeatherProps) : null;
-                            const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty as WeatherProps) : null;
-                            const scaleX = chart.viewPortHandler.scaleX;
-                            const modulo = Math.max(Math.round(6 / scaleX), 1);
-                            if (
-                                next === null ||
-                                prev === null ||
-                                ((!lastDrawnValueIndex[yProperty] || entryIndex - lastDrawnValueIndex[yProperty] > 4 / scaleX) && entryIndex % modulo === 0) ||
-                                (prev[0] !== current[0] && !(prev[0] < current[0] && current[0] < next[0]) && !(prev[0] > current[0] && current[0] > next[0]))
-                            ) {
+                            if (valuesToDraw.indexOf(entryIndex) !== -1) {
+                                const yProperty = dataSet.yProperty;
+                                const value = entry as CommonWeatherData;
+                                const prevValue: CommonWeatherData = entryIndex > 0 ? dataSet.getEntryForIndex(entryIndex - 1) : null;
+                                // const nextValue: CommonWeatherData = entryIndex < dataSet.entryCount - 1 ? dataSet.getEntryForIndex(entryIndex + 1) : null;
+                                const current = convertWeatherValueToUnit(value, yProperty as WeatherProps);
+                                // const next = nextValue ? convertWeatherValueToUnit(nextValue, yProperty as WeatherProps) : null;
+                                const prev = prevValue ? convertWeatherValueToUnit(prevValue, yProperty as WeatherProps) : null;
                                 const showUnder = prev && current[0] < prev[0];
                                 paint.setColor(color);
                                 c.drawText(current.join(''), x, y + (showUnder ? 14 : 0), paint);
-                                lastDrawnValueIndex[yProperty] = entryIndex;
                             }
                         },
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
                             const precipProbability = e.precipProbability;
-                            paint.setColor(e.precipColor);
                             paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
-                            c.drawRect(left, top, right, bottom, paint);
+                            if (hasSnowFall) {
+                                c.drawRect(left + 1, top + 1, right - 0.5, bottom - 0.5, paint);
+                            } else if (e.precipColor) {
+                                paint.setColor(e.precipColor);
+                                paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                                c.drawRect(left, top, right, bottom, paint);
+                            }
                         },
                         drawHighlight(c: Canvas, h: Highlight<Entry>) {
                             const date = getLocalTime(startTimestamp + h.entry['deltaHours'] * 3600 * 1000, timezoneOffset);
@@ -304,18 +322,44 @@
                 };
                 let tempMin = Number.MAX_SAFE_INTEGER;
                 let tempMax = Number.MIN_SAFE_INTEGER;
+                hasSnowFall = false;
+
+                let lastDrawnValue: number;
+                valuesToDraw = [];
+                const nbData = sourceData.length;
                 const data = sourceData.map((d: DailyData | Hourly, index) => {
                     const result = { ...d, deltaHours: (d.time - startTimestamp) / (3600 * 1000) };
+                    if (result['snowfall'] > 0) {
+                        hasSnowFall = true;
+                    }
                     dataToShow.forEach((k) => {
                         if (result.hasOwnProperty(k)) {
                             if (k === WeatherProps.iconId || k === WeatherProps.windBearing) {
                                 result['setFakeKey'] = 1;
                             } else if (k === WeatherProps.precipAccumulation) {
-                                // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
+                                // result.snow = convertWeatherValueToUnit(d, k, { round: false })[0];
                             } else if (k === WeatherProps.temperature) {
+                                const value = d[k];
                                 // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
-                                tempMin = Math.min(tempMin, d[k]);
-                                tempMax = Math.max(tempMax, d[k]);
+                                tempMin = Math.min(tempMin, value);
+                                tempMax = Math.max(tempMax, value);
+
+                                // compute values to draw
+                                // TODO: still needs improvement. Some "peaks/trough" are not drawn
+                                const prevValue = index > 0 ? sourceData[index - 1] : null;
+                                const nextValue = index < nbData - 1 ? sourceData[index + 1] : null;
+                                const current = convertWeatherValueToUnit(d, k);
+                                const next = nextValue ? convertWeatherValueToUnit(nextValue, k) : null;
+                                const prev = prevValue ? convertWeatherValueToUnit(prevValue, k) : null;
+                                if (
+                                    next === null ||
+                                    prev === null ||
+                                    lastDrawnValue === null ||
+                                    (Math.abs(lastDrawnValue - current[0]) > 1 && !(lastDrawnValue < current[0] && current[0] < next[0]) && !(lastDrawnValue > current[0] && current[0] > next[0]))
+                                ) {
+                                    valuesToDraw.push(index);
+                                    lastDrawnValue = current[0];
+                                }
                             } else {
                                 // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
                             }
@@ -379,7 +423,6 @@
                     // }
                     const enabled = hidden.indexOf(key) === -1;
                     const color = getWeatherDataColor(key);
-                    const hasCustomColor = !!color;
                     const setColor = color || colorOnSurface;
                     newLegends.push({
                         name: getWeatherDataTitle(key),
@@ -398,7 +441,6 @@
                             set.scatterShapeSize = 4;
                             // set.scatterShapeSize=(enabled ? 4 : 0);
                             set.color = setColor;
-                            set['hasValueTextColor'] = hasCustomColor;
                             // set.fillColor=(color);
                             scatterDataSets.push(set);
                             break;
@@ -407,7 +449,27 @@
                             const set = new BarDataSet(data, key, 'deltaHours', key);
                             set.visible = enabled;
                             set.color = setColor;
-                            set['hasValueTextColor'] = hasCustomColor;
+                            set.axisDependency = AxisDependency.RIGHT;
+                            // set.fillColor=(color);
+                            barDataSets.push(set);
+                            break;
+                        }
+                        case 'precipitationchart': {
+                            const values = hasSnowFall
+                                ? data.map((d) => ({
+                                      ...d,
+                                      yVals: [d['rain'] || 0, d['snowfall'] || 0]
+                                  }))
+                                : data;
+                            const set = new BarDataSet(values, key, 'deltaHours', hasSnowFall ? undefined : key);
+
+                            if (hasSnowFall) {
+                                set.stackLabels = [lc('rain'), lc('snow')];
+                                set.colors = [rainColor, snowColor];
+                            } else {
+                                set.color = setColor;
+                            }
+                            set.visible = enabled;
                             set.axisDependency = AxisDependency.RIGHT;
                             // set.fillColor=(color);
                             barDataSets.push(set);
@@ -417,7 +479,6 @@
                         default: {
                             const set = new LineDataSet(data, key, 'deltaHours', key === WeatherProps.iconId || key === WeatherProps.windBearing ? 'setFakeKey' : key);
                             set.color = setColor;
-                            set['hasValueTextColor'] = hasCustomColor;
                             switch (key) {
                                 case WeatherProps.windSpeed:
                                     set.getEntryIcon = function (entry) {
@@ -440,9 +501,9 @@
                                     set.drawIconsEnabled = true;
                                     break;
                                 case WeatherProps.temperature:
-                                    if (!lastGradient) {
-                                        updateGradient();
-                                    }
+                                    // if (!lastGradient) {
+                                    updateGradient();
+                                    // }
                                     set.shader = lastGradient?.gradient;
                                     set.lineWidth = temperatureLineWidth;
                                     set.mode = Mode.CUBIC_BEZIER;
@@ -556,27 +617,27 @@
         DEV_LOG && console.log('onOrientationChanged');
         chartNeedsZoomUpdate = true;
     }
-    let lastGradient: { min; max; gradient: LinearGradient };
+    let lastGradient: { min; max; height; gradient: LinearGradient };
 
     function updateGradient() {
         const chart = chartView?.nativeView;
         const height = chart.viewPortHandler.contentRect.height();
 
-        if (temperatureData && height && (!lastGradient || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
+        if (temperatureData && height && (!lastGradient || lastGradient.height !== height || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, height, 0);
             const dataSet = chart.lineData?.getDataSetByLabel(WeatherProps.temperature, false);
             if (dataSet) {
                 dataSet.shader = lastGradient.gradient;
             }
+            // chartView?.nativeView?.redraw()
         }
     }
     function onLayoutChanged(event: EventData) {
         updateGradient();
         //use a timeout to ensure we are called after chart layout changed was called
-        DEV_LOG && console.log('onLayoutChanged', screenOrientation, Application.orientation(), chartNeedsZoomUpdate);
-        const chart = event.object as CombinedChart;
         setTimeout(() => {
-            if (chartNeedsZoomUpdate) {
+            const chart = event.object as CombinedChart;
+            if (chart && chartNeedsZoomUpdate) {
                 chartNeedsZoomUpdate = false;
                 if (screenOrientation || Application.orientation() === 'landscape') {
                     chart.resetZoom();
@@ -600,7 +661,6 @@
     }
     function onChartDraw() {
         lastIconX = undefined;
-        lastDrawnValueIndex = {};
     }
 
     function highlightOnDate(timestamp: number) {
@@ -611,6 +671,32 @@
             chart.highlight(highlights);
         }
     }
+    let popoverInstance: HourlyPopover__SvelteComponent_;
+    async function showPopover(item, highlightedMargin) {
+        try {
+            if (popoverInstance) {
+                popoverInstance.$set({ item });
+                return;
+            }
+            await showHourlyPopover(
+                item,
+                {},
+                {
+                    anchor: chartView?.nativeView,
+                    onDismiss: () => {
+                        popoverInstance = null;
+                        highlightedItem = null;
+                    },
+                    x: highlightedMargin
+                },
+                (data: ComponentInstanceInfo) => {
+                    popoverInstance = data.viewInstance as any;
+                }
+            );
+        } catch (error) {
+            showError(error);
+        }
+    }
     function onHighlight({ highlight, object }: { object: CombinedChart; highlight: Highlight }) {
         const popoverWidth = 150 * $fontScale;
         const fullWidth = Utils.layout.toDeviceIndependentPixels(chartView.nativeView.getMeasuredWidth());
@@ -618,6 +704,7 @@
         highlightedAlignment = highlightedX >= fullWidth - popoverWidth ? 'right' : 'left';
         highlightedMargin = highlightedAlignment === 'left' ? `40 0 0 ${highlightedX}` : `40 ${fullWidth - highlightedX} 0 0`;
         highlightedItem = hourly[highlight.x] as CommonWeatherData;
+        showPopover(highlightedItem, highlightedX > fullWidth / 2 ? 0 : fullWidth * 2);
     }
     function clearHighlight() {
         highlightedItem = null;
@@ -771,9 +858,9 @@
         on:pan={clearHighlight}
         on:zoom={clearHighlight}>
     </combinedchart>
-    {#if highlightedItem}
+    <!-- {#if highlightedItem}
         <HourlyPopover horizontalAlignment={highlightedAlignment} item={highlightedItem} margin={highlightedMargin} on:tap={clearHighlight} />
-    {/if}
+    {/if} -->
     <!-- {#if currentHighlight}
         <nestedscrollview
             backgroundColor={new Color(colorBackground).setAlpha(220)}

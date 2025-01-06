@@ -1,4 +1,5 @@
 <script context="module" lang="ts">
+    import { share } from '@akylas/nativescript-app-utils/share';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
@@ -9,7 +10,6 @@
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Sentry } from '@shared/utils/sentry';
-    import { share } from '@akylas/nativescript-app-utils/share';
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
@@ -25,6 +25,8 @@
         DAILY_PAGE_HOURLY_CHART,
         DECIMAL_METRICS_TEMP,
         FEELS_LIKE_TEMPERATURE,
+        MAIN_CHART_NB_HOURS,
+        MAIN_CHART_SHOW_WIND,
         MAIN_PAGE_HOURLY_CHART,
         MIN_UV_INDEX,
         NB_DAYS_FORECAST,
@@ -35,6 +37,8 @@
         SETTINGS_FEELS_LIKE_TEMPERATURES,
         SETTINGS_IMPERIAL,
         SETTINGS_LANGUAGE,
+        SETTINGS_MAIN_CHART_NB_HOURS,
+        SETTINGS_MAIN_CHART_SHOW_WIND,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
         SETTINGS_METRIC_TEMP_DECIMAL,
         SETTINGS_MIN_UV_INDEX,
@@ -45,7 +49,9 @@
         SETTINGS_WEATHER_DATA_LAYOUT,
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
+        SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE,
         SETTINGS_WEATHER_MAP_LAYER_OPACITY,
+        SETTINGS_WEATHER_MAP_SHOW_SNOW,
         SHOW_CURRENT_DAY_DAILY,
         SHOW_DAILY_IN_CURRENTLY,
         SWIPE_ACTION_BAR_PROVIDER,
@@ -53,17 +59,18 @@
         WEATHER_MAP_ANIMATION_SPEED,
         WEATHER_MAP_COLORS,
         WEATHER_MAP_COLOR_SCHEMES,
-        WEATHER_MAP_LAYER_OPACITY
+        WEATHER_MAP_LAYER_OPACITY,
+        WEATHER_MAP_SHOW_SNOW
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
     import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
+    import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
-    import { restartApp } from '~/utils/utils';
+    import { confirmRestartApp, createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
@@ -138,6 +145,19 @@
                         id: SETTINGS_DAILY_PAGE_HOURLY_CHART,
                         title: lc('show_hourly_chart_on_daily'),
                         value: ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART)
+                    },
+                    {
+                        key: SETTINGS_MAIN_CHART_NB_HOURS,
+                        id: 'setting',
+                        title: lc('main_chart_nb_hours'),
+                        values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        rightValue: () => ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_MAIN_CHART_SHOW_WIND,
+                        title: lc('main_chart_show_wind'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND)
                     }
                 ];
             case 'units':
@@ -320,6 +340,7 @@
                         valueType: 'string',
                         id: 'setting',
                         key: 'owmApiKey',
+                        default: () => ApplicationSettings.getString('owmApiKey'),
                         description: lc('api_key_required_description'),
                         title: lc('owm_api_key')
                     },
@@ -465,6 +486,23 @@
                         valueFormatter: (value) => value.toFixed(2),
                         transformValue: (value) => value,
                         rightValue: () => Math.round(ApplicationSettings.getNumber(SETTINGS_WEATHER_MAP_LAYER_OPACITY, WEATHER_MAP_LAYER_OPACITY) * 100) / 100
+                    },
+                    {
+                        type: 'switch',
+                        icon: 'mdi-snowflake',
+                        id: SETTINGS_WEATHER_MAP_SHOW_SNOW,
+                        title: lc('show_snow'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_WEATHER_MAP_SHOW_SNOW, WEATHER_MAP_SHOW_SNOW)
+                    },
+                    {
+                        type: 'prompt',
+                        icon: 'mdi-server',
+                        valueType: 'string',
+                        default: () => ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, null),
+                        id: 'setting',
+                        key: SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE,
+                        description: () => ApplicationSettings.getString(SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE, null),
+                        title: lc('custom_tile_server')
                     }
                 ];
             case 'geolocation':
@@ -480,6 +518,30 @@
                 break;
         }
     }
+
+    let nbDevModeTap = 0;
+    let devModeClearTimer;
+    function onTouch(item, event) {
+        if (event.action !== 'down') {
+            return;
+        }
+        nbDevModeTap += 1;
+        if (devModeClearTimer) {
+            clearTimeout(devModeClearTimer);
+        }
+        if (nbDevModeTap === 6) {
+            const devMode = (networkService.devMode = !networkService.devMode);
+            nbDevModeTap = 0;
+            showSnack({ message: devMode ? 'devmode on' : 'devmode off' });
+            refresh();
+            return;
+        }
+        devModeClearTimer = setTimeout(() => {
+            devModeClearTimer = null;
+            nbDevModeTap = 0;
+        }, 500);
+    }
+
     function refresh() {
         const newItems: any[] =
             options?.(page, updateItem) ||
@@ -722,6 +784,7 @@
                 );
                 return;
             }
+            DEV_LOG && console.log('onTap', item.id);
             switch (item.id) {
                 case 'sub_settings': {
                     const component = (await import('~/components/settings/Settings.svelte')).default;
@@ -762,7 +825,6 @@
                 case 'review':
                     openLink(STORE_REVIEW_LINK);
                     break;
-                case 'sponsor':
                 case 'sponsor':
                     switch (item.type) {
                         case 'librepay':
@@ -850,6 +912,11 @@
                     // }
                     const jsonStr = ApplicationSettings.getAllJSON();
                     if (jsonStr) {
+                        try {
+                            const data = JSON.parse(jsonStr);
+                        } catch (error) {
+                            throw new Error(lc('failed_to_export_settings'));
+                        }
                         const result = await saveFile({
                             name: `${__APP_ID__}_settings_${dayjs().format('YYYY-MM-DD')}.json`,
                             data: jsonStr,
@@ -923,18 +990,7 @@
                             });
                         }
                         await hideLoading();
-                        if (__ANDROID__) {
-                            const result = await confirm({
-                                message: lc('restart_app'),
-                                okButtonText: lc('restart'),
-                                cancelButtonText: lc('later')
-                            });
-                            if (result) {
-                                restartApp();
-                            }
-                        } else {
-                            showSnack({ message: lc('please_restart_app') });
-                        }
+                        confirmRestartApp();
                     }
                     break;
                 case 'store_setting':
@@ -947,7 +1003,7 @@
                             cancelButtonText: l('cancel'),
                             textFieldProperties: item.textFieldProperties,
                             autoFocus: true,
-                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : item.default
+                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : typeof item.default === 'function' ? item.default() : item.default
                         });
                         Utils.dismissSoftInput();
                         if (result && !!result.result && result.text.length > 0) {
@@ -1149,7 +1205,7 @@
 </script>
 
 <page bind:this={page} id={title || $slc('settings.title')} actionBarHidden={true}>
-    <gridlayout rows="auto,*">
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*">
         <collectionview
             bind:this={collectionView}
             accessibilityValue="settingsCV"
@@ -1191,7 +1247,7 @@
 
                     <stacklayout horizontalAlignment="center" marginBottom={0} marginTop={20} row={1} verticalAlignment="center">
                         <absolutelayout backgroundColor={iconColor} borderRadius="50%" height={50} horizontalAlignment="center" width={50} />
-                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress('version', event)} />
+                        <label fontSize={13} marginTop={4} text={version} on:longPress={(event) => onLongPress('version', event)} on:touch={(e) => onTouch(item, e)} />
                     </stacklayout>
                 </gridlayout>
             </Template>

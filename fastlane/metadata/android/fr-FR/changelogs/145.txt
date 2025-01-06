@@ -1,0 +1,7 @@
+Bug fixes:
+- prevent error if ATMO does not have data for the location
+- unable to pinch-zoom on map
+- prevent error when switched to eink style but not restarted
+- prevent error when hourly data shows a mix of snow/rain. A weather data refresh will fix it
+- prevent too big or too small custom font scale
+- Translations update

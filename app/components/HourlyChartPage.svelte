@@ -123,7 +123,6 @@
             }
             if (index >= 0) {
                 const chart = chartView?.getChart();
-                DEV_LOG && console.log('toggleLegend', chart, index);
                 if (chart) {
                     const enabled = legendItem.enabled;
                     const set = chart.data.getDataSetByLabel(legendItem.id, false);
@@ -148,7 +147,7 @@
 </script>
 
 <page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
-    <gridlayout rows="auto,*">
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*">
         {#if !networkConnected && !weatherData}
             <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
         {:else}

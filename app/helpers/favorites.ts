@@ -1,16 +1,63 @@
 import { ApplicationSettings, Observable, ObservableArray } from '@nativescript/core';
-import { WeatherLocation } from '~/services/api';
+import { WeatherLocation, getTimezone } from '~/services/api';
 import { prefs } from '~/services/preferences';
 import { colors } from '~/variables';
 import { get } from 'svelte/store';
 import { globalObservable } from '@shared/utils/svelte/ui';
+import PolygonLookup from 'polygon-lookup';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
     startingSide?: string;
 }
+
+let timezoneLookUp: PolygonLookup;
+export async function queryTimezone(location: FavoriteLocation, force = false) {
+    if (!force && location.timezone) {
+        return;
+    }
+    if (!timezoneLookUp) {
+        timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
+    }
+    const result = timezoneLookUp.search(location.coord.lon, location.coord.lat);
+    const timezone = result?.properties.tzid;
+
+    if (timezone) {
+        if (__ANDROID__) {
+            const nTimezone = java.util.TimeZone.getTimeZone(timezone);
+            return {
+                timezone,
+                timezoneOffset: nTimezone.getOffset(Date.now()) / 3600000
+            };
+        } else {
+            return {
+                timezone,
+                timezoneOffset: NSTimeZone.alloc().initWithName(timezone).daylightSavingTimeOffsetForDate(new Date()) / 3600
+            };
+        }
+    } else {
+        return getTimezone(location);
+    }
+}
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));
+
+favorites.on('change', (e) => {
+    DEV_LOG && console.log('on favorites changed1');
+    ApplicationSettings.setString('favorites', JSON.stringify(favorites));
+});
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
+if (favorites.length && !favorites.getItem(0).timezone) {
+    Promise.all(
+        favorites.map((f, index) => {
+            if (!f.timezone) {
+                return queryTimezone(f).then((timezonData) => {
+                    Object.assign(f, timezonData);
+                    favorites.setItem(index, f);
+                });
+            }
+        })
+    ).then(() => ApplicationSettings.setString('favorites', JSON.stringify(favorites)));
+}
 
 prefs.on('key:favorites', () => {
     favorites.splice(0, favorites.length, ...JSON.parse(ApplicationSettings.getString('favorites', '[]')));
@@ -42,7 +89,7 @@ export function getFavoriteKey(item: WeatherLocation) {
     }
 }
 
-export function toggleFavorite(item: FavoriteLocation) {
+export async function toggleFavorite(item: FavoriteLocation) {
     if (isFavorite(item)) {
         const key = getFavoriteKey(item);
         item.isFavorite = false;
@@ -53,12 +100,19 @@ export function toggleFavorite(item: FavoriteLocation) {
         }
     } else {
         const { isFavorite, startingSide, ...toSave } = item;
+        // if (!item.timezone) {
+        try {
+            const timezonData = await queryTimezone(item, true);
+            if (timezonData) {
+                Object.assign(toSave, timezonData);
+            }
+        } catch (error) {}
+        // }
         item.isFavorite = true;
         favorites.push(toSave);
         favoritesKeys.push(getFavoriteKey(item));
     }
     delete item.startingSide; //for swipemenu
-    ApplicationSettings.setString('favorites', JSON.stringify(favorites));
     globalObservable.notify({ eventName: 'favorite', data: item });
     return item;
 }

@@ -323,7 +323,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 d.rain = (rain[index] || 0) + (showers?.[index] || 0);
             }
 
-            d.precipAccumulation = d.rain + d.snowfall / 7;
+            d.precipAccumulation = d.rain + d.snowfall;
             // const precipitation = this.getDataArray(hourly, 'precipitation', model);
             // if (hasNext && precipitation) {
             //     d.precipAccumulation = precipitation[index + 1] ?? 0;
@@ -389,7 +389,8 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const daily_weathercodes = this.getMixedDataArray(daily, 'weathercode', model);
         const dailyLastIndex = daily_weathercodes.findIndex((d) => d === null);
         const r = {
-            time: result.time,
+            time: Date.now(), // we use phone local current time as reference
+            // time: result.time,
             currently: currentData
                 ? weatherDataIconColors(
                       {
@@ -461,7 +462,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             alerts: []
         } as WeatherData;
         r.hourly = hourlyData;
-        DEV_LOG && console.log('om getWeather', JSON.stringify(r));
+        // DEV_LOG && console.log('om getWeather', JSON.stringify(r));
         return r;
     }
 
@@ -474,6 +475,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const units = result.content.hourly_units;
         const keys = new Set(Object.keys(units).filter((s) => !!s));
         keys.delete('time');
+        keys.delete('interval');
 
         const hourlyData = hourly.time.map((time, index) => {
             const d = {} as Hourly;

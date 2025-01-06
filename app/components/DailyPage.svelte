@@ -1,23 +1,23 @@
 <script context="module" lang="ts">
-    import { ApplicationSettings, Page, fontSizeProperty } from '@nativescript/core';
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import HourlyView from './HourlyView.svelte';
-    import { colors, fontScale, fonts, weatherDataLayout } from '~/variables';
-    import { iconService, onIconAnimationsChanged } from '~/services/icon';
-    import WeatherIcon from './WeatherIcon.svelte';
-    import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
-    import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
-    import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';
+    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { CombinedChart } from '@nativescript-community/ui-chart';
+    import { ApplicationSettings, Page } from '@nativescript/core';
+    import dayjs, { Dayjs } from 'dayjs';
+    import { NativeViewElementNode } from 'svelte-native/dom';
+    import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
+    import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
+    import { formatDate, lc } from '~/helpers/locale';
+    import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     import { WeatherLocation } from '~/services/api';
+    import { iconService, onIconAnimationsChanged } from '~/services/icon';
+    import type { CommonWeatherData, Hourly } from '~/services/providers/weather';
+    import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
+    import { colors, fontScale, weatherDataLayout, windowInset } from '~/variables';
     import CActionBar from './common/CActionBar.svelte';
     import HourlyChartView from './HourlyChartView.svelte';
-    import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
-    import { CombinedChart } from '@nativescript-community/ui-chart';
-    import type { CommonWeatherData, Hourly } from '~/services/providers/weather';
-    import dayjs, { Dayjs } from 'dayjs';
-    import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
+    import HourlyView from './HourlyView.svelte';
+    import WeatherIcon from './WeatherIcon.svelte';
     const weatherIconSize = 100;
     const PADDING_LEFT = 7;
 
@@ -37,13 +37,22 @@
 </script>
 
 <script lang="ts">
+    import { SwipeGestureEventData } from '@akylas/nativescript';
+
     const showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART);
+
+    export let getDailyPageProps: Function;
+    export let itemIndex: number;
+    export let items: any[];
 
     export let item: CommonWeatherData & { hourly: Hourly[] };
     export let location: WeatherLocation;
     export let weatherLocation: WeatherLocation;
     export let timezoneOffset;
     export let startTime: Dayjs;
+
+    let itemsCount = items.length;
+
     DEV_LOG && console.log('startTime', startTime, dayjs(startTime).isSame(dayjs(), 'd'));
     let page: NativeViewElementNode<Page>;
     let animated = iconService.animated;
@@ -263,6 +272,7 @@
     }
 
     function drawPollOnCanvas(polls, title: string, canvas: Canvas) {
+        delete polls['interval'];
         const w = canvas.getWidth();
         const h = canvas.getHeight();
         let row, col, dx, dy, data;
@@ -292,11 +302,29 @@
     function drawPollens({ canvas }: { canvas: Canvas }) {
         drawPollOnCanvas(item.pollens, lc('pollens'), canvas);
     }
+
+    function onSwipe(e) {
+        if (e.direction === 1 && itemIndex > 0) {
+            const data = getDailyPageProps(items[itemIndex - 1]);
+            item = data.item;
+            itemIndex = data.itemIndex;
+            items = data.items;
+            itemsCount = items.length;
+            redraw();
+        } else if (e.direction === 2 && itemIndex < itemsCount - 1) {
+            const data = getDailyPageProps(items[itemIndex + 1]);
+            item = data.item;
+            itemIndex = data.itemIndex;
+            items = data.items;
+            itemsCount = items.length;
+            redraw();
+        }
+    }
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
     <scrollview>
-        <gridlayout rows="auto,auto,auto,auto,auto,auto">
+        <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,auto,auto,auto,auto" on:swipe={onSwipe}>
             <gridlayout columns="*,auto" height={topViewHeight} row={1}>
                 <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
                 <WeatherIcon
@@ -337,7 +365,7 @@
             {/if}
             <AstronomyView {location} row={5} selectableDate={false} {startTime} {timezoneOffset} />
 
-            <CActionBar title={weatherLocation && weatherLocation.name}></CActionBar>
+            <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />
         </gridlayout>
     </scrollview>
 </page>

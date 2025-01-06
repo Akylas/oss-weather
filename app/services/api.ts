@@ -169,6 +169,16 @@ class NetworkService extends Observable {
     onConnectionStateChange(newConnectionType: connectionType) {
         this.connectionType = newConnectionType;
     }
+
+    mDevMode = ApplicationSettings.getBoolean('devMode', !PRODUCTION);
+
+    set devMode(value: boolean) {
+        this.mDevMode = value;
+        ApplicationSettings.setBoolean('devMode', value);
+    }
+    get devMode() {
+        return this.mDevMode;
+    }
 }
 
 export const networkService = new NetworkService();
@@ -262,9 +272,8 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     }
 }
 
-export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate?, now = dayjs.utc()) {
+export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate = weatherData.time, now = dayjs.utc()) {
     const newItems = [];
-
     const startOfHour = now.startOf('h').valueOf();
     const endOfMinute = now.endOf('m').valueOf();
     const firstHourIndex = weatherData.hourly.findIndex((h) => h.time >= startOfHour);

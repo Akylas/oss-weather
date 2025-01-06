@@ -12,7 +12,14 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import HourlyView from '~/components/HourlyView.svelte';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { MAIN_PAGE_HOURLY_CHART, SETTINGS_MAIN_PAGE_HOURLY_CHART } from '~/helpers/constants';
+    import {
+        MAIN_CHART_NB_HOURS,
+        MAIN_CHART_SHOW_WIND,
+        MAIN_PAGE_HOURLY_CHART,
+        SETTINGS_MAIN_CHART_NB_HOURS,
+        SETTINGS_MAIN_CHART_SHOW_WIND,
+        SETTINGS_MAIN_PAGE_HOURLY_CHART
+    } from '~/helpers/constants';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { isFavorite, toggleFavorite } from '~/helpers/favorites';
     import { formatDate, formatTime, l, lc } from '~/helpers/locale';
@@ -25,34 +32,16 @@
 
     const PADDING_LEFT = 7;
     const einkBmpShader = isEInk ? new BitmapShader(ImageSource.fromFileSync('~/assets/images/pattern.png'), TileMode.REPEAT, TileMode.REPEAT) : null;
-</script>
-
-<script lang="ts">
-    let showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
-    prefs.on(`key:${SETTINGS_MAIN_PAGE_HOURLY_CHART}`, () => {
-        showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
-    });
-
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
     const textPaint = new Paint();
-    // const arcPaint = new Paint();
-    // arcPaint.style = Style.STROKE;
-    // arcPaint.setTextAlign(Align.CENTER);
-    // arcPaint.strokeCap = Cap.ROUND;
 
     interface Item extends Currently {
         minutely?: MinutelyData[];
         lastUpdate: number;
         hourly?: Hourly[];
     }
-    export let item: Item;
-    export let weatherLocation: FavoriteLocation;
-    export let height;
-    export let fakeNow;
-    export let animated = false;
 
     function formatLastUpdate(date) {
         if (dayjs(date).isBefore(dayjs().startOf('d'))) {
@@ -61,8 +50,45 @@
             return formatTime(date, 'LT');
         }
     }
+</script>
+
+<script lang="ts">
+    const currentData = weatherDataService.currentWeatherData;
+    let showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
+    prefs.on(`key:${SETTINGS_MAIN_PAGE_HOURLY_CHART}`, () => {
+        showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART);
+    });
+
+    let showWind = ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND);
+    let dataToShow = [
+        ...new Set(
+            [WeatherProps.precipAccumulation]
+                .filter((s) => currentData.includes(s))
+                .concat([WeatherProps.windBearing, WeatherProps.iconId, WeatherProps.temperature])
+                .concat(showWind ? [WeatherProps.windSpeed] : [])
+        )
+    ];
+    prefs.on(`key:${SETTINGS_MAIN_CHART_SHOW_WIND}`, () => {
+        showWind = ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND);
+        if (showWind) {
+            dataToShow = [...new Set(dataToShow.concat([WeatherProps.windSpeed]))];
+        } else {
+            dataToShow = dataToShow.filter((d) => d !== WeatherProps.windSpeed);
+        }
+    });
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
+
+    // const arcPaint = new Paint();
+    // arcPaint.style = Style.STROKE;
+    // arcPaint.setTextAlign(Align.CENTER);
+    // arcPaint.strokeCap = Cap.ROUND;
+    export let item: Item;
+    export let weatherLocation: FavoriteLocation;
+    export let height;
+    export let fakeNow;
+    export let animated = false;
     let lineChart: NativeViewElementNode<LineChart>;
-    const weatherIconSize = 140;
+    const weatherIconSize = 120;
     $: topViewHeight = 220 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
@@ -474,10 +500,6 @@
         }
     }
 
-    function toggleItemFavorite(item: FavoriteLocation) {
-        weatherLocation = toggleFavorite(item);
-    }
-
     function onChartConfigure(chart: CombinedChart): void {
         chart.leftAxis.drawAxisLine = false;
         chart.leftAxis.drawGridLines = false;
@@ -487,6 +509,11 @@
         chart.rightAxis.drawLabels = false;
         chart.setExtraOffsets(0, 40, 0, 10);
     }
+
+    let hourlyChartNbHours = ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS);
+    prefs.on(`key:${SETTINGS_MAIN_CHART_NB_HOURS}`, () => {
+        hourlyChartNbHours = ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS);
+    });
 </script>
 
 <gridlayout columns="*,auto" {height} rows={`${topViewHeight},*`}>
@@ -513,18 +540,19 @@
         horizontalAlignment="left"
     /> -->
     <!-- the gridlayout is there to ensure a max width for the chart -->
-    <gridlayout height={90} marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
+    <gridlayout height={90} horizontalAlignment="left" marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
+    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={5} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}
             borderBottomColor={colorOutline}
             borderBottomWidth={1}
             colSpan={2}
+            {dataToShow}
             fixedBarScale={false}
-            hourly={item.hourly}
+            hourly={item.hourly.slice(0, hourlyChartNbHours)}
             {onChartConfigure}
             rightAxisSuggestedMaximum={8}
             row={1}

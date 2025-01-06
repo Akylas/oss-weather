@@ -7,10 +7,10 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';
-    import { getLocationName, getLocationSubtitle } from '~/helpers/formatter';
+    import { getLocationName } from '~/helpers/formatter';
     import { lc } from '~/helpers/locale';
     import { photonSearch } from '~/services/api';
-    import { actionBarButtonHeight, colors } from '~/variables';
+    import { actionBarButtonHeight, colors, windowInset } from '~/variables';
     import ListItemAutoSize from './common/ListItemAutoSize.svelte';
 
     // let { colorOnSurfaceVariant } = $colors;
@@ -80,9 +80,9 @@
             }, 100);
         }
     }
-    function toggleItemFavorite(item: FavoriteLocation) {
+    async function toggleItemFavorite(item: FavoriteLocation) {
         try {
-            item = toggleFavorite(item);
+            item = await toggleFavorite(item);
             const index = searchResults.findIndex((s) => s.coord.lat === item.coord.lat && s.coord.lon === item.coord.lon);
             if (index > -1) {
                 searchResults.setItem(index, item);
@@ -91,18 +91,32 @@
             showError(error);
         }
     }
+
+    function getItem(item) {
+        const data = [];
+        if (item.sys.state) {
+            data.push(item.sys.state);
+        }
+        if (item.sys.country) {
+            data.push(item.sys.country);
+        }
+        return {
+            title: getLocationName(item),
+            subtitle: data.join('\n')
+        };
+    }
 </script>
 
 <!-- <frame backgroundColor="transparent"> -->
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>
         <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} />
-        <collectionview items={searchResults} row={2}>
+        <collectionview items={searchResults} paddingBottom={$windowInset.bottom} row={2}>
             <Template let:item>
-                <ListItemAutoSize disableCss={false} item={{ subtitle: getLocationSubtitle(item), title: getLocationName(item) }} on:tap={() => close(item)}>
+                <ListItemAutoSize disableCss={false} item={getItem(item)} on:tap={() => close(item)}>
                     <mdbutton
                         class="icon-btn"
                         col={2}

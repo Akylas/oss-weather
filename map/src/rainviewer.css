@@ -578,15 +578,21 @@ select {
 }
 
 
+
+
 #prevBtn {
-    background: url(skip-previous.svg) no-repeat center;
+    -webkit-mask-image: url(skip-previous.svg);
+    mask-image: url(skip-previous.svg);
 }
 #nextBtn {
-    background: url(skip-next.svg) no-repeat center;
+    -webkit-mask-image: url(skip-next.svg);
+    mask-image: url(skip-next.svg);
 }
 #playBtn {
-    background: url(play.svg) no-repeat center;
+    -webkit-mask-image: url(play.svg);
+    mask-image: url(play.svg);
 }
 #pauseBtn {
-    background: url(pause.svg) no-repeat center;
+    -webkit-mask-image: url(pause.svg);
+    mask-image: url(pause.svg);
 }

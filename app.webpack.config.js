@@ -21,6 +21,7 @@ function fixedFromCharCode(codePt) {
         return String.fromCharCode(codePt);
     }
 }
+
 module.exports = (env, params = {}) => {
     Object.keys(env).forEach((k) => {
         if (env[k] === 'false' || env[k] === '0') {
@@ -189,6 +190,7 @@ module.exports = (env, params = {}) => {
             config.externals.push(`~/themes/${l}.json`);
         });
     }
+    config.externals.push('~/timezone/timezonedb.json');
     config.externals.push(function ({ context, request }, cb) {
         if (/i18n$/i.test(context)) {
             return cb(null, join('~/i18n/', request));
@@ -524,6 +526,11 @@ module.exports = (env, params = {}) => {
                     return Buffer.from(JSON.stringify(path.endsWith('aliases.json') ? data : filterObject(data, allowedAddressFormatterCountries)));
                 }
             }
+        },
+        {
+            context,
+            from: 'timezone/*.json',
+            globOptions
         }
     ];
     config.plugins.unshift(new CopyPlugin({ patterns: copyPatterns }));
@@ -680,14 +687,14 @@ module.exports = (env, params = {}) => {
         if (!!sentry && !!uploadSentry) {
             config.devtool = false;
             config.devtool = 'source-map';
-            // config.plugins.push(
-            //     new webpack.SourceMapDevToolPlugin({
-            //         // moduleFilenameTemplate:  'webpack://[namespace]/[resource-path]?[loaders]',
-            //         append: `\n//# sourceMappingURL=${process.env.SOURCEMAP_REL_DIR}/[name].js.map`,
-            //         filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
-            //     })
-            // );
-            console.log(dist + '/**/*.js', join(dist, process.env.SOURCEMAP_REL_DIR) + '/*.map');
+            config.plugins.push(
+                new webpack.SourceMapDevToolPlugin({
+                    // moduleFilenameTemplate:  'webpack://[namespace]/[resource-path]?[loaders]',
+                    append: `\n//# sourceMappingURL=${process.env.SOURCEMAP_REL_DIR}/[name].js.map`,
+                    filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
+                })
+            );
+            // console.log(dist + '/**/*.js', join(dist, process.env.SOURCEMAP_REL_DIR) + '/*.map');
             config.plugins.push(
                 sentryWebpackPlugin({
                     telemetry: false,
@@ -697,7 +704,7 @@ module.exports = (env, params = {}) => {
                     authToken: process.env.SENTRY_AUTH_TOKEN,
                     release: {
                         name: `${appId}@${appVersion}+${buildNumber}`,
-                        dist: `${buildNumber}.${platform}`,
+                        dist: `${buildNumber}.${platform}${isAndroid ? (playStoreBuild ? '.playstore' : '.fdroid') : ''}`,
                         setCommits: {
                             auto: true,
                             ignoreEmpty: true,
@@ -711,7 +718,7 @@ module.exports = (env, params = {}) => {
                         // assets: './**/*.nonexistent'
                         rewriteSources: (source, map) => source.replace('webpack:///', 'webpack://'),
                         ignore: ['tns-java-classes', 'hot-update'],
-                        assets: [dist + '/**/*.js', join(dist, process.env.SOURCEMAP_REL_DIR) + '/*.map']
+                        assets: [join(dist, '**/*.js'), join(dist, process.env.SOURCEMAP_REL_DIR, '*.map')]
                     }
                 })
             );

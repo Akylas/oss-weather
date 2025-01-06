@@ -1,0 +1,11 @@
+Features:
+- new Favorites design with more favorite infos (coords,time) and access to a menu for specific favorite actions
+
+Bug fixes:
+- crash when showing chart
+- show snow legend in weather map
+- allow to set custom tile url for weather map
+- landscape layout fix
+- use local db to find location timezone. Will be much faster in most cases. A bit less precise though
+- wrong wind gust colors
+- Translations update

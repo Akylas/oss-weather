@@ -1,0 +1,11 @@
+Features:
+- new chart option to set max number of hours shown in the main hourly chart view
+- swipe on daiily page to change day
+- option to show wind line chart in main view hourly chart
+
+Bug fixes:
+- new loading indicator for better layout
+- last update time now based on phone time and not weather forecast returned time
+- weather list hidden behind navigation bar after weather update
+- dont show "daylight left" when not "today"
+- snow fall not showing correct value (was showing the equivalent 

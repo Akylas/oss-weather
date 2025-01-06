@@ -77,7 +77,7 @@
     itemIdGenerator={(_item, index) => index}
     itemTemplateSelector={selectTemplate}
     {items}
-    android:paddingBottom={$windowInset.bottom + 16}
+    paddingBottom={(__ANDROID__ ? $windowInset.bottom : 0) + 16}
     on:layoutCompleted={onCollectionViewLayoutCompleted}>
     <Template key="topView" let:item>
         <TopWeatherView {fakeNow} height={topHeight} {item} {weatherLocation} on:tap={() => onTap(item)} />

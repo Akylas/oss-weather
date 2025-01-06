@@ -323,49 +323,50 @@
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <scrollview>
-        <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,auto,auto,auto,auto" on:swipe={onSwipe}>
-            <gridlayout columns="*,auto" height={topViewHeight} row={1}>
-                <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
-                <WeatherIcon
-                    {animated}
-                    col={1}
-                    horizontalAlignment="right"
-                    iconData={[item.iconId, item.isDay]}
-                    marginBottom={12}
-                    size={weatherIconSize * (2 - $fontScale)}
-                    verticalAlignment="bottom" />
-            </gridlayout>
-            ${#if item.hourly && item.hourly.length}
-                {#if showHourlyChart}
-                    <HourlyChartView
-                        barWidth={1}
-                        borderBottomColor={colorOutline}
-                        borderBottomWidth={1}
-                        fixedBarScale={false}
-                        height={200}
-                        hourly={item.hourly}
-                        {onChartConfigure}
-                        rightAxisSuggestedMaximum={8}
-                        row={2}
-                        showCurrentTimeLimitLine={false}
-                        startTime={dayjs(startTime).isSame(dayjs(), 'd') ? startTime.valueOf() : undefined}
-                        temperatureLineWidth={3}
-                        visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
-                {:else}
-                    <HourlyView height={250} items={item.hourly} row={2} />
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*" on:swipe={onSwipe}>
+        <scrollview row={1}>
+            <gridlayout rows="auto,auto,auto,auto,auto" on:swipe={onSwipe}>
+                <gridlayout columns="*,auto" height={topViewHeight}>
+                    <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
+                    <WeatherIcon
+                        {animated}
+                        col={1}
+                        horizontalAlignment="right"
+                        iconData={[item.iconId, item.isDay]}
+                        marginBottom={12}
+                        size={weatherIconSize * (2 - $fontScale)}
+                        verticalAlignment="bottom" />
+                </gridlayout>
+                ${#if item.hourly && item.hourly.length}
+                    {#if showHourlyChart}
+                        <HourlyChartView
+                            barWidth={1}
+                            borderBottomColor={colorOutline}
+                            borderBottomWidth={1}
+                            fixedBarScale={false}
+                            height={200}
+                            hourly={item.hourly}
+                            {onChartConfigure}
+                            rightAxisSuggestedMaximum={8}
+                            row={1}
+                            showCurrentTimeLimitLine={false}
+                            startTime={dayjs(startTime).isSame(dayjs(), 'd') ? startTime.valueOf() : undefined}
+                            temperatureLineWidth={3}
+                            visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
+                    {:else}
+                        <HourlyView height={250} items={item.hourly} row={1} />
+                    {/if}
                 {/if}
-            {/if}
 
-            {#if item.pollutants}
-                <canvasview height={Math.ceil(Object.keys(item.pollutants).length / 2) * 40 * $fontScale + 55 * $fontScale} row={3} on:draw={drawPollutants} />
-            {/if}
-            {#if item.pollens}
-                <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2) * 40 * $fontScale + 55 * $fontScale} row={4} on:draw={drawPollens} />
-            {/if}
-            <AstronomyView {location} row={5} selectableDate={false} {startTime} {timezoneOffset} />
-
-            <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />
-        </gridlayout>
-    </scrollview>
+                {#if item.pollutants}
+                    <canvasview height={Math.ceil(Object.keys(item.pollutants).length / 2) * 40 * $fontScale + 55 * $fontScale} row={2} on:draw={drawPollutants} />
+                {/if}
+                {#if item.pollens}
+                    <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2) * 40 * $fontScale + 55 * $fontScale} row={3} on:draw={drawPollens} />
+                {/if}
+                <AstronomyView {location} row={4} selectableDate={false} {startTime} {timezoneOffset} />
+            </gridlayout>
+        </scrollview>
+        <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />
+    </gridlayout>
 </page>

@@ -1,0 +1,8 @@
+Bug fixes:
+- current weather data placement fix
+- in daily page the action bar should not scroll with the content
+- another fix for the astronomy view and daylight left
+- dont round temperatures to 0.5 if using decimal temperature
+- improved layout for "line" layout so that it does not overlap with other drawn informations like temperature
+- wrong wind gust coloring in hourly list view
+- Translations update

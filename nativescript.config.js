@@ -3,7 +3,6 @@ const sentryEnabled = !!process.env['NS_SENTRY'];
 const loggingEnabled = !!process.env['NS_LOGGING'];
 const playstoreBuild = !!process.env['PLAY_STORE_BUILD'];
 
-console.log('playstoreBuild', playstoreBuild)
 module.exports = {
     ignoredNativeDependencies: [].concat(sentryEnabled ? [] : ['@nativescript-community/sentry']).concat(playstoreBuild ? [] : ['@akylas/nativescript-inapp-purchase']),
     id: process.env['APP_ID'],

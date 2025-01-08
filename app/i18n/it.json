@@ -136,6 +136,19 @@
     "imperial_units_desc": "la modifica di questa impostazione sovrascriverà le unità definite personalizzate",
     "import_settings": "impostazioni di importazione",
     "import_settings_desc": "importare tutte le impostazioni da un backup precedente",
+    "in_app_failure": "si è verificato un errore durante il processo di acquisto in-app: %1$s",
+    "inapp": {
+        "bigtip": "una donazione molto bella",
+        "bigtip_desc": "nuove funzionalità in arrivo!",
+        "largertip": "una pinta",
+        "largertip_desc": "le idee stanno per arrivare!",
+        "largetip": "una birra",
+        "largetip_desc": "rilassati e torna al lavoro!",
+        "mediumtip": "un grande caffè",
+        "mediumtip_desc": "i miei occhi sono aperti!",
+        "smalltip": "un caffè",
+        "smalltip_desc": "tutto aiuta a lavorare di notte!"
+    },
     "ios": {
         "info": {
             "plist": {
@@ -275,6 +288,8 @@
     "swipe_actionbar_provider": "gesto di scorrimento della barra delle azioni",
     "swipe_actionbar_provider_desc": "scorri verso sinistra o destra sulla barra delle azioni per cambiare rapidamente fornitore",
     "temperature_unit": "unità di temperatura",
+    "thank_you": "grazie !",
+    "thank_you_subtitle": "la tua donazione aiuterà il progetto a crescere e mi darà il tempo di implementare più funzionalità",
     "theme": {
         "auto": "Automatico",
         "black": "Nero",

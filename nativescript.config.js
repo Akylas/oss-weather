@@ -1,9 +1,10 @@
 const timelineEnabled = !!process.env['NS_TIMELINE'];
 const sentryEnabled = !!process.env['NS_SENTRY'];
 const loggingEnabled = !!process.env['NS_LOGGING'];
+const playstoreBuild = !!process.env['PLAY_STORE_BUILD'];
 
 module.exports = {
-    ignoredNativeDependencies: [].concat(sentryEnabled ? [] : ['@nativescript-community/sentry']),
+    ignoredNativeDependencies: [].concat(sentryEnabled ? [] : ['@nativescript-community/sentry']).concat(playstoreBuild ? [] : ['@akyas/nativescript-inapp-purchase']),
     id: process.env['APP_ID'],
     appResourcesPath: 'App_Resources',
     buildPath: 'platforms',

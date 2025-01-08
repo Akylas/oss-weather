@@ -154,6 +154,7 @@
     export let selectableDate = true;
     export let timezoneOffset;
     export let startTime = getLocalTime(undefined, timezoneOffset);
+    export let isCurrentDay = false;
     // let limitLine: LimitLine;
     let moonPhase: number; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
@@ -163,6 +164,8 @@
     let moonAzimuth: CompassInfo;
     let sunPoses: any[]; // SunPosition[];
     let moonPoses: any[]; // MoonPosition[];
+
+    let selectedTime;
 
     const moonPaint = new Paint();
     moonPaint.strokeWidth = 1.5;
@@ -206,7 +209,7 @@
             return;
         }
         const computeStartTime = getStartOfDay(startTime, timezoneOffset);
-        DEV_LOG && console.log('updateChartData', startTime, timezoneOffset, computeStartTime);
+        // DEV_LOG && console.log('updateChartData', startTime, timezoneOffset, computeStartTime);
         const chart = chartView.nativeView;
         const sets = [];
         sunPoses = [];
@@ -236,11 +239,11 @@
 
                     const hours = Math.min(Math.floor(h.x / 6), 23);
                     const minutes = (h.x * 10) % 60;
-                    startTime = startTime.set('h', hours).set('m', minutes);
+                    selectedTime = startTime.set('h', hours).set('m', minutes);
                     c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                     highlightPaint.setTextAlign(Align.LEFT);
                     let x = h.drawX + 4;
-                    const text = formatTime(startTime);
+                    const text = formatTime(selectedTime);
                     const size = Utils.calcTextSize(highlightPaint, text);
                     if (x > c.getWidth() - size.width) {
                         x = h.drawX - 4;
@@ -301,9 +304,11 @@
             const lineData = new LineData(sets);
             chart.data = lineData;
 
-            const nowMinutes = dayjs(startTime).diff(computeStartTime, 'minutes');
-            const h = chart.getHighlightByXValue(nowMinutes / 10);
-            chart.highlight(h[0]);
+            if (isCurrentDay) {
+                const nowMinutes = dayjs(startTime).diff(computeStartTime, 'minutes');
+                const h = chart.getHighlightByXValue(nowMinutes / 10);
+                chart.highlight(h[0]);
+            }
         } else {
             chartData.getDataSetByIndex(1).values = sunPoses;
             chartData.getDataSetByIndex(1).notifyDataSetChanged();
@@ -317,8 +322,8 @@
 
     async function selectDate() {
         try {
-            const date = await pickDate(dayjs(startTime));
-            if (date && startTime.valueOf() !== date) {
+            const date = await pickDate(dayjs(selectedTime));
+            if (date && selectedTime.valueOf() !== date) {
                 updateStartTime(getLocalTime(date, timezoneOffset));
             }
         } catch (error) {
@@ -338,23 +343,33 @@
 
     function updateStartTime(time: Dayjs) {
         startTime = time;
-        updateChartData();
     }
-    let isCurrentDay = false;
+    $: if (selectedTime) {
+        selectedTime = startTime.set('h', selectedTime.get('h')).set('m', selectedTime.get('m'));
+    } else {
+        selectedTime = startTime;
+    }
+
     $: {
         try {
             const date = startTime.toDate();
             //   const date = getStartOfDay(startTime, 0).toDate();
             moonPhase = getMoonPhase(date);
-            moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
             sunriseEnd = dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf();
             sunsetStart = dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf();
-            sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
-
-            isCurrentDay = dayjs(sunsetStart).isSame(dayjs(), 'd');
+            updateChartData();
             // sunriseEndAzimuth = getCompassInfo(getPosition(sunTimes.sunriseEnd, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunsetStartAzimuth = getCompassInfo(getPosition(sunTimes.sunsetStart, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    $: {
+        try {
+            const date = selectedTime.toDate();
+            sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+            moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
         } catch (err) {
             console.error(err);
         }

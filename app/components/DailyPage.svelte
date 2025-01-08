@@ -6,7 +6,7 @@
     import dayjs, { Dayjs } from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
-    import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
+    import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART, SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY } from '~/helpers/constants';
     import { formatDate, lc } from '~/helpers/locale';
     import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     import { WeatherLocation } from '~/services/api';
@@ -37,8 +37,6 @@
 </script>
 
 <script lang="ts">
-    import { SwipeGestureEventData } from '@akylas/nativescript';
-
     const showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART);
 
     export let getDailyPageProps: Function;
@@ -51,9 +49,11 @@
     export let timezoneOffset;
     export let startTime: Dayjs;
 
+    const isCurrentDay = dayjs(startTime).isSame(dayjs(), 'days');
+
     let itemsCount = items.length;
 
-    DEV_LOG && console.log('startTime', startTime, dayjs(startTime).isSame(dayjs(), 'd'));
+    // DEV_LOG && console.log('startTime', startTime, dayjs(), startTime.valueOf(), dayjs().valueOf(), isCurrentDay);
     let page: NativeViewElementNode<Page>;
     let animated = iconService.animated;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -303,16 +303,21 @@
         drawPollOnCanvas(item.pollens, lc('pollens'), canvas);
     }
 
+    const showDayDataInCurrent = ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY);
+    const minIndex = showDayDataInCurrent ? 1 : 0;
     function onSwipe(e) {
-        if (e.direction === 1 && itemIndex > 0) {
+        if (e.direction === 1 && itemIndex > minIndex) {
             const data = getDailyPageProps(items[itemIndex - 1]);
+            startTime = data.startTime;
             item = data.item;
             itemIndex = data.itemIndex;
             items = data.items;
             itemsCount = items.length;
             redraw();
         } else if (e.direction === 2 && itemIndex < itemsCount - 1) {
-            const data = getDailyPageProps(items[itemIndex + 1]);
+            const delta = showDayDataInCurrent && itemIndex === 0 ? 2 : 1;
+            const data = getDailyPageProps(items[itemIndex + delta]);
+            startTime = data.startTime;
             item = data.item;
             itemIndex = data.itemIndex;
             items = data.items;
@@ -350,7 +355,7 @@
                             rightAxisSuggestedMaximum={8}
                             row={1}
                             showCurrentTimeLimitLine={false}
-                            startTime={dayjs(startTime).isSame(dayjs(), 'd') ? startTime.valueOf() : undefined}
+                            startTime={isCurrentDay ? Date.now() : undefined}
                             temperatureLineWidth={3}
                             visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
                     {:else}
@@ -364,7 +369,7 @@
                 {#if item.pollens}
                     <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2) * 40 * $fontScale + 55 * $fontScale} row={3} on:draw={drawPollens} />
                 {/if}
-                <AstronomyView {location} row={4} selectableDate={false} {startTime} {timezoneOffset} />
+                <AstronomyView {isCurrentDay} {location} row={4} selectableDate={false} startTime={isCurrentDay ? startTime : undefined} {timezoneOffset} />
             </gridlayout>
         </scrollview>
         <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />

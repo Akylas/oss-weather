@@ -858,7 +858,7 @@
                             disableCss={true}
                             fontSize={14 * $fontScale}
                             paddingTop={3 * $fontScale}
-                            text={getLocalTime(undefined, item.timezoneOffset).format('LT')}
+                            text={formatTime(Date.now(), 'LT', item.timezoneOffset)}
                             textWrap={true}
                             visibility={item.timezone ? 'visible' : 'hidden'} />
                         <IconButton col={1} gray={true} horizontalAlignment="right" size={40} text="mdi-dots-vertical" verticalAlignment="bottom" on:tap={(event) => showFavMenu(item, event)} />

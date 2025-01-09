@@ -9,6 +9,9 @@ export abstract class Provider {
     getName() {
         return lc(`provider.${this.id}`);
     }
+    getModelName(key) {
+        return key;
+    }
 
     public static getInstance<T extends Provider>(this: new () => T): T {
         // we use static id because prototype.constructor.name might not be uniq when uglified

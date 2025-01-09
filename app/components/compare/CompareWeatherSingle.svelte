@@ -17,7 +17,7 @@
     import { getProviderForType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_COMPARE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
     import { showError } from '@shared/utils/showError';
-    import { actionBarButtonHeight, colors } from '~/variables';
+    import { actionBarButtonHeight, colors, windowInset } from '~/variables';
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
@@ -98,7 +98,7 @@
                     acc.push({
                         id: provider.id + ':' + key,
                         title: provider.getName(),
-                        subtitle: key,
+                        subtitle: provider.getModelName(key),
                         name: provider.getName() + ': ' + key,
                         color: colorGenerator.getColor().hsl.formatted,
                         shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
@@ -314,6 +314,9 @@
         iosIgnoreSafeArea={false}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
+        android:paddingLeft={$windowInset.left}
+        android:paddingRight={$windowInset.right}
+        android:paddingBottom={$windowInset.bottom}
         on:close={onDrawerClose}
         on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>

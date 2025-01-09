@@ -50,7 +50,7 @@
 </script>
 
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,*,auto" android:paddingBottom={$windowInset.bottom}>
+    <gridlayout rows="auto,*,auto" android:paddingLeft={$windowInset.left} android:paddingRight={$windowInset.right} android:paddingBottom={$windowInset.bottom}>
         <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={1}>
             <WeatherComponent {fakeNow} fullRefresh={false} {items} {weatherLocation} />
         </gridlayout>

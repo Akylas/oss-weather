@@ -365,7 +365,7 @@
 
         textPaint.setTextAlign(Align.RIGHT);
         textPaint.textSize = 20 * $fontScale;
-        canvas.drawText(formatDate(item.time, 'dddd'), w - 10, 22 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'dddd', item.timezoneOffset), w - 10, 22 * $fontScale, textPaint);
         textPaint.textSize = 14 * $fontScale;
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
 

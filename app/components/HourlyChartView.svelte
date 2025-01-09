@@ -7,7 +7,6 @@
     import { LimitLine } from '@nativescript-community/ui-chart/components/LimitLine';
     import { XAxisPosition } from '@nativescript-community/ui-chart/components/XAxis';
     import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
-    import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet, Mode } from '@nativescript-community/ui-chart/data/LineDataSet';
     import { ScatterData } from '@nativescript-community/ui-chart/data/ScatterData';
@@ -16,6 +15,7 @@
     import { Application, Color, CoreTypes, EventData, ImageSource, ObservableArray, OrientationChangedEventData, Utils } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import type { NativeViewElementNode } from 'svelte-native/dom';
+    import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
     import { windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { isEInk, onThemeChanged } from '~/helpers/theme';
@@ -27,25 +27,10 @@
     import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
     import { Entry } from '@nativescript-community/ui-chart/data/Entry';
     import { Utils as ChartUtils } from '@nativescript-community/ui-chart/utils/Utils';
-    import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import { iconService } from '~/services/icon';
-    import {
-        WeatherProps,
-        appPaint,
-        convertWeatherValueToUnit,
-        getWeatherDataColor,
-        getWeatherDataIcon,
-        getWeatherDataTitle,
-        showHourlyPopover,
-        weatherDataService,
-        wiPaint
-    } from '~/services/weatherData';
-    // import { fade } from '@shared/utils/svelte/ui';
+    import { WeatherProps, appPaint, convertWeatherValueToUnit, getWeatherDataColor, getWeatherDataTitle, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient, loadImage } from '~/utils/utils.common';
-
-    // const labelPaint = new Paint();
-    // labelPaint.textSize = 13;
 
     const highlightPaint = new Paint();
     highlightPaint.setColor('white');
@@ -54,30 +39,21 @@
     highlightPaint.setTextAlign(Align.LEFT);
     highlightPaint.setTextSize(10);
 
-    // const mFontMetricsBuffer = new FontMetrics();
-
     const LINE_WIDTH = 2;
 
     const CHART_TYPE = {
         [WeatherProps.precipAccumulation]: 'precipitationchart',
-        // [WeatherProps.windSpeed]: 'scatterchart',
-        // [WeatherProps.windGust]: 'scatterchart',
         [WeatherProps.cloudCover]: 'scatterchart'
-        // [WeatherProps.windBearing]: 'linechart'
     };
-    const highlightViewWidth = 100;
 </script>
 
 <script lang="ts">
-    import HourlyPopover from './HourlyPopover.svelte';
     import { ComponentInstanceInfo } from '~/utils/ui';
-    import DailyPage from './DailyPage.svelte';
 
-    let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
-    $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
+    let { colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors;
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline, colorSurfaceContainer } = $colors);
 
     const currentData = weatherDataService.currentWeatherData;
-    // const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
     const screenOrientation = undefined;
     const combinedChartData = new CombinedData();
     const hidden: string[] = [];
@@ -281,23 +257,19 @@
 
                 xAxis.valueFormatter = {
                     getAxisLabel: (value, axis) => {
-                        const date = getLocalTime(startTimestamp + value * 3600 * 1000, timezoneOffset);
+                        // we add 1 minute to ensure we always show next day with 12:00PM
+                        const timestamp = startTimestamp + value * 3600 * 1000 + 6000;
+                        const date = getLocalTime(timestamp, timezoneOffset);
+                        // DEV_LOG && console.log('getAxisLabel', date.valueOf(), date);
                         // if (date.get('m') === 0) {
                         if (date.get('h') === 0) {
-                            return date.format('ddd\nDD/MM');
+                            return formatTime(timestamp, 'ddd\nDD/MM', timezoneOffset);
                         } else if (date.get('h') % 4 === 0) {
-                            return date.format('HH');
+                            return formatTime(timestamp, 'HH', timezoneOffset);
                         }
                         // }
                     }
                 };
-                // } else {
-                //     xAxis.forcedInterval = 24 * 3600 * 1000;
-                //     chart.setExtraOffsets(0, 0, 15, 0);
-                //     xAxis.valueFormatter=({
-                //         getAxisLabel: (value, axis) => formatDate(startTimestamp + value * 3600 * 1000, 'DD/MM')
-                //     });
-                // }
                 const gridLinePathEffect = new DashPathEffect([4, 8], 0);
                 xAxis.customRenderer = {
                     drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
@@ -666,7 +638,8 @@
     function highlightOnDate(timestamp: number) {
         const chart = chartView?.nativeView;
         if (chart) {
-            const x = dayjs(timestamp).diff(startTimestamp) / (3600 * 1000);
+            const x = (timestamp - startTimestamp) / (3600 * 1000);
+            // DEV_LOG && console.log('highlightOnDate', timestamp,  dayjs(timestamp),startTimestamp, x);
             const highlights = chart.getHighlightByXValue(x);
             chart.highlight(highlights);
         }
@@ -703,7 +676,7 @@
         const highlightedX = highlight.xPx;
         highlightedAlignment = highlightedX >= fullWidth - popoverWidth ? 'right' : 'left';
         highlightedMargin = highlightedAlignment === 'left' ? `40 0 0 ${highlightedX}` : `40 ${fullWidth - highlightedX} 0 0`;
-        highlightedItem = hourly[highlight.x] as CommonWeatherData;
+        highlightedItem = highlight.entry as CommonWeatherData;
         showPopover(highlightedItem, highlightedX > fullWidth / 2 ? 0 : fullWidth * 2);
     }
     function clearHighlight() {

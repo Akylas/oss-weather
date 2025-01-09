@@ -2,7 +2,7 @@ import { titlecase } from '@nativescript-community/l';
 import { getString } from '@nativescript/core/application-settings';
 import dayjs from 'dayjs';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
-import { lang, lc } from '~/helpers/locale';
+import { getEndOfDay, getStartOfDay, lang, lc } from '~/helpers/locale';
 import { RequestResult, WeatherLocation, request } from '../api';
 import type { Coord, Dailyforecast, ForecastForecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 import { WeatherProvider } from './weatherprovider';
@@ -28,18 +28,22 @@ export class MFProvider extends WeatherProvider {
         const rainSnowLimitTotal = { count: 0, total: 0 };
         const isoTotal = { count: 0, total: 0 };
 
+        // MF does not handle timezone correctly and will return start of day for UTC
+        // we want times based on real start of day
+        const msTimezoneOffset = -weatherLocation.timezoneOffset * 60 * 60 * 1000;
+
         let precipProbability = 0;
 
-        const dayStartTime = dayjs(dailyForecast.time * 1000)
-            .startOf('d')
-            .valueOf();
-        const dayEndTime = dayjs(dailyForecast.time * 1000)
-            .endOf('d')
+        const time = dailyForecast.time * 1000 + msTimezoneOffset;
+
+        const startOfDay = getStartOfDay(time + 60000, weatherLocation.timezoneOffset).valueOf();
+        const endOfDay = getEndOfDay(time + 60000, weatherLocation.timezoneOffset)
+            .add(1, 'm')
             .valueOf();
         if (hourly) {
             for (const hour of hourly) {
-                const time = hour.time;
-                if (time >= dayStartTime && time < dayEndTime) {
+                const htime = hour.time + msTimezoneOffset;
+                if (htime >= startOfDay && htime < endOfDay) {
                     // Precipitation
                     snowfallTotal += hour.snowfall;
                     rainTotal += hour.rain;
@@ -74,7 +78,7 @@ export class MFProvider extends WeatherProvider {
         if (hourlyForecast) {
             for (const hourForecast of hourlyForecast) {
                 const time = hourForecast.time * 1000;
-                if (time >= dayStartTime && time < dayEndTime) {
+                if (time >= startOfDay && time < endOfDay) {
                     cloudCover.count++;
                     cloudCover.total += hourForecast.total_cloud_cover;
                     if (hourForecast.wind_speed) {
@@ -95,7 +99,7 @@ export class MFProvider extends WeatherProvider {
         }
 
         const d = {
-            time: dailyForecast.time * 1000,
+            time,
             description: dailyForecast.daily_weather_description == null ? '' : dailyForecast.daily_weather_description,
             iconId: this.convertMFICon(dailyForecast.daily_weather_icon),
             temperatureMax: dailyForecast.T_max,
@@ -501,42 +505,3 @@ export class MFProvider extends WeatherProvider {
         return content.length ? content : null;
     }
 }
-
-function round5(t) {
-    return 5 * Math.ceil(t / 5);
-}
-const SixHours = 6 * 3600;
-const ThirtyHours = 30 * 3600;
-
-// function getWeatherCode(icon: string) {
-//     return if (icon == null) {
-//         null
-//     } else with (icon) {
-//         when {
-//             // We need to take care of two-digits first
-//             startsWith("p32") || startsWith("p33")
-//                     || startsWith("p34") : return  WeatherCode.WIND
-//             startsWith("p31") : return  null // What is this?
-//             startsWith("p26") || startsWith("p27") || startsWith("p28")
-//                     || startsWith("p29") : return  WeatherCode.THUNDER
-//             startsWith("p26") || startsWith("p27") || startsWith("p28")
-//                     || startsWith("p29") : return  WeatherCode.THUNDER
-//             startsWith("p21") || startsWith("p22")
-//                     || startsWith("p23") : return  WeatherCode.SNOW
-//             startsWith("p19") || startsWith("p20") : return  WeatherCode.HAIL
-//             startsWith("p17") || startsWith("p18") : return  WeatherCode.SLEET
-//             startsWith("p16") || startsWith("p24")
-//                     || startsWith("p25") || startsWith("p30") : return  WeatherCode.THUNDERSTORM
-//             startsWith("p9") || startsWith("p10") || startsWith("p11")
-//                     || startsWith("p12") || startsWith("p13")
-//                     || startsWith("p14") || startsWith("p15") : return  WeatherCode.RAIN
-//             startsWith("p6") || startsWith("p7")
-//                     || startsWith("p8") : return  WeatherCode.FOG
-//             startsWith("p4") || startsWith("p5") : return  WeatherCode.HAZE
-//             startsWith("p3") : return  WeatherCode.CLOUDY
-//             startsWith("p2") : return  WeatherCode.PARTLY_CLOUDY
-//             startsWith("p1") : return  WeatherCode.CLEAR
-//             else : return  null
-//         }
-//     }
-// }

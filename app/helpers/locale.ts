@@ -5,7 +5,7 @@ import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
-// import Timezone from 'dayjs/plugin/timezone';
+import Timezone from 'dayjs/plugin/timezone';
 import { derived, get, writable } from 'svelte/store';
 import { prefs } from '~/services/preferences';
 import { showError } from '@shared/utils/showError';
@@ -19,7 +19,7 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.extend(LocalizedFormat);
 dayjs.extend(utc);
-// dayjs.extend(Timezone);
+dayjs.extend(Timezone);
 export let lang;
 export const $lang = writable(null);
 let default24Clock = false;
@@ -137,10 +137,13 @@ export function getLocalTime(timestamp?: number | string | dayjs.Dayjs | Date, t
 }
 
 export function getStartOfDay(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
-    return getLocalTime(timestamp, 0).startOf('d').add(-timezoneOffset, 'h');
+    return dayjs.utc(timestamp).utcOffset(timezoneOffset).startOf('d');
 }
 export function getEndOfDay(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
-    return getLocalTime(timestamp, 0).endOf('d').add(-timezoneOffset, 'h');
+    return dayjs.utc(timestamp).utcOffset(timezoneOffset).endOf('d');
+}
+export function isSameDay(timestamp1?: number | string | dayjs.Dayjs | Date, timestamp2?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
+    return dayjs.utc(timestamp1).utcOffset(timezoneOffset).isSame(dayjs.utc(timestamp2).utcOffset(timezoneOffset), 'd');
 }
 
 export function formatDate(date: number | string | dayjs.Dayjs | Date, formatStr: string = 'dddd LT', timezoneOffset?: number) {

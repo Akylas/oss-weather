@@ -63,11 +63,10 @@
         textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor(colorOnSurface);
-        // item.time is in UTC which will always be the starting time of the day. If we offset we might get the wrong date.
-        canvas.drawText(formatDate(item.time, 'ddd', 0), PADDING_LEFT, 26 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd', item.timezoneOffset), PADDING_LEFT, 26 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(15 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'DD/MM', 0), PADDING_LEFT, 46 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'DD/MM', item.timezoneOffset), PADDING_LEFT, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
         const nString = createNativeAttributedString(
@@ -130,14 +129,15 @@
         canvas.clipRect(60 * $fontScale, 0, w - ICON_WIDTH * $fontScale - 10, h);
         switch ($weatherDataLayout) {
             case 'line': {
-                const iconsTop = 7 * $fontScale;
                 const lineHeight = 20 * $fontScale;
                 const lineWidth = 100 * $fontScale;
+                const centerX = 70 * $fontScale + lineWidth;
                 const nbLines = Math.ceil(count / 2);
-                canvas.drawLine(w2, iconsTop, w2, iconsTop + lineHeight * nbLines, paint);
+                const iconsTop = h / 2 - (nbLines / 2) * lineHeight;
+                canvas.drawLine(centerX, iconsTop, centerX, iconsTop + lineHeight * nbLines, paint);
                 for (let index = 0; index < nbLines - 1; index++) {
                     const y = iconsTop + lineHeight * (index + 1);
-                    canvas.drawLine(w2 - lineWidth, y, w2 + lineWidth, y, paint);
+                    canvas.drawLine(centerX - lineWidth, y, centerX + lineWidth, y, paint);
                 }
                 const iconDelta = 20 * $fontScale;
                 for (let index = 0; index < centeredItemsToDraw.length; index++) {
@@ -167,7 +167,7 @@
                         canvas.save();
                         const staticLayout = new StaticLayout(dataNString, textPaint, iconDelta, LayoutAlignment.ALIGN_CENTER, 1, 0, true);
                         // canvas.translate(columnIndex === 0 ? w2 - lineWidth : w2 + lineWidth  - staticLayout.getWidth(), y + lineHeight / 2 - staticLayout.getHeight() / 2);
-                        canvas.translate(columnIndex === 0 ? w2 - lineWidth : w2 + 2, y + lineHeight / 2 - staticLayout.getHeight() / 2);
+                        canvas.translate(columnIndex === 0 ? centerX - lineWidth : centerX + 2, y + lineHeight / 2 - staticLayout.getHeight() / 2);
                         staticLayout.draw(canvas);
                         canvas.restore();
                     }
@@ -214,7 +214,7 @@
                     );
                     canvas.save();
                     const staticLayout = new StaticLayout(dataNString, textPaint, lineWidth, LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
-                    canvas.translate(iconDelta + (columnIndex === 0 ? w2 - lineWidth + 5 : w2 + 5), y + lineHeight / 2 - staticLayout.getHeight() / 2);
+                    canvas.translate(iconDelta + (columnIndex === 0 ? centerX - lineWidth + 5 : centerX + 5), y + lineHeight / 2 - staticLayout.getHeight() / 2);
                     // const staticLayout = new StaticLayout(dataNString, textPaint, lineWidth, columnIndex === 0 ? LayoutAlignment.ALIGN_OPPOSITE : LayoutAlignment.ALIGN_NORMAL, 1, 0, true);
                     // canvas.translate(columnIndex === 0 ? w2 - lineWidth - 5 : w2 + 5, y + lineHeight / 2 - staticLayout.getHeight() / 2);
                     staticLayout.draw(canvas);

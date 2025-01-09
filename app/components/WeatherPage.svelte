@@ -2,7 +2,6 @@
     import { GPS } from '@nativescript-community/gps';
     import { getFile } from '@nativescript-community/https';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
-    import { Paint } from '@nativescript-community/ui-canvas';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
@@ -28,11 +27,12 @@
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
         SETTINGS_SHOW_DAILY_IN_CURRENTLY,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+        SHOW_CURRENT_DAY_DAILY,
         SWIPE_ACTION_BAR_PROVIDER
     } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
     import { getLocationName } from '~/helpers/formatter';
-    import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { formatTime, getEndOfDay, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
@@ -444,22 +444,36 @@
 
     function getDailyPageProps(item: DailyData) {
         //we need to offset back the startOf/endOf to correctly get local utc values
-        const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
-        const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
+        const startOfDay = getStartOfDay(item.time + 60000, item.timezoneOffset)
+            .add(1, 'h')
+            .valueOf();
+        const endOfDay = getEndOfDay(item.time + 60000, item.timezoneOffset)
+            .add(1, 'm')
+            .valueOf();
         const hourly = items[0].hourly as Hourly[];
         const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
         let endIndex = hourly.findIndex((h) => h.time > endOfDay);
+        // DEV_LOG &&
+        //     console.log(
+        //         'getDailyPageProps',
+        //         item.time,
+        //         item.timezoneOffset,
+        //         dayjs(item.time),
+        //         dayjs(startOfDay),
+        //         dayjs(endOfDay),
+        //         endIndex,
+        //         hourly.map((d) => dayjs(d.time))
+        //     );
         if (endIndex === -1) {
             endIndex = hourly.length;
         }
-        DEV_LOG && console.log('getDailyPageProps', item.time, startOfDay, endOfDay, startIndex, endIndex);
         return {
             getDailyPageProps,
             itemIndex: items.indexOf(item),
             items,
             item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
             location: weatherLocation,
-            startTime: dayjs(item.time).isSame(Date.now(), 'day') ? getLocalTime(undefined, item.timezoneOffset) : dayjs(item.time).set('h', dayjs().get('h')).set('m', dayjs().get('m')),
+            startTime: dayjs(item.time),
             weatherLocation,
             timezoneOffset: item.timezoneOffset
         };
@@ -467,9 +481,12 @@
 
     const onTap = throttle(async function (event) {
         try {
-            const item = event as DailyData;
+            let item = event as DailyData;
             const component = (await import('~/components/DailyPage.svelte')).default;
-            DEV_LOG && console.log('onTap', item.time, item.timezoneOffset);
+            const showDayDataInCurrent = ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY);
+            if (showDayDataInCurrent && items.indexOf(item) === 0) {
+                item = items[1];
+            }
             navigate({
                 page: component,
                 props: getDailyPageProps(item)
@@ -854,7 +871,7 @@
                             disableCss={true}
                             fontSize={14 * $fontScale}
                             paddingTop={3 * $fontScale}
-                            text={getLocalTime(undefined, item.timezoneOffset).format('LT')}
+                            text={formatTime(Date.now(), 'LT', item.timezoneOffset)}
                             textWrap={true}
                             visibility={item.timezone ? 'visible' : 'hidden'} />
                         <IconButton col={1} gray={true} horizontalAlignment="right" size={40} text="mdi-dots-vertical" verticalAlignment="bottom" on:tap={(event) => showFavMenu(item, event)} />

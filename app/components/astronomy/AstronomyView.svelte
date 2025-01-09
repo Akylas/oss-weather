@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { GetMoonIlluminationResult, GetTimesResult, getMoonIllumination, getMoonPosition, getPosition, getTimes } from 'suncalc';
-    import { Align, Canvas, DashPathEffect, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, CanvasView, DashPathEffect, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
     import { CanvasLabel } from '@nativescript-community/ui-canvaslabel/canvaslabel.common';
     import { LineChart } from '@nativescript-community/ui-chart';
     import { AxisBase } from '@nativescript-community/ui-chart/components/AxisBase';
@@ -148,12 +148,14 @@
     let { colorBackground, colorOnSurface, colorOnSurfaceVariant } = $colors;
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
     let chartView: NativeViewElementNode<LineChart>;
+    let subCanvas: NativeViewElementNode<CanvasView>;
 
     let chartInitialized = false;
     export let location: WeatherLocation;
     export let selectableDate = true;
     export let timezoneOffset;
     export let startTime = getLocalTime(undefined, timezoneOffset);
+    export let isCurrentDay = false;
     // let limitLine: LimitLine;
     let moonPhase: number; // MoonPhase;
     let sunTimes: GetTimesResult; // SunTimes;
@@ -163,6 +165,11 @@
     let moonAzimuth: CompassInfo;
     let sunPoses: any[]; // SunPosition[];
     let moonPoses: any[]; // MoonPosition[];
+
+    $: if (isCurrentDay !== undefined) subCanvas?.nativeView?.redraw();
+    // $: DEV_LOG && console.log('isCurrentDay changed ', isCurrentDay);
+
+    let selectedTime;
 
     const moonPaint = new Paint();
     moonPaint.strokeWidth = 1.5;
@@ -206,7 +213,7 @@
             return;
         }
         const computeStartTime = getStartOfDay(startTime, timezoneOffset);
-        DEV_LOG && console.log('updateChartData', startTime, timezoneOffset, computeStartTime);
+        // DEV_LOG && console.log('updateChartData', startTime, timezoneOffset, computeStartTime);
         const chart = chartView.nativeView;
         const sets = [];
         sunPoses = [];
@@ -236,11 +243,11 @@
 
                     const hours = Math.min(Math.floor(h.x / 6), 23);
                     const minutes = (h.x * 10) % 60;
-                    startTime = startTime.set('h', hours).set('m', minutes);
+                    selectedTime = startTime.set('h', hours).set('m', minutes);
                     c.drawLine(h.drawX, 0, h.drawX, c.getHeight(), highlightPaint);
                     highlightPaint.setTextAlign(Align.LEFT);
                     let x = h.drawX + 4;
-                    const text = formatTime(startTime);
+                    const text = formatTime(selectedTime);
                     const size = Utils.calcTextSize(highlightPaint, text);
                     if (x > c.getWidth() - size.width) {
                         x = h.drawX - 4;
@@ -301,9 +308,12 @@
             const lineData = new LineData(sets);
             chart.data = lineData;
 
-            const nowMinutes = dayjs(startTime).diff(computeStartTime, 'minutes');
-            const h = chart.getHighlightByXValue(nowMinutes / 10);
-            chart.highlight(h[0]);
+            if (startTime) {
+                const nowMinutes = startTime.diff(getStartOfDay(startTime, timezoneOffset), 'minutes');
+                // DEV_LOG && console.log('highlight current day', isCurrentDay, startTime, dayjs(startTime), nowMinutes);
+                const h = chart.getHighlightByXValue(nowMinutes / 10);
+                chart.highlight(h[0]);
+            }
         } else {
             chartData.getDataSetByIndex(1).values = sunPoses;
             chartData.getDataSetByIndex(1).notifyDataSetChanged();
@@ -317,8 +327,8 @@
 
     async function selectDate() {
         try {
-            const date = await pickDate(dayjs(startTime));
-            if (date && startTime.valueOf() !== date) {
+            const date = await pickDate(dayjs(selectedTime));
+            if (date && selectedTime.valueOf() !== date) {
                 updateStartTime(getLocalTime(date, timezoneOffset));
             }
         } catch (error) {
@@ -338,21 +348,34 @@
 
     function updateStartTime(time: Dayjs) {
         startTime = time;
-        updateChartData();
+    }
+    $: if (selectedTime) {
+        selectedTime = startTime.set('h', selectedTime.get('h')).set('m', selectedTime.get('m'));
+    } else {
+        selectedTime = startTime;
     }
 
     $: {
         try {
-            const date = startTime.toDate();
+            const date = startTime.add(startTime.get('h') === 0 ? 1 : 0, 'h').toDate();
             //   const date = getStartOfDay(startTime, 0).toDate();
             moonPhase = getMoonPhase(date);
-            moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
             sunriseEnd = dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf();
             sunsetStart = dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf();
-            sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+            // DEV_LOG && console.log('sunsetStart', sunsetStart, startTime, date, date.valueOf(), Date.now(), Date.now() - sunsetStart);
+            updateChartData();
             // sunriseEndAzimuth = getCompassInfo(getPosition(sunTimes.sunriseEnd, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunsetStartAzimuth = getCompassInfo(getPosition(sunTimes.sunsetStart, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    $: {
+        try {
+            const date = selectedTime.toDate();
+            sunAzimuth = getCompassInfo(getPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
+            moonAzimuth = getCompassInfo(getMoonPosition(date, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
         } catch (err) {
             console.error(err);
         }
@@ -513,7 +536,7 @@
                 [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()]
             ] as [any, string][]
         )
-            .concat(startTime.isSame(dayjs(), 'd') ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
+            .concat(isCurrentDay && Date.now() >= sunriseEnd ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
             .concat([[lc('moon_phase'), getMoonPhaseName(moonPhase)]] as [any, string][])
             .forEach((e, index) => {
                 const y = 30 + 30 * index;
@@ -574,7 +597,7 @@
             </cgroup>
         </canvaslabel>
     {/if}
-    <canvasview colSpan={2} padding={10} row={3} on:draw={onSubCanvasDraw}>
+    <canvasview bind:this={subCanvas} colSpan={2} padding={10} row={3} on:draw={onSubCanvasDraw}>
         <!-- <CompassView row={3} {location} updateWithSensor={false} date={startTime} /> -->
         <!-- <canvaslabel row={3} col={1} fontSize={13} padding={10} height={200}>
         <cgroup paddingTop={10}>

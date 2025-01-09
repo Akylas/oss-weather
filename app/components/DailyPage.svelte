@@ -6,8 +6,8 @@
     import dayjs, { Dayjs } from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
-    import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART } from '~/helpers/constants';
-    import { formatDate, lc } from '~/helpers/locale';
+    import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART, SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY } from '~/helpers/constants';
+    import { formatDate, isSameDay, lc } from '~/helpers/locale';
     import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
@@ -37,10 +37,10 @@
 </script>
 
 <script lang="ts">
-    import { SwipeGestureEventData } from '@akylas/nativescript';
-
     const showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART);
 
+    const currentData = weatherDataService.currentWeatherData;
+    export let dataToShow = [...new Set([WeatherProps.windSpeed, WeatherProps.precipAccumulation].filter((s) => currentData.includes(s)).concat([WeatherProps.iconId, WeatherProps.temperature]))];
     export let getDailyPageProps: Function;
     export let itemIndex: number;
     export let items: any[];
@@ -51,9 +51,14 @@
     export let timezoneOffset;
     export let startTime: Dayjs;
 
+    let isCurrentDay = false;
+
+    $: isCurrentDay = isSameDay(startTime, Date.now(), timezoneOffset);
+    // $: DEV_LOG && console.log('startTime', startTime);
+    // $: DEV_LOG && console.log('isCurrentDay', startTime, dayjs(), isCurrentDay);
     let itemsCount = items.length;
 
-    DEV_LOG && console.log('startTime', startTime, dayjs(startTime).isSame(dayjs(), 'd'));
+    // DEV_LOG && console.log('startTime', startTime, dayjs(), startTime.valueOf(), dayjs().valueOf(), isCurrentDay);
     let page: NativeViewElementNode<Page>;
     let animated = iconService.animated;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -225,11 +230,11 @@
             createNativeAttributedString({
                 spans: [
                     {
-                        text: formatDate(item.time, 'dddd', 0) + '\n',
+                        text: formatDate(item.time, 'dddd', item.timezoneOffset) + '\n',
                         fontSize: 20 * $fontScale
                     },
                     {
-                        text: formatDate(item.time, 'LL', 0),
+                        text: formatDate(item.time, 'LL', item.timezoneOffset),
                         fontSize: 16 * $fontScale
                     }
                 ]
@@ -303,16 +308,23 @@
         drawPollOnCanvas(item.pollens, lc('pollens'), canvas);
     }
 
+    const showDayDataInCurrent = ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY);
+    const minIndex = showDayDataInCurrent ? 1 : 0;
     function onSwipe(e) {
-        if (e.direction === 1 && itemIndex > 0) {
+        if (e.direction === 1 && itemIndex > minIndex) {
             const data = getDailyPageProps(items[itemIndex - 1]);
+            DEV_LOG && console.log('swiping left', startTime, data.startTime);
+            startTime = data.startTime;
             item = data.item;
             itemIndex = data.itemIndex;
             items = data.items;
             itemsCount = items.length;
             redraw();
         } else if (e.direction === 2 && itemIndex < itemsCount - 1) {
-            const data = getDailyPageProps(items[itemIndex + 1]);
+            const delta = showDayDataInCurrent && itemIndex === 0 ? 2 : 1;
+            const data = getDailyPageProps(items[itemIndex + delta]);
+            DEV_LOG && console.log('swiping right', startTime, data.startTime);
+            startTime = data.startTime;
             item = data.item;
             itemIndex = data.itemIndex;
             items = data.items;
@@ -323,49 +335,51 @@
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <scrollview>
-        <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,auto,auto,auto,auto" on:swipe={onSwipe}>
-            <gridlayout columns="*,auto" height={topViewHeight} row={1}>
-                <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
-                <WeatherIcon
-                    {animated}
-                    col={1}
-                    horizontalAlignment="right"
-                    iconData={[item.iconId, item.isDay]}
-                    marginBottom={12}
-                    size={weatherIconSize * (2 - $fontScale)}
-                    verticalAlignment="bottom" />
-            </gridlayout>
-            ${#if item.hourly && item.hourly.length}
-                {#if showHourlyChart}
-                    <HourlyChartView
-                        barWidth={1}
-                        borderBottomColor={colorOutline}
-                        borderBottomWidth={1}
-                        fixedBarScale={false}
-                        height={200}
-                        hourly={item.hourly}
-                        {onChartConfigure}
-                        rightAxisSuggestedMaximum={8}
-                        row={2}
-                        showCurrentTimeLimitLine={false}
-                        startTime={dayjs(startTime).isSame(dayjs(), 'd') ? startTime.valueOf() : undefined}
-                        temperatureLineWidth={3}
-                        visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
-                {:else}
-                    <HourlyView height={250} items={item.hourly} row={2} />
+    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*" on:swipe={onSwipe}>
+        <scrollview row={1}>
+            <gridlayout rows="auto,auto,auto,auto,auto" on:swipe={onSwipe}>
+                <gridlayout columns="*,auto" height={topViewHeight}>
+                    <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
+                    <WeatherIcon
+                        {animated}
+                        col={1}
+                        horizontalAlignment="right"
+                        iconData={[item.iconId, item.isDay]}
+                        marginBottom={12}
+                        size={weatherIconSize * (2 - $fontScale)}
+                        verticalAlignment="bottom" />
+                </gridlayout>
+                ${#if item.hourly && item.hourly.length}
+                    {#if showHourlyChart}
+                        <HourlyChartView
+                            barWidth={1}
+                            borderBottomColor={colorOutline}
+                            borderBottomWidth={1}
+                            {dataToShow}
+                            fixedBarScale={false}
+                            height={200}
+                            hourly={item.hourly}
+                            {onChartConfigure}
+                            rightAxisSuggestedMaximum={8}
+                            row={1}
+                            showCurrentTimeLimitLine={false}
+                            startTime={isCurrentDay ? Date.now() : undefined}
+                            temperatureLineWidth={3}
+                            visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
+                    {:else}
+                        <HourlyView height={250} items={item.hourly} row={1} />
+                    {/if}
                 {/if}
-            {/if}
 
-            {#if item.pollutants}
-                <canvasview height={Math.ceil(Object.keys(item.pollutants).length / 2) * 40 * $fontScale + 55 * $fontScale} row={3} on:draw={drawPollutants} />
-            {/if}
-            {#if item.pollens}
-                <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2) * 40 * $fontScale + 55 * $fontScale} row={4} on:draw={drawPollens} />
-            {/if}
-            <AstronomyView {location} row={5} selectableDate={false} {startTime} {timezoneOffset} />
-
-            <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />
-        </gridlayout>
-    </scrollview>
+                {#if item.pollutants}
+                    <canvasview height={Math.ceil(Object.keys(item.pollutants).length / 2) * 40 * $fontScale + 55 * $fontScale} row={2} on:draw={drawPollutants} />
+                {/if}
+                {#if item.pollens}
+                    <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2) * 40 * $fontScale + 55 * $fontScale} row={3} on:draw={drawPollens} />
+                {/if}
+                <AstronomyView {isCurrentDay} {location} row={4} selectableDate={false} startTime={isCurrentDay ? dayjs() : undefined} {timezoneOffset} />
+            </gridlayout>
+        </scrollview>
+        <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />
+    </gridlayout>
 </page>

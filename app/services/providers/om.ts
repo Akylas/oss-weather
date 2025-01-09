@@ -27,9 +27,11 @@ export const OM_MODELS = {
     best_match: 'Best match',
     ecmwf_ifs04: 'ECMWF IFS 0.4°',
     ecmwf_ifs025: 'ECMWF IFS 0.25°',
+    ecmwf_aifs025: 'ECMWF IFS 0.25°',
     cma_grapes_global: 'CMA GRAPES Global',
     bom_access_global: 'BOM Access Global',
     metno_nordic: 'MET Norway Nordic',
+    metno_seamless: 'MET Norway Nordic Seamless (with ECMWF)',
     gfs_seamless: 'GFS Seamless',
     gfs_global: 'GFS Global',
     gfs_hrrr: 'GFS HRRR',
@@ -49,8 +51,19 @@ export const OM_MODELS = {
     meteofrance_arome_france_hd: 'MeteoFrance Arome France HD',
     arpae_cosmo_seamless: 'ARPAE Seamless',
     arpae_cosmo_2i: 'ARPAE COSMO 2I',
-    arpae_cosmo_2i_ruc: 'ARPAE COSMO 2I RUC',
-    arpae_cosmo_5m: 'ARPAE COSMO 5M'
+    arpae_cosmo_5m: 'ARPAE COSMO 5M',
+    ukmo_seamless: 'UK Met Office Seamless',
+    ukmo_global_deterministic_10km: 'UK Met Office Global 10km',
+    ukmo_uk_deterministic_2km: 'UK Met Office UK 2km',
+    ncep_nbm_conus: 'NCEP NBM U.S. Conus',
+    jma_seamless: 'JMA Seamless',
+    jma_msm: 'JMA MSM',
+    jma_gsm: 'JMA GSM',
+    knmi_seamless: 'KNMI Seamless (with ECMWF)',
+    knmi_harmonie_arome_europe: 'KNMI Harmonie Arome Europe',
+    knmi_harmonie_arome_netherlands: 'KNMI Harmonie Arome Netherlands',
+    dmi_seamless: 'DMI Seamless (with ECMWF)',
+    dmi_harmonie_arome_europe: 'DMI Harmonie Arome Europe'
 };
 
 export const API_KEY_VALUES = {
@@ -116,6 +129,10 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
     id = OMProvider.id;
     getModels() {
         return OM_MODELS;
+    }
+
+    getModelName(key) {
+        return OM_MODELS[key];
     }
     private static readonly weatherCodeDescription = {
         0: l('clear'),
@@ -276,7 +293,11 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 models += ',' + model;
             }
         }
-        const result = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon, models }, { current, warnings, minutely, weatherProps });
+        const result = await this.fetch<Forecast>(
+            'forecast',
+            { latitude: coords.lat, longitude: coords.lon, timezone: weatherLocation.timezone, models },
+            { current, warnings, minutely, weatherProps }
+        );
         const forecast = result.content;
         // console.log('forecast', Object.keys(forecast));
         // console.log('rain', JSON.stringify(rain));
@@ -468,7 +489,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
 
     async getAirQuality(weatherLocation: WeatherLocation, { current, minutely }: { minutely?: boolean; current?: boolean } = {}): Promise<AirQualityData> {
         const coords = weatherLocation.coord;
-        const result = await this.fetch<Forecast>('air-quality', { latitude: coords.lat, longitude: coords.lon }, { current, minutely }, 'air-quality-api');
+        const result = await this.fetch<Forecast>('air-quality', { latitude: coords.lat, longitude: coords.lon, timezone: weatherLocation.timezone }, { current, minutely }, 'air-quality-api');
         const hourly = result.content.hourly;
         const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];
         let lastDay: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any };

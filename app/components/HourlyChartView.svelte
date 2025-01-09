@@ -703,7 +703,7 @@
         const highlightedX = highlight.xPx;
         highlightedAlignment = highlightedX >= fullWidth - popoverWidth ? 'right' : 'left';
         highlightedMargin = highlightedAlignment === 'left' ? `40 0 0 ${highlightedX}` : `40 ${fullWidth - highlightedX} 0 0`;
-        highlightedItem = hourly[highlight.x] as CommonWeatherData;
+        highlightedItem = highlight.entry as CommonWeatherData;
         showPopover(highlightedItem, highlightedX > fullWidth / 2 ? 0 : fullWidth * 2);
     }
     function clearHighlight() {

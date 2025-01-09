@@ -1,0 +1,9 @@
+Bug fixes:
+- error which showing hourly popover while using MeteoFrance
+- use 24h setting to format location time in favorites drawer
+- full rewrite of the timezone handling. Hopefully things should be much better now
+- add all missing Open-Meteo models
+- some compare models fixes
+- some padding fixes for settings pages and weather map
+- show wind in daily page chart if option is set
+- Translations update

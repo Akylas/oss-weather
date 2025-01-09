@@ -75,7 +75,7 @@
                 acc.push({
                     id: provider.id + ':' + key,
                     title: provider.getName(),
-                    subtitle: key,
+                    subtitle: provider.getModelName(key),
                     name: provider.getName() + ': ' + key,
                     color: colorGenerator.getColor().hsl.formatted,
                     shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
@@ -299,6 +299,9 @@
         }}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
+        android:paddingLeft={$windowInset.left}
+        android:paddingRight={$windowInset.right}
+        android:paddingBottom={$windowInset.bottom}
         on:close={onDrawerClose}
         on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>

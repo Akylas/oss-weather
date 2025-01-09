@@ -130,6 +130,10 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
     getModels() {
         return OM_MODELS;
     }
+
+    getModelName(key) {
+        return OM_MODELS[key];
+    }
     private static readonly weatherCodeDescription = {
         0: l('clear'),
         1: l('mostly_clear'),

@@ -174,58 +174,63 @@
                 const data = new CombinedData();
                 maxDatalength = 0;
                 let xAxisMaximum = -1;
-                const dataSets = item.weatherData.map((wData) => {
-                    const key = item.id;
-                    const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
-                    const startTimestamp = sourceData[0]?.time;
-                    if (timezoneOffset === undefined) {
-                        timezoneOffset = sourceData[0]?.timezoneOffset;
-                    }
-                    const data = sourceData.map((d: DailyData | Hourly) => ({
-                        ...d,
-                        deltaHours: (d.time - startTimestamp) / (3600 * 1000),
-                        [key]: convertWeatherValueToUnit(d, key as any, { round: false })[0]
-                    }));
-                    maxDatalength = Math.max(maxDatalength, data.length);
-                    xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);
-                    globalStartTimestamp = Math.min(globalStartTimestamp, startTimestamp);
-                    const color = wData.model.color;
-                    const enabled = item.hidden.indexOf(wData.model.id) === -1;
-                    newLegends.push({
-                        name: wData.model.name,
-                        shortName: wData.model.shortName,
-                        id: wData.model.id,
-                        enabled,
-                        color
-                    });
-                    let set: BarLineScatterCandleBubbleDataSet<any>;
-                    switch (chartType) {
-                        case 'scatterchart': {
-                            const scatterDataSet = (set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key));
-                            scatterDataSet.scatterShape = ScatterShape.CIRCLE;
-                            scatterDataSet.drawIconsEnabled = enabled;
-                            scatterDataSet.scatterShapeSize = enabled ? 4 : 0;
-                            break;
+                const dataSets = item.weatherData
+                    .map((wData) => {
+                        const key = item.id;
+                        const sourceData = item.forecast === 'hourly' ? wData.weatherData.hourly : wData.weatherData.daily.data;
+                        if (sourceData.length === 0) {
+                            return;
                         }
-                        case 'barchart': {
-                            const barDataSet = (set = new BarDataSet(data, wData.model.id, 'deltaHours', key));
-                            barDataSet.visible = enabled;
-                            break;
+                        const startTimestamp = sourceData[0]?.time;
+                        if (timezoneOffset === undefined) {
+                            timezoneOffset = sourceData[0]?.timezoneOffset;
                         }
-                        case 'linechart':
-                        default: {
-                            {
-                                const lineDataSet = (set = new LineDataSet(data, wData.model.id, 'deltaHours', key));
-                                lineDataSet.lineWidth = enabled ? LINE_WIDTH : 0;
+                        const data = sourceData.map((d: DailyData | Hourly) => ({
+                            ...d,
+                            deltaHours: (d.time - startTimestamp) / (3600 * 1000),
+                            [key]: convertWeatherValueToUnit(d, key as any, { round: false })[0]
+                        }));
+                        maxDatalength = Math.max(maxDatalength, data.length);
+                        xAxisMaximum = Math.max(xAxisMaximum, data[data.length - 1].deltaHours);
+                        globalStartTimestamp = Math.min(globalStartTimestamp, startTimestamp);
+                        const color = wData.model.color;
+                        const enabled = item.hidden.indexOf(wData.model.id) === -1;
+                        newLegends.push({
+                            name: wData.model.name,
+                            shortName: wData.model.shortName,
+                            id: wData.model.id,
+                            enabled,
+                            color
+                        });
+                        let set: BarLineScatterCandleBubbleDataSet<any>;
+                        switch (chartType) {
+                            case 'scatterchart': {
+                                const scatterDataSet = (set = new ScatterDataSet(data, wData.model.id, 'deltaHours', key));
+                                scatterDataSet.scatterShape = ScatterShape.CIRCLE;
+                                scatterDataSet.drawIconsEnabled = enabled;
+                                scatterDataSet.scatterShapeSize = enabled ? 4 : 0;
                                 break;
                             }
+                            case 'barchart': {
+                                const barDataSet = (set = new BarDataSet(data, wData.model.id, 'deltaHours', key));
+                                barDataSet.visible = enabled;
+                                break;
+                            }
+                            case 'linechart':
+                            default: {
+                                {
+                                    const lineDataSet = (set = new LineDataSet(data, wData.model.id, 'deltaHours', key));
+                                    lineDataSet.lineWidth = enabled ? LINE_WIDTH : 0;
+                                    break;
+                                }
+                            }
                         }
-                    }
-                    set['modelId'] = wData.model.id;
-                    set.color = color;
-                    set.highlightColor = colorPrimary;
-                    return set;
-                });
+                        set['modelId'] = wData.model.id;
+                        set.color = color;
+                        set.highlightColor = colorPrimary;
+                        return set;
+                    })
+                    .filter((s) => !!s);
                 if (!screenOrientation && Application.orientation() !== 'landscape') {
                     chart.setScale(10 / (screenWidthDips / maxDatalength), 1);
                 }
@@ -472,7 +477,7 @@
             {/each}
         </label> -->
     </gridlayout>
-    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40 + $windowInset.bottom} rows="*">
+    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
         <collectionview colWidth={150} height="40" items={legends} orientation="horizontal" verticalAlignment="top">
             <Template let:item>
                 <canvasview rippleColor={item.color} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />

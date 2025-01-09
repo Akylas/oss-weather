@@ -2,7 +2,6 @@
     import { GPS } from '@nativescript-community/gps';
     import { getFile } from '@nativescript-community/https';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
-    import { Paint } from '@nativescript-community/ui-canvas';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
@@ -33,7 +32,7 @@
     } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
     import { getLocationName } from '~/helpers/formatter';
-    import { formatTime, getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { formatTime, getEndOfDay, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';

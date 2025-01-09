@@ -1,11 +1,12 @@
 <script context="module" lang="ts">
+    import { VerticalPosition } from '@nativescript-community/ui-popover';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
     import { AWebView } from '@nativescript-community/ui-webview';
-    import { ApplicationSettings, Screen } from '@nativescript/core';
-    import { getString } from '@nativescript/core/application-settings';
+    import { ApplicationSettings } from '@nativescript/core';
+    import { debounce } from '@nativescript/core/utils';
     import { showError } from '@shared/utils/showError';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
-    import { VerticalPosition } from '@nativescript-community/ui-popover';
     import {
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,
         SETTINGS_WEATHER_MAP_COLORS,
@@ -18,14 +19,11 @@
         WEATHER_MAP_LAYER_OPACITY,
         WEATHER_MAP_SHOW_SNOW
     } from '~/helpers/constants';
-    import { l, lang, lc } from '~/helpers/locale';
-    import { hideLoading, openLink, showAlertOptionSelect, showLoading, showPopoverMenu } from '~/utils/ui';
-    import { actionBarHeight, screenWidthDips, systemFontScale, windowInset } from '~/variables';
-    import { debounce } from '@nativescript/core/utils';
-    import { rowHeightProperty } from '@akylas/nativescript/ui/list-view';
-    import { closePopover } from '@nativescript-community/ui-popover/svelte';
-    import { currentTheme, isDarkTheme, onThemeChanged, sTheme } from '~/helpers/theme';
+    import { lang, lc } from '~/helpers/locale';
+    import { currentTheme, onThemeChanged } from '~/helpers/theme';
     import { networkService } from '~/services/api';
+    import { hideLoading, openLink, showPopoverMenu } from '~/utils/ui';
+    import { screenWidthDips, windowInset } from '~/variables';
 </script>
 
 <script lang="ts">

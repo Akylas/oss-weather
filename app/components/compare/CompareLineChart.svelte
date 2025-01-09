@@ -7,9 +7,7 @@
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
     import { BarDataSet } from '@nativescript-community/ui-chart/data/BarDataSet';
     import { BarLineScatterCandleBubbleDataSet } from '@nativescript-community/ui-chart/data/BarLineScatterCandleBubbleDataSet';
-    import { ChartData } from '@nativescript-community/ui-chart/data/ChartData';
     import { CombinedData } from '@nativescript-community/ui-chart/data/CombinedData';
-    import { DataSet } from '@nativescript-community/ui-chart/data/DataSet';
     import { Entry } from '@nativescript-community/ui-chart/data/Entry';
     import { LineData } from '@nativescript-community/ui-chart/data/LineData';
     import { LineDataSet } from '@nativescript-community/ui-chart/data/LineDataSet';
@@ -19,6 +17,7 @@
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { EventData } from '@nativescript-community/ui-image';
     import { Application, ApplicationSettings, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import { onDestroy, onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeViewElementNode } from 'svelte-native/dom';
@@ -27,8 +26,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
     import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
-    import { showError } from '@shared/utils/showError';
-    import { colors, fontScale, screenWidthDips, windowInset } from '~/variables';
+    import { colors, fontScale, screenWidthDips } from '~/variables';
 
     const legendIconPaint = new Paint();
     legendIconPaint.textSize = 13;

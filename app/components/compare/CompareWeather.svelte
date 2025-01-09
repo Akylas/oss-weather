@@ -6,6 +6,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { ApplicationSettings, NavigatedData, Page, View } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
@@ -17,7 +18,6 @@
     import type { ProviderType } from '~/services/providers/weather';
     import { getProviderForType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_COMPARE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
-    import { showError } from '@shared/utils/showError';
     import { actionBarButtonHeight, colors, windowInset } from '~/variables';
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';

@@ -313,7 +313,6 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const hourlyData = hourly.time.slice(0, hourlyLastIndex).map((time, index) => {
             const d = {} as Hourly;
             d.time = time * 1000;
-            DEV_LOG && console.log('hourlyData', index, d.time);
             const code = hourly_weathercodes[index];
             d.isDay = !!this.getDataArray(hourly, 'is_day', model)[index];
             d.iconId = this.convertWeatherCodeToIcon(code);
@@ -436,7 +435,6 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             daily: {
                 data: daily.time.slice(0, dailyLastIndex).map((time, index) => {
                     const code = daily_weathercodes[index];
-                    DEV_LOG && console.log('daily', index, time * 1000);
                     const d = {
                         time: time * 1000,
                         description: OMProvider.weatherCodeDescription[code],

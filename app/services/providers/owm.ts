@@ -75,6 +75,7 @@ export class OWMProvider extends WeatherProvider {
                 data: forecast.daily.slice(0, forecast_days).map((data) => {
                     const d = {} as DailyData;
                     d.time = data.dt * 1000;
+                    DEV_LOG && console.log('daily', d.time);
                     d.isDay = true;
                     d.iconId = data.weather[0]?.id;
                     d.description = titlecase(data.weather[0]?.description);

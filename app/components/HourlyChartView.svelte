@@ -281,23 +281,19 @@
 
                 xAxis.valueFormatter = {
                     getAxisLabel: (value, axis) => {
-                        const date = getLocalTime(startTimestamp + value * 3600 * 1000, timezoneOffset);
+                        // we add 1 minute to ensure we always show next day with 12:00PM
+                        const timestamp = startTimestamp + value * 3600 * 1000 + 6000;
+                        const date = getLocalTime(timestamp, timezoneOffset);
+                        // DEV_LOG && console.log('getAxisLabel', date.valueOf(), date);
                         // if (date.get('m') === 0) {
                         if (date.get('h') === 0) {
-                            return date.format('ddd\nDD/MM');
+                            return formatTime(timestamp, 'ddd\nDD/MM', timezoneOffset);
                         } else if (date.get('h') % 4 === 0) {
-                            return date.format('HH');
+                            return formatTime(timestamp, 'HH', timezoneOffset);
                         }
                         // }
                     }
                 };
-                // } else {
-                //     xAxis.forcedInterval = 24 * 3600 * 1000;
-                //     chart.setExtraOffsets(0, 0, 15, 0);
-                //     xAxis.valueFormatter=({
-                //         getAxisLabel: (value, axis) => formatDate(startTimestamp + value * 3600 * 1000, 'DD/MM')
-                //     });
-                // }
                 const gridLinePathEffect = new DashPathEffect([4, 8], 0);
                 xAxis.customRenderer = {
                     drawGridLine(c: Canvas, axis, rect: RectF, x: any, y: any, axisValue: any, paint: Paint) {
@@ -666,7 +662,8 @@
     function highlightOnDate(timestamp: number) {
         const chart = chartView?.nativeView;
         if (chart) {
-            const x = dayjs(timestamp).diff(startTimestamp) / (3600 * 1000);
+            const x = (timestamp - startTimestamp) / (3600 * 1000);
+            // DEV_LOG && console.log('highlightOnDate', timestamp,  dayjs(timestamp),startTimestamp, x);
             const highlights = chart.getHighlightByXValue(x);
             chart.highlight(highlights);
         }

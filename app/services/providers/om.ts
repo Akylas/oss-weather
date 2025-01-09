@@ -276,7 +276,11 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                 models += ',' + model;
             }
         }
-        const result = await this.fetch<Forecast>('forecast', { latitude: coords.lat, longitude: coords.lon, models }, { current, warnings, minutely, weatherProps });
+        const result = await this.fetch<Forecast>(
+            'forecast',
+            { latitude: coords.lat, longitude: coords.lon, timezone: weatherLocation.timezone, models },
+            { current, warnings, minutely, weatherProps }
+        );
         const forecast = result.content;
         // console.log('forecast', Object.keys(forecast));
         // console.log('rain', JSON.stringify(rain));
@@ -292,6 +296,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const hourlyData = hourly.time.slice(0, hourlyLastIndex).map((time, index) => {
             const d = {} as Hourly;
             d.time = time * 1000;
+            DEV_LOG && console.log('hourlyData', index, d.time);
             const code = hourly_weathercodes[index];
             d.isDay = !!this.getDataArray(hourly, 'is_day', model)[index];
             d.iconId = this.convertWeatherCodeToIcon(code);
@@ -414,6 +419,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             daily: {
                 data: daily.time.slice(0, dailyLastIndex).map((time, index) => {
                     const code = daily_weathercodes[index];
+                    DEV_LOG && console.log('daily', index, time * 1000);
                     const d = {
                         time: time * 1000,
                         description: OMProvider.weatherCodeDescription[code],
@@ -468,7 +474,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
 
     async getAirQuality(weatherLocation: WeatherLocation, { current, minutely }: { minutely?: boolean; current?: boolean } = {}): Promise<AirQualityData> {
         const coords = weatherLocation.coord;
-        const result = await this.fetch<Forecast>('air-quality', { latitude: coords.lat, longitude: coords.lon }, { current, minutely }, 'air-quality-api');
+        const result = await this.fetch<Forecast>('air-quality', { latitude: coords.lat, longitude: coords.lon, timezone: weatherLocation.timezone }, { current, minutely }, 'air-quality-api');
         const hourly = result.content.hourly;
         const daily: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any }[] = [];
         let lastDay: { tempDatas: { [k: string]: { sum: number; count: number; unit: string; path: string } }; [k: string]: any };

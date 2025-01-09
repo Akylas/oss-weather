@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { GetMoonIlluminationResult, GetTimesResult, getMoonIllumination, getMoonPosition, getPosition, getTimes } from 'suncalc';
-    import { Align, Canvas, DashPathEffect, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, CanvasView, DashPathEffect, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
     import { CanvasLabel } from '@nativescript-community/ui-canvaslabel/canvaslabel.common';
     import { LineChart } from '@nativescript-community/ui-chart';
     import { AxisBase } from '@nativescript-community/ui-chart/components/AxisBase';
@@ -148,6 +148,7 @@
     let { colorBackground, colorOnSurface, colorOnSurfaceVariant } = $colors;
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
     let chartView: NativeViewElementNode<LineChart>;
+    let subCanvas: NativeViewElementNode<CanvasView>;
 
     let chartInitialized = false;
     export let location: WeatherLocation;
@@ -164,6 +165,9 @@
     let moonAzimuth: CompassInfo;
     let sunPoses: any[]; // SunPosition[];
     let moonPoses: any[]; // MoonPosition[];
+
+    $: if (isCurrentDay !== undefined) subCanvas?.nativeView?.redraw();
+    // $: DEV_LOG && console.log('isCurrentDay changed ', isCurrentDay);
 
     let selectedTime;
 
@@ -304,8 +308,9 @@
             const lineData = new LineData(sets);
             chart.data = lineData;
 
-            if (isCurrentDay) {
-                const nowMinutes = dayjs(startTime).diff(computeStartTime, 'minutes');
+            if (startTime) {
+                const nowMinutes = startTime.diff(getStartOfDay(startTime, timezoneOffset), 'minutes');
+                // DEV_LOG && console.log('highlight current day', isCurrentDay, startTime, dayjs(startTime), nowMinutes);
                 const h = chart.getHighlightByXValue(nowMinutes / 10);
                 chart.highlight(h[0]);
             }
@@ -352,12 +357,13 @@
 
     $: {
         try {
-            const date = startTime.toDate();
+            const date = startTime.add(startTime.get('h') === 0 ? 1 : 0, 'h').toDate();
             //   const date = getStartOfDay(startTime, 0).toDate();
             moonPhase = getMoonPhase(date);
             sunTimes = getTimes(date, location.coord.lat, location.coord.lon);
             sunriseEnd = dayjs.utc(sunTimes.sunriseEnd.valueOf()).valueOf();
             sunsetStart = dayjs.utc(sunTimes.sunsetStart.valueOf()).valueOf();
+            // DEV_LOG && console.log('sunsetStart', sunsetStart, startTime, date, date.valueOf(), Date.now(), Date.now() - sunsetStart);
             updateChartData();
             // sunriseEndAzimuth = getCompassInfo(getPosition(sunTimes.sunriseEnd, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
             // sunsetStartAzimuth = getCompassInfo(getPosition(sunTimes.sunsetStart, location.coord.lat, location.coord.lon).azimuth * TO_DEG + 180);
@@ -530,7 +536,7 @@
                 [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()]
             ] as [any, string][]
         )
-            .concat(isCurrentDay ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
+            .concat(isCurrentDay && Date.now() >= sunriseEnd ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
             .concat([[lc('moon_phase'), getMoonPhaseName(moonPhase)]] as [any, string][])
             .forEach((e, index) => {
                 const y = 30 + 30 * index;
@@ -591,7 +597,7 @@
             </cgroup>
         </canvaslabel>
     {/if}
-    <canvasview colSpan={2} padding={10} row={3} on:draw={onSubCanvasDraw}>
+    <canvasview bind:this={subCanvas} colSpan={2} padding={10} row={3} on:draw={onSubCanvasDraw}>
         <!-- <CompassView row={3} {location} updateWithSensor={false} date={startTime} /> -->
         <!-- <canvaslabel row={3} col={1} fontSize={13} padding={10} height={200}>
         <cgroup paddingTop={10}>

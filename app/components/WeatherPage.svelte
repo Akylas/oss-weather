@@ -33,7 +33,7 @@
     } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
     import { getLocationName } from '~/helpers/formatter';
-    import { getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { formatTime, getEndOfDay, getLocalTime, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
@@ -445,22 +445,36 @@
 
     function getDailyPageProps(item: DailyData) {
         //we need to offset back the startOf/endOf to correctly get local utc values
-        const startOfDay = getStartOfDay(item.time, item.timezoneOffset).valueOf();
-        const endOfDay = getEndOfDay(item.time, item.timezoneOffset).valueOf();
+        const startOfDay = getStartOfDay(item.time + 60000, item.timezoneOffset)
+            .add(1, 'h')
+            .valueOf();
+        const endOfDay = getEndOfDay(item.time + 60000, item.timezoneOffset)
+            .add(1, 'm')
+            .valueOf();
         const hourly = items[0].hourly as Hourly[];
         const startIndex = hourly.findIndex((h) => h.time >= startOfDay);
         let endIndex = hourly.findIndex((h) => h.time > endOfDay);
+        // DEV_LOG &&
+        //     console.log(
+        //         'getDailyPageProps',
+        //         item.time,
+        //         item.timezoneOffset,
+        //         dayjs(item.time),
+        //         dayjs(startOfDay),
+        //         dayjs(endOfDay),
+        //         endIndex,
+        //         hourly.map((d) => dayjs(d.time))
+        //     );
         if (endIndex === -1) {
             endIndex = hourly.length;
         }
-        // DEV_LOG && console.log('getDailyPageProps', item.time, dayjs(item.time), getLocalTime(item.time, item.timezoneOffset), startOfDay, endOfDay, startIndex, endIndex);
         return {
             getDailyPageProps,
             itemIndex: items.indexOf(item),
             items,
             item: { ...item, hourly: startIndex >= 0 && endIndex - startIndex >= 2 ? hourly.slice(startIndex, endIndex) : [] },
             location: weatherLocation,
-            startTime: dayjs(item.time).add(-item.timezoneOffset, 'h'),
+            startTime: dayjs(item.time),
             weatherLocation,
             timezoneOffset: item.timezoneOffset
         };

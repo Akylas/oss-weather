@@ -63,11 +63,10 @@
         textPaint.setTextAlign(Align.LEFT);
         textPaint.setTextSize(22 * $fontScale);
         textPaint.setColor(colorOnSurface);
-        // item.time is in UTC which will always be the starting time of the day. If we offset we might get the wrong date.
-        canvas.drawText(formatDate(item.time, 'ddd', 0), PADDING_LEFT, 26 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'ddd', item.timezoneOffset), PADDING_LEFT, 26 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(15 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'DD/MM', 0), PADDING_LEFT, 46 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, 'DD/MM', item.timezoneOffset), PADDING_LEFT, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
         const nString = createNativeAttributedString(

@@ -39,6 +39,8 @@
 <script lang="ts">
     const showHourlyChart = ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART);
 
+    const currentData = weatherDataService.currentWeatherData;
+    export let dataToShow = [...new Set([WeatherProps.windSpeed, WeatherProps.precipAccumulation].filter((s) => currentData.includes(s)).concat([WeatherProps.iconId, WeatherProps.temperature]))];
     export let getDailyPageProps: Function;
     export let itemIndex: number;
     export let items: any[];
@@ -353,6 +355,7 @@
                             barWidth={1}
                             borderBottomColor={colorOutline}
                             borderBottomWidth={1}
+                            {dataToShow}
                             fixedBarScale={false}
                             height={200}
                             hourly={item.hourly}

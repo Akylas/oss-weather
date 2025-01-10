@@ -501,6 +501,7 @@
         // subCanvasTextPaint.setTextAlign(Align.RIGHT);
         // canvas.drawText(formatTime(sunsetStart, undefined, timezoneOffset), w - 2 * padding, 13, subCanvasTextPaint);
         // canvas.restore();
+        const now = Date.now();
         (
             [
                 [
@@ -536,7 +537,7 @@
                 [lc('daylight_duration'), dayjs.duration({ milliseconds: sunsetStart - sunriseEnd }).humanize()]
             ] as [any, string][]
         )
-            .concat(isCurrentDay && Date.now() >= sunriseEnd ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - Date.now() }).humanize()]] : [])
+            .concat(isCurrentDay && now >= sunriseEnd && now < sunsetStart ? [[lc('daylight_left'), dayjs.duration({ milliseconds: sunsetStart - now }).humanize()]] : [])
             .concat([[lc('moon_phase'), getMoonPhaseName(moonPhase)]] as [any, string][])
             .forEach((e, index) => {
                 const y = 30 + 30 * index;

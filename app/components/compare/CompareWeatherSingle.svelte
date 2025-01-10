@@ -22,6 +22,7 @@
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
     import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
     import { CHARTS_LANDSCAPE } from '~/helpers/constants';
+    import ListItemAutoSize from '../common/ListItemAutoSize.svelte';
 
     $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorPrimary, colorSurface } = $colors);
 
@@ -66,8 +67,8 @@
     }
 
     function generateColor(provider: string) {
-        DEV_LOG && console.log('generateColor', provider, isDarkTheme());
-        return new toColor(provider, { saturation: 3, brightness: isDarkTheme() ? 1.2 : 0.9 });
+        // DEV_LOG && console.log('generateColor', provider, isDarkTheme());
+        return new toColor(provider, { saturation: isDarkTheme() ? 0 : 3, brightness: isDarkTheme() ? 1.6 : 0.9 });
     }
 
     function updateColors() {
@@ -341,14 +342,13 @@
                     <label class="sectionHeader" text={item.name} />
                 </Template>
                 <Template let:item>
-                    <ListItem
+                    <ListItemAutoSize
                         borderLeftColor={item.color}
                         borderLeftWidth={6}
                         columns="*,auto"
                         fontWeight="normal"
                         item={{ ...item, subtitleColor: item.color }}
                         padding="0 0 0 10"
-                        rows="50"
                         titleProps={{
                             paddingTop: 0,
                             paddingBottom: 0
@@ -363,7 +363,7 @@
                             fillColor={item.color}
                             verticalAlignment="center"
                             on:checkedChange={(e) => onModelCheckBox(item, e)} />
-                    </ListItem>
+                    </ListItemAutoSize>
                 </Template>
             </collectionview>
             <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} />
@@ -375,20 +375,19 @@
                     <label class="sectionHeader" text={item.name} />
                 </Template>
                 <Template let:item>
-                    <ListItem
+                    <ListItemAutoSize
                         columns="*,auto,auto"
                         fontWeight="normal"
                         {item}
                         mainCol={0}
                         padding="0 0 0 16"
-                        rows="50"
                         titleProps={{
                             paddingTop: 0,
                             paddingBottom: 0
                         }}>
                         <checkbox checked={item.hourlySelected} col={1} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('hourly', item, e)} />
                         <checkbox checked={item.dailySelected} col={2} ios:marginRight={10} verticalAlignment="center" on:checkedChange={(e) => onDataCheckBox('daily', item, e)} />
-                    </ListItem>
+                    </ListItemAutoSize>
                 </Template>
             </collectionview>
         </gridlayout>

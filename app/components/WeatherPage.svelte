@@ -848,6 +848,7 @@
                 items={favorites}
                 reorderEnabled={true}
                 reorderLongPressEnabled={true}
+                android:paddingBottom={$windowInset.bottom}
                 row={1}
                 on:itemReorderStarting={onItemReorderStarting}
                 on:itemReordered={onItemReordered}>

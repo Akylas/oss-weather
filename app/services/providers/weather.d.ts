@@ -83,6 +83,8 @@ export interface CommonWeatherData extends CommonAirQualityData {
     apparentTemperatureMax?: number;
     precipProbability?: number;
     precipAccumulation?: number;
+    snowfall?: number;
+    rain?: number;
     precipUnitFamily?: UNIT_FAMILIES;
     precipIcon?: string;
     precipFontUseApp?: boolean;
@@ -124,8 +126,6 @@ export interface Hourly extends CommonWeatherData {
         ice: number;
     };
     rainSnowLimit?: number;
-    snowfall?: number;
-    rain?: number;
 }
 export interface Currently extends CommonWeatherData {
     time: number;

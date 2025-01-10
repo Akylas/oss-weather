@@ -48,6 +48,7 @@
     "bra": "BRA",
     "bug_report_sent": "Bug report sent",
     "cancel": "Cancel",
+    "chart": "chart",
     "charts": "charts",
     "charts_landscape": "force charts to show in landscape",
     "charts_portrait_fullscreen": "charts use full height in portrait",
@@ -137,17 +138,17 @@
     "import_settings": "import settings",
     "import_settings_desc": "import all settings from a previous backup",
     "in_app_failure": "there was an error during the inapp purchase process: %1$s",
-    "inapp":{
-        "smalltip": "a coffee",
-        "smalltip_desc": "everything helps to work at night!",
-        "mediumtip": "a big coffee",
-        "mediumtip_desc": "my eyes are open!",
-        "largetip": "a beer",
-        "largetip_desc": "chill out and go back to work!",
+    "inapp": {
+        "bigtip": "a very nice donation",
+        "bigtip_desc": "new features are coming!",
         "largertip": "a pint",
         "largertip_desc": "ideas are going to flow!",
-        "bigtip": "a very nice donation",
-        "bigtip_desc": "new features are coming!"
+        "largetip": "a beer",
+        "largetip_desc": "chill out and go back to work!",
+        "mediumtip": "a big coffee",
+        "mediumtip_desc": "my eyes are open!",
+        "smalltip": "a coffee",
+        "smalltip_desc": "everything helps to work at night!"
     },
     "ios": {
         "info": {

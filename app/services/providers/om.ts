@@ -27,7 +27,7 @@ export const OM_MODELS = {
     best_match: 'Best match',
     ecmwf_ifs04: 'ECMWF IFS 0.4°',
     ecmwf_ifs025: 'ECMWF IFS 0.25°',
-    ecmwf_aifs025: 'ECMWF IFS 0.25°',
+    ecmwf_aifs025: 'ECMWF AIFS 0.25°',
     cma_grapes_global: 'CMA GRAPES Global',
     bom_access_global: 'BOM Access Global',
     metno_nordic: 'MET Norway Nordic',
@@ -252,14 +252,21 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
 
     private getDataArray(object: any, key: string, model: string = 'best_match') {
         if (model !== 'best_match') {
-            return object[key + '_' + model] || object[key + '_best_match'] || object[key];
+            return object[key + '_' + model] ?? object[key + '_best_match'] ?? object[key];
         } else {
             return object[key];
         }
     }
+    private getDataArrayValue(object: any, key: string, model: string = 'best_match', index): number {
+        if (model !== 'best_match') {
+            return object[key + '_' + model]?.[index] ?? object[key + '_best_match']?.[index] ?? object[key]?.[index];
+        } else {
+            return object[key]?.[index];
+        }
+    }
 
     private getMixedDataArray(object: any, key: string, model: string = 'best_match') {
-        const result = (object[key + '_best_match'] || object[key]).slice();
+        const result = (object[key + '_best_match'] ?? object[key]).slice();
         const modelObj = object[key + '_' + model];
         if (modelObj) {
             for (let index = 0; index < Math.min(modelObj.length, result.length); index++) {
@@ -314,34 +321,33 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             const d = {} as Hourly;
             d.time = time * 1000;
             const code = hourly_weathercodes[index];
-            d.isDay = !!this.getDataArray(hourly, 'is_day', model)[index];
+            d.isDay = !!this.getDataArrayValue(hourly, 'is_day', model, index);
             d.iconId = this.convertWeatherCodeToIcon(code);
             d.description = OMProvider.weatherCodeDescription[code];
-            const apparentTemperature = this.getDataArray(hourly, 'apparent_temperature', model);
-            if (apparentTemperature) {
-                d.apparentTemperature = apparentTemperature[index];
+            const apparentTemperature = this.getDataArrayValue(hourly, 'apparent_temperature', model, index);
+            if (apparentTemperature !== undefined) {
+                d.apparentTemperature = apparentTemperature;
             }
-            d.temperature = this.getDataArray(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', model)[index];
-            d.uvIndex = this.getDataArray(hourly, 'uv_index', model)[index];
+            d.temperature = this.getDataArrayValue(hourly, feelsLikeTemperatures ? 'apparent_temperature' : 'temperature_2m', model, index);
+            d.uvIndex = this.getDataArrayValue(hourly, 'uv_index', model, index);
 
             d.usingFeelsLike = feelsLikeTemperatures;
-            const windBearing = this.getDataArray(hourly, 'winddirection_10m', model);
-            if (windBearing) {
-                d.windBearing = windBearing[index];
+            const windBearing = this.getDataArrayValue(hourly, 'winddirection_10m', model, index);
+            if (windBearing !== undefined) {
+                d.windBearing = windBearing;
             }
-            const precipitation_probability = this.getDataArray(hourly, 'precipitation_probability', model);
-            if (precipitation_probability) {
-                d.precipProbability = precipitation_probability[index] || -1;
-            }
-            const snowfall = this.getDataArray(hourly, 'snowfall', model);
-            if (snowfall) {
+            const precipitation_probability = this.getDataArrayValue(hourly, 'precipitation_probability', model, index);
+            d.precipProbability = precipitation_probability ?? -1;
+
+            const snowfall = this.getDataArrayValue(hourly, 'snowfall', model, index);
+            if (snowfall !== undefined) {
                 //we want it in mm
-                d.snowfall = (snowfall[index] || 0) * 10;
+                d.snowfall = snowfall * 10;
             }
-            const rain = this.getDataArray(hourly, 'rain', model);
-            const showers = this.getDataArray(hourly, 'showers', model);
-            if (rain) {
-                d.rain = (rain[index] || 0) + (showers?.[index] || 0);
+            const rain = this.getDataArrayValue(hourly, 'rain', model, index);
+            const showers = this.getDataArrayValue(hourly, 'showers', model, index);
+            if (rain !== undefined || snowfall !== undefined) {
+                d.rain = (rain ?? 0) + (showers ?? 0);
             }
 
             d.precipAccumulation = d.rain + d.snowfall;
@@ -351,38 +357,38 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             // }
             // }
 
-            const cloudcover = this.getDataArray(hourly, 'cloudcover', model);
-            if (cloudcover) {
-                d.cloudCover = cloudcover[index];
+            const cloudcover = this.getDataArrayValue(hourly, 'cloudcover', model, index);
+            if (cloudcover !== undefined) {
+                d.cloudCover = cloudcover;
             }
-            const windspeed_10m = this.getDataArray(hourly, 'windspeed_10m', model);
-            if (windspeed_10m) {
-                d.windSpeed = windspeed_10m[index];
+            const windspeed_10m = this.getDataArrayValue(hourly, 'windspeed_10m', model, index);
+            if (windspeed_10m !== undefined) {
+                d.windSpeed = windspeed_10m;
             }
 
-            const windgusts_10m = this.getDataArray(hourly, 'windgusts_10m', model);
-            if (windgusts_10m) {
-                d.windGust = windgusts_10m[index];
+            const windgusts_10m = this.getDataArrayValue(hourly, 'windgusts_10m', model, index);
+            if (windgusts_10m !== undefined) {
+                d.windGust = windgusts_10m;
             }
-            const snow_depth = this.getDataArray(hourly, 'snow_depth', model);
-            if (snow_depth) {
-                d.snowDepth = snow_depth[index];
+            const snow_depth = this.getDataArrayValue(hourly, 'snow_depth', model, index);
+            if (snow_depth !== undefined) {
+                d.snowDepth = snow_depth;
             }
-            const freezinglevel_height = this.getDataArray(hourly, 'freezinglevel_height', model);
-            if (freezinglevel_height) {
-                d.iso = freezinglevel_height[index];
+            const freezinglevel_height = this.getDataArrayValue(hourly, 'freezinglevel_height', model, index);
+            if (freezinglevel_height !== undefined) {
+                d.iso = freezinglevel_height;
             }
-            const dew_point_2m = this.getDataArray(hourly, 'dew_point_2m', model);
-            if (dew_point_2m) {
-                d.dewpoint = dew_point_2m[index];
+            const dew_point_2m = this.getDataArrayValue(hourly, 'dew_point_2m', model, index);
+            if (dew_point_2m !== undefined) {
+                d.dewpoint = dew_point_2m;
             }
-            const pressure_msl = this.getDataArray(hourly, 'pressure_msl', model);
-            if (pressure_msl) {
-                d.sealevelPressure = pressure_msl[index];
+            const pressure_msl = this.getDataArrayValue(hourly, 'pressure_msl', model, index);
+            if (pressure_msl !== undefined) {
+                d.sealevelPressure = pressure_msl;
             }
-            const relative_humidity_2m = this.getDataArray(hourly, 'relative_humidity_2m', model);
-            if (relative_humidity_2m) {
-                d.relativeHumidity = relative_humidity_2m[index];
+            const relative_humidity_2m = this.getDataArrayValue(hourly, 'relative_humidity_2m', model, index);
+            if (relative_humidity_2m !== undefined) {
+                d.relativeHumidity = relative_humidity_2m;
             }
             // d.pressure = data.pressure;
             // DEV_LOG && console.log('test', dayjs(d.time), code, d.iconId, d.temperature, d.precipProbability, d.precipAccumulation, d.rain, d.snowfall);
@@ -440,18 +446,18 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                         description: OMProvider.weatherCodeDescription[code],
                         isDay: true,
                         iconId: this.convertWeatherCodeToIcon(code),
-                        apparentTemperatureMax: this.getDataArray(daily, 'apparent_temperature_max', model)?.[index],
-                        apparentTemperatureMin: this.getDataArray(daily, 'apparent_temperature_min', model)?.[index],
-                        temperatureMax: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model)?.[index],
-                        temperatureMin: this.getDataArray(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', model)?.[index],
+                        apparentTemperatureMax: this.getDataArrayValue(daily, 'apparent_temperature_max', model, index),
+                        apparentTemperatureMin: this.getDataArrayValue(daily, 'apparent_temperature_min', model, index),
+                        temperatureMax: this.getDataArrayValue(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model, index),
+                        temperatureMin: this.getDataArrayValue(daily, feelsLikeTemperatures ? 'apparent_temperature_min' : 'temperature_2m_min', model, index),
                         usingFeelsLike: feelsLikeTemperatures,
-                        relativeHumidity: this.getDataArray(daily, 'relative_humidity_2m_mean', model)?.[index],
-                        uvIndex: Math.ceil(this.getDataArray(daily, 'uv_index_max', model)?.[index]),
-                        windGust: Math.round(this.getDataArray(daily, 'windgusts_10m_max', model)?.[index]),
-                        windSpeed: Math.round(this.getDataArray(daily, 'windspeed_10m_max', model)?.[index]),
-                        windBearing: Math.round(this.getDataArray(daily, 'winddirection_10m_dominant', model)?.[index]),
-                        precipProbability: this.getDataArray(daily, 'precipitation_probability_max', model)?.[index],
-                        precipAccumulation: this.getDataArray(daily, 'precipitation_sum', model)?.[index]
+                        relativeHumidity: this.getDataArrayValue(daily, 'relative_humidity_2m_mean', model, index),
+                        uvIndex: Math.ceil(this.getDataArrayValue(daily, 'uv_index_max', model, index)),
+                        windGust: Math.round(this.getDataArrayValue(daily, 'windgusts_10m_max', model, index)),
+                        windSpeed: Math.round(this.getDataArrayValue(daily, 'windspeed_10m_max', model, index)),
+                        windBearing: Math.round(this.getDataArrayValue(daily, 'winddirection_10m_dominant', model, index)),
+                        precipProbability: this.getDataArrayValue(daily, 'precipitation_probability_max', model, index),
+                        precipAccumulation: this.getDataArrayValue(daily, 'precipitation_sum', model, index)
                         // cloudCover: Math.round(daily.clou),
                         // sunriseTime: dailyForecast.sun.rise * 1000,
                         // sunsetTime: dailyForecast.sun.set * 1000
@@ -469,11 +475,12 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                     // if (isoTotal.count > 0) {
                     //     d.iso = Math.round(isoTotal.total / isoTotal.count);
                     // }
-
+                    d.rain = (this.getDataArrayValue(daily, 'showers_sum', model, index) || 0) + (this.getDataArrayValue(daily, 'rain_sum', model, index) || 0);
+                    d.snowfall = this.getDataArrayValue(daily, 'snowfall_sum', model, index) * 10;
+                    d.precipAccumulation = d.rain + d.snowfall;
                     // const propRain = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
                     // const propSnow = Math.round(probSnowPrecipitationTotal.total / (probSnowPrecipitationTotal.count || 1));
-                    const rain = this.getDataArray(daily, 'showers_sum', model)?.[index] || 0 + this.getDataArray(daily, 'rain_sum', model)?.[index];
-                    weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, rain, this.getDataArray(daily, 'snowfall_sum', model)?.[index] * 10);
+                    weatherDataIconColors(d, WeatherDataType.DAILY, weatherLocation.coord, d.rain, d.snowfall);
                     return d;
                 })
             },

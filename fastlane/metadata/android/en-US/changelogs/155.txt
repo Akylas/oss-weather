@@ -1,0 +1,7 @@
+Bug fixes:
+- show odd background in hourly view even with black theme
+- long favorite list always fully visible
+- Open-Meteo fix while using other models than best match
+- dont show daylight left after sunset
+- capitalized menu entries
+- compare chart fixes

@@ -5,7 +5,7 @@
     import WeatherIcon from '~/components/WeatherIcon.svelte';
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
-    import { isEInk } from '~/helpers/theme';
+    import { isEInk, theme } from '~/helpers/theme';
     import type { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient } from '~/utils/utils.common';
@@ -26,13 +26,12 @@
     pathPaint.setStyle(Style.STROKE);
     const curvePath = new Path();
 
-    const oddColor = new Color(0.05 * 255, 120, 120, 120);
-
     let lastGradient: { min; max; gradient: LinearGradient };
 </script>
 
 <script lang="ts">
     $: ({ colorOnSurface, colorOnSurfaceVariant } = $colors);
+    const oddColor = new Color((theme === 'black' ? 0.2 : 0.05) * 255, 120, 120, 120);
     export let item: Hourly & {
         index: number;
         min: number;
@@ -262,7 +261,6 @@
     }
 </script>
 
-<gridlayout on:tap={onTap}>
-    <canvasview bind:this={canvasView} rowSpan={3} on:draw={drawOnCanvas} />
+<canvasview bind:this={canvasView} on:draw={drawOnCanvas} on:tap={onTap}>
     <WeatherIcon {animated} iconData={[item.iconId, item.isDay]} isUserInteractionEnabled={false} marginTop={27 * $fontScale} size={weatherIconSize * $fontScale} verticalAlignment="top" />
-</gridlayout>
+</canvasview>

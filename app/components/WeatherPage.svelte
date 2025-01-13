@@ -32,7 +32,7 @@
     } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
     import { getLocationName } from '~/helpers/formatter';
-    import { formatTime, getEndOfDay, getStartOfDay, l, lc, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { formatTime, getEndOfDay, getStartOfDay, l, lc, lu, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
@@ -79,7 +79,7 @@
                           {
                               icon: 'mdi-crosshairs-gps',
                               id: 'gps_location',
-                              name: l('gps_location')
+                              name: lc('gps_location')
                           }
                       ]
                     : []
@@ -87,7 +87,7 @@
                 {
                     icon: 'mdi-cogs',
                     id: 'preferences',
-                    name: l('preferences')
+                    name: lc('preferences')
                 }
                 // {
                 //     icon: 'mdi-information-outline',
@@ -101,28 +101,28 @@
                         {
                             icon: 'mdi-refresh',
                             id: 'refresh',
-                            name: l('refresh')
+                            name: lc('refresh')
                         },
                         {
                             icon: 'mdi-chart-bar',
                             id: 'compare',
-                            name: l('compare_models')
+                            name: lc('compare_models')
                         },
                         {
                             icon: 'mdi-chart-areaspline',
                             id: 'chart',
-                            name: l('chart')
+                            name: lc('chart')
                         },
                         {
                             icon: 'mdi-map',
                             id: 'map',
-                            name: l('map')
+                            name: lc('map')
                         },
                         {
                             icon: 'mb',
                             iconFontSize: 16,
                             id: 'meteo_blue',
-                            name: 'meteoblue'
+                            name: 'Meteoblue'
                         }
                     ] as any)
                 );
@@ -130,7 +130,7 @@
                     options.push({
                         icon: 'mdi-snowflake-alert',
                         id: 'bra',
-                        name: l('bra')
+                        name: lu('bra')
                     });
                 }
             }
@@ -848,6 +848,7 @@
                 items={favorites}
                 reorderEnabled={true}
                 reorderLongPressEnabled={true}
+                android:paddingBottom={$windowInset.bottom}
                 row={1}
                 on:itemReorderStarting={onItemReorderStarting}
                 on:itemReordered={onItemReordered}>

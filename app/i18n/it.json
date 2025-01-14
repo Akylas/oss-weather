@@ -32,7 +32,7 @@
     "app": {
         "name": "OSS Weather"
     },
-    "apparent": "apparente",
+    "apparent": "percepita",
     "aqi": "Indice di qualità dell'aria",
     "artemisia": "artemisia",
     "authorize": "Autorizza",
@@ -48,6 +48,7 @@
     "bra": "BRA",
     "bug_report_sent": "Segnalazione di bug inviata",
     "cancel": "Annulla",
+    "chart": "grafico",
     "charts": "grafici",
     "charts_landscape": "forza i grafici ad essere visualizzati in orizzontale",
     "charts_portrait_fullscreen": "i grafici usano l'altezza intera in verticale",
@@ -180,7 +181,7 @@
     "medium": "Moderato",
     "meteogram": "meteogramma",
     "metric_temp_decimal": "usa i decimali per la temperatura",
-    "min_uv_index": "L'indice UV sottostante non verrà mostrato",
+    "min_uv_index": "L' indice UV sottostante non verrà mostrato",
     "missing_location_perm": "Manca il permesso di localizzazione",
     "missing_storage_perm_settings": "è necessaria l'autorizzazione di archiviazione per esportare le impostazioni",
     "models": "modelli",

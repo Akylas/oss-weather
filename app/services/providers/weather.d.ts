@@ -117,6 +117,8 @@ export interface DailyData extends CommonWeatherData {
     sunsetTime?: number;
 
     rainSnowLimit?: number;
+
+    last24?: DailyData;
 }
 
 export interface Hourly extends CommonWeatherData {
@@ -134,8 +136,8 @@ export interface Currently extends CommonWeatherData {
     sunsetTime?: number;
 }
 
-export type AirQualityCurrently = CommonAirQualityData
+export type AirQualityCurrently = CommonAirQualityData;
 export interface AirQualityDaily {
     data: CommonAirQualityData[];
 }
-export type AirQualityMinutely = CommonAirQualityData
+export type AirQualityMinutely = CommonAirQualityData;

@@ -11,8 +11,8 @@
     import { POLLENS_POLLUTANTS_TITLES } from '~/services/airQualityData';
     import { WeatherLocation } from '~/services/api';
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
-    import type { CommonWeatherData, Hourly } from '~/services/providers/weather';
-    import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
+    import type { DailyData, Hourly } from '~/services/providers/weather';
+    import { WeatherProps, formatWeatherValue, getWeatherDataShortTitle, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale, weatherDataLayout, windowInset } from '~/variables';
     import CActionBar from './common/CActionBar.svelte';
     import HourlyChartView from './HourlyChartView.svelte';
@@ -24,11 +24,12 @@
     const textIconPaint = new Paint();
     textIconPaint.setTextAlign(Align.CENTER);
     const textPaint = new Paint();
-    const pollensPollutantsIndicatorPaint = new Paint();
-    const pollensPollutantsTitlePaint = new Paint();
+    const indicatorPaint = new Paint();
+    const titlesPaint = new Paint();
+    const dataPaint = new Paint();
 
-    pollensPollutantsTitlePaint.fontWeight = 'bold';
-    const pollensPollutantsSubtitlePaint = new Paint();
+    titlesPaint.fontWeight = 'bold';
+    const subtitlesPaint = new Paint();
     // const arcPaint = new Paint();
     // arcPaint.style = Style.STROKE;
     // arcPaint.setTextAlign(Align.CENTER);
@@ -45,7 +46,7 @@
     export let itemIndex: number;
     export let items: any[];
 
-    export let item: CommonWeatherData & { hourly: Hourly[] };
+    export let item: DailyData & { hourly: Hourly[] };
     export let location: WeatherLocation;
     export let weatherLocation: WeatherLocation;
     export let timezoneOffset;
@@ -58,7 +59,10 @@
     // $: DEV_LOG && console.log('isCurrentDay', startTime, dayjs(), isCurrentDay);
     let itemsCount = items.length;
 
-    // DEV_LOG && console.log('startTime', startTime, dayjs(), startTime.valueOf(), dayjs().valueOf(), isCurrentDay);
+    const last24 = item.last24;
+    const last24Keys = last24 ? Object.keys(last24) : [];
+    const last24Data = last24Keys.map((k: WeatherProps) => weatherDataService.getItemData(k, last24)).filter((s) => !!s);
+    const next24Data = [WeatherProps.rainPrecipitation, WeatherProps.snowfall].map((k: WeatherProps) => weatherDataService.getItemData(k, item)).filter((s) => !!s);
     let page: NativeViewElementNode<Page>;
     let animated = iconService.animated;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -281,25 +285,72 @@
         const w = canvas.getWidth();
         const h = canvas.getHeight();
         let row, col, dx, dy, data;
-        pollensPollutantsTitlePaint.textSize = 17 * $fontScale;
-        pollensPollutantsTitlePaint.color = colorOnSurface;
-        canvas.drawText(title, 20, 30 * $fontScale, pollensPollutantsTitlePaint);
+        canvas.drawText(title, 20, 25 * $fontScale, titlesPaint);
 
-        pollensPollutantsTitlePaint.textSize = 14 * $fontScale;
-        pollensPollutantsSubtitlePaint.textSize = 12 * $fontScale;
-        pollensPollutantsSubtitlePaint.color = colorOutline;
         Object.keys(polls).forEach((k, index) => {
             col = index % 2;
             row = Math.floor(index / 2);
             dx = (col * w) / 2 + 25;
-            dy = (row * 40 + 55) * $fontScale;
+            dy = (row * 40 + 50) * $fontScale;
             data = polls[k];
-            pollensPollutantsIndicatorPaint.color = data.color;
-            canvas.drawCircle(dx + 2, dy + 13, 4, pollensPollutantsIndicatorPaint);
-            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 11, pollensPollutantsTitlePaint);
-            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 26, pollensPollutantsSubtitlePaint);
+            indicatorPaint.color = data.color;
+            canvas.drawCircle(dx + 2, dy + 13, 4, indicatorPaint);
+            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 11, dataPaint);
+            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 26, subtitlesPaint);
         });
-        canvas.drawLine(0, h - 1, w, h - 1, pollensPollutantsSubtitlePaint);
+        canvas.drawLine(0, h - 1, w, h - 1, subtitlesPaint);
+    }
+
+    $: {
+        titlesPaint.textSize = 17 * $fontScale;
+        subtitlesPaint.textSize = 12 * $fontScale;
+        dataPaint.textSize = 14 * $fontScale;
+        titlesPaint.textSize = 17 * $fontScale;
+    }
+    $: {
+        dataPaint.color = colorOnSurface;
+        titlesPaint.color = colorOnSurface;
+        subtitlesPaint.color = colorOutline;
+    }
+    function drawLast24({ canvas }: { canvas: Canvas }) {
+        const w = canvas.getWidth();
+        const h = canvas.getHeight();
+        const dx = 25;
+        let dy = 40 * $fontScale;
+        canvas.drawText(lc('last_24_hours'), dx - 5, 25 * $fontScale, titlesPaint);
+
+        last24Data.forEach((data, index) => {
+            dy += index * 30 * $fontScale;
+            indicatorPaint.color = data.iconColor;
+            canvas.drawCircle(dx + 2, dy + 13, 8, indicatorPaint);
+            canvas.drawText(getWeatherDataShortTitle(data.key), dx + 20, dy + 18, dataPaint);
+            dataPaint.setTextAlign(Align.RIGHT);
+            canvas.drawText(data.value + '', w - dx, dy + 18, dataPaint);
+            dataPaint.setTextAlign(Align.LEFT);
+        });
+        canvas.drawLine(0, h - 1, w, h - 1, subtitlesPaint);
+    }
+    function drawNext24({ canvas }: { canvas: Canvas }) {
+        const w = canvas.getWidth();
+        const h = canvas.getHeight();
+        const dx = 25;
+        let dy = 10 * $fontScale;
+
+        if (last24Data.length > 0) {
+            dy = 40 * $fontScale;
+            canvas.drawText(lc('next_24_hours'), dx - 5, 25 * $fontScale, titlesPaint);
+        }
+
+        next24Data.forEach((data, index) => {
+            dy += index * 30 * $fontScale;
+            indicatorPaint.color = data.iconColor;
+            canvas.drawCircle(dx + 2, dy + 13, 8, indicatorPaint);
+            canvas.drawText(getWeatherDataShortTitle(data.key), dx + 20, dy + 18, dataPaint);
+            dataPaint.setTextAlign(Align.RIGHT);
+            canvas.drawText(data.value + '', w - dx, dy + 18, dataPaint);
+            dataPaint.setTextAlign(Align.LEFT);
+        });
+        canvas.drawLine(0, h - 1, w, h - 1, subtitlesPaint);
     }
     function drawPollutants({ canvas }: { canvas: Canvas }) {
         drawPollOnCanvas(item.pollutants, lc('pollutants'), canvas);
@@ -337,7 +388,7 @@
 <page bind:this={page} actionBarHidden={true}>
     <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*" on:swipe={onSwipe}>
         <scrollview row={1}>
-            <gridlayout rows="auto,auto,auto,auto,auto" on:swipe={onSwipe}>
+            <stacklayout on:swipe={onSwipe}>
                 <gridlayout columns="*,auto" height={topViewHeight}>
                     <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
                     <WeatherIcon
@@ -370,15 +421,21 @@
                         <HourlyView height={250} items={item.hourly} row={1} />
                     {/if}
                 {/if}
+                {#if last24Data.length > 0}
+                    <canvasview height={Math.ceil(last24Data.length * 30 + 45) * $fontScale} on:draw={drawLast24} />
+                {/if}
+                {#if next24Data.length > 0}
+                    <canvasview height={Math.ceil(next24Data.length * 30 + (last24Data.length > 0 ? 45 : 0)) * $fontScale} on:draw={drawNext24} />
+                {/if}
 
                 {#if item.pollutants}
-                    <canvasview height={Math.ceil(Object.keys(item.pollutants).length / 2) * 40 * $fontScale + 55 * $fontScale} row={2} on:draw={drawPollutants} />
+                    <canvasview height={Math.ceil((Object.keys(item.pollutants).length / 2) * 40 + 55) * $fontScale} on:draw={drawPollutants} />
                 {/if}
                 {#if item.pollens}
-                    <canvasview height={Math.ceil(Object.keys(item.pollens).length / 2) * 40 * $fontScale + 55 * $fontScale} row={3} on:draw={drawPollens} />
+                    <canvasview height={Math.ceil((Object.keys(item.pollens).length / 2) * 40 + 55) * $fontScale} on:draw={drawPollens} />
                 {/if}
-                <AstronomyView {isCurrentDay} {location} row={4} selectableDate={false} startTime={isCurrentDay ? dayjs() : undefined} {timezoneOffset} />
-            </gridlayout>
+                <AstronomyView {isCurrentDay} {location} selectableDate={false} startTime={isCurrentDay ? dayjs() : undefined} {timezoneOffset} />
+            </stacklayout>
         </scrollview>
         <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />
     </gridlayout>

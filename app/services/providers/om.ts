@@ -98,6 +98,7 @@ export const API_KEY_VALUES = {
                   (currentData.includes(WeatherProps.relativeHumidity) ? ',relative_humidity_2m' : '')
                 : undefined,
         minutely_15: minutely !== false ? 'precipitation' : undefined,
+        past_days: 1,
         daily:
             'weathercode,uv_index_max,precipitation_sum,precipitation_probability_max,rain_sum,snowfall_sum,showers_sum' +
             (currentData.includes(WeatherProps.apparentTemperature) && !feelsLikeTemperatures

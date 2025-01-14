@@ -107,6 +107,9 @@
         const chart = lineChart?.nativeView;
         if (chart) {
             let data = item.minutely;
+            if (!data) {
+                return;
+            }
             let now = fakeNow || Date.now();
             const index = data.findIndex((v) => v.time >= now);
             now = Math.floor(now * timeFactor);

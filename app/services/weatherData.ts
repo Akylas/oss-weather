@@ -185,8 +185,8 @@ fonts.subscribe((data) => {
 
 const WEATHER_DATA_PARENT = {
     [WeatherProps.snowfall]: WeatherProps.precipAccumulation,
-    [WeatherProps.rainPrecipitation]: WeatherProps.precipAccumulation,
-}
+    [WeatherProps.rainPrecipitation]: WeatherProps.precipAccumulation
+};
 
 const WEATHER_DATA_ICONS = {
     [WeatherProps.moon]: (item: CommonWeatherData) => item.moonIcon,
@@ -207,7 +207,10 @@ const WEATHER_DATA_ICONS = {
     [WeatherProps.rainPrecipitation]: 'wi-raindrop',
     [WeatherProps.snowfall]: 'wi-snowflake-cold'
 };
-
+const WEATHER_DATA_SHORT_TITLES = {
+    [WeatherProps.snowfall]: lt('snow'),
+    [WeatherProps.rainPrecipitation]: lt('rain')
+};
 const WEATHER_DATA_TITLES = {
     [WeatherProps.iconId]: lt('weather_condition'),
     [WeatherProps.moon]: lt('moon'),
@@ -256,6 +259,9 @@ export function getWeatherDataIcon(key: string) {
 }
 export function getWeatherDataTitle(key: string) {
     return WEATHER_DATA_TITLES[key] || key;
+}
+export function getWeatherDataShortTitle(key: string) {
+    return WEATHER_DATA_SHORT_TITLES[key] || WEATHER_DATA_TITLES[key] || key;
 }
 export function getWeatherDataColor(key: string) {
     return WEATHER_DATA_COLORS[key];
@@ -558,7 +564,7 @@ export class DataService extends Observable {
                 }
                 break;
             case WeatherProps.precipAccumulation:
-                if ((item.precipProbability === -1 || item.precipProbability > 10) && item.precipAccumulation >= 0.1) {
+                if ((item.precipProbability === -1 || item.precipProbability === undefined || item.precipProbability > 10) && item.precipAccumulation >= 0.1) {
                     return {
                         key,
                         paint: item.precipFontUseApp ? appPaint : wiPaint,
@@ -572,7 +578,7 @@ export class DataService extends Observable {
                 break;
             case WeatherProps.rainPrecipitation:
             case WeatherProps.snowfall:
-                if ((item.precipProbability === -1 || item.precipProbability > 10) && item[key] >= 0.1) {
+                if ((item.precipProbability === -1 || item.precipProbability === undefined || item.precipProbability > 10) && item[key] >= 0.1) {
                     return {
                         key,
                         paint: wiPaint,

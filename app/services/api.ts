@@ -9,10 +9,11 @@ import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';
 import { SETTINGS_SHOW_CURRENT_DAY_DAILY, SETTINGS_SHOW_DAILY_IN_CURRENTLY, SHOW_CURRENT_DAY_DAILY, SHOW_DAILY_IN_CURRENTLY } from '~/helpers/constants';
 import { FavoriteLocation } from '~/helpers/favorites';
-import { lang } from '~/helpers/locale';
+import { getStartOfDay, lang } from '~/helpers/locale';
 import { NominatimResult } from '../../typings/nominatim';
 import { Photon, PhotonProperties } from '../../typings/photon';
 import { WeatherData } from './providers/weather';
+import { WeatherProps } from './weatherData';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -275,15 +276,20 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
 export function prepareItems(weatherLocation: WeatherLocation, weatherData: WeatherData, lastUpdate = weatherData.time, now = dayjs.utc()) {
     const newItems = [];
     const startOfHour = now.startOf('h').valueOf();
+    const startOfDay = getStartOfDay(now, weatherLocation.timezoneOffset).valueOf();
     const endOfMinute = now.endOf('m').valueOf();
     const firstHourIndex = weatherData.hourly.findIndex((h) => h.time >= startOfHour);
     const firstMinuteIndex = weatherData.minutely?.data ? weatherData.minutely.data.findIndex((h) => h.time >= endOfMinute) : -1;
-    const hours = firstHourIndex >= 0 ? weatherData.hourly.slice(firstHourIndex) : [];
     const showCurrentInDaily = ApplicationSettings.getBoolean(SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY);
     const showDayDataInCurrent = ApplicationSettings.getBoolean(SETTINGS_SHOW_DAILY_IN_CURRENTLY, SHOW_DAILY_IN_CURRENTLY);
-    weatherData.daily.data.forEach((d, index) => {
+
+    const weatherDailyData = weatherData.daily.data;
+    const firstDailyIndex = weatherDailyData.findIndex((d) => d.time >= startOfDay);
+
+    weatherDailyData.slice(firstDailyIndex).forEach((d, index) => {
         if (index === 0) {
-            const dailyData = weatherData.daily.data[index];
+            const hours = firstHourIndex >= 0 ? weatherData.hourly.slice(firstHourIndex) : [];
+            const dailyData = weatherDailyData[index];
             // eslint-disable-next-line prefer-const
             let { cloudCeiling, cloudCover, isDay, iso, precipAccumulation, uvIndex, windGust, ...current } = dailyData;
             if (showDayDataInCurrent) {
@@ -291,7 +297,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             }
 
             if (firstHourIndex >= 0) {
-                Object.assign(current, hours[index]);
+                Object.assign(current, hours[0]);
             }
             if (firstHourIndex === 0 && firstMinuteIndex > 10) {
                 current = Object.assign(current, weatherData.minutely.data[firstMinuteIndex - 1]);
@@ -320,10 +326,31 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             const times = getTimes(dayjs.utc() as any, weatherLocation.coord.lat, weatherLocation.coord.lon);
             const sunsetTime = dayjs.utc(times.sunsetStart.valueOf()).valueOf();
             const sunriseTime = dayjs.utc(times.sunriseEnd.valueOf()).valueOf();
+
+            const last24Keys = [WeatherProps.rainPrecipitation, WeatherProps.snowfall];
+            const lastDay = firstDailyIndex > 0 ? weatherDailyData[firstDailyIndex - 1] : {};
+            // const lastdayData =
+            //     firstHourIndex > 0
+            //         ? weatherData.hourly.slice(Math.max(firstHourIndex - 24, 0), firstHourIndex).reduce((acc, h) => {
+            //               last24Keys.forEach((k) => {
+            //                   if (h[k] > 0) {
+            //                       acc[k] = (acc[k] || 0) + h[k];
+            //                   }
+            //               });
+            //               return acc;
+            //           }, {})
+            //         : null;
+            const lastdayData = last24Keys.reduce((acc, k) => {
+                if (lastDay[k] > 0) {
+                    acc[k] = (acc[k] || 0) + lastDay[k];
+                }
+                return acc;
+            }, {});
             // current weather is a mix of actual current weather, hourly and daily
             newItems.push({
                 ...current,
                 lastUpdate,
+                last24: Object.keys(lastdayData).length > 0 ? lastdayData : null,
                 timezone: weatherLocation.timezone,
                 timezoneOffset: weatherLocation.timezoneOffset,
                 isDay: now.valueOf() < sunsetTime && now.valueOf() > sunriseTime,
@@ -361,6 +388,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             if (showCurrentInDaily) {
                 newItems.push(
                     Object.assign(d, {
+                        last24: lastdayData ? lastdayData : null,
                         timezone: weatherLocation.timezone,
                         timezoneOffset: weatherLocation.timezoneOffset,
                         // icon: iconService.getIcon(d.iconId, d.isDay),

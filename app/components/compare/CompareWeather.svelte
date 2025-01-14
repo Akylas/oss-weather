@@ -311,13 +311,13 @@
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
                     <collectionview bind:this={collectionView} id="data" itemTemplateSelector={selectDataTemplate} items={data}>
                         <Template key="linechart" let:item>
-                            <CompareLineChart height={200} {item} />
+                            <CompareLineChart height={200} {item} {weatherLocation} />
                         </Template>
                         <Template key="scatterchart" let:item>
-                            <CompareLineChart height={200} {item} />
+                            <CompareLineChart height={200} {item} {weatherLocation} />
                         </Template>
                         <Template key="weathericons" let:item>
-                            <CompareWeatherIcons {item} />
+                            <CompareWeatherIcons {item} {weatherLocation} />
                         </Template>
                     </collectionview>
                 </pullrefresh>

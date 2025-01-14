@@ -225,7 +225,7 @@
                 Object.assign(weatherLocation, timezoneData);
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
             }
-            const weatherData = await getWeatherProvider().getWeather(weatherLocation);
+            weatherData = await getWeatherProvider().getWeather(weatherLocation);
             DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
             if (timezoneData) {
             }

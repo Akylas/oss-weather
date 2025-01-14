@@ -11,7 +11,7 @@
     import type { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient } from '~/utils/utils.common';
-    import { alwaysShowPrecipProb, colors, fontScale } from '~/variables';
+    import { alwaysShowPrecipProb, colors, fontScale, rainColor, snowColor } from '~/variables';
 
     const einkBmpShader = isEInk ? new BitmapShader(ImageSource.fromFileSync('~/assets/images/pattern.png'), TileMode.REPEAT, TileMode.REPEAT) : null;
 
@@ -61,7 +61,7 @@
     }
     $: {
         if (item.precipShowSnow) {
-            precipitationHeight = item.snowfall > 1 ? Math.sqrt(item.snowfall / 10) : item.snowfall / 10;
+            precipitationHeight = item.snowfall > 1 ? Math.sqrt(item.snowfall) : item.snowfall;
         } else {
             precipitationHeight = item.precipAccumulation > 1 ? Math.sqrt(item.precipAccumulation) : item.precipAccumulation;
         }
@@ -94,16 +94,45 @@
             let color;
             const precipProbability = item.precipProbability;
             if ((precipProbability === -1 || precipProbability > 0) && precipitationHeight > 0) {
-                const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - BOTTOM_INSET);
-                paint.setColor(item.precipColor);
-                paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
-                if (isEInk) {
-                    paint.setShader(einkBmpShader);
+                const rain = item.rain;
+                const snowfall = item.snowfall;
+                if (item.mixedRainSnow && rain >= 0.1 && snowfall >= 0.1) {
+                    let height = item.rain > 1 ? Math.sqrt(item.rain) : item.rain;
+                    let precipTop = (0.5 + (1 - height / 5) / 2) * (h - BOTTOM_INSET);
+                    paint.setColor(rainColor);
+                    paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                    if (isEInk) {
+                        paint.setShader(einkBmpShader);
+                        canvas.drawRect(0, precipTop, w / 2, h - BOTTOM_INSET, paint);
+                        paint.setShader(null);
+                        paint.setStyle(Style.STROKE);
+                    }
+                    canvas.drawRect(0, precipTop, w / 2, h - BOTTOM_INSET, paint);
+
+                    height = item.snowfall > 1 ? Math.sqrt(item.snowfall) : item.snowfall;
+                    precipTop = (0.5 + (1 - height / 5) / 2) * (h - BOTTOM_INSET);
+                    paint.setColor(snowColor);
+                    paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                    if (isEInk) {
+                        paint.setShader(einkBmpShader);
+                        canvas.drawRect(w / 2, precipTop, w, h - BOTTOM_INSET, paint);
+                        paint.setShader(null);
+                        paint.setStyle(Style.STROKE);
+                    }
+                    canvas.drawRect(w / 2, precipTop, w, h - BOTTOM_INSET, paint);
+                } else {
+                    const precipTop = (0.5 + (1 - precipitationHeight / 5) / 2) * (h - BOTTOM_INSET);
+                    paint.setColor(item.precipColor);
+                    paint.setAlpha(precipProbability === -1 ? 125 : precipProbability * 2.55);
+                    if (isEInk) {
+                        paint.setShader(einkBmpShader);
+                        canvas.drawRect(0, precipTop, w, h - BOTTOM_INSET, paint);
+                        paint.setShader(null);
+                        paint.setStyle(Style.STROKE);
+                    }
                     canvas.drawRect(0, precipTop, w, h - BOTTOM_INSET, paint);
-                    paint.setShader(null);
-                    paint.setStyle(Style.STROKE);
                 }
-                canvas.drawRect(0, precipTop, w, h - BOTTOM_INSET, paint);
+
                 if (isEInk) {
                     paint.setStyle(Style.FILL);
                 }

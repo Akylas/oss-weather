@@ -21,6 +21,7 @@ import { isEInk } from '~/helpers/theme';
 
 export enum WeatherProps {
     precipAccumulation = 'precipAccumulation',
+    rainPrecipitation = 'rain',
     precipProbability = 'precipProbability',
     cloudCover = 'cloudCover',
     cloudCeiling = 'cloudCeiling',
@@ -70,6 +71,7 @@ export function propToUnit(prop: WeatherProps, item?: CommonWeatherData) {
         case WeatherProps.precipProbability:
         case WeatherProps.uvIndex:
             return unitsSettings[UNIT_FAMILIES.Uv];
+        case WeatherProps.rainPrecipitation:
         case WeatherProps.precipAccumulation:
             if (item?.precipUnitFamily) {
                 return unitsSettings[item?.precipUnitFamily];
@@ -107,6 +109,7 @@ export function defaultPropUnit(prop: WeatherProps) {
         case WeatherProps.uvIndex:
             return UNITS.UV;
         case WeatherProps.precipAccumulation:
+        case WeatherProps.rainPrecipitation:
             return UNITS.MM;
         case WeatherProps.snowfall:
         case WeatherProps.snowDepth:
@@ -148,6 +151,7 @@ export const AVAILABLE_COMPARE_WEATHER_DATA = [
     WeatherProps.windBearing,
     WeatherProps.windSpeed,
     WeatherProps.precipAccumulation,
+    WeatherProps.rainPrecipitation,
     WeatherProps.cloudCover,
     WeatherProps.uvIndex,
     WeatherProps.windGust,
@@ -179,6 +183,11 @@ fonts.subscribe((data) => {
     }
 });
 
+const WEATHER_DATA_PARENT = {
+    [WeatherProps.snowfall]: WeatherProps.precipAccumulation,
+    [WeatherProps.rainPrecipitation]: WeatherProps.precipAccumulation,
+}
+
 const WEATHER_DATA_ICONS = {
     [WeatherProps.moon]: (item: CommonWeatherData) => item.moonIcon,
     [WeatherProps.iconId]: 'mdi-theme-light-dark',
@@ -194,7 +203,9 @@ const WEATHER_DATA_ICONS = {
     [WeatherProps.uvIndex]: 'mdi-weather-sunny-alert',
     [WeatherProps.windBeaufort]: (item: CommonWeatherData) => item.windBeaufortIcon,
     [WeatherProps.windSpeed]: (item: CommonWeatherData) => item.windIcon,
-    [WeatherProps.precipAccumulation]: (item: CommonWeatherData) => item.precipIcon
+    [WeatherProps.precipAccumulation]: (item: CommonWeatherData) => item.precipIcon,
+    [WeatherProps.rainPrecipitation]: 'wi-raindrop',
+    [WeatherProps.snowfall]: 'wi-snowflake-cold'
 };
 
 const WEATHER_DATA_TITLES = {
@@ -208,6 +219,8 @@ const WEATHER_DATA_TITLES = {
     [WeatherProps.rainSnowLimit]: lt('rain_snow_limit'),
     [WeatherProps.iso]: lt('freezing_level'),
     [WeatherProps.precipAccumulation]: lt('precipitation'),
+    [WeatherProps.snowfall]: lt('snow_precipitation'),
+    [WeatherProps.rainPrecipitation]: lt('rain_precipitation'),
     [WeatherProps.apparentTemperature]: lt('feels_like'),
     [WeatherProps.aqi]: lt('aqi'),
     [WeatherProps.sealevelPressure]: lt('sealevel_pressure'),
@@ -229,6 +242,8 @@ const WEATHER_DATA_COLORS = {
     [WeatherProps.iso]: snowColor,
     [WeatherProps.iconId]: sunnyColor,
     [WeatherProps.precipAccumulation]: rainColor,
+    [WeatherProps.rainPrecipitation]: rainColor,
+    [WeatherProps.snowfall]: snowColor,
     [WeatherProps.aqi]: colorForAqi(0)
 };
 
@@ -372,6 +387,7 @@ export class DataService extends Observable {
         type?: 'daily' | 'hourly' | 'currently';
     }) {
         let keys = [...new Set(addedBefore.concat(this.allWeatherData).concat(addedAfter))];
+        DEV_LOG && console.log('getAllIconsData', keys);
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }
@@ -416,8 +432,10 @@ export class DataService extends Observable {
         return keys.map((k) => this.getItemData(k, item, type)).filter((d) => !!d);
     }
 
-    getItemData(key: WeatherProps, item: CommonWeatherData, type?: 'daily' | 'hourly' | 'currently', options = this.getWeatherDataOptions(key)): CommonData {
-        if (!options || this.allWeatherData.indexOf(key) === -1) {
+    getItemData(key: WeatherProps, item: CommonWeatherData, type?: 'daily' | 'hourly' | 'currently'): CommonData {
+        const options = this.getWeatherDataOptions(key);
+
+        if (!options || this.allWeatherData.indexOf(WEATHER_DATA_PARENT[key] || key) === -1) {
             return null;
         }
         const toCheck = (type === 'daily' && key === WeatherProps.apparentTemperature ? item['apparentTemperatureMin'] : item[key]) ?? null;
@@ -547,6 +565,20 @@ export class DataService extends Observable {
                         color: item.precipColor,
                         iconFontSize,
                         icon: item.precipIcon,
+                        value: formatWeatherValue(item, key),
+                        subvalue: item.precipProbability > 0 && formatWeatherValue(item, WeatherProps.precipProbability)
+                    };
+                }
+                break;
+            case WeatherProps.rainPrecipitation:
+            case WeatherProps.snowfall:
+                if ((item.precipProbability === -1 || item.precipProbability > 10) && item[key] >= 0.1) {
+                    return {
+                        key,
+                        paint: wiPaint,
+                        iconColor: getWeatherDataColor(key),
+                        iconFontSize,
+                        icon,
                         value: formatWeatherValue(item, key),
                         subvalue: item.precipProbability > 0 && formatWeatherValue(item, WeatherProps.precipProbability)
                     };

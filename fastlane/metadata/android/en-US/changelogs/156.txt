@@ -1,0 +1,12 @@
+Features:
+- you can now see (only with Open-Meteo!) past precipition/snow for current day in daily view. You can also see precipitation/snow summary (all providers)
+
+Bug fixes:
+- compare weather icons was not correctly using timezone
+- compare charts where not showing times using correct timezone
+- more timezone fixes. Will fix missing AQI data
+- option to disable odd coloring in hourly section
+- settings first in main menu popover
+- some local fixes
+- ensure we already have timezone data
+- whit

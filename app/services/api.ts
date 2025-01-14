@@ -289,6 +289,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             if (showDayDataInCurrent) {
                 Object.assign(current, { precipAccumulation, cloudCover, cloudCeiling, iso, uvIndex, windGust });
             }
+
             if (firstHourIndex >= 0) {
                 Object.assign(current, hours[index]);
             }
@@ -297,6 +298,10 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             }
             if (now.valueOf() - weatherData.currently.time <= 1000 * 60 * 20) {
                 Object.assign(current, weatherData.currently);
+            }
+            // sometimes current APIs might
+            if (!current.iconId) {
+                current.iconId = dailyData.iconId;
             }
             // const { ...currentDaily } = current;
             let min = 10000;

@@ -1,6 +1,6 @@
 import { titlecase } from '@nativescript-community/l';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
-import { lang } from '~/helpers/locale';
+import { getStartOfDay, lang } from '~/helpers/locale';
 import { WeatherLocation, request } from '../api';
 import { CityWeather, Coord, OneCallResult } from './openweathermap';
 import { prefs } from '../preferences';
@@ -43,7 +43,7 @@ export class OWMProvider extends WeatherProvider {
         const forecast = result.content;
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
-        const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
+        // const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
         // console.log('test', JSON.stringify(result.daily));
         const r = {
             time: Date.now(), // we use phone local current time as reference
@@ -74,7 +74,7 @@ export class OWMProvider extends WeatherProvider {
             daily: {
                 data: forecast.daily.slice(0, forecast_days).map((data) => {
                     const d = {} as DailyData;
-                    d.time = data.dt * 1000;
+                    d.time = getStartOfDay(data.dt * 1000, weatherLocation.timezoneOffset).valueOf();
                     d.isDay = true;
                     d.iconId = data.weather[0]?.id;
                     d.description = titlecase(data.weather[0]?.description);

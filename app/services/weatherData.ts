@@ -281,8 +281,8 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
     for (let index = 0; index < addedDatas.length; index++) {
         const addedData = addedDatas[index];
         Object.keys(addedData).forEach((k) => {
-            const mainDataK = mainData[k]?.data || mainData[k];
-            const addedDataK = addedData[k]?.data || addedData[k];
+            const mainDataK: CommonWeatherData[] = mainData[k]?.data || mainData[k];
+            const addedDataK: CommonWeatherData[] = addedData[k]?.data || addedData[k];
             if (!Array.isArray(mainDataK) && !Array.isArray(addedDataK)) {
                 // DEV_LOG && console.log('mergeWeatherData object', k);
                 Object.assign(mainDataK, addedDataK);
@@ -291,29 +291,12 @@ export function mergeWeatherData(mainData: WeatherData, ...addedDatas) {
             if (!mainDataK?.length || !addedDataK?.length) {
                 return;
             }
-            const originalFirstTime = mainDataK[0].time;
-            const addedDataFirstTime = addedDataK[0].time;
+            for (index = 0; index < mainDataK.length; index++) {
+                const time = mainDataK[index].time;
+                const foundIndexToMerge = addedDataK.findIndex((d) => d.time === time);
 
-            // DEV_LOG && console.log('mergeWeatherData test', originalFirstTime, addedDataFirstTime);
-            if (addedDataFirstTime >= originalFirstTime) {
-                let index = mainDataK.findIndex((d) => d.time === addedDataFirstTime);
-                if (index !== -1) {
-                    for (index; index < mainDataK.length; index++) {
-                        if (index < mainDataK.length && index < addedDataK.length && mainDataK[index].time === addedDataK[index].time) {
-                            // DEV_LOG && console.log('assigning', k, index, addedDataK[index]);
-                            Object.assign(mainDataK[index], addedDataK[index]);
-                        }
-                    }
-                }
-            } else {
-                let index = addedDataK.findIndex((d) => d.time === originalFirstTime);
-                if (index !== -1) {
-                    for (index; index < addedDataK.length; index++) {
-                        if (index < mainDataK.length && index < addedDataK.length && mainDataK[index].time === addedDataK[index].time) {
-                            // DEV_LOG && console.log('assigning1', k, index, addedDataK[index]);
-                            Object.assign(mainDataK[index], addedDataK[index]);
-                        }
-                    }
+                if (foundIndexToMerge >= 0) {
+                    Object.assign(mainDataK[index], addedDataK[foundIndexToMerge]);
                 }
             }
         });

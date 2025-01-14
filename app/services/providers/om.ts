@@ -2,7 +2,7 @@ import { ApplicationSettings } from '@nativescript/core';
 import dayjs from 'dayjs';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
-import { l } from '~/helpers/locale';
+import { getStartOfDay, l } from '~/helpers/locale';
 import { Pollutants, getAqiFromPollutants, prepareAirQualityData } from '../airQualityData';
 import { WeatherLocation, request } from '../api';
 import { WeatherProps, weatherDataService } from '../weatherData';
@@ -508,7 +508,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         const hourlyData = hourly.time.map((time, index) => {
             const d = {} as Hourly;
             d.time = time * 1000;
-            const currentDay = dayjs.utc(d.time).startOf('d').valueOf();
+            const currentDay = getStartOfDay(d.time + 60000, weatherLocation.timezoneOffset).valueOf();
             if (!lastDay || currentDay !== lastDay.time) {
                 lastDay = {
                     time: currentDay,

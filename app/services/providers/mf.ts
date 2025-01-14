@@ -334,6 +334,7 @@ export class MFProvider extends WeatherProvider {
             hourlyData = forecastData?.slice(Math.max(firstHourIndex - 1, 0), hourlyLastIndex).map((data, index) => {
                 const d = {} as Hourly;
                 d.time = data.time * 1000;
+                DEV_LOG && console.log('mf hourly', d.time);
                 const icon = data.weather_icon;
 
                 d.isDay = icon.endsWith('j');

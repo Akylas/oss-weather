@@ -329,7 +329,6 @@ export class DataService extends Observable {
         };
     }
     updateCurrentWeatherData(data: WeatherProps[], smallData: WeatherProps[], save = true) {
-        DEV_LOG && console.log('updateCurrentWeatherData', data, smallData);
         this.currentWeatherData = data;
         this.currentSmallWeatherData = smallData;
         this.allWeatherData = data.concat(smallData);

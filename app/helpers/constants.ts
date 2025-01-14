@@ -26,6 +26,7 @@ export const SETTINGS_WEATHER_DATA_LAYOUT = 'weather_data_layout';
 export const SETTINGS_MIN_UV_INDEX = 'min_uv_index';
 export const SETTINGS_MAIN_CHART_NB_HOURS = 'main_chart_nb_hours';
 export const SETTINGS_MAIN_CHART_SHOW_WIND = 'main_chart_show_wind';
+export const SETTINGS_HOURLY_ODD_COLORS = 'hourly_odd_colors';
 
 export const DEFAULT_COLOR_THEME = 'default';
 export const DEFAULT_LOCALE = 'auto';
@@ -50,6 +51,7 @@ export const NB_HOURS_FORECAST = 72;
 export const MAIN_CHART_NB_HOURS = 72;
 export const NB_MINUTES_FORECAST = 60;
 export const MAIN_CHART_SHOW_WIND = false;
+export const DEFAULT_HOURLY_ODD_COLORS = true;
 
 export const MIN_UV_INDEX = 0;
 

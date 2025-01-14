@@ -1,11 +1,13 @@
 <script context="module" lang="ts">
     import { Align, BitmapShader, LayoutAlignment, LinearGradient, Paint, Path, StaticLayout, Style, TileMode } from '@nativescript-community/ui-canvas';
-    import { Color, ImageSource } from '@nativescript/core';
+    import { ApplicationSettings, Color, ImageSource } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
+    import { DEFAULT_HOURLY_ODD_COLORS, SETTINGS_HOURLY_ODD_COLORS } from '~/helpers/constants';
     import { formatDate, formatTime, getLocalTime } from '~/helpers/locale';
     import { getCanvas } from '~/helpers/sveltehelpers';
     import { isEInk, theme } from '~/helpers/theme';
+    import { prefs } from '~/services/preferences';
     import type { Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, showHourlyPopover, weatherDataService } from '~/services/weatherData';
     import { generateGradient } from '~/utils/utils.common';
@@ -27,11 +29,17 @@
     const curvePath = new Path();
 
     let lastGradient: { min; max; gradient: LinearGradient };
+    let useOddColors = ApplicationSettings.getBoolean(SETTINGS_HOURLY_ODD_COLORS, DEFAULT_HOURLY_ODD_COLORS);
+    let oddColor = useOddColors ? new Color((theme === 'black' ? 0.2 : 0.05) * 255, 120, 120, 120) : null;
+    prefs.on(`key:${SETTINGS_HOURLY_ODD_COLORS}`, () => {
+        useOddColors = ApplicationSettings.getBoolean(SETTINGS_HOURLY_ODD_COLORS, DEFAULT_HOURLY_ODD_COLORS);
+        oddColor = useOddColors ? new Color((theme === 'black' ? 0.2 : 0.05) * 255, 120, 120, 120) : null;
+    });
 </script>
 
 <script lang="ts">
     $: ({ colorOnSurface, colorOnSurfaceVariant } = $colors);
-    const oddColor = new Color((theme === 'black' ? 0.2 : 0.05) * 255, 120, 120, 120);
+
     export let item: Hourly & {
         index: number;
         min: number;
@@ -80,7 +88,7 @@
             const h = canvas.getHeight();
             textPaint.setFontWeight('normal');
 
-            if (!isEInk && item.odd) {
+            if (!isEInk && item.odd && oddColor) {
                 canvas.drawColor(oddColor);
             }
             let color;

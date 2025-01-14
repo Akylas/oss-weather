@@ -24,6 +24,7 @@
         CHARTS_PORTRAIT_FULLSCREEN,
         DAILY_PAGE_HOURLY_CHART,
         DECIMAL_METRICS_TEMP,
+        DEFAULT_HOURLY_ODD_COLORS,
         FEELS_LIKE_TEMPERATURE,
         MAIN_CHART_NB_HOURS,
         MAIN_CHART_SHOW_WIND,
@@ -35,6 +36,7 @@
         SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
         SETTINGS_DAILY_PAGE_HOURLY_CHART,
         SETTINGS_FEELS_LIKE_TEMPERATURES,
+        SETTINGS_HOURLY_ODD_COLORS,
         SETTINGS_IMPERIAL,
         SETTINGS_LANGUAGE,
         SETTINGS_MAIN_CHART_NB_HOURS,
@@ -517,6 +519,15 @@
                         value: ApplicationSettings.getBoolean('refresh_location_on_pull', false)
                     }
                 ];
+            case 'hourly':
+                return () => [
+                    {
+                        type: 'switch',
+                        id: SETTINGS_HOURLY_ODD_COLORS,
+                        title: lc('use_odd_colors_in_hourly'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_HOURLY_ODD_COLORS, DEFAULT_HOURLY_ODD_COLORS)
+                    }
+                ];
             default:
                 break;
         }
@@ -597,27 +608,21 @@
                         description: lc('icons_settings'),
                         icon: 'mdi-weather-partly-cloudy',
                         options: getSubSettings('icons')
-                    }
-                ] as any)
-                .concat([
+                    },
                     {
                         id: 'sub_settings',
                         title: lc('units'),
                         description: lc('units_settings'),
                         icon: 'mdi-temperature-celsius',
                         subSettingsOptions: 'units'
-                    }
-                ] as any)
-                .concat([
+                    },
                     {
                         id: 'sub_settings',
                         title: lc('providers'),
                         description: lc('providers_settings'),
                         icon: 'mdi-cloud-circle',
                         options: getSubSettings('providers')
-                    }
-                ] as any)
-                .concat([
+                    },
                     {
                         id: 'sub_settings',
                         title: lc('weather_data'),
@@ -626,9 +631,7 @@
                         onReordered: () => {},
                         icon: 'mdi-gauge',
                         options: getSubSettings('weather_data')
-                    }
-                ] as any)
-                .concat([
+                    },
                     {
                         id: 'sub_settings',
                         title: lc('charts'),
@@ -637,27 +640,30 @@
                         onReordered: () => {},
                         icon: 'mdi-chart-bar',
                         options: getSubSettings('charts')
-                    }
-                ] as any)
-                .concat([
+                    },
+                    {
+                        id: 'sub_settings',
+                        title: lc('hourly'),
+                        description: lc('hourly_settings'),
+                        reorderEnabled: true,
+                        onReordered: () => {},
+                        icon: 'mdi-clock-outline',
+                        options: getSubSettings('hourly')
+                    },
                     {
                         id: 'sub_settings',
                         title: lc('map'),
                         description: lc('map_settings'),
                         icon: 'mdi-map',
                         options: getSubSettings('map')
-                    }
-                ] as any)
-                .concat([
+                    },
                     {
                         id: 'sub_settings',
                         title: lc('geolocation'),
                         description: lc('geolocation_settings'),
                         icon: 'mdi-map-marker-circle',
                         options: getSubSettings('geolocation')
-                    }
-                ] as any)
-                .concat([
+                    },
                     {
                         id: 'third_party',
                         // rightBtnIcon: 'mdi-chevron-right',

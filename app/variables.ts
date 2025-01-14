@@ -113,7 +113,6 @@ function getUintSettingsData() {
         }
     });
     // ApplicationSettings.setString(SETTINGS_UNITS, JSON.stringify(newData));
-    DEV_LOG && console.log('getUintSettingsData', newData);
     return newData;
 }
 export const unitsSettings = getUintSettingsData();

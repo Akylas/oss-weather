@@ -73,17 +73,7 @@
     let page: NativeViewElementNode<Page>;
     async function showOptions(event) {
         try {
-            const options = (
-                gpsAvailable
-                    ? [
-                          {
-                              icon: 'mdi-crosshairs-gps',
-                              id: 'gps_location',
-                              name: lc('gps_location')
-                          }
-                      ]
-                    : []
-            ).concat([
+            const options = [
                 {
                     icon: 'mdi-cogs',
                     id: 'preferences',
@@ -94,7 +84,17 @@
                 //     id: 'about',
                 //     text: l('about')
                 // }
-            ] as any);
+            ].concat(
+                gpsAvailable
+                    ? [
+                          {
+                              icon: 'mdi-crosshairs-gps',
+                              id: 'gps_location',
+                              name: lc('gps_location')
+                          }
+                      ]
+                    : []
+            );
             if (weatherLocation) {
                 options.push(
                     ...([

@@ -220,12 +220,14 @@
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
             let timezoneData;
-
-            [weatherData, timezoneData] = await Promise.all([getWeatherProvider().getWeather(weatherLocation), queryTimezone(weatherLocation)]);
-            DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
-            if (timezoneData) {
+            if (!weatherLocation.timezone) {
+                timezoneData = await queryTimezone(weatherLocation);
                 Object.assign(weatherLocation, timezoneData);
                 ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+            }
+            const weatherData = await getWeatherProvider().getWeather(weatherLocation);
+            DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
+            if (timezoneData) {
             }
             if (weatherData) {
                 await updateView();

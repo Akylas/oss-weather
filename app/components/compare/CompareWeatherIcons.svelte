@@ -4,7 +4,7 @@
     import dayjs from 'dayjs';
     import { onDestroy } from 'svelte';
     import type { NativeViewElementNode } from 'svelte-native/dom';
-    import { lc } from '~/helpers/locale';
+    import { formatDate, formatTime, getLocalTime, getStartOfDay, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
     import type { CommonWeatherData, WeatherData } from '~/services/providers/weather';
@@ -21,6 +21,7 @@
     import { showError } from '@shared/utils/showError';
     import { Template } from 'svelte-native/components';
     import { loadImage } from '~/utils/utils.common';
+    import { FavoriteLocation } from '~/helpers/favorites';
 
     let { colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors;
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
@@ -37,6 +38,7 @@
     const COLUMN_HEIGHT = 50;
     const ICON_SIZE = 30;
     export let item: Item;
+    export let weatherLocation: FavoriteLocation;
     // export let screenOrientation: string = null;
 
     let width;
@@ -97,15 +99,12 @@
         canvas.drawBitmap(icon, srcRect, dstRect, null);
     }
     function onDraw({ canvas }: { canvas: Canvas }) {
-        const w = canvas.getWidth();
-        const h = canvas.getHeight();
         let dy = 0;
-        const dx = 90;
-        const now = dayjs();
+        const now = getLocalTime(undefined, weatherLocation.timezoneOffset);
         const startOfHour = now.startOf('h');
         const startOfHourTimeStamp = startOfHour.valueOf();
-        const startOfDay = now.startOf('d');
-        const startOfDayTimeStamp = startOfDay.valueOf();
+        const startOfDayTimeStamp = getStartOfDay(now, weatherLocation.timezoneOffset).valueOf();
+        // const startOfDayTimeStamp = startOfDay.valueOf();
         paint.setTextAlign(Align.LEFT);
         item.weatherData.forEach((data) => {
             let dx = 90;
@@ -154,21 +153,21 @@
             const h = canvas.getHeight();
             const dy = h - 5;
             let dx = 90;
-            const now = dayjs();
+            const now = getLocalTime(undefined, weatherLocation.timezoneOffset);
             const startOfHour = now.startOf('h');
-            const startOfDay = now.startOf('d');
+            const startOfDay = getStartOfDay(now, weatherLocation.timezoneOffset);
             paint.setTextAlign(Align.CENTER);
             paint.setColor(colorOnSurface);
             if (item.forecast === 'hourly') {
                 for (let index = 0; index < columns; index++) {
                     const date = startOfHour.add(index + 1, 'h');
-                    canvas.drawText(date.format(date.get('h') === 0 ? 'ddd' : 'HH'), dx + COLUMN_WIDTH / 2, dy, paint);
+                    canvas.drawText(formatTime(date.valueOf(), date.get('h') === 0 ? 'ddd' : 'HH', weatherLocation.timezoneOffset), dx + COLUMN_WIDTH / 2, dy, paint);
                     dx += COLUMN_WIDTH;
                 }
             } else {
                 for (let index = 0; index < columns; index++) {
                     const date = startOfDay.add(index + 1, 'd');
-                    canvas.drawText(date.format('DD/MM'), dx + COLUMN_WIDTH / 2, dy, paint);
+                    canvas.drawText(formatDate(date.valueOf(), 'DD/MM', weatherLocation.timezoneOffset), dx + COLUMN_WIDTH / 2, dy, paint);
                     dx += COLUMN_WIDTH;
                 }
             }

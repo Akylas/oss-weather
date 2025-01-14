@@ -5,26 +5,23 @@
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { ApplicationSettings, NavigatedData, ObservableArray, Page, View } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
     import { onMount } from 'svelte';
     import { Template } from 'svelte-native/components';
     import type { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
-    import ListItem from '~/components/common/ListItem.svelte';
+    import { CHARTS_LANDSCAPE } from '~/helpers/constants';
     import { FavoriteLocation } from '~/helpers/favorites';
     import { l, lc, slc } from '~/helpers/locale';
+    import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, networkService } from '~/services/api';
     import type { ProviderType } from '~/services/providers/weather';
     import { getProviderForType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_COMPARE_WEATHER_DATA, WeatherProps, getWeatherDataIcon, getWeatherDataTitle } from '~/services/weatherData';
-    import { showError } from '@shared/utils/showError';
-    import { actionBarButtonHeight, colors, windowInset } from '~/variables';
+    import { actionBarButtonHeight, windowInset } from '~/variables';
+    import ListItemAutoSize from '../common/ListItemAutoSize.svelte';
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
-    import { isDarkTheme, onThemeChanged } from '~/helpers/theme';
-    import { CHARTS_LANDSCAPE } from '~/helpers/constants';
-    import ListItemAutoSize from '../common/ListItemAutoSize.svelte';
-
-    $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorPrimary, colorSurface } = $colors);
 
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
     let dataToCompare: any = JSON.parse(ApplicationSettings.getString('compare_data_single', '{"id":"temperature","type":"linechart","forecast":"hourly"}'));
@@ -325,7 +322,7 @@
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if currentItem}
                 <CompareLineChart item={currentItem} row={1} {screenOrientation} visibility={currentItem?.chartType === 'weathericons' ? 'hidden' : 'visible'} />
-                <CompareWeatherIcons item={currentItem} row={1} {screenOrientation} visibility={currentItem?.chartType === 'weathericons' ? 'visible' : 'hidden'} />
+                <CompareWeatherIcons {weatherLocation} item={currentItem} row={1} {screenOrientation} visibility={currentItem?.chartType === 'weathericons' ? 'visible' : 'hidden'} />
             {:else}
                 <mdbutton horizontalAlignment="center" row={1} text={lc('select_data')} variant="text" verticalAlignment="middle" on:tap={toggleRightDrawer} />
             {/if}

@@ -587,7 +587,7 @@ export class DataService extends Observable {
                         iconFontSize,
                         paint: wiPaint,
                         backgroundColor: isEInk ? (item.windGust >= 50 ? '#000000' : undefined) : item.windGust >= 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : undefined,
-                        customDrawColor: isEInk ? '#000000' : item.windGust > 80 ? 'white' : item.windGust >= 50 ? 'white' : '#FFBC03',
+                        customDrawColor: isEInk ? '#000000' : item.windGust > 80 ? 'white' : item.windGust >= 50 ? 'black' : '#FFBC03',
                         color: isEInk ? '#000000' : item.windGust >= 80 ? '#ff0353' : item.windGust >= 50 ? '#FFBC03' : undefined,
                         icon,
                         value: data[0],

@@ -190,7 +190,7 @@
                         storeKey: SETTINGS_UNITS,
                         key: UNIT_FAMILIES.Temperature,
                         valueType: 'string',
-                        title: lc('temperature_unit'),
+                        title: lc('temperature'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Temperature],
                         values: [UNITS.Celcius, UNITS.Fahrenheit].map((u) => ({ title: u, value: u }))
                     },
@@ -200,7 +200,7 @@
                         storeKey: SETTINGS_UNITS,
                         key: UNIT_FAMILIES.Distance,
                         valueType: 'string',
-                        title: lc('distance_unit'),
+                        title: lc('distance'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Distance],
                         values: [UNITS.Kilometers, UNITS.Miles, UNITS.Meters, UNITS.Feet, UNITS.Inch].map((u) => ({ title: u, value: u }))
                     },
@@ -210,7 +210,7 @@
                         storeKey: SETTINGS_UNITS,
                         key: UNIT_FAMILIES.Precipitation,
                         valueType: 'string',
-                        title: lc('precipitation_unit'),
+                        title: lc('precipitation'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Precipitation],
                         values: [UNITS.Inch, UNITS.MM, UNITS.CM].map((u) => ({ title: u, value: u }))
                     },
@@ -220,7 +220,7 @@
                         storeKey: SETTINGS_UNITS,
                         key: UNIT_FAMILIES.Speed,
                         valueType: 'string',
-                        title: lc('speed_unit'),
+                        title: lc('speed'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Speed],
                         values: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.MPH, UNITS.FPH].map((u) => ({ title: u, value: u }))
                     },
@@ -230,7 +230,7 @@
                         storeKey: SETTINGS_UNITS,
                         key: UNIT_FAMILIES.Pressure,
                         valueType: 'string',
-                        title: lc('pressure_unit'),
+                        title: lc('pressure'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Pressure],
                         values: [UNITS.PressureHpa].map((u) => ({ title: u, value: u }))
                     }

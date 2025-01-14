@@ -1,4 +1,4 @@
-import { lc } from '@nativescript-community/l';
+import { lc, lt } from '@nativescript-community/l';
 import { createNativeAttributedString } from '@nativescript-community/text';
 import { Align, Canvas, Cap, LayoutAlignment, Paint, StaticLayout, Style } from '@nativescript-community/ui-canvas';
 import { HorizontalPosition, VerticalPosition } from '@nativescript-community/ui-popover';
@@ -198,21 +198,21 @@ const WEATHER_DATA_ICONS = {
 };
 
 const WEATHER_DATA_TITLES = {
-    [WeatherProps.iconId]: lc('weather_condition'),
-    [WeatherProps.moon]: lc('moon'),
-    [WeatherProps.cloudCover]: lc('cloud_cover'),
-    [WeatherProps.windGust]: lc('wind_gust'),
-    [WeatherProps.uvIndex]: lc('uv_index'),
-    [WeatherProps.windBeaufort]: lc('wind_beaufort'),
-    [WeatherProps.windSpeed]: lc('wind_speed'),
-    [WeatherProps.rainSnowLimit]: lc('rain_snow_limit'),
-    [WeatherProps.iso]: lc('freezing_level'),
-    [WeatherProps.precipAccumulation]: lc('precipitation'),
-    [WeatherProps.apparentTemperature]: lc('feels_like'),
-    [WeatherProps.aqi]: lc('aqi'),
-    [WeatherProps.sealevelPressure]: lc('sealevel_pressure'),
-    [WeatherProps.dewpoint]: lc('dewpoint'),
-    [WeatherProps.relativeHumidity]: lc('relative_humidity')
+    [WeatherProps.iconId]: lt('weather_condition'),
+    [WeatherProps.moon]: lt('moon'),
+    [WeatherProps.cloudCover]: lt('cloud_cover'),
+    [WeatherProps.windGust]: lt('wind_gust'),
+    [WeatherProps.uvIndex]: lt('uv_index'),
+    [WeatherProps.windBeaufort]: lt('wind_beaufort'),
+    [WeatherProps.windSpeed]: lt('wind_speed'),
+    [WeatherProps.rainSnowLimit]: lt('rain_snow_limit'),
+    [WeatherProps.iso]: lt('freezing_level'),
+    [WeatherProps.precipAccumulation]: lt('precipitation'),
+    [WeatherProps.apparentTemperature]: lt('feels_like'),
+    [WeatherProps.aqi]: lt('aqi'),
+    [WeatherProps.sealevelPressure]: lt('sealevel_pressure'),
+    [WeatherProps.dewpoint]: lt('dewpoint'),
+    [WeatherProps.relativeHumidity]: lt('relative_humidity')
 };
 const WEATHER_DATA_COLORS = {
     [WeatherProps.moon]: '#845987',

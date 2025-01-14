@@ -58,7 +58,7 @@
     "description_required": "Uma descrição é necessária",
     "dewpoint": "Ponto de orvalho",
     "disabled_weather_data": "dados do clima desativados",
-    "distance_unit": "unidade de distância",
+    "distance": "distância",
     "divers": "Outros",
     "donate": "Por favor, considere fazer uma pequena doação para ajudar o projeto",
     "drizzle": "Garoa",
@@ -183,7 +183,7 @@
     "precipitation": "precipitação",
     "precipitation_unit": "unidade de precipitação",
     "preferences": "Preferências",
-    "pressure_unit": "pressão",
+    "pressure": "pressão",
     "provider": {
         "meteofrance": "Méteo France",
         "title": "Provedor"
@@ -241,12 +241,12 @@
     "source_code": "Código fonte",
     "source_code_desc": "Obter código fonte no GitHub",
     "spanish": "Espanhol",
-    "speed_unit": "unidade de velocidade",
+    "speed": "velocidade",
     "sunrise": "nascer do sol",
     "sunset": "pôr do sol",
     "swipe_actionbar_provider": "gesto de deslizar da barra de ações",
     "swipe_actionbar_provider_desc": "deslize para esquerda ou direita na barra de ações para troca rápida do provedor",
-    "temperature_unit": "unidade de temperatura",
+    "temperature": "temperatura",
     "theme": {
         "auto": "Automático",
         "black": "Preto",

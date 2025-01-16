@@ -22,7 +22,7 @@ body {
 }
 
 .maplibregl-ctrl-bottom-right {
-    bottom: 100px;
+    bottom: var(--bottom-padding);
 }
 
 :root {

@@ -8,7 +8,7 @@
     import RangeSlider from 'svelte-range-slider-pips';
 
     function GetURLParameters() {
-        console.log('GetURLParameters ' + window.location.search);
+        // console.log('GetURLParameters ' + window.location.search);
         const sPageURL = decodeURI(window.location.search).substring(1);
         const sURLVariables = sPageURL.split('&');
         return sURLVariables.reduce((acc, val) => {
@@ -22,9 +22,10 @@
 
     let options = {
         source: urlParamers['source'],
-        position: (urlParamers['position'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike,
+        position: urlParamers['position']?.split(',').map(parseFloat).reverse() as LngLatLike,
         mapCenter: (urlParamers['mapCenter'] || '45.18453,5.75').split(',').map(parseFloat).reverse() as LngLatLike,
         zoom: parseFloat(urlParamers['zoom'] || '8'),
+        useToPickLocation: parseFloat(urlParamers['useToPickLocation'] || '0') === 1,
         layerOpacity: parseFloat(urlParamers['opacity'] || '0.8'),
         animationSpeed: parseFloat(urlParamers['animationSpeed'] || '100'),
         animated: (urlParamers['animated'] || 'false') === 'true',
@@ -36,10 +37,11 @@
         snowColors: parseFloat(urlParamers['snowColors'] || '1'), // 0 - do not show snow colors, 1 - show snow colors
         tileSize: parseFloat(urlParamers['tileSize'] || '256') // can be 256 or 512.
     };
-    console.log(`options ${JSON.stringify(options)}`);
+    // console.log(`options ${JSON.stringify(options)}`);
     let apiData: any = {};
     let data: any[] = [];
     let dataLength: number = 0;
+    document.documentElement.style.setProperty('--bottom-padding', options.useToPickLocation ? '0px' : '100px');
 
     document.documentElement.setAttribute('data-dark', options.dark === 'black' ? 'dark' : options.dark);
     if (options.dark === 'dark' || options.dark === 'black') {
@@ -57,7 +59,6 @@
                 await fetch(options.source.replace(/\{(x|y|z)\}/g, '0'), {
                     method: 'HEAD'
                 });
-                console.log('adding custom source ' + options.source);
                 style.sources.openmaptiles = {
                     type: 'vector',
                     tiles: [options.source],
@@ -77,9 +78,8 @@
                       customAttribution: [
                           '<a href="https://maplibre.org/">MapLibre</a>',
                           '<a href="https://www.openstreetmap.org">OpenStreetMap</a>',
-                          '<a href="https://carto.com/about-carto/">CARTO</a>',
-                          '<a href="https://www.rainviewer.com/api.html">RainViewer</a>'
-                      ]
+                          '<a href="https://carto.com/about-carto/">CARTO</a>'
+                      ].concat(options.useToPickLocation ? [] : ['<a href="https://www.rainviewer.com/api.html">RainViewer</a>'])
                   },
             //  refreshExpiredTiles:false,
             container,
@@ -97,44 +97,62 @@
                     map.setLayoutProperty(layer.id, 'text-field', result);
                 });
         });
-        const el = document.createElement('div');
-        el.className = 'marker';
-        new Marker({ element: el }).setLngLat(options.position).addTo(map);
-
         return map;
     }
     function mapAction(container) {
-        createMap(container).then((result) => {
-            map = result;
-            fetch('https://api.rainviewer.com/public/weather-maps.json')
-                .then((response) => response.text())
-                .then((response) => {
-                    apiData = JSON.parse(response);
-                    data = apiData.radar.past.concat(apiData.radar.nowcast);
-                    dataLength = data.length;
-                    data.forEach((frame) => {
-                        map.addLayer({
-                            id: `rainviewer_${frame.path}`,
-                            type: 'raster',
-                            source: {
-                                type: 'raster',
-                                tiles: [apiData.host + frame.path + `/${options.tileSize}/{z}/{x}/{y}/${options.colors}/${options.smoothData}_${options.snowColors}.png`],
-                                tileSize: options.tileSize
-                            },
-                            // layout: { visibility: 'none' },
-                            paint: {
-                                'raster-fade-duration': 0,
-                                'raster-opacity': 0
-                            },
-                            minzoom: 0,
-                            maxzoom: 12
-                        });
-                    });
-                    setIndex(apiData.radar.past.length - 1);
-                    if (options.animated) {
-                        startStopAnimation();
+        createMap(container).then((map) => {
+            if (options.position) {
+                const el = document.createElement('div');
+                el.className = 'marker';
+                new Marker({ element: el }).setLngLat(options.position).addTo(map);
+            }
+
+            if (options.useToPickLocation) {
+                let positionMarker: Marker;
+                map.on('click', (e) => {
+                    if (!positionMarker) {
+                        const el = document.createElement('div');
+                        el.className = 'marker';
+                        positionMarker = new Marker({ element: el }).setLngLat(e.lngLat).addTo(map);
+                    } else {
+                        positionMarker.setLngLat(e.lngLat);
+                    }
+                    if (window['nsWebViewBridge']) {
+                        // console.log('emitNSEvent ', name, value);
+                        window['nsWebViewBridge'].emit('position', e.lngLat);
                     }
                 });
+            } else {
+                fetch('https://api.rainviewer.com/public/weather-maps.json')
+                    .then((response) => response.text())
+                    .then((response) => {
+                        apiData = JSON.parse(response);
+                        data = apiData.radar.past.concat(apiData.radar.nowcast);
+                        dataLength = data.length;
+                        data.forEach((frame) => {
+                            map.addLayer({
+                                id: `rainviewer_${frame.path}`,
+                                type: 'raster',
+                                source: {
+                                    type: 'raster',
+                                    tiles: [apiData.host + frame.path + `/${options.tileSize}/{z}/{x}/{y}/${options.colors}/${options.smoothData}_${options.snowColors}.png`],
+                                    tileSize: options.tileSize
+                                },
+                                // layout: { visibility: 'none' },
+                                paint: {
+                                    'raster-fade-duration': 0,
+                                    'raster-opacity': 0
+                                },
+                                minzoom: 0,
+                                maxzoom: 12
+                            });
+                        });
+                        setIndex(apiData.radar.past.length - 1);
+                        if (options.animated) {
+                            startStopAnimation();
+                        }
+                    });
+            }
         });
     }
     let currentIndex = 0;
@@ -253,35 +271,23 @@
 <div style="height:100%;width:100%;display:flex;justify-content:center  ">
     <div style="height:100%;width:100%;" class="map" use:mapAction />
 
-    <RainViewerLegend colorScheme={options.colors} snow={options.snowColors === 1} />
-    <div style="position: absolute; bottom:5px; width: 90%; height: 60px;  align-content: center;flex-direction: row;display: flex;" class="popup">
-        <div style="display: flex;flex-direction: column;flex-grow:1;">
-            <div style="display: flex;flex-direction: row;flex-grow:1;">
-                <div style="text-align:center; height: 30px;flex-direction: row;flex-grow: 1;">
-                    <button id="prevBtn" style="width:30px;height:30px;" class="button" on:click={showPreviousFrame} />
-                    <button id={animationInterval ? 'pauseBtn' : 'playBtn'} style="width:30px;height:30px;" class="button" on:click={startStopAnimation} />
-                    <button id="nextBtn" style="width:30px;height:30px;" class="button" on:click={showNextFrame} />
-
-                    <!-- <li>
-                        <select id="colors" onchange="setColors(); return;">
-                            <option value="0">Black and White Values</option>
-                            <option value="1">Original</option>
-                            <option selected="selected" value="2">Universal Blue</option>
-                            <option value="3">TITAN</option>
-                            <option value="4">The Weather Channel</option>
-                            <option value="5">Meteored</option>
-                            <option value="6">NEXRAD Level-III</option>
-                            <option value="7">RAINBOW @ SELEX-SI</option>
-                            <option value="8">Dark Sky</option>
-                        </select>
-                    </li> -->
+    {#if !options.useToPickLocation}
+        <RainViewerLegend colorScheme={options.colors} snow={options.snowColors === 1} />
+        <div style="position: absolute; bottom:5px; width: 90%; height: 60px;  align-content: center;flex-direction: row;display: flex;" class="popup">
+            <div style="display: flex;flex-direction: column;flex-grow:1;">
+                <div style="display: flex;flex-direction: row;flex-grow:1;">
+                    <div style="text-align:center; height: 30px;flex-direction: row;flex-grow: 1;">
+                        <button id="prevBtn" style="width:30px;height:30px;" class="button" on:click={showPreviousFrame} />
+                        <button id={animationInterval ? 'pauseBtn' : 'playBtn'} style="width:30px;height:30px;" class="button" on:click={startStopAnimation} />
+                        <button id="nextBtn" style="width:30px;height:30px;" class="button" on:click={showNextFrame} />
+                    </div>
+                    <div id="timestamp" style="text-align:center; font-weight:bold;padding:4px" class="label"></div>
                 </div>
-                <div id="timestamp" style="text-align:center; font-weight:bold;padding:4px" class="label"></div>
-            </div>
 
-            <div style="padding: 0px 0px;">
-                <RangeSlider float {handleFormatter} max={dataLength - 1} min={0} pips values={[currentIndex]} on:start={stopAnimation} on:change={(e) => setIndex(e.detail.value)} />
+                <div style="padding: 0px 0px;">
+                    <RangeSlider float {handleFormatter} max={dataLength - 1} min={0} pips values={[currentIndex]} on:start={stopAnimation} on:change={(e) => setIndex(e.detail.value)} />
+                </div>
             </div>
         </div>
-    </div>
+    {/if}
 </div>

@@ -44,3 +44,9 @@ interface LatLonKeys {
     lon: number;
     altitude?: number;
 }
+
+declare namespace svelteNative.JSX {
+    interface WebViewAttributes {
+        'on:position'?: (args) => void;
+    }
+}

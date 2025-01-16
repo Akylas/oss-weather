@@ -492,11 +492,12 @@ export async function requestNominatimReverse(coord: { lat: number; lon: number 
             }
         })
     ).content;
+    const city = result.address.city || result.address.municipality || result.address.town || result.address.village || result.address.hamlet;
     return {
         coord,
-        name: result.name || result.address.city || result.address.municipality,
+        name: city,
         sys: {
-            city: result.address.city || result.address.municipality,
+            city,
             country: result.address.country,
             state: result.address.state || result.address.county,
             housenumber: result.address.house_number,

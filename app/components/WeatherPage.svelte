@@ -78,12 +78,12 @@
                     icon: 'mdi-cogs',
                     id: 'preferences',
                     name: lc('preferences')
+                },
+                {
+                    icon: 'mdi-map-plus',
+                    id: 'select_map',
+                    name: lc('select_location_map')
                 }
-                // {
-                //     icon: 'mdi-information-outline',
-                //     id: 'about',
-                //     text: l('about')
-                // }
             ].concat(
                 gpsAvailable
                     ? [
@@ -183,6 +183,9 @@
                                 case 'gps_location':
                                     await getLocationAndWeather();
                                     break;
+                                case 'select_map':
+                                    await selectLocationOnMap();
+                                    break;
                                 case 'meteo_blue':
                                     const MeteoBlue = (await import('~/components/MeteoBlue.svelte')).default;
                                     navigate({ page: MeteoBlue, props: { weatherLocation } });
@@ -279,6 +282,31 @@
             // it would crash in production because imported toggleFavorite would be undefined ...
             const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true });
             if (result) {
+                saveLocation(result);
+            }
+        } catch (err) {
+            showError(err);
+        }
+    }
+    async function selectLocationOnMap() {
+        try {
+            const SelectPositionOnMap = (await import('~/components/SelectPositionOnMap.svelte')).default;
+            // TODO: for now we dont lazy load SelectCity
+            // it would crash in production because imported toggleFavorite would be undefined ...
+
+            const location: {
+                lat: number;
+                lon: number;
+            } = await showModal({
+                page: SelectPositionOnMap,
+                animated: true,
+                fullscreen: true,
+                props: {
+                    focusPos: gps.getLastKnownLocation() || weatherLocation?.coord
+                }
+            });
+            if (location) {
+                const result = await geocodeAddress(location);
                 saveLocation(result);
             }
         } catch (err) {
@@ -812,6 +840,10 @@
                     <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
+                    </mdbutton>
+                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={selectLocationOnMap} android:paddingTop={2}>
+                        <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-map-plus" verticalAlignment="middle" />
+                        <cspan text={' ' + $sl('select_location_map').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                 </stackLayout>
             {/if}

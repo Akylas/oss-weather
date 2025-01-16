@@ -246,7 +246,7 @@ module.exports = (env, params = {}) => {
         TNS_ENV: JSON.stringify(mode),
         __APP_ID__: `"${appId}"`,
         __APP_VERSION__: `"${appVersion}"`,
-        __APP_BUILD_NUMBER__: `"${buildNumber}"`,
+        __APP_BUILD_NUMBER__: `${buildNumber}`,
         SUPPORTED_LOCALES: JSON.stringify(supportedLocales),
         SUPPORTED_COLOR_THEMES: JSON.stringify(supportedColorThemes),
         __INAPP_PURCHASE_ID_PREFIX__: `""`,

@@ -10,11 +10,6 @@ declare const DARK_SKY_KEY: string;
 declare const CLIMA_CELL_DEFAULT_KEY: string;
 declare const CLIMA_CELL_MY_KEY: string;
 declare const DEFAULT_LOCATION: string;
-declare const GIT_URL: string;
-declare const STORE_LINK: string;
-declare const PLAY_STORE_BUILD: boolean;
-declare const STORE_REVIEW_LINK: string;
-declare const SPONSOR_URL: string;
 declare const DEFAULT_PROVIDER: string;
 
 interface LatLonKeys {

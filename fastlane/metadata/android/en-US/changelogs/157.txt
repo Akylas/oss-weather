@@ -1,0 +1,8 @@
+Features:
+- allow to select position from map
+
+Bug fixes:
+- error while opening Font scale settings
+- precipitation view being not fully displayed
+- try to always show precipitation as mm
+- Translations update

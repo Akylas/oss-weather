@@ -425,7 +425,7 @@
                     <canvasview height={Math.ceil(last24Data.length * 30 + 45) * $fontScale} on:draw={drawLast24} />
                 {/if}
                 {#if next24Data.length > 0}
-                    <canvasview height={Math.ceil(next24Data.length * 30 + (last24Data.length > 0 ? 45 : 0)) * $fontScale} on:draw={drawNext24} />
+                    <canvasview height={Math.ceil(next24Data.length * 30 + (last24Data.length > 0 ? 45 : 15)) * $fontScale} on:draw={drawNext24} />
                 {/if}
 
                 {#if item.pollutants}

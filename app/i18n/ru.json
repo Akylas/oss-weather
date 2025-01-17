@@ -265,6 +265,7 @@
     "select_data": "Выберите данные",
     "select_language": "Выберите язык",
     "select_location": "Выберите местоположение",
+    "select_location_map": "Выбрать местоположение на карте",
     "select_on_map": "Выбрать на карте",
     "select_theme": "Выберите тему",
     "send": "Отправить",

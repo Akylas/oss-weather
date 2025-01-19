@@ -62,7 +62,9 @@
         "title": "колір теми"
     },
     "comments": "коментарі",
+    "custom_tile_server_description": "ви можете використовувати власний сервер для отримання даних мапи",
     "daylight_duration": "тривалість світлового дня",
+    "daylight_left": "залишилось світлового дня",
     "description": "опис",
     "description_required": "потрібен опис",
     "distance": "Відстань",

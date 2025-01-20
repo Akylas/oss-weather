@@ -68,7 +68,7 @@
                 console.error('error ' + error);
             }
         }
-        const map = new Map({
+        map = new Map({
             fadeDuration: 0,
             validateStyle: false,
             attributionControl: options.hideAttribution
@@ -106,7 +106,6 @@
                 el.className = 'marker';
                 new Marker({ element: el }).setLngLat(options.position).addTo(map);
             }
-
             if (options.useToPickLocation) {
                 let positionMarker: Marker;
                 map.on('click', (e) => {
@@ -127,6 +126,7 @@
                     .then((response) => response.text())
                     .then((response) => {
                         apiData = JSON.parse(response);
+                        console.log('apiData ' + response);
                         data = apiData.radar.past.concat(apiData.radar.nowcast);
                         dataLength = data.length;
                         data.forEach((frame) => {

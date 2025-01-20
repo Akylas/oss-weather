@@ -1,4 +1,4 @@
-import App from './App_maplibre.svelte';
+import App from './App.svelte';
 
 const app = new App({
     target: document.body

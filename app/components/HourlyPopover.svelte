@@ -36,7 +36,6 @@
             addedAfter: [WeatherProps.rainSnowLimit, WeatherProps.iso],
             type: 'hourly'
         });
-        DEV_LOG && console.log('getAllIconsData', JSON.stringify(item), JSON.stringify(data));
         height = data.length * 19 * $fontScale;
         canvas?.nativeView?.invalidate();
     }
@@ -48,7 +47,6 @@
         const addedDy = 19;
         for (let index = 0; index < data.length; index++) {
             const c = data[index];
-            DEV_LOG && console.log('draw data', c.key );
             const paint = c.paint || labelPaint;
             paint.color = c.iconColor || c.color || colorOnSurface;
             paint.textSize = c.iconFontSize * 0.8;

@@ -226,6 +226,16 @@
                         id: 'store_setting',
                         store: unitsSettings,
                         storeKey: SETTINGS_UNITS,
+                        key: UNIT_FAMILIES.DistanceSmall,
+                        valueType: 'string',
+                        title: lc('snow'),
+                        rightValue: () => unitsSettings[UNIT_FAMILIES.DistanceSmall],
+                        values: [UNITS.Inch, UNITS.MM, UNITS.CM].map((u) => ({ title: u, value: u }))
+                    },
+                    {
+                        id: 'store_setting',
+                        store: unitsSettings,
+                        storeKey: SETTINGS_UNITS,
                         key: UNIT_FAMILIES.Speed,
                         valueType: 'string',
                         title: lc('speed'),
@@ -1185,7 +1195,6 @@
     }
     onThemeChanged(refreshCollectionView);
     onUnitsChanged(() => {
-        DEV_LOG && console.info('onUnitsChanged', subSettingsOptions, unitsSettings);
         if (subSettingsOptions === 'units') {
             refreshCollectionView();
         }

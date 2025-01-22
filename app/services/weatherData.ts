@@ -72,7 +72,6 @@ export function propToUnit(prop: WeatherProps, item?: CommonWeatherData, options
         case WeatherProps.uvIndex:
             return unitsSettings[UNIT_FAMILIES.Uv];
         case WeatherProps.rainPrecipitation:
-        case WeatherProps.precipAccumulation:
             return unitsSettings[UNIT_FAMILIES.Precipitation];
         case WeatherProps.precipAccumulation:
             if (item?.precipUnitFamily && options?.canForcePrecipUnit !== false) {
@@ -395,7 +394,6 @@ export class DataService extends Observable {
         type?: 'daily' | 'hourly' | 'currently';
     }) {
         let keys = [...new Set(addedBefore.concat(this.allWeatherData).concat(addedAfter))];
-        DEV_LOG && console.log('getAllIconsData', keys);
         if (filter.length) {
             keys = keys.filter((k) => filter.indexOf(k) === -1);
         }

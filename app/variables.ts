@@ -8,11 +8,13 @@ import {
     ALWAYS_SHOW_PRECIP_PROB,
     DECIMAL_METRICS_TEMP,
     DEFAULT_COLOR_THEME,
+    DEFAULT_METRIC_CM_TO_MM,
     SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
     SETTINGS_COLOR_THEME,
     SETTINGS_FEELS_LIKE_TEMPERATURES,
     SETTINGS_FONTSCALE,
     SETTINGS_IMPERIAL,
+    SETTINGS_METRIC_CM_TO_MM,
     SETTINGS_METRIC_TEMP_DECIMAL,
     SETTINGS_SHOW_CURRENT_DAY_DAILY,
     SETTINGS_UNITS,
@@ -86,6 +88,7 @@ export const snowColor = new Color('#43b4e0');
 
 export let imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL, false);
 export let metricDecimalTemp = ApplicationSettings.getBoolean(SETTINGS_METRIC_TEMP_DECIMAL, DECIMAL_METRICS_TEMP);
+export let unitCMToMM = ApplicationSettings.getBoolean(SETTINGS_METRIC_CM_TO_MM, DEFAULT_METRIC_CM_TO_MM);
 export const alwaysShowPrecipProb = writable(ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB));
 export const weatherDataLayout = writable(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
@@ -118,12 +121,15 @@ function getUintSettingsData() {
 export const unitsSettings = getUintSettingsData();
 export const unitsSettingsStore = writable(unitsSettings);
 
+function notifyUnits() {
+    globalObservable.notify({ eventName: SETTINGS_UNITS, data: unitsSettings });
+}
+
 function updateUnits() {
     Object.assign(unitsSettings, getUintSettingsData());
     unitsSettingsStore.set(unitsSettings);
     DEV_LOG && console.log('updateUnits', unitsSettings);
-
-    globalObservable.notify({ eventName: SETTINGS_UNITS, data: unitsSettings });
+    notifyUnits();
 }
 prefs.on(`key:${SETTINGS_IMPERIAL}`, () => {
     imperialUnits = ApplicationSettings.getBoolean(SETTINGS_IMPERIAL);
@@ -139,8 +145,14 @@ prefs.on(`key:${SETTINGS_UNITS}`, () => {
 prefs.on(`key:${SETTINGS_METRIC_TEMP_DECIMAL}`, () => {
     metricDecimalTemp = ApplicationSettings.getBoolean(SETTINGS_METRIC_TEMP_DECIMAL, DECIMAL_METRICS_TEMP);
     DEV_LOG && console.log(`key:${SETTINGS_METRIC_TEMP_DECIMAL}`, imperialUnits, metricDecimalTemp);
-    // we notify imperial to update ui
-    globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
+    // we notify units to update ui
+    notifyUnits();
+});
+prefs.on(`key:${SETTINGS_METRIC_CM_TO_MM}`, () => {
+    unitCMToMM = ApplicationSettings.getBoolean(SETTINGS_METRIC_CM_TO_MM, DEFAULT_METRIC_CM_TO_MM);
+    DEV_LOG && console.log(`key:${SETTINGS_METRIC_CM_TO_MM}`, imperialUnits, metricDecimalTemp);
+    // we notify units to update ui
+    notifyUnits();
 });
 prefs.on(`key:${SETTINGS_WEATHER_DATA_LAYOUT}`, () => {
     weatherDataLayout.set(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));

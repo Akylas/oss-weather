@@ -316,6 +316,8 @@
     "uchinaguchi": "Okinawan",
     "ukrainian": "Ukrainian",
     "units": "units",
+    "units_cm_to_mm": "use mm for small cm values",
+    "units_cm_to_mm_desc": "when using cm and value is < 1 switch to mm",
     "units_settings": "all units related settings",
     "use_odd_colors_in_hourly": "use odd background colors in hourly section",
     "uv_index": "uv index",

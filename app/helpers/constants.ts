@@ -18,6 +18,7 @@ export const SETTINGS_WEATHER_MAP_SHOW_SNOW = 'weather_map_show_snow';
 export const SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE = 'weather_map_custom_tile_source';
 export const SETTINGS_UNITS = 'units';
 export const SETTINGS_METRIC_TEMP_DECIMAL = 'metric_temp_decimal';
+export const SETTINGS_METRIC_CM_TO_MM = 'metric_cm_to_mm';
 export const SETTINGS_ALWAYS_SHOW_PRECIP_PROB = 'always_show_precip_prob';
 export const SETTINGS_FEELS_LIKE_TEMPERATURES = 'feels_like_temperatures';
 export const SETTINGS_SHOW_DAILY_IN_CURRENTLY = 'show_daily_in_currently';
@@ -43,6 +44,7 @@ export const SHOW_CURRENT_DAY_DAILY = false;
 export const SHOW_DAILY_IN_CURRENTLY = false;
 export const FEELS_LIKE_TEMPERATURE = false;
 export const ALWAYS_SHOW_PRECIP_PROB = false;
+export const DEFAULT_METRIC_CM_TO_MM = false;
 
 export const WEATHER_DATA_LAYOUT = 'default';
 

@@ -42,6 +42,7 @@
         SETTINGS_MAIN_CHART_NB_HOURS,
         SETTINGS_MAIN_CHART_SHOW_WIND,
         SETTINGS_MAIN_PAGE_HOURLY_CHART,
+        SETTINGS_METRIC_CM_TO_MM,
         SETTINGS_METRIC_TEMP_DECIMAL,
         SETTINGS_MIN_UV_INDEX,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
@@ -73,7 +74,7 @@
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { confirmRestartApp, createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
-    import { colors, fonts, iconColor, imperial, onUnitsChanged, unitsSettings, windowInset } from '~/variables';
+    import { colors, fonts, iconColor, imperial, metricDecimalTemp, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
@@ -178,7 +179,14 @@
                         type: 'switch',
                         id: SETTINGS_METRIC_TEMP_DECIMAL,
                         title: lc('metric_temp_decimal'),
-                        value: ApplicationSettings.getBoolean(SETTINGS_METRIC_TEMP_DECIMAL, DECIMAL_METRICS_TEMP)
+                        value: metricDecimalTemp
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_METRIC_CM_TO_MM,
+                        title: lc('units_cm_to_mm'),
+                        description: lc('units_cm_to_mm_desc'),
+                        value: unitCMToMM
                     },
                     {
                         type: 'sectionheader',

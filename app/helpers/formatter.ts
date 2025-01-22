@@ -5,7 +5,7 @@ import { colorForAqi, colorForPollen, colorForPollutant } from '~/services/airQu
 import { WeatherLocation } from '~/services/api';
 import type { CommonAirQualityData, Currently, DailyData, Hourly } from '~/services/providers/weather';
 import { colorForUV } from '~/services/weatherData';
-import { cloudyColor, imperialUnits, metricDecimalTemp, rainColor, snowColor, sunnyColor } from '~/variables';
+import { cloudyColor, imperialUnits, metricDecimalTemp, rainColor, snowColor, sunnyColor, unitCMToMM } from '~/variables';
 import { formatDate, lang, lc } from './locale';
 import { UNITS, UNIT_FAMILIES } from './units';
 
@@ -71,7 +71,7 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
         case UNITS.CM:
             digits = 10;
             value /= 10;
-            if (unit === UNITS.CM && value < 1) {
+            if (unitCMToMM && unit === UNITS.CM && value < 1) {
                 unit = UNITS.MM;
                 value *= 10;
             }

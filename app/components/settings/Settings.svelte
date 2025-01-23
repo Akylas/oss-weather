@@ -139,31 +139,6 @@
                         id: 'charts_portrait_fullscreen',
                         title: lc('charts_portrait_fullscreen'),
                         value: ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN)
-                    },
-                    {
-                        type: 'switch',
-                        id: SETTINGS_MAIN_PAGE_HOURLY_CHART,
-                        title: lc('show_hourly_chart_on_main'),
-                        value: ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART)
-                    },
-                    {
-                        type: 'switch',
-                        id: SETTINGS_DAILY_PAGE_HOURLY_CHART,
-                        title: lc('show_hourly_chart_on_daily'),
-                        value: ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART)
-                    },
-                    {
-                        key: SETTINGS_MAIN_CHART_NB_HOURS,
-                        id: 'setting',
-                        title: lc('main_chart_nb_hours'),
-                        values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
-                        rightValue: () => ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS)
-                    },
-                    {
-                        type: 'switch',
-                        id: SETTINGS_MAIN_CHART_SHOW_WIND,
-                        title: lc('main_chart_show_wind'),
-                        value: ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND)
                     }
                 ];
             case 'units':
@@ -544,6 +519,31 @@
                         id: SETTINGS_HOURLY_ODD_COLORS,
                         title: lc('use_odd_colors_in_hourly'),
                         value: ApplicationSettings.getBoolean(SETTINGS_HOURLY_ODD_COLORS, DEFAULT_HOURLY_ODD_COLORS)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_MAIN_PAGE_HOURLY_CHART,
+                        title: lc('show_hourly_chart_on_main'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_MAIN_PAGE_HOURLY_CHART, MAIN_PAGE_HOURLY_CHART)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_DAILY_PAGE_HOURLY_CHART,
+                        title: lc('show_hourly_chart_on_daily'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_DAILY_PAGE_HOURLY_CHART, DAILY_PAGE_HOURLY_CHART)
+                    },
+                    {
+                        key: SETTINGS_MAIN_CHART_NB_HOURS,
+                        id: 'setting',
+                        title: lc('main_chart_nb_hours'),
+                        values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        rightValue: () => ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS)
+                    },
+                    {
+                        type: 'switch',
+                        id: SETTINGS_MAIN_CHART_SHOW_WIND,
+                        title: lc('main_chart_show_wind'),
+                        value: ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND)
                     }
                 ];
             default:

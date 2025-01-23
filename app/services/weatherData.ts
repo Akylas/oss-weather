@@ -229,7 +229,8 @@ const WEATHER_DATA_TITLES = {
     [WeatherProps.aqi]: lt('aqi'),
     [WeatherProps.sealevelPressure]: lt('sealevel_pressure'),
     [WeatherProps.dewpoint]: lt('dewpoint'),
-    [WeatherProps.relativeHumidity]: lt('relative_humidity')
+    [WeatherProps.relativeHumidity]: lt('relative_humidity'),
+    [WeatherProps.snowDepth]: lt('snow_depth')
 };
 const WEATHER_DATA_COLORS = {
     [WeatherProps.moon]: '#845987',

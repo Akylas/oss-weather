@@ -906,6 +906,7 @@
                             disableCss={true}
                             fontSize={14 * $fontScale}
                             paddingTop={3 * $fontScale}
+                            verticalAlignment="top"
                             text={formatTime(Date.now(), 'LT', item.timezoneOffset)}
                             textWrap={true}
                             visibility={item.timezone ? 'visible' : 'hidden'} />

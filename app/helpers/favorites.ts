@@ -32,7 +32,7 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
         } else {
             return {
                 timezone,
-                timezoneOffset: NSTimeZone.alloc().initWithName(timezone).daylightSavingTimeOffsetForDate(new Date()) / 3600
+                timezoneOffset: NSTimeZone.alloc().initWithName(timezone).secondsFromGMTForDate(new Date()) / 3600
             };
         }
     } else {

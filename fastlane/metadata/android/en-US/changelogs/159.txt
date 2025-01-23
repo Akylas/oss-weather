@@ -1,0 +1,5 @@
+Bug fixes:
+- moved some settings around for better consistency
+- some locale fixes
+- another (again) mm/cm fix
+- Translations update

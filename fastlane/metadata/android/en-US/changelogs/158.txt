@@ -1,0 +1,6 @@
+Bug fixes:
+- weather map not showing data anymore
+- new units option to auto switch from cm to mm for small values (disabled by default)
+- precipitation (snow only) wrong in some cases
+- allow to select unit for snow falls
+- Translations update

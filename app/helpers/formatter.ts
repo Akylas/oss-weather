@@ -62,8 +62,14 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
                 value *= 0.03937008;
             } else if (unit === UNITS.CM) {
                 if (value < 1) {
-                    unit = UNITS.MM;
+                    if (unitCMToMM) {
+                        unit = UNITS.MM;
+                    } else {
+                        value /= 10;
+                        digits = 100;
+                    }
                 } else {
+                    digits = 100;
                     value /= 10;
                 }
             }
@@ -71,9 +77,13 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
         case UNITS.CM:
             digits = 10;
             value /= 10;
-            if (unitCMToMM && unit === UNITS.CM && value < 1) {
-                unit = UNITS.MM;
-                value *= 10;
+            if (unit === UNITS.CM && value < 1) {
+                if (unitCMToMM) {
+                    unit = UNITS.MM;
+                    value *= 10;
+                } else {
+                    digits = 100;
+                }
             }
             //     if (unit === UNITS.Inch) {
             //         digits = 10;

@@ -88,6 +88,7 @@
             center: options.mapCenter,
             zoom: options.zoom
         });
+        map.touchZoomRotate.disableRotation();
         map.on('styledata', () => {
             const languageFieldName = `name:${options.language}`;
             map?.getStyle()

@@ -50,11 +50,11 @@
 </script>
 
 <page actionBarHidden={true}>
-    <gridlayout rows="auto,*,auto" android:paddingLeft={$windowInset.left} android:paddingRight={$windowInset.right} android:paddingBottom={$windowInset.bottom}>
-        <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={1}>
+    <gridlayout rows="auto,auto,*" android:paddingLeft={$windowInset.left} android:paddingRight={$windowInset.right} android:paddingBottom={$windowInset.bottom}>
+        <gridlayout borderColor={colorOutline} borderRadius={10} borderWidth={1} margin="10" row={2}>
             <WeatherComponent {fakeNow} fullRefresh={false} {items} {weatherLocation} />
         </gridlayout>
-        <gridlayout columns="*,auto,auto" row={2}>
+        <gridlayout columns="*,auto,auto" row={1}>
             <slider maxValue={2} minValue={0.5} value={fontScale} on:valueChange={(e) => setFontScale(e.value)} />
 
             <textfield col={1} keyboardType="number" padding="4" text={fontScale.toFixed(2)} variant="outline" verticalTextAlignment="middle" width={70} on:textChange={onTextChange} />

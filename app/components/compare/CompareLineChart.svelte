@@ -72,7 +72,7 @@
     let chartInitialized = false;
 
     $: if (drawer) {
-        drawer.nativeView.on('open', () => (item.startingSide = 'bottom'));
+        drawer.nativeView.on('open', () => (item.startingSide = 'top'));
         drawer.nativeView.on('close', () => (item.startingSide = null));
     }
 
@@ -311,8 +311,8 @@
 
     function swipeMenuTranslationFunction(side, width, value, delta, progress) {
         const result = {
-            bottomDrawer: {
-                translateY: side === 'left' ? -value : value
+            topDrawer: {
+                translateY: -value
                 //    translateX: side === 'right' ? -delta : delta
             },
             backDrop: {
@@ -446,12 +446,12 @@
 
 <drawer
     bind:this={drawer}
-    bottomDrawerMode="over"
-    bottomSwipeDistance={200}
     closeAnimationDuration={100}
     gestureEnabled={false}
     openAnimationDuration={100}
     startingSide={item.startingSide}
+    topDrawerMode="over"
+    topSwipeDistance={200}
     translationFunction={swipeMenuTranslationFunction}
     {...$$restProps}>
     <gridlayout prop:mainContent rows="auto,*">
@@ -475,8 +475,8 @@
             {/each}
         </label> -->
     </gridlayout>
-    <gridlayout prop:bottomDrawer backgroundColor={new Color(colorBackground).setAlpha(200)} columns="*" height={40} rows="*">
-        <collectionview colWidth={150} height="40" items={legends} orientation="horizontal" verticalAlignment="top">
+    <gridlayout prop:topDrawer columns="*" height={40 + 36} rows="36,*">
+        <collectionview backgroundColor={new Color(colorBackground).setAlpha(200)} colWidth={150} height="40" items={legends} orientation="horizontal" row={1} verticalAlignment="top">
             <Template let:item>
                 <canvasview rippleColor={item.color} on:draw={(event) => onDrawLegend(item, event)} on:tap={(event) => toggleLegend(item, event)} />
             </Template>

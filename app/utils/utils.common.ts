@@ -36,7 +36,7 @@ export async function pickDate(currentDate: Dayjs) {
 const BRA_BOUNDS = [-4.855957, 41.310824, 9.645996, 51.124213];
 export function isBRABounds(location: FavoriteLocation) {
     const coords = location.coord;
-    DEV_LOG && console.log('isBRABounds', coords);
+    DEV_LOG && console.log('isBRABounds', JSON.stringify(coords));
     return coords.lon >= BRA_BOUNDS[0] && coords.lon <= BRA_BOUNDS[2] && coords.lat >= BRA_BOUNDS[1] && coords.lat <= BRA_BOUNDS[3];
 }
 export function tempColor(t, min, max) {

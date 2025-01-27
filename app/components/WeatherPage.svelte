@@ -191,9 +191,14 @@
                                     navigate({ page: MeteoBlue, props: { weatherLocation } });
                                     break;
                                 case 'bra':
+                                    DEV_LOG && console.log('finding bra');
                                     const lookup = await getFranceGeoJSONLookup();
+                                    DEV_LOG && console.log('bra lookup', JSON.stringify(lookup));
                                     const result = lookup.search(weatherLocation.coord.lon, weatherLocation.coord.lat);
                                     const massifId = result?.properties.code ?? -1;
+                                    const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                    DEV_LOG && console.log('massifId', massifId, pdfFile.path);
+                                    openFile(pdfFile.path);
                                     break;
                             }
                         }
@@ -906,9 +911,9 @@
                             disableCss={true}
                             fontSize={14 * $fontScale}
                             paddingTop={3 * $fontScale}
-                            verticalAlignment="top"
                             text={formatTime(Date.now(), 'LT', item.timezoneOffset)}
                             textWrap={true}
+                            verticalAlignment="top"
                             visibility={item.timezone ? 'visible' : 'hidden'} />
                         <IconButton col={1} gray={true} horizontalAlignment="right" size={40} text="mdi-dots-vertical" verticalAlignment="bottom" on:tap={(event) => showFavMenu(item, event)} />
                     </gridlayout>

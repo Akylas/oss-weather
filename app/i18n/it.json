@@ -28,7 +28,7 @@
     "animations_desc": "animato se il set di icone lo supporta",
     "api_key": "Chiave API",
     "api_key_required": "Chiave API richiesta",
-    "api_key_required_description": "Crea un account su OpenWeather per ottenere la chiave API gratuita necessaria per recuperare i dati meteorologici.\\nL'app ne ha una, ma per rimanere entro i limiti del piano gratuito ogni utente deve creare la propria chiave API.",
+    "api_key_required_description": "Crea un account su OpenWeather per ottenere la chiave API gratuita necessaria per recuperare i dati meteorologici. L'app ne ha una, ma per rimanere entro i limiti del piano gratuito ogni utente deve creare la propria chiave API.",
     "app": {
         "name": "OSS Weather"
     },
@@ -197,7 +197,7 @@
     "new_moon": "luna nuova",
     "next_24_hours": "prossime 24 ore",
     "no2": "NO₂",
-    "no_location_desc": "Non hai ancora scelto una posizione.\\nCerca o usa la tua posizione GPS.",
+    "no_location_desc": "Non hai ancora scelto una posizione. Cerca o usa la tua posizione GPS.",
     "no_location_set": "Nessuna posizione impostata",
     "no_network": "Nessuna rete",
     "no_particular_vigilance": "Nessuna particolare vigilanza",

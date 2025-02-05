@@ -307,7 +307,7 @@
                 animated: true,
                 fullscreen: true,
                 props: {
-                    focusPos: gps.getLastKnownLocation() || weatherLocation?.coord
+                    focusPos: gps.getLastKnownLocation<LatLonKeys>() || weatherLocation?.coord
                 }
             });
             if (location) {

@@ -1,0 +1,12 @@
+Bug fixes:
+- Translated using Weblate (Russian)
+- Translated using Weblate (Polish)
+- Translated using Weblate (Italian)
+- layout issue with system bottom navigation in models compare and font scale setting
+- map disable rotation
+- Translated using Weblate (Ukrainian)
+- Translated using Weblate (Tamil)
+- prevent error when trying to select position on app on fresh installed app
+- BRA fix for France
+- allow max nb hours to be equal to max nb days * 24
+- Translations update

@@ -118,7 +118,8 @@ export const API_KEY_VALUES = {
 };
 export const API_MAX_VALUES = {
     forecast: {
-        forecast_days: 15
+        forecast_days: 16,
+        forecast_hours: 168
     },
     'air-quality': {
         forecast_days: 6
@@ -229,8 +230,8 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         subdomain = 'api'
     ) {
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
-        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
-        const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
+        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
+        const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST);
         const forecast_minutely_15 = Math.round(ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST) / 15);
         const currentData = weatherDataService.allWeatherData.concat(weatherProps || []);
         const apikeyValues = API_KEY_VALUES[apiName]({ feelsLikeTemperatures, current, minutely, currentData });
@@ -239,7 +240,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             method: 'GET',
             queryParams: {
                 forecast_days: Math.min(API_MAX_VALUES[apiName].forecast_days, forecast_days),
-                forecast_hours,
+                forecast_hours: Math.min(API_MAX_VALUES[apiName].forecast_hours, forecast_hours),
                 forecast_minutely_15,
                 ...apikeyValues,
                 timeformat: 'unixtime',

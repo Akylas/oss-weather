@@ -41,8 +41,8 @@ export class OWMProvider extends WeatherProvider {
         const onecallVersion = ApplicationSettings.getString('owm_one_call_version', '3.0');
         const result = await OWMProvider.fetch<OneCallResult>(onecallVersion, 'onecall', coords);
         const forecast = result.content;
-        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST) + 1;
-        const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST) + 2;
+        const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
+        const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST);
         // const forecast_minutely = ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST);
         // console.log('test', JSON.stringify(result.daily));
         const r = {

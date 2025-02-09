@@ -75,10 +75,12 @@
                 result = await internalFetch('en');
             }
 
-            const match = result.match(/(?:data-(?:href|original)=)["'](\/\/my\.meteoblue\.com\/images\/.*?["'])/);
+            const match = result.match(/(?:<a id="chart_download"(?:.|\n)*?)href="(.*?)"/) ?? result.match(/(?:data-(?:href|original)=)["'](\/\/my\.meteoblue\.com\/images\/.*?["'])/);
             if (match) {
-                const newImageSrc = 'https:' + match[1].slice(0, -1).replace(/&amp;/g, '&');
-
+                let newImageSrc = match[1].slice(0, -1).replace(/&amp;/g, '&').trim();
+                if (!newImageSrc.startsWith('http')) {
+                    newImageSrc = 'https:' + newImageSrc;
+                }
                 // const parsed = parseUrl(newImageSrc);
                 // DEV_LOG && console.log('parsed', parsed);
                 // if ($imperial) {

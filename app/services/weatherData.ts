@@ -224,13 +224,17 @@ const WEATHER_DATA_TITLES = {
     [WeatherProps.iso]: lt('freezing_level'),
     [WeatherProps.precipAccumulation]: lt('precipitation'),
     [WeatherProps.snowfall]: lt('snow_precipitation'),
-    [WeatherProps.rainPrecipitation]: lt('rain_precipitation'),
     [WeatherProps.apparentTemperature]: lt('feels_like'),
     [WeatherProps.aqi]: lt('aqi'),
     [WeatherProps.sealevelPressure]: lt('sealevel_pressure'),
     [WeatherProps.dewpoint]: lt('dewpoint'),
     [WeatherProps.relativeHumidity]: lt('relative_humidity'),
-    [WeatherProps.snowDepth]: lt('snow_depth')
+    [WeatherProps.snowDepth]: lt('snow_depth'),
+    [WeatherProps.temperature]: lt('temperature'),
+    [WeatherProps.temperatureMin]: lt('min_temperature'),
+    [WeatherProps.temperatureMax]: lt('max_temperature'),
+    [WeatherProps.rainPrecipitation]: lt('precipitation'),
+    [WeatherProps.windBearing]: lt('wind_bearing')
 };
 const WEATHER_DATA_COLORS = {
     [WeatherProps.moon]: '#845987',

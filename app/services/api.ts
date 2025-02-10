@@ -289,9 +289,8 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
     weatherDailyData.slice(firstDailyIndex).forEach((d, index) => {
         if (index === 0) {
             const hours = firstHourIndex >= 0 ? weatherData.hourly.slice(firstHourIndex) : [];
-            const dailyData = weatherDailyData[index];
             // eslint-disable-next-line prefer-const
-            let { cloudCeiling, cloudCover, isDay, iso, precipAccumulation, uvIndex, windGust, ...current } = dailyData;
+            let { cloudCeiling, cloudCover, isDay, iso, precipAccumulation, uvIndex, windGust, ...current } = d;
             if (showDayDataInCurrent) {
                 Object.assign(current, { precipAccumulation, cloudCover, cloudCeiling, iso, uvIndex, windGust });
             }
@@ -307,7 +306,7 @@ export function prepareItems(weatherLocation: WeatherLocation, weatherData: Weat
             }
             // sometimes current APIs might
             if (!current.iconId) {
-                current.iconId = dailyData.iconId;
+                current.iconId = d.iconId;
             }
             // const { ...currentDaily } = current;
             let min = 10000;

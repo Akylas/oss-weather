@@ -17,7 +17,6 @@ export class MainActivity extends androidx.appcompat.app.AppCompatActivity {
 
     public onCreate(savedInstanceState: android.os.Bundle): void {
         DEV_LOG && console.log(TAG, 'onCreate');
-        // Handle the splash screen transition.
         Application.android.init(this.getApplication());
         // Set the isNativeScriptActivity in onCreate (as done in the original NativeScript activity code)
         // The JS constructor might not be called because the activity is created from Android.
@@ -34,7 +33,6 @@ export class MainActivity extends androidx.appcompat.app.AppCompatActivity {
     }
 
     public onSaveInstanceState(outState: android.os.Bundle): void {
-        DEV_LOG && console.log(TAG, 'onSaveInstanceState');
         this._callbacks.onSaveInstanceState(this, outState, super.onSaveInstanceState);
     }
 

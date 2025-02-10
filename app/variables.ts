@@ -200,7 +200,6 @@ function getRootViewStyle() {
 
 if (__ANDROID__) {
     Application.android.on(Application.android.activityCreateEvent, (event) => {
-        // DEV_LOG && console.log('activityCreateEvent', useDynamicColors);
         AppUtilsAndroid.prepareActivity(event.activity, useDynamicColors);
     });
     Page.on('shownModally', function (event) {
@@ -322,75 +321,78 @@ if (__ANDROID__) {
     });
 }
 
-let lastThemeColor: string;
 export function updateThemeColors(theme: string, colorTheme: ColorThemes = ApplicationSettings.getString(SETTINGS_COLOR_THEME, DEFAULT_COLOR_THEME) as ColorThemes) {
-    DEV_LOG && console.log('updateThemeColors', theme, colorTheme);
-    let rootView = Application.getRootView();
-    if (rootView?.parent) {
-        rootView = rootView.parent as any;
-    }
-    const rootViewStyle = rootView?.style;
-    if (!rootViewStyle || !theme) {
-        return;
-    }
-    // if (!force && lastThemeColor === theme) {
-    //     return;
-    // }
-    lastThemeColor = theme;
-    const currentColors = get(colors);
-    // rootViewStyle?.setUnscopedCssVariable('--systemFontScale', systemFontScale + '');
-    if (__ANDROID__) {
-        const activity = Application.android.startActivity;
-        // we also update system font scale so that our UI updates correcly
-        updateSystemFontScale(Utils.android.getApplicationContext().getResources().getConfiguration().fontScale);
+    try {
+        DEV_LOG && console.log('updateThemeColors', theme, colorTheme);
+        let rootView = Application.getRootView();
+        if (rootView?.parent) {
+            rootView = rootView.parent as any;
+        }
+        const rootViewStyle = rootView?.style;
+        if (!rootViewStyle || !theme) {
+            return;
+        }
+        // if (!force && lastThemeColor === theme) {
+        //     return;
+        // }
+        // lastThemeColor = theme;
+        const currentColors = get(colors);
+        // rootViewStyle?.setUnscopedCssVariable('--systemFontScale', systemFontScale + '');
+        if (__ANDROID__) {
+            const activity = Application.android.startActivity;
+            // we also update system font scale so that our UI updates correcly
+            updateSystemFontScale(Utils.android.getApplicationContext().getResources().getConfiguration().fontScale);
+            Object.keys(currentColors).forEach((c) => {
+                if (c.endsWith('Disabled')) {
+                    return;
+                }
+                if (c === 'colorBackground') {
+                    currentColors.colorBackground = new Color(AppUtilsAndroid.getColorFromInt(activity, 16842801)).hex;
+                } else if (c === 'popupMenuBackground') {
+                    currentColors.popupMenuBackground = new Color(AppUtilsAndroid.getColorFromInt(activity, 16843126)).hex;
+                } else {
+                    currentColors[c] = new Color(AppUtilsAndroid.getColorFromName(activity, c)).hex;
+                }
+            });
+        } else {
+            const themeColors = require(`~/themes/${colorTheme}.json`);
+            Object.assign(currentColors, theme === 'dark' || theme === 'black' ? themeColors.dark : themeColors.light);
+
+            themer.setPrimaryColor(currentColors.colorPrimary);
+            themer.setOnPrimaryColor(currentColors.colorOnPrimary);
+            themer.setAccentColor(currentColors.colorPrimary);
+            themer.setSecondaryColor(currentColors.colorSecondary);
+            themer.setSurfaceColor(currentColors.colorSurface);
+            themer.setOnSurfaceColor(currentColors.colorOnSurface);
+        }
+
+        if (theme === 'black') {
+            currentColors.colorBackground = '#000000';
+            currentColors.colorSurfaceContainer = '#000000';
+        }
+
+        currentColors.colorWidgetBackground = new Color(currentColors.colorSurfaceContainer).setAlpha(230).hex;
+        currentColors.colorOnSurfaceDisabled = new Color(currentColors.colorOnSurface).setAlpha(50).hex;
+
+        if (theme === 'dark') {
+            currentColors.colorSurfaceContainerHigh = new Color(currentColors.colorSurfaceContainer).lighten(3).hex;
+            currentColors.colorSurfaceContainerHighest = new Color(currentColors.colorSurfaceContainer).lighten(6).hex;
+        } else {
+            currentColors.colorSurfaceContainerHigh = new Color(currentColors.colorSurfaceContainer).darken(3).hex;
+            currentColors.colorSurfaceContainerHighest = new Color(currentColors.colorSurfaceContainer).darken(6).hex;
+        }
+        currentColors.colorOnSurfaceVariant2 = new Color(currentColors.colorOnSurfaceVariant).setAlpha(170).hex;
         Object.keys(currentColors).forEach((c) => {
-            if (c.endsWith('Disabled')) {
-                return;
-            }
-            if (c === 'colorBackground') {
-                currentColors.colorBackground = new Color(AppUtilsAndroid.getColorFromInt(activity, 16842801)).hex;
-            } else if (c === 'popupMenuBackground') {
-                currentColors.popupMenuBackground = new Color(AppUtilsAndroid.getColorFromInt(activity, 16843126)).hex;
-            } else {
-                currentColors[c] = new Color(AppUtilsAndroid.getColorFromName(activity, c)).hex;
-            }
+            rootViewStyle?.setUnscopedCssVariable('--' + c, currentColors[c]);
         });
-    } else {
-        const themeColors = require(`~/themes/${colorTheme}.json`);
-        Object.assign(currentColors, theme === 'dark' || theme === 'black' ? themeColors.dark : themeColors.light);
+        colors.set(currentColors);
 
-        themer.setPrimaryColor(currentColors.colorPrimary);
-        themer.setOnPrimaryColor(currentColors.colorOnPrimary);
-        themer.setAccentColor(currentColors.colorPrimary);
-        themer.setSecondaryColor(currentColors.colorSecondary);
-        themer.setSurfaceColor(currentColors.colorSurface);
-        themer.setOnSurfaceColor(currentColors.colorOnSurface);
+        Application.notify({ eventName: 'colorsChange', colors: currentColors });
+        // DEV_LOG && console.log('changed colors', rootView, JSON.stringify(currentColors));
+        rootView?._onCssStateChange();
+        const rootModalViews = rootView?._getRootModalViews();
+        rootModalViews.forEach((rootModalView) => rootModalView._onCssStateChange());
+    } catch (error) {
+        console.error(error, error.stack);
     }
-
-    if (theme === 'black') {
-        currentColors.colorBackground = '#000000';
-        currentColors.colorSurfaceContainer = '#000000';
-    }
-
-    currentColors.colorWidgetBackground = new Color(currentColors.colorSurfaceContainer).setAlpha(230).hex;
-    currentColors.colorOnSurfaceDisabled = new Color(currentColors.colorOnSurface).setAlpha(50).hex;
-
-    if (theme === 'dark') {
-        currentColors.colorSurfaceContainerHigh = new Color(currentColors.colorSurfaceContainer).lighten(3).hex;
-        currentColors.colorSurfaceContainerHighest = new Color(currentColors.colorSurfaceContainer).lighten(6).hex;
-    } else {
-        currentColors.colorSurfaceContainerHigh = new Color(currentColors.colorSurfaceContainer).darken(3).hex;
-        currentColors.colorSurfaceContainerHighest = new Color(currentColors.colorSurfaceContainer).darken(6).hex;
-    }
-    currentColors.colorOnSurfaceVariant2 = new Color(currentColors.colorOnSurfaceVariant).setAlpha(170).hex;
-    Object.keys(currentColors).forEach((c) => {
-        rootViewStyle?.setUnscopedCssVariable('--' + c, currentColors[c]);
-    });
-    colors.set(currentColors);
-
-    Application.notify({ eventName: 'colorsChange', colors: currentColors });
-    // DEV_LOG && console.log('changed colors', rootView, JSON.stringify(currentColors));
-    rootView?._onCssStateChange();
-    const rootModalViews = rootView?._getRootModalViews();
-    rootModalViews.forEach((rootModalView) => rootModalView._onCssStateChange());
 }

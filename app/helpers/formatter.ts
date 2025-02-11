@@ -50,6 +50,8 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
             options.roundedTo05 = !metricDecimalTemp;
             if (unit === UNITS.Fahrenheit) {
                 value = celciusToFahrenheit(value);
+                // we rollback to celcius after to only show '°' and not '°F'
+                unit = UNITS.Celcius;
             }
             if (metricDecimalTemp) {
                 digits = 10;

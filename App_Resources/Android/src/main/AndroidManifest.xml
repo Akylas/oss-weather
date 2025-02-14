@@ -54,6 +54,12 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="weather" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="geo" />
+            </intent-filter>
         </activity>
         <provider android:name="androidx.core.content.FileProvider"
             android:authorities="__PACKAGE__.provider" android:exported="false"

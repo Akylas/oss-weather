@@ -47,7 +47,7 @@
     $: menuIconVisibility = menuIconVisible ? 'visible' : 'collapse';
 </script>
 
-<gridlayout class="actionBar" columns="auto,*,auto" rows={`${height || $actionBarHeight},auto`} on:swipe {...$$restProps} on:tap={() => {}} android:marginTop={$windowInset.top}>
+<gridlayout class="actionBar" android:marginTop={$windowInset.top} columns="auto,*,auto" rows={`${height || $actionBarHeight},auto`} on:swipe on:tap={() => {}} {...$$restProps}>
     <label
         id="actionBarTitle"
         class="actionBarTitle"

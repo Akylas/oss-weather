@@ -1,12 +1,11 @@
+import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
 import {
     AndroidActivityBackPressedEventData,
     AndroidActivityCallbacks,
     AndroidActivityNewIntentEventData,
     AndroidActivityRequestPermissionsEventData,
     AndroidActivityResultEventData,
-    AndroidApplication,
     Application,
-    ApplicationEventData,
     Frame,
     GridLayout,
     Trace,
@@ -14,12 +13,9 @@ import {
     View
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
-import { WeatherLocation } from '~/services/api';
-import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
-import { isLandscape } from '~/utils/ui';
-import { fonts, onInitRootView } from '~/variables';
-import { get } from 'svelte/store';
+import { WeatherLocation } from '~/services/api';
+import { onInitRootView } from '~/variables';
 
 const CALLBACKS = '_callbacks';
 const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
@@ -279,11 +275,10 @@ class CustomActivityCallbacksImplementation implements AndroidActivityCallbacks 
             const name = uri.getQueryParameter('name');
             const address = JSON.parse(uri.getQueryParameter('address') || '{}');
             const BottomSheetWeatherPage = (await import('~/components/BottomSheetWeatherPage.svelte')).default;
-            DEV_LOG && console.log('about to show BottomSheetWeatherPage', get(fonts));
             await showBottomSheet({
                 parent: rootView,
                 view: BottomSheetWeatherPage,
-                peekHeight: 400,
+                peekHeight: 600,
                 // skipCollapsedState: isLandscape(),
                 dismissOnBackgroundTap: true,
                 dismissOnDraggingDownSheet: true,

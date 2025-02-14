@@ -90,8 +90,8 @@
     }
 </script>
 
-<gesturerootview class="weatherpage" height="100%" rows="auto,*">
-    <CActionBar title={name} on:swipe={onSwipe}>
+<gesturerootview class="weatherpage" backgroundColor="transparent" height="100%" rows="auto,*">
+    <CActionBar backgroundColor="transparent" disableBackButton={true} marginTop={0} title={name} on:swipe={onSwipe}>
         <mdbutton
             slot="left"
             class="actionBarButton"
@@ -108,7 +108,7 @@
         backgroundColor={new Color(colorBackground).setAlpha(100).hex}
         fontSize={10}
         horizontalAlignment="right"
-        marginRight={6}
+        marginRight={12}
         row={0}
         text={lc('powered_by', l(`provider.${provider}`))}
         verticalAlignment="top" />

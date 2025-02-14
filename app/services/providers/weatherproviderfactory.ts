@@ -36,14 +36,12 @@ prefs.on('key:aqi_provider', () => {
 export const onProviderChanged = createGlobalEventListener('provider');
 
 export function getWeatherProvider(): WeatherProvider {
-    DEV_LOG && console.log('getProvider', getProviderType(), !!currentProvider);
     if (!currentProvider) {
         setWeatherProvider(getProviderType());
     }
     return currentProvider;
 }
 export function getAqiProvider(): AirQualityProvider {
-    DEV_LOG && console.log('getAqiProvider', getAqiProviderType());
     return getAqiProviderForType(getAqiProviderType());
 }
 export function getProviderType(): ProviderType {

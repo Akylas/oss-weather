@@ -1,0 +1,9 @@
+Bug fixes:
+- MB meteogram fix
+- better handle of nb days/hours forecast parameter
+- missing locales in compare models
+- current condition not showing same min/max datas as current day in list view
+- remove the F from `°F`
+- some weather bottomsheet(opened from other apps) fixes
+- regression fix for AQI query
+- Translations update

@@ -20,7 +20,7 @@ module.exports = {
         runtimePackageName: '@akylas/nativescript-ios-runtime'
     },
     android: {
-        runtimePackageName: '@akylas/nativescript-android-runtime',
+        // runtimePackageName: '@akylas/nativescript-android-runtime',
         gradleVersion: '8.10.2',
         markingMode: 'none',
         codeCache: true,

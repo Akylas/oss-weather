@@ -244,7 +244,7 @@
     "quit": "Esci",
     "rain": "Pioggia",
     "rain_flood": "Pioggia/alluvione",
-    "rain_precipitation": "pioggia_precipitazionii",
+    "rain_precipitation": "pioggia precipitazionii",
     "rain_shower": "Rovesci di pioggia",
     "rain_snow_limit": "limite di pioggia e neve",
     "refresh": "Aggiorna",
@@ -336,7 +336,7 @@
     "weather_map": "Mappa del meteo",
     "weather_map_colors": "schema colori mappa meteo",
     "wind": "Vento",
-    "wind_bearing": "direzione_vento",
+    "wind_bearing": "direzione vento",
     "wind_beaufort": "scala dei venti di Beaufort",
     "wind_gust": "raffiche di vento",
     "wind_speed": "velocità del vento"

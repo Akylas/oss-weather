@@ -184,7 +184,7 @@
     "max_temperature": "Maximaltemperatur",
     "medium": "Gemäßigt",
     "meteogram": "Meteogramm",
-    "metric_temp_decimal": "Dezimalzahlen für Temperaturen benutzen",
+    "metric_temp_decimal": "Dezimalzahlen für Temperatur benutzen",
     "min_temperature": "Minimaltemperatur",
     "min_uv_index": "UV-Index darunter wird nicht angezeigt",
     "missing_location_perm": "Standort-Berechtigung nicht erteilt",

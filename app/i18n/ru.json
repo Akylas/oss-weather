@@ -226,6 +226,7 @@
     "possible_consequences": "Возможные последствия",
     "powered_by": "При поддержке %1$s",
     "precipitation": "Осадки",
+    "precipitation_probability": "Вероятность осадков",
     "precipitation_unit": "Единица осадков",
     "preferences": "Настройка параметров",
     "pressure": "давление",

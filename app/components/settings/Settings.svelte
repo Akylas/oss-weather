@@ -536,7 +536,7 @@
                         key: SETTINGS_MAIN_CHART_NB_HOURS,
                         id: 'setting',
                         title: lc('main_chart_nb_hours'),
-                        values: Array.from(Array(72), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        values: Array.from(Array(NB_DAYS_FORECAST * 24), (_, index) => ({ value: index + 1, title: index + 1 })),
                         rightValue: () => ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS)
                     },
                     {

@@ -22,6 +22,7 @@
     "alnus": "桤木",
     "always_show_precip_prob": "始终显示降雨概率",
     "always_show_precip_prob_desc": "总是在每小时预报图中显示降水概率",
+    "ambrosia": "豚草",
     "animation_speed": "动画速度",
     "animations": "动画",
     "animations_desc": "启用动画（如果所选图标包支持）",
@@ -32,6 +33,7 @@
         "name": "OSS 天气"
     },
     "aqi": "空气质量指数",
+    "artemisia": "艾蒿",
     "authorize": "授权",
     "auto": "自动",
     "auto_black": "自动暗色主题使用纯黑背景",
@@ -40,10 +42,12 @@
     "be_extra_vigilant": "格外警惕",
     "be_vigilant": "警惕",
     "behavioral_tips": "行为提示",
+    "betula": "桦木",
     "blocks": "块",
     "bra": "BRA",
     "bug_report_sent": "已发送错误报告",
     "cancel": "取消",
+    "chart": "图表",
     "charts": "图表",
     "charts_landscape": "强制图表横向显示",
     "charts_portrait_fullscreen": "图表在竖屏模式下使用全高度",
@@ -55,6 +59,9 @@
     "cloudy": "多云",
     "co": "CO",
     "coastal_flooding": "沿海洪水",
+    "color_theme": {
+        "default": "默认"
+    },
     "compare_models": "比较模型",
     "custom_units": "自定义单位",
     "data": "数据",

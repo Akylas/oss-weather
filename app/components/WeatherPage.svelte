@@ -407,7 +407,7 @@
             try {
                 if (networkConnected !== event.data.connected) {
                     networkConnected = event.data.connected;
-                    if ((event.data.connected && !weatherData) || Date.now() - weatherData.time > 10 * 60 * 1000) {
+                    if ((event.data.connected && !weatherData) || (weatherData && Date.now() - weatherData.time > 10 * 60 * 1000)) {
                         refreshWeather();
                     }
                 } else {

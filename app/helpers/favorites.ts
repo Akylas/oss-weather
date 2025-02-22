@@ -42,7 +42,7 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));
 
 favorites.on('change', (e) => {
-    DEV_LOG && console.log('on favorites changed1');
+    // DEV_LOG && console.log('on favorites changed1');
     ApplicationSettings.setString('favorites', JSON.stringify(favorites));
 });
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);

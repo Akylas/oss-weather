@@ -137,10 +137,12 @@
                     chart.dragEnabled = true;
                     chart.scaleXEnabled = true;
                     chart.scaleYEnabled = false;
+                    chart.autoScaleMinMaxEnabled = false;
                     xAxis.enabled = true;
                     xAxis.textSize = 10 * $fontScale;
                     xAxis.labelTextAlign = Align.CENTER;
                     xAxis.ensureLastLabel = true;
+                    xAxis.avoidFirstLastClipping = false;
                     xAxis.position = XAxisPosition.BOTTOM;
                     xAxis.yOffset = 12;
                     xAxis.axisMinimum = -1.5;
@@ -155,14 +157,14 @@
                                 const date = getLocalTime(startTimestamp + entry['deltaHours'] * 3600 * 1000, timezoneOffset);
                                 // if (date.get('m') === 0) {
                                 const scaleX = chart.viewPortHandler.scaleX;
-                                const modulo = Math.max(Math.round(6 / scaleX), 1);
-                                if (lastIconX === undefined || x - lastIconX > iconSize || date.get('h') % modulo === 0) {
+                                const modulo = Math.max(Math.round(11 / scaleX), 1);
+                                if (/* lastIconX === undefined ||  */x - lastIconX > iconSize || date.get('h') % modulo === 0) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
                                         imageSource,
                                         new Rect(0, 0, imageSource.width, imageSource.height),
-                                        new Rect(drawOffsetX, drawOffsetY, drawOffsetX + iconSize, drawOffsetY + iconSize),
+                                        new RectF(drawOffsetX, drawOffsetY, drawOffsetX + iconSize, drawOffsetY + iconSize),
                                         null
                                     );
                                     lastIconX = x;

@@ -49,7 +49,7 @@
     $: ({ colorBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary } = $colors);
 
     interface Item {
-        weatherData: { weatherData: WeatherData; model: { id: string; name: string; shortName: string; color: string } }[];
+        weatherData: { weatherData: WeatherData; model: { id: string; name: string; subtitle: string; color: string } }[];
         forecast: string;
         chartType: 'linechart' | 'scatterchart' | 'barchart';
         id: string;
@@ -195,7 +195,7 @@
                         const enabled = item.hidden.indexOf(wData.model.id) === -1;
                         newLegends.push({
                             name: wData.model.name,
-                            shortName: wData.model.shortName,
+                            subtitle: wData.model.subtitle,
                             id: wData.model.id,
                             enabled,
                             color
@@ -323,7 +323,7 @@
 
         return result;
     }
-    function onDrawLegend({ color, enabled, id, name, shortName }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
+    function onDrawLegend({ color, enabled, id, name, subtitle }: { id: string; subtitle: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
         const h = canvas.getHeight();
         legendIconPaint.color = color;
         legendPaint.color = color;
@@ -332,10 +332,10 @@
 
             canvas.drawRect(0, 0, 5, h, legendIconPaint);
         }
-        const nameAndKey = name.split(': ');
-        if (nameAndKey.length === 2) {
-            canvas.drawText(nameAndKey[0], 15, h / 2 - 3, legendPaint);
-            canvas.drawText(nameAndKey[1], 15, h / 2 - mFontMetricsBuffer.ascent, legendPaint);
+        // const nameAndKey = name.split(': ');
+        if (subtitle) {
+            canvas.drawText(name, 15, h / 2 - 3, legendPaint);
+            canvas.drawText(subtitle, 15, h / 2 - mFontMetricsBuffer.ascent, legendPaint);
         } else {
             canvas.drawText(name, 15, h / 2 - mFontMetricsBuffer.ascent / 2, legendPaint);
         }

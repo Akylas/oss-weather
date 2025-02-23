@@ -95,11 +95,9 @@
                     const key = keys[index];
                     acc.push({
                         id: provider.id + ':' + key,
-                        title: provider.getName(),
+                        name: provider.getName(),
                         subtitle: provider.getModelName(key),
-                        name: provider.getName() + ': ' + key,
                         color: colorGenerator.getColor().hsl.formatted,
-                        shortName: provider.getName().replace(/[^A-Z]+/g, '') + ': ' + key
                     } as Model);
                 }
             } else {
@@ -107,7 +105,6 @@
                     id: provider.id,
                     name: provider.getName(),
                     color: colorGenerator.getColor().hsl.formatted,
-                    shortName: provider.getName().replace(/[^A-Z]+/g, '')
                 } as Model);
             }
             return acc;

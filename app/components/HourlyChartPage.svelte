@@ -7,7 +7,7 @@
     import type { NativeViewElementNode } from 'svelte-native/dom';
     import { l, lc } from '~/helpers/locale';
     import type { WeatherData } from '~/services/providers/weather';
-    import { colors, screenWidthDips, windowInset } from '~/variables';
+    import { colors, fontScale, screenWidthDips, windowInset } from '~/variables';
 
     import { NavigatedData, Page } from '@nativescript/core';
     import { onDestroy, onMount } from 'svelte';
@@ -48,6 +48,8 @@
     const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
     let chartHeight = !screenOrientation && !ApplicationSettings.getBoolean('charts_portrait_fullscreen', CHARTS_PORTRAIT_FULLSCREEN) ? screenWidthDips : undefined;
     let chartView: HourlyChartView;
+
+    let chartInitialized;
     let drawer: DrawerElement;
     const hidden: string[] = [];
     let legends: ObservableArray<any>;
@@ -77,7 +79,15 @@
 
     function onNavigatedTo(args: NavigatedData): void {
         // updateLineChart();
+        updatePaint();
     }
+
+    function updatePaint() {
+        labelPaint.textSize = 10 * $fontScale;
+        labelPaint.getFontMetrics(mFontMetricsBuffer);
+        chartView?.nativeView?.invalidate();
+    }
+    fontScale.subscribe(updatePaint);
 
     function swipeMenuTranslationFunction(side, width, value, delta, progress) {
         const result = {
@@ -93,7 +103,7 @@
 
         return result;
     }
-    function onDrawLegend({ color, enabled, id, name, shortName }: { id: string; shortName: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
+    function onDrawLegend({ color, enabled, id, name, subtitle }: { id: string; subtitle: string; name: string; color: string; enabled: boolean }, { canvas }: { canvas: Canvas }) {
         const h = canvas.getHeight();
         legendIconPaint.color = color || colorOnSurface;
         legendPaint.color = color || colorOnSurface;
@@ -102,10 +112,9 @@
 
             canvas.drawRect(0, 0, 5, h, legendIconPaint);
         }
-        const nameAndKey = name.split(': ');
-        if (nameAndKey.length === 2) {
-            canvas.drawText(nameAndKey[0], 15, h / 2 - 3, legendPaint);
-            canvas.drawText(nameAndKey[1], 15, h / 2 - mFontMetricsBuffer.ascent, legendPaint);
+        if (subtitle) {
+            canvas.drawText(name, 15, h / 2 - 3, legendPaint);
+            canvas.drawText(subtitle, 15, h / 2 - mFontMetricsBuffer.ascent, legendPaint);
         } else {
             canvas.drawText(name, 15, h / 2 - mFontMetricsBuffer.ascent / 2, legendPaint);
         }
@@ -171,7 +180,8 @@
                         iosOverflowSafeArea={false}
                         row={1}
                         verticalAlignment={chartHeight ? 'center' : 'stretch'}
-                        bind:legends />
+                        bind:legends
+                        bind:chartInitialized />
                     <!-- <combinedchart
                         bind:this={chartView}
                         height={chartHeight}

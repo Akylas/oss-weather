@@ -78,7 +78,7 @@
     let timezoneOffset;
     let chartNeedsZoomUpdate = false;
     let iconCache: { [k: string]: ImageSource } = {};
-    let chartInitialized = false;
+    export let chartInitialized = false;
     let highlightedItem: CommonWeatherData;
     let highlightedMargin: string;
     let highlightedAlignment: CoreTypes.HorizontalAlignmentType;
@@ -400,7 +400,6 @@
                     const setColor = color || colorOnSurface;
                     newLegends.push({
                         name: getWeatherDataTitle(key),
-                        shortName: getWeatherDataTitle(key),
                         id: key,
                         enabled,
                         color

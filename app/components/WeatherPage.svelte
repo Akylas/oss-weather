@@ -5,7 +5,7 @@
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { confirm } from '@nativescript-community/ui-material-dialogs';
+    import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
@@ -33,6 +33,7 @@
         SWIPE_ACTION_BAR_PROVIDER
     } from '~/helpers/constants';
     import {
+        EVENT_FAVORITE,
         FavoriteLocation,
         favoriteIcon,
         favoriteIconColor,
@@ -40,6 +41,7 @@
         getFavoriteKey,
         isFavorite,
         queryTimezone,
+        renameFavorite,
         setFavoriteAqiProvider,
         setFavoriteProvider,
         toggleFavorite
@@ -575,18 +577,17 @@
         }
         return changed;
     }
-    globalObservable.on('favorite', (item: EventData & { data: FavoriteLocation }) => {
+    globalObservable.on(EVENT_FAVORITE, (item: EventData & { data: FavoriteLocation; needsWeatherRefresh?: boolean }) => {
         if (weatherLocation && getFavoriteKey(item.data) === getFavoriteKey(weatherLocation)) {
-            const changed = setWeatherLocation(item.data);
-            updateProvider();
-            // if (changed) {
-            refreshWeather();
-            // }
+            setWeatherLocation(item.data);
+            if (item.needsWeatherRefresh !== false) {
+                updateProvider();
+                refreshWeather();
+            }
         }
     });
 
     async function selectProvider(location: WeatherLocation) {
-        DEV_LOG && console.log('selectProvider', JSON.stringify(location));
         const value = await selectValue<ProviderType>(
             providers.map((t) => ({ data: t, title: lc('provider.' + t) })),
             location.provider || getProviderType(),
@@ -603,7 +604,6 @@
             location.providerAqi || getAqiProviderType(),
             { title: lc('provider_aqi.title') }
         );
-        DEV_LOG && console.log('selectProviderAQI', JSON.stringify(location), value);
         if (value) {
             setWeatherLocationAQIProvider(value, location);
         }
@@ -774,14 +774,9 @@
         try {
             const options = [
                 {
-                    icon: 'mdi-refresh',
-                    id: 'refresh',
-                    name: l('refresh')
-                },
-                {
-                    icon: 'mdi-chart-bar',
-                    id: 'compare',
-                    name: lc('compare_models')
+                    icon: 'mdi-rename',
+                    id: 'rename',
+                    name: l('rename')
                 },
                 {
                     icon: 'mdi-cloud-circle',
@@ -794,6 +789,11 @@
                     id: 'provider_aqi',
                     subtitle: lc('provider_aqi.' + (favItem?.providerAqi || getAqiProviderType())),
                     name: lc('provider_aqi.title')
+                },
+                {
+                    icon: 'mdi-chart-bar',
+                    id: 'compare',
+                    name: lc('compare_models')
                 },
                 {
                     icon: 'mdi-chart-areaspline',
@@ -837,6 +837,7 @@
                 onClose: async (item) => {
                     try {
                         if (item) {
+                            let result;
                             switch (item.id) {
                                 case 'delete':
                                     toggleFavorite(favItem);
@@ -859,7 +860,7 @@
                                     break;
                                 case 'bra':
                                     const lookup = await getFranceGeoJSONLookup();
-                                    const result = lookup.search(favItem.coord.lon, favItem.coord.lat);
+                                    result = lookup.search(favItem.coord.lon, favItem.coord.lat);
                                     const massifId = result?.properties.code ?? -1;
                                     if (massifId !== -1) {
                                         showLoading();
@@ -874,6 +875,15 @@
                                     break;
                                 case 'provider_aqi':
                                     await selectProviderAQI(favItem);
+                                    break;
+                                case 'rename':
+                                    result = await prompt({
+                                        title: lc('rename'),
+                                        defaultText: favItem.name
+                                    });
+                                    if (result.result && result.text?.length) {
+                                        await renameFavorite(favItem, result.text);
+                                    }
                                     break;
                             }
                         }

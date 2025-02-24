@@ -8,6 +8,8 @@ import PolygonLookup from 'polygon-lookup';
 import { AqiProviderType, ProviderType } from '~/services/providers/weather';
 import { SETTINGS_FAVORITES } from './constants';
 
+export const EVENT_FAVORITE = 'favorite'
+
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
     startingSide?: string;
@@ -99,7 +101,16 @@ export async function setFavoriteProvider(item: FavoriteLocation, provider: Prov
         item.provider = provider;
         DEV_LOG && console.log('setFavoriteProvider', provider, JSON.stringify(item));
         favorites.setItem(index, item);
-        globalObservable.notify({ eventName: 'favorite', data: item });
+        globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
+    }
+}
+export async function renameFavorite(item: FavoriteLocation, name: string) {
+    const key = getFavoriteKey(item);
+    const index = favoritesKeys.indexOf(key);
+    if (index !== -1) {
+        item.name = name;
+        favorites.setItem(index, item);
+        globalObservable.notify({ eventName: EVENT_FAVORITE, data: item, needsWeatherRefresh: false });
     }
 }
 export async function setFavoriteAqiProvider(item: FavoriteLocation, provider: AqiProviderType) {
@@ -108,7 +119,7 @@ export async function setFavoriteAqiProvider(item: FavoriteLocation, provider: A
     if (index !== -1) {
         item.providerAqi = provider;
         favorites.setItem(index, item);
-        globalObservable.notify({ eventName: 'favorite', data: item });
+        globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }
 }
 export async function toggleFavorite(item: FavoriteLocation) {
@@ -135,6 +146,6 @@ export async function toggleFavorite(item: FavoriteLocation) {
         favoritesKeys.push(getFavoriteKey(item));
     }
     delete item.startingSide; //for swipemenu
-    globalObservable.notify({ eventName: 'favorite', data: item });
+    globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     return item;
 }

@@ -158,7 +158,7 @@
                                 // if (date.get('m') === 0) {
                                 const scaleX = chart.viewPortHandler.scaleX;
                                 const modulo = Math.max(Math.round(11 / scaleX), 1);
-                                if (/* lastIconX === undefined ||  */x - lastIconX > iconSize || date.get('h') % modulo === 0) {
+                                if (/* lastIconX === undefined ||  */ x - lastIconX > iconSize || date.get('h') % modulo === 0) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(

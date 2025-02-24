@@ -183,6 +183,7 @@
     "map_settings": "Karteneinstellungen",
     "max_temperature": "Maximaltemperatur",
     "medium": "Gemäßigt",
+    "meteoblue": "meteoblue",
     "meteogram": "Meteogramm",
     "metric_temp_decimal": "Dezimalzahlen für Temperatur benutzen",
     "min_temperature": "Minimaltemperatur",
@@ -226,6 +227,7 @@
     "possible_consequences": "Mögliche Folgen",
     "powered_by": "Unterstützt von %1$s",
     "precipitation": "Niederschlag",
+    "precipitation_probability": "Niederschlagswahrscheinlichkeit",
     "precipitation_unit": "Niederschlagseinheit",
     "preferences": "Einstellungen",
     "pressure": "Druck",
@@ -233,12 +235,12 @@
         "meteofrance": "Méteo France",
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",
-        "title": "Wetterdaten-Anbieter"
+        "title": "Wetterdaten"
     },
     "provider_aqi": {
         "atmo": "ATMO Auvergne-Rhône-Alpes",
         "openmeteo": "Open-Meteo",
-        "title": "Luftqualitätsdaten-Anbieter"
+        "title": "Luftqualitätsdaten"
     },
     "providers": "Anbieter",
     "providers_settings": "Anbieterauswahl und Einstellungen",

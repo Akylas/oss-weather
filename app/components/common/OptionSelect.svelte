@@ -248,7 +248,7 @@
                     columns="auto,*,auto"
                     {fontSize}
                     {fontWeight}
-                    {iconFontSize}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     {item}
                     mainCol={1}
                     showBottomLine={showBorders}
@@ -274,7 +274,7 @@
                     columns="auto,*,auto"
                     {fontSize}
                     {fontWeight}
-                    {iconFontSize}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     {item}
                     mainCol={1}
                     showBottomLine={showBorders}
@@ -293,7 +293,7 @@
                     columns="*,auto"
                     {fontSize}
                     {fontWeight}
-                    {iconFontSize}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     {item}
                     showBottomLine={showBorders}
                     {subtitleProps}
@@ -311,7 +311,7 @@
                     columns="auto,*"
                     {fontSize}
                     {fontWeight}
-                    {iconFontSize}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     {item}
                     mainCol={1}
                     showBottomLine={showBorders}
@@ -333,7 +333,7 @@
                     {borderRadius}
                     {fontSize}
                     {fontWeight}
-                    {iconFontSize}
+                    iconFontSize={item.iconFontSize || iconFontSize}
                     {item}
                     showBottomLine={showBorders}
                     {subtitleProps}

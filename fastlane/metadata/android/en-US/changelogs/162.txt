@@ -1,0 +1,11 @@
+Features:
+- select per favorite provider/aqiprovider. Default will always be app default provider
+
+Bug fixes:
+- some missing translation fix
+- allow up to 168 hours in hourly chart view
+- potentiall error while trying refresh when not connected to internet
+- better hourly chart view renderig
+- legend texts / localization for Charts/Compare
+- edge case fix for wrong wing gust text color
+- Translations update

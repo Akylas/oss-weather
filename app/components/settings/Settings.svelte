@@ -45,6 +45,8 @@
         SETTINGS_METRIC_CM_TO_MM,
         SETTINGS_METRIC_TEMP_DECIMAL,
         SETTINGS_MIN_UV_INDEX,
+        SETTINGS_PROVIDER,
+        SETTINGS_PROVIDER_AQI,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
         SETTINGS_SHOW_DAILY_IN_CURRENTLY,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
@@ -73,7 +75,7 @@
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { confirmRestartApp, createView, hideLoading, openLink, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
+    import { confirmRestartApp, createView, hideLoading, openLink, selectValue, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
@@ -244,25 +246,21 @@
                         description: () => iconService.getPackName(),
                         image: () => iconService.getPackIcon(),
                         async onTap(item) {
-                            const themes = await iconService.getAvailableThemes();
-                            const result = await showAlertOptionSelect(
-                                {
-                                    height: Math.min(themes.length * 65, 400),
-                                    rowHeight: 65,
-                                    options: themes.map((k) => ({
-                                        name: k.name,
-                                        subtitle: k.description,
-                                        data: k.id,
-                                        type: 'image',
-                                        image: k.icon
-                                    }))
-                                },
+                            const data = await selectValue<string>(
+                                (await iconService.getAvailableThemes()).map((k) => ({
+                                    title: k.name,
+                                    subtitle: k.description,
+                                    data: k.id,
+                                    type: 'image',
+                                    image: k.icon
+                                })),
+                                iconService.iconSet,
                                 {
                                     title: lc('icon_pack')
                                 }
                             );
-                            if (result?.data) {
-                                ApplicationSettings.setString('icon_set', result.data);
+                            if (data) {
+                                ApplicationSettings.setString('icon_set', data);
                                 updateItem(item, 'id');
                             }
                         }
@@ -271,22 +269,22 @@
             case 'providers':
                 return () => [
                     {
-                        key: 'provider',
+                        key: SETTINGS_PROVIDER,
                         id: 'setting',
                         valueType: 'string',
                         description: () => lc('provider.' + getProviderType()),
                         title: lc('provider.title'),
                         currentValue: getProviderType,
-                        values: providers.map((t) => ({ value: t, title: lc(t) }))
+                        values: providers.map((t) => ({ value: t, title: lc('provider.' + t) }))
                     },
                     {
-                        key: 'provider_aqi',
+                        key: SETTINGS_PROVIDER_AQI,
                         id: 'setting',
                         valueType: 'string',
                         description: () => lc('provider_aqi.' + getAqiProviderType()),
                         title: lc('provider_aqi.title'),
                         currentValue: getAqiProviderType,
-                        values: aqi_providers.map((t) => ({ value: t, title: lc(t) }))
+                        values: aqi_providers.map((t) => ({ value: t, title: lc('provider_aqi.' + t) }))
                     },
                     {
                         key: 'forecast_nb_days',
@@ -1085,50 +1083,34 @@
                             }
                         });
                     } else {
-                        let selectedIndex = -1;
-                        const currentValue = (item.currentValue || item.rightValue)?.();
-                        const options = item.values.map((k, index) => {
-                            const selected = currentValue === k.value;
-                            if (selected) {
-                                selectedIndex = index;
-                            }
-                            return {
+                        const result = await selectValue(
+                            item.values.map((k) => ({
                                 name: k.title || k.name,
-                                data: k.value,
-                                boxType: 'circle',
-                                type: 'checkbox',
-                                value: selected
-                            };
-                        });
-                        const result = await showAlertOptionSelect(
-                            {
-                                height: Math.min(item.values.length * 56, 400),
-                                rowHeight: 56,
-                                selectedIndex,
-                                options
-                            },
+                                data: k.value
+                            })),
+                            (item.currentValue || item.rightValue)?.(),
                             {
                                 title: item.title,
                                 message: item.full_description
                             }
                         );
-                        if (result?.data !== undefined) {
+                        if (result !== undefined) {
                             if (item.onResult) {
                                 item.onResult(result.data);
                             } else {
                                 if (item.id === 'store_setting') {
                                     const store = item.store || getStoreSetting(item.storeKey, item.storeDefault);
                                     if (item.valueType === 'string') {
-                                        store[item.key] = result.data;
+                                        store[item.key] = result;
                                     } else {
-                                        store[item.key] = parseInt(result.data, 10);
+                                        store[item.key] = parseInt(result, 10);
                                     }
                                     ApplicationSettings.setString(item.storeKey, JSON.stringify(store));
                                 } else {
                                     if (item.valueType === 'string') {
-                                        ApplicationSettings.setString(item.key, result.data);
+                                        ApplicationSettings.setString(item.key, result);
                                     } else {
-                                        ApplicationSettings.setNumber(item.key, parseInt(result.data, 10));
+                                        ApplicationSettings.setNumber(item.key, parseInt(result, 10));
                                     }
                                 }
                                 updateItem(item);

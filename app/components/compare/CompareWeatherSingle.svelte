@@ -97,14 +97,14 @@
                         id: provider.id + ':' + key,
                         name: provider.getName(),
                         subtitle: provider.getModelName(key),
-                        color: colorGenerator.getColor().hsl.formatted,
+                        color: colorGenerator.getColor().hsl.formatted
                     } as Model);
                 }
             } else {
                 acc.push({
                     id: provider.id,
                     name: provider.getName(),
-                    color: colorGenerator.getColor().hsl.formatted,
+                    color: colorGenerator.getColor().hsl.formatted
                 } as Model);
             }
             return acc;

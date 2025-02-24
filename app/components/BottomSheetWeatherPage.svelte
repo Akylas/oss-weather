@@ -4,6 +4,7 @@
     import { onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
+    import { SETTINGS_WEATHER_LOCATION } from '~/helpers/constants';
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, toggleFavorite } from '~/helpers/favorites';
     import { l, lc } from '~/helpers/locale';
     import { WeatherLocation, getTimezone, networkService, prepareItems } from '~/services/api';
@@ -40,7 +41,7 @@
             ]);
             if (timezoneData) {
                 Object.assign(weatherLocation, timezoneData);
-                ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+                ApplicationSettings.setString(SETTINGS_WEATHER_LOCATION, JSON.stringify(weatherLocation));
             }
             if (weatherData) {
                 await updateView(weatherData);

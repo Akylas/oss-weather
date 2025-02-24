@@ -12,7 +12,7 @@ import { FavoriteLocation } from '~/helpers/favorites';
 import { getStartOfDay, lang } from '~/helpers/locale';
 import { NominatimResult } from '../../typings/nominatim';
 import { Photon, PhotonProperties } from '../../typings/photon';
-import { WeatherData } from './providers/weather';
+import { AqiProviderType, ProviderType, WeatherData } from './providers/weather';
 import { WeatherProps } from './weatherData';
 
 type HTTPSOptions = https.HttpsRequestOptions;
@@ -422,6 +422,8 @@ export interface WeatherLocation {
         lat: number;
         lon: number;
     };
+    provider?: ProviderType;
+    providerAqi?: AqiProviderType;
 }
 const PHOTON_SUPPORTED_LANGUAGES = ['en', 'de', 'fr'];
 

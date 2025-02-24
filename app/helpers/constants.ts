@@ -28,6 +28,10 @@ export const SETTINGS_MIN_UV_INDEX = 'min_uv_index';
 export const SETTINGS_MAIN_CHART_NB_HOURS = 'main_chart_nb_hours';
 export const SETTINGS_MAIN_CHART_SHOW_WIND = 'main_chart_show_wind';
 export const SETTINGS_HOURLY_ODD_COLORS = 'hourly_odd_colors';
+export const SETTINGS_PROVIDER = 'provider';
+export const SETTINGS_PROVIDER_AQI = 'provider_aqi';
+export const SETTINGS_WEATHER_LOCATION = 'weatherLocation';
+export const SETTINGS_FAVORITES = 'favorites';
 
 export const DEFAULT_COLOR_THEME = 'default';
 export const DEFAULT_LOCALE = 'auto';

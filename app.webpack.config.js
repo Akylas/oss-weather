@@ -265,6 +265,7 @@ module.exports = (env, params = {}) => {
         DEV_LOG: !!devlog,
         TEST_LOG: !!devlog || !!testlog,
         DEFAULT_PROVIDER: '"openmeteo"',
+        DEFAULT_PROVIDER_AQI: '"openmeteo"',
         OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
         ATMO_DEFAULT_KEY: `"${process.env.ATMO_DEFAULT_KEY}"`,
         MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',

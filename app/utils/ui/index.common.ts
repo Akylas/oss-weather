@@ -195,3 +195,31 @@ export async function confirmRestartApp() {
         confirmingRestart = false;
     }
 }
+
+export async function selectValue<T = any>(options: { data: T; title: string }[], currentValue: T, alertOptions?: Partial<AlertOptions & MDCAlertControlerOptions>) {
+    // return tryCatch(async () => {
+    let selectedIndex = -1;
+    options = options.map((d, index) => {
+        const selected = currentValue === d.data;
+        if (selected) {
+            selectedIndex = index;
+        }
+        return {
+            ...d,
+            boxType: 'circle',
+            type: 'checkbox',
+            value: selected
+        };
+    });
+    const result = await showAlertOptionSelect(
+        {
+            height: Math.min(options.length * 56, 400),
+            rowHeight: 56,
+            selectedIndex,
+            options
+        },
+        alertOptions
+    );
+    return result?.data as T;
+    // });
+}

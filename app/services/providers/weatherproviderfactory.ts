@@ -8,6 +8,7 @@ import { OWMProvider } from './owm';
 import { AqiProviderType, ProviderType } from './weather';
 import { WeatherProvider } from './weatherprovider';
 import { AtmoProvider } from './atmo';
+import { SETTINGS_PROVIDER, SETTINGS_PROVIDER_AQI } from '~/helpers/constants';
 
 export enum Providers {
     MeteoFrance = 'meteofrance',
@@ -25,31 +26,35 @@ export const aqi_providers = Object.values(AirQualityProviders);
 
 let currentProvider: WeatherProvider;
 let currentAirQualityProvider: AirQualityProvider;
-prefs.on('key:provider', () => {
+prefs.on(`key:${SETTINGS_PROVIDER}`, () => {
     const provider = setWeatherProvider(getProviderType());
-    globalObservable.notify({ eventName: 'provider', data: provider });
+    globalObservable.notify({ eventName: SETTINGS_PROVIDER, data: provider });
 });
-prefs.on('key:aqi_provider', () => {
+prefs.on(`key:${SETTINGS_PROVIDER_AQI}`, () => {
     const provider = setAirQualityProvider(getAqiProviderType());
-    globalObservable.notify({ eventName: 'aqi_provider', data: provider });
+    globalObservable.notify({ eventName: SETTINGS_PROVIDER_AQI, data: provider });
 });
-export const onProviderChanged = createGlobalEventListener('provider');
+export const onProviderChanged = createGlobalEventListener(SETTINGS_PROVIDER);
+export const onAQIProviderChanged = createGlobalEventListener(SETTINGS_PROVIDER_AQI);
 
-export function getWeatherProvider(): WeatherProvider {
+export function getWeatherProvider(provider?: ProviderType): WeatherProvider {
+    if (provider) {
+        return getProviderForType(provider);
+    }
     if (!currentProvider) {
         setWeatherProvider(getProviderType());
     }
     return currentProvider;
 }
-export function getAqiProvider(): AirQualityProvider {
-    return getAqiProviderForType(getAqiProviderType());
+export function getAqiProvider(provider?: AqiProviderType): AirQualityProvider {
+    return getAqiProviderForType(provider || getAqiProviderType());
 }
 export function getProviderType(): ProviderType {
-    const requestedProviderType: ProviderType = (ApplicationSettings.getString('provider', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
+    const requestedProviderType: ProviderType = (ApplicationSettings.getString(SETTINGS_PROVIDER, DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as ProviderType;
     return requestedProviderType;
 }
 export function getAqiProviderType(): AqiProviderType {
-    const requestedProviderType: AqiProviderType = (ApplicationSettings.getString('provider_aqi', DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as AqiProviderType;
+    const requestedProviderType: AqiProviderType = (ApplicationSettings.getString(SETTINGS_PROVIDER_AQI, DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as AqiProviderType;
     return requestedProviderType;
 }
 

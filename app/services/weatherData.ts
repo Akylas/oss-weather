@@ -638,7 +638,6 @@ export class DataService extends Observable {
                         subvalue: data[1],
                         customDraw(canvas: Canvas, fontScale: number, textPaint: Paint, data: CommonData, x: number, y: number, withIcon = false) {
                             textPaint.setTextSize(11 * fontScale);
-                            DEV_LOG && console.log('customDraw', data.customDrawColor, data.backgroundColor);
                             if (data.customDrawColor) {
                                 textPaint.setColor(data.customDrawColor);
                             }

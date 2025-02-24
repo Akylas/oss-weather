@@ -24,26 +24,40 @@
     import {
         DATA_VERSION,
         SETTINGS_FEELS_LIKE_TEMPERATURES,
+        SETTINGS_PROVIDER,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
         SETTINGS_SHOW_DAILY_IN_CURRENTLY,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+        SETTINGS_WEATHER_LOCATION,
         SHOW_CURRENT_DAY_DAILY,
         SWIPE_ACTION_BAR_PROVIDER
     } from '~/helpers/constants';
-    import { FavoriteLocation, favoriteIcon, favoriteIconColor, favorites, getFavoriteKey, queryTimezone, toggleFavorite } from '~/helpers/favorites';
+    import {
+        FavoriteLocation,
+        favoriteIcon,
+        favoriteIconColor,
+        favorites,
+        getFavoriteKey,
+        isFavorite,
+        queryTimezone,
+        setFavoriteAqiProvider,
+        setFavoriteProvider,
+        toggleFavorite
+    } from '~/helpers/favorites';
     import { getLocationName } from '~/helpers/formatter';
     import { formatTime, getEndOfDay, getStartOfDay, l, lc, lu, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
-    import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
-    import { getAqiProvider, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import type { AqiProviderType, DailyData, Hourly, ProviderType, WeatherData } from '~/services/providers/weather';
+    import { aqi_providers, getAqiProvider, getAqiProviderType, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
-    import { hideLoading, showLoading, showPopoverMenu } from '~/utils/ui';
+    import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, tryCatch, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
+    import ThankYou from '@shared/components/ThankYou.svelte';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -54,14 +68,15 @@
     $: ({ colorBackground, colorError, colorOnBackground, colorOnError, colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary, colorSurface } = $colors);
 
     let loading = false;
-    let provider = getProviderType();
-    let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString('weatherLocation', DEFAULT_LOCATION || 'null'));
+    let provider: ProviderType;
+    let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
     let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
     const data_version = ApplicationSettings.getNumber('data_version', -1);
     if (data_version !== DATA_VERSION) {
         ApplicationSettings.setNumber('data_version', DATA_VERSION);
         weatherData = null;
     }
+    updateProvider();
 
     let items = [];
 
@@ -120,9 +135,9 @@
                         },
                         {
                             icon: 'mb',
-                            iconFontSize: 16,
+                            iconFontSize: 15,
                             id: 'meteo_blue',
-                            name: 'Meteoblue'
+                            name: lc('meteoblue')
                         }
                     ] as any)
                 );
@@ -231,16 +246,16 @@
             if (!weatherLocation.timezone) {
                 timezoneData = await queryTimezone(weatherLocation);
                 Object.assign(weatherLocation, timezoneData);
-                ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+                saveWeatherLocation();
             }
-            weatherData = await getWeatherProvider().getWeather(weatherLocation);
+            weatherData = await getWeatherProvider(weatherLocation.provider).getWeather(weatherLocation);
             DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
             if (timezoneData) {
             }
             if (weatherData) {
                 await updateView();
                 if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
-                    const aqiData = await getAqiProvider().getAirQuality(weatherLocation);
+                    const aqiData = await getAqiProvider(weatherLocation.providerAqi).getAirQuality(weatherLocation);
                     if (aqiData) {
                         mergeWeatherData(weatherData, aqiData);
                         await updateView();
@@ -269,11 +284,14 @@
         }
     }
 
+    function isCurrentLocation(location: WeatherLocation, currentLocation: WeatherLocation = weatherLocation) {
+        return currentLocation && location.coord.lat === currentLocation.coord.lat && location.coord.lon === currentLocation.coord.lon;
+    }
+
     function saveLocation(result: WeatherLocation) {
-        const cityChanged = !weatherLocation || result.coord.lat !== weatherLocation.coord.lat || weatherLocation.coord.lon !== result.coord.lat;
+        const cityChanged = !isCurrentLocation(result);
         if (cityChanged) {
-            weatherLocation = result;
-            ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+            setWeatherLocation(result);
             refreshWeather();
         }
         favoriteCollectionView?.nativeView?.refreshVisibleItems();
@@ -469,9 +487,11 @@
     }
     onProviderChanged((event) => {
         try {
-            provider = getProviderType();
-            DEV_LOG && console.log('provider changed', provider);
-            refreshWeather();
+            const changed = updateProvider();
+            DEV_LOG && console.log('provider changed', provider, changed);
+            if (changed) {
+                refreshWeather();
+            }
         } catch (error) {
             showError(error);
         }
@@ -537,33 +557,75 @@
         drawer?.toggle();
     }
 
-    async function toggleItemFavorite(item: FavoriteLocation) {
-        weatherLocation = await toggleFavorite(item);
+    function updateProvider() {
+        const oldProvider = provider;
+        provider = weatherLocation?.provider || getProviderType();
+        return provider !== oldProvider;
+    }
+
+    function saveWeatherLocation() {
+        ApplicationSettings.setString(SETTINGS_WEATHER_LOCATION, JSON.stringify(weatherLocation));
+    }
+    function setWeatherLocation(location: FavoriteLocation, save = true) {
+        DEV_LOG && console.log('setWeatherLocation', JSON.stringify(location));
+        weatherLocation = location;
+        const changed = updateProvider();
+        if (save) {
+            saveWeatherLocation();
+        }
+        return changed;
     }
     globalObservable.on('favorite', (item: EventData & { data: FavoriteLocation }) => {
         if (weatherLocation && getFavoriteKey(item.data) === getFavoriteKey(weatherLocation)) {
-            weatherLocation.isFavorite = item.data.isFavorite;
-            weatherLocation = weatherLocation;
-            ApplicationSettings.setString('weatherLocation', JSON.stringify(weatherLocation));
+            const changed = setWeatherLocation(item.data);
+            updateProvider();
+            // if (changed) {
+            refreshWeather();
+            // }
         }
     });
-    function swipeMenuTranslationFunction(side, width, value, delta, progress) {
-        const result = {
-            mainContent: {
-                translateX: side === 'right' ? -delta : delta
-            },
-            backDrop: {
-                translateX: side === 'right' ? -delta : delta,
-                opacity: progress * 0.1
-            },
-            deleteBtn: {
-                backgroundColor: progress >= 0.6 ? colorError : colorSurface,
-                color: progress >= 0.6 ? colorOnError : colorError
-            }
-        } as any;
 
-        return result;
+    async function selectProvider(location: WeatherLocation) {
+        DEV_LOG && console.log('selectProvider', JSON.stringify(location));
+        const value = await selectValue<ProviderType>(
+            providers.map((t) => ({ data: t, title: lc('provider.' + t) })),
+            location.provider || getProviderType(),
+            { title: lc('provider.title') }
+        );
+        if (value) {
+            setWeatherLocationProvider(value, location);
+        }
     }
+
+    async function selectProviderAQI(location: WeatherLocation) {
+        const value = await selectValue<AqiProviderType>(
+            aqi_providers.map((t) => ({ data: t, title: lc('provider_aqi.' + t) })),
+            location.providerAqi || getAqiProviderType(),
+            { title: lc('provider_aqi.title') }
+        );
+        DEV_LOG && console.log('selectProviderAQI', JSON.stringify(location), value);
+        if (value) {
+            setWeatherLocationAQIProvider(value, location);
+        }
+    }
+
+    // function swipeMenuTranslationFunction(side, width, value, delta, progress) {
+    //     const result = {
+    //         mainContent: {
+    //             translateX: side === 'right' ? -delta : delta
+    //         },
+    //         backDrop: {
+    //             translateX: side === 'right' ? -delta : delta,
+    //             opacity: progress * 0.1
+    //         },
+    //         deleteBtn: {
+    //             backgroundColor: progress >= 0.6 ? colorError : colorSurface,
+    //             color: progress >= 0.6 ? colorOnError : colorError
+    //         }
+    //     } as any;
+
+    //     return result;
+    // }
     let drawerOpened = false;
     function onDrawerStart() {
         drawerOpened = true;
@@ -574,16 +636,38 @@
         favoriteCollectionView.nativeElement?.closeCurrentMenu();
     }
 
+    function setWeatherLocationProvider(provider: ProviderType, location: WeatherLocation = weatherLocation) {
+        DEV_LOG && console.log('setWeatherLocationProvider', JSON.stringify(location), provider, isFavorite(location));
+        location.provider = provider;
+        saveWeatherLocation();
+        if (isFavorite(location)) {
+            setFavoriteProvider(location, provider);
+        } else if (isCurrentLocation(location)) {
+            updateProvider();
+            refreshWeather();
+        }
+    }
+    function setWeatherLocationAQIProvider(provider: AqiProviderType, location: WeatherLocation = weatherLocation) {
+        location.providerAqi = provider;
+        saveWeatherLocation();
+        if (isFavorite(location)) {
+            setFavoriteAqiProvider(location, provider);
+        } else if (isCurrentLocation(location)) {
+            saveWeatherLocation();
+            refreshWeather();
+        }
+    }
+
     function onSwipe(e) {
         const enabled = ApplicationSettings.getBoolean(SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER);
-        if (enabled) {
+        if (enabled && weatherLocation) {
             const currentProviderIndex = providers.indexOf(provider);
             let newIndex = currentProviderIndex + (e.direction === 1 ? -1 : 1);
             if (newIndex < 0) {
                 newIndex += providers.length;
             }
             const newProvider = providers[newIndex % providers.length];
-            ApplicationSettings.setString('provider', newProvider);
+            setWeatherLocationProvider(newProvider);
         }
     }
 
@@ -697,29 +781,41 @@
                 {
                     icon: 'mdi-chart-bar',
                     id: 'compare',
-                    name: l('compare_models')
+                    name: lc('compare_models')
+                },
+                {
+                    icon: 'mdi-cloud-circle',
+                    id: 'provider',
+                    name: lc('provider.title'),
+                    subtitle: lc('provider.' + (favItem?.provider || getProviderType()))
+                },
+                {
+                    icon: 'mdi-leaf',
+                    id: 'provider_aqi',
+                    subtitle: lc('provider_aqi.' + (favItem?.providerAqi || getAqiProviderType())),
+                    name: lc('provider_aqi.title')
                 },
                 {
                     icon: 'mdi-chart-areaspline',
                     id: 'chart',
-                    name: l('chart')
+                    name: lc('chart')
                 },
                 {
                     icon: 'mdi-map',
                     id: 'map',
-                    name: l('map')
+                    name: lc('map')
                 },
                 {
                     icon: 'mb',
                     iconFontSize: 16,
                     id: 'meteo_blue',
-                    name: 'meteoblue'
+                    name: lc('meteoblue')
                 },
                 {
                     icon: 'mdi-trash-can',
                     id: 'delete',
                     color: colorError,
-                    name: l('remove')
+                    name: lc('remove')
                 }
             ];
             if (favItem.timezone === 'Europe/Paris' && isBRABounds(favItem)) {
@@ -735,7 +831,7 @@
                 anchor: event.object,
                 vertPos: VerticalPosition.BELOW,
                 props: {
-                    width: 180 * $fontScale,
+                    width: 220 * $fontScale,
                     maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
                 },
                 onClose: async (item) => {
@@ -771,6 +867,13 @@
                                         DEV_LOG && console.log('massifId', massifId, result.path);
                                         openFile(result.path);
                                     }
+                                    break;
+
+                                case 'provider':
+                                    await selectProvider(favItem);
+                                    break;
+                                case 'provider_aqi':
+                                    await selectProviderAQI(favItem);
                                     break;
                             }
                         }
@@ -863,7 +966,7 @@
                     variant="text"
                     verticalAlignment="middle"
                     visibility={weatherLocation ? 'visible' : 'collapse'}
-                    on:tap={() => toggleItemFavorite(weatherLocation)} />
+                    on:tap={() => toggleFavorite(weatherLocation)} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"
@@ -896,7 +999,7 @@
                         borderBottomColor={colorOutlineVariant}
                         borderBottomWidth={1}
                         borderRightColor={colorPrimary}
-                        borderRightWidth={weatherLocation && item.coord.lat === weatherLocation.coord.lat && item.coord.lon === weatherLocation.coord.lon ? 6 : 0}
+                        borderRightWidth={isCurrentLocation(item, weatherLocation) ? 6 : 0}
                         columns="*,auto"
                         padding={10}
                         rippleColor={colorOnSurface}

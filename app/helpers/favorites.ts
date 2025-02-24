@@ -5,6 +5,8 @@ import { colors } from '~/variables';
 import { get } from 'svelte/store';
 import { globalObservable } from '@shared/utils/svelte/ui';
 import PolygonLookup from 'polygon-lookup';
+import { AqiProviderType, ProviderType } from '~/services/providers/weather';
+import { SETTINGS_FAVORITES } from './constants';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
@@ -39,11 +41,11 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
         return getTimezone(location);
     }
 }
-export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString('favorites', '[]')).map((i) => ({ ...i, isFavorite: true })));
+export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString(SETTINGS_FAVORITES, '[]')).map((i) => ({ ...i, isFavorite: true })));
 
 favorites.on('change', (e) => {
     // DEV_LOG && console.log('on favorites changed1');
-    ApplicationSettings.setString('favorites', JSON.stringify(favorites));
+    ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites));
 });
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 if (favorites.length && !favorites.getItem(0).timezone) {
@@ -56,11 +58,11 @@ if (favorites.length && !favorites.getItem(0).timezone) {
                 });
             }
         })
-    ).then(() => ApplicationSettings.setString('favorites', JSON.stringify(favorites)));
+    ).then(() => ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites)));
 }
 
-prefs.on('key:favorites', () => {
-    favorites.splice(0, favorites.length, ...JSON.parse(ApplicationSettings.getString('favorites', '[]')));
+prefs.on(`key:${SETTINGS_FAVORITES}`, () => {
+    favorites.splice(0, favorites.length, ...JSON.parse(ApplicationSettings.getString(SETTINGS_FAVORITES, '[]')));
     favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 });
 
@@ -76,6 +78,7 @@ export function favoriteIconColor(item: FavoriteLocation) {
         return item.isFavorite ? '#EFB644' : get(colors).colorOnSurfaceVariant;
     }
 }
+export function saveFavorite(item: FavoriteLocation) {}
 
 export function favoriteIcon(item: FavoriteLocation) {
     if (item) {
@@ -89,6 +92,25 @@ export function getFavoriteKey(item: WeatherLocation) {
     }
 }
 
+export async function setFavoriteProvider(item: FavoriteLocation, provider: ProviderType) {
+    const key = getFavoriteKey(item);
+    const index = favoritesKeys.indexOf(key);
+    if (index !== -1) {
+        item.provider = provider;
+        DEV_LOG && console.log('setFavoriteProvider', provider, JSON.stringify(item));
+        favorites.setItem(index, item);
+        globalObservable.notify({ eventName: 'favorite', data: item });
+    }
+}
+export async function setFavoriteAqiProvider(item: FavoriteLocation, provider: AqiProviderType) {
+    const key = getFavoriteKey(item);
+    const index = favoritesKeys.indexOf(key);
+    if (index !== -1) {
+        item.providerAqi = provider;
+        favorites.setItem(index, item);
+        globalObservable.notify({ eventName: 'favorite', data: item });
+    }
+}
 export async function toggleFavorite(item: FavoriteLocation) {
     if (isFavorite(item)) {
         const key = getFavoriteKey(item);

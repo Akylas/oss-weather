@@ -27,7 +27,7 @@
     import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import type { DailyData, Hourly, WeatherData } from '~/services/providers/weather';
-    import { convertWeatherValueToUnit, propToUnit } from '~/services/weatherData';
+    import { convertWeatherValueToUnit, getWeatherDataTitle, propToUnit } from '~/services/weatherData';
     import { colors, fontScale, screenWidthDips } from '~/variables';
 
     const legendIconPaint = new Paint();
@@ -455,7 +455,7 @@
     translationFunction={swipeMenuTranslationFunction}
     {...$$restProps}>
     <gridlayout prop:mainContent rows="auto,*">
-        <label class="sectionHeader" paddingTop={10} text={`${item.id} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} />
+        <label class="sectionHeader" paddingTop={10} text={`${getWeatherDataTitle(item.id)} ${getUnit(item.id) || ''} (${lc(item.forecast)})`} />
         <mdbutton class="mdi" horizontalAlignment="right" text="mdi-format-list-bulleted-square" variant="text" on:tap={() => drawer.toggle()} />
 
         <combinedchart bind:this={chartView} height={chartHeight} row={1} verticalAlignment={chartHeight ? 'center' : 'stretch'} on:highlight={onChartHighlight} on:layoutChanged={onLayoutChanged} />

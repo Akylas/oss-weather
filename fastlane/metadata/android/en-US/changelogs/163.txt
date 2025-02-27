@@ -1,0 +1,10 @@
+Features:
+- allow to rename favorites
+- allow to set custom daily date format
+- You can now select OpenMeteo model per favorite
+
+Bug fixes:
+- reorganized settings page
+- hourly chart view missing icon drawing
+- allow full range of hourly forecast or hourly chart. Setting now uses 12 hours step
+- Translations update

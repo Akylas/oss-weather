@@ -1,13 +1,12 @@
 <script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
     import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
-    import dayjs from 'dayjs';
     import WeatherIcon from '~/components/WeatherIcon.svelte';
-    import { formatDate, getLocalTime } from '~/helpers/locale';
+    import { formatDate } from '~/helpers/locale';
     import type { DailyData } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
     import { createEventDispatcher } from '@shared/utils/svelte/ui';
-    import { colors, fontScale, weatherDataLayout } from '~/variables';
+    import { colors, dailyDateFormat, fontScale, weatherDataLayout } from '~/variables';
     import { isEInk } from '~/helpers/theme';
 
     let textPaint: Paint;
@@ -66,7 +65,7 @@
         canvas.drawText(formatDate(item.time, 'ddd', item.timezoneOffset), PADDING_LEFT, 26 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurfaceVariant);
         textPaint.setTextSize(15 * $fontScale);
-        canvas.drawText(formatDate(item.time, 'DD/MM', item.timezoneOffset), PADDING_LEFT, 46 * $fontScale, textPaint);
+        canvas.drawText(formatDate(item.time, dailyDateFormat, item.timezoneOffset), PADDING_LEFT, 46 * $fontScale, textPaint);
         textPaint.setColor(colorOnSurface);
 
         const nString = createNativeAttributedString(

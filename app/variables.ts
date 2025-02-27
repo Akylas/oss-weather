@@ -8,9 +8,11 @@ import {
     ALWAYS_SHOW_PRECIP_PROB,
     DECIMAL_METRICS_TEMP,
     DEFAULT_COLOR_THEME,
+    DEFAULT_DAILY_DATE_FORMAT,
     DEFAULT_METRIC_CM_TO_MM,
     SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
     SETTINGS_COLOR_THEME,
+    SETTINGS_DAILY_DATE_FORMAT,
     SETTINGS_FEELS_LIKE_TEMPERATURES,
     SETTINGS_FONTSCALE,
     SETTINGS_IMPERIAL,
@@ -92,6 +94,8 @@ export let unitCMToMM = ApplicationSettings.getBoolean(SETTINGS_METRIC_CM_TO_MM,
 export const alwaysShowPrecipProb = writable(ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB));
 export const weatherDataLayout = writable(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
+export let dailyDateFormat = (ApplicationSettings.getString(SETTINGS_DAILY_DATE_FORMAT, DEFAULT_DAILY_DATE_FORMAT));
+
 let storedFontScale = ApplicationSettings.getNumber(SETTINGS_FONTSCALE, 1);
 if (isNaN(storedFontScale)) {
     storedFontScale = 1;
@@ -151,6 +155,12 @@ prefs.on(`key:${SETTINGS_METRIC_TEMP_DECIMAL}`, () => {
 prefs.on(`key:${SETTINGS_METRIC_CM_TO_MM}`, () => {
     unitCMToMM = ApplicationSettings.getBoolean(SETTINGS_METRIC_CM_TO_MM, DEFAULT_METRIC_CM_TO_MM);
     DEV_LOG && console.log(`key:${SETTINGS_METRIC_CM_TO_MM}`, imperialUnits, metricDecimalTemp);
+    // we notify units to update ui
+    notifyUnits();
+});
+
+prefs.on(`key:${SETTINGS_DAILY_DATE_FORMAT}`, () => {
+    dailyDateFormat = ApplicationSettings.getString(SETTINGS_DAILY_DATE_FORMAT, DEFAULT_DAILY_DATE_FORMAT);
     // we notify units to update ui
     notifyUnits();
 });

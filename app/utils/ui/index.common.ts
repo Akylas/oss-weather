@@ -9,7 +9,7 @@ import { ComponentInstanceInfo, hideLoading, resolveComponentElement, showSnack 
 import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
 import type OptionSelect__SvelteComponent_ from '~/components/common/OptionSelect.svelte';
-import { lc } from '~/helpers/locale';
+import { l, lc } from '~/helpers/locale';
 import { colors, fontScale, screenWidthDips } from '~/variables';
 
 export * from '@shared/utils/ui';
@@ -222,4 +222,9 @@ export async function selectValue<T = any>(options: { data: T; title: string }[]
     );
     return result?.data as T;
     // });
+}
+
+export function getDateFormatHTMLArgs() {
+    const cols = get(colors);
+    return [`<span style="background-color:${cols.colorSurfaceContainerHigh};">YYYY,M,MM,D,H,s...</span>`, `<a href="https://day.js.org/docs/en/display/format">${l('here')}</a>`];
 }

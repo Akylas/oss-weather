@@ -1,4 +1,5 @@
-import { Screen } from '@nativescript/core';
+import { ApplicationSettings, Screen } from '@nativescript/core';
+import { prefs } from '~/services/preferences';
 
 export const DATA_VERSION = 1;
 
@@ -32,6 +33,7 @@ export const SETTINGS_PROVIDER = 'provider';
 export const SETTINGS_PROVIDER_AQI = 'provider_aqi';
 export const SETTINGS_WEATHER_LOCATION = 'weatherLocation';
 export const SETTINGS_FAVORITES = 'favorites';
+export const SETTINGS_DAILY_DATE_FORMAT = 'daily_date_format';
 
 export const DEFAULT_COLOR_THEME = 'default';
 export const DEFAULT_LOCALE = 'auto';
@@ -49,6 +51,7 @@ export const SHOW_DAILY_IN_CURRENTLY = false;
 export const FEELS_LIKE_TEMPERATURE = false;
 export const ALWAYS_SHOW_PRECIP_PROB = false;
 export const DEFAULT_METRIC_CM_TO_MM = false;
+export const DEFAULT_DAILY_DATE_FORMAT = 'DD/MM';
 
 export const WEATHER_DATA_LAYOUT = 'default';
 

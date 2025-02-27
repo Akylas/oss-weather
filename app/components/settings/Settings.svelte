@@ -30,6 +30,7 @@
         MAIN_CHART_NB_HOURS,
         MAIN_CHART_SHOW_WIND,
         MAIN_PAGE_HOURLY_CHART,
+        MAX_NB_DAYS_FORECAST,
         MIN_UV_INDEX,
         NB_DAYS_FORECAST,
         NB_HOURS_FORECAST,
@@ -88,8 +89,8 @@
 
 <script lang="ts">
     // technique for only specific properties to get updated on store change
-    let { colorOnBackground, colorPrimary ,colorOnSurfaceVariant} = $colors;
-    $: ({ colorOnBackground, colorPrimary, colorOnSurfaceVariant } = $colors);
+    let { colorOnBackground, colorOnSurfaceVariant, colorPrimary } = $colors;
+    $: ({ colorOnBackground, colorOnSurfaceVariant, colorPrimary } = $colors);
     $: ({ bottom: windowInsetBottom } = $windowInset);
 
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -349,14 +350,14 @@
                         key: 'forecast_nb_days',
                         id: 'setting',
                         title: lc('forecast_nb_days'),
-                        values: Array.from(Array(16), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        values: Array.from(Array(MAX_NB_DAYS_FORECAST), (_, index) => ({ value: index + 1, title: index + 1 })),
                         rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
                     },
                     {
                         key: 'forecast_nb_hours',
                         id: 'setting',
                         title: lc('forecast_nb_hours'),
-                        values: Array.from(Array(NB_DAYS_FORECAST * 24), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        values: Array.from(Array(MAX_NB_DAYS_FORECAST * 2), (_, index) => ({ value: (index + 1) * 12, title: (index + 1) * 12 })),
                         rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
                     },
                     {
@@ -593,7 +594,7 @@
                         key: SETTINGS_MAIN_CHART_NB_HOURS,
                         id: 'setting',
                         title: lc('main_chart_nb_hours'),
-                        values: Array.from(Array(NB_DAYS_FORECAST * 24), (_, index) => ({ value: index + 1, title: index + 1 })),
+                        values: Array.from(Array(MAX_NB_DAYS_FORECAST * 2), (_, index) => ({ value: (index + 1) * 12, title: (index + 1) * 12 })),
                         rightValue: () => ApplicationSettings.getNumber(SETTINGS_MAIN_CHART_NB_HOURS, MAIN_CHART_NB_HOURS)
                     },
                     {

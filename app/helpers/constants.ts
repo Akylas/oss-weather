@@ -55,6 +55,7 @@ export const DEFAULT_DAILY_DATE_FORMAT = 'DD/MM';
 
 export const WEATHER_DATA_LAYOUT = 'default';
 
+export const MAX_NB_DAYS_FORECAST = 16;
 export const NB_DAYS_FORECAST = 7;
 export const NB_HOURS_FORECAST = 72;
 export const MAIN_CHART_NB_HOURS = 72;

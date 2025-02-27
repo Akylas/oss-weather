@@ -109,6 +109,7 @@
     });
 
     let lastIconX: number;
+    let lastIconHour: number;
     let valuesToDraw: number[] = [];
     let hasSnowFall = false;
     function updateLineChart(setData = true) {
@@ -158,7 +159,8 @@
                                 // if (date.get('m') === 0) {
                                 const scaleX = chart.viewPortHandler.scaleX;
                                 const modulo = Math.max(Math.round(11 / scaleX), 1);
-                                if (/* lastIconX === undefined ||  */ x - lastIconX > iconSize || date.get('h') % modulo === 0) {
+                                const hour = date.get('h');
+                                if (/* (x > 0 && lastIconX === undefined) || */ /*  x - lastIconX > iconSize || */ Math.abs(hour - lastIconHour) >= modulo || hour % modulo === 0) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
@@ -169,6 +171,7 @@
                                     );
                                     lastIconX = x;
                                 }
+                                lastIconHour = hour;
 
                                 // canvas.save();
                                 // canvas.scale(0.5, 0.5, x, y);
@@ -634,6 +637,7 @@
     }
     function onChartDraw() {
         lastIconX = undefined;
+        lastIconHour = undefined;
     }
 
     function highlightOnDate(timestamp: number) {

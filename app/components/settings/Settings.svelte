@@ -6,7 +6,7 @@
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { TextField, TextFieldProperties } from '@nativescript-community/ui-material-textfield';
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { Sentry } from '@shared/utils/sentry';
@@ -24,6 +24,7 @@
         CHARTS_PORTRAIT_FULLSCREEN,
         DAILY_PAGE_HOURLY_CHART,
         DECIMAL_METRICS_TEMP,
+        DEFAULT_DAILY_DATE_FORMAT,
         DEFAULT_HOURLY_ODD_COLORS,
         FEELS_LIKE_TEMPERATURE,
         MAIN_CHART_NB_HOURS,
@@ -34,6 +35,7 @@
         NB_HOURS_FORECAST,
         NB_MINUTES_FORECAST,
         SETTINGS_ALWAYS_SHOW_PRECIP_PROB,
+        SETTINGS_DAILY_DATE_FORMAT,
         SETTINGS_DAILY_PAGE_HOURLY_CHART,
         SETTINGS_FEELS_LIKE_TEMPERATURES,
         SETTINGS_HOURLY_ODD_COLORS,
@@ -75,18 +77,19 @@
     import { OM_MODELS } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { confirmRestartApp, createView, hideLoading, openLink, selectValue, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
+    import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
+    import { Label } from '@nativescript-community/ui-label';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
 
 <script lang="ts">
     // technique for only specific properties to get updated on store change
-    let { colorOnBackground, colorPrimary } = $colors;
-    $: ({ colorOnBackground, colorPrimary } = $colors);
+    let { colorOnBackground, colorPrimary ,colorOnSurfaceVariant} = $colors;
+    $: ({ colorOnBackground, colorPrimary, colorOnSurfaceVariant } = $colors);
     $: ({ bottom: windowInsetBottom } = $windowInset);
 
     let collectionView: NativeViewElementNode<CollectionView>;
@@ -128,6 +131,62 @@
     }
     function getSubSettings(id: string) {
         switch (id) {
+            case 'appearance':
+                return () => [
+                    {
+                        id: 'theme',
+                        description: () => getThemeDisplayName(),
+                        title: lc('theme.title')
+                    },
+                    {
+                        id: 'color_theme',
+                        description: () => getColorThemeDisplayName(),
+                        title: lc('color_theme.title')
+                    },
+                    {
+                        type: 'switch',
+                        id: 'auto_black',
+                        title: lc('auto_black'),
+                        value: ApplicationSettings.getBoolean('auto_black', false)
+                    },
+                    {
+                        icon: 'mdi-format-size',
+                        id: 'font_scale',
+                        title: lc('font_scale')
+                    }
+                ];
+            case 'locales':
+                return () => [
+                    {
+                        id: SETTINGS_LANGUAGE,
+                        description: () => getLocaleDisplayName(),
+                        title: lc('language')
+                    },
+                    {
+                        type: 'switch',
+                        id: 'clock_24',
+                        title: lc('clock_24'),
+                        value: clock_24
+                    },
+                    {
+                        type: 'prompt',
+                        valueType: 'string',
+                        id: 'setting',
+                        key: SETTINGS_DAILY_DATE_FORMAT,
+                        default: () => ApplicationSettings.getString(SETTINGS_DAILY_DATE_FORMAT, DEFAULT_DAILY_DATE_FORMAT),
+                        description: lc('daily_date_format_description'),
+                        title: lc('daily_date_format'),
+                        full_description: lc('daily_date_format_fulldesc', ...getDateFormatHTMLArgs()),
+                        useHTML: true,
+                        onLinkTap: ({ link }) => {
+                            openLink(link);
+                        },
+                        textFieldProperties: {
+                            autocapitalizationType: 'none',
+                            autocorrect: false
+                        } as TextFieldProperties
+                    }
+                ];
             case 'charts':
                 return () => [
                     {
@@ -585,36 +644,18 @@
                     title: lc('general')
                 },
                 {
-                    id: SETTINGS_LANGUAGE,
-                    description: () => getLocaleDisplayName(),
-                    title: lc('language')
+                    id: 'sub_settings',
+                    options: getSubSettings('appearance'),
+                    icon: 'mdi-cards-outline',
+                    description: () => lc('appearance_settings'),
+                    title: lc('appearance')
                 },
                 {
-                    id: 'theme',
-                    description: () => getThemeDisplayName(),
-                    title: lc('theme.title')
-                },
-                {
-                    id: 'color_theme',
-                    description: () => getColorThemeDisplayName(),
-                    title: lc('color_theme.title')
-                },
-                {
-                    type: 'switch',
-                    id: 'auto_black',
-                    title: lc('auto_black'),
-                    value: ApplicationSettings.getBoolean('auto_black', false)
-                },
-                {
-                    type: 'switch',
-                    id: 'clock_24',
-                    title: lc('clock_24'),
-                    value: clock_24
-                },
-                {
-                    icon: 'mdi-format-size',
-                    id: 'font_scale',
-                    title: lc('font_scale')
+                    id: 'sub_settings',
+                    options: getSubSettings('locales'),
+                    icon: 'mdi-translate',
+                    description: () => lc('language_locale_settings'),
+                    title: lc('language_locale')
                 }
             ]
                 .concat([
@@ -1027,12 +1068,28 @@
                     if (item.type === 'prompt') {
                         const result = await prompt({
                             title: getTitle(item),
-                            message: item.full_description || item.description,
+                            message: item.useHTML ? item.description : item.full_description || item.description,
                             okButtonText: l('save'),
                             cancelButtonText: l('cancel'),
                             textFieldProperties: item.textFieldProperties,
                             autoFocus: true,
-                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : typeof item.default === 'function' ? item.default() : item.default
+                            defaultText: typeof item.rightValue === 'function' ? item.rightValue() : typeof item.default === 'function' ? item.default() : item.default,
+                            view: item.useHTML
+                                ? createView(
+                                      Label,
+                                      {
+                                          padding: '10 20 0 20',
+                                          textWrap: true,
+                                          color: colorOnSurfaceVariant as any,
+                                          html: item.full_description || item.description
+                                      },
+                                      item.onLinkTap
+                                          ? {
+                                                linkTap: item.onLinkTap
+                                            }
+                                          : undefined
+                                  )
+                                : undefined
                         });
                         Utils.dismissSoftInput();
                         if (result && !!result.result && result.text.length > 0) {

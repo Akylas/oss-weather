@@ -33,6 +33,8 @@
         "name": "OSS Weather"
     },
     "apparent": "apparent",
+    "appearance": "Appearance",
+    "appearance_settings": "theme and other appearance settings",
     "aqi": "Air Quality Index",
     "artemisia": "mugwort",
     "authorize": "Authorize",
@@ -166,6 +168,8 @@
     "italian": "Italian",
     "japanese": "Japanese",
     "language": "Language",
+    "language_locale": "Language & locales",
+    "language_locale_settings": "language, locale, data & time related settings",
     "last_24_hours": "last 24 hours",
     "last_quarter": "last quarter",
     "last_updated": "Updated",

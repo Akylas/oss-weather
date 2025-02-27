@@ -1,15 +1,15 @@
 import { ApplicationSettings } from '@nativescript/core';
-import dayjs from 'dayjs';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
 import { getStartOfDay, l } from '~/helpers/locale';
-import { Pollutants, getAqiFromPollutants, prepareAirQualityData } from '../airQualityData';
+import { Pollutants, prepareAirQualityData } from '../airQualityData';
 import { WeatherLocation, request } from '../api';
 import { WeatherProps, weatherDataService } from '../weatherData';
 import { AirQualityProvider } from './airqualityprovider';
 import { Forecast } from './openmeteo';
 import { AirQualityCurrently, AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { WeatherProvider } from './weatherprovider';
+import { getOMPreferredModel } from './weatherproviderfactory';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
@@ -23,48 +23,48 @@ const KEY_MAPPING = {
     ammonia: Pollutants.NH3
 };
 
-export const OM_MODELS = {
-    best_match: 'Best match',
-    ecmwf_ifs04: 'ECMWF IFS 0.4°',
-    ecmwf_ifs025: 'ECMWF IFS 0.25°',
-    ecmwf_aifs025: 'ECMWF AIFS 0.25°',
-    cma_grapes_global: 'CMA GRAPES Global',
-    bom_access_global: 'BOM Access Global',
-    metno_nordic: 'MET Norway Nordic',
-    metno_seamless: 'MET Norway Nordic Seamless (with ECMWF)',
-    gfs_seamless: 'GFS Seamless',
-    gfs_global: 'GFS Global',
-    gfs_hrrr: 'GFS HRRR',
-    gfs_graphcast025: 'GFS GraphCast',
-    icon_seamless: 'DWD Icon Seamless',
-    icon_global: 'DWD Icon Global',
-    icon_eu: 'DWD Icon EU',
-    icon_d2: 'DWD Icon D2',
-    gem_seamless: 'GEM Seamless',
-    gem_global: 'GEM Global',
-    gem_regional: 'GEM Regional',
-    gem_hrdps_continental: 'GEM HRDPS Continental',
-    meteofrance_seamless: 'MeteoFrance Seamless',
-    meteofrance_arpege_world: 'MeteoFrance Arpege World',
-    meteofrance_arpege_europe: 'MeteoFrance Arpege Europe',
-    meteofrance_arome_france: ' MeteoFrance Arome France',
-    meteofrance_arome_france_hd: 'MeteoFrance Arome France HD',
-    arpae_cosmo_seamless: 'ARPAE Seamless',
-    arpae_cosmo_2i: 'ARPAE COSMO 2I',
-    arpae_cosmo_5m: 'ARPAE COSMO 5M',
-    ukmo_seamless: 'UK Met Office Seamless',
-    ukmo_global_deterministic_10km: 'UK Met Office Global 10km',
-    ukmo_uk_deterministic_2km: 'UK Met Office UK 2km',
-    ncep_nbm_conus: 'NCEP NBM U.S. Conus',
-    jma_seamless: 'JMA Seamless',
-    jma_msm: 'JMA MSM',
-    jma_gsm: 'JMA GSM',
-    knmi_seamless: 'KNMI Seamless (with ECMWF)',
-    knmi_harmonie_arome_europe: 'KNMI Harmonie Arome Europe',
-    knmi_harmonie_arome_netherlands: 'KNMI Harmonie Arome Netherlands',
-    dmi_seamless: 'DMI Seamless (with ECMWF)',
-    dmi_harmonie_arome_europe: 'DMI Harmonie Arome Europe'
-};
+export enum OpenMeteoModels {
+    best_match = 'Best match',
+    ecmwf_ifs04 = 'ECMWF IFS 0.4°',
+    ecmwf_ifs025 = 'ECMWF IFS 0.25°',
+    ecmwf_aifs025 = 'ECMWF AIFS 0.25°',
+    cma_grapes_global = 'CMA GRAPES Global',
+    bom_access_global = 'BOM Access Global',
+    metno_nordic = 'MET Norway Nordic',
+    metno_seamless = 'MET Norway Nordic Seamless (with ECMWF)',
+    gfs_seamless = 'GFS Seamless',
+    gfs_global = 'GFS Global',
+    gfs_hrrr = 'GFS HRRR',
+    gfs_graphcast025 = 'GFS GraphCast',
+    icon_seamless = 'DWD Icon Seamless',
+    icon_global = 'DWD Icon Global',
+    icon_eu = 'DWD Icon EU',
+    icon_d2 = 'DWD Icon D2',
+    gem_seamless = 'GEM Seamless',
+    gem_global = 'GEM Global',
+    gem_regional = 'GEM Regional',
+    gem_hrdps_continental = 'GEM HRDPS Continental',
+    meteofrance_seamless = 'MeteoFrance Seamless',
+    meteofrance_arpege_world = 'MeteoFrance Arpege World',
+    meteofrance_arpege_europe = 'MeteoFrance Arpege Europe',
+    meteofrance_arome_france = ' MeteoFrance Arome France',
+    meteofrance_arome_france_hd = 'MeteoFrance Arome France HD',
+    arpae_cosmo_seamless = 'ARPAE Seamless',
+    arpae_cosmo_2i = 'ARPAE COSMO 2I',
+    arpae_cosmo_5m = 'ARPAE COSMO 5M',
+    ukmo_seamless = 'UK Met Office Seamless',
+    ukmo_global_deterministic_10km = 'UK Met Office Global 10km',
+    ukmo_uk_deterministic_2km = 'UK Met Office UK 2km',
+    ncep_nbm_conus = 'NCEP NBM U.S. Conus',
+    jma_seamless = 'JMA Seamless',
+    jma_msm = 'JMA MSM',
+    jma_gsm = 'JMA GSM',
+    knmi_seamless = 'KNMI Seamless (with ECMWF)',
+    knmi_harmonie_arome_europe = 'KNMI Harmonie Arome Europe',
+    knmi_harmonie_arome_netherlands = 'KNMI Harmonie Arome Netherlands',
+    dmi_seamless = 'DMI Seamless (with ECMWF)',
+    dmi_harmonie_arome_europe = 'DMI Harmonie Arome Europe'
+}
 
 export const API_KEY_VALUES = {
     forecast: ({ current, currentData, feelsLikeTemperatures, minutely }: { currentData: WeatherProps[]; feelsLikeTemperatures: boolean; current: boolean; minutely: boolean }) => ({
@@ -131,11 +131,11 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
     static id = 'openmeteo';
     id = OMProvider.id;
     getModels() {
-        return OM_MODELS;
+        return OpenMeteoModels;
     }
 
     getModelName(key) {
-        return OM_MODELS[key];
+        return OpenMeteoModels[key];
     }
     private static readonly weatherCodeDescription = {
         0: l('clear'),
@@ -288,7 +288,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             current,
             forceModel,
             minutely,
-            model = ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
+            model = getOMPreferredModel(),
             warnings,
             weatherProps
         }: { warnings?: boolean; minutely?: boolean; current?: boolean; model?: string; forceModel?: boolean; weatherProps?: WeatherProps[] } = {}

@@ -7,8 +7,9 @@ import { globalObservable } from '@shared/utils/svelte/ui';
 import PolygonLookup from 'polygon-lookup';
 import { AqiProviderType, ProviderType } from '~/services/providers/weather';
 import { SETTINGS_FAVORITES } from './constants';
+import { OpenMeteoModels } from '~/services/providers/om';
 
-export const EVENT_FAVORITE = 'favorite'
+export const EVENT_FAVORITE = 'favorite';
 
 export interface FavoriteLocation extends WeatherLocation {
     isFavorite?: boolean;
@@ -99,7 +100,16 @@ export async function setFavoriteProvider(item: FavoriteLocation, provider: Prov
     const index = favoritesKeys.indexOf(key);
     if (index !== -1) {
         item.provider = provider;
-        DEV_LOG && console.log('setFavoriteProvider', provider, JSON.stringify(item));
+        favorites.setItem(index, item);
+        globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
+    }
+}
+
+export async function setFavoriteOMProviderModel(item: FavoriteLocation, model: OpenMeteoModels) {
+    const key = getFavoriteKey(item);
+    const index = favoritesKeys.indexOf(key);
+    if (index !== -1) {
+        item.omModel = model;
         favorites.setItem(index, item);
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }

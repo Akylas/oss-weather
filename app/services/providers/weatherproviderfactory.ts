@@ -3,12 +3,12 @@ import { createGlobalEventListener, globalObservable } from '@shared/utils/svelt
 import { prefs } from '../preferences';
 import { AirQualityProvider } from './airqualityprovider';
 import { MFProvider } from './mf';
-import { OMProvider } from './om';
+import { OMProvider, OpenMeteoModels } from './om';
 import { OWMProvider } from './owm';
 import { AqiProviderType, ProviderType } from './weather';
 import { WeatherProvider } from './weatherprovider';
 import { AtmoProvider } from './atmo';
-import { SETTINGS_PROVIDER, SETTINGS_PROVIDER_AQI } from '~/helpers/constants';
+import { DEFAULT_OM_PREFERED_MODEL, SETTINGS_OM_PREFERED_MODEL, SETTINGS_PROVIDER, SETTINGS_PROVIDER_AQI } from '~/helpers/constants';
 
 export enum Providers {
     MeteoFrance = 'meteofrance',
@@ -56,6 +56,10 @@ export function getProviderType(): ProviderType {
 export function getAqiProviderType(): AqiProviderType {
     const requestedProviderType: AqiProviderType = (ApplicationSettings.getString(SETTINGS_PROVIDER_AQI, DEFAULT_PROVIDER) || DEFAULT_PROVIDER) as AqiProviderType;
     return requestedProviderType;
+}
+
+export function getOMPreferredModel() {
+    return ApplicationSettings.getString(SETTINGS_OM_PREFERED_MODEL, DEFAULT_OM_PREFERED_MODEL) as OpenMeteoModels;
 }
 
 export function getProviderForType(newType: ProviderType): WeatherProvider {

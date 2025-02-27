@@ -14,6 +14,7 @@ import { NominatimResult } from '../../typings/nominatim';
 import { Photon, PhotonProperties } from '../../typings/photon';
 import { AqiProviderType, ProviderType, WeatherData } from './providers/weather';
 import { WeatherProps } from './weatherData';
+import { OpenMeteoModels } from './providers/om';
 
 type HTTPSOptions = https.HttpsRequestOptions;
 
@@ -423,6 +424,7 @@ export interface WeatherLocation {
         lon: number;
     };
     provider?: ProviderType;
+    omModel?: OpenMeteoModels;
     providerAqi?: AqiProviderType;
 }
 const PHOTON_SUPPORTED_LANGUAGES = ['en', 'de', 'fr'];

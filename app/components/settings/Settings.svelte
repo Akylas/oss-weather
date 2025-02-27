@@ -3,12 +3,14 @@
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
+    import { Label } from '@nativescript-community/ui-label';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { TextField, TextFieldProperties } from '@nativescript-community/ui-material-textfield';
     import { TextView } from '@nativescript-community/ui-material-textview';
     import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
     import { Sentry } from '@shared/utils/sentry';
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
@@ -23,7 +25,6 @@
         CHARTS_LANDSCAPE,
         CHARTS_PORTRAIT_FULLSCREEN,
         DAILY_PAGE_HOURLY_CHART,
-        DECIMAL_METRICS_TEMP,
         DEFAULT_DAILY_DATE_FORMAT,
         DEFAULT_HOURLY_ODD_COLORS,
         FEELS_LIKE_TEMPERATURE,
@@ -48,6 +49,7 @@
         SETTINGS_METRIC_CM_TO_MM,
         SETTINGS_METRIC_TEMP_DECIMAL,
         SETTINGS_MIN_UV_INDEX,
+        SETTINGS_OM_PREFERED_MODEL,
         SETTINGS_PROVIDER,
         SETTINGS_PROVIDER_AQI,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
@@ -75,14 +77,12 @@
     import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
     import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
-    import { OM_MODELS } from '~/services/providers/om';
-    import { aqi_providers, getAqiProviderType, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { OpenMeteoModels } from '~/services/providers/om';
+    import { aqi_providers, getAqiProviderType, getOMPreferredModel, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
-    import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showAlertOptionSelect, showLoading, showSliderPopover } from '~/utils/ui';
+    import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
-    import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
-    import { Label } from '@nativescript-community/ui-label';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -379,13 +379,13 @@
                         title: lc('provider.openmeteo')
                     },
                     {
-                        key: 'open_meteo_prefered_model',
+                        key: SETTINGS_OM_PREFERED_MODEL,
                         id: 'setting',
                         valueType: 'string',
-                        description: () => OM_MODELS[ApplicationSettings.getString('open_meteo_prefered_model', 'best_match')],
+                        description: () => OpenMeteoModels[getOMPreferredModel()],
                         title: lc('open_meteo_prefered_model'),
-                        currentValue: () => ApplicationSettings.getString('open_meteo_prefered_model', 'best_match'),
-                        values: Object.keys(OM_MODELS).map((t) => ({ value: t, title: OM_MODELS[t] }))
+                        currentValue: getOMPreferredModel,
+                        values: Object.keys(OpenMeteoModels).map((t) => ({ value: t, title: OpenMeteoModels[t] }))
                     },
                     {
                         type: 'sectionheader',

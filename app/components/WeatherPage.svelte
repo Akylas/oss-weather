@@ -43,6 +43,7 @@
         queryTimezone,
         renameFavorite,
         setFavoriteAqiProvider,
+        setFavoriteOMProviderModel,
         setFavoriteProvider,
         toggleFavorite
     } from '~/helpers/favorites';
@@ -53,13 +54,23 @@
     import { onIconPackChanged } from '~/services/icon';
     import { OWMProvider } from '~/services/providers/owm';
     import type { AqiProviderType, DailyData, Hourly, ProviderType, WeatherData } from '~/services/providers/weather';
-    import { aqi_providers, getAqiProvider, getAqiProviderType, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import {
+        aqi_providers,
+        getAqiProvider,
+        getAqiProviderType,
+        getOMPreferredModel,
+        getProviderType,
+        getWeatherProvider,
+        onProviderChanged,
+        providers
+    } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, tryCatch, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
     import ThankYou from '@shared/components/ThankYou.svelte';
+    import { OpenMeteoModels } from '~/services/providers/om';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -250,7 +261,7 @@
                 Object.assign(weatherLocation, timezoneData);
                 saveWeatherLocation();
             }
-            weatherData = await getWeatherProvider(weatherLocation.provider).getWeather(weatherLocation);
+            weatherData = await getWeatherProvider(weatherLocation.provider).getWeather(weatherLocation, { model: weatherLocation.omModel });
             DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
             if (timezoneData) {
             }
@@ -597,6 +608,16 @@
             setWeatherLocationProvider(value, location);
         }
     }
+    async function selectOMProviderModel(location: WeatherLocation) {
+        const value = await selectValue<OpenMeteoModels>(
+            Object.keys(OpenMeteoModels).map((t) => ({ data: t as OpenMeteoModels, title: OpenMeteoModels[t] })),
+            location.omModel || getOMPreferredModel(),
+            { title: lc('open_meteo_model') }
+        );
+        if (value) {
+            setWeatherLocationOMProviderModel(value, location);
+        }
+    }
 
     async function selectProviderAQI(location: WeatherLocation) {
         const value = await selectValue<AqiProviderType>(
@@ -642,6 +663,17 @@
         saveWeatherLocation();
         if (isFavorite(location)) {
             setFavoriteProvider(location, provider);
+        } else if (isCurrentLocation(location)) {
+            updateProvider();
+            refreshWeather();
+        }
+    }
+    function setWeatherLocationOMProviderModel(model: OpenMeteoModels, location: WeatherLocation = weatherLocation) {
+        DEV_LOG && console.log('setWeatherLocationOMProviderModel', JSON.stringify(location), provider, isFavorite(location));
+        location.omModel = model;
+        saveWeatherLocation();
+        if (isFavorite(location)) {
+            setFavoriteOMProviderModel(location, model);
         } else if (isCurrentLocation(location)) {
             updateProvider();
             refreshWeather();
@@ -785,6 +817,12 @@
                     subtitle: lc('provider.' + (favItem?.provider || getProviderType()))
                 },
                 {
+                    icon: 'mdi-database',
+                    id: 'om_model',
+                    subtitle: OpenMeteoModels[favItem?.omModel || getOMPreferredModel()],
+                    title: lc('open_meteo_model')
+                },
+                {
                     icon: 'mdi-leaf',
                     id: 'provider_aqi',
                     subtitle: lc('provider_aqi.' + (favItem?.providerAqi || getAqiProviderType())),
@@ -875,6 +913,9 @@
                                     break;
                                 case 'provider_aqi':
                                     await selectProviderAQI(favItem);
+                                    break;
+                                case 'om_model':
+                                    await selectOMProviderModel(favItem);
                                     break;
                                 case 'rename':
                                     result = await prompt({

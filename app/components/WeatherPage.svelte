@@ -808,7 +808,7 @@
                 {
                     icon: 'mdi-rename',
                     id: 'rename',
-                    name: l('rename')
+                    name: lc('rename')
                 },
                 {
                     icon: 'mdi-cloud-circle',
@@ -870,7 +870,8 @@
                 vertPos: VerticalPosition.BELOW,
                 props: {
                     width: 220 * $fontScale,
-                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight,
+                    autoSizeListItem: true
                 },
                 onClose: async (item) => {
                     try {

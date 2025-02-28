@@ -15,7 +15,7 @@
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import SettingsSlider from '~/components/settings/SettingsSlider.svelte';
     import { lc } from '~/helpers/locale';
-    import { colors } from '~/variables';
+    import { colors, fontScale, fonts } from '~/variables';
     export interface OptionType extends IListItem {
         subtitle?: string;
         isPick?: boolean;
@@ -64,7 +64,7 @@
     let filter: string = null;
 
     // technique for only specific properties to get updated on store change
-    $: ({ colorOutline } = $colors);
+    $: ({ colorOutline, colorOnSurface } = $colors);
 
     function updateFiltered(filter) {
         if (filter) {
@@ -179,6 +179,9 @@
     function itemTemplateSelector(item) {
         if (item.type) {
             return item.type;
+        }
+        if (autoSizeListItem && item.icon) {
+            return 'lefticon';
         }
         if (item.rightIcon) {
             return 'righticon';
@@ -302,6 +305,32 @@
                     {...templateProps}
                     on:tap={(event) => onTap(item, event)}>
                     <mdbutton class="icon-btn" col={1} text={item.rightIcon} variant="text" on:tap={(event) => onRightTap(item, event)} />
+                </svelte:component>
+            </Template>
+            <Template key="lefticon" let:item>
+                <svelte:component
+                    this={component}
+                    {borderRadius}
+                    columns="auto,*"
+                    {fontSize}
+                    {fontWeight}
+                    {item}
+                    mainCol={1}
+                    showBottomLine={showBorders}
+                    {subtitleProps}
+                    {titleHolderProps}
+                    {titleProps}
+                    {...templateProps}
+                    on:tap={(event) => onTap(item, event)}>
+                    <label
+                        col={0}
+                        color={item.color || colorOnSurface}
+                        fontFamily={$fonts.mdi}
+                        fontSize={(item.iconFontSize || iconFontSize) * $fontScale}
+                        paddingLeft="8"
+                        text={item.icon}
+                        verticalAlignment="center"
+                        width={iconFontSize * 2} />
                 </svelte:component>
             </Template>
             <Template key="image" let:item>

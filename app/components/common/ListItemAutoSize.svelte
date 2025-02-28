@@ -10,8 +10,8 @@
 <script lang="ts">
     const dispatch = createEventDispatcher();
     // technique for only specific properties to get updated on store change
-    let { colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant } = $colors;
-    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant } = $colors);
+    let { colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors;
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors);
 
     $: linePaint.color = colorOutlineVariant;
     export let showBottomLine: boolean = false;
@@ -73,7 +73,7 @@
 <canvasview
     {columns}
     padding="0 16 0 16"
-    rippleColor={item.color || colorOnSurface}
+    rippleColor={item.color || colorPrimary}
     on:tap={(event) => dispatch('tap', event)}
     on:longPress={(event) => dispatch('longPress', event)}
     on:draw={draw}

@@ -65,7 +65,7 @@
     "color_theme": {
         "default": "По умолчанию",
         "dynamic": "Динамические цвета",
-        "eink": "Eink",
+        "eink": "E-Ink",
         "title": "Цветовая тема"
     },
     "comments": "Комментарии",

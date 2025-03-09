@@ -65,7 +65,7 @@
     "color_theme": {
         "default": "default",
         "dynamic": "dynamic colors",
-        "eink": "eink",
+        "eink": "color theme E-Ink",
         "title": "color theme"
     },
     "comments": "comments",

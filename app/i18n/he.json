@@ -1,1 +1,20 @@
-{}
+{
+    "E": "E",
+    "N": "N",
+    "NE": "NE",
+    "NNE": "NNE",
+    "NNW": "NNW",
+    "NSE": "NSE",
+    "NSW": "NSW",
+    "NW": "NW",
+    "S": "S",
+    "SE": "SE",
+    "SW": "SW",
+    "W": "W",
+    "WNE": "WNE",
+    "WNW": "WNW",
+    "WSE": "WSE",
+    "WSW": "WSW",
+    "about": "אודות",
+    "about_to_quit": "האפליקציה נסגרת כי חסר לה מפתח API"
+}

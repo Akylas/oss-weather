@@ -119,11 +119,11 @@ export const API_KEY_VALUES = {
 export const API_MAX_VALUES = {
     forecast: {
         forecast_days: 16,
-        forecast_hours: 168
+        forecast_hours: 384
     },
     'air-quality': {
-        forecast_days: 6,
-        forecast_hours: 168
+        forecast_days: 7,
+        forecast_hours: 384
     }
 };
 

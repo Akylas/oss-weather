@@ -20,7 +20,7 @@
     import { formatTime, getLocalTime, lc } from '~/helpers/locale';
     import { isEInk, onThemeChanged } from '~/helpers/theme';
     import type { CommonWeatherData, DailyData, Hourly } from '~/services/providers/weather';
-    import { colors, fontScale, rainColor, screenWidthDips, snowColor } from '~/variables';
+    import { colors, dailyDateFormat, fontScale, rainColor, screenWidthDips, snowColor } from '~/variables';
 
     import { AxisDependency } from '@nativescript-community/ui-chart/components/YAxis';
     import { BarData } from '@nativescript-community/ui-chart/data/BarData';
@@ -75,6 +75,7 @@
 
     let temperatureData: { min: number; max: number };
     let startTimestamp = 0;
+    let timeRange = 0;
     let timezoneOffset;
     let chartNeedsZoomUpdate = false;
     let iconCache: { [k: string]: ImageSource } = {};
@@ -108,8 +109,9 @@
         }
     });
 
-    let lastIconX: number;
     let lastIconHour: number;
+    let lastWindIconHour: number;
+    let lastXLabelIconHour: number;
     let valuesToDraw: number[] = [];
     let hasSnowFall = false;
     function updateLineChart(setData = true) {
@@ -152,15 +154,18 @@
                     chart.data = combinedChartData;
                     chart.customRenderer = {
                         drawIcon(canvas: Canvas, chart: CombinedChart, dataSet, dataSetIndex, entry, entryIndex, icon: any, x: number, y: number) {
+                            const date = getLocalTime(startTimestamp + entry['deltaHours'] * 3600 * 1000, timezoneOffset);
+                            const scaleX = chart.viewPortHandler.scaleX;
+                            const hour = date.valueOf() / (3600 * 1000);
                             if (dataSet.label === WeatherProps.iconId) {
                                 const imageSource = icon as ImageSource;
                                 const iconSize = 30;
-                                const date = getLocalTime(startTimestamp + entry['deltaHours'] * 3600 * 1000, timezoneOffset);
                                 // if (date.get('m') === 0) {
-                                const scaleX = chart.viewPortHandler.scaleX;
-                                const modulo = Math.max(Math.round(11 / scaleX), 1);
-                                const hour = date.get('h');
-                                if (/* (x > 0 && lastIconX === undefined) || */ /*  x - lastIconX > iconSize || */ Math.abs(hour - lastIconHour) >= modulo || hour % modulo === 0) {
+                                const modulo = Math.max(Math.round(timeRange / (scaleX * 10)), 1);
+                                if (
+                                    /* (x > 0 && lastIconX === undefined) || */ /*  x - lastIconX > iconSize || */ Math.abs(hour - lastIconHour) >= modulo ||
+                                    (lastIconHour === undefined && hour % modulo === 0) /*  || (hour % modulo === 0 ) */
+                                ) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
@@ -169,26 +174,29 @@
                                         new RectF(drawOffsetX, drawOffsetY, drawOffsetX + iconSize, drawOffsetY + iconSize),
                                         null
                                     );
-                                    lastIconX = x;
+                                    lastIconHour = hour;
                                 }
-                                lastIconHour = hour;
 
                                 // canvas.save();
                                 // canvas.scale(0.5, 0.5, x, y);
                                 // canvas.drawBitmap(icon, drawOffsetX, drawOffsetY, null);
                                 // canvas.restore();
                             } else if (dataSet.label === WeatherProps.windSpeed || dataSet.label === WeatherProps.windBearing) {
-                                const item = entry as Hourly | DailyData;
-                                const drawOffsetY = 40;
-                                appPaint.setTextSize(10);
-                                appPaint.color = !isEInk ? (item.windSpeed >= 70 ? '#ff0353' : item.windSpeed > 40 ? '#FFBC03' : dataSet.color) : dataSet.color;
-                                canvas.drawText(icon as string, x, drawOffsetY, appPaint);
+                                const modulo = Math.max(Math.round(timeRange / (scaleX * 10)), 1);
+                                if (Math.abs(hour - lastWindIconHour) >= modulo || (lastWindIconHour === undefined && hour % modulo === 0)) {
+                                    const item = entry as Hourly | DailyData;
+                                    const drawOffsetY = 40;
+                                    appPaint.setTextSize(10);
+                                    appPaint.color = !isEInk ? (item.windSpeed >= 70 ? '#ff0353' : item.windSpeed > 40 ? '#FFBC03' : dataSet.color) : dataSet.color;
+                                    canvas.drawText(icon as string, x, drawOffsetY, appPaint);
 
-                                // if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust >= 2 * item.windSpeed))) {
-                                //     wiPaint.setTextSize(6);
-                                //     wiPaint.color = !isEInk ? (item.windGust >= 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : dataSet.color) : dataSet.color;
-                                //     canvas.drawText(getWeatherDataIcon(WeatherProps.windGust), x, drawOffsetY + 8, wiPaint);
-                                // }
+                                    // if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust >= 2 * item.windSpeed))) {
+                                    //     wiPaint.setTextSize(6);
+                                    //     wiPaint.color = !isEInk ? (item.windGust >= 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : dataSet.color) : dataSet.color;
+                                    //     canvas.drawText(getWeatherDataIcon(WeatherProps.windGust), x, drawOffsetY + 8, wiPaint);
+                                    // }
+                                    lastWindIconHour = hour;
+                                }
                             }
                         },
                         drawValue(c: Canvas, chart, dataSet, dataSetIndex: number, entry, entryIndex: number, valueText: string, x: number, y: number, color: string | Color, paint: Paint) {
@@ -247,6 +255,7 @@
                 }
                 timezoneOffset = sourceData[0].timezoneOffset;
                 startTimestamp = sourceData[0].time;
+                timeRange = (sourceData[sourceData.length - 1].time - sourceData[0].time) / (3600 * 1000);
 
                 if (showCurrentTimeLimitLine) {
                     const limitLine = new LimitLine((getLocalTime(undefined, timezoneOffset).valueOf() - startTimestamp) / (3600 * 1000));
@@ -262,15 +271,31 @@
 
                 xAxis.valueFormatter = {
                     getAxisLabel: (value, axis) => {
+                        const scaleX = chart.viewPortHandler.scaleX;
+                        const hour = value;
+
+                        // DEV_LOG && console.log('getAxisLabel', scaleX, hour, modulo);
                         // we add 1 minute to ensure we always show next day with 12:00PM
-                        const timestamp = startTimestamp + value * 3600 * 1000 + 6000;
+                        const timestamp = startTimestamp + hour * 3600 * 1000 + 6000;
                         const date = getLocalTime(timestamp, timezoneOffset);
-                        // DEV_LOG && console.log('getAxisLabel', date.valueOf(), date);
-                        // if (date.get('m') === 0) {
-                        if (date.get('h') === 0) {
-                            return formatTime(timestamp, 'ddd\nDD/MM', timezoneOffset);
-                        } else if (date.get('h') % 4 === 0) {
-                            return formatTime(timestamp, 'HH', timezoneOffset);
+                        const dateHours = date.get('h');
+                        let modulo = Math.max(Math.round(timeRange / (scaleX * 10)), 1);
+                        if (modulo >= 24) {
+                            modulo = 24;
+                        } else if (modulo >= 12) {
+                            modulo = 12;
+                        } else if (modulo >= 8) {
+                            modulo = 8;
+                        } else if (modulo >= 6) {
+                            modulo = 6;
+                        } else if (modulo >= 4) {
+                            modulo = 4;
+                        } else if (modulo >= 2) {
+                            modulo = 2;
+                        }
+                        if (dateHours % modulo === 0 && (Math.abs(hour - lastXLabelIconHour) >= modulo || lastXLabelIconHour === undefined)) {
+                            lastXLabelIconHour = hour;
+                            return formatTime(timestamp, dateHours === 0 ? `ddd\n${dailyDateFormat}` : 'HH', timezoneOffset);
                         }
                         // }
                     }
@@ -636,8 +661,9 @@
         }
     }
     function onChartDraw() {
-        lastIconX = undefined;
         lastIconHour = undefined;
+        lastWindIconHour = undefined;
+        lastXLabelIconHour = undefined;
     }
 
     function highlightOnDate(timestamp: number) {

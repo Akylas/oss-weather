@@ -308,7 +308,7 @@
             const lineData = new LineData(sets);
             chart.data = lineData;
 
-            if (startTime) {
+            if (startTime && isCurrentDay) {
                 const nowMinutes = startTime.diff(getStartOfDay(startTime, timezoneOffset), 'minutes');
                 // DEV_LOG && console.log('highlight current day', isCurrentDay, startTime, dayjs(startTime), nowMinutes);
                 const h = chart.getHighlightByXValue(nowMinutes / 10);

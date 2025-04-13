@@ -434,7 +434,7 @@
                 {#if item.pollens}
                     <canvasview height={Math.ceil((Object.keys(item.pollens).length / 2) * 40 + 55) * $fontScale} on:draw={drawPollens} />
                 {/if}
-                <AstronomyView {isCurrentDay} {location} selectableDate={false} startTime={isCurrentDay ? dayjs() : undefined} {timezoneOffset} />
+                <AstronomyView {isCurrentDay} {location} selectableDate={false} startTime={isCurrentDay ? dayjs() : startTime} {timezoneOffset} />
             </stacklayout>
         </scrollview>
         <CActionBar title={weatherLocation && weatherLocation.name} on:swipe={onSwipe} />

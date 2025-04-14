@@ -313,6 +313,9 @@
                 // DEV_LOG && console.log('highlight current day', isCurrentDay, startTime, dayjs(startTime), nowMinutes);
                 const h = chart.getHighlightByXValue(nowMinutes / 10);
                 chart.highlight(h[0]);
+            } else {
+                const h = chart.getHighlightByXValue(0);
+                chart.highlight(h[0]);
             }
         } else {
             chartData.getDataSetByIndex(1).values = sunPoses;

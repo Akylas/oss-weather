@@ -45,7 +45,7 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
     }
 }
 export const favorites: ObservableArray<WeatherLocation> = new ObservableArray(JSON.parse(ApplicationSettings.getString(SETTINGS_FAVORITES, '[]')).map((i) => ({ ...i, isFavorite: true })));
-
+let updateOnSettingChanged = true;
 favorites.on('change', (e) => {
     // DEV_LOG && console.log('on favorites changed1');
     ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites));
@@ -65,6 +65,10 @@ if (favorites.length && !favorites.getItem(0).timezone) {
 }
 
 prefs.on(`key:${SETTINGS_FAVORITES}`, () => {
+    if (!updateOnSettingChanged) {
+        updateOnSettingChanged = true;
+        return;
+    }
     favorites.splice(0, favorites.length, ...JSON.parse(ApplicationSettings.getString(SETTINGS_FAVORITES, '[]')));
     favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 });
@@ -100,6 +104,7 @@ export async function setFavoriteProvider(item: FavoriteLocation, provider: Prov
     const index = favoritesKeys.indexOf(key);
     if (index !== -1) {
         item.provider = provider;
+        updateOnSettingChanged = false;
         favorites.setItem(index, item);
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }
@@ -110,6 +115,7 @@ export async function setFavoriteOMProviderModel(item: FavoriteLocation, model: 
     const index = favoritesKeys.indexOf(key);
     if (index !== -1) {
         item.omModel = model;
+        updateOnSettingChanged = false;
         favorites.setItem(index, item);
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }
@@ -119,6 +125,7 @@ export async function renameFavorite(item: FavoriteLocation, name: string) {
     const index = favoritesKeys.indexOf(key);
     if (index !== -1) {
         item.name = name;
+        updateOnSettingChanged = false;
         favorites.setItem(index, item);
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item, needsWeatherRefresh: false });
     }
@@ -128,6 +135,7 @@ export async function setFavoriteAqiProvider(item: FavoriteLocation, provider: A
     const index = favoritesKeys.indexOf(key);
     if (index !== -1) {
         item.providerAqi = provider;
+        updateOnSettingChanged = false;
         favorites.setItem(index, item);
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }
@@ -138,8 +146,9 @@ export async function toggleFavorite(item: FavoriteLocation) {
         item.isFavorite = false;
         const index = favoritesKeys.indexOf(key);
         if (index !== -1) {
-            favorites.splice(index, 1);
+            updateOnSettingChanged = false;
             favoritesKeys.splice(index, 1);
+            favorites.splice(index, 1);
         }
     } else {
         const { isFavorite, startingSide, ...toSave } = item;
@@ -152,8 +161,9 @@ export async function toggleFavorite(item: FavoriteLocation) {
         } catch (error) {}
         // }
         item.isFavorite = true;
-        favorites.push(toSave);
+        updateOnSettingChanged = true;
         favoritesKeys.push(getFavoriteKey(item));
+        favorites.push(toSave);
     }
     delete item.startingSide; //for swipemenu
     globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });

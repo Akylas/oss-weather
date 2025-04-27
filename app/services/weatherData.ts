@@ -67,7 +67,6 @@ export function propToUnit(prop: WeatherProps, item?: CommonWeatherData, options
         case WeatherProps.precipProbability:
         case WeatherProps.relativeHumidity:
             return unitsSettings[UNIT_FAMILIES.Percent];
-        case WeatherProps.cloudCover:
         case WeatherProps.precipProbability:
         case WeatherProps.uvIndex:
             return unitsSettings[UNIT_FAMILIES.Uv];
@@ -105,7 +104,6 @@ export function defaultPropUnit(prop: WeatherProps) {
         case WeatherProps.precipProbability:
         case WeatherProps.relativeHumidity:
             return UNITS.Percent;
-        case WeatherProps.cloudCover:
         case WeatherProps.precipProbability:
         case WeatherProps.uvIndex:
             return UNITS.UV;

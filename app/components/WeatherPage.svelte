@@ -255,9 +255,9 @@
 
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
-            let timezoneData;
-            if (!weatherLocation.timezone) {
-                timezoneData = await queryTimezone(weatherLocation);
+            const needsSaving = !weatherLocation.timezone;   
+            const timezoneData = await queryTimezone(weatherLocation);
+            if (needsSaving) {
                 Object.assign(weatherLocation, timezoneData);
                 saveWeatherLocation();
             }

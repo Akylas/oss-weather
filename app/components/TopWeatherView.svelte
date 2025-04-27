@@ -88,7 +88,7 @@
     export let fakeNow;
     export let animated = false;
     let lineChart: NativeViewElementNode<LineChart>;
-    const weatherIconSize = 100;
+    const weatherIconSize = 110;
     $: topViewHeight = 220 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
@@ -375,7 +375,7 @@
         const iconsBottom = 26 * $fontScale;
         
         textPaint.textSize = 16 * $fontScale;
-        canvas.drawText(item.description, w - 10, h - 8 - iconsBottom , textPaint);
+        canvas.drawText(item.description, w - 10, h - 8 - iconsBottom - textPaint.textSize , textPaint);
 
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
@@ -550,7 +550,7 @@
     <gridlayout height={90} horizontalAlignment="left" marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginTop={5} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
+    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginBottom={5} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap />
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}

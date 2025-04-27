@@ -18,15 +18,14 @@ export interface FavoriteLocation extends WeatherLocation {
 
 let timezoneLookUp: PolygonLookup;
 export async function queryTimezone(location: FavoriteLocation, force = false) {
-    if (!force && location.timezone) {
-        return;
+    let timezone = location.timezone;
+    if (!timezone) {
+        if (!timezoneLookUp) {
+              timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
+        }
+        const result = timezoneLookUp.search(location.coord.lon, location.coord.lat);
+        timezone = result?.properties.tzid;
     }
-    if (!timezoneLookUp) {
-        timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
-    }
-    const result = timezoneLookUp.search(location.coord.lon, location.coord.lat);
-    const timezone = result?.properties.tzid;
-
     if (timezone) {
         if (__ANDROID__) {
             const nTimezone = java.util.TimeZone.getTimeZone(timezone);
@@ -51,17 +50,16 @@ favorites.on('change', (e) => {
     ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites));
 });
 let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
-if (favorites.length && !favorites.getItem(0).timezone) {
+if (favorites.length) {
+    const needsSaving = !favorites.getItem(0).timezone;
     Promise.all(
-        favorites.map((f, index) => {
-            if (!f.timezone) {
-                return queryTimezone(f).then((timezonData) => {
-                    Object.assign(f, timezonData);
-                    favorites.setItem(index, f);
-                });
-            }
-        })
-    ).then(() => ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites)));
+        favorites.map((f, index) => 
+             queryTimezone(f).then((timezonData) => {
+                Object.assign(f, timezonData);
+                favorites.setItem(index, f);
+            }) 
+        )
+    ).then(() => needsSaving && ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites)));
 }
 
 prefs.on(`key:${SETTINGS_FAVORITES}`, () => {
@@ -154,7 +152,7 @@ export async function toggleFavorite(item: FavoriteLocation) {
         const { isFavorite, startingSide, ...toSave } = item;
         // if (!item.timezone) {
         try {
-            const timezonData = await queryTimezone(item, true);
+            const timezonData = await queryTimezone(item);
             if (timezonData) {
                 Object.assign(toSave, timezonData);
             }

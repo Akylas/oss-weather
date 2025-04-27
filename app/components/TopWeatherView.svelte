@@ -88,7 +88,7 @@
     export let fakeNow;
     export let animated = false;
     let lineChart: NativeViewElementNode<LineChart>;
-    const weatherIconSize = 120;
+    const weatherIconSize = 100;
     $: topViewHeight = 220 * $fontScale;
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
@@ -371,13 +371,17 @@
         canvas.drawText(formatDate(item.time, 'dddd', item.timezoneOffset), w - 10, 22 * $fontScale, textPaint);
         textPaint.textSize = 14 * $fontScale;
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
+        
+        const iconsBottom = 26 * $fontScale;
+        
+        textPaint.textSize = 16 * $fontScale;
+        canvas.drawText(item.description, w - 10, h - 8 - iconsBottom , textPaint);
 
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
 
         const smallItemsToDraw = weatherDataService.getSmallIconsData({ item, type: 'currently' }).reverse();
         let iconRight = PADDING_LEFT;
-        const iconsBottom = 26 * $fontScale;
         for (let index = 0; index < smallItemsToDraw.length; index++) {
             const c = smallItemsToDraw[index];
 

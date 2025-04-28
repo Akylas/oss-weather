@@ -1,6 +1,9 @@
 {
+    "about": "Rakenduse teave",
+    "about_to_quit": "Kuna API võti on puudu, siis rakendus lõpetab töö",
     "api_key": "API võti",
     "api_key_required": "API võti on vajalik",
     "aqi": "Õhukvaliteedi indeks",
+    "no_network": "Võrguühendus puudub",
     "uv_index": "UV-indeks"
 }

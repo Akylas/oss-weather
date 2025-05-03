@@ -1,0 +1,10 @@
+Bug fixes:
+- unit not localized in compare chart view
+- Open-Meteo not returning the full 384 possible hour range
+- favorite menu not rendering correctly
+- astronomy always showing current day data
+- issue when removing favorites
+- should fix cloud cover not visible in some cases
+- show current weather description in top view
+- refresh favorites timezone data on start and refresh, fix
+- Translations update

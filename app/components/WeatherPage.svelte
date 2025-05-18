@@ -434,17 +434,17 @@
                     const result = await geocodeAddress({lat:latlong[0],lon:latlong[1]});
                     saveLocation(result);
                 }
-            }if (link.startsWith('ossweather')) {
-            const params = parseUrlQueryParameters(link);
-                    const result = await geocodeAddress({lat:params.lat,lon:params.lon});
-                    delete params.lat;
-                    delete params.lon;
-                    Object.keys(params).forEach((k) => {
-                        if (!result[k]) {
-                            result[k] = params[k];
-                        }
-                    });
-                    saveLocation(result);
+            } else if (link.startsWith('ossweather')) {
+                const params = parseUrlQueryParameters(link);
+                const result = await geocodeAddress({lat:parseFloat(params.lat),lon:parseFloat(params.lon)});
+                delete params.lat;
+                delete params.lon;
+                Object.keys(params).forEach((k) => {
+                    if (!result[k]) {
+                        result[k] = params[k];
+                     }
+                });
+                saveLocation(result);
             } else {
                 searchCity(link);
             }

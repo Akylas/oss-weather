@@ -66,6 +66,7 @@
         providers
     } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
+    import { parseUrlQueryParameters } from '~/utils/http';
     import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, tryCatch, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
@@ -312,7 +313,7 @@
         drawer?.close();
     }
 
-    async function searchCity(query) {
+    async function searchCity(query?: string) {
         try {
             const SelectCity = (await import('~/components/SelectCity.svelte')).default;
             // TODO: for now we dont lazy load SelectCity
@@ -431,6 +432,7 @@
                 const latlong = link.split(':')[1].split(',').map(parseFloat) as [number, number];
                 if (latlong[0] !== 0 || latlong[1] !== 0) {
                     const result = await geocodeAddress({lat:latlong[0],lon:latlong[1]});
+                    const params = parseUrlQueryParameters(link);
                     Object.keys(params).forEach((k) => {
                         if (!result[k]) {
                             result[k] = params[k];
@@ -476,7 +478,7 @@
         const current = getUniversalLink();
         if (current) {
               onAppUrl(current);
-        } els  if (weatherData) {
+        } else if (weatherData) {
             items = prepareItems(weatherLocation, weatherData);
         } else if (weatherLocation) {
             refreshWeather();

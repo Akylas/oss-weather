@@ -21,6 +21,8 @@
     let searchResults: ObservableArray<FavoriteLocation> = new ObservableArray();
     let searchAsTypeTimer: NodeJS.Timeout;
     let currentSearchText: string;
+    
+    export let startQuery: string = null;
 
     function focus() {
         textField && textField.nativeView.requestFocus();
@@ -76,7 +78,12 @@
             firstLayout = false;
             // we need to wait a bit before requesting focus or the keyboard wont show on android
             setTimeout(() => {
-                focus();
+                if (startQuery) {
+                    currentSearchText = startQuery;
+                    searchCity();
+                } else {
+                    focus();
+                }            
             }, 100);
         }
     }
@@ -113,7 +120,7 @@
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>
-        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} />
+        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} text={startQuery} />
         <collectionview items={searchResults} paddingBottom={$windowInset.bottom} row={2}>
             <Template let:item>
                 <ListItemAutoSize disableCss={false} item={getItem(item)} on:tap={() => close(item)}>

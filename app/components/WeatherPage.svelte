@@ -9,6 +9,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
+    import { getUniversalLink, registerUniversalLinkCallback } from '@nativescript-community/universal-links';
     import { Application, ApplicationSettings, Color, ContentView, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
     import { openFile, throttle } from '@nativescript/core/utils';
     import { alert, showError } from '@shared/utils/showError';
@@ -311,12 +312,12 @@
         drawer?.close();
     }
 
-    async function searchCity() {
+    async function searchCity(query) {
         try {
             const SelectCity = (await import('~/components/SelectCity.svelte')).default;
             // TODO: for now we dont lazy load SelectCity
             // it would crash in production because imported toggleFavorite would be undefined ...
-            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true });
+            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true, props: { startQuery: query }});
             if (result) {
                 saveLocation(result);
             }
@@ -423,6 +424,27 @@
     function onOrientationChanged(event) {
         page.nativeElement.checkStatusBarVisibility();
     }
+    
+    const onAppUrl = tryCatchFunction(
+        async (link: string) => {
+            if (link.startsWith('geo') || link.startsWith('ossweather')) {
+                const latlong = link.split(':')[1].split(',').map(parseFloat) as [number, number];
+                if (latlong[0] !== 0 || latlong[1] !== 0) {
+                    const result = await geocodeAddress({lat:latlong[0],lon:latlong[1]});
+                    Object.keys(params).forEach((k) => {
+                        if (!result[k]) {
+                            result[k] = params[k];
+                        }
+                    });
+                    saveLocation(result);
+                }
+            } else {
+                searchCity(link);
+            }
+        },
+        undefined,
+        hideLoading
+    );
     onMount(async () => {
         if (__IOS__) {
             Application.on(Application.orientationChangedEvent, onOrientationChanged);
@@ -449,8 +471,12 @@
             }
         });
         networkService.start(); // should send connection event and then refresh
-
-        if (weatherData) {
+        
+        registerUniversalLinkCallback(onAppUrl);
+        const current = getUniversalLink();
+        if (current) {
+              onAppUrl(current);
+        } els  if (weatherData) {
             items = prepareItems(weatherLocation, weatherData);
         } else if (weatherLocation) {
             refreshWeather();
@@ -997,7 +1023,7 @@
                             <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                         </mdbutton>
                     {/if}
-                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={searchCity} android:paddingTop={2}>
+                    <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={() => searchCity()} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
                         <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
@@ -1028,7 +1054,7 @@
                     verticalAlignment="middle"
                     visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapse'}
                     on:tap={() => showAlerts()} />
-                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={searchCity} />
+                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={()=>searchCity()} />
 
                 <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>

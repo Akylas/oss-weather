@@ -37,6 +37,12 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="ossweather" />
+            </intent-filter>
         </activity>
         <activity android:name="com.tns.ErrorReportActivity" />
         <!-- <activity android:name="com.nativescript.preferences.NativescriptSettingsActivity"
@@ -53,12 +59,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="weather" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="ossweather" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

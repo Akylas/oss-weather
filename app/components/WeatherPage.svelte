@@ -428,18 +428,23 @@
     
     const onAppUrl = tryCatchFunction(
         async (link: string) => {
-            if (link.startsWith('geo') || link.startsWith('ossweather')) {
+            if (link.startsWith('geo')) {
                 const latlong = link.split(':')[1].split(',').map(parseFloat) as [number, number];
                 if (latlong[0] !== 0 || latlong[1] !== 0) {
                     const result = await geocodeAddress({lat:latlong[0],lon:latlong[1]});
-                    const params = parseUrlQueryParameters(link);
+                    saveLocation(result);
+                }
+            }if (link.startsWith('ossweather')) {
+            const params = parseUrlQueryParameters(link);
+                    const result = await geocodeAddress({lat:params.lat,lon:params.lon});
+                    delete params.lat;
+                    delete params.lon;
                     Object.keys(params).forEach((k) => {
                         if (!result[k]) {
                             result[k] = params[k];
                         }
                     });
                     saveLocation(result);
-                }
             } else {
                 searchCity(link);
             }

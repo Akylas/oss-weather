@@ -1,0 +1,7 @@
+Features:
+- Knot as speed unit
+
+Bug fixes:
+- universal link support
+- error with air-quality and high numbers for hourly forecast
+- Translations update

@@ -129,6 +129,8 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
                 value *= 3280.84;
             } else if (unit === UNITS.SpeedM) {
                 value *= 1000;
+            } else if (unit === UNITS.Knot) {
+                value /= 1.852;
             }
             break;
         case UNITS.Date:

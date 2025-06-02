@@ -277,7 +277,7 @@
                         valueType: 'string',
                         title: lc('speed'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Speed],
-                        values: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.MPH, UNITS.FPH].map((u) => ({ title: u, value: u }))
+                        values: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.MPH, UNITS.FPH, UNITS.Knot].map((u) => ({ title: u, value: u }))
                     },
                     {
                         id: 'store_setting',

@@ -20,7 +20,8 @@ export enum UNITS {
     SpeedKm = 'km/h',
     MPH = 'mph',
     FPH = 'ft/h',
-    SpeedM = 'm/h'
+    SpeedM = 'm/h',
+    Knot = 'kn'
 }
 
 export enum UNIT_FAMILIES {

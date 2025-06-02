@@ -123,7 +123,7 @@ export const API_MAX_VALUES = {
     },
     'air-quality': {
         forecast_days: 7,
-        forecast_hours: 384
+        forecast_hours: 168
     }
 };
 

@@ -377,9 +377,10 @@
         textPaint.textSize = 16 * $fontScale;
         
         if (item.description?.length) {
+            textPaint.setTextAlign(Align.LEFT);
             canvas.save();
-            let staticLayout = new StaticLayout(item.description, textPaint, w - 20 - 300, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - 20, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2 + 10);
+            let staticLayout = new StaticLayout(item.description, textPaint, w - 10 - 250, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+            canvas.translate(0, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2 - 10);
             staticLayout.draw(canvas);
             canvas.restore();
         }

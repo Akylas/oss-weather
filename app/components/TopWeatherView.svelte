@@ -378,8 +378,8 @@
         
         if (item.description?.length) {
             canvas.save();
-            let staticLayout = new StaticLayout(item.description, textPaint, weatherIconSize * (2 - $fontScale), LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - 10, h - 16 - iconsBottom - textPaint.textSize);
+            let staticLayout = new StaticLayout(item.description, textPaint, w - 20 - 300, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+            canvas.translate(w - 20, h/2 +  weatherIconSize * (2 - $fontScale)/2 + 10 + staticLayout.getHeight());
             staticLayout.draw(canvas);
             canvas.restore();
         }

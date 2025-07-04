@@ -376,11 +376,14 @@
         
         textPaint.textSize = 16 * $fontScale;
         
-        canvas.save();
-        let staticLayout = new StaticLayout(item.description, textPaint, weatherIconSize * (2 - $fontScale), LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-        canvas.translate(w - 10, h - 16 - iconsBottom - textPaint.textSize);
-        staticLayout.draw(canvas);
-        canvas.restore();
+        if (item.description?.length) {
+            canvas.save();
+            let staticLayout = new StaticLayout(item.description, textPaint, weatherIconSize * (2 - $fontScale), LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+            canvas.translate(w - 10, h - 16 - iconsBottom - textPaint.textSize);
+            staticLayout.draw(canvas);
+            canvas.restore();
+        }
+        
         
     //    canvas.drawText(item.description, w - 10, h - 8 - iconsBottom - textPaint.textSize , textPaint);
 

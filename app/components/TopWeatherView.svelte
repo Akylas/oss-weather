@@ -382,7 +382,7 @@
             textPaint.setTextAlign(Align.LEFT);
             canvas.save();
             let staticLayout = new StaticLayout(item.description, textPaint, width, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - width - 10, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2 - 5);
+            canvas.translate(w - width - 10, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2 + 5);
             staticLayout.draw(canvas);
             canvas.restore();
         }
@@ -563,7 +563,7 @@
     <gridlayout height={90} horizontalAlignment="left" marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginBottom={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap backgroundColor="#ff000055"/>
+    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginBottom={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap/>
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}

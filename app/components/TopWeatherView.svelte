@@ -374,14 +374,15 @@
         
         const iconsBottom = 26 * $fontScale;
         
-        textPaint.textSize = 16 * $fontScale;
+        
         
         if (item.description?.length) {
+            textPaint.textSize = 15 * $fontScale;
             const width = w - 10 - 250;
             textPaint.setTextAlign(Align.LEFT);
             canvas.save();
             let staticLayout = new StaticLayout(item.description, textPaint, width, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - width, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2);
+            canvas.translate(w - width - 10, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2 - 5);
             staticLayout.draw(canvas);
             canvas.restore();
         }

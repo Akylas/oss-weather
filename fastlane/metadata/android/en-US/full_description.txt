@@ -1,3 +1,5 @@
 Open Source app to access detailed weather data from OpenWeather, Open-Meteo and Meteo France. Weather radar provided by RainViewer.
+
 You can create a free OWM key to access OpenWeather weather data.
+
 There is a default key included in the app but the access is limited and you could get errors related to rate limits.

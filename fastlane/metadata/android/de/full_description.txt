@@ -1,0 +1,3 @@
+Dies ist eine Open Source App, um auf detaillierte Wetterdaten von OpenWeatherMap zuzugreifen.
+
+Sie können einen kostenlosen OWM-Schlüssel erstellen, um auf Wetterdaten zuzugreifen. In der App ist ein Standardschlüssel enthalten, aber der Zugriff ist eingeschränkt, und es können Fehler im Zusammenhang mit der Ratenbegrenzung auftreten.

@@ -1,0 +1,1 @@
+Greifen Sie über die öffentlichen OpenWeatherMap-Daten auf Wetterdaten zu

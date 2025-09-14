@@ -1,1 +1,19 @@
-{}
+{
+    "E": "Or",
+    "N": "N",
+    "NE": "NOr",
+    "NNE": "NNOr",
+    "NNW": "NNOk",
+    "NSE": "NSOr",
+    "NSW": "NSOk",
+    "NW": "NOk",
+    "S": "S",
+    "SE": "SOr",
+    "SW": "SOk",
+    "W": "Ok",
+    "WNE": "OkNOr",
+    "WNW": "OkNOk",
+    "WSE": "OkSOr",
+    "WSW": "OkSOk",
+    "about": "Pri"
+}

@@ -1,5 +1,5 @@
-﻿@use "sass:color";
-@use "sass:math";
+﻿// @use "sass:color";
+// @use "sass:math";
 
 .ns-root {
     // --systemFontScale: 1;
@@ -131,9 +131,9 @@ page,
     // background-color: var(--colorBackground);
     background-color: var(--colorBackground) + 'aa';
 
-    .ns-black & {
-        background-color: scale-color(black, $alpha: -30%);
-    }
+    // .ns-black & {
+    //     background-color: color.scale(black, $alpha: -30%);
+    // }
 
     // .ns-dark & {
     //     background-color: scale-color(#1c1c1e, $alpha: -30%);

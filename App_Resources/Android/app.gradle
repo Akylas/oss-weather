@@ -5,7 +5,6 @@ def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 apply plugin: "androidx.baselineprofile"
 apply plugin: "org.jetbrains.kotlin.android"
 
-
 android { 
   // we only enable split if specified as an arg or if in debug and abiFilters is used(through cli)
   def splitEnabled = (gradle.startParameter.taskNames.contains("assembleDebug") && project.hasProperty('abiFilters')) || project.hasProperty('splitEnabled');

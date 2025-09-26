@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.example.baselineprofile'
-    compileSdk 34
+    compileSdk 35
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         minSdk 28
-        targetSdk 34
+        targetSdk 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

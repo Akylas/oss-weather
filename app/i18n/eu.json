@@ -28,7 +28,7 @@
     "animations_desc": "Animatu ikono-sortak ahal bada",
     "api_key": "API gakoa",
     "api_key_required": "API gakoa beharrezkoa",
-    "api_key_required_description": "Sortu kontua OpenWeather-en eguraldiaren datuak atzitzeko behar den doako API gakoa lortzeko.\\nAplikazioak badu bat baina doako planaren mugen barne mantentzeko erabiltzaile bakoitzak bere API gako propioa sortu behar du.",
+    "api_key_required_description": "Sortu kontua OpenWeather-en eguraldiaren datuak atzitzeko behar den doako API gakoa lortzeko.\nAplikazioak badu bat baina doako planaren mugen barne mantentzeko erabiltzaile bakoitzak bere API gako propioa sortu behar du.",
     "app": {
         "name": "OSS Eguraldia"
     },
@@ -208,7 +208,7 @@
     "new_moon": "ilargi berria",
     "next_24_hours": "datozen 24 orduak",
     "no2": "NO₂",
-    "no_location_desc": "Ez duzu kokapenik aukeratu oraindik.\\nBilatu edo erabili zure GPSaren posizioa.",
+    "no_location_desc": "Ez duzu kokapenik aukeratu oraindik.\nBilatu edo erabili zure GPSaren posizioa.",
     "no_location_set": "Ez da kokapenik ezarri",
     "no_network": "Sarerik ez",
     "no_particular_vigilance": "Zaintza berezirik gabekoa",

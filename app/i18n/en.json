@@ -28,7 +28,7 @@
     "animations_desc": "animated if the icon set supports it",
     "api_key": "API key",
     "api_key_required": "API key required",
-    "api_key_required_description": "Create an account on OpenWeather to get the gratis API key required to fetch weather data.\\nThe app has one, but to stay within the limits of the gratis plan, each user must create their own API key.",
+    "api_key_required_description": "Create an account on OpenWeather to get the gratis API key required to fetch weather data.\nThe app has one, but to stay within the limits of the gratis plan, each user must create their own API key.",
     "app": {
         "name": "OSS Weather"
     },
@@ -208,7 +208,7 @@
     "new_moon": "new moon",
     "next_24_hours": "next 24 hours",
     "no2": "NO₂",
-    "no_location_desc": "You haven't chosen a location yet.\\nSearch or use your GPS position.",
+    "no_location_desc": "You haven't chosen a location yet.\nSearch or use your GPS position.",
     "no_location_set": "No location set",
     "no_network": "No network",
     "no_particular_vigilance": "No particular vigilance",

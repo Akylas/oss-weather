@@ -21,7 +21,7 @@
     let searchResults: ObservableArray<FavoriteLocation> = new ObservableArray();
     let searchAsTypeTimer: NodeJS.Timeout;
     let currentSearchText: string;
-    
+
     export let startQuery: string = null;
 
     function focus() {
@@ -83,7 +83,7 @@
                     searchCity();
                 } else {
                     focus();
-                }            
+                }
             }, 100);
         }
     }
@@ -120,7 +120,7 @@
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>
-        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} on:textChange={onTextChange} on:returnPress={searchCity} text={startQuery} />
+        <textfield bind:this={textField} floating="false" hint={lc('search')} returnKeyType="search" row={1} text={startQuery} on:textChange={onTextChange} on:returnPress={searchCity} />
         <collectionview items={searchResults} paddingBottom={$windowInset.bottom} row={2}>
             <Template let:item>
                 <ListItemAutoSize disableCss={false} item={getItem(item)} on:tap={() => close(item)}>

@@ -127,7 +127,7 @@ module.exports = (env, params = {}) => {
         includeOWMKey, // --env.includeOWMKey
         includeDefaultLocation // --env.includeDefaultLocation
     } = env;
-    console.log('env', env);
+    // console.log('env', env);
     env.appPath = appPath;
     env.appResourcesPath = appResourcesPath;
     env.appComponents = env.appComponents || [];
@@ -256,6 +256,7 @@ module.exports = (env, params = {}) => {
         __ACCESSIBILITY_DEFAULT_ENABLED__: false,
         __ONLY_ALLOW_ROOT_VARIABLES__: true,
         __UI_USE_XML_PARSER__: false,
+        __CSS_USE_CSS_TOOLS__: false,
         __IOS__: isIOS,
         __ANDROID__: isAndroid,
         'global.autoLoadPolyfills': false,

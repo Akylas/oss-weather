@@ -504,6 +504,7 @@
     onSettingsChanged(SETTINGS_FEELS_LIKE_TEMPERATURES, refreshWeather);
     onSettingsChanged(SETTINGS_SHOW_CURRENT_DAY_DAILY, updateView);
     onSettingsChanged(SETTINGS_SHOW_DAILY_IN_CURRENTLY, updateView);
+    fontScale.subscribe(updateView);
 
     async function showAlerts() {
         if (!weatherData.alerts) {

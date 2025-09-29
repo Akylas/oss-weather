@@ -11,7 +11,7 @@ import { prefs } from '~/services/preferences';
 import { showError } from '@shared/utils/showError';
 import { showAlertOptionSelect } from '~/utils/ui';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
-import { DEFAULT_LOCALE, SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
+import { ALERT_OPTION_MAX_HEIGHT, DEFAULT_LOCALE, SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
 import { imperialUnits } from '~/variables';
 import { getISO3Language } from '@akylas/nativescript-app-utils';
 const supportedLanguages = SUPPORTED_LOCALES;
@@ -233,7 +233,7 @@ async function internalSelectLanguage() {
     });
     return showAlertOptionSelect(
         {
-            height: Math.min(actions.length * 56, 400),
+            height: Math.min(actions.length * 56, ALERT_OPTION_MAX_HEIGHT),
             rowHeight: 56,
             selectedIndex,
             options

@@ -562,12 +562,11 @@
     </gridlayout>
     <WeatherIcon
         {animated}
-        backgroundColor="red"
         col={1}
         horizontalAlignment="right"
         iconData={[item.iconId, item.isDay]}
-        marginBottom={15}
-        size={weatherIconSize * (2 - $fontScale)}
+        marginBottom={19 * $fontScale}
+        size={(weatherIconSize * 1) / Math.sqrt($fontScale)}
         verticalAlignment="middle"
         on:tap />
     {#if showHourlyChart}

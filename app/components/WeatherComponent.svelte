@@ -29,7 +29,7 @@
         topHeight = Math.max(
             Math.min(
                 Math.max(screenWidthDips, screenHeightDips) - $actionBarHeight - windowInsetBottom - windowInsetTop - 100,
-                (showHourlyChart ? (__IOS__ ? 450 : 400) : __IOS__ ? 500 : 450) * $fontScale
+                400 * $fontScale
             ),
             370 * $fontScale
         );

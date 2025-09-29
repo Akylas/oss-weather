@@ -2,7 +2,7 @@
     import { Canvas, CanvasView, Paint } from '@nativescript-community/ui-canvas';
     import { conditionalEvent, createEventDispatcher } from '@shared/utils/svelte/ui';
     import { colors, fontScale } from '~/variables';
-    import { ListItem } from './ListItem';
+    import { IListItem } from './OptionSelect.svelte';
     const linePaint = new Paint();
     linePaint.strokeWidth = 1;
 </script>
@@ -16,14 +16,15 @@
     $: linePaint.color = colorOutlineVariant;
     export let showBottomLine: boolean = false;
     // export let iconFontSize: number = 24;
-    export let item: ListItem;
+    export let item: IListItem;
     export let fontSize: number = 17;
     export let fontWeight: any = 'normal';
     export let subtitleFontSize: number = 14;
     export let columns: string = '*,auto';
     export let mainCol = 0;
     export let onLinkTap: (event) => void = null;
-    export let onDraw: (item: ListItem, event: { canvas: Canvas; object: CanvasView }) => void = null;
+    export let onLongPress: (event) => void = null;
+    export let onDraw: (item: IListItem, event: { canvas: Canvas; object: CanvasView }) => void = null;
 
     function draw(event: { canvas: Canvas; object: CanvasView }) {
         const canvas = event.canvas;
@@ -75,8 +76,8 @@
     padding="0 16 0 16"
     rippleColor={item.color || colorPrimary}
     on:tap={(event) => dispatch('tap', event)}
-    on:longPress={(event) => dispatch('longPress', event)}
     on:draw={draw}
+    use:conditionalEvent={{ condition: !!(item.onLongPress || onLongPress), event: 'longPress', callback: item.onLongPress || onLongPress }}
     {...$$restProps}>
     <!-- <label
         fontFamily={leftIconFonFamily}
@@ -90,7 +91,6 @@
         col={mainCol}
         color={item.titleColor || item.color || colorOnSurface}
         disableCss={true}
-        fontSize={fontSize * $fontScale}
         {fontWeight}
         html={item.html}
         paddingBottom={addedPadding}
@@ -100,7 +100,7 @@
         verticalTextAlignment="center"
         {...item.titleProps || $$restProps?.titleProps}
         use:conditionalEvent={{ condition: !!(item.onLinkTap || onLinkTap), event: 'linkTap', callback: item.onLinkTap || onLinkTap }}>
-        <cspan text={item.title || item.name} />
+        <cspan fontSize={fontSize * $fontScale} text={item.title || item.name} />
         <cspan color={item.subtitleColor || colorOnSurfaceVariant} fontSize={(item.subtitleFontSize || subtitleFontSize) * $fontScale} text={item.subtitle ? '\n' + item.subtitle : null} />
     </label>
 

@@ -1,9 +1,11 @@
-<script lang="ts">
-    import { Canvas, CanvasView } from '@nativescript-community/ui-canvas';
-    import { createEventDispatcher } from '@shared/utils/svelte/ui';
-    import { conditionalEvent } from '@shared/utils/svelte/ui';
+<script context="module" lang="ts">
+    import { Canvas, CanvasView, Paint } from '@nativescript-community/ui-canvas';
+    import { conditionalEvent, createEventDispatcher } from '@shared/utils/svelte/ui';
     import { colors, fontScale, fonts } from '~/variables';
-    import { ListItem } from './ListItem';
+    import { IListItem } from './OptionSelect.svelte';
+</script>
+
+<script lang="ts">
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors);
     const dispatch = createEventDispatcher();
     // technique for only specific properties to get updated on store change
@@ -19,7 +21,7 @@
     export let leftIconFonFamily: string = $fonts.mdi;
     export let color: string | Color = colorOnSurface;
     export let subtitleColor: string | Color = null;
-    export let item: ListItem;
+    export let item: IListItem;
     export let onDraw: (event: { canvas: Canvas; object: CanvasView }) => void = null;
 </script>
 
@@ -28,7 +30,7 @@
     padding="0 16 0 16"
     rippleColor={colorPrimary}
     on:tap={(event) => dispatch('tap', event)}
-    use:conditionalEvent={{ condition: !!onLongPress, event: 'longPress', callback: onLongPress }}
+    use:conditionalEvent={{ condition: !!(item.onLongPress || onLongPress), event: 'longPress', callback: item.onLongPress || onLongPress }}
     {...$$restProps}>
     <canvaslabel col={mainCol} color={item.color || color || colorOnSurface} on:draw={onDraw}>
         <cgroup paddingBottom={item.subtitle ? 10 : 0} verticalAlignment="middle">

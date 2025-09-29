@@ -10,14 +10,34 @@
     import { onDestroy } from 'svelte';
     import { Template } from 'svelte-native/components';
     import IconButton from '~/components/common/IconButton.svelte';
-    import { ListItem as IListItem } from '~/components/common/ListItem';
     import ListItem from '~/components/common/ListItem.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import SettingsSlider from '~/components/settings/SettingsSlider.svelte';
     import { lc } from '~/helpers/locale';
     import { colors, fontScale, fonts } from '~/variables';
-    export interface OptionType extends IListItem {
+    import { Canvas, CanvasView } from '@nativescript-community/ui-canvas';
+
+    export interface IListItem {
+        showBottomLine?: boolean;
+        iconFontSize?: number;
+        subtitleFontSize?: number;
+        rightValue?: string | (() => string);
+        rightValueFontSize?: number;
+        fontSize?: number;
+        html?: any;
+        name?: string;
+        icon?: string;
+        color?: string | Color;
+        rippleColor?: string | Color;
+        title?: string;
         subtitle?: string;
+        type?: string;
+        onLinkTap?: (event) => void;
+        onLongPress?: (event) => void;
+        onDraw?: (item: IListItem, event: { canvas: Canvas; object: CanvasView }) => void;
+        [k: string]: any;
+    }
+    export interface OptionType extends IListItem {
         isPick?: boolean;
         boxType?: string;
         type?: string;
@@ -51,6 +71,7 @@
     export let onCheckBox: (item, value, e) => void = null;
     export let onChange: (item, value, e) => void = null;
     export let onRightIconTap: (item, e) => void = null;
+    export let onLongPress: (item, e) => void = null;
 
     export let titleProps: Partial<svelteNative.JSX.LabelAttributes> = {};
     export let titleHolderProps: Partial<svelteNative.JSX.StackLayoutAttributes> = {};
@@ -64,7 +85,7 @@
     let filter: string = null;
 
     // technique for only specific properties to get updated on store change
-    $: ({ colorOutline, colorOnSurface } = $colors);
+    $: ({ colorOnSurface, colorOutline } = $colors);
 
     function updateFiltered(filter) {
         if (filter) {
@@ -259,6 +280,7 @@
                     {titleHolderProps}
                     {titleProps}
                     {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
                     on:tap={(event) => onTap(item, event)}>
                     <checkbox
                         id="checkbox"
@@ -285,6 +307,7 @@
                     {titleHolderProps}
                     {titleProps}
                     {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
                     on:tap={(event) => onTap(item, event)}>
                     <switch id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckedChanged(item, e)} />
                 </svelte:component>
@@ -303,6 +326,7 @@
                     {titleHolderProps}
                     {titleProps}
                     {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
                     on:tap={(event) => onTap(item, event)}>
                     <mdbutton class="icon-btn" col={1} text={item.rightIcon} variant="text" on:tap={(event) => onRightTap(item, event)} />
                 </svelte:component>
@@ -321,6 +345,7 @@
                     {titleHolderProps}
                     {titleProps}
                     {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
                     on:tap={(event) => onTap(item, event)}>
                     <label
                         col={0}
@@ -349,6 +374,7 @@
                     {titleHolderProps}
                     {titleProps}
                     {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
                     on:tap={(event) => onTap(item, event)}>
                     <image borderRadius={4} col={0} marginBottom={5} marginRight={10} marginTop={5} src={item.image} />
                 </svelte:component>
@@ -369,6 +395,7 @@
                     {titleHolderProps}
                     {titleProps}
                     {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
                     on:rightTap={(event) => onRightTap(item, event)}
                     on:tap={(event) => onTap(item, event)}>
                 </svelte:component>

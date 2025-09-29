@@ -9,6 +9,7 @@ import { ComponentInstanceInfo, hideLoading, resolveComponentElement, showSnack 
 import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
 import type OptionSelect__SvelteComponent_ from '~/components/common/OptionSelect.svelte';
+import { ALERT_OPTION_MAX_HEIGHT } from '~/helpers/constants';
 import { l, lc } from '~/helpers/locale';
 import { colors, fontScale, screenWidthDips } from '~/variables';
 
@@ -73,7 +74,7 @@ export async function showPopoverMenu<T = any>({
             backgroundColor: colorSurfaceContainer,
             containerColumns: 'auto',
             rowHeight: !!props?.autoSizeListItem ? null : rowHeight,
-            height: (props.height !== 'auto' && props?.autoSizeListItem !== true ) ? Math.min( rowHeight * options.length, props?.maxHeight || 400) : undefined,
+            height: props.height !== 'auto' && props?.autoSizeListItem !== true ? Math.min(rowHeight * options.length, props?.maxHeight || 400) : undefined,
             width: 200 * get(fontScale),
             options,
             onLongPress,
@@ -213,8 +214,9 @@ export async function selectValue<T = any>(options: { data: T; title: string }[]
     });
     const result = await showAlertOptionSelect(
         {
-            height: Math.min(options.length * 56, 400),
-            rowHeight: 56,
+            height: Math.min(options.length * 56 * get(fontScale), ALERT_OPTION_MAX_HEIGHT),
+            // rowHeight: 56,
+            autoSizeListItem: true,
             selectedIndex,
             options
         },

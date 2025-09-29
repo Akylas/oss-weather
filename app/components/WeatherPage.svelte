@@ -257,7 +257,7 @@
 
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
-            const needsSaving = !weatherLocation.timezone;   
+            const needsSaving = !weatherLocation.timezone;
             const timezoneData = await queryTimezone(weatherLocation);
             if (needsSaving) {
                 Object.assign(weatherLocation, timezoneData);
@@ -318,7 +318,7 @@
             const SelectCity = (await import('~/components/SelectCity.svelte')).default;
             // TODO: for now we dont lazy load SelectCity
             // it would crash in production because imported toggleFavorite would be undefined ...
-            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true, props: { startQuery: query }});
+            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true, props: { startQuery: query } });
             if (result) {
                 saveLocation(result);
             }
@@ -425,24 +425,24 @@
     function onOrientationChanged(event) {
         page.nativeElement.checkStatusBarVisibility();
     }
-    
+
     const onAppUrl = tryCatchFunction(
         async (link: string) => {
             if (link.startsWith('geo')) {
                 const latlong = link.split(':')[1].split(',').map(parseFloat) as [number, number];
                 if (latlong[0] !== 0 || latlong[1] !== 0) {
-                    const result = await geocodeAddress({lat:latlong[0],lon:latlong[1]});
+                    const result = await geocodeAddress({ lat: latlong[0], lon: latlong[1] });
                     saveLocation(result);
                 }
             } else if (link.startsWith('ossweather')) {
                 const params = parseUrlQueryParameters(link);
-                const result = await geocodeAddress({lat:parseFloat(params.lat),lon:parseFloat(params.lon)});
+                const result = await geocodeAddress({ lat: parseFloat(params.lat), lon: parseFloat(params.lon) });
                 delete params.lat;
                 delete params.lon;
                 Object.keys(params).forEach((k) => {
                     if (!result[k]) {
                         result[k] = params[k];
-                     }
+                    }
                 });
                 saveLocation(result);
             } else {
@@ -478,11 +478,11 @@
             }
         });
         networkService.start(); // should send connection event and then refresh
-        
+
         registerUniversalLinkCallback(onAppUrl);
         const current = getUniversalLink();
         if (current) {
-              onAppUrl(current);
+            onAppUrl(current);
         } else if (weatherData) {
             items = prepareItems(weatherLocation, weatherData);
         } else if (weatherLocation) {
@@ -509,6 +509,7 @@
     onSettingsChanged(SETTINGS_FEELS_LIKE_TEMPERATURES, refreshWeather);
     onSettingsChanged(SETTINGS_SHOW_CURRENT_DAY_DAILY, updateView);
     onSettingsChanged(SETTINGS_SHOW_DAILY_IN_CURRENTLY, updateView);
+    fontScale.subscribe(updateView);
 
     async function showAlerts() {
         if (!weatherData.alerts) {
@@ -1061,7 +1062,7 @@
                     verticalAlignment="middle"
                     visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapse'}
                     on:tap={() => showAlerts()} />
-                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={()=>searchCity()} />
+                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={() => searchCity()} />
 
                 <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>

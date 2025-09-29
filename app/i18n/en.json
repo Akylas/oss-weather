@@ -99,6 +99,7 @@
     "export_settings_desc": "export all application settings so that you can import them later",
     "extreme_cold": "Extreme cold",
     "failed_to_export_settings": "failed to export settings",
+    "failed_to_find_bra": "failed to find the BRA for this location",
     "favorites": "Favorites",
     "feedback_sent": "feedback sent",
     "feels_like": "feels like",

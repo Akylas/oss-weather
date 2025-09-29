@@ -73,7 +73,7 @@ export async function showPopoverMenu<T = any>({
             backgroundColor: colorSurfaceContainer,
             containerColumns: 'auto',
             rowHeight: !!props?.autoSizeListItem ? null : rowHeight,
-            height: (props.height !== 'auto' && props?.autoSizeListItem !== true ) ? Math.min( rowHeight * options.length, props?.maxHeight || 400) : undefined,
+            height: props.height !== 'auto' && props?.autoSizeListItem !== true ? Math.min(rowHeight * options.length, props?.maxHeight || 400) : undefined,
             width: 200 * get(fontScale),
             options,
             onLongPress,
@@ -81,12 +81,12 @@ export async function showPopoverMenu<T = any>({
             onChange,
             onClose: async (item) => {
                 if (closeOnClose) {
-                    if (__IOS__) {
-                        // on iOS we need to wait or if onClose shows an alert dialog it wont work
-                        await closePopover();
-                    } else {
-                        closePopover();
-                    }
+                    // if (__IOS__) {
+                    // on iOS we need to wait or if onClose shows an alert dialog it wont work
+                    await closePopover();
+                    // } else {
+                    // closePopover();
+                    // }
                 }
                 try {
                     await onClose?.(item);

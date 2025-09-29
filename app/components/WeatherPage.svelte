@@ -67,12 +67,13 @@
     } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { parseUrlQueryParameters } from '~/utils/http';
-    import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, tryCatch, tryCatchFunction } from '~/utils/ui';
+    import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, showToast, tryCatch, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
     import ThankYou from '@shared/components/ThankYou.svelte';
     import { OpenMeteoModels } from '~/services/providers/om';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -103,18 +104,20 @@
     let page: NativeViewElementNode<Page>;
     async function showOptions(event) {
         try {
-            const options = [
-                {
-                    icon: 'mdi-cogs',
-                    id: 'preferences',
-                    name: lc('preferences')
-                },
-                {
-                    icon: 'mdi-map-plus',
-                    id: 'select_map',
-                    name: lc('select_location_map')
-                }
-            ].concat(
+            const options = (
+                [
+                    {
+                        icon: 'mdi-cogs',
+                        id: 'preferences',
+                        name: lc('preferences')
+                    },
+                    {
+                        icon: 'mdi-map-plus',
+                        id: 'select_map',
+                        name: lc('select_location_map')
+                    }
+                ] as any
+            ).concat(
                 gpsAvailable
                     ? [
                           {
@@ -160,7 +163,8 @@
                     options.push({
                         icon: 'mdi-snowflake-alert',
                         id: 'bra',
-                        name: lu('bra')
+                        name: lu('bra'),
+                        onLongPress: tryCatchFunction(selectAndOpenBRA)
                     });
                 }
             }
@@ -173,20 +177,7 @@
                     maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
                     // autoSizeListItem: true
                 },
-                onLongPress: async (item, event, close) => {
-                    try {
-                        if (item) {
-                            switch (item.id) {
-                                case 'bra':
-                                    selectAndOpenBRA();
-                            }
-                        }
-                    } catch (error) {
-                        showError(error);
-                    } finally {
-                        hideLoading();
-                    }
-                },
+
                 onClose: async (item) => {
                     try {
                         if (item) {
@@ -223,12 +214,16 @@
                                 case 'bra':
                                     DEV_LOG && console.log('finding bra');
                                     const lookup = await getFranceGeoJSONLookup();
-                                    DEV_LOG && console.log('bra lookup', JSON.stringify(lookup));
                                     const result = lookup.search(weatherLocation.coord.lon, weatherLocation.coord.lat);
+                                    DEV_LOG && console.log('bra lookup', weatherLocation.coord, result);
                                     const massifId = result?.properties.code ?? -1;
-                                    const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
-                                    DEV_LOG && console.log('massifId', massifId, pdfFile.path);
-                                    openFile(pdfFile.path);
+                                    if (massifId !== -1) {
+                                        const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        DEV_LOG && console.log('massifId', massifId, typeof massifId, pdfFile.path);
+                                        openFile(pdfFile.path);
+                                    } else {
+                                        showToast(lc('failed_to_find_bra'));
+                                    }
                                     break;
                             }
                         }
@@ -829,10 +824,14 @@
             }
         });
         if (result) {
-            showLoading();
-            const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
-            DEV_LOG && console.log('massifId', result.id, pdfFile.path);
-            openFile(pdfFile.path);
+            try {
+                showLoading();
+                const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
+                DEV_LOG && console.log('massifId', result.id, pdfFile.path);
+                openFile(pdfFile.path);
+            } finally {
+                hideLoading();
+            }
         }
     }
     async function showFavMenu(favItem: FavoriteLocation, event) {

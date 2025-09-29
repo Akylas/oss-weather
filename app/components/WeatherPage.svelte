@@ -252,7 +252,7 @@
 
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
-            const needsSaving = !weatherLocation.timezone;   
+            const needsSaving = !weatherLocation.timezone;
             const timezoneData = await queryTimezone(weatherLocation);
             if (needsSaving) {
                 Object.assign(weatherLocation, timezoneData);
@@ -313,7 +313,7 @@
             const SelectCity = (await import('~/components/SelectCity.svelte')).default;
             // TODO: for now we dont lazy load SelectCity
             // it would crash in production because imported toggleFavorite would be undefined ...
-            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true, props: { startQuery: query }});
+            const result: WeatherLocation = await showModal({ page: SelectCity, animated: true, fullscreen: true, props: { startQuery: query } });
             if (result) {
                 saveLocation(result);
             }
@@ -420,24 +420,24 @@
     function onOrientationChanged(event) {
         page.nativeElement.checkStatusBarVisibility();
     }
-    
+
     const onAppUrl = tryCatchFunction(
         async (link: string) => {
             if (link.startsWith('geo')) {
                 const latlong = link.split(':')[1].split(',').map(parseFloat) as [number, number];
                 if (latlong[0] !== 0 || latlong[1] !== 0) {
-                    const result = await geocodeAddress({lat:latlong[0],lon:latlong[1]});
+                    const result = await geocodeAddress({ lat: latlong[0], lon: latlong[1] });
                     saveLocation(result);
                 }
             } else if (link.startsWith('ossweather')) {
                 const params = parseUrlQueryParameters(link);
-                const result = await geocodeAddress({lat:parseFloat(params.lat),lon:parseFloat(params.lon)});
+                const result = await geocodeAddress({ lat: parseFloat(params.lat), lon: parseFloat(params.lon) });
                 delete params.lat;
                 delete params.lon;
                 Object.keys(params).forEach((k) => {
                     if (!result[k]) {
                         result[k] = params[k];
-                     }
+                    }
                 });
                 saveLocation(result);
             } else {
@@ -473,11 +473,11 @@
             }
         });
         networkService.start(); // should send connection event and then refresh
-        
+
         registerUniversalLinkCallback(onAppUrl);
         const current = getUniversalLink();
         if (current) {
-              onAppUrl(current);
+            onAppUrl(current);
         } else if (weatherData) {
             items = prepareItems(weatherLocation, weatherData);
         } else if (weatherLocation) {
@@ -811,6 +811,7 @@
             .sort((a, b) => a.name.localeCompare(b.name));
         const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
         DEV_LOG && console.log('options', options);
+        closePopover();
         const result = await showBottomSheet({
             parent: null,
             view: OptionSelect,
@@ -994,6 +995,7 @@
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
+        class="pageContent"
         gestureHandlerOptions={{
             minDist: 50,
             failOffsetYStart: -40,
@@ -1001,8 +1003,6 @@
         }}
         leftSwipeDistance={50}
         on:close={onDrawerClose}
-        android:paddingLeft={$windowInset.left}
-        android:paddingRight={$windowInset.right}
         on:start={onDrawerStart}>
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
@@ -1021,21 +1021,21 @@
                     text={$slc('powered_by', l(`provider.${provider}`))}
                     verticalAlignment="bottom" />
             {:else}
-                <stackLayout horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle" android:paddingTop={2}>
-                    <label fontSize={16} marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
+                <stackLayout id="hodler" horizontalAlignment="center" paddingLeft={20} paddingRight={20} row={1} verticalAlignment="middle" android:paddingTop={2}>
+                    <label id="test" ios:iosAccessibilityAdjustsFontSize={false} fontSize={16 * $fontScale} marginBottom={20} text={$sl('no_location_desc')} textAlignment="center" textWrap={true} />
                     {#if gpsAvailable}
                         <mdbutton id="location" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={getLocationAndWeather} android:paddingTop={2}>
                             <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-crosshairs-gps" verticalAlignment="middle" />
-                            <cspan text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
+                            <cspan ios:fontSize={16 * $fontScale} text={' ' + $sl('my_location').toUpperCase()} verticalAlignment="middle" />
                         </mdbutton>
                     {/if}
                     <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={() => searchCity()} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-magnify" verticalAlignment="middle" />
-                        <cspan text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
+                        <cspan ios:fontSize={16 * $fontScale} text={' ' + $sl('search_location').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                     <mdbutton id="search" margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={selectLocationOnMap} android:paddingTop={2}>
                         <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-map-plus" verticalAlignment="middle" />
-                        <cspan text={' ' + $sl('select_location_map').toUpperCase()} verticalAlignment="middle" />
+                        <cspan ios:fontSize={16 * $fontScale} text={' ' + $sl('select_location_map').toUpperCase()} verticalAlignment="middle" />
                     </mdbutton>
                 </stackLayout>
             {/if}
@@ -1060,7 +1060,7 @@
                     verticalAlignment="middle"
                     visibility={!loading && weatherData?.alerts?.length > 0 ? 'visible' : 'collapse'}
                     on:tap={() => showAlerts()} />
-                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={()=>searchCity()} />
+                <mdbutton class="actionBarButton" text="mdi-magnify" variant="text" verticalAlignment="middle" on:tap={() => searchCity()} />
 
                 <mdbutton id="menu_button" class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
             </CActionBar>

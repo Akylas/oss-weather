@@ -1275,7 +1275,7 @@
 </script>
 
 <page bind:this={page} id={title || $slc('settings.title')} actionBarHidden={true}>
-    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*">
+    <gridlayout class="pageContent" rows="auto,*">
         <collectionview
             bind:this={collectionView}
             accessibilityValue="settingsCV"
@@ -1326,7 +1326,7 @@
             </Template>
             <Template key="switch" let:item>
                 <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} leftIcon={item.icon} on:tap={(event) => onTap(item, event)}>
-                    <switch id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} />
+                    <switch id="checkbox" checked={item.value} col={1} marginLeft={10} on:checkedChange={(e) => onCheckBox(item, e)} ios:backgroundColor={colorPrimary} verticalAlignment="center" />
                 </ListItemAutoSize>
             </Template>
             <Template key="checkbox" let:item>
@@ -1366,7 +1366,7 @@
             </Template>
         </collectionview>
         <CActionBar canGoBack title={title || $slc('settings.title')}>
-            {#each actionBarButtons as button}
+            {#each actionBarButtons as button (button.id)}
                 <mdbutton class="actionBarButton" text={button.icon} variant="text" on:tap={(event) => onTap({ id: button.id }, event)} />
             {/each}
         </CActionBar>

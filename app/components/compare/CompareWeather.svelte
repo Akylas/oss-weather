@@ -292,6 +292,7 @@
 <page bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
+        class="pageContent"
         gestureHandlerOptions={{
             minDist: 50,
             failOffsetYStart: -40,
@@ -299,8 +300,6 @@
         }}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
-        android:paddingLeft={$windowInset.left}
-        android:paddingRight={$windowInset.right}
         android:paddingBottom={$windowInset.bottom}
         on:close={onDrawerClose}
         on:start={onDrawerStart}>

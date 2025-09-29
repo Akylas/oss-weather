@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { iconService } from '~/services/icon';
-    import { createEventDispatcher } from '@shared/utils/svelte/ui';
+    import { conditionalEvent, createEventDispatcher } from '@shared/utils/svelte/ui';
 </script>
 
 <script lang="ts">
@@ -22,22 +22,6 @@
         } else {
             iconSrc = null;
         }
-    }
-
-    function conditionalEvent(node, { condition, event, callback }) {
-        let toRemove;
-        if (condition) {
-            toRemove = callback;
-            node.addEventListener(event, callback);
-        }
-
-        return {
-            destroy() {
-                if (toRemove) {
-                    node.removeEventListener(event, toRemove);
-                }
-            }
-        };
     }
 </script>
 

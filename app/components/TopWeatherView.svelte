@@ -89,7 +89,7 @@
     export let animated = false;
     let lineChart: NativeViewElementNode<LineChart>;
     const weatherIconSize = 110;
-    $: topViewHeight = 220 * $fontScale;
+    $: topViewHeight = 220 * Math.max(1, $fontScale / 1.2);
     let chartInitialized = false;
     let precipChartSet: LineDataSet;
     let cloudChartSet: LineDataSet;
@@ -371,24 +371,21 @@
         canvas.drawText(formatDate(item.time, 'dddd', item.timezoneOffset), w - 10, 22 * $fontScale, textPaint);
         textPaint.textSize = 14 * $fontScale;
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
-        
+
         const iconsBottom = 26 * $fontScale;
-        
-        
-        
+
         if (item.description?.length) {
             textPaint.textSize = 15 * $fontScale;
             const width = w - 10 - 250;
             textPaint.setTextAlign(Align.LEFT);
             canvas.save();
-            let staticLayout = new StaticLayout(item.description, textPaint, width, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - width - 10, h/2 +  weatherIconSize/2 * (2 - $fontScale)/2 + 5);
+            const staticLayout = new StaticLayout(item.description, textPaint, width, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
+            canvas.translate(w - width - 10, h - iconsBottom - 40 * $fontScale);
             staticLayout.draw(canvas);
             canvas.restore();
         }
-        
-        
-    //    canvas.drawText(item.description, w - 10, h - 8 - iconsBottom - textPaint.textSize , textPaint);
+
+        //    canvas.drawText(item.description, w - 10, h - 8 - iconsBottom - textPaint.textSize , textPaint);
 
         textPaint.setColor(colorOutline);
         canvas.drawLine(0, h, w, h - 1, textPaint);
@@ -417,7 +414,7 @@
                 textPaint.setTextAlign(Align.LEFT);
                 textIconPaint.setTextAlign(Align.CENTER);
                 textIconPaint.color = colorOutline;
-                const iconsTop = (hasPrecip ? 45 : topViewHeight / 2 - 20) * $fontScale;
+                const iconsTop = hasPrecip ? 45 * $fontScale : topViewHeight / 2 - 20 * $fontScale;
                 const lineHeight = 20 * $fontScale;
                 const lineWidth = 100 * $fontScale;
                 const nbLines = Math.ceil(centeredItemsToDraw.length / 2);
@@ -489,7 +486,7 @@
             }
             default:
             case 'default': {
-                const iconsTop = hasPrecip ? 45 : topViewHeight / 2 - 20;
+                const iconsTop = hasPrecip ? 45 * $fontScale : topViewHeight / 2 - 20 * $fontScale;
                 const iconsLeft = 26;
                 centeredItemsToDraw.forEach((c, index) => {
                     const x = index * 45 * $fontScale + iconsLeft;
@@ -563,7 +560,16 @@
     <gridlayout height={90} horizontalAlignment="left" marginBottom={45 * $fontScale} verticalAlignment="bottom" width={300}>
         <linechart bind:this={lineChart} visibility={hasPrecip ? 'visible' : 'hidden'} />
     </gridlayout>
-    <WeatherIcon {animated} col={1} horizontalAlignment="right" iconData={[item.iconId, item.isDay]} marginBottom={15} size={weatherIconSize * (2 - $fontScale)} verticalAlignment="middle" on:tap/>
+    <WeatherIcon
+        {animated}
+        backgroundColor="red"
+        col={1}
+        horizontalAlignment="right"
+        iconData={[item.iconId, item.isDay]}
+        marginBottom={15}
+        size={weatherIconSize * (2 - $fontScale)}
+        verticalAlignment="middle"
+        on:tap />
     {#if showHourlyChart}
         <HourlyChartView
             barWidth={1}

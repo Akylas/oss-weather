@@ -156,7 +156,7 @@
 </script>
 
 <page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
-    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*">
+    <gridlayout class="pageContent" rows="auto,*">
         {#if !networkConnected && !weatherData}
             <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
         {:else}
@@ -177,7 +177,6 @@
                         {dataToShow}
                         height={chartHeight}
                         hourly={weatherData.hourly}
-                        iosOverflowSafeArea={false}
                         row={1}
                         verticalAlignment={chartHeight ? 'center' : 'stretch'}
                         bind:legends

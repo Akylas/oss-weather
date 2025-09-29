@@ -48,7 +48,6 @@
         id="hourly"
         colWidth={68 * $fontScale}
         height="100%"
-        iosOverflowSafeAreaEnabled="false"
         isBounceEnabled="false"
         itemIdGenerator={(_item, index) => index}
         itemTemplateSelector={selectTemplate}

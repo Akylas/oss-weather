@@ -5,8 +5,12 @@ mdbutton {
     shape: round;
 }
 
-htmllabel,
 canvasview,
+canvaslabel {
+    ios-ignore-safe-area: true;
+}
+
+htmllabel,
 label,
 button,
 textfield,
@@ -26,16 +30,18 @@ mdcardview {
     shape: medium;
     elevation: 2;
 }
+
 .small-floating-btn {
     shape: medium;
     elevation: 2;
 }
 
 mdtextfield[variant=none] {
-    padding:0;
+    padding: 0;
 }
 
-mdtextfield, mdtextview {
+mdtextfield,
+mdtextview {
     floating-color: var(--colorPrimary);
     floating-inactive-color: var(--colorOutline);
 }

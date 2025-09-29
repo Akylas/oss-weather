@@ -1,5 +1,7 @@
 {
     "E": "E",
+    "ENE": "ENE",
+    "ESE": "ESE",
     "N": "N",
     "NE": "NE",
     "NNE": "NNE",
@@ -9,6 +11,8 @@
     "NW": "NW",
     "S": "S",
     "SE": "SE",
+    "SSE": "SSE",
+    "SSW": "SSW",
     "SW": "SW",
     "W": "W",
     "WNE": "WNE",

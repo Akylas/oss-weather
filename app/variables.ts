@@ -94,7 +94,7 @@ export let unitCMToMM = ApplicationSettings.getBoolean(SETTINGS_METRIC_CM_TO_MM,
 export const alwaysShowPrecipProb = writable(ApplicationSettings.getBoolean(SETTINGS_ALWAYS_SHOW_PRECIP_PROB, ALWAYS_SHOW_PRECIP_PROB));
 export const weatherDataLayout = writable(ApplicationSettings.getString(SETTINGS_WEATHER_DATA_LAYOUT, WEATHER_DATA_LAYOUT));
 export const imperial = writable(imperialUnits);
-export let dailyDateFormat = (ApplicationSettings.getString(SETTINGS_DAILY_DATE_FORMAT, DEFAULT_DAILY_DATE_FORMAT));
+export let dailyDateFormat = ApplicationSettings.getString(SETTINGS_DAILY_DATE_FORMAT, DEFAULT_DAILY_DATE_FORMAT);
 
 let storedFontScale = ApplicationSettings.getNumber(SETTINGS_FONTSCALE, 1);
 if (isNaN(storedFontScale)) {
@@ -199,7 +199,15 @@ function updateSystemFontScale(value) {
     }
     globalObservable.notify({ eventName: 'fontscale', data: get(fontScale) });
 }
-
+function updateRootCss() {
+    let rootView = Application.getRootView();
+    if (rootView?.parent) {
+        rootView = rootView.parent as any;
+    }
+    rootView?._onCssStateChange();
+    const rootModalViews = rootView?._getRootModalViews();
+    rootModalViews.forEach((rootModalView) => rootModalView._onCssStateChange());
+}
 function getRootViewStyle() {
     let rootView = Application.getRootView();
     if (rootView?.parent) {
@@ -236,7 +244,7 @@ export function onInitRootView(force = false) {
         // DEV_LOG && console.log('onInitRootView', rootView);
         if (rootView) {
             AppUtilsAndroid.listenForWindowInsets((inset) => {
-                windowInset.set({
+                setWindowInset({
                     top: Utils.layout.toDeviceIndependentPixels(inset[0]),
                     bottom: Utils.layout.toDeviceIndependentPixels(Math.max(inset[1], inset[4])),
                     left: Utils.layout.toDeviceIndependentPixels(inset[2]),
@@ -245,20 +253,15 @@ export function onInitRootView(force = false) {
             });
         }
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
-
+        actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
+        actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
         const context = Utils.android.getApplicationContext();
 
         const resources = context.getResources();
         updateSystemFontScale(resources.getConfiguration().fontScale);
         isRTL.set(resources.getConfiguration().getLayoutDirection() === 1);
 
-        // ActionBar
-        // resourceId = resources.getIdentifier('status_bar_height', 'dimen', 'android');
         let nActionBarHeight = Utils.layout.toDeviceIndependentPixels(AppUtilsAndroid.getDimensionFromInt(context, 16843499 /* actionBarSize */));
-        // let nActionBarHeight = 0;
-        // if (resourceId > 0) {
-        //     nActionBarHeight = Utils.layout.toDeviceIndependentPixels(resources.getDimensionPixelSize(resourceId));
-        // }
         if (nActionBarHeight > 0) {
             actionBarHeight.set(nActionBarHeight);
             rootViewStyle?.setUnscopedCssVariable('--actionBarHeight', nActionBarHeight + '');
@@ -269,7 +272,6 @@ export function onInitRootView(force = false) {
         const nActionBarButtonHeight = nActionBarHeight - 10;
         actionBarButtonHeight.set(nActionBarButtonHeight);
         rootViewStyle?.setUnscopedCssVariable('--actionBarButtonHeight', nActionBarButtonHeight + '');
-        // DEV_LOG && console.log('actionBarHeight', nActionBarHeight);
     }
 
     if (__IOS__) {
@@ -278,30 +280,43 @@ export function onInitRootView(force = false) {
         const rootViewStyle = rootView?.style;
         DEV_LOG && console.log('initRootView', rootView);
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
-        // DEV_LOG && console.log('fonts', get(fonts));
+        const currentColors = get(colors);
+        Object.keys(currentColors).forEach((c) => {
+            currentColors[c] = rootViewStyle.getCssVariable('--' + c);
+        });
+        colors.set(currentColors);
         updateSystemFontScale(getCurrentFontScale());
-        Application.on(Application.fontScaleChangedEvent, (event) => updateSystemFontScale(event.newValue));
         actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
         updateIOSWindowInset();
     }
     updateThemeColors(getRealTheme());
     // DEV_LOG && console.log('initRootView', get(navigationBarHeight), get(statusBarHeight), get(actionBarHeight), get(actionBarButtonHeight), get(fonts));
+    Application.on(Application.fontScaleChangedEvent, (event) => updateSystemFontScale(event.newValue));
     Application.off(Application.initRootViewEvent, onInitRootViewFromEvent);
     // getRealThemeAndUpdateColors();
 }
-
+function setWindowInset(newInset) {
+    windowInset.set(newInset);
+    const rootViewStyle = getRootViewStyle();
+    rootViewStyle?.setUnscopedCssVariable('--windowInsetLeft', newInset.left + '');
+    rootViewStyle?.setUnscopedCssVariable('--windowInsetRight', newInset.right + '');
+    updateRootCss();
+    DEV_LOG && console.log('setWindowInset', get(windowInset));
+}
 function updateIOSWindowInset() {
     if (__IOS__) {
         setTimeout(() => {
-            const safeAreaInsets = Application.getRootView().nativeViewProtected.safeAreaInsets;
-            windowInset.set({
-                left: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.left)),
-                top: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.top)),
-                right: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.right)),
-                bottom: Utils.layout.round(Utils.layout.toDevicePixels(safeAreaInsets.bottom))
-            });
-            DEV_LOG && console.log('updateIOSWindowInset', get(windowInset));
+            const safeAreaInsets = UIApplication.sharedApplication.keyWindow?.safeAreaInsets;
+            DEV_LOG && console.log('safeAreaInsets', safeAreaInsets.top, safeAreaInsets.right, safeAreaInsets.bottom, safeAreaInsets.left);
+            if (safeAreaInsets) {
+                windowInset.set({
+                    left: Math.round(safeAreaInsets.left),
+                    top: 0,
+                    right: Math.round(safeAreaInsets.right),
+                    bottom: 0
+                });
+            }
         }, 0);
     }
 }
@@ -318,6 +333,7 @@ function onOrientationChanged() {
         const nActionBarButtonHeight = nActionBarHeight - 10;
         actionBarButtonHeight.set(nActionBarButtonHeight);
         rootViewStyle?.setUnscopedCssVariable('--actionBarButtonHeight', nActionBarButtonHeight + '');
+        updateRootCss();
     } else {
         updateIOSWindowInset();
     }

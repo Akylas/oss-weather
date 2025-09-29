@@ -2,7 +2,9 @@
 // @use "sass:math";
 
 .ns-root {
-    // --systemFontScale: 1;
+    --windowInsetLeft: 0;
+    --windowInsetRight: 0;
+    --fontScale: 1;
     --colorPrimary: #FFC82F;
     --colorOnPrimary: #3F2E00;
     --colorPrimaryContainer: #FFDF98;
@@ -107,6 +109,11 @@ mdbutton[variant=outline] {
     // .ns-black & {
     //     background-color: #333;
     // }
+}
+
+.pageContent {
+    padding-left:var(--windowInsetLeft);
+    padding-right:var(--windowInsetRight);
 }
 
 frame {

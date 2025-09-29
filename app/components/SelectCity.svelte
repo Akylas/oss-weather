@@ -116,7 +116,7 @@
 
 <!-- <frame backgroundColor="transparent"> -->
 <page actionBarHidden={true}>
-    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
+    <gridlayout class="pageContent" rows="auto,auto,*" on:layoutChanged={onLayoutChange}>
         <CActionBar modalWindow title={lc('search_city')}>
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
         </CActionBar>

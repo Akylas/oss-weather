@@ -301,16 +301,14 @@
 <page bind:this={page} id="comparesingle" actionBarHidden={true} {screenOrientation} on:navigatedTo={onNavigatedTo}>
     <drawer
         bind:this={drawer}
+        class="pageContent"
         gestureHandlerOptions={{
             minDist: 50,
             failOffsetYStart: -40,
             failOffsetYEnd: 40
         }}
-        iosIgnoreSafeArea={false}
         leftClosedDrawerAllowDraging={false}
         rightClosedDrawerAllowDraging={false}
-        android:paddingLeft={$windowInset.left}
-        android:paddingRight={$windowInset.right}
         android:paddingBottom={$windowInset.bottom}
         on:close={onDrawerClose}
         on:start={onDrawerStart}>

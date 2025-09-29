@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
     import { createNativeAttributedString } from '@nativescript-community/text';
-    import { Align, Canvas, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
+    import { Align, Canvas, CanvasView, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
     import { CombinedChart } from '@nativescript-community/ui-chart';
-    import { ApplicationSettings, Page } from '@nativescript/core';
+    import { ApplicationSettings, Page, StackLayout } from '@nativescript/core';
     import dayjs, { Dayjs } from 'dayjs';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
@@ -13,7 +13,7 @@
     import { iconService, onIconAnimationsChanged } from '~/services/icon';
     import type { DailyData, Hourly } from '~/services/providers/weather';
     import { WeatherProps, formatWeatherValue, getWeatherDataShortTitle, weatherDataService } from '~/services/weatherData';
-    import { colors, fontScale, weatherDataLayout, windowInset } from '~/variables';
+    import { colors, fontScale, onFontScaleChanged, weatherDataLayout, windowInset } from '~/variables';
     import CActionBar from './common/CActionBar.svelte';
     import HourlyChartView from './HourlyChartView.svelte';
     import HourlyView from './HourlyView.svelte';
@@ -64,18 +64,26 @@
     const last24Data = last24Keys.map((k: WeatherProps) => weatherDataService.getItemData(k, last24)).filter((s) => !!s);
     const next24Data = [WeatherProps.rainPrecipitation, WeatherProps.snowfall].map((k: WeatherProps) => weatherDataService.getItemData(k, item)).filter((s) => !!s);
     let page: NativeViewElementNode<Page>;
+    let stackHolder: NativeViewElementNode<StackLayout>;
+    let topCanvasView: NativeViewElementNode<CanvasView>;
     let animated = iconService.animated;
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutline } = $colors);
 
-    onIconAnimationsChanged((event) => {
-        animated = event.animated;
-    });
+    onIconAnimationsChanged((event) => (animated = event.animated));
+    onFontScaleChanged(redraw);
 
-    let canvasView;
+    // let canvasView;
     function redraw() {
-        canvasView?.nativeView.invalidate();
+        topCanvasView?.nativeView?.invalidate();
+        stackHolder?.nativeView.eachChild((d) => {
+            DEV_LOG && console.log('redraw', d);
+            if (typeof d['invalidate'] === 'function') {
+                d['invalidate']();
+            }
+            return true;
+        });
     }
-    fontScale.subscribe(redraw);
+    // fontScale.subscribe(redraw);
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
         const h = canvas.getHeight();
@@ -295,8 +303,8 @@
             data = polls[k];
             indicatorPaint.color = data.color;
             canvas.drawCircle(dx + 2, dy + 13, 4, indicatorPaint);
-            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 11, dataPaint);
-            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 26, subtitlesPaint);
+            canvas.drawText(POLLENS_POLLUTANTS_TITLES[k], dx + 20, dy + 11 * $fontScale, dataPaint);
+            canvas.drawText(data.value + ' ' + data.unit, dx + 20, dy + 26 * $fontScale, subtitlesPaint);
         });
         canvas.drawLine(0, h - 1, w, h - 1, subtitlesPaint);
     }
@@ -386,13 +394,14 @@
 </script>
 
 <page bind:this={page} actionBarHidden={true}>
-    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*" on:swipe={onSwipe}>
+    <gridlayout class="pageContent" rows="auto,*">
         <scrollview row={1}>
-            <stacklayout on:swipe={onSwipe}>
-                <gridlayout columns="*,auto" height={topViewHeight}>
-                    <canvasview bind:this={canvasView} id="topweather" colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas}> </canvasview>
+            <stacklayout bind:this={stackHolder} on:swipe={onSwipe}>
+                <gridlayout columns="*,auto" height={topViewHeight * $fontScale}>
+                    <canvasview bind:this={topCanvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas} />
                     <WeatherIcon
                         {animated}
+                        backgroundColor="red"
                         col={1}
                         horizontalAlignment="right"
                         iconData={[item.iconId, item.isDay]}
@@ -408,7 +417,7 @@
                             borderBottomWidth={1}
                             {dataToShow}
                             fixedBarScale={false}
-                            height={200}
+                            height={200 * $fontScale}
                             hourly={item.hourly}
                             {onChartConfigure}
                             rightAxisSuggestedMaximum={8}
@@ -418,7 +427,7 @@
                             temperatureLineWidth={3}
                             visibility={item.hourly.length > 0 ? 'visible' : 'collapsed'} />
                     {:else}
-                        <HourlyView height={250} items={item.hourly} row={1} />
+                        <HourlyView height={250 * $fontScale} items={item.hourly} row={1} />
                     {/if}
                 {/if}
                 {#if last24Data.length > 0}
@@ -431,6 +440,7 @@
                 {#if item.pollutants}
                     <canvasview height={Math.ceil((Object.keys(item.pollutants).length / 2) * 40 + 55) * $fontScale} on:draw={drawPollutants} />
                 {/if}
+
                 {#if item.pollens}
                     <canvasview height={Math.ceil((Object.keys(item.pollens).length / 2) * 40 + 55) * $fontScale} on:draw={drawPollens} />
                 {/if}

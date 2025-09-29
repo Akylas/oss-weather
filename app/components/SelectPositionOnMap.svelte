@@ -77,7 +77,7 @@
 </script>
 
 <page actionBarHidden={true}>
-    <gridlayout paddingLeft={$windowInset.left} paddingRight={$windowInset.right} rows="auto,*" android:paddingBottom={$windowInset.bottom}>
+    <gridlayout class="pageContent" rows="auto,*" android:paddingBottom={$windowInset.bottom}>
         <CActionBar modalWindow title={lc('select_location')}></CActionBar>
         <webview
             bind:this={webView}

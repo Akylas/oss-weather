@@ -58,5 +58,9 @@
         "a11y-mouse-events-have-key-events": "ignore",
         "a11y-missing-content": "ignore",
         "illegal-attribute-character": "ignore"
-    }
+    },
+    "debug.javascript.defaultRuntimeExecutable": {
+        "pwa-node": "/Users/mguillon/.local/share/mise/shims/node"
+    },
+    "python.defaultInterpreterPath": "/Users/mguillon/.local/share/mise/installs/python/3.11.13/bin/python"
 }

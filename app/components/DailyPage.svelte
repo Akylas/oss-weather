@@ -401,7 +401,6 @@
                     <canvasview bind:this={topCanvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas} />
                     <WeatherIcon
                         {animated}
-                        backgroundColor="red"
                         col={1}
                         horizontalAlignment="right"
                         iconData={[item.iconId, item.isDay]}

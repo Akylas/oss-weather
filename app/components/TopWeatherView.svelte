@@ -341,6 +341,7 @@
                     {
                         color: '#ffa500',
                         fontFamily: $fonts.wi,
+                        fontSize: 14 * $fontScale,
                         text: 'wi-sunrise '
                     },
                     {
@@ -348,6 +349,7 @@
                     },
                     {
                         color: '#ff7200',
+                        fontSize: 14 * $fontScale,
                         fontFamily: $fonts.wi,
                         text: '  wi-sunset '
                     },
@@ -363,16 +365,21 @@
             0,
             false
         );
+
+        let iconsBottom = 26 * $fontScale;
+        if ($fontScale > 1.5) {
+            canvas.translate(0, -22 * $fontScale);
+            iconsBottom += 22 * $fontScale;
+        }
         staticLayout.draw(canvas);
         canvas.restore();
 
         textPaint.setTextAlign(Align.RIGHT);
         textPaint.textSize = 20 * $fontScale;
         canvas.drawText(formatDate(item.time, 'dddd', item.timezoneOffset), w - 10, 22 * $fontScale, textPaint);
+
         textPaint.textSize = 14 * $fontScale;
         canvas.drawText(`${lc('last_updated')}: ${formatLastUpdate(item.lastUpdate)}`, w - 10, h - 8, textPaint);
-
-        const iconsBottom = 26 * $fontScale;
 
         if (item.description?.length) {
             textPaint.textSize = 15 * $fontScale;
@@ -380,7 +387,7 @@
             textPaint.setTextAlign(Align.LEFT);
             canvas.save();
             const staticLayout = new StaticLayout(item.description, textPaint, width, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - width - 10, h - iconsBottom - 40 * $fontScale);
+            canvas.translate(w - width - 10, h - iconsBottom - staticLayout.getHeight() -  textPaint.textSize * 1.4);
             staticLayout.draw(canvas);
             canvas.restore();
         }
@@ -565,7 +572,7 @@
         col={1}
         horizontalAlignment="right"
         iconData={[item.iconId, item.isDay]}
-        marginBottom={19 * $fontScale}
+        marginBottom={$fontScale > 1 ? 19 * $fontScale * $fontScale : 19 * $fontScale}
         size={(weatherIconSize * 1) / Math.sqrt($fontScale)}
         verticalAlignment="middle"
         on:tap />

@@ -308,7 +308,7 @@ function updateIOSWindowInset() {
     if (__IOS__) {
         setTimeout(() => {
             const safeAreaInsets = UIApplication.sharedApplication.keyWindow?.safeAreaInsets;
-            DEV_LOG && console.log('safeAreaInsets', safeAreaInsets.top, safeAreaInsets.right, safeAreaInsets.bottom, safeAreaInsets.left);
+            // DEV_LOG && console.log('safeAreaInsets', safeAreaInsets.top, safeAreaInsets.right, safeAreaInsets.bottom, safeAreaInsets.left);
             if (safeAreaInsets) {
                 windowInset.set({
                     left: Math.round(safeAreaInsets.left),

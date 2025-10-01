@@ -1,13 +1,12 @@
 <script context="module" lang="ts">
-    import { Canvas, CanvasView, Paint } from '@nativescript-community/ui-canvas';
-    import { conditionalEvent, createEventDispatcher } from '@shared/utils/svelte/ui';
+    import { Canvas, CanvasView } from '@nativescript-community/ui-canvas';
+    import { conditionalEvent } from '@shared/utils/svelte/ui';
     import { colors, fontScale, fonts } from '~/variables';
     import { IListItem } from './OptionSelect.svelte';
 </script>
 
 <script lang="ts">
     $: ({ colorOnSurface, colorOnSurfaceVariant, colorOutlineVariant, colorPrimary } = $colors);
-    const dispatch = createEventDispatcher();
     // technique for only specific properties to get updated on store change
     export let showBottomLine: boolean = false;
     export let extraPaddingLeft: number = 0;
@@ -29,7 +28,7 @@
     {columns}
     padding="0 16 0 16"
     rippleColor={colorPrimary}
-    on:tap={(event) => dispatch('tap', event)}
+    on:tap
     use:conditionalEvent={{ condition: !!(item.onLongPress || onLongPress), event: 'longPress', callback: item.onLongPress || onLongPress }}
     {...$$restProps}>
     <canvaslabel col={mainCol} color={item.color || color || colorOnSurface} on:draw={onDraw}>

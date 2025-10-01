@@ -311,7 +311,7 @@
                                     title: k.name,
                                     subtitle: k.description,
                                     data: k.id,
-                                    type: 'image',
+                                    type: 'checkbox_image',
                                     image: k.icon
                                 })),
                                 iconService.iconSet,

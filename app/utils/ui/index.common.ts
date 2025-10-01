@@ -60,6 +60,7 @@ export async function showPopoverMenu<T = any>({
     const { colorSurfaceContainer } = get(colors);
     const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
     const rowHeight = (props?.rowHeight ?? 58) * get(fontScale);
+    DEV_LOG && console.log('showPopoverMenu');
     const result: T = await showPopover({
         backgroundColor: colorSurfaceContainer,
         view: OptionSelect,
@@ -206,10 +207,10 @@ export async function selectValue<T = any>(options: { data: T; title: string }[]
             selectedIndex = index;
         }
         return {
-            ...d,
             boxType: 'circle',
             type: 'checkbox',
-            value: selected
+            value: selected,
+            ...d
         };
     });
     const result = await showAlertOptionSelect(

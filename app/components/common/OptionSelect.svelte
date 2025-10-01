@@ -379,6 +379,35 @@
                     <image borderRadius={4} col={0} marginBottom={5} marginRight={10} marginTop={5} src={item.image} />
                 </svelte:component>
             </Template>
+            <Template key="checkbox_image" let:item>
+                <svelte:component
+                    this={component}
+                    {borderRadius}
+                    columns="auto,*,auto"
+                    {fontSize}
+                    {fontWeight}
+                    iconFontSize={item.iconFontSize || iconFontSize}
+                    {item}
+                    mainCol={1}
+                    showBottomLine={showBorders}
+                    {subtitleProps}
+                    title={item.name}
+                    {titleHolderProps}
+                    {titleProps}
+                    {...templateProps}
+                    onLongPress={onLongPress ? (e) => onLongPress(item, e) : null}
+                    on:tap={(event) => onTap(item, event)}>
+                    <checkbox
+                        id="checkbox"
+                        boxType={item.boxType}
+                        checked={item.value}
+                        col={item.boxType === 'circle' ? 0 : 2}
+                        ios:marginRight={10}
+                        verticalAlignment="center"
+                        on:checkedChange={(e) => onCheckedChanged(item, e)} />
+                    <image borderRadius={4} col={2} marginBottom={5} marginRight={10} marginTop={5} src={item.image} width={50} />
+                </svelte:component>
+            </Template>
             <Template key="slider" let:item>
                 <SettingsSlider {...item} onChange={(value, event) => onChange?.(item, value, event)} />
             </Template>

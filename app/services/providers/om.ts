@@ -25,9 +25,11 @@ const KEY_MAPPING = {
 
 export enum OpenMeteoModels {
     best_match = 'Best match',
+    ecmwf_ifs = 'ECMWF IFS HRES 9km',
     ecmwf_ifs04 = 'ECMWF IFS 0.4°',
     ecmwf_ifs025 = 'ECMWF IFS 0.25°',
     ecmwf_aifs025 = 'ECMWF AIFS 0.25°',
+    ecmwf_aifs025_single = 'ECMWF AIFS 0.25° Single',
     cma_grapes_global = 'CMA GRAPES Global',
     bom_access_global = 'BOM Access Global',
     metno_nordic = 'MET Norway Nordic',

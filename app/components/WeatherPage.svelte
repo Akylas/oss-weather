@@ -904,8 +904,8 @@
                 vertPos: VerticalPosition.BELOW,
                 props: {
                     width: 220 * $fontScale,
-                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight,
-                    autoSizeListItem: true
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+                    // autoSizeListItem: true
                 },
                 onClose: async (item) => {
                     try {
@@ -993,7 +993,7 @@
     }
 </script>
 
-<page bind:this={page} actionBarHidden={true}>
+<page id="test" bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
         class="pageContent"

@@ -700,7 +700,7 @@ module.exports = (env, params = {}) => {
     }
 
     if (hiddenSourceMap || sourceMap) {
-        if (!!sentry && !!uploadSentry) {
+        if (!!sentry) {
             config.devtool = false;
             config.devtool = 'source-map';
             config.plugins.push(
@@ -710,34 +710,36 @@ module.exports = (env, params = {}) => {
                     filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
                 })
             );
-            // console.log(dist + '/**/*.js', join(dist, process.env.SOURCEMAP_REL_DIR) + '/*.map');
-            config.plugins.push(
-                sentryWebpackPlugin({
-                    telemetry: false,
-                    org: process.env.SENTRY_ORG,
-                    url: process.env.SENTRY_URL,
-                    project: process.env.SENTRY_PROJECT,
-                    authToken: process.env.SENTRY_AUTH_TOKEN,
-                    release: {
-                        name: `${appId}@${appVersion}+${buildNumber}`,
-                        dist: `${buildNumber}.${platform}${isAndroid ? (playStoreBuild ? '.playstore' : '.fdroid') : ''}`,
-                        setCommits: {
-                            auto: true,
-                            ignoreEmpty: true,
-                            ignoreMissing: true
+            if (!!uploadSentry) {
+                config.plugins.push(
+                    sentryWebpackPlugin({
+                        telemetry: false,
+                        org: process.env.SENTRY_ORG,
+                        url: process.env.SENTRY_URL,
+                        project: process.env.SENTRY_PROJECT,
+                        authToken: process.env.SENTRY_AUTH_TOKEN,
+                        release: {
+                            name: `${appId}@${appVersion}+${buildNumber}`,
+                            dist: `${buildNumber}.${platform}${isAndroid ? (playStoreBuild ? '.playstore' : '.fdroid') : ''}`,
+                            setCommits: {
+                                auto: true,
+                                ignoreEmpty: true,
+                                ignoreMissing: true
+                            },
+                            create: true,
+                            cleanArtifacts: true
                         },
-                        create: true,
-                        cleanArtifacts: true
-                    },
-                    // debug: true,
-                    sourcemaps: {
-                        // assets: './**/*.nonexistent'
-                        rewriteSources: (source, map) => source.replace('webpack:///', 'webpack://'),
-                        ignore: ['tns-java-classes', 'hot-update'],
-                        assets: [join(dist, '**/*.js'), join(dist, process.env.SOURCEMAP_REL_DIR, '*.map')]
-                    }
-                })
-            );
+                        // debug: true,
+                        sourcemaps: {
+                            // assets: './**/*.nonexistent'
+                            rewriteSources: (source, map) => source.replace('webpack:///', 'webpack://'),
+                            ignore: ['tns-java-classes', 'hot-update'],
+                            assets: [join(dist, '**/*.js'), join(dist, process.env.SOURCEMAP_REL_DIR, '*.map')]
+                        }
+                    })
+                );
+            }
+            
         } else {
             config.devtool = 'inline-nosources-cheap-module-source-map';
         }

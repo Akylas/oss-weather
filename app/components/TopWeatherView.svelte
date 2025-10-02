@@ -572,8 +572,8 @@
         col={1}
         horizontalAlignment="right"
         iconData={[item.iconId, item.isDay]}
-        marginBottom={$fontScale > 1 ? 19 * $fontScale * $fontScale : 19 * $fontScale}
-        size={(weatherIconSize * 1) / Math.sqrt($fontScale)}
+        marginBottom={$fontScale > 1 ? 17 * $fontScale * $fontScale : 17 * $fontScale}
+        size={(weatherIconSize * 0.9) / Math.sqrt($fontScale)}
         verticalAlignment="middle"
         on:tap />
     {#if showHourlyChart}

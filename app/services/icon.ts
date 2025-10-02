@@ -158,8 +158,8 @@ export class IconService extends Observable {
         const theme_folders = await Folder.fromPath(iconThemesFolder).getEntities();
         return Promise.all(
             theme_folders.map(async (folderPath) => {
-                const jsonData = JSON.parse(await File.fromPath(path.join(folderPath._path, 'config.json')).readText());
-                const icon = this.getPackIcon(folderPath._path);
+                const jsonData = JSON.parse(await File.fromPath(path.join(folderPath.path, 'config.json')).readText());
+                const icon = this.getPackIcon(folderPath.path);
                 return {
                     icon,
                     name: jsonData.name,

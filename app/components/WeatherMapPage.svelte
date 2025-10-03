@@ -85,7 +85,6 @@
             props: {
                 async onCheckBox(item, value, e) {
                     closePopover();
-                    DEV_LOG && console.log('onCheckBox', item, value);
                     if (item !== undefined) {
                         await saveCurrentMapParameters();
                         colors = parseInt(item.data, 10);
@@ -166,7 +165,6 @@
                             snowColors = value;
                             break;
                     }
-                    DEV_LOG && console.log('onCheckBox', item.id, value);
                     updateUrl();
                 },
                 onChange: debounce(async (item, value) => {

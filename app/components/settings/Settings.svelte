@@ -1215,12 +1215,10 @@
         const value = event.value;
         item.value = value;
         clearCheckboxTimer();
-        DEV_LOG && console.log('onCheckBox', item.id, value);
         try {
             ignoreNextOnCheckBoxChange = true;
             switch (item.id) {
                 default:
-                    DEV_LOG && console.log('updating setting for checkbox', item.id, item.key, value);
                     ApplicationSettings.setBoolean(item.key || item.id, value);
                     break;
             }

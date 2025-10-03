@@ -26,6 +26,22 @@ mdcardview {
     shape: medium;
 }
 
+
+checkbox {
+    off-animation-type: 3;
+    on-animation-type: 3;
+    on-check-color: var(--colorOnPrimary);
+    on-tint-color: var(--colorPrimary);
+}
+
+mdswitch {
+    on-background-color: var(--colorPrimary)
+}
+
+mdslider {
+    track-fill-color: var(--colorPrimary);
+}
+
 .floating-btn {
     shape: medium;
     elevation: 2;

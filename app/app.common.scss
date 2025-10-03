@@ -56,10 +56,9 @@
 }
 
 checkbox {
+    margin-left: 10;
     color: var(--colorOnSurface);
     fill-color: var(--colorPrimary);
-    on-check-color: var(--colorOnPrimary);
-    on-tint-color: var(--colorPrimary);
 }
 
 htmllabel,

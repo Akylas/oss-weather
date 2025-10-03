@@ -287,7 +287,6 @@
                         boxType={item.boxType}
                         checked={item.value}
                         col={item.boxType === 'circle' ? 0 : 2}
-                        ios:marginRight={10}
                         verticalAlignment="center"
                         on:checkedChange={(e) => onCheckedChanged(item, e)} />
                 </svelte:component>
@@ -402,7 +401,6 @@
                         boxType={item.boxType}
                         checked={item.value}
                         col={item.boxType === 'circle' ? 0 : 2}
-                        ios:marginRight={10}
                         verticalAlignment="center"
                         on:checkedChange={(e) => onCheckedChanged(item, e)} />
                     <image borderRadius={4} col={2} marginBottom={5} marginRight={10} marginTop={5} src={item.image} width={50} />

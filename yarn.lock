@@ -23,7 +23,7 @@ __metadata:
 
 "@akylas/nativescript-app-tools@file:tools::locator=root-workspace-0b6124%40workspace%3A.":
   version: 1.0.0
-  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=b67d8a&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@akylas/nativescript-app-tools@file:tools#tools::hash=837b1c&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@dotenvx/dotenvx": "npm:1.49.1"
     "@nativescript-community/fontmin": "npm:0.9.11"
@@ -77,7 +77,7 @@ __metadata:
     typescript: "npm:5.9.2"
     typescript-eslint: "npm:8.44.0"
     webpack-bundle-analyzer: "npm:4.10.2"
-  checksum: 10/2dade410644e94ef4a5d032dea5619cd866fa24e3c2e99dd124e5da45385d42acf9317d084ae1b461fbbd7f9759afad8489f1d79cf25aa337030bbacbac9ceb4
+  checksum: 10/b103d698e50bb53fab278e10927e6bf47093f367f6dd87fd6e8ec9bca6910624daac04133ce9e9a00e824ce5d898f8fd8643736e887d0d30878f0fb2b5173b79
   languageName: node
   linkType: hard
 
@@ -2386,10 +2386,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-checkbox@npm:^2.0.13":
-  version: 2.0.13
-  resolution: "@nativescript-community/ui-checkbox@npm:2.0.13"
-  checksum: 10/69ba175a75d180f8ad6ee323747ebabd4e9880643c1383aca3b904dda6722618346890bb6a643eee63a0d71321ce259f541928abee10bca44b682f91823d69c4
+"@nativescript-community/ui-checkbox@npm:2.0.14":
+  version: 2.0.14
+  resolution: "@nativescript-community/ui-checkbox@npm:2.0.14"
+  checksum: 10/ba640dcfd9729ea8774dbecd88763271134c97943836bdf8cc09b79fd85493e8b1a5555538681343de7dbe6477a0b7994afa11d2b6d2db0463bab3d2afd99261
   languageName: node
   linkType: hard
 
@@ -12118,7 +12118,7 @@ __metadata:
     "@nativescript-community/ui-canvas": "npm:4.6.43"
     "@nativescript-community/ui-canvaslabel": "npm:1.2.46"
     "@nativescript-community/ui-chart": "npm:2.0.26"
-    "@nativescript-community/ui-checkbox": "npm:^2.0.13"
+    "@nativescript-community/ui-checkbox": "npm:2.0.14"
     "@nativescript-community/ui-collectionview": "npm:6.0.8"
     "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.8"
     "@nativescript-community/ui-document-picker": "npm:1.1.29"

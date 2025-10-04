@@ -38,7 +38,7 @@ try {
     // registerNativeViewElement('scrollview', () => NestedScrollView);
     registerNativeViewElement('StackLayout', () => require('@nativescript/core').StackLayout);
     registerNativeViewElement('slider', () => require('@nativescript-community/ui-material-slider').Slider, null, {}, { override: true });
-    registerNativeViewElement('webview', () => require('@nativescript-community/ui-webview').AWebView);
+    registerNativeViewElement('awebview', () => require('@nativescript-community/ui-webview').AWebView);
     registerNativeViewElement('gesturerootview', () => require('@nativescript-community/gesturehandler').GestureRootView);
 
     registerNativeViewElement('span', () => require('@nativescript/core').Span);

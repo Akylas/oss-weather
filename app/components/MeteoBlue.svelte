@@ -276,7 +276,7 @@
 <page bind:this={page} actionBarHidden={true} on:navigatedTo={onNavigatedTo}>
     <gridlayout rows="auto,auto,*">
         <CActionBar titleProps={{ visibility: 'visible' }}>
-            <span slot="subtitle" text={'meteoblue'} />
+            <span slot="subtitle" text="meteoblue" />
             <span slot="subtitle2" color={colorOnSurfaceVariant} fontSize={12} text={'\n' + weatherLocation.name} />
             <activityIndicator busy={loading} height={$actionBarButtonHeight} verticalAlignment="middle" visibility={loading ? 'visible' : 'collapse'} width={$actionBarButtonHeight} />
             <mdbutton class="actionBarButton" text="mdi-refresh" variant="text" verticalAlignment="middle" on:tap={refresh} />
@@ -307,7 +307,7 @@
         </gridlayout>
         <!-- <pullrefresh bind:this={pullRefresh} row={2} on:refresh={onPullToRefresh}> -->
 
-        <webview
+        <awebview
             bind:this={webView}
             builtInZoomControls={false}
             debugMode={true}

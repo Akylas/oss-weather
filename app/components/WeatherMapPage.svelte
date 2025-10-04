@@ -224,7 +224,7 @@
             <mdbutton class="actionBarButton" text="mdi-palette" variant="text" verticalAlignment="middle" on:tap={seletMapColors} />
             <mdbutton class="actionBarButton" text="mdi-dots-vertical" variant="text" verticalAlignment="middle" on:tap={showOptions} />
         </CActionBar>
-        <webview
+        <awebview
             bind:this={webView}
             debugMode={consoleEnabled}
             displayZoomControls={false}

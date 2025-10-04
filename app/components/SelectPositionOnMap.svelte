@@ -14,7 +14,7 @@
 </script>
 
 <script lang="ts">
-    export let focusPos: { lat: number; lon: number } = {lat:45, lon:5};
+    export let focusPos: { lat: number; lon: number } = { lat: 45, lon: 5 };
     let webView: NativeViewElementNode<AWebView>;
     let url = '~/assets/map/index.html';
     let zoom = 8;
@@ -79,7 +79,7 @@
 <page actionBarHidden={true}>
     <gridlayout class="pageContent" rows="auto,*" android:paddingBottom={$windowInset.bottom}>
         <CActionBar modalWindow title={lc('select_location')}></CActionBar>
-        <webview
+        <awebview
             bind:this={webView}
             debugMode={consoleEnabled}
             displayZoomControls={false}

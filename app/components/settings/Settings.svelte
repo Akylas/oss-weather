@@ -81,7 +81,7 @@
     import { aqi_providers, getAqiProviderType, getOMPreferredModel, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
-    import { colors, fonts, iconColor, imperial, metricDecimalTemp, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
+    import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
@@ -1231,6 +1231,10 @@
     function refreshCollectionView() {
         collectionView?.nativeView?.refresh();
     }
+    function refreshCollectionViewVisibleItems() {
+        collectionView?.nativeView?.refreshVisibleItems();
+    }
+    onFontScaleChanged(refreshCollectionViewVisibleItems);
     onThemeChanged(refreshCollectionView);
     onUnitsChanged(() => {
         if (subSettingsOptions === 'units') {

@@ -1,0 +1,6 @@
+Bug fixes:
+- removed deprecated Open-Meteo models
+- BRA fix
+- added ECMWF IFS HRES 9km and ECMWF AIFS 0.25° Single models for OpenMeteo
+- show preview when selecting icon theme
+- Translations update

@@ -20,6 +20,6 @@ ext {
     lottieVersion = "6.2.0"
     ndkVersion = "27.2.12479018"
     licenseReporterVersion = "2.4"
-    sentryVersion = "7.15.0"
-    sentryGradleVersion = "4.12.0"
+    sentryVersion = "7.22.6"
+    sentryGradleVersion = "4.14.1"
 }

@@ -1,5 +1,7 @@
 {
     "E": "E",
+    "ENE": "ENE",
+    "ESE": "ESE",
     "N": "N",
     "NE": "NE",
     "NNE": "NNE",
@@ -9,6 +11,8 @@
     "NW": "NW",
     "S": "S",
     "SE": "SE",
+    "SSE": "SSE",
+    "SSW": "SSW",
     "SW": "SW",
     "W": "W",
     "WNE": "WNE",
@@ -47,6 +51,7 @@
     "behavioral_tips": "Wskazówki dotyczące zachowania",
     "betula": "brzoza",
     "blocks": "bloki",
+    "bra": "BRA",
     "bug_report_sent": "Wysłano raport o błędzie",
     "cancel": "Anuluj",
     "chart": "Wykres",
@@ -98,6 +103,7 @@
     "export_settings_desc": "eksportuj wszystkie ustawienia aplikacji, aby móc je później zaimportować",
     "extreme_cold": "Ekstremalnie zimno",
     "failed_to_export_settings": "eksport ustawień nie powiódł się",
+    "failed_to_find_bra": "nie znaleziono BRA dla tej lokalizacji",
     "favorites": "Ulubione",
     "feedback_sent": "wysłano opinię",
     "feels_like": "czuć jak",
@@ -182,7 +188,7 @@
     "light_rain_shower": "Lekki deszcz",
     "light_snow": "Lekkie opady śniegu",
     "lines": "linie",
-    "list_used_third_parties": "lista używanych stron trzecich",
+    "list_used_third_parties": "Lista używanych bibliotek stron trzecich",
     "loading": "Ładowanie",
     "main_chart_nb_hours": "liczba godzin wyświetlana na głównym wykresie godzinowym",
     "main_chart_show_wind": "pokaż prędkość wiatru na głównym wykresie godzinowym",
@@ -239,7 +245,7 @@
     "preferences": "Preferencje",
     "pressure": "ciśnienie",
     "provider": {
-        "meteofrance": "Méteo France",
+        "meteofrance": "Meteo France",
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",
         "title": "Dostawca"
@@ -347,6 +353,7 @@
     "weather_map": "Mapa pogody",
     "weather_map_colors": "schemat kolorów mapy pogodowej",
     "wind": "Wiatr",
+    "wind_bearing": "kierunkowość wiatru",
     "wind_beaufort": "skala wiatru Beauforta",
     "wind_gust": "podmuch wiatru",
     "wind_speed": "prędkość wiatru"

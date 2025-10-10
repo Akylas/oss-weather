@@ -705,7 +705,6 @@ module.exports = (env, params = {}) => {
             config.devtool = 'source-map';
             config.plugins.push(
                 new webpack.SourceMapDevToolPlugin({
-                    // moduleFilenameTemplate:  'webpack://[namespace]/[resource-path]?[loaders]',
                     append: `\n//# sourceMappingURL=${process.env.SOURCEMAP_REL_DIR}/[name].js.map`,
                     filename: join(process.env.SOURCEMAP_REL_DIR, '[name].js.map')
                 })
@@ -719,7 +718,7 @@ module.exports = (env, params = {}) => {
                         project: process.env.SENTRY_PROJECT,
                         authToken: process.env.SENTRY_AUTH_TOKEN,
                         release: {
-                            name: `${appId}@${appVersion}+${buildNumber}`,
+                            name: `${appId}@${platform}${isAndroid ? (playStoreBuild ? '.playstore' : '.fdroid') : ''}@${appVersion}+${buildNumber}`,
                             dist: `${buildNumber}.${platform}${isAndroid ? (playStoreBuild ? '.playstore' : '.fdroid') : ''}`,
                             setCommits: {
                                 auto: true,
@@ -729,9 +728,7 @@ module.exports = (env, params = {}) => {
                             create: true,
                             cleanArtifacts: true
                         },
-                        // debug: true,
                         sourcemaps: {
-                            // assets: './**/*.nonexistent'
                             rewriteSources: (source, map) => source.replace('webpack:///', 'webpack://'),
                             ignore: ['tns-java-classes', 'hot-update'],
                             assets: [join(dist, '**/*.js'), join(dist, process.env.SOURCEMAP_REL_DIR, '*.map')]
@@ -739,7 +736,6 @@ module.exports = (env, params = {}) => {
                     })
                 );
             }
-            
         } else {
             config.devtool = 'inline-nosources-cheap-module-source-map';
         }

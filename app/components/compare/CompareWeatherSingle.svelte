@@ -23,7 +23,6 @@
     import CompareLineChart from './CompareLineChart.svelte';
     import CompareWeatherIcons from './CompareWeatherIcons.svelte';
 
-    const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
     let dataToCompare: any = JSON.parse(ApplicationSettings.getString('compare_data_single', '{"id":"temperature","type":"linechart","forecast":"hourly"}'));
     const screenOrientation = ApplicationSettings.getBoolean('charts_landscape', CHARTS_LANDSCAPE) ? 'landscape' : undefined;
 
@@ -109,6 +108,9 @@
             }
             return acc;
         }, [])
+    );
+    const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]')).filter(
+        (d) => modelsList.findIndex((m) => m.id === d) !== -1
     );
     let page: NativeViewElementNode<Page>;
     // let pullRefresh: NativeViewElementNode<PullToRefresh>;
@@ -342,8 +344,8 @@
                         item={{ ...item, subtitleColor: item.color }}
                         padding="0 0 0 10"
                         titleProps={{
-                            paddingTop: 0,
-                            paddingBottom: 0
+                            paddingTop: 10,
+                            paddingBottom: 10
                         }}
                         on:tap={(event) => onModelTap(item, event)}>
                         <checkbox

@@ -24,9 +24,6 @@
 
     $: ({ colorBackground, colorError, colorOnError, colorOnSurfaceVariant, colorPrimary, colorSurface } = $colors);
 
-    const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]'));
-    const dataToCompare: any[] = JSON.parse(ApplicationSettings.getString('compare_data', '[{"id":"temperature","type":"linechart","forecast":"hourly"}]'));
-
     const CHART_TYPE = {
         [WeatherProps.iconId]: 'weathericons',
         // [WeatherProps.windSpeed]: 'scatterchart',
@@ -91,6 +88,10 @@
         }
         return acc;
     }, []);
+    const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]')).filter(
+        (d) => modelsList.findIndex((m) => m.id === d) !== -1
+    );
+    const dataToCompare: any[] = JSON.parse(ApplicationSettings.getString('compare_data', '[{"id":"temperature","type":"linechart","forecast":"hourly"}]'));
     let page: NativeViewElementNode<Page>;
     let pullRefresh: NativeViewElementNode<PullToRefresh>;
     let networkConnected = networkService.connected;
@@ -339,17 +340,16 @@
                         borderLeftWidth={6}
                         item={{ ...item, subtitleColor: item.color }}
                         padding="0 0 0 10"
-                        rows="50"
                         titleProps={{
-                            paddingTop: 0,
-                            paddingBottom: 0
+                            paddingTop: 10,
+                            paddingBottom: 10
                         }}
                         on:tap={(event) => onModelTap(item, event)}>
                         <checkbox
                             id="checkbox"
                             checked={isModelSelected(item)}
                             col={2}
-                            ios:marginRight={10}
+                            ios:margin={10}
                             color={item.color}
                             fillColor={item.color}
                             verticalAlignment="center"

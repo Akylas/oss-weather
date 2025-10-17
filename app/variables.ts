@@ -206,7 +206,7 @@ function updateRootCss() {
     }
     rootView?._onCssStateChange();
     const rootModalViews = rootView?._getRootModalViews();
-    rootModalViews.forEach((rootModalView) => rootModalView._onCssStateChange());
+    rootModalViews?.forEach((rootModalView) => rootModalView._onCssStateChange());
 }
 function getRootViewStyle() {
     let rootView = Application.getRootView();

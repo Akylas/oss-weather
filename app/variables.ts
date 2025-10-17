@@ -252,6 +252,9 @@ export function onInitRootView(force = false) {
                 });
             });
         }
+        if (!rootViewStyle) {
+            return;
+        }
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
         actionBarHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarHeight')));
         actionBarButtonHeight.set(parseFloat(rootViewStyle.getCssVariable('--actionBarButtonHeight')));
@@ -276,8 +279,11 @@ export function onInitRootView(force = false) {
 
     if (__IOS__) {
         const rootView = Application.getRootView();
-        initRootViewCalled = !!rootView;
         const rootViewStyle = rootView?.style;
+        if (!rootViewStyle) {
+            return;
+        }
+        initRootViewCalled = !!rootView;
         DEV_LOG && console.log('initRootView', rootView);
         fonts.set({ mdi: rootViewStyle.getCssVariable('--mdiFontFamily'), app: rootViewStyle.getCssVariable('--appFontFamily'), wi: rootViewStyle.getCssVariable('--wiFontFamily') });
         const currentColors = get(colors);

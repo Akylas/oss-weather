@@ -1,9 +1,9 @@
 <script lang="ts">
     import { ObservableArray, TextField } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
-    import { closeModal } from 'svelte-native';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { closeModal } from '@nativescript-community/svelte-native';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import type { FavoriteLocation } from '~/helpers/favorites';
     import { favoriteIcon, favoriteIconColor, isFavorite, toggleFavorite } from '~/helpers/favorites';

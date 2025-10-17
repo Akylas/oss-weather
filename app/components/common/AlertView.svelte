@@ -1,6 +1,6 @@
 <script lang="ts">
     import { titlecase } from '@nativescript-community/l';
-    import { Template } from 'svelte-native/components';
+    import { Template } from '@nativescript-community/svelte-native/components';
     import { formatDate, l } from '~/helpers/locale';
     import type { Alert } from '~/services//providers/weather';
     import { colors } from '~/variables';

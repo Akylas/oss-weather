@@ -4,7 +4,7 @@
     import { CombinedChart } from '@nativescript-community/ui-chart';
     import { ApplicationSettings, Page, StackLayout } from '@nativescript/core';
     import dayjs, { Dayjs } from 'dayjs';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
     import { DAILY_PAGE_HOURLY_CHART, SETTINGS_DAILY_PAGE_HOURLY_CHART, SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY } from '~/helpers/constants';
     import { formatDate, isSameDay, lc } from '~/helpers/locale';

@@ -15,8 +15,8 @@
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import {

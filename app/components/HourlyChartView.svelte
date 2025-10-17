@@ -14,7 +14,7 @@
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
     import { Application, Color, CoreTypes, EventData, ImageSource, ObservableArray, OrientationChangedEventData, Utils } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import type HourlyPopover__SvelteComponent_ from '~/components/HourlyPopover.svelte';
     import { windIcon } from '~/helpers/formatter';
     import { formatTime, getLocalTime, lc } from '~/helpers/locale';

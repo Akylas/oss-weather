@@ -1,8 +1,8 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Color } from '@nativescript/core';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import HourlyItem from '~/components/HourlyItem.svelte';
     import { isEInk, onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';

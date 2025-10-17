@@ -14,8 +14,8 @@ import { installMixins, themer } from '@nativescript-community/ui-material-core'
 import { Application } from '@nativescript/core';
 import { init as sharedInit } from '@shared/index';
 import { startSentry } from '@shared/utils/sentry';
-import { svelteNative } from 'svelte-native';
-import { FrameElement, PageElement, registerElement, registerNativeViewElement } from 'svelte-native/dom';
+import { svelteNative } from '@nativescript-community/svelte-native';
+import { FrameElement, PageElement, registerElement, registerNativeViewElement } from '@nativescript-community/svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 

@@ -11,7 +11,7 @@
     import { Highlight } from '@nativescript-community/ui-chart/highlight/Highlight';
     import { Utils } from '@nativescript-community/ui-chart/utils/Utils';
     import dayjs, { Dayjs } from 'dayjs';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { formatTime, getLocalTime, getStartOfDay, l, lc, lu } from '~/helpers/locale';
     import { showError } from '@shared/utils/showError';
     import { pickDate } from '~/utils/utils.common';

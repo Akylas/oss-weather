@@ -6,7 +6,7 @@
     import { AndroidActivityBackPressedEventData, Application, ImageSource, Page, Screen } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';
     import { lang, lc, lu } from '~/helpers/locale';

@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { Canvas, CanvasView, LayoutAlignment, Paint, StaticLayout } from '@nativescript-community/ui-canvas';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { conditionalEvent } from '@shared/utils/svelte/ui';
     // import { showToolTip } from '~/utils/utils';
     import { actionBarButtonHeight, colors, fonts } from '~/variables';

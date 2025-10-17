@@ -18,8 +18,8 @@
     import type { FeatureCollection, MultiPolygon } from 'geojson';
     import PolygonLookup from 'polygon-lookup';
     import { onDestroy, onMount } from 'svelte';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import {

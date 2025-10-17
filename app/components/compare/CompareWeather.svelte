@@ -8,8 +8,8 @@
     import { ApplicationSettings, NavigatedData, Page, View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import { onMount } from 'svelte';
-    import { Template } from 'svelte-native/components';
-    import { NativeElementNode, NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import { NativeElementNode, NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import { FavoriteLocation } from '~/helpers/favorites';

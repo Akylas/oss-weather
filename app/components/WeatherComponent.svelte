@@ -1,8 +1,8 @@
 <script lang="ts">
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { Application, ApplicationSettings } from '@nativescript/core';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import DailyView from '~/components/DailyView.svelte';
     import TopWeatherView from '~/components/TopWeatherView.svelte';
     import { MAIN_PAGE_HOURLY_CHART, SETTINGS_MAIN_PAGE_HOURLY_CHART } from '~/helpers/constants';

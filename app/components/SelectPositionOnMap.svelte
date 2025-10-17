@@ -3,7 +3,7 @@
     import { ApplicationSettings } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import { closeModal } from '@shared/utils/svelte/ui';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import { SETTINGS_WEATHER_MAP_CUSTOM_TILE_SOURCE } from '~/helpers/constants';
     import { lang, lc } from '~/helpers/locale';

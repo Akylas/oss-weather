@@ -5,7 +5,7 @@
     import { ApplicationSettings } from '@nativescript/core';
     import { debounce } from '@nativescript/core/utils';
     import { showError } from '@shared/utils/showError';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import {
         SETTINGS_WEATHER_MAP_ANIMATION_SPEED,

@@ -3,7 +3,7 @@
     import { ImageSource, ScrollView } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onDestroy } from 'svelte';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { formatDate, formatTime, getLocalTime, getStartOfDay, lc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { iconService } from '~/services/icon';
@@ -19,7 +19,7 @@
 
 <script lang="ts">
     import { showError } from '@shared/utils/showError';
-    import { Template } from 'svelte-native/components';
+    import { Template } from '@nativescript-community/svelte-native/components';
     import { loadImage } from '~/utils/utils.common';
     import { FavoriteLocation } from '~/helpers/favorites';
 

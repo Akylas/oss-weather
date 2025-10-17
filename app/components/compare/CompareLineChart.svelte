@@ -20,8 +20,8 @@
     import { showError } from '@shared/utils/showError';
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { CHARTS_PORTRAIT_FULLSCREEN } from '~/helpers/constants';
     import { FavoriteLocation } from '~/helpers/favorites';
     import { formatDate, formatTime, getLocalTime, lc } from '~/helpers/locale';

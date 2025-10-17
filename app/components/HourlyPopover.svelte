@@ -9,7 +9,7 @@
     import { CommonData, WeatherProps, weatherDataService } from '~/services/weatherData';
     import { colors, fontScale } from '~/variables';
     import WeatherIcon from './WeatherIcon.svelte';
-    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { WeatherDataType } from '~/helpers/formatter';
 
     const labelPaint = new Paint();

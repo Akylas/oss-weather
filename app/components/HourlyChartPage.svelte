@@ -3,8 +3,8 @@
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { Application, ApplicationSettings, Color, ObservableArray, OrientationChangedEventData } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
-    import { Template } from 'svelte-native/components';
-    import type { NativeViewElementNode } from 'svelte-native/dom';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { l, lc } from '~/helpers/locale';
     import type { WeatherData } from '~/services/providers/weather';
     import { colors, fontScale, screenWidthDips, windowInset } from '~/variables';

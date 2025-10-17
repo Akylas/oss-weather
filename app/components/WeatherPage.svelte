@@ -609,7 +609,7 @@
         ApplicationSettings.setString(SETTINGS_WEATHER_LOCATION, JSON.stringify(weatherLocation));
     }
     function setWeatherLocation(location: FavoriteLocation, save = true) {
-        DEV_LOG && console.log('setWeatherLocation', JSON.stringify(location));
+        // DEV_LOG && console.log('setWeatherLocation', JSON.stringify(location));
         weatherLocation = location;
         const changed = updateProvider();
         if (save) {

@@ -48,7 +48,7 @@
         id="hourly"
         colWidth={68 * $fontScale}
         height="100%"
-        isBounceEnabled="false"
+        isBounceEnabled={false}
         itemIdGenerator={(_item, index) => index}
         itemTemplateSelector={selectTemplate}
         {items}

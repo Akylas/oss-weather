@@ -13008,6 +13008,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"svelte-check@patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch":
+  version: 4.3.1
+  resolution: "svelte-check@patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch::version=4.3.1&hash=d38fad"
+  dependencies:
+    "@jridgewell/trace-mapping": "npm:^0.3.25"
+    chokidar: "npm:^4.0.1"
+    fdir: "npm:^6.2.0"
+    picocolors: "npm:^1.0.0"
+    sade: "npm:^1.7.4"
+  peerDependencies:
+    svelte: ^4.0.0 || ^5.0.0-next.0
+    typescript: ">=5.0.0"
+  bin:
+    svelte-check: bin/svelte-check
+  checksum: 10/41041e43f8ba37bfbbabea2fa89860054b85d07d75d309c6f60b804de022d0a5e2ddb548054f96b6064fb2e062d53f57e846a1b667bdd88fa100b44305c7d21b
+  languageName: node
+  linkType: hard
+
 "svelte-dev-helper@npm:^1.1.9":
   version: 1.1.9
   resolution: "svelte-dev-helper@npm:1.1.9"

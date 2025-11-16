@@ -19,7 +19,6 @@
     let loading = false;
     export let weatherLocation: WeatherLocation;
     export let name;
-    networkService.start(); // ensure it is started
     DEV_LOG && console.log('BottomSheetWeatherPage');
 
     async function updateView(weatherData) {

@@ -356,5 +356,54 @@
     "wind_bearing": "wind bearing",
     "wind_beaufort": "beaufort wind scale",
     "wind_gust": "wind gust",
-    "wind_speed": "wind speed"
+    "wind_speed": "wind speed",
+
+    "widget_settings": "Widget Settings",
+    "widget_update_frequency": "Widget Update Frequency",
+    "widget_update_frequency_description": "How often widgets should refresh weather data (15-1440 minutes)",
+    "widget_update_frequency_saved": "Widget update frequency saved",
+    "update_all_widgets_now": "Update All Widgets Now",
+    "updating_all_widgets": "Updating all widgets...",
+    "widget_update_error": "Failed to update widgets",
+    "widget_configurations": "Widget Configurations",
+    "widget": "Widget",
+    "location_name": "Location Name",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "model": "Model",
+
+
+    "widget.simple.name": "Simple Weather",
+    "widget.simple.description": "Current weather at a glance",
+    "widget.withdate.name": "Weather with Date",
+    "widget.withdate.description": "Weather with date and location",
+    "widget.withclock.name": "Weather with Clock",
+    "widget.withclock.description": "Real-time clock with weather",
+    "widget.hourly.name": "Hourly Forecast",
+    "widget.hourly.description": "Next 24 hours forecast",
+    "widget.daily.name": "7-Day Forecast",
+    "widget.daily.description": "Weekly weather forecast",
+    "widget.forecast.name": "Detailed Forecast",
+    "widget.forecast.description": "Detailed weather forecast",
+
+    "widget.no_location": "No location set",
+    "widget.tap_configure": "Tap to configure",
+    "widget.loading": "Loading...",
+    "widget.error_loading": "Error loading widget data",
+    "widget.hourly.title": "Hourly Forecast",
+    "widget.daily.title": "7-Day Forecast",
+
+    "widget_config_saved": "Widget configuration saved",
+    "widget_settings_save_error": "Failed to save widget settings",
+    "widget_configs_saved": "All widget configurations saved",
+    "widget_config_added": "Widget configuration added",
+    "no_widgets_configured": "No widgets configured yet. Add widgets to your home screen and configure them here.",
+    "add_widget_config": "Add Widget Configuration",
+    "save_all_widget_configs": "Save All Configurations",
+    "widget_config_deleted": "Widget configuration deleted",
+    "widget_configuration_note": "Note: Use 'current' as location name to use the app's selected location. Use 'default' as model to use the app's configured weather provider.",
+    "widget_android_note": "Android: Widgets will update automatically based on the frequency. Tap any widget to manually refresh it.",
+    "widget_ios_note": "iOS: Widgets update in the background. Add widgets from the widget gallery, then configure them here. iOS controls the actual refresh timing."
+
+  
 }

@@ -13,7 +13,6 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             const lat = intent.getFloatExtra('lat', -1);
             const lon = intent.getFloatExtra('lon', -1);
             const receivingPackage = intent.getStringExtra('package');
-            networkService.start(); // ensure it is started
             const weatherLocation = await geocodeAddress({ lat, lon });
             const data = await getWeatherProvider().getWeather(weatherLocation);
             const responseIntent = new android.content.Intent(`${__APP_ID__}.QUERY_WEATHER_RESULT`);

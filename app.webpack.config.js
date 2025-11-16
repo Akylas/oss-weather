@@ -131,7 +131,7 @@ module.exports = (env, params = {}) => {
     env.appPath = appPath;
     env.appResourcesPath = appResourcesPath;
     env.appComponents = env.appComponents || [];
-    env.appComponents.push('~/android/floatingactivity', '~/android/activity.android');
+    env.appComponents.push('~/android/floatingactivity', '~/android/activity.android', '~/android/WidgetUpdateReceiver', '~/receivers/CommandReceiver');
 
     const ignoredSvelteWarnings = new Set(['a11y-no-onchange', 'a11y-label-has-associated-control', 'illegal-attribute-character']);
 
@@ -295,7 +295,8 @@ module.exports = (env, params = {}) => {
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
             : 'undefined'
     };
-    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
+    console.log(config.plugins.map((p) => p.constructor.name));
+    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin' || p.constructor.name === 'CompatDefinePlugin').definitions, defines);
 
     const symbolsParser = require('scss-symbols-parser');
     const mdiSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString());
@@ -610,8 +611,6 @@ module.exports = (env, params = {}) => {
         );
     }
     // save as long as we dont use calc in css
-    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));
-    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /punnycode$/ }));
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^url$/ }));
 
     if (!!production && !timeline) {

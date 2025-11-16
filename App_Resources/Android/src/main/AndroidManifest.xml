@@ -95,7 +95,11 @@
             android:name="__PACKAGE__.widgets.SimpleWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -107,7 +111,11 @@
             android:name="__PACKAGE__.widgets.SimpleWeatherWithDateWidgetReceiver"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -119,7 +127,11 @@
             android:name="__PACKAGE__.widgets.SimpleWeatherWithClockWidgetReceiver"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -131,7 +143,11 @@
             android:name="__PACKAGE__.widgets.HourlyWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -143,7 +159,11 @@
             android:name="__PACKAGE__.widgets.DailyWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -152,10 +172,14 @@
 
         <!-- Forecast Weather Widget -->
         <receiver
-            android:name="__PACKAGE__.widgets.ForecastWeatherWidgetReceiver"
+            android:name=".widgets.ForecastWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -164,44 +188,30 @@
 
         <!-- Widget Configuration Activity -->
         <activity
-            android:name="__PACKAGE__.widgets.WidgetConfigurationActivity"
+            android:name=".widgets.WidgetConfigurationActivity"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_OPTIONS_CHANGED" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" />
+                <action android:name="android.appwidget.action.ACTION_APPWIDGET_DISABLED" />
             </intent-filter>
         </activity>
-
-        <!-- Boot receiver to restore widget scheduling after reboot -->
         <receiver
-            android:name="__PACKAGE__.widgets.WidgetBootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="__PACKAGE__.widgets.WidgetConfigChangeReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
-                <action android:name="android.intent.action.LOCALE_CHANGED" />
-                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
-                <action android:name="android.intent.action.TIME_CHANGED" />
-                <action android:name="android.intent.action.UI_MODE_NIGHT_CHANGED" />
-                <action android:name="android.intent.action.SCREEN_ON" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="__PACKAGE__.WidgetUpdateReceiver"
+            android:name=".WidgetUpdateReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="__PACKAGE__.WIDGET_UPDATE_REQUEST" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".widgets.ThemeChangeReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
             </intent-filter>
         </receiver>
     </application>

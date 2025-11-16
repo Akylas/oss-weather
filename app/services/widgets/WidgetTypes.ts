@@ -29,6 +29,7 @@ export interface HourlyData {
     temperature: string;
     iconPath: string;
     precipitation: string;
+    precipAccumulation: string;
     windSpeed: string;
 }
 
@@ -38,6 +39,7 @@ export interface DailyData {
     temperatureLow: string;
     iconPath: string;
     precipitation: string;
+    precipAccumulation: string;
 }
 
 export interface ForecastData {
@@ -46,6 +48,7 @@ export interface ForecastData {
     iconPath: string;
     description: string;
     precipitation: string;
+    precipAccumulation: string;
 }
 
 export enum WidgetType {

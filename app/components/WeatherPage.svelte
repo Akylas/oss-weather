@@ -260,8 +260,7 @@
             }
             weatherData = await getWeatherProvider(weatherLocation.provider).getWeather(weatherLocation, { model: weatherLocation.omModel });
             DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
-            if (timezoneData) {
-            }
+
             if (weatherData) {
                 await updateView();
                 if (usedWeatherData.indexOf(WeatherProps.aqi) !== -1) {
@@ -472,7 +471,6 @@
                 showError(error);
             }
         });
-        networkService.start(); // should send connection event and then refresh
 
         registerUniversalLinkCallback(onAppUrl);
         const current = getUniversalLink();

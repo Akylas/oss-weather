@@ -138,7 +138,7 @@ class WidgetLifecycleManager {
             
             // Post notification for main app to observe
             CFNotificationCenterPostNotification(
-                CFNotificationCenterGetDarwinCenter(),
+                CFNotificationCenterGetDarwinNotifyCenter(),
                 CFNotificationName("com.akylas.weather.widgetEvent" as CFString),
                 nil,
                 nil,

@@ -86,7 +86,7 @@ try {
     Application.on(Application.launchEvent, () => {
         DEV_LOG && console.log('launchEvent');
         if (__IOS__) {
-            Utils.ios.app.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum);
+            UIApplication.sharedApplication.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum);
         }
         startThemeHelper();
         // widgetService.updateAllWidgets();

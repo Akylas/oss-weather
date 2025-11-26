@@ -81,6 +81,7 @@ class WidgetLifecycleManager {
     
     // MARK: - Widget ID Generation
     
+    @available(iOS 14.0, *)
     private func generateWidgetId(kind: String, family: WidgetFamily) -> String {
         return "widget_\(family.rawValue)_\(kind)".hashValue.description
     }

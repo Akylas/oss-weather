@@ -12,8 +12,10 @@ import {
     View
 } from '@nativescript/core';
 import { CSSUtils } from '@nativescript/core/css/system-classes';
+import { ComponentInstanceInfo } from 'svelte-native/dom';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { onInitRootView } from '~/variables';
+import type ConfigWidget__SvelteComponent_ from '~/components/settings/ConfigWidget.svelte';
 
 const TAG = '[WidgetConfActivity]';
 const CALLBACKS = '_callbacks';
@@ -130,11 +132,17 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
             Trace.write('WidgetConfActivity.onPostResume();', Trace.categories.NativeLifecycle);
         }
     }
-
+    componentInstanceInfo: ComponentInstanceInfo<GridLayout, ConfigWidget__SvelteComponent_>;
     public onDestroy(activity: any, superFunc: Function): void {
         try {
             if (Trace.isEnabled()) {
                 Trace.write('WidgetConfActivity.onDestroy();', Trace.categories.NativeLifecycle);
+            }
+
+            if (this.componentInstanceInfo) {
+                this.componentInstanceInfo.element.nativeElement._tearDownUI();
+                this.componentInstanceInfo.viewInstance.$destroy();
+                this.componentInstanceInfo = null;
             }
 
             const rootView = this._rootView;
@@ -266,14 +274,14 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
             const { resolveComponentElement } = await import('@shared/utils/ui');
             const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
 
-            const componentInfo = resolveComponentElement(ConfigWidget, {
+            this.componentInstanceInfo = resolveComponentElement(ConfigWidget, {
                 widgetClass: this.widgetClass,
                 widgetId: String(this.widgetId),
-                modalMode: false
-            });
+                modalMode: true
+            }) as ComponentInstanceInfo<GridLayout, ConfigWidget__SvelteComponent_>;
 
-            const configView = componentInfo.element.nativeView;
-            rootView.addChild(configView);
+            const configView = this.componentInstanceInfo.element.nativeView;
+            (rootView as GridLayout).addChild(configView);
 
             // Listen for back button to finish activity with result
             rootView.on('activityBackPressed', (args: AndroidActivityBackPressedEventData) => {

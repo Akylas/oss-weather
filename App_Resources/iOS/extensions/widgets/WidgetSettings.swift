@@ -20,6 +20,14 @@ class WidgetSettings {
         return frequency > 0 ? frequency : 30
     }
     
+    func clockBold() -> Bool {
+        guard let userDefaults = UserDefaults(suiteName: appGroupId) else {
+            return true // Default: true
+        }
+        let value = userDefaults.bool(forKey: "widget_clock_bold")
+        return value
+    }
+    
     func setUpdateFrequency(_ minutes: Int) {
         guard let userDefaults = UserDefaults(suiteName: appGroupId) else {
             return
@@ -30,6 +38,10 @@ class WidgetSettings {
         print("Widget update frequency set to \(minutes) minutes")
         
         // Reload all widgets to pick up new frequency
-        WidgetCenter.shared.reloadAllTimelines()
+        if #available(iOS 14.0, *) {
+            Task.detached(priority: .userInitiated) {
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+        }
     }
 }

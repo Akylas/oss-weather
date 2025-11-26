@@ -1,21 +1,21 @@
 <script context="module" lang="ts">
-    import { ApplicationSettings, Utils, View } from '@nativescript/core';
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
-    import { closeModal, showModal } from '@shared/utils/svelte/ui';
-    import { onDestroy, onMount } from 'svelte';
+    import { showModal } from '@shared/utils/svelte/ui';
+    import { onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
-    import WidgetPreview from '~/components/WidgetPreview.svelte';
-    import { lc, onLanguageChanged } from '~/helpers/locale';
-    import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
-    import { DEFAULT_UPDATE_FREQUENCY, MAX_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, WidgetConfig, WidgetType } from '~/services/widgets/WidgetTypes';
-    import { colors, fonts, windowInset } from '~/variables';
+    import { lc } from '~/helpers/locale';
+    import { WeatherLocation } from '~/services/api';
     import { OpenMeteoModels } from '~/services/providers/om';
-    import { providers, getProviderType } from '~/services/providers/weatherproviderfactory';
-    import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { selectValue } from '~/utils/ui';
-    import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
+    import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { widgetService } from '~/services/widgets/WidgetBridge';
+    import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
+    import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
+    import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from '~/services/widgets/WidgetTypes';
+    import { selectValue } from '~/utils/ui';
+    import { colors, windowInset } from '~/variables';
 </script>
 
 <script lang="ts">
@@ -35,7 +35,7 @@
     let model: string = null;
     let provider: string = null;
     let updateFrequency: number = DEFAULT_UPDATE_FREQUENCY;
-    let previewView: View = null;
+    const previewView: View = null;
 
     // Widget kind display names
     const widgetKindNames = {
@@ -97,7 +97,7 @@
     async function selectLocation() {
         try {
             const SelectCity = (await import('~/components/SelectCity.svelte')).default;
-            const result = await showModal({
+            const result: WeatherLocation = await showModal({
                 page: SelectCity,
                 props: {}
             });
@@ -115,16 +115,16 @@
     async function selectLocationOnMap() {
         try {
             const SelectPositionOnMap = (await import('~/components/SelectPositionOnMap.svelte')).default;
-            const result = await showModal({
+            const result: WeatherLocation = await showModal({
                 page: SelectPositionOnMap,
                 props: {
                     focusPos: latitude && longitude ? { lat: latitude, lon: longitude } : undefined
                 }
             });
             if (result) {
-                locationName = `${result.lat.toFixed(4)}, ${result.lon.toFixed(4)}`;
-                latitude = result.lat;
-                longitude = result.lon;
+                locationName = result.name;
+                latitude = result.coord.lat;
+                longitude = result.coord.lon;
                 saveConfig();
             }
         } catch (error) {
@@ -142,10 +142,10 @@
     async function selectProvider() {
         try {
             const result = await selectValue(
-                [{ title: lc('auto'), value: null }].concat(
+                [{ title: lc('auto'), data: null }].concat(
                     providers.map((p) => ({
                         title: lc('provider.' + p),
-                        value: p
+                        data: p
                     }))
                 ),
                 provider,
@@ -162,10 +162,10 @@
 
     async function selectModel() {
         try {
-            const modelOptions = [{ title: lc('auto'), value: null }].concat(
+            const modelOptions = [{ title: lc('auto'), data: null }].concat(
                 Object.keys(OpenMeteoModels).map((k) => ({
                     title: OpenMeteoModels[k],
-                    value: k
+                    data: k
                 }))
             );
 
@@ -185,7 +185,7 @@
         try {
             const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
                 title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
-                value: mins
+                data: mins
             }));
 
             const result = await selectValue(frequencyOptions, updateFrequency, {
@@ -240,24 +240,7 @@
         <scrollview row={1} android:paddingBottom={$windowInset.bottom}>
             <stacklayout padding="0 0 20 0">
                 <!-- Preview Section with home background -->
-                {#if widgetId}
-                    <gridlayout
-                        backgroundImage="~/assets/images/pattern.png"
-                        backgroundRepeat="repeat"
-                        borderRadius={12}
-                        height={220}
-                        margin="16"
-                        padding="10">
-                        <!-- Native widget preview -->
-                        <WidgetPreview
-                            widgetClass={widgetClass || 'SimpleWeatherWidget'}
-                            locationName={locationName === 'current' ? lc('my_location') : locationName}
-                            previewWidth={200}
-                            previewHeight={180}
-                            horizontalAlignment="center"
-                            verticalAlignment="center" />
-                    </gridlayout>
-                {/if}
+                <!-- TODO: show a header with like name of the widget -->
 
                 <!-- Location Section -->
                 <label class="sectionHeader" text={lc('select_location')} />
@@ -311,19 +294,9 @@
                     on:tap={selectUpdateFrequency} />
 
                 <!-- Info Notes -->
-                <label
-                    color={colorOnSurfaceVariant}
-                    fontSize={12}
-                    margin="16 16 0 16"
-                    text={lc('widget_configuration_note')}
-                    textWrap={true} />
+                <label color={colorOnSurfaceVariant} fontSize={12} margin="16 16 0 16" text={lc('widget_configuration_note')} textWrap={true} />
 
-                <label
-                    color={colorOnSurfaceVariant}
-                    fontSize={12}
-                    margin="8 16 0 16"
-                    text={__ANDROID__ ? lc('widget_android_note') : lc('widget_ios_note')}
-                    textWrap={true} />
+                <label color={colorOnSurfaceVariant} fontSize={12} margin="8 16 0 16" text={__ANDROID__ ? lc('widget_android_note') : lc('widget_ios_note')} textWrap={true} />
             </stacklayout>
         </scrollview>
     </gridlayout>

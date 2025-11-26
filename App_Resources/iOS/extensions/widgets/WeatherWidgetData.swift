@@ -3,6 +3,7 @@
 
 import Foundation
 import WidgetKit
+import UIKit
 
 // MARK: - Weather Widget Data
 struct WeatherWidgetData: Codable {
@@ -258,7 +259,9 @@ class WidgetDataProvider {
             print("Saved widget data to: \(dataFile.path)")
             
             // Reload all widgets after data change
-            WidgetCenter.shared.reloadAllTimelines()
+            if #available(iOS 14.0, *) {
+                WidgetCenter.shared.reloadAllTimelines()
+            }
         }
     }
 

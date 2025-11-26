@@ -1005,7 +1005,7 @@
                     const { WidgetConfigManager } = await import('~/services/widgets/WidgetConfigManager');
                     const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
                         title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
-                        value: mins
+                        data: mins
                     }));
                     const currentFreq = WidgetConfigManager.getUpdateFrequency();
                     const result = await selectValue(frequencyOptions, currentFreq, {

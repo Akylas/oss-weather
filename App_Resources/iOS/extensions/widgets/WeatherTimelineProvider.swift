@@ -4,6 +4,7 @@
 import WidgetKit
 import SwiftUI
 
+@available(iOS 14.0, *)
 struct WeatherEntry: TimelineEntry {
     let date: Date
     let weatherData: WeatherWidgetData?
@@ -11,6 +12,7 @@ struct WeatherEntry: TimelineEntry {
     let widgetKind: String
 }
 
+@available(iOS 14.0, *)
 struct WeatherTimelineProvider: TimelineProvider {
     let widgetKind: String
     func placeholder(in context: Context) -> WeatherEntry {

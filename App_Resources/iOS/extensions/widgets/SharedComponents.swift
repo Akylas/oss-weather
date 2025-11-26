@@ -1,6 +1,7 @@
 import SwiftUI
 import WidgetKit
 
+@available(iOS 14.0, *)
 struct WidgetContainer<Content: View>: View {
     let padding: CGFloat
     let content: Content
@@ -18,6 +19,7 @@ struct WidgetContainer<Content: View>: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct LocationHeader: View {
     let locationName: String
     let fontSize: CGFloat
@@ -38,6 +40,7 @@ struct LocationHeader: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct WeatherIconView: View {
     let iconPath: String?
     let description: String
@@ -66,6 +69,7 @@ struct WeatherIconView: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct TemperatureText: View {
     let temperature: String
     let fontSize: CGFloat
@@ -83,6 +87,7 @@ struct TemperatureText: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct DescriptionText: View {
     let description: String
     let fontSize: CGFloat
@@ -100,6 +105,7 @@ struct DescriptionText: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct PrecipitationText: View {
     let precipAccumulation: String
     let fontSize: CGFloat
@@ -119,6 +125,7 @@ struct PrecipitationText: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct NoDataView: View {
     let state: WeatherWidgetData.LoadingState
     let errorMessage: String?
@@ -155,6 +162,7 @@ struct NoDataView: View {
 }
 
 // MARK: - Widget Background with Gradient
+@available(iOS 14.0, *)
 struct WidgetBackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     
@@ -165,6 +173,7 @@ struct WidgetBackgroundView: View {
 }
 
 // MARK: - Card View with Adaptive Background
+@available(iOS 14.0, *)
 struct CardView<Content: View>: View {
     let content: Content
     @Environment(\.colorScheme) var colorScheme

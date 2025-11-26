@@ -238,15 +238,11 @@
         }
         return updateFrequency === 60 ? '1 hour' : `${updateFrequency / 60} hours`;
     }
-
-    function close() {
-        closeModal(undefined);
-    }
 </script>
 
 <page actionBarHidden={true}>
     <gridlayout class="pageContent" rows="auto,*">
-        <CActionBar modalWindow={modalMode} title={getWidgetTitle()} on:tap={() => {}} />
+        <CActionBar modalWindow={modalMode} title={getWidgetTitle()} />
 
         <scrollview row={1} android:paddingBottom={$windowInset.bottom}>
             <stacklayout padding="0 0 20 0">

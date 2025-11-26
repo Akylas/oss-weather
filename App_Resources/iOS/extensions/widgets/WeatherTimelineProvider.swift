@@ -7,7 +7,7 @@ import SwiftUI
 @available(iOS 14.0, *)
 struct WeatherEntry: TimelineEntry {
     let date: Date
-    let weatherData: WeatherWidgetData?
+    let data: WeatherWidgetData?
     let widgetFamily: WidgetFamily
     let widgetKind: String
 }
@@ -18,7 +18,7 @@ struct WeatherTimelineProvider: TimelineProvider {
     func placeholder(in context: Context) -> WeatherEntry {
         WeatherEntry(
             date: Date(),
-            weatherData: nil,
+            data: nil,
             widgetFamily: context.family,
             widgetKind: widgetKind
         )
@@ -30,7 +30,7 @@ struct WeatherTimelineProvider: TimelineProvider {
         
         let entry = WeatherEntry(
             date: Date(),
-            weatherData: data,
+            data: data,
             widgetFamily: context.family,
             widgetKind: widgetKind
         )
@@ -63,7 +63,7 @@ struct WeatherTimelineProvider: TimelineProvider {
                 let entryDate = Calendar.current.date(byAdding: .minute, value: minuteOffset, to: currentDate)!
                 entries.append(WeatherEntry(
                     date: entryDate,
-                    weatherData: weatherData,
+                    data: weatherData,
                     widgetFamily: context.family,
                     widgetKind: widgetKind
                 ))
@@ -75,7 +75,7 @@ struct WeatherTimelineProvider: TimelineProvider {
             let calendar = Calendar.current
             entries.append(WeatherEntry(
                 date: currentDate,
-                weatherData: weatherData,
+                data: weatherData,
                 widgetFamily: context.family,
                 widgetKind: widgetKind
             ))
@@ -88,14 +88,14 @@ struct WeatherTimelineProvider: TimelineProvider {
             
         } else {
             // Weather-only widgets: Use configured frequency
-            let updateFrequency = getUpdateFrequency()
+            let updateFrequency = WidgetSettings.shared.getUpdateFrequency()
             let numberOfEntries = min(12, 360 / updateFrequency)
             
             for offset in 0..<numberOfEntries {
                 let entryDate = Calendar.current.date(byAdding: .minute, value: offset * updateFrequency, to: currentDate)!
                 entries.append(WeatherEntry(
                     date: entryDate,
-                    weatherData: weatherData,
+                    data: weatherData,
                     widgetFamily: context.family,
                     widgetKind: widgetKind
                 ))
@@ -113,13 +113,5 @@ struct WeatherTimelineProvider: TimelineProvider {
         // Generate consistent widget ID from context
         // In iOS, we use the widget's configuration display name or a hash
         return "widget_\(context.family.rawValue)_\(widgetKind)".hash.description
-    }
-    
-    private func getUpdateFrequency() -> Int {
-        guard let userDefaults = UserDefaults(suiteName: "group.com.akylas.weather") else {
-            return 30
-        }
-        let frequency = userDefaults.integer(forKey: "widget_update_frequency")
-        return frequency > 0 ? frequency : 30
     }
 }

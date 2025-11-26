@@ -6,6 +6,8 @@
 	<dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.widgetkit-extension</string>
+		<key>NSExtensionPrincipalClass</key>
+        <string>$(PRODUCT_MODULE_NAME).AllWeatherWidgets</string>
 	</dict>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>

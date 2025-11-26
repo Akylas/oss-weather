@@ -81,9 +81,9 @@ class WidgetLifecycleManager {
     
     // MARK: - Widget ID Generation
     
-    private func generateWidgetId(kind: String, family: WidgetFamily) -> String {
-        return "widget_\(family.rawValue)_\(kind)".hashValue.description
-    }
+//    private func generateWidgetId(kind: String, family: WidgetFamily) -> String {
+//        return "widget_\(family.rawValue)_\(kind)".hashValue.description
+//    }
     
     // MARK: - Active Widgets Storage
     

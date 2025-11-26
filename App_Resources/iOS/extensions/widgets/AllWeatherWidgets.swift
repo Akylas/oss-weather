@@ -5,11 +5,12 @@ import WidgetKit
 import SwiftUI
 
 // MARK: - Simple Weather Widget
+@available(iOS 17.0, *)
 struct SimpleWeatherWidget: Widget {
     let kind: String = "SimpleWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWidgetView(entry: entry)
                 .containerBackground(WidgetColorProvider.background, for: .widget)
         }
@@ -19,8 +20,9 @@ struct SimpleWeatherWidget: Widget {
     }
 }
 
+@available(iOS 14.0, *)
 struct SimpleWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
+    let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
     
     var body: some View {
@@ -37,9 +39,7 @@ struct SimpleWeatherWidgetView: View {
                 // Adjust padding based on size
                 let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
                 
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
+                if let data = entry.data, entry.data?.loadingState != WeatherWidgetData.LoadingState.loaded  {
                     WidgetContainer(padding: padding) {
                         if isVerySmall {
                             // Very small layout: large icon with small temp
@@ -47,52 +47,54 @@ struct SimpleWeatherWidgetView: View {
                                 Spacer()
                                 
                                 // Large icon - 50% of width
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, 
+                                WeatherIconView(data.iconPath, description: data.description, 
                                             size: max(32, width * 0.5))
                                 
                                 // Small temperature
-                                TemperatureText(entry.data.temperature, fontSize: 14)
+                                TemperatureText(data.temperature, fontSize: 14)
                                 
                                 // Location at bottom, scaled with size
-                                LocationHeader(entry.data.locationName, 
+                                LocationHeader(data.locationName, 
                                             fontSize: max(8, min(12, width / 15)),
                                             maxLines: 1)
                             }
                         } else if width < 200 {
                             // Small widget: vertical layout
                             VStack(spacing: 4) {
-                                LocationHeader(entry.data.locationName, fontSize: 12)
+                                LocationHeader(data.locationName, fontSize: 12)
                                 
                                 Spacer()
                                 
                                 // Bigger icon - 40% of width
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description,
+                                WeatherIconView(data.iconPath, description: data.description,
                                             size: max(48, width * 0.4))
                                 
                                 Spacer()
                                 
-                                TemperatureText(entry.data.temperature, fontSize: 32)
+                                TemperatureText(data.temperature, fontSize: 32)
                             }
                         } else {
                             // Medium widget: more spacious layout
                             VStack(spacing: 8) {
-                                LocationHeader(entry.data.locationName, fontSize: 16)
+                                LocationHeader(data.locationName, fontSize: 16)
                                 
                                 Spacer()
                                 
                                 // Bigger icon
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 72)
+                                WeatherIconView(data.iconPath, description: data.description, size: 72)
                                 
                                 Spacer()
                                 
-                                TemperatureText(entry.data.temperature, fontSize: 48)
+                                TemperatureText(data.temperature, fontSize: 48)
                                 
-                                if !entry.data.description.isEmpty {
-                                    DescriptionText(entry.data.description, fontSize: 14)
+                                if !data.description.isEmpty {
+                                    DescriptionText(data.description, fontSize: 14)
                                 }
                             }
                         }
                     }
+                } else {
+                    NoDataView(state: entry.data?.loadingState ??  WeatherWidgetData.LoadingState.none , errorMessage: entry.data?.errorMessage)
                 }
             }
         }
@@ -100,11 +102,12 @@ struct SimpleWeatherWidgetView: View {
 }
 
 // MARK: - Simple Weather Widget with Clock
+@available(iOS 17.0, *)
 struct SimpleWeatherWithClockWidget: Widget {
     let kind: String = "SimpleWeatherWithClockWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWithClockWidgetView(entry: entry)
                 .containerBackground(WidgetColorProvider.background, for: .widget)
         }
@@ -114,8 +117,9 @@ struct SimpleWeatherWithClockWidget: Widget {
     }
 }
 
+@available(iOS 14.0, *)
 struct SimpleWeatherWithClockWidgetView: View {
-    let entry: WeatherTimelineEntry
+    let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
     
     var body: some View {
@@ -130,14 +134,12 @@ struct SimpleWeatherWithClockWidgetView: View {
                 let isSmall = width < 150
                 
                 // Read clock bold setting
-                let clockBold = WidgetSettings.clockBold
+                let clockBold = WidgetSettings.shared.clockBold()
                 
                 // Adjust padding based on size
                 let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
                 
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
+                if let data = entry.data, entry.data?.loadingState != WeatherWidgetData.LoadingState.loaded  {
                     WidgetContainer(padding: padding) {
                         ZStack {
                             VStack(spacing: isSmall ? 4 : 8) {
@@ -151,10 +153,10 @@ struct SimpleWeatherWithClockWidgetView: View {
                                 HStack(spacing: isSmall ? 4 : 8) {
                                     // Bigger icon
                                     let iconSize: CGFloat = width < 100 ? 32 : (width < 150 ? 40 : 56)
-                                    WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
+                                    WeatherIconView(data.iconPath, description: data.description, size: iconSize)
                                     
                                     let tempFontSize: CGFloat = width < 100 ? 18 : (width < 150 ? 24 : 32)
-                                    TemperatureText(entry.data.temperature, fontSize: tempFontSize)
+                                    TemperatureText(data.temperature, fontSize: tempFontSize)
                                 }
                                 
                                 Spacer()
@@ -166,13 +168,15 @@ struct SimpleWeatherWithClockWidgetView: View {
                                 HStack {
                                     Spacer()
                                     let locationFontSize: CGFloat = width < 100 ? 8 : (width < 150 ? 10 : 12)
-                                    LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
+                                    LocationHeader(data.locationName, fontSize: locationFontSize, maxLines: 1)
                                         .padding(.bottom, 2)
                                         .padding(.trailing, 2)
                                 }
                             }
                         }
                     }
+                } else {
+                    NoDataView(state: entry.data?.loadingState ??  WeatherWidgetData.LoadingState.none , errorMessage: entry.data?.errorMessage)
                 }
             }
         }
@@ -180,11 +184,12 @@ struct SimpleWeatherWithClockWidgetView: View {
 }
 
 // MARK: - Simple Weather Widget with Date
+@available(iOS 17.0, *)
 struct SimpleWeatherWithDateWidget: Widget {
     let kind: String = "SimpleWeatherWithDateWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWithDateWidgetView(entry: entry)
                 .containerBackground(WidgetColorProvider.background, for: .widget)
         }
@@ -194,8 +199,9 @@ struct SimpleWeatherWithDateWidget: Widget {
     }
 }
 
+@available(iOS 14.0, *)
 struct SimpleWeatherWithDateWidgetView: View {
-    let entry: WeatherTimelineEntry
+    let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
     
     var body: some View {
@@ -212,9 +218,7 @@ struct SimpleWeatherWithDateWidgetView: View {
                 let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
                 let isVerySmall = height < 60
                 
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
+                if let data = entry.data, entry.data?.loadingState != WeatherWidgetData.LoadingState.loaded  {
                     WidgetContainer(padding: padding) {
                         VStack(spacing: 0) {
                             // Date
@@ -230,19 +234,21 @@ struct SimpleWeatherWithDateWidgetView: View {
                             HStack(spacing: isVerySmall ? 4 : 8) {
                                 // Bigger icon
                                 let iconSize: CGFloat = isVerySmall ? 24 : (height < 80 ? 32 : 40)
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
+                                WeatherIconView(data.iconPath, description: data.description, size: iconSize)
                                 
                                 let tempFontSize: CGFloat = isVerySmall ? 16 : (height < 80 ? 20 : 24)
-                                TemperatureText(entry.data.temperature, fontSize: tempFontSize)
+                                TemperatureText(data.temperature, fontSize: tempFontSize)
                             }
                             
                             Spacer()
                             
                             // Location
                             let locationFontSize: CGFloat = isVerySmall ? 9 : (height < 80 ? 11 : 12)
-                            LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
+                            LocationHeader(data.locationName, fontSize: locationFontSize, maxLines: 1)
                         }
                     }
+                } else {
+                    NoDataView(state: entry.data?.loadingState ??  WeatherWidgetData.LoadingState.none , errorMessage: entry.data?.errorMessage)
                 }
             }
         }
@@ -250,11 +256,12 @@ struct SimpleWeatherWithDateWidgetView: View {
 }
 
 // MARK: - Hourly Weather Widget
+@available(iOS 17.0, *)
 struct HourlyWeatherWidget: Widget {
     let kind: String = "HourlyWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             HourlyWeatherWidgetView(entry: entry)
                 .containerBackground(WidgetColorProvider.background, for: .widget)
         }
@@ -264,8 +271,9 @@ struct HourlyWeatherWidget: Widget {
     }
 }
 
+@available(iOS 14.0, *)
 struct HourlyWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
+    let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
     
     var body: some View {
@@ -282,31 +290,32 @@ struct HourlyWeatherWidgetView: View {
                 let isVerySmall = height < 60
                 let isSmall = height < 80
                 
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
+                if let data = entry.data, entry.data?.loadingState != WeatherWidgetData.LoadingState.loaded  {
                     WidgetContainer(padding: padding) {
                         VStack(alignment: .leading, spacing: 0) {
                             if !isSmall {
-                                LocationHeader(entry.data.locationName, fontSize: 14)
+                                LocationHeader(data.locationName, fontSize: 14)
                                 Spacer().frame(height: 4)
                             }
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
-                                    ForEach(entry.data.hourlyData) { hour in
+                                    ForEach(data.hourlyData) { hour in
                                         HourlyItem(hour: hour, height: height, isVerySmall: isVerySmall, isSmall: isSmall)
                                     }
                                 }
                             }
                         }
                     }
+                } else {
+                    NoDataView(state: entry.data?.loadingState ??  WeatherWidgetData.LoadingState.none , errorMessage: entry.data?.errorMessage)
                 }
             }
         }
     }
 }
 
+@available(iOS 14.0, *)
 struct HourlyItem: View {
     let hour: HourlyData
     let height: CGFloat
@@ -343,11 +352,12 @@ struct HourlyItem: View {
 }
 
 // MARK: - Daily Weather Widget
+@available(iOS 17.0, *)
 struct DailyWeatherWidget: Widget {
     let kind: String = "DailyWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             DailyWeatherWidgetView(entry: entry)
                 .containerBackground(WidgetColorProvider.background, for: .widget)
         }
@@ -357,8 +367,9 @@ struct DailyWeatherWidget: Widget {
     }
 }
 
+@available(iOS 14.0, *)
 struct DailyWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
+    let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
     
     var body: some View {
@@ -371,16 +382,14 @@ struct DailyWeatherWidgetView: View {
                 let height = geometry.size.height
                 let isLarge = height > 150
                 
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
+                if let data = entry.data, entry.data?.loadingState != WeatherWidgetData.LoadingState.loaded  {
                     WidgetContainer(padding: 8) {
                         VStack(alignment: .leading, spacing: 8) {
-                            LocationHeader(entry.data.locationName, fontSize: 14)
+                            LocationHeader(data.locationName, fontSize: 14)
                             
                             VStack(spacing: 0) {
                                 let maxItems = isLarge ? 5 : 3
-                                ForEach(Array(entry.data.dailyData.prefix(maxItems).enumerated()), id: \.element.id) { index, day in
+                                ForEach(Array(data.dailyData.prefix(maxItems).enumerated()), id: \.element.id) { index, day in
                                     // Add gap between days using a divider with spacing
                                     if index > 0 {
                                         Spacer().frame(height: 4)
@@ -390,12 +399,15 @@ struct DailyWeatherWidgetView: View {
                             }
                         }
                     }
+                } else {
+                    NoDataView(state: entry.data?.loadingState ??  WeatherWidgetData.LoadingState.none , errorMessage: entry.data?.errorMessage)
                 }
             }
         }
     }
 }
 
+@available(iOS 14.0, *)
 struct DailyItem: View {
     let day: DailyData
     let showExtraData: Bool
@@ -433,11 +445,12 @@ struct DailyItem: View {
 }
 
 // MARK: - Forecast Weather Widget
+@available(iOS 17.0, *)
 struct ForecastWeatherWidget: Widget {
     let kind: String = "ForecastWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
+        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             ForecastWeatherWidgetView(entry: entry)
                 .containerBackground(WidgetColorProvider.background, for: .widget)
         }
@@ -447,8 +460,9 @@ struct ForecastWeatherWidget: Widget {
     }
 }
 
+@available(iOS 14.0, *)
 struct ForecastWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
+    let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
     
     var body: some View {
@@ -461,18 +475,16 @@ struct ForecastWeatherWidgetView: View {
                 let height = geometry.size.height
                 let isLarge = height > 240
                 
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
+                if let data = entry.data, entry.data?.loadingState != WeatherWidgetData.LoadingState.loaded  {
                     WidgetContainer(padding: 8) {
                         VStack(alignment: .leading, spacing: 8) {
                             // Current weather
                             HStack(spacing: 8) {
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 40)
+                                WeatherIconView(data.iconPath, description: data.description, size: 40)
                                 
                                 VStack(alignment: .leading) {
-                                    TemperatureText(entry.data.temperature, fontSize: 24)
-                                    LocationHeader(entry.data.locationName, fontSize: 11)
+                                    TemperatureText(data.temperature, fontSize: 24)
+                                    LocationHeader(data.locationName, fontSize: 11)
                                 }
                                 
                                 Spacer()
@@ -487,7 +499,7 @@ struct ForecastWeatherWidgetView: View {
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
-                                    ForEach(entry.data.hourlyData.prefix(8)) { hour in
+                                    ForEach(data.hourlyData.prefix(8)) { hour in
                                         HourlyForecastItem(hour: hour, isLarge: isLarge)
                                     }
                                 }
@@ -503,7 +515,7 @@ struct ForecastWeatherWidgetView: View {
                             
                             VStack(spacing: 0) {
                                 let maxDays = isLarge ? 5 : 3
-                                ForEach(Array(entry.data.dailyData.prefix(maxDays).enumerated()), id: \.element.id) { index, day in
+                                ForEach(Array(data.dailyData.prefix(maxDays).enumerated()), id: \.element.id) { index, day in
                                     if index > 0 {
                                         Spacer().frame(height: 2)
                                     }
@@ -512,12 +524,16 @@ struct ForecastWeatherWidgetView: View {
                             }
                         }
                     }
+                } else {
+                    NoDataView(state: entry.data?.loadingState ??  WeatherWidgetData.LoadingState.none , errorMessage: entry.data?.errorMessage)
+
                 }
             }
         }
     }
 }
 
+@available(iOS 14.0, *)
 struct HourlyForecastItem: View {
     let hour: HourlyData
     let isLarge: Bool
@@ -542,6 +558,7 @@ struct HourlyForecastItem: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct DailyForecastItem: View {
     let day: DailyData
     
@@ -571,6 +588,7 @@ struct DailyForecastItem: View {
 
 // MARK: - Widget Bundle
 @main
+@available(iOS 17.0, *)
 struct AllWeatherWidgets: WidgetBundle {
     var body: some Widget {
         SimpleWeatherWidget()

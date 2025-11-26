@@ -22,9 +22,16 @@ widget-layouts/
 │   ├── HourlyWeatherWidget.json
 │   ├── DailyWeatherWidget.json
 │   └── ForecastWeatherWidget.json
-└── renderers/               # Platform-specific renderers
-    ├── nativescript-renderer.ts
-    └── html-renderer.ts
+├── renderers/               # Platform-specific renderers
+│   ├── nativescript-renderer.ts
+│   └── html-renderer.ts
+├── generators/              # Code generators
+│   ├── swift-generator.ts   # iOS SwiftUI code generator
+│   └── glance-generator.ts  # Android Glance code generator
+└── image-generator/         # Preview image generation
+    ├── generate-images.ts
+    ├── package.json
+    └── README.md
 ```
 
 ## Layout Elements
@@ -39,11 +46,11 @@ The following layout primitives are available:
 | `label` | Text display | Text | Text | Label | span |
 | `image` | Image display | Image | Image | Image | img |
 | `spacer` | Flexible space | Spacer | Spacer | StackLayout | div with flex |
-| `divider` | Line separator | Divider | - | StackLayout | div |
+| `divider` | Line separator | Divider | Box | StackLayout | div |
 | `scrollView` | Scrollable container | ScrollView | LazyRow/Column | ScrollView | overflow: auto |
-| `forEach` | Repeat template | ForEach | items() | Loop | map() |
+| `forEach` | Repeat template | ForEach | forEachIndexed | Loop | map() |
 | `clock` | Current time | Text(.time) | TextClock | Label | span |
-| `date` | Current date | Text(.date) | - | Label | span |
+| `date` | Current date | Text(.date) | DateText | Label | span |
 
 ## Data Binding
 
@@ -91,6 +98,41 @@ Widgets can define different layouts for different sizes:
 }
 ```
 
+## Code Generators
+
+### iOS SwiftUI Generator
+
+Generate SwiftUI widget views from JSON layouts:
+
+```bash
+npx ts-node generators/swift-generator.ts [layoutsDir] [outputDir]
+```
+
+This generates `*View.generated.swift` files that can be used in the iOS widget extension.
+
+### Android Glance Generator
+
+Generate Glance composables from JSON layouts:
+
+```bash
+npx ts-node generators/glance-generator.ts [layoutsDir] [outputDir]
+```
+
+This generates `*Content.generated.kt` files that can be used in Android widgets.
+
+### Image Generator
+
+Generate preview images using Puppeteer:
+
+```bash
+cd image-generator
+npm install
+npm run generate        # Generate all widget images
+npm run generate:combined  # Generate gallery preview
+```
+
+See `image-generator/README.md` for more details.
+
 ## Usage
 
 ### NativeScript (In-App Preview)
@@ -127,8 +169,10 @@ Or use hex colors directly: `#RRGGBB`
 
 ## TODO
 
-- [ ] Generate iOS SwiftUI code from JSON
-- [ ] Generate Android Glance composables from JSON
-- [ ] Add image generation script for README previews
+- [x] Generate iOS SwiftUI code from JSON
+- [x] Generate Android Glance composables from JSON
+- [x] Add image generation script for README previews
+- [ ] Update existing iOS widgets to use generated code
+- [ ] Update existing Android widgets to use generated code
 - [ ] Add visual editor for widget layouts
 - [ ] Add animation support

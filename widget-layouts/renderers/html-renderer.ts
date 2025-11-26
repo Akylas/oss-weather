@@ -135,6 +135,49 @@ function escapeHtml(text: string): string {
 }
 
 /**
+ * Safely evaluate a simple comparison expression
+ * Only supports: number comparisons with <, >, <=, >=, ==, !=
+ */
+function safeEvaluateExpression(expr: string): boolean {
+    // Remove whitespace
+    expr = expr.trim();
+    
+    // Handle boolean literals
+    if (expr === 'true') return true;
+    if (expr === 'false') return false;
+    
+    // Match simple comparison: number op number
+    const comparisonMatch = expr.match(/^(\d+(?:\.\d+)?)\s*(<=|>=|<|>|==|!=)\s*(\d+(?:\.\d+)?)$/);
+    if (comparisonMatch) {
+        const left = parseFloat(comparisonMatch[1]);
+        const op = comparisonMatch[2];
+        const right = parseFloat(comparisonMatch[3]);
+        
+        switch (op) {
+            case '<': return left < right;
+            case '>': return left > right;
+            case '<=': return left <= right;
+            case '>=': return left >= right;
+            case '==': return left === right;
+            case '!=': return left !== right;
+        }
+    }
+    
+    // Handle && and || by splitting and recursing
+    if (expr.includes('&&')) {
+        const parts = expr.split('&&');
+        return parts.every(part => safeEvaluateExpression(part));
+    }
+    if (expr.includes('||')) {
+        const parts = expr.split('||');
+        return parts.some(part => safeEvaluateExpression(part));
+    }
+    
+    // Default to true for unrecognized expressions
+    return true;
+}
+
+/**
  * Evaluate a condition expression
  */
 function evaluateCondition(condition: string, context: RenderContext): boolean {
@@ -168,7 +211,8 @@ function evaluateCondition(condition: string, context: RenderContext): boolean {
             return 'true';
         });
         
-        return new Function(`return ${expr}`)();
+        // Use safe expression evaluator instead of Function constructor
+        return safeEvaluateExpression(expr);
     } catch {
         return true;
     }
@@ -395,11 +439,16 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         styles['text-align'] = element.textAlign;
     }
     if (element.maxLines) {
+        // Fallback for browsers that don't support -webkit-line-clamp
         styles['overflow'] = 'hidden';
         styles['text-overflow'] = 'ellipsis';
-        styles['display'] = '-webkit-box';
-        styles['-webkit-line-clamp'] = element.maxLines.toString();
-        styles['-webkit-box-orient'] = 'vertical';
+        styles['white-space'] = element.maxLines === 1 ? 'nowrap' : 'normal';
+        // For multi-line truncation (webkit browsers)
+        if (element.maxLines > 1) {
+            styles['display'] = '-webkit-box';
+            styles['-webkit-line-clamp'] = element.maxLines.toString();
+            styles['-webkit-box-orient'] = 'vertical';
+        }
     }
     
     const text = resolveBinding(element.text || '', context);

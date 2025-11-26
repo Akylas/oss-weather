@@ -160,11 +160,55 @@ function evaluateCondition(condition: string, context: RenderContext): boolean {
             return 'true';
         });
         
-        // Safe eval using Function constructor
-        return new Function(`return ${expr}`)();
+        // Safe expression evaluation using simple pattern matching
+        // Only supports basic comparisons: <, >, <=, >=, ==, !=
+        return safeEvaluateExpression(expr);
     } catch {
         return true;
     }
+}
+
+/**
+ * Safely evaluate a simple comparison expression
+ * Only supports: number comparisons with <, >, <=, >=, ==, !=
+ */
+function safeEvaluateExpression(expr: string): boolean {
+    // Remove whitespace
+    expr = expr.trim();
+    
+    // Handle boolean literals
+    if (expr === 'true') return true;
+    if (expr === 'false') return false;
+    
+    // Match simple comparison: number op number
+    const comparisonMatch = expr.match(/^(\d+(?:\.\d+)?)\s*(<=|>=|<|>|==|!=)\s*(\d+(?:\.\d+)?)$/);
+    if (comparisonMatch) {
+        const left = parseFloat(comparisonMatch[1]);
+        const op = comparisonMatch[2];
+        const right = parseFloat(comparisonMatch[3]);
+        
+        switch (op) {
+            case '<': return left < right;
+            case '>': return left > right;
+            case '<=': return left <= right;
+            case '>=': return left >= right;
+            case '==': return left === right;
+            case '!=': return left !== right;
+        }
+    }
+    
+    // Handle && and || by splitting and recursing
+    if (expr.includes('&&')) {
+        const parts = expr.split('&&');
+        return parts.every(part => safeEvaluateExpression(part));
+    }
+    if (expr.includes('||')) {
+        const parts = expr.split('||');
+        return parts.some(part => safeEvaluateExpression(part));
+    }
+    
+    // Default to true for unrecognized expressions
+    return true;
 }
 
 /**
@@ -422,8 +466,10 @@ function renderSpacer(element: LayoutElement, context: RenderContext): View {
         spacer.height = element.size;
         spacer.width = element.size;
     } else if (element.flex) {
-        // Flex spacer - use flexGrow
-        spacer.flexGrow = element.flex;
+        // For flex spacers, set a minimum height and use vertical alignment
+        // Note: True flex behavior requires FlexboxLayout parent
+        spacer.height = 1;
+        spacer.verticalAlignment = 'stretch';
     }
 
     return spacer;
@@ -436,7 +482,9 @@ function renderDivider(element: LayoutElement, context: RenderContext): View {
     
     const color = resolveColor(element.color || 'onSurfaceVariant');
     if (color) {
-        divider.backgroundColor = new Color(color.hex).setAlpha(0.3);
+        // Create a semi-transparent version of the color
+        const alphaColor = new Color(Math.round(0.3 * 255), color.r, color.g, color.b);
+        divider.backgroundColor = alphaColor;
     }
 
     return divider;
@@ -602,6 +650,7 @@ export function renderWidget(
 
 /**
  * Load and render a widget by name
+ * Note: Requires the layout to be passed directly or bundled with the app
  */
 export async function renderWidgetByName(
     widgetName: string,
@@ -614,11 +663,27 @@ export async function renderWidgetByName(
 }
 
 /**
- * Load widget layout from JSON file
+ * Load widget layout from bundled JSON
+ * Widget layouts should be imported as modules or bundled with the app
  */
 async function loadWidgetLayout(widgetName: string): Promise<WidgetLayout> {
-    // In a real implementation, this would load from the JSON files
-    // For now, we'll need to bundle the JSON or load at runtime
-    const response = await fetch(`~/widget-layouts/widgets/${widgetName}.json`);
-    return response.json();
+    // Widget layouts should be bundled as JSON modules
+    // This is a placeholder - actual implementation depends on bundler config
+    // For NativeScript, you would typically import the JSON files directly:
+    // import SimpleWeatherWidgetLayout from '~/widget-layouts/widgets/SimpleWeatherWidget.json';
+    
+    const layouts: Record<string, () => Promise<WidgetLayout>> = {
+        'SimpleWeatherWidget': async () => require('~/widget-layouts/widgets/SimpleWeatherWidget.json'),
+        'SimpleWeatherWithClockWidget': async () => require('~/widget-layouts/widgets/SimpleWeatherWithClockWidget.json'),
+        'SimpleWeatherWithDateWidget': async () => require('~/widget-layouts/widgets/SimpleWeatherWithDateWidget.json'),
+        'HourlyWeatherWidget': async () => require('~/widget-layouts/widgets/HourlyWeatherWidget.json'),
+        'DailyWeatherWidget': async () => require('~/widget-layouts/widgets/DailyWeatherWidget.json'),
+        'ForecastWeatherWidget': async () => require('~/widget-layouts/widgets/ForecastWeatherWidget.json')
+    };
+    
+    const loader = layouts[widgetName];
+    if (!loader) {
+        throw new Error(`Unknown widget: ${widgetName}`);
+    }
+    return loader();
 }

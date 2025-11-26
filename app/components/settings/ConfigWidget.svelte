@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-    import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { ApplicationSettings, Utils, View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import { closeModal, showModal } from '@shared/utils/svelte/ui';
@@ -15,6 +14,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { selectValue } from '~/utils/ui';
     import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
+    import { widgetService } from '~/services/widgets/WidgetBridge';
 </script>
 
 <script lang="ts">
@@ -89,16 +89,8 @@
         WidgetConfigManager.saveConfig(widgetId, newConfig, widgetClass);
         showSnack({ message: lc('widget_config_saved') });
 
-        // Trigger widget update
-        if (__ANDROID__) {
-            try {
-                const context = Utils.android.getApplicationContext();
-                const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
-                widgetManager.updateWidgetById(context, parseInt(widgetId, 10));
-            } catch (error) {
-                console.error('Failed to update widget:', error);
-            }
-        }
+        // Trigger widget update using widgetService
+        widgetService.updateWidget(widgetId);
     }
 
     async function selectLocation() {
@@ -246,33 +238,44 @@
 
         <scrollview row={1} android:paddingBottom={$windowInset.bottom}>
             <stacklayout padding="0 0 20 0">
-                <!-- Preview Section -->
-                {#if __ANDROID__ && widgetId}
+                <!-- Preview Section with home background -->
+                {#if widgetId}
                     <gridlayout
-                        backgroundColor={colorSurfaceContainer}
+                        backgroundImage="~/assets/images/pattern.png"
+                        backgroundRepeat="repeat"
                         borderRadius={12}
-                        height={150}
+                        height={200}
                         margin="16"
                         padding="10">
-                        <label
-                            color={colorOnSurfaceVariant}
+                        <!-- Widget preview placeholder - styled like a home screen widget -->
+                        <gridlayout
+                            backgroundColor={colorSurfaceContainer}
+                            borderRadius={16}
                             horizontalAlignment="center"
-                            text={lc('widget') + ' Preview'}
-                            verticalAlignment="center" />
-                    </gridlayout>
-                {:else if widgetId}
-                    <!-- iOS fallback - show placeholder -->
-                    <gridlayout
-                        backgroundColor={colorSurfaceContainer}
-                        borderRadius={12}
-                        height={150}
-                        margin="16"
-                        padding="10">
-                        <label
-                            color={colorOnSurfaceVariant}
-                            horizontalAlignment="center"
-                            text={lc('widget') + ' Preview'}
-                            verticalAlignment="center" />
+                            opacity={0.95}
+                            padding="16"
+                            verticalAlignment="center"
+                            width={180}>
+                            <stacklayout horizontalAlignment="center" verticalAlignment="center">
+                                <label
+                                    color={colorOnSurface}
+                                    fontSize={24}
+                                    fontWeight="bold"
+                                    horizontalAlignment="center"
+                                    text="8°C" />
+                                <label
+                                    color={colorOnSurfaceVariant}
+                                    fontSize={14}
+                                    horizontalAlignment="center"
+                                    text={locationName === 'current' ? lc('my_location') : locationName} />
+                                <label
+                                    color={colorOnSurfaceVariant}
+                                    fontSize={12}
+                                    horizontalAlignment="center"
+                                    marginTop={4}
+                                    text={lc('widget') + ' Preview'} />
+                            </stacklayout>
+                        </gridlayout>
                     </gridlayout>
                 {/if}
 
@@ -335,21 +338,12 @@
                     text={lc('widget_configuration_note')}
                     textWrap={true} />
 
-                {#if __ANDROID__}
-                    <label
-                        color={colorOnSurfaceVariant}
-                        fontSize={12}
-                        margin="8 16 0 16"
-                        text={lc('widget_android_note')}
-                        textWrap={true} />
-                {:else}
-                    <label
-                        color={colorOnSurfaceVariant}
-                        fontSize={12}
-                        margin="8 16 0 16"
-                        text={lc('widget_ios_note')}
-                        textWrap={true} />
-                {/if}
+                <label
+                    color={colorOnSurfaceVariant}
+                    fontSize={12}
+                    margin="8 16 0 16"
+                    text={__ANDROID__ ? lc('widget_android_note') : lc('widget_ios_note')}
+                    textWrap={true} />
             </stacklayout>
         </scrollview>
     </gridlayout>

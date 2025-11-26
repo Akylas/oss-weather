@@ -1,28 +1,57 @@
-import { AndroidActivityCallbacks, Application, Frame, Utils, setActivityCallbacks } from '@nativescript/core';
-import { showModal } from '@shared/utils/svelte/ui';
+import {
+    AndroidActivityBackPressedEventData,
+    AndroidActivityCallbacks,
+    AndroidActivityNewIntentEventData,
+    AndroidActivityRequestPermissionsEventData,
+    AndroidActivityResultEventData,
+    Application,
+    Frame,
+    GridLayout,
+    Trace,
+    Utils,
+    View
+} from '@nativescript/core';
+import { CSSUtils } from '@nativescript/core/css/system-classes';
+import { start as startThemeHelper } from '~/helpers/theme';
+import { onInitRootView } from '~/variables';
 
 const TAG = '[WidgetConfActivity]';
-@NativeClass()
-@JavaProxy('__PACKAGE__.WidgetConfActivity')
-export class WidgetConfActivity extends androidx.appcompat.app.AppCompatActivity {
-    public isNativeScriptActivity;
+const CALLBACKS = '_callbacks';
+const ROOT_VIEW_ID_EXTRA = 'com.tns.activity.rootViewId';
+const activityRootViewsMap = new Map<number, WeakRef<View>>();
 
-    private _callbacks: AndroidActivityCallbacks;
+export function setActivityCallbacks(activity: androidx.appcompat.app.AppCompatActivity): void {
+    activity[CALLBACKS] = new WidgetConfigActivityCallbacksImplementation();
+}
+
+export let moduleLoaded: boolean;
+
+class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCallbacks {
+    private _rootView: View;
     private widgetId: number = -1;
     private widgetClass: string = '';
 
-    public onCreate(savedInstanceState: android.os.Bundle): void {
-        DEV_LOG && console.log(TAG, 'onCreate');
-        Application.android.init(this.getApplication());
-        // Set the isNativeScriptActivity in onCreate (as done in the original NativeScript activity code)
-        // The JS constructor might not be called because the activity is created from Android.
-        this.isNativeScriptActivity = true;
-        if (!this._callbacks) {
-            setActivityCallbacks(this);
+    public getRootView(): View {
+        return this._rootView;
+    }
+
+    public onCreate(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, intentOrSuperFunc: android.content.Intent | Function, superFunc?: Function): void {
+        const intent: android.content.Intent = superFunc ? (intentOrSuperFunc as android.content.Intent) : undefined;
+        if (!superFunc) {
+            superFunc = intentOrSuperFunc as Function;
         }
 
-        // Parse widget ID from intent
-        const intent = this.getIntent();
+        const isRestart = !!savedInstanceState && moduleLoaded;
+        superFunc.call(activity, isRestart ? savedInstanceState : null);
+
+        if (savedInstanceState) {
+            const rootViewId = savedInstanceState.getInt(ROOT_VIEW_ID_EXTRA, -1);
+            if (rootViewId !== -1 && activityRootViewsMap.has(rootViewId)) {
+                this._rootView = activityRootViewsMap.get(rootViewId).get();
+            }
+        }
+
+        // Parse widget ID and class from intent
         if (intent) {
             const extras = intent.getExtras();
             if (extras) {
@@ -32,38 +61,264 @@ export class WidgetConfActivity extends androidx.appcompat.app.AppCompatActivity
             }
         }
 
-        this._callbacks.onCreate(this, savedInstanceState, this.getIntent(), super.onCreate);
+        if (intent && intent.getAction()) {
+            Application.android.notify({
+                eventName: Application.android.activityNewIntentEvent,
+                object: Application.android,
+                activity,
+                intent
+            } as AndroidActivityNewIntentEventData);
+        }
 
-        // Open ConfigWidget page after activity is created
-        if (this.widgetId !== android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID) {
-            this.openConfigWidget();
+        this.setActivityContent(activity, savedInstanceState, true, intent);
+        moduleLoaded = true;
+    }
+
+    public onSaveInstanceState(activity: androidx.appcompat.app.AppCompatActivity, outState: android.os.Bundle, superFunc: Function): void {
+        superFunc.call(activity, outState);
+        const rootView = this._rootView;
+        if (rootView instanceof Frame) {
+            outState.putInt('com.tns.activity', rootView.android['frameId']);
+            rootView._saveFragmentsState();
+        }
+
+        outState.putInt(ROOT_VIEW_ID_EXTRA, rootView._domId);
+    }
+
+    public onNewIntent(activity: androidx.appcompat.app.AppCompatActivity, intent: android.content.Intent, superSetIntentFunc: Function, superFunc: Function): void {
+        superFunc.call(activity, intent);
+        superSetIntentFunc.call(activity, intent);
+
+        Application.android.notify({
+            eventName: Application.android.activityNewIntentEvent,
+            object: Application.android,
+            activity,
+            intent
+        } as AndroidActivityNewIntentEventData);
+    }
+
+    public onStart(activity: any, superFunc: Function): void {
+        superFunc.call(activity);
+
+        if (Trace.isEnabled()) {
+            Trace.write('WidgetConfActivity.onStart();', Trace.categories.NativeLifecycle);
+        }
+
+        const rootView = this._rootView;
+        if (rootView && !rootView.isLoaded) {
+            rootView.callLoaded();
         }
     }
 
-    private async openConfigWidget() {
+    public onStop(activity: any, superFunc: Function): void {
+        superFunc.call(activity);
+
+        if (Trace.isEnabled()) {
+            Trace.write('WidgetConfActivity.onStop();', Trace.categories.NativeLifecycle);
+        }
+
+        const rootView = this._rootView;
+        if (rootView && rootView.isLoaded) {
+            rootView.callUnloaded();
+        }
+    }
+
+    public onPostResume(activity: any, superFunc: Function): void {
+        superFunc.call(activity);
+
+        if (Trace.isEnabled()) {
+            Trace.write('WidgetConfActivity.onPostResume();', Trace.categories.NativeLifecycle);
+        }
+    }
+
+    public onDestroy(activity: any, superFunc: Function): void {
         try {
+            if (Trace.isEnabled()) {
+                Trace.write('WidgetConfActivity.onDestroy();', Trace.categories.NativeLifecycle);
+            }
+
+            const rootView = this._rootView;
+            if (rootView) {
+                rootView._tearDownUI(true);
+            }
+        } catch (error) {
+            console.error(error, error.stack);
+        } finally {
+            superFunc.call(activity);
+        }
+    }
+
+    public onBackPressed(activity: any, superFunc: Function): void {
+        if (Trace.isEnabled()) {
+            Trace.write('WidgetConfActivity.onBackPressed;', Trace.categories.NativeLifecycle);
+        }
+
+        const args = {
+            eventName: 'activityBackPressed',
+            object: Application.android,
+            activity,
+            cancel: false
+        } as AndroidActivityBackPressedEventData;
+        Application.android.notify(args);
+        if (args.cancel) {
+            return;
+        }
+
+        const view = this._rootView;
+        let callSuper = false;
+        if (view instanceof Frame) {
+            callSuper = !view.goBack();
+        } else {
+            const viewArgs = {
+                eventName: 'activityBackPressed',
+                object: view,
+                activity,
+                cancel: false
+            } as AndroidActivityBackPressedEventData;
+            view.notify(viewArgs);
+
+            if (!viewArgs.cancel && !view.onBackPressed()) {
+                callSuper = true;
+            }
+        }
+
+        if (callSuper) {
+            superFunc.call(activity);
+        }
+    }
+
+    public onRequestPermissionsResult(activity: any, requestCode: number, permissions: string[], grantResults: number[], superFunc: Function): void {
+        if (Trace.isEnabled()) {
+            Trace.write('WidgetConfActivity.onRequestPermissionsResult;', Trace.categories.NativeLifecycle);
+        }
+
+        Application.android.notify({
+            eventName: 'activityRequestPermissions',
+            object: Application.android,
+            activity,
+            requestCode,
+            permissions,
+            grantResults
+        } as AndroidActivityRequestPermissionsEventData);
+    }
+
+    public onActivityResult(activity: any, requestCode: number, resultCode: number, data: android.content.Intent, superFunc: Function): void {
+        superFunc.call(activity, requestCode, resultCode, data);
+        if (Trace.isEnabled()) {
+            Trace.write(`WidgetConfActivity.onActivityResult(${requestCode}, ${resultCode}, ${data})`, Trace.categories.NativeLifecycle);
+        }
+
+        Application.android.notify({
+            eventName: 'activityResult',
+            object: Application.android,
+            activity,
+            requestCode,
+            resultCode,
+            intent: data
+        } as AndroidActivityResultEventData);
+    }
+
+    public resetActivityContent(activity: androidx.appcompat.app.AppCompatActivity): void {
+        if (this._rootView) {
+            const manager = this._rootView._getFragmentManager();
+            manager.executePendingTransactions();
+
+            this._rootView._onRootViewReset();
+        }
+        this._rootView = null;
+        this.setActivityContent(activity, null, false, null);
+        this._rootView.callLoaded();
+    }
+
+    private async setActivityContent(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, fireLaunchEvent: boolean, intent: android.content.Intent) {
+        let rootView = this._rootView;
+        DEV_LOG && console.log(TAG, 'setActivityContent');
+        if (!rootView) {
+            rootView = new GridLayout();
+            this._rootView = rootView;
+
+            activityRootViewsMap.set(rootView._domId, new WeakRef(rootView));
+            const rootViewCssClasses = CSSUtils.getSystemCssClasses();
+            rootViewCssClasses.forEach((c) => this._rootView.cssClasses.add(c));
+        }
+
+        // setup view as styleScopeHost
+        rootView._setupAsRootView(activity);
+        // sets root classes once rootView is ready...
+        Application.initRootView(rootView);
+
+        activity.setContentView(rootView.nativeViewProtected, new org.nativescript.widgets.CommonLayoutParams());
+
+        try {
+            // Ensure theme is started
+            startThemeHelper(true);
+            onInitRootView(true);
+
+            // Check for valid widget ID
+            if (this.widgetId === android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID) {
+                DEV_LOG && console.log(TAG, 'Invalid widget ID');
+                activity.setResult(android.app.Activity.RESULT_CANCELED);
+                activity.finish();
+                return;
+            }
+
+            // Mount ConfigWidget component
+            const { resolveComponentElement } = await import('@shared/utils/ui');
             const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
-            const result = await showModal({
-                page: ConfigWidget,
-                props: {
-                    widgetClass: this.widgetClass,
-                    widgetId: String(this.widgetId),
-                    modalMode: true
-                },
-                fullscreen: true
+
+            const componentInfo = resolveComponentElement(ConfigWidget, {
+                widgetClass: this.widgetClass,
+                widgetId: String(this.widgetId),
+                modalMode: false
             });
 
-            // Set result OK when modal is closed to confirm widget configuration
-            const resultIntent = new android.content.Intent();
-            resultIntent.putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID, this.widgetId);
-            this.setResult(android.app.Activity.RESULT_OK, resultIntent);
-            this.finish();
-        } catch (error) {
-            console.error(TAG, 'Error opening ConfigWidget:', error);
-            // Set result CANCELED on error
-            this.setResult(android.app.Activity.RESULT_CANCELED);
-            this.finish();
+            const configView = componentInfo.element.nativeView;
+            rootView.addChild(configView);
+
+            // Listen for back button to finish activity with result
+            rootView.on('activityBackPressed', (args: AndroidActivityBackPressedEventData) => {
+                args.cancel = true;
+                // Set result OK when closing
+                const resultIntent = new android.content.Intent();
+                resultIntent.putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID, this.widgetId);
+                activity.setResult(android.app.Activity.RESULT_OK, resultIntent);
+                activity.finish();
+            });
+        } catch (err) {
+            console.error(TAG, 'Error mounting ConfigWidget:', err, err.stack);
+            activity.setResult(android.app.Activity.RESULT_CANCELED);
+            activity.finish();
         }
+    }
+}
+
+@JavaProxy('__PACKAGE__.WidgetConfActivity')
+@NativeClass
+class Activity extends androidx.appcompat.app.AppCompatActivity {
+    isWidgetConfigActivity: boolean;
+    private _callbacks: AndroidActivityCallbacks;
+    constructor() {
+        super();
+
+        return global.__native(this);
+    }
+
+    finish() {
+        super.finish();
+        this.overridePendingTransition(0, 0);
+    }
+
+    public onCreate(savedInstanceState: android.os.Bundle): void {
+        // Ensure the app is initialized
+        Application.android.init(this.getApplication());
+
+        this.isWidgetConfigActivity = true;
+
+        if (!this._callbacks) {
+            setActivityCallbacks(this);
+        }
+
+        this._callbacks.onCreate(this, savedInstanceState, this.getIntent(), super.onCreate);
     }
 
     public onNewIntent(intent: android.content.Intent): void {
@@ -75,17 +330,15 @@ export class WidgetConfActivity extends androidx.appcompat.app.AppCompatActivity
     }
 
     public onStart(): void {
-        DEV_LOG && console.log(TAG, 'onStart');
         this._callbacks.onStart(this, super.onStart);
+        this.overridePendingTransition(0, 0);
     }
 
     public onStop(): void {
-        DEV_LOG && console.log(TAG, 'onStop');
         this._callbacks.onStop(this, super.onStop);
     }
 
     public onDestroy(): void {
-        DEV_LOG && console.log(TAG, 'onDestroy');
         this._callbacks.onDestroy(this, super.onDestroy);
     }
 
@@ -98,7 +351,7 @@ export class WidgetConfActivity extends androidx.appcompat.app.AppCompatActivity
     }
 
     public onRequestPermissionsResult(requestCode: number, permissions: string[], grantResults: number[]): void {
-        this._callbacks.onRequestPermissionsResult(this, requestCode, permissions, grantResults, undefined /*TODO: Enable if needed*/);
+        this._callbacks.onRequestPermissionsResult(this, requestCode, permissions, grantResults, undefined);
     }
 
     public onActivityResult(requestCode: number, resultCode: number, data: android.content.Intent): void {

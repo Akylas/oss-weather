@@ -1,0 +1,303 @@
+<script context="module" lang="ts">
+    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { View } from '@nativescript/core';
+    import { showError } from '@shared/utils/showError';
+    import { showModal } from '@shared/utils/svelte/ui';
+    import { onMount } from 'svelte';
+    import CActionBar from '~/components/common/CActionBar.svelte';
+    import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
+    import { lc } from '~/helpers/locale';
+    import { WeatherLocation } from '~/services/api';
+    import { OpenMeteoModels } from '~/services/providers/om';
+    import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { widgetService } from '~/services/widgets/WidgetBridge';
+    import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
+    import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
+    import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from '~/services/widgets/WidgetTypes';
+    import { selectValue } from '~/utils/ui';
+    import { colors, windowInset } from '~/variables';
+</script>
+
+<script lang="ts">
+    let { colorOnSurface, colorOnSurfaceVariant, colorPrimary, colorSurfaceContainer } = $colors;
+    $: ({ colorOnSurface, colorOnSurfaceVariant, colorPrimary, colorSurfaceContainer } = $colors);
+
+    // Props
+    export let widgetClass: string = '';
+    export let widgetId: string = '';
+    export let modalMode: boolean = false;
+
+    // State
+    let config: WidgetConfig = null;
+    let locationName: string = 'current';
+    let latitude: number = null;
+    let longitude: number = null;
+    let model: string = null;
+    let provider: string = null;
+    let updateFrequency: number = DEFAULT_UPDATE_FREQUENCY;
+    const previewView: View = null;
+
+    // Widget kind display names
+    const widgetKindNames = {
+        SimpleWeatherWidget: lc('widget.simple.name'),
+        SimpleWeatherWithDateWidget: lc('widget.withdate.name'),
+        SimpleWeatherWithClockWidget: lc('widget.withclock.name'),
+        HourlyWeatherWidget: lc('widget.hourly.name'),
+        DailyWeatherWidget: lc('widget.daily.name'),
+        ForecastWeatherWidget: lc('widget.forecast.name')
+    };
+
+    function getWidgetTitle(): string {
+        if (widgetClass && widgetKindNames[widgetClass]) {
+            return widgetKindNames[widgetClass];
+        }
+        if (widgetId) {
+            return `${lc('widget')} #${widgetId}`;
+        }
+        return lc('widget_settings');
+    }
+
+    onMount(() => {
+        loadConfig();
+        updateFrequency = WidgetConfigManager.getUpdateFrequency();
+    });
+
+    function loadConfig() {
+        if (widgetId) {
+            config = WidgetConfigManager.getConfig(widgetId);
+            if (config) {
+                locationName = config.locationName || 'current';
+                latitude = config.latitude;
+                longitude = config.longitude;
+                model = config.model;
+                provider = config.provider;
+            }
+        }
+    }
+
+    function saveConfig() {
+        if (!widgetId) return;
+
+        const newConfig: WidgetConfig = {
+            locationName,
+            latitude,
+            longitude,
+            model,
+            provider: provider as any,
+            widgetKind: widgetClass
+        };
+
+        WidgetConfigManager.saveConfig(widgetId, newConfig, widgetClass);
+        showSnack({ message: lc('widget_config_saved') });
+
+        // Trigger widget update using widgetService
+        widgetService.updateWidget(widgetId);
+    }
+
+    async function selectLocation() {
+        try {
+            const SelectCity = (await import('~/components/SelectCity.svelte')).default;
+            const result: WeatherLocation = await showModal({
+                page: SelectCity,
+                props: {}
+            });
+            if (result) {
+                locationName = result.name || result.sys?.name || 'Selected';
+                latitude = result.coord.lat;
+                longitude = result.coord.lon;
+                saveConfig();
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function selectLocationOnMap() {
+        try {
+            const SelectPositionOnMap = (await import('~/components/SelectPositionOnMap.svelte')).default;
+            const result: WeatherLocation = await showModal({
+                page: SelectPositionOnMap,
+                props: {
+                    focusPos: latitude && longitude ? { lat: latitude, lon: longitude } : undefined
+                }
+            });
+            if (result) {
+                locationName = result.name;
+                latitude = result.coord.lat;
+                longitude = result.coord.lon;
+                saveConfig();
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    function useCurrentLocation() {
+        locationName = 'current';
+        latitude = null;
+        longitude = null;
+        saveConfig();
+    }
+
+    async function selectProvider() {
+        try {
+            const result = await selectValue(
+                [{ title: lc('auto'), data: null }].concat(
+                    providers.map((p) => ({
+                        title: lc('provider.' + p),
+                        data: p
+                    }))
+                ),
+                provider,
+                { title: lc('provider.title') }
+            );
+            if (result !== undefined) {
+                provider = result;
+                saveConfig();
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function selectModel() {
+        try {
+            const modelOptions = [{ title: lc('auto'), data: null }].concat(
+                Object.keys(OpenMeteoModels).map((k) => ({
+                    title: OpenMeteoModels[k],
+                    data: k
+                }))
+            );
+
+            const result = await selectValue(modelOptions, model, {
+                title: lc('model')
+            });
+            if (result !== undefined) {
+                model = result;
+                saveConfig();
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function selectUpdateFrequency() {
+        try {
+            const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
+                title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
+                data: mins
+            }));
+
+            const result = await selectValue(frequencyOptions, updateFrequency, {
+                title: lc('widget_update_frequency')
+            });
+            if (result !== undefined) {
+                updateFrequency = result;
+                WidgetConfigManager.setUpdateFrequency(updateFrequency);
+                showSnack({ message: lc('widget_update_frequency_saved') });
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    function getLocationDescription(): string {
+        if (isDefaultLocation(locationName)) {
+            return lc('my_location');
+        }
+        if (latitude != null && longitude != null) {
+            return `${locationName} (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`;
+        }
+        return locationName;
+    }
+
+    function getProviderDescription(): string {
+        if (!provider) {
+            return lc('auto') + ' (' + lc('provider.' + getProviderType()) + ')';
+        }
+        return lc('provider.' + provider);
+    }
+
+    function getModelDescription(): string {
+        if (!model) {
+            return lc('auto');
+        }
+        return OpenMeteoModels[model] || model;
+    }
+
+    function getFrequencyDescription(): string {
+        if (updateFrequency < 60) {
+            return `${updateFrequency} min`;
+        }
+        return updateFrequency === 60 ? '1 hour' : `${updateFrequency / 60} hours`;
+    }
+</script>
+
+<page actionBarHidden={true}>
+    <gridlayout class="pageContent" rows="auto,*">
+        <CActionBar modalWindow={modalMode} title={getWidgetTitle()} />
+
+        <scrollview row={1} android:paddingBottom={$windowInset.bottom}>
+            <stacklayout padding="0 0 20 0">
+                <!-- Preview Section with home background -->
+                <!-- TODO: show a header with like name of the widget -->
+
+                <!-- Location Section -->
+                <label class="sectionHeader" text={lc('select_location')} />
+
+                <ListItemAutoSize
+                    item={{
+                        title: lc('location_name'),
+                        subtitle: getLocationDescription()
+                    }}
+                    on:tap={selectLocation} />
+
+                <ListItemAutoSize
+                    item={{
+                        title: lc('select_location_map'),
+                        subtitle: lc('select_on_map')
+                    }}
+                    on:tap={selectLocationOnMap} />
+
+                <ListItemAutoSize
+                    item={{
+                        title: lc('my_location'),
+                        subtitle: isDefaultLocation(locationName) ? '✓' : ''
+                    }}
+                    on:tap={useCurrentLocation} />
+
+                <!-- Provider Section -->
+                <label class="sectionHeader" text={lc('providers')} />
+
+                <ListItemAutoSize
+                    item={{
+                        title: lc('provider.title'),
+                        subtitle: getProviderDescription()
+                    }}
+                    on:tap={selectProvider} />
+
+                <ListItemAutoSize
+                    item={{
+                        title: lc('model'),
+                        subtitle: getModelDescription()
+                    }}
+                    on:tap={selectModel} />
+
+                <!-- Update Frequency Section -->
+                <label class="sectionHeader" text={lc('widget_settings')} />
+
+                <ListItemAutoSize
+                    item={{
+                        title: lc('widget_update_frequency'),
+                        subtitle: getFrequencyDescription()
+                    }}
+                    on:tap={selectUpdateFrequency} />
+
+                <!-- Info Notes -->
+                <label color={colorOnSurfaceVariant} fontSize={12} margin="16 16 0 16" text={lc('widget_configuration_note')} textWrap={true} />
+
+                <label color={colorOnSurfaceVariant} fontSize={12} margin="8 16 0 16" text={__ANDROID__ ? lc('widget_android_note') : lc('widget_ios_note')} textWrap={true} />
+            </stacklayout>
+        </scrollview>
+    </gridlayout>
+</page>

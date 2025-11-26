@@ -64,6 +64,10 @@ try {
     registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
     registerNativeViewElement('checkbox', () => require('@nativescript-community/ui-checkbox').CheckBox);
     registerNativeViewElement('zoomimage', () => require('@nativescript-community/ui-zoomimage').ZoomImg);
+    // Register WidgetPreview for Android widget preview
+    if (__ANDROID__) {
+        registerNativeViewElement('widgetPreview', () => require('~/android/WidgetPreview').WidgetPreview);
+    }
     DrawerElement.register();
     CollectionViewElement.register();
     SwipeMenuElement.register();

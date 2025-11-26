@@ -5,6 +5,7 @@
     import { onDestroy, onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
+    import WidgetPreview from '~/components/WidgetPreview.svelte';
     import { lc, onLanguageChanged } from '~/helpers/locale';
     import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     import { DEFAULT_UPDATE_FREQUENCY, MAX_UPDATE_FREQUENCY, MIN_UPDATE_FREQUENCY, WidgetConfig, WidgetType } from '~/services/widgets/WidgetTypes';
@@ -244,38 +245,17 @@
                         backgroundImage="~/assets/images/pattern.png"
                         backgroundRepeat="repeat"
                         borderRadius={12}
-                        height={200}
+                        height={220}
                         margin="16"
                         padding="10">
-                        <!-- Widget preview placeholder - styled like a home screen widget -->
-                        <gridlayout
-                            backgroundColor={colorSurfaceContainer}
-                            borderRadius={16}
+                        <!-- Native widget preview -->
+                        <WidgetPreview
+                            widgetClass={widgetClass || 'SimpleWeatherWidget'}
+                            locationName={locationName === 'current' ? lc('my_location') : locationName}
+                            previewWidth={200}
+                            previewHeight={180}
                             horizontalAlignment="center"
-                            opacity={0.95}
-                            padding="16"
-                            verticalAlignment="center"
-                            width={180}>
-                            <stacklayout horizontalAlignment="center" verticalAlignment="center">
-                                <label
-                                    color={colorOnSurface}
-                                    fontSize={24}
-                                    fontWeight="bold"
-                                    horizontalAlignment="center"
-                                    text="8°C" />
-                                <label
-                                    color={colorOnSurfaceVariant}
-                                    fontSize={14}
-                                    horizontalAlignment="center"
-                                    text={locationName === 'current' ? lc('my_location') : locationName} />
-                                <label
-                                    color={colorOnSurfaceVariant}
-                                    fontSize={12}
-                                    horizontalAlignment="center"
-                                    marginTop={4}
-                                    text={lc('widget') + ' Preview'} />
-                            </stacklayout>
-                        </gridlayout>
+                            verticalAlignment="center" />
                     </gridlayout>
                 {/if}
 

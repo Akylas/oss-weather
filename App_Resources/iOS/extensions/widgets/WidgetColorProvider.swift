@@ -1,6 +1,7 @@
 import SwiftUI
 
 /// Provides colors for widgets that automatically adapt to dark mode
+@available(iOS 14.0, *)
 struct WidgetColorProvider {
     // MARK: - Primary Colors
     static let background = Color("WidgetBackground", bundle: nil)
@@ -33,6 +34,7 @@ struct WidgetColorProvider {
 }
 
 // MARK: - Color Hex Extension
+@available(iOS 14.0, *)
 extension Color {
     /// Creates a color from a hex string
     /// Supports formats: "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
@@ -71,6 +73,7 @@ extension Color {
 }
 
 // MARK: - Fallback Static Colors (if Asset Catalog not used)
+@available(iOS 14.0, *)
 extension WidgetColorProvider {
     // Background Colors
     static var backgroundLight: Color {
@@ -146,6 +149,7 @@ extension WidgetColorProvider {
 }
 
 // MARK: - Convenience Methods
+@available(iOS 14.0, *)
 extension WidgetColorProvider {
     /// Get background color based on color scheme
     static func backgroundColor(for colorScheme: ColorScheme) -> Color {

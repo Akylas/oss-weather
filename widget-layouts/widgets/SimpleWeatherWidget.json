@@ -1,0 +1,131 @@
+{
+  "$schema": "../schema.json",
+  "name": "SimpleWeatherWidget",
+  "displayName": "Simple Weather",
+  "description": "Shows current temperature, weather icon, and location",
+  "supportedSizes": [
+    { "width": 50, "height": 50, "family": "small" },
+    { "width": 80, "height": 80, "family": "small" },
+    { "width": 120, "height": 120, "family": "small" },
+    { "width": 260, "height": 120, "family": "medium" }
+  ],
+  "defaultPadding": 8,
+  "background": {
+    "type": "solid",
+    "color": "widgetBackground"
+  },
+  "variants": [
+    {
+      "condition": "size.width < 80",
+      "layout": {
+        "type": "column",
+        "alignment": "center",
+        "crossAlignment": "center",
+        "padding": 4,
+        "children": [
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "image",
+            "src": "{{iconPath}}",
+            "size": 32,
+            "visibleIf": "iconPath"
+          },
+          { "type": "spacer", "size": 4 },
+          {
+            "type": "label",
+            "text": "{{temperature}}",
+            "fontSize": 14,
+            "fontWeight": "bold",
+            "color": "onSurface",
+            "textAlign": "center"
+          },
+          { "type": "spacer", "size": 4 },
+          {
+            "type": "label",
+            "text": "{{locationName}}",
+            "fontSize": 8,
+            "color": "onSurfaceVariant",
+            "textAlign": "center",
+            "maxLines": 1
+          }
+        ]
+      }
+    },
+    {
+      "condition": "size.width < 200",
+      "layout": {
+        "type": "column",
+        "alignment": "center",
+        "crossAlignment": "center",
+        "padding": 6,
+        "children": [
+          {
+            "type": "label",
+            "text": "{{locationName}}",
+            "fontSize": 12,
+            "color": "onSurfaceVariant",
+            "textAlign": "center",
+            "maxLines": 1
+          },
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "image",
+            "src": "{{iconPath}}",
+            "size": 48,
+            "visibleIf": "iconPath"
+          },
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "label",
+            "text": "{{temperature}}",
+            "fontSize": 32,
+            "fontWeight": "bold",
+            "color": "onSurface",
+            "textAlign": "center"
+          }
+        ]
+      }
+    }
+  ],
+  "layout": {
+    "type": "column",
+    "alignment": "center",
+    "crossAlignment": "center",
+    "padding": 8,
+    "children": [
+      {
+        "type": "label",
+        "text": "{{locationName}}",
+        "fontSize": 16,
+        "color": "onSurfaceVariant",
+        "textAlign": "center",
+        "maxLines": 1
+      },
+      { "type": "spacer", "size": 8 },
+      {
+        "type": "image",
+        "src": "{{iconPath}}",
+        "size": 72,
+        "visibleIf": "iconPath"
+      },
+      { "type": "spacer", "size": 8 },
+      {
+        "type": "label",
+        "text": "{{temperature}}",
+        "fontSize": 48,
+        "fontWeight": "bold",
+        "color": "onSurface",
+        "textAlign": "center"
+      },
+      { "type": "spacer", "size": 4 },
+      {
+        "type": "label",
+        "text": "{{description}}",
+        "fontSize": 14,
+        "color": "onSurfaceVariant",
+        "textAlign": "center",
+        "visibleIf": "description"
+      }
+    ]
+  }
+}

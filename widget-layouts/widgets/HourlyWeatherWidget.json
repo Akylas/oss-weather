@@ -1,0 +1,209 @@
+{
+  "$schema": "../schema.json",
+  "name": "HourlyWeatherWidget",
+  "displayName": "Hourly Forecast",
+  "description": "Shows hourly weather forecast with icons and temperatures",
+  "supportedSizes": [
+    { "width": 260, "height": 60, "family": "medium" },
+    { "width": 260, "height": 80, "family": "medium" },
+    { "width": 260, "height": 120, "family": "medium" },
+    { "width": 360, "height": 180, "family": "large" }
+  ],
+  "defaultPadding": 6,
+  "background": {
+    "type": "solid",
+    "color": "widgetBackground"
+  },
+  "variants": [
+    {
+      "condition": "size.height < 60",
+      "layout": {
+        "type": "column",
+        "alignment": "start",
+        "crossAlignment": "stretch",
+        "padding": 2,
+        "spacing": 0,
+        "children": [
+          {
+            "type": "scrollView",
+            "direction": "horizontal",
+            "showIndicators": false,
+            "children": [
+              {
+                "type": "row",
+                "spacing": 8,
+                "children": [
+                  {
+                    "type": "forEach",
+                    "items": "hourlyData",
+                    "limit": 8,
+                    "itemTemplate": {
+                      "type": "column",
+                      "alignment": "center",
+                      "crossAlignment": "center",
+                      "width": 56,
+                      "spacing": 0,
+                      "children": [
+                        {
+                          "type": "label",
+                          "text": "{{item.hour}}",
+                          "fontSize": 9,
+                          "color": "onSurfaceVariant"
+                        },
+                        {
+                          "type": "image",
+                          "src": "{{item.iconPath}}",
+                          "size": 24
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{item.temperature}}",
+                          "fontSize": 12,
+                          "fontWeight": "bold",
+                          "color": "onSurface"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "condition": "size.height < 80",
+      "layout": {
+        "type": "column",
+        "alignment": "start",
+        "crossAlignment": "stretch",
+        "padding": 4,
+        "spacing": 0,
+        "children": [
+          {
+            "type": "scrollView",
+            "direction": "horizontal",
+            "showIndicators": false,
+            "children": [
+              {
+                "type": "row",
+                "spacing": 8,
+                "children": [
+                  {
+                    "type": "forEach",
+                    "items": "hourlyData",
+                    "limit": 8,
+                    "itemTemplate": {
+                      "type": "column",
+                      "alignment": "center",
+                      "crossAlignment": "center",
+                      "width": 56,
+                      "spacing": 2,
+                      "children": [
+                        {
+                          "type": "label",
+                          "text": "{{item.hour}}",
+                          "fontSize": 11,
+                          "color": "onSurfaceVariant"
+                        },
+                        {
+                          "type": "image",
+                          "src": "{{item.iconPath}}",
+                          "size": 28
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{item.temperature}}",
+                          "fontSize": 14,
+                          "fontWeight": "bold",
+                          "color": "onSurface"
+                        },
+                        {
+                          "type": "label",
+                          "text": "{{item.precipAccumulation}}",
+                          "fontSize": 9,
+                          "color": "onSurfaceVariant",
+                          "visibleIf": "item.precipAccumulation"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "layout": {
+    "type": "column",
+    "alignment": "start",
+    "crossAlignment": "stretch",
+    "padding": 6,
+    "spacing": 0,
+    "children": [
+      {
+        "type": "label",
+        "text": "{{locationName}}",
+        "fontSize": 14,
+        "color": "onSurfaceVariant",
+        "maxLines": 1
+      },
+      { "type": "spacer", "size": 4 },
+      {
+        "type": "scrollView",
+        "direction": "horizontal",
+        "showIndicators": false,
+        "children": [
+          {
+            "type": "row",
+            "spacing": 8,
+            "children": [
+              {
+                "type": "forEach",
+                "items": "hourlyData",
+                "limit": 8,
+                "itemTemplate": {
+                  "type": "column",
+                  "alignment": "center",
+                  "crossAlignment": "center",
+                  "width": 56,
+                  "spacing": 2,
+                  "children": [
+                    {
+                      "type": "label",
+                      "text": "{{item.hour}}",
+                      "fontSize": 11,
+                      "color": "onSurfaceVariant"
+                    },
+                    {
+                      "type": "image",
+                      "src": "{{item.iconPath}}",
+                      "size": 32
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{item.temperature}}",
+                      "fontSize": 14,
+                      "fontWeight": "bold",
+                      "color": "onSurface"
+                    },
+                    {
+                      "type": "label",
+                      "text": "{{item.precipAccumulation}}",
+                      "fontSize": 10,
+                      "color": "onSurfaceVariant",
+                      "visibleIf": "item.precipAccumulation"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

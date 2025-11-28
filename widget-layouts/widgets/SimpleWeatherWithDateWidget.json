@@ -1,0 +1,159 @@
+{
+  "$schema": "../schema.json",
+  "name": "SimpleWeatherWithDateWidget",
+  "displayName": "Weather with Date",
+  "description": "Shows current date, temperature, weather icon, and location",
+  "supportedSizes": [
+    { "width": 80, "height": 50, "family": "small" },
+    { "width": 120, "height": 80, "family": "small" },
+    { "width": 260, "height": 120, "family": "medium" }
+  ],
+  "defaultPadding": 6,
+  "background": {
+    "type": "solid",
+    "color": "widgetBackground"
+  },
+  "variants": [
+    {
+      "condition": "size.height < 60",
+      "layout": {
+        "type": "column",
+        "alignment": "center",
+        "crossAlignment": "center",
+        "padding": 2,
+        "spacing": 0,
+        "children": [
+          {
+            "type": "date",
+            "style": "date",
+            "fontSize": 10,
+            "color": "onSurfaceVariant"
+          },
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "row",
+            "alignment": "center",
+            "crossAlignment": "center",
+            "spacing": 4,
+            "children": [
+              {
+                "type": "image",
+                "src": "{{iconPath}}",
+                "size": 24,
+                "visibleIf": "iconPath"
+              },
+              {
+                "type": "label",
+                "text": "{{temperature}}",
+                "fontSize": 16,
+                "fontWeight": "bold",
+                "color": "onSurface"
+              }
+            ]
+          },
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "label",
+            "text": "{{locationName}}",
+            "fontSize": 9,
+            "color": "onSurfaceVariant",
+            "maxLines": 1
+          }
+        ]
+      }
+    },
+    {
+      "condition": "size.height < 80",
+      "layout": {
+        "type": "column",
+        "alignment": "center",
+        "crossAlignment": "center",
+        "padding": 4,
+        "spacing": 0,
+        "children": [
+          {
+            "type": "date",
+            "style": "date",
+            "fontSize": 12,
+            "color": "onSurfaceVariant"
+          },
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "row",
+            "alignment": "center",
+            "crossAlignment": "center",
+            "spacing": 8,
+            "children": [
+              {
+                "type": "image",
+                "src": "{{iconPath}}",
+                "size": 32,
+                "visibleIf": "iconPath"
+              },
+              {
+                "type": "label",
+                "text": "{{temperature}}",
+                "fontSize": 20,
+                "fontWeight": "bold",
+                "color": "onSurface"
+              }
+            ]
+          },
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "label",
+            "text": "{{locationName}}",
+            "fontSize": 11,
+            "color": "onSurfaceVariant",
+            "maxLines": 1
+          }
+        ]
+      }
+    }
+  ],
+  "layout": {
+    "type": "column",
+    "alignment": "center",
+    "crossAlignment": "center",
+    "padding": 6,
+    "spacing": 0,
+    "children": [
+      {
+        "type": "date",
+        "style": "date",
+        "fontSize": 14,
+        "color": "onSurfaceVariant"
+      },
+      { "type": "spacer", "flex": 1 },
+      {
+        "type": "row",
+        "alignment": "center",
+        "crossAlignment": "center",
+        "spacing": 8,
+        "children": [
+          {
+            "type": "image",
+            "src": "{{iconPath}}",
+            "size": 40,
+            "visibleIf": "iconPath"
+          },
+          {
+            "type": "label",
+            "text": "{{temperature}}",
+            "fontSize": 24,
+            "fontWeight": "bold",
+            "color": "onSurface"
+          }
+        ]
+      },
+      { "type": "spacer", "flex": 1 },
+      {
+        "type": "label",
+        "text": "{{locationName}}",
+        "fontSize": 12,
+        "color": "onSurfaceVariant",
+        "maxLines": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "$schema": "../schema.json",
+  "name": "SimpleWeatherWithClockWidget",
+  "displayName": "Weather with Clock",
+  "description": "Shows current time, temperature, weather icon, and location",
+  "supportedSizes": [
+    { "width": 80, "height": 80, "family": "small" },
+    { "width": 120, "height": 120, "family": "small" },
+    { "width": 260, "height": 120, "family": "medium" }
+  ],
+  "defaultPadding": 8,
+  "background": {
+    "type": "solid",
+    "color": "widgetBackground"
+  },
+  "variants": [
+    {
+      "condition": "size.width < 100",
+      "layout": {
+        "type": "stack",
+        "padding": 4,
+        "children": [
+          {
+            "type": "column",
+            "alignment": "center",
+            "crossAlignment": "center",
+            "children": [
+              {
+                "type": "clock",
+                "fontSize": 24,
+                "fontWeight": "bold",
+                "color": "onSurface"
+              },
+              {
+                "type": "row",
+                "alignment": "center",
+                "crossAlignment": "center",
+                "spacing": 4,
+                "children": [
+                  {
+                    "type": "image",
+                    "src": "{{iconPath}}",
+                    "size": 32,
+                    "visibleIf": "iconPath"
+                  },
+                  {
+                    "type": "label",
+                    "text": "{{temperature}}",
+                    "fontSize": 18,
+                    "fontWeight": "bold",
+                    "color": "onSurface"
+                  }
+                ]
+              },
+              { "type": "spacer", "flex": 1 }
+            ]
+          },
+          {
+            "type": "column",
+            "alignment": "end",
+            "crossAlignment": "end",
+            "children": [
+              { "type": "spacer", "flex": 1 },
+              {
+                "type": "label",
+                "text": "{{locationName}}",
+                "fontSize": 8,
+                "color": "onSurfaceVariant",
+                "maxLines": 1,
+                "margin": 2
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "condition": "size.width < 150",
+      "layout": {
+        "type": "stack",
+        "padding": 6,
+        "children": [
+          {
+            "type": "column",
+            "alignment": "center",
+            "crossAlignment": "center",
+            "spacing": 4,
+            "children": [
+              {
+                "type": "clock",
+                "fontSize": 32,
+                "fontWeight": "bold",
+                "color": "onSurface"
+              },
+              {
+                "type": "row",
+                "alignment": "center",
+                "crossAlignment": "center",
+                "spacing": 4,
+                "children": [
+                  {
+                    "type": "image",
+                    "src": "{{iconPath}}",
+                    "size": 40,
+                    "visibleIf": "iconPath"
+                  },
+                  {
+                    "type": "label",
+                    "text": "{{temperature}}",
+                    "fontSize": 24,
+                    "fontWeight": "bold",
+                    "color": "onSurface"
+                  }
+                ]
+              },
+              { "type": "spacer", "flex": 1 }
+            ]
+          },
+          {
+            "type": "column",
+            "alignment": "end",
+            "crossAlignment": "end",
+            "children": [
+              { "type": "spacer", "flex": 1 },
+              {
+                "type": "label",
+                "text": "{{locationName}}",
+                "fontSize": 10,
+                "color": "onSurfaceVariant",
+                "maxLines": 1,
+                "margin": 2
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "layout": {
+    "type": "stack",
+    "padding": 8,
+    "children": [
+      {
+        "type": "column",
+        "alignment": "center",
+        "crossAlignment": "center",
+        "spacing": 8,
+        "children": [
+          {
+            "type": "clock",
+            "fontSize": 48,
+            "fontWeight": "bold",
+            "color": "onSurface"
+          },
+          {
+            "type": "row",
+            "alignment": "center",
+            "crossAlignment": "center",
+            "spacing": 8,
+            "children": [
+              {
+                "type": "image",
+                "src": "{{iconPath}}",
+                "size": 56,
+                "visibleIf": "iconPath"
+              },
+              {
+                "type": "label",
+                "text": "{{temperature}}",
+                "fontSize": 32,
+                "fontWeight": "bold",
+                "color": "onSurface"
+              }
+            ]
+          },
+          { "type": "spacer", "flex": 1 }
+        ]
+      },
+      {
+        "type": "column",
+        "alignment": "end",
+        "crossAlignment": "end",
+        "children": [
+          { "type": "spacer", "flex": 1 },
+          {
+            "type": "label",
+            "text": "{{locationName}}",
+            "fontSize": 12,
+            "color": "onSurfaceVariant",
+            "maxLines": 1,
+            "margin": 2
+          }
+        ]
+      }
+    ]
+  }
+}

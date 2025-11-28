@@ -52,34 +52,34 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    supportedSizes?: Array<{ width: number; height: number; family: string }>;
+    supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
     background?: {
         type: string;
         color?: string;
     };
-    variants?: Array<{
+    variants?: {
         condition: string;
         layout: LayoutElement;
-    }>;
+    }[];
     layout: LayoutElement;
 }
 
 // Color mapping for theme colors
 const GLANCE_COLORS: Record<string, string> = {
-    'onSurface': 'GlanceTheme.colors.onSurface',
-    'onSurfaceVariant': 'GlanceTheme.colors.onSurfaceVariant',
-    'primary': 'GlanceTheme.colors.primary',
-    'error': 'GlanceTheme.colors.error',
-    'widgetBackground': 'GlanceTheme.colors.background',
-    'surface': 'GlanceTheme.colors.surface'
+    onSurface: 'GlanceTheme.colors.onSurface',
+    onSurfaceVariant: 'GlanceTheme.colors.onSurfaceVariant',
+    primary: 'GlanceTheme.colors.primary',
+    error: 'GlanceTheme.colors.error',
+    widgetBackground: 'GlanceTheme.colors.background',
+    surface: 'GlanceTheme.colors.surface'
 };
 
 // Font weight mapping
 const KOTLIN_FONT_WEIGHTS: Record<string, string> = {
-    'normal': 'FontWeight.Normal',
-    'medium': 'FontWeight.Medium',
-    'bold': 'FontWeight.Bold'
+    normal: 'FontWeight.Normal',
+    medium: 'FontWeight.Medium',
+    bold: 'FontWeight.Bold'
 };
 
 /**
@@ -87,20 +87,29 @@ const KOTLIN_FONT_WEIGHTS: Record<string, string> = {
  */
 function toGlanceVerticalAlignment(alignment?: string): string {
     switch (alignment) {
-        case 'start': return 'Alignment.Vertical.Top';
-        case 'center': return 'Alignment.Vertical.CenterVertically';
-        case 'end': return 'Alignment.Vertical.Bottom';
-        case 'spaceBetween': return 'Alignment.Vertical.CenterVertically';
-        default: return 'Alignment.Vertical.CenterVertically';
+        case 'start':
+            return 'Alignment.Vertical.Top';
+        case 'center':
+            return 'Alignment.Vertical.CenterVertically';
+        case 'end':
+            return 'Alignment.Vertical.Bottom';
+        case 'spaceBetween':
+            return 'Alignment.Vertical.CenterVertically';
+        default:
+            return 'Alignment.Vertical.CenterVertically';
     }
 }
 
 function toGlanceHorizontalAlignment(alignment?: string): string {
     switch (alignment) {
-        case 'start': return 'Alignment.Start';
-        case 'center': return 'Alignment.CenterHorizontally';
-        case 'end': return 'Alignment.End';
-        default: return 'Alignment.CenterHorizontally';
+        case 'start':
+            return 'Alignment.Start';
+        case 'center':
+            return 'Alignment.CenterHorizontally';
+        case 'end':
+            return 'Alignment.End';
+        default:
+            return 'Alignment.CenterHorizontally';
     }
 }
 
@@ -133,9 +142,7 @@ function convertBinding(text: string): string {
  * Note: Most operators are identical between JS and Kotlin
  */
 function toKotlinCondition(condition: string): string {
-    return condition
-        .replace(/size\.width/g, 'size.width.value')
-        .replace(/size\.height/g, 'size.height.value');
+    return condition.replace(/size\.width/g, 'size.width.value').replace(/size\.height/g, 'size.height.value');
     // Operators &&, ||, ==, != are the same in Kotlin
 }
 
@@ -144,16 +151,16 @@ function toKotlinCondition(condition: string): string {
  */
 function generateElement(element: LayoutElement, indent: string = '            '): string {
     const lines: string[] = [];
-    
+
     // Handle visibility condition
     const wrapWithIf = element.visibleIf ? true : false;
     const currentIndent = wrapWithIf ? indent + '    ' : indent;
-    
+
     if (wrapWithIf) {
         // For simple property checks like "iconPath" or "description", check if not empty
-        const propName = element.visibleIf!.trim();
+        const propName = element.visibleIf.trim();
         const isPropCheck = /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(propName);
-        
+
         if (isPropCheck) {
             // Simple property check - wrap with isNotEmpty
             const parts = propName.split('.');
@@ -164,13 +171,11 @@ function generateElement(element: LayoutElement, indent: string = '            '
             }
         } else {
             // Complex condition - use as-is
-            const condition = element.visibleIf!
-                .replace(/size\.width/g, 'size.width.value')
-                .replace(/size\.height/g, 'size.height.value');
+            const condition = element.visibleIf.replace(/size\.width/g, 'size.width.value').replace(/size\.height/g, 'size.height.value');
             lines.push(`${indent}if (${condition}) {`);
         }
     }
-    
+
     switch (element.type) {
         case 'column':
             lines.push(...generateColumn(element, currentIndent));
@@ -211,11 +216,11 @@ function generateElement(element: LayoutElement, indent: string = '            '
         default:
             lines.push(`${currentIndent}// Unknown element type: ${element.type}`);
     }
-    
+
     if (wrapWithIf) {
         lines.push(`${indent}}`);
     }
-    
+
     return lines.join('\n');
 }
 
@@ -223,15 +228,15 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const vertAlign = toGlanceVerticalAlignment(element.alignment);
     const horizAlign = toGlanceHorizontalAlignment(element.crossAlignment);
-    
-    let modifier = 'GlanceModifier.fillMaxSize()';
-    
+
+    const modifier = 'GlanceModifier.fillMaxSize()';
+
     lines.push(`${indent}Column(`);
     lines.push(`${indent}    modifier = ${modifier},`);
     lines.push(`${indent}    verticalAlignment = ${vertAlign},`);
     lines.push(`${indent}    horizontalAlignment = ${horizAlign}`);
     lines.push(`${indent}) {`);
-    
+
     if (element.children) {
         for (const child of element.children) {
             lines.push(generateElement(child, indent + '    '));
@@ -241,26 +246,30 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
             }
         }
     }
-    
+
     lines.push(`${indent}}`);
-    
+
     return lines;
 }
 
 function generateRow(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const horizAlign = element.alignment === 'center' ? 'Arrangement.Center' : 
-                      element.alignment === 'end' ? 'Arrangement.End' : 
-                      element.alignment === 'spaceBetween' ? 'Arrangement.SpaceBetween' : 'Arrangement.Start';
-    const vertAlign = element.crossAlignment === 'start' ? 'Alignment.Vertical.Top' :
-                     element.crossAlignment === 'end' ? 'Alignment.Vertical.Bottom' : 'Alignment.Vertical.CenterVertically';
-    
+    const horizAlign =
+        element.alignment === 'center'
+            ? 'Arrangement.Center'
+            : element.alignment === 'end'
+              ? 'Arrangement.End'
+              : element.alignment === 'spaceBetween'
+                ? 'Arrangement.SpaceBetween'
+                : 'Arrangement.Start';
+    const vertAlign = element.crossAlignment === 'start' ? 'Alignment.Vertical.Top' : element.crossAlignment === 'end' ? 'Alignment.Vertical.Bottom' : 'Alignment.Vertical.CenterVertically';
+
     lines.push(`${indent}Row(`);
     lines.push(`${indent}    modifier = GlanceModifier.fillMaxWidth(),`);
     lines.push(`${indent}    horizontalAlignment = ${horizAlign},`);
     lines.push(`${indent}    verticalAlignment = ${vertAlign}`);
     lines.push(`${indent}) {`);
-    
+
     if (element.children) {
         for (const child of element.children) {
             lines.push(generateElement(child, indent + '    '));
@@ -269,28 +278,28 @@ function generateRow(element: LayoutElement, indent: string): string[] {
             }
         }
     }
-    
+
     lines.push(`${indent}}`);
-    
+
     return lines;
 }
 
 function generateStack(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    
+
     lines.push(`${indent}Box(`);
     lines.push(`${indent}    modifier = GlanceModifier.fillMaxSize(),`);
     lines.push(`${indent}    contentAlignment = Alignment.Center`);
     lines.push(`${indent}) {`);
-    
+
     if (element.children) {
         for (const child of element.children) {
             lines.push(generateElement(child, indent + '    '));
         }
     }
-    
+
     lines.push(`${indent}}`);
-    
+
     return lines;
 }
 
@@ -306,9 +315,9 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     const fontSize = element.fontSize || 14;
     const fontWeight = KOTLIN_FONT_WEIGHTS[element.fontWeight || 'normal'] || 'FontWeight.Normal';
     const color = toGlanceColor(element.color);
-    
-    let style = `style = TextStyle(fontSize = ${fontSize}.sp, fontWeight = ${fontWeight}, color = ${color})`;
-    
+
+    const style = `style = TextStyle(fontSize = ${fontSize}.sp, fontWeight = ${fontWeight}, color = ${color})`;
+
     if (element.maxLines) {
         lines.push(`${indent}Text(`);
         lines.push(`${indent}    text = "${text}",`);
@@ -318,7 +327,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     } else {
         lines.push(`${indent}Text(text = "${text}", ${style})`);
     }
-    
+
     return lines;
 }
 
@@ -326,7 +335,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const src = element.src || '';
     const size = element.size || 24;
-    
+
     // For weather icons, use the WidgetComposables helper
     if (src.includes('iconPath')) {
         lines.push(`${indent}WidgetComposables.WeatherIcon(data.iconPath, data.description, ${size}.dp)`);
@@ -338,7 +347,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
         lines.push(`${indent}    modifier = GlanceModifier.size(${size}.dp)`);
         lines.push(`${indent})`);
     }
-    
+
     return lines;
 }
 
@@ -355,23 +364,19 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
 function generateDivider(element: LayoutElement, indent: string): string[] {
     const thickness = element.thickness || 1;
     const color = toGlanceColor(element.color || 'onSurfaceVariant');
-    return [
-        `${indent}Box(`,
-        `${indent}    modifier = GlanceModifier.fillMaxWidth().height(${thickness}.dp).background(${color}.copy(alpha = 0.3f))`,
-        `${indent}) {}`
-    ];
+    return [`${indent}Box(`, `${indent}    modifier = GlanceModifier.fillMaxWidth().height(${thickness}.dp).background(${color}.copy(alpha = 0.3f))`, `${indent}) {}`];
 }
 
 function generateScrollView(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const isHorizontal = element.direction === 'horizontal';
-    
+
     if (isHorizontal) {
         lines.push(`${indent}LazyRow {`);
     } else {
         lines.push(`${indent}LazyColumn {`);
     }
-    
+
     if (element.children) {
         lines.push(`${indent}    items(1) {`);
         for (const child of element.children) {
@@ -379,9 +384,9 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
         }
         lines.push(`${indent}    }`);
     }
-    
+
     lines.push(`${indent}}`);
-    
+
     return lines;
 }
 
@@ -389,37 +394,37 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const items = element.items || 'items';
     const limit = element.limit;
-    
+
     const dataPath = items.includes('.') ? items : `data.${items}`;
     const collection = limit ? `${dataPath}.take(${limit})` : dataPath;
-    
+
     lines.push(`${indent}${collection}.forEachIndexed { index, item ->`);
-    
+
     if (element.itemTemplate) {
         lines.push(generateElement(element.itemTemplate, indent + '    '));
     }
-    
+
     lines.push(`${indent}}`);
-    
+
     return lines;
 }
 
 function generateConditional(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const condition = toKotlinCondition(element.condition || 'true');
-    
+
     lines.push(`${indent}if (${condition}) {`);
     if (element.then) {
         lines.push(generateElement(element.then, indent + '    '));
     }
     lines.push(`${indent}}`);
-    
+
     if (element.else) {
         lines.push(`${indent}else {`);
         lines.push(generateElement(element.else, indent + '    '));
         lines.push(`${indent}}`);
     }
-    
+
     return lines;
 }
 
@@ -427,22 +432,16 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const fontSize = element.fontSize || 24;
     const fontWeight = KOTLIN_FONT_WEIGHTS[element.fontWeight || 'bold'] || 'FontWeight.Bold';
     const color = toGlanceColor(element.color);
-    
-    return [
-        `${indent}// TextClock for live time display`,
-        `${indent}WidgetComposables.ClockText(${fontSize}.sp, ${fontWeight}, ${color})`
-    ];
+
+    return [`${indent}// TextClock for live time display`, `${indent}WidgetComposables.ClockText(${fontSize}.sp, ${fontWeight}, ${color})`];
 }
 
 function generateDate(element: LayoutElement, indent: string): string[] {
     const fontSize = element.fontSize || 14;
     const fontWeight = KOTLIN_FONT_WEIGHTS[element.fontWeight || 'normal'] || 'FontWeight.Normal';
     const color = toGlanceColor(element.color);
-    
-    return [
-        `${indent}// Date text`,
-        `${indent}WidgetComposables.DateText(${fontSize}.sp, ${fontWeight}, ${color})`
-    ];
+
+    return [`${indent}// Date text`, `${indent}WidgetComposables.DateText(${fontSize}.sp, ${fontWeight}, ${color})`];
 }
 
 /**
@@ -450,7 +449,7 @@ function generateDate(element: LayoutElement, indent: string): string[] {
  */
 function generateWidgetContent(layout: WidgetLayout): string {
     const name = layout.name;
-    
+
     let code = `// Auto-generated from ${name}.json - DO NOT EDIT MANUALLY
 // Generated by widget-layouts/generators/glance-generator.ts
 
@@ -488,18 +487,18 @@ object ${name}Content {
         
         WidgetComposables.WidgetContainer(padding = padding) {
 `;
-    
+
     // Generate variant conditions
     if (layout.variants && layout.variants.length > 0) {
         for (let i = 0; i < layout.variants.length; i++) {
             const variant = layout.variants[i];
             const condition = toKotlinCondition(variant.condition);
             const keyword = i === 0 ? 'if' : '} else if';
-            
+
             code += `            ${keyword} (${condition}) {\n`;
             code += generateElement(variant.layout, '                ') + '\n';
         }
-        
+
         // Default layout
         code += `            } else {\n`;
         code += generateElement(layout.layout, '                ') + '\n';
@@ -507,12 +506,12 @@ object ${name}Content {
     } else {
         code += generateElement(layout.layout, '            ') + '\n';
     }
-    
+
     code += `        }
     }
 }
 `;
-    
+
     return code;
 }
 
@@ -520,32 +519,32 @@ object ${name}Content {
  * Generate all widget content composables from JSON layouts
  */
 export function generateAllWidgets(layoutsDir: string, outputDir: string): void {
-    const widgetFiles = fs.readdirSync(layoutsDir).filter(f => f.endsWith('.json'));
-    
+    const widgetFiles = fs.readdirSync(layoutsDir).filter((f) => f.endsWith('.json'));
+
     for (const file of widgetFiles) {
         const layoutPath = path.join(layoutsDir, file);
         const layout: WidgetLayout = JSON.parse(fs.readFileSync(layoutPath, 'utf-8'));
-        
+
         const kotlinCode = generateWidgetContent(layout);
         const outputPath = path.join(outputDir, `${layout.name}Content.generated.kt`);
-        
+
         fs.writeFileSync(outputPath, kotlinCode);
         console.log(`Generated: ${outputPath}`);
     }
 }
 
 // CLI entry point
-if (require.main === module) {
-    const args = process.argv.slice(2);
-    const layoutsDir = args[0] || path.join(__dirname, '..', 'widgets');
-    const outputDir = args[1] || path.join(__dirname, '..', '..', 'App_Resources', 'Android', 'src', 'main', 'java', 'com', 'akylas', 'weather', 'widgets', 'generated');
-    
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
-    }
-    
-    generateAllWidgets(layoutsDir, outputDir);
-    console.log('Glance widget generation complete!');
+// if (require.main === module) {
+const args = process.argv.slice(2);
+const layoutsDir = args[0] || path.join(__dirname, '..', 'widgets');
+const outputDir = args[1] || path.join(__dirname, '..', '..', 'App_Resources', 'Android', 'src', 'main', 'java', 'com', 'akylas', 'weather', 'widgets', 'generated');
+
+if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
 }
 
-export { generateWidgetContent, WidgetLayout, LayoutElement };
+generateAllWidgets(layoutsDir, outputDir);
+console.log('Glance widget generation complete!');
+// }
+
+// export { generateWidgetContent, WidgetLayout, LayoutElement };

@@ -3,40 +3,40 @@
  * Parses JSON widget layouts and renders them as native views
  */
 
-import { View, StackLayout, GridLayout, Label, Image, ScrollView, Color, FlexboxLayout } from '@nativescript/core';
+import { Color, FlexboxLayout, GridLayout, Image, Label, ScrollView, StackLayout, View } from '@nativescript/core';
 
 // Color mapping for theme colors
 const THEME_COLORS: Record<string, string> = {
-    'onSurface': '#E6E1E5',
-    'onSurfaceVariant': '#CAC4D0',
-    'primary': '#D0BCFF',
-    'error': '#F2B8B5',
-    'widgetBackground': '#1C1B1F',
-    'surface': '#2B2930'
+    onSurface: '#E6E1E5',
+    onSurfaceVariant: '#CAC4D0',
+    primary: '#D0BCFF',
+    error: '#F2B8B5',
+    widgetBackground: '#1C1B1F',
+    surface: '#2B2930'
 };
 
 // Font weight mapping
 const FONT_WEIGHTS: Record<string, string> = {
-    'normal': 'normal',
-    'medium': '500',
-    'bold': 'bold'
+    normal: 'normal',
+    medium: '500',
+    bold: 'bold'
 };
 
 export interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    supportedSizes?: Array<{ width: number; height: number; family: string }>;
+    supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
     background?: {
         type: string;
         color?: string;
         image?: string;
     };
-    variants?: Array<{
+    variants?: {
         condition: string;
         layout: LayoutElement;
-    }>;
+    }[];
     layout: LayoutElement;
 }
 
@@ -66,21 +66,21 @@ export interface WidgetData {
     locationName?: string;
     description?: string;
     iconPath?: string;
-    hourlyData?: Array<{
+    hourlyData?: {
         hour: string;
         temperature: string;
         iconPath?: string;
         description?: string;
         precipAccumulation?: string;
-    }>;
-    dailyData?: Array<{
+    }[];
+    dailyData?: {
         day: string;
         temperatureHigh: string;
         temperatureLow: string;
         iconPath?: string;
         description?: string;
         precipAccumulation?: string;
-    }>;
+    }[];
 }
 
 export interface RenderContext {
@@ -109,7 +109,7 @@ function resolveBinding(text: string, context: RenderContext): string {
     return text.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const parts = path.trim().split('.');
         let value: any = context;
-        
+
         for (const part of parts) {
             if (part === 'item' && context.item) {
                 value = context.item;
@@ -129,20 +129,18 @@ function resolveBinding(text: string, context: RenderContext): string {
 function evaluateCondition(condition: string, context: RenderContext): boolean {
     try {
         // Replace data references
-        let expr = condition
-            .replace(/size\.width/g, context.size.width.toString())
-            .replace(/size\.height/g, context.size.height.toString());
-        
+        let expr = condition.replace(/size\.width/g, context.size.width.toString()).replace(/size\.height/g, context.size.height.toString());
+
         // Handle data path checks like "iconPath" or "item.precipAccumulation"
         expr = expr.replace(/\b([a-zA-Z_][a-zA-Z0-9_.]*)\b/g, (match) => {
             if (['true', 'false', 'null', 'undefined'].includes(match)) return match;
             if (/^\d+$/.test(match)) return match;
-            if (['<', '>', '<=', '>=', '==', '!=', '&&', '||'].some(op => match === op)) return match;
-            
+            if (['<', '>', '<=', '>=', '==', '!=', '&&', '||'].some((op) => match === op)) return match;
+
             // Resolve the path
             const parts = match.split('.');
             let value: any = context;
-            
+
             for (const part of parts) {
                 if (part === 'item' && context.item) {
                     value = context.item;
@@ -153,13 +151,13 @@ function evaluateCondition(condition: string, context: RenderContext): boolean {
                     break;
                 }
             }
-            
+
             if (value === undefined || value === null || value === '') {
                 return 'false';
             }
             return 'true';
         });
-        
+
         // Safe expression evaluation using simple pattern matching
         // Only supports basic comparisons: <, >, <=, >=, ==, !=
         return safeEvaluateExpression(expr);
@@ -175,38 +173,44 @@ function evaluateCondition(condition: string, context: RenderContext): boolean {
 function safeEvaluateExpression(expr: string): boolean {
     // Remove whitespace
     expr = expr.trim();
-    
+
     // Handle boolean literals
     if (expr === 'true') return true;
     if (expr === 'false') return false;
-    
+
     // Match simple comparison: number op number
     const comparisonMatch = expr.match(/^(\d+(?:\.\d+)?)\s*(<=|>=|<|>|==|!=)\s*(\d+(?:\.\d+)?)$/);
     if (comparisonMatch) {
         const left = parseFloat(comparisonMatch[1]);
         const op = comparisonMatch[2];
         const right = parseFloat(comparisonMatch[3]);
-        
+
         switch (op) {
-            case '<': return left < right;
-            case '>': return left > right;
-            case '<=': return left <= right;
-            case '>=': return left >= right;
-            case '==': return left === right;
-            case '!=': return left !== right;
+            case '<':
+                return left < right;
+            case '>':
+                return left > right;
+            case '<=':
+                return left <= right;
+            case '>=':
+                return left >= right;
+            case '==':
+                return left === right;
+            case '!=':
+                return left !== right;
         }
     }
-    
+
     // Handle && and || by splitting and recursing
     if (expr.includes('&&')) {
         const parts = expr.split('&&');
-        return parts.every(part => safeEvaluateExpression(part));
+        return parts.every((part) => safeEvaluateExpression(part));
     }
     if (expr.includes('||')) {
         const parts = expr.split('||');
-        return parts.some(part => safeEvaluateExpression(part));
+        return parts.some((part) => safeEvaluateExpression(part));
     }
-    
+
     // Default to true for unrecognized expressions
     return true;
 }
@@ -345,14 +349,22 @@ function applyBaseStyles(view: View, element: LayoutElement): void {
 function renderColumn(element: LayoutElement, context: RenderContext): View {
     const stack = new StackLayout();
     stack.orientation = 'vertical';
-    
+
     // Alignment
     if (element.crossAlignment) {
         switch (element.crossAlignment) {
-            case 'start': stack.horizontalAlignment = 'left'; break;
-            case 'center': stack.horizontalAlignment = 'center'; break;
-            case 'end': stack.horizontalAlignment = 'right'; break;
-            case 'stretch': stack.horizontalAlignment = 'stretch'; break;
+            case 'start':
+                stack.horizontalAlignment = 'left';
+                break;
+            case 'center':
+                stack.horizontalAlignment = 'center';
+                break;
+            case 'end':
+                stack.horizontalAlignment = 'right';
+                break;
+            case 'stretch':
+                stack.horizontalAlignment = 'stretch';
+                break;
         }
     }
 
@@ -376,14 +388,22 @@ function renderColumn(element: LayoutElement, context: RenderContext): View {
 function renderRow(element: LayoutElement, context: RenderContext): View {
     const stack = new StackLayout();
     stack.orientation = 'horizontal';
-    
+
     // Alignment
     if (element.crossAlignment) {
         switch (element.crossAlignment) {
-            case 'start': stack.verticalAlignment = 'top'; break;
-            case 'center': stack.verticalAlignment = 'middle'; break;
-            case 'end': stack.verticalAlignment = 'bottom'; break;
-            case 'stretch': stack.verticalAlignment = 'stretch'; break;
+            case 'start':
+                stack.verticalAlignment = 'top';
+                break;
+            case 'center':
+                stack.verticalAlignment = 'middle';
+                break;
+            case 'end':
+                stack.verticalAlignment = 'bottom';
+                break;
+            case 'stretch':
+                stack.verticalAlignment = 'stretch';
+                break;
         }
     }
 
@@ -406,7 +426,7 @@ function renderRow(element: LayoutElement, context: RenderContext): View {
 
 function renderStack(element: LayoutElement, context: RenderContext): View {
     const grid = new GridLayout();
-    
+
     // Render children (all in same cell for stacking)
     if (element.children) {
         for (const child of element.children) {
@@ -423,19 +443,19 @@ function renderStack(element: LayoutElement, context: RenderContext): View {
 function renderLabel(element: LayoutElement, context: RenderContext): View {
     const label = new Label();
     label.text = resolveBinding(element.text || '', context);
-    
+
     if (element.fontSize) {
         label.fontSize = element.fontSize;
     }
     if (element.fontWeight) {
-        label.fontWeight = FONT_WEIGHTS[element.fontWeight] as any || 'normal';
+        label.fontWeight = (FONT_WEIGHTS[element.fontWeight] as any) || 'normal';
     }
     if (element.color) {
         const color = resolveColor(element.color);
         if (color) label.color = color;
     }
     if (element.textAlign) {
-        label.textAlignment = element.textAlign as any;
+        label.textAlignment = element.textAlign;
     }
     if (element.maxLines) {
         label.maxLines = element.maxLines;
@@ -447,7 +467,7 @@ function renderLabel(element: LayoutElement, context: RenderContext): View {
 function renderImage(element: LayoutElement, context: RenderContext): View {
     const image = new Image();
     const src = resolveBinding(element.src || '', context);
-    
+
     if (src) {
         image.src = src;
     }
@@ -461,7 +481,7 @@ function renderImage(element: LayoutElement, context: RenderContext): View {
 
 function renderSpacer(element: LayoutElement, context: RenderContext): View {
     const spacer = new StackLayout();
-    
+
     if (element.size !== undefined) {
         spacer.height = element.size;
         spacer.width = element.size;
@@ -479,7 +499,7 @@ function renderDivider(element: LayoutElement, context: RenderContext): View {
     const divider = new StackLayout();
     divider.height = element.thickness || 1;
     divider.horizontalAlignment = 'stretch';
-    
+
     const color = resolveColor(element.color || 'onSurfaceVariant');
     if (color) {
         // Create a semi-transparent version of the color
@@ -493,11 +513,11 @@ function renderDivider(element: LayoutElement, context: RenderContext): View {
 function renderScrollView(element: LayoutElement, context: RenderContext): View {
     const scroll = new ScrollView();
     scroll.orientation = element.direction === 'horizontal' ? 'horizontal' : 'vertical';
-    
+
     // Render content
     const content = new StackLayout();
     content.orientation = element.direction === 'horizontal' ? 'horizontal' : 'vertical';
-    
+
     if (element.children) {
         for (const child of element.children) {
             const childView = renderElement(child, context);
@@ -506,7 +526,7 @@ function renderScrollView(element: LayoutElement, context: RenderContext): View 
             }
         }
     }
-    
+
     scroll.content = content;
     return scroll;
 }
@@ -514,20 +534,20 @@ function renderScrollView(element: LayoutElement, context: RenderContext): View 
 function renderForEach(element: LayoutElement, context: RenderContext): View {
     const container = new StackLayout();
     container.orientation = 'horizontal'; // Default for forEach
-    
+
     // Get the array from data
     const parts = element.items.split('.');
     let items: any[] = context.data as any;
     for (const part of parts) {
         items = items?.[part];
     }
-    
+
     if (!Array.isArray(items)) return container;
-    
+
     // Limit items if specified
     const limit = element.limit || items.length;
     const limitedItems = items.slice(0, limit);
-    
+
     // Render each item
     for (let i = 0; i < limitedItems.length; i++) {
         const itemContext: RenderContext = {
@@ -535,7 +555,7 @@ function renderForEach(element: LayoutElement, context: RenderContext): View {
             item: limitedItems[i],
             index: i
         };
-        
+
         if (element.itemTemplate) {
             const itemView = renderElement(element.itemTemplate, itemContext);
             if (itemView) {
@@ -549,13 +569,13 @@ function renderForEach(element: LayoutElement, context: RenderContext): View {
 
 function renderConditional(element: LayoutElement, context: RenderContext): View | null {
     const condition = evaluateCondition(element.condition, context);
-    
+
     if (condition && element.then) {
         return renderElement(element.then, context);
     } else if (!condition && element.else) {
         return renderElement(element.else, context);
     }
-    
+
     return null;
 }
 
@@ -564,24 +584,24 @@ function renderClock(element: LayoutElement, context: RenderContext): View {
     // In a real app, this would be a live-updating clock
     const label = new Label();
     const now = new Date();
-    
+
     // Format time based on element properties
     const format24 = element.format24Hour || 'HH:mm';
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     label.text = `${hours}:${minutes}`;
-    
+
     if (element.fontSize) {
         label.fontSize = element.fontSize;
     }
     if (element.fontWeight) {
-        label.fontWeight = FONT_WEIGHTS[element.fontWeight] as any || 'normal';
+        label.fontWeight = (FONT_WEIGHTS[element.fontWeight] as any) || 'normal';
     }
     if (element.color) {
         const color = resolveColor(element.color);
         if (color) label.color = color;
     }
-    
+
     label.textAlignment = 'center';
     return label;
 }
@@ -589,7 +609,7 @@ function renderClock(element: LayoutElement, context: RenderContext): View {
 function renderDate(element: LayoutElement, context: RenderContext): View {
     const label = new Label();
     const now = new Date();
-    
+
     // Format date
     const options: Intl.DateTimeFormatOptions = {
         weekday: 'long',
@@ -597,18 +617,18 @@ function renderDate(element: LayoutElement, context: RenderContext): View {
         day: 'numeric'
     };
     label.text = now.toLocaleDateString(undefined, options);
-    
+
     if (element.fontSize) {
         label.fontSize = element.fontSize;
     }
     if (element.fontWeight) {
-        label.fontWeight = FONT_WEIGHTS[element.fontWeight] as any || 'normal';
+        label.fontWeight = (FONT_WEIGHTS[element.fontWeight] as any) || 'normal';
     }
     if (element.color) {
         const color = resolveColor(element.color);
         if (color) label.color = color;
     }
-    
+
     label.textAlignment = 'center';
     return label;
 }
@@ -616,35 +636,31 @@ function renderDate(element: LayoutElement, context: RenderContext): View {
 /**
  * Main entry point: Render a widget from its JSON layout
  */
-export function renderWidget(
-    layout: WidgetLayout,
-    data: WidgetData,
-    size: { width: number; height: number }
-): View {
+export function renderWidget(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }): View {
     const context: RenderContext = { data, size };
-    
+
     // Select the appropriate layout variant
     const selectedLayout = selectLayout(layout, context);
-    
+
     // Create container with background
     const container = new GridLayout();
-    
+
     if (layout.background?.color) {
         const bgColor = resolveColor(layout.background.color);
         if (bgColor) container.backgroundColor = bgColor;
     }
-    
+
     // Apply default padding
     if (layout.defaultPadding) {
         container.padding = layout.defaultPadding;
     }
-    
+
     // Render the layout
     const content = renderElement(selectedLayout, context);
     if (content) {
         container.addChild(content);
     }
-    
+
     return container;
 }
 
@@ -652,11 +668,7 @@ export function renderWidget(
  * Load and render a widget by name
  * Note: Requires the layout to be passed directly or bundled with the app
  */
-export async function renderWidgetByName(
-    widgetName: string,
-    data: WidgetData,
-    size: { width: number; height: number }
-): Promise<View> {
+export async function renderWidgetByName(widgetName: string, data: WidgetData, size: { width: number; height: number }): Promise<View> {
     // Load the widget layout JSON
     const layoutJson = await loadWidgetLayout(widgetName);
     return renderWidget(layoutJson, data, size);
@@ -671,16 +683,16 @@ async function loadWidgetLayout(widgetName: string): Promise<WidgetLayout> {
     // This is a placeholder - actual implementation depends on bundler config
     // For NativeScript, you would typically import the JSON files directly:
     // import SimpleWeatherWidgetLayout from '~/widget-layouts/widgets/SimpleWeatherWidget.json';
-    
+
     const layouts: Record<string, () => Promise<WidgetLayout>> = {
-        'SimpleWeatherWidget': async () => require('~/widget-layouts/widgets/SimpleWeatherWidget.json'),
-        'SimpleWeatherWithClockWidget': async () => require('~/widget-layouts/widgets/SimpleWeatherWithClockWidget.json'),
-        'SimpleWeatherWithDateWidget': async () => require('~/widget-layouts/widgets/SimpleWeatherWithDateWidget.json'),
-        'HourlyWeatherWidget': async () => require('~/widget-layouts/widgets/HourlyWeatherWidget.json'),
-        'DailyWeatherWidget': async () => require('~/widget-layouts/widgets/DailyWeatherWidget.json'),
-        'ForecastWeatherWidget': async () => require('~/widget-layouts/widgets/ForecastWeatherWidget.json')
+        SimpleWeatherWidget: async () => require('~/widget-layouts/widgets/SimpleWeatherWidget.json'),
+        SimpleWeatherWithClockWidget: async () => require('~/widget-layouts/widgets/SimpleWeatherWithClockWidget.json'),
+        SimpleWeatherWithDateWidget: async () => require('~/widget-layouts/widgets/SimpleWeatherWithDateWidget.json'),
+        HourlyWeatherWidget: async () => require('~/widget-layouts/widgets/HourlyWeatherWidget.json'),
+        DailyWeatherWidget: async () => require('~/widget-layouts/widgets/DailyWeatherWidget.json'),
+        ForecastWeatherWidget: async () => require('~/widget-layouts/widgets/ForecastWeatherWidget.json')
     };
-    
+
     const loader = layouts[widgetName];
     if (!loader) {
         throw new Error(`Unknown widget: ${widgetName}`);

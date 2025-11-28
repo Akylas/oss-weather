@@ -5,36 +5,36 @@
 
 // Color mapping for theme colors
 const THEME_COLORS: Record<string, string> = {
-    'onSurface': '#E6E1E5',
-    'onSurfaceVariant': '#CAC4D0',
-    'primary': '#D0BCFF',
-    'error': '#F2B8B5',
-    'widgetBackground': '#1C1B1F',
-    'surface': '#2B2930'
+    onSurface: '#E6E1E5',
+    onSurfaceVariant: '#CAC4D0',
+    primary: '#D0BCFF',
+    error: '#F2B8B5',
+    widgetBackground: '#1C1B1F',
+    surface: '#2B2930'
 };
 
 // Font weight mapping
 const FONT_WEIGHTS: Record<string, string> = {
-    'normal': '400',
-    'medium': '500',
-    'bold': '700'
+    normal: '400',
+    medium: '500',
+    bold: '700'
 };
 
 export interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    supportedSizes?: Array<{ width: number; height: number; family: string }>;
+    supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
     background?: {
         type: string;
         color?: string;
         image?: string;
     };
-    variants?: Array<{
+    variants?: {
         condition: string;
         layout: LayoutElement;
-    }>;
+    }[];
     layout: LayoutElement;
 }
 
@@ -66,21 +66,21 @@ export interface WidgetData {
     locationName?: string;
     description?: string;
     iconPath?: string;
-    hourlyData?: Array<{
+    hourlyData?: {
         hour: string;
         temperature: string;
         iconPath?: string;
         description?: string;
         precipAccumulation?: string;
-    }>;
-    dailyData?: Array<{
+    }[];
+    dailyData?: {
         day: string;
         temperatureHigh: string;
         temperatureLow: string;
         iconPath?: string;
         description?: string;
         precipAccumulation?: string;
-    }>;
+    }[];
 }
 
 export interface RenderContext {
@@ -108,7 +108,7 @@ function resolveBinding(text: string, context: RenderContext): string {
     return text.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
         const parts = path.trim().split('.');
         let value: any = context;
-        
+
         for (const part of parts) {
             if (part === 'item' && context.item) {
                 value = context.item;
@@ -126,12 +126,7 @@ function resolveBinding(text: string, context: RenderContext): string {
  * Escape HTML special characters
  */
 function escapeHtml(text: string): string {
-    return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
 /**
@@ -141,38 +136,44 @@ function escapeHtml(text: string): string {
 function safeEvaluateExpression(expr: string): boolean {
     // Remove whitespace
     expr = expr.trim();
-    
+
     // Handle boolean literals
     if (expr === 'true') return true;
     if (expr === 'false') return false;
-    
+
     // Match simple comparison: number op number
     const comparisonMatch = expr.match(/^(\d+(?:\.\d+)?)\s*(<=|>=|<|>|==|!=)\s*(\d+(?:\.\d+)?)$/);
     if (comparisonMatch) {
         const left = parseFloat(comparisonMatch[1]);
         const op = comparisonMatch[2];
         const right = parseFloat(comparisonMatch[3]);
-        
+
         switch (op) {
-            case '<': return left < right;
-            case '>': return left > right;
-            case '<=': return left <= right;
-            case '>=': return left >= right;
-            case '==': return left === right;
-            case '!=': return left !== right;
+            case '<':
+                return left < right;
+            case '>':
+                return left > right;
+            case '<=':
+                return left <= right;
+            case '>=':
+                return left >= right;
+            case '==':
+                return left === right;
+            case '!=':
+                return left !== right;
         }
     }
-    
+
     // Handle && and || by splitting and recursing
     if (expr.includes('&&')) {
         const parts = expr.split('&&');
-        return parts.every(part => safeEvaluateExpression(part));
+        return parts.every((part) => safeEvaluateExpression(part));
     }
     if (expr.includes('||')) {
         const parts = expr.split('||');
-        return parts.some(part => safeEvaluateExpression(part));
+        return parts.some((part) => safeEvaluateExpression(part));
     }
-    
+
     // Default to true for unrecognized expressions
     return true;
 }
@@ -182,18 +183,16 @@ function safeEvaluateExpression(expr: string): boolean {
  */
 function evaluateCondition(condition: string, context: RenderContext): boolean {
     try {
-        let expr = condition
-            .replace(/size\.width/g, context.size.width.toString())
-            .replace(/size\.height/g, context.size.height.toString());
-        
+        let expr = condition.replace(/size\.width/g, context.size.width.toString()).replace(/size\.height/g, context.size.height.toString());
+
         expr = expr.replace(/\b([a-zA-Z_][a-zA-Z0-9_.]*)\b/g, (match) => {
             if (['true', 'false', 'null', 'undefined'].includes(match)) return match;
             if (/^\d+$/.test(match)) return match;
-            if (['<', '>', '<=', '>=', '==', '!=', '&&', '||'].some(op => match === op)) return match;
-            
+            if (['<', '>', '<=', '>=', '==', '!=', '&&', '||'].some((op) => match === op)) return match;
+
             const parts = match.split('.');
             let value: any = context;
-            
+
             for (const part of parts) {
                 if (part === 'item' && context.item) {
                     value = context.item;
@@ -204,13 +203,13 @@ function evaluateCondition(condition: string, context: RenderContext): boolean {
                     break;
                 }
             }
-            
+
             if (value === undefined || value === null || value === '') {
                 return 'false';
             }
             return 'true';
         });
-        
+
         // Use safe expression evaluator instead of Function constructor
         return safeEvaluateExpression(expr);
     } catch {
@@ -237,7 +236,7 @@ function selectLayout(widget: WidgetLayout, context: RenderContext): LayoutEleme
  */
 function buildStyles(element: LayoutElement): Record<string, string> {
     const styles: Record<string, string> = {};
-    
+
     // Padding
     if (element.padding !== undefined) {
         styles['padding'] = `${element.padding}px`;
@@ -250,7 +249,7 @@ function buildStyles(element: LayoutElement): Record<string, string> {
         styles['padding-top'] = `${element.paddingVertical}px`;
         styles['padding-bottom'] = `${element.paddingVertical}px`;
     }
-    
+
     // Margin
     if (element.margin !== undefined) {
         styles['margin'] = `${element.margin}px`;
@@ -263,7 +262,7 @@ function buildStyles(element: LayoutElement): Record<string, string> {
         styles['margin-top'] = `${element.marginVertical}px`;
         styles['margin-bottom'] = `${element.marginVertical}px`;
     }
-    
+
     // Size
     if (element.width !== undefined) {
         if (typeof element.width === 'number') {
@@ -279,22 +278,22 @@ function buildStyles(element: LayoutElement): Record<string, string> {
             styles['height'] = '100%';
         }
     }
-    
+
     // Flex
     if (element.flex !== undefined) {
         styles['flex'] = element.flex.toString();
     }
-    
+
     // Background
     if (element.backgroundColor) {
         styles['background-color'] = resolveColor(element.backgroundColor);
     }
-    
+
     // Corner radius
     if (element.cornerRadius !== undefined) {
         styles['border-radius'] = `${element.cornerRadius}px`;
     }
-    
+
     return styles;
 }
 
@@ -349,33 +348,53 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'column';
-    
+
     // Alignment
     if (element.alignment) {
         switch (element.alignment) {
-            case 'start': styles['justify-content'] = 'flex-start'; break;
-            case 'center': styles['justify-content'] = 'center'; break;
-            case 'end': styles['justify-content'] = 'flex-end'; break;
-            case 'spaceBetween': styles['justify-content'] = 'space-between'; break;
-            case 'spaceAround': styles['justify-content'] = 'space-around'; break;
-            case 'spaceEvenly': styles['justify-content'] = 'space-evenly'; break;
+            case 'start':
+                styles['justify-content'] = 'flex-start';
+                break;
+            case 'center':
+                styles['justify-content'] = 'center';
+                break;
+            case 'end':
+                styles['justify-content'] = 'flex-end';
+                break;
+            case 'spaceBetween':
+                styles['justify-content'] = 'space-between';
+                break;
+            case 'spaceAround':
+                styles['justify-content'] = 'space-around';
+                break;
+            case 'spaceEvenly':
+                styles['justify-content'] = 'space-evenly';
+                break;
         }
     }
     if (element.crossAlignment) {
         switch (element.crossAlignment) {
-            case 'start': styles['align-items'] = 'flex-start'; break;
-            case 'center': styles['align-items'] = 'center'; break;
-            case 'end': styles['align-items'] = 'flex-end'; break;
-            case 'stretch': styles['align-items'] = 'stretch'; break;
+            case 'start':
+                styles['align-items'] = 'flex-start';
+                break;
+            case 'center':
+                styles['align-items'] = 'center';
+                break;
+            case 'end':
+                styles['align-items'] = 'flex-end';
+                break;
+            case 'stretch':
+                styles['align-items'] = 'stretch';
+                break;
         }
     }
-    
+
     // Gap for spacing
     if (element.spacing) {
         styles['gap'] = `${element.spacing}px`;
     }
-    
-    const children = element.children?.map(child => renderElement(child, context)).join('') || '';
+
+    const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
     return `<div style="${stylesToString(styles)}">${children}</div>`;
 }
 
@@ -383,29 +402,45 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'row';
-    
+
     if (element.alignment) {
         switch (element.alignment) {
-            case 'start': styles['justify-content'] = 'flex-start'; break;
-            case 'center': styles['justify-content'] = 'center'; break;
-            case 'end': styles['justify-content'] = 'flex-end'; break;
-            case 'spaceBetween': styles['justify-content'] = 'space-between'; break;
+            case 'start':
+                styles['justify-content'] = 'flex-start';
+                break;
+            case 'center':
+                styles['justify-content'] = 'center';
+                break;
+            case 'end':
+                styles['justify-content'] = 'flex-end';
+                break;
+            case 'spaceBetween':
+                styles['justify-content'] = 'space-between';
+                break;
         }
     }
     if (element.crossAlignment) {
         switch (element.crossAlignment) {
-            case 'start': styles['align-items'] = 'flex-start'; break;
-            case 'center': styles['align-items'] = 'center'; break;
-            case 'end': styles['align-items'] = 'flex-end'; break;
-            case 'stretch': styles['align-items'] = 'stretch'; break;
+            case 'start':
+                styles['align-items'] = 'flex-start';
+                break;
+            case 'center':
+                styles['align-items'] = 'center';
+                break;
+            case 'end':
+                styles['align-items'] = 'flex-end';
+                break;
+            case 'stretch':
+                styles['align-items'] = 'stretch';
+                break;
         }
     }
-    
+
     if (element.spacing) {
         styles['gap'] = `${element.spacing}px`;
     }
-    
-    const children = element.children?.map(child => renderElement(child, context)).join('') || '';
+
+    const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
     return `<div style="${stylesToString(styles)}">${children}</div>`;
 }
 
@@ -414,18 +449,21 @@ function renderStack(element: LayoutElement, context: RenderContext): string {
     styles['position'] = 'relative';
     styles['width'] = '100%';
     styles['height'] = '100%';
-    
-    const children = element.children?.map((child, index) => {
-        const childHtml = renderElement(child, context);
-        return `<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">${childHtml}</div>`;
-    }).join('') || '';
-    
+
+    const children =
+        element.children
+            ?.map((child, index) => {
+                const childHtml = renderElement(child, context);
+                return `<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">${childHtml}</div>`;
+            })
+            .join('') || '';
+
     return `<div style="${stylesToString(styles)}">${children}</div>`;
 }
 
 function renderLabel(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
-    
+
     if (element.fontSize) {
         styles['font-size'] = `${element.fontSize}px`;
     }
@@ -450,21 +488,21 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
             styles['-webkit-box-orient'] = 'vertical';
         }
     }
-    
+
     const text = resolveBinding(element.text || '', context);
     return `<span style="${stylesToString(styles)}">${text}</span>`;
 }
 
 function renderImage(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
-    
+
     if (element.size) {
         styles['width'] = `${element.size}px`;
         styles['height'] = `${element.size}px`;
     }
-    
+
     const src = resolveBinding(element.src || '', context);
-    
+
     // For weather icons, use emoji placeholders in HTML preview
     if (!src || src.includes('{{')) {
         styles['font-size'] = element.size ? `${element.size * 0.8}px` : '32px';
@@ -473,20 +511,20 @@ function renderImage(element: LayoutElement, context: RenderContext): string {
         styles['justify-content'] = 'center';
         return `<span style="${stylesToString(styles)}">☁️</span>`;
     }
-    
+
     return `<img src="${src}" style="${stylesToString(styles)}" alt=""/>`;
 }
 
 function renderSpacer(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
-    
+
     if (element.size !== undefined) {
         styles['width'] = `${element.size}px`;
         styles['height'] = `${element.size}px`;
     } else {
         styles['flex'] = (element.flex || 1).toString();
     }
-    
+
     return `<div style="${stylesToString(styles)}"></div>`;
 }
 
@@ -496,7 +534,7 @@ function renderDivider(element: LayoutElement, context: RenderContext): string {
     styles['width'] = '100%';
     styles['background-color'] = resolveColor(element.color || 'onSurfaceVariant');
     styles['opacity'] = '0.3';
-    
+
     return `<div style="${stylesToString(styles)}"></div>`;
 }
 
@@ -506,8 +544,8 @@ function renderScrollView(element: LayoutElement, context: RenderContext): strin
     styles['overflow-y'] = element.direction === 'horizontal' ? 'hidden' : 'auto';
     styles['display'] = 'flex';
     styles['flex-direction'] = element.direction === 'horizontal' ? 'row' : 'column';
-    
-    const children = element.children?.map(child => renderElement(child, context)).join('') || '';
+
+    const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
     return `<div style="${stylesToString(styles)}">${children}</div>`;
 }
 
@@ -517,39 +555,41 @@ function renderForEach(element: LayoutElement, context: RenderContext): string {
     for (const part of parts) {
         items = items?.[part];
     }
-    
+
     if (!Array.isArray(items)) return '';
-    
+
     const limit = element.limit || items.length;
     const limitedItems = items.slice(0, limit);
-    
-    const html = limitedItems.map((item, index) => {
-        const itemContext: RenderContext = {
-            ...context,
-            item,
-            index
-        };
-        return element.itemTemplate ? renderElement(element.itemTemplate, itemContext) : '';
-    }).join('');
-    
+
+    const html = limitedItems
+        .map((item, index) => {
+            const itemContext: RenderContext = {
+                ...context,
+                item,
+                index
+            };
+            return element.itemTemplate ? renderElement(element.itemTemplate, itemContext) : '';
+        })
+        .join('');
+
     return html;
 }
 
 function renderConditional(element: LayoutElement, context: RenderContext): string {
     const condition = evaluateCondition(element.condition, context);
-    
+
     if (condition && element.then) {
         return renderElement(element.then, context);
     } else if (!condition && element.else) {
         return renderElement(element.else, context);
     }
-    
+
     return '';
 }
 
 function renderClock(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
-    
+
     if (element.fontSize) {
         styles['font-size'] = `${element.fontSize}px`;
     }
@@ -560,17 +600,17 @@ function renderClock(element: LayoutElement, context: RenderContext): string {
         styles['color'] = resolveColor(element.color);
     }
     styles['text-align'] = 'center';
-    
+
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-    
+
     return `<span style="${stylesToString(styles)}">${hours}:${minutes}</span>`;
 }
 
 function renderDate(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element);
-    
+
     if (element.fontSize) {
         styles['font-size'] = `${element.fontSize}px`;
     }
@@ -581,7 +621,7 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
         styles['color'] = resolveColor(element.color);
     }
     styles['text-align'] = 'center';
-    
+
     const now = new Date();
     const options: Intl.DateTimeFormatOptions = {
         weekday: 'long',
@@ -589,53 +629,44 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
         day: 'numeric'
     };
     const dateStr = now.toLocaleDateString('en-US', options);
-    
+
     return `<span style="${stylesToString(styles)}">${dateStr}</span>`;
 }
 
 /**
  * Render a complete widget as HTML
  */
-export function renderWidgetToHtml(
-    layout: WidgetLayout,
-    data: WidgetData,
-    size: { width: number; height: number }
-): string {
+export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }): string {
     const context: RenderContext = { data, size };
     const selectedLayout = selectLayout(layout, context);
-    
+
     const containerStyles: Record<string, string> = {
-        'width': `${size.width}px`,
-        'height': `${size.height}px`,
+        width: `${size.width}px`,
+        height: `${size.height}px`,
         'border-radius': '16px',
-        'overflow': 'hidden',
+        overflow: 'hidden',
         'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     };
-    
+
     if (layout.background?.color) {
         containerStyles['background-color'] = resolveColor(layout.background.color);
     }
-    
+
     if (layout.defaultPadding) {
         containerStyles['padding'] = `${layout.defaultPadding}px`;
     }
-    
+
     const content = renderElement(selectedLayout, context);
-    
+
     return `<div style="${stylesToString(containerStyles)}">${content}</div>`;
 }
 
 /**
  * Generate a full HTML page with the widget preview
  */
-export function generateWidgetPreviewPage(
-    layout: WidgetLayout,
-    data: WidgetData,
-    size: { width: number; height: number },
-    backgroundImage?: string
-): string {
+export function generateWidgetPreviewPage(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }, backgroundImage?: string): string {
     const widgetHtml = renderWidgetToHtml(layout, data, size);
-    
+
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -672,4 +703,3 @@ export function generateWidgetPreviewPage(
 }
 
 // Export for Node.js usage
-export { WidgetLayout, WidgetData, RenderContext };

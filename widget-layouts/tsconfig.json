@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES2022", // Or a recent target
+        "module": "NodeNext", // Or "ESNext"
+        "moduleResolution": "NodeNext", // Crucial for modern ESM
+        "outDir": "./dist", // Your output directory
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true,
+    },
+    "include": ["rendereder", "image-generator"]
+}

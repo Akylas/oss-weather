@@ -167,8 +167,6 @@ struct WidgetBackgroundView: View {
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        WidgetColorProvider.backgroundGradient(for: colorScheme)
-            .ignoresSafeArea()
     }
 }
 

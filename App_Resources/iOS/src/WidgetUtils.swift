@@ -6,7 +6,7 @@ import WidgetKit
 
 @objcMembers
 public class WidgetUtils: NSObject {
-	static let suiteName = "group.com.akylas.weather"
+	public static let suiteName = "group.com.akylas.weather"
 
 	
 

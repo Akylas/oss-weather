@@ -91,32 +91,17 @@ function isExpression(value: any): value is any[] {
 /**
  * Evaluate/compile a Mapbox expression to Kotlin code
  */
-function compileExpression(expr: Expression, context: 'value' | 'condition' = 'value', formatter?: (v: any) => string): string {
-    // Handle null/undefined
-    if (expr === null || expr === undefined) {
-        return 'null';
-    }
-    
+function compileExpression(expr: Expression, context: 'value' | 'condition' = 'value'): string {
     // Literal values
     if (typeof expr === 'string') {
-        if (formatter && context === 'value') {
-            return formatter(expr);
-        }
         return context === 'value' ? `"${expr}"` : expr;
     }
     if (typeof expr === 'number' || typeof expr === 'boolean') {
-        if (formatter && context === 'value') {
-            return formatter(expr);
-        }
         return String(expr);
     }
     
     if (!isExpression(expr)) {
-        const result = String(expr);
-        if (formatter && context === 'value') {
-            return formatter(result);
-        }
-        return result;
+        return String(expr);
     }
     
     const [op, ...args] = expr;
@@ -126,12 +111,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
         case 'get': {
             const prop = args[0] as string;
             if (prop.startsWith('size.')) {
-                // size.width -> size.width.value
-                const parts = prop.split('.');
-                if (parts.length === 2) {
-                    return `size.${parts[1]}.value`;
-                }
-                return prop + '.value';
+                return prop.replace('size.', 'size.') + '.value';
             }
             if (prop.startsWith('item.')) {
                 return prop; // Keep as-is for forEach items
@@ -150,37 +130,37 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
         
         // Arithmetic
         case '+':
-            return `(${compileExpression(args[0], context, formatter)} + ${compileExpression(args[1], context, formatter)})`;
+            return `(${compileExpression(args[0], context)} + ${compileExpression(args[1], context)})`;
         case '-':
-            return `(${compileExpression(args[0], context, formatter)} - ${compileExpression(args[1], context, formatter)})`;
+            return `(${compileExpression(args[0], context)} - ${compileExpression(args[1], context)})`;
         case '*':
-            return `(${compileExpression(args[0], context, formatter)} * ${compileExpression(args[1], context, formatter)})`;
+            return `(${compileExpression(args[0], context)} * ${compileExpression(args[1], context)})`;
         case '/':
-            return `(${compileExpression(args[0], context, formatter)} / ${compileExpression(args[1], context, formatter)})`;
+            return `(${compileExpression(args[0], context)} / ${compileExpression(args[1], context)})`;
         
         // Comparison
         case '<':
-            return `${compileExpression(args[0], 'condition', undefined)} < ${compileExpression(args[1], 'condition', undefined)}`;
+            return `${compileExpression(args[0], 'condition')} < ${compileExpression(args[1], 'condition')}`;
         case '<=':
-            return `${compileExpression(args[0], 'condition', undefined)} <= ${compileExpression(args[1], 'condition', undefined)}`;
+            return `${compileExpression(args[0], 'condition')} <= ${compileExpression(args[1], 'condition')}`;
         case '>':
-            return `${compileExpression(args[0], 'condition', undefined)} > ${compileExpression(args[1], 'condition', undefined)}`;
+            return `${compileExpression(args[0], 'condition')} > ${compileExpression(args[1], 'condition')}`;
         case '>=':
-            return `${compileExpression(args[0], 'condition', undefined)} >= ${compileExpression(args[1], 'condition', undefined)}`;
+            return `${compileExpression(args[0], 'condition')} >= ${compileExpression(args[1], 'condition')}`;
         case '==':
-            return `${compileExpression(args[0], 'condition', undefined)} == ${compileExpression(args[1], 'condition', undefined)}`;
+            return `${compileExpression(args[0], 'condition')} == ${compileExpression(args[1], 'condition')}`;
         case '!=':
-            return `${compileExpression(args[0], 'condition', undefined)} != ${compileExpression(args[1], 'condition', undefined)}`;
+            return `${compileExpression(args[0], 'condition')} != ${compileExpression(args[1], 'condition')}`;
         
         // Logical
         case '!':
-            return `!(${compileExpression(args[0], 'condition', undefined)})`;
+            return `!(${compileExpression(args[0], 'condition')})`;
         case 'all': {
-            const conditions = args.map(a => compileExpression(a, 'condition', undefined));
+            const conditions = args.map(a => compileExpression(a, 'condition'));
             return `(${conditions.join(' && ')})`;
         }
         case 'any': {
-            const conditions = args.map(a => compileExpression(a, 'condition', undefined));
+            const conditions = args.map(a => compileExpression(a, 'condition'));
             return `(${conditions.join(' || ')})`;
         }
         
@@ -189,16 +169,15 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             const pairs: string[] = [];
             for (let i = 0; i < args.length - 1; i += 2) {
                 if (i + 1 < args.length) {
-                    const condition = compileExpression(args[i], 'condition', undefined);
-                    const value = compileExpression(args[i + 1], context, formatter);
+                    const condition = compileExpression(args[i], 'condition');
+                    const value = compileExpression(args[i + 1], context);
                     pairs.push(`${condition} -> ${value}`);
                 }
             }
             // Last arg is the fallback
-            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context, formatter) : '""';
+            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context) : '""';
             
-            // Return as a single-line when expression for now
-            return `when { ${pairs.join('; ')}; else -> ${fallback} }`;
+            return `when {\n                ${pairs.join('\n                ')}\n                else -> ${fallback}\n            }`;
         }
         
         // String operations
@@ -241,8 +220,8 @@ function compilePropertyValue<T>(
         return formatter(value as T);
     }
     
-    // It's an expression, compile it with formatter
-    return compileExpression(value, 'value', formatter);
+    // It's an expression, compile it
+    return compileExpression(value, 'value');
 }
 
 /**
@@ -450,8 +429,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     }
 
     if (styleProps.length > 0) {
-        const styleStr = styleProps.join(', ');
-        lines.push(`${indent}    style = TextStyle(${styleStr})`);
+        lines.push(`${indent}    style = TextStyle(${styleProps.join(', ')})`);
     }
 
     if (maxLinesExpr) {
@@ -491,15 +469,12 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
     const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, undefined);
     const flexExpr = compilePropertyValue(element.flex, (v: number) => String(v), undefined);
 
-    if (sizeExpr && sizeExpr !== 'null') {
+    if (sizeExpr) {
         lines.push(`${indent}Spacer(modifier = GlanceModifier.height(${sizeExpr}))`);
-    } else if (flexExpr && flexExpr !== 'null') {
+    } else if (flexExpr) {
         lines.push(`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`);
     } else {
-        // If both are null, don't generate anything (it's conditional)
-        if (sizeExpr !== 'null' || flexExpr !== 'null') {
-            lines.push(`${indent}Spacer(modifier = GlanceModifier.height(8.dp))`);
-        }
+        lines.push(`${indent}Spacer(modifier = GlanceModifier.height(8.dp))`);
     }
 
     return lines;
@@ -718,14 +693,8 @@ function main() {
         fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    // Process all widget JSON files (excluding backups and test files)
-    const files = fs.readdirSync(widgetsDir).filter(f => 
-        f.endsWith('.json') && 
-        !f.includes('.refactored') && 
-        !f.includes('.old') && 
-        !f.includes('.mapbox') &&
-        !f.includes('.backup')
-    );
+    // Process all widget JSON files
+    const files = fs.readdirSync(widgetsDir).filter(f => f.endsWith('.json') && !f.includes('.refactored'));
 
     for (const file of files) {
         const filePath = path.join(widgetsDir, file);
@@ -736,7 +705,7 @@ function main() {
 
         const kotlinCode = generateKotlinFile(layout);
         const outputPath = path.join(outputDir, `${layout.name}Content.generated.kt`);
-        fs.writeFileSync(outputPath, kotlinCode, 'utf-8');
+        fs.writeFileSync(outputPath, kotlinCode);
 
         console.log(`  → ${outputPath}`);
     }

@@ -36,23 +36,23 @@ fun SimpleWeatherWithClockWidgetContent(data: SimpleWeatherWithClockWidgetData) 
         ) {
             Text(
                 text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                style = TextStyle(fontSize = 48.sp, color = GlanceTheme.colors.onSurface)
+                style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, color = GlanceTheme.colors.onSurface)
             )
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
-                if (iconPath) {
+                if (data.iconPath.isNotEmpty()) {
                     Image(
-                        provider = ImageProvider(resId = R.drawable.${data.iconPath}),
+                        provider = ImageProvider(resId = R.drawable.data.iconPath),
                         contentDescription = null,
-                        modifier = GlanceModifier.size(56.dp)
+                        modifier = GlanceModifier.size(when { size.width.value < 100 -> 32.dp; size.width.value < 150 -> 40.dp; else -> 56.dp })
                     )
                 }
                 Text(
-                    text = "${data.temperature}",
-                    style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    text = data.temperature,
+                    style = TextStyle(fontSize = when { size.width.value < 100 -> 18.sp; size.width.value < 150 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
@@ -64,8 +64,8 @@ fun SimpleWeatherWithClockWidgetContent(data: SimpleWeatherWithClockWidgetData) 
         ) {
             Spacer(modifier = GlanceModifier.defaultWeight())
             Text(
-                text = "${data.locationName}",
-                style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                text = data.locationName,
+                style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant)
                 maxLines = 1
             )
         }

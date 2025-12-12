@@ -32,7 +32,7 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         Text(
-            text = "${data.locationName}",
+            text = data.locationName,
             style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
             maxLines = 1
         )
@@ -41,7 +41,7 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
             verticalAlignment = Alignment.Vertical.CenterVertically,
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
-            data.dailyData.take(5).forEach { item ->
+            data.dailyData.take(case,<=,get,size.height,150,3,5).forEach { item ->
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
@@ -61,7 +61,7 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
-                        if (item.precipAccumulation) {
+                        if (item.precipAccumulation.isNotEmpty()) {
                             Text(
                                 text = "${data.item.precipAccumulation}",
                                 style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)

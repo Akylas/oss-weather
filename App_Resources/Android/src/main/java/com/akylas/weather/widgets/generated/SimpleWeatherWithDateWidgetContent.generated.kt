@@ -33,7 +33,7 @@ fun SimpleWeatherWithDateWidgetContent(data: SimpleWeatherWithDateWidgetData) {
     ) {
         Text(
             text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
-            style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = when { size.height.value < 60 -> 10.sp; size.height.value < 80 -> 12.sp; else -> 14.sp }, color = GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.defaultWeight())
         Row(
@@ -41,22 +41,22 @@ fun SimpleWeatherWithDateWidgetContent(data: SimpleWeatherWithDateWidgetData) {
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
-            if (iconPath) {
+            if (data.iconPath.isNotEmpty()) {
                 Image(
-                    provider = ImageProvider(resId = R.drawable.${data.iconPath}),
+                    provider = ImageProvider(resId = R.drawable.data.iconPath),
                     contentDescription = null,
-                    modifier = GlanceModifier.size(40.dp)
+                    modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 32.dp; else -> 40.dp })
                 )
             }
             Text(
-                text = "${data.temperature}",
-                style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                text = data.temperature,
+                style = TextStyle(fontSize = when { size.height.value < 60 -> 16.sp; size.height.value < 80 -> 20.sp; else -> 24.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
             )
         }
         Spacer(modifier = GlanceModifier.defaultWeight())
         Text(
-            text = "${data.locationName}",
-            style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant)
+            text = data.locationName,
+            style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; size.height.value < 80 -> 11.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant)
             maxLines = 1
         )
     }

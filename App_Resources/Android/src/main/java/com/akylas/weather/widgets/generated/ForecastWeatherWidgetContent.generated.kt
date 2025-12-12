@@ -37,7 +37,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
             Image(
-                provider = ImageProvider(resId = R.drawable.${data.iconPath}),
+                provider = ImageProvider(resId = R.drawable.data.iconPath),
                 contentDescription = null,
                 modifier = GlanceModifier.size(40.dp)
             )
@@ -47,11 +47,11 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 Text(
-                    text = "${data.temperature}",
+                    text = data.temperature,
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
                 Text(
-                    text = "${data.locationName}",
+                    text = data.locationName,
                     style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant)
                 )
             }
@@ -94,7 +94,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
                             text = "${data.item.temperature}",
                             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                         )
-                        if (item.precipAccumulation) {
+                        if (item.precipAccumulation.isNotEmpty()) {
                             Text(
                                 text = "${data.item.precipAccumulation}",
                                 style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurfaceVariant)
@@ -117,7 +117,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
             verticalAlignment = Alignment.Vertical.CenterVertically,
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
-            data.dailyData.take(5).forEach { item ->
+            data.dailyData.take(case,<=,get,size.height,240,3,5).forEach { item ->
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
@@ -137,7 +137,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
-                        if (item.precipAccumulation) {
+                        if (item.precipAccumulation.isNotEmpty()) {
                             Text(
                                 text = "${data.item.precipAccumulation}",
                                 style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)

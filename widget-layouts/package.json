@@ -15,7 +15,8 @@
     "dev": "vite"
   },
   "dependencies": {
-    "puppeteer": "^24.31.0"
+    "puppeteer": "^24.31.0",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/node": "^24.10.3",

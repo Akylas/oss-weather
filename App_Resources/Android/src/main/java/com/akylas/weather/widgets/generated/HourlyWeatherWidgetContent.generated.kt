@@ -31,12 +31,16 @@ fun HourlyWeatherWidgetContent(data: HourlyWeatherWidgetData) {
         verticalAlignment = Alignment.Vertical.Top,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
-        Text(
-            text = "${data.locationName}",
-            style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
-            maxLines = 1
-        )
-        Spacer(modifier = GlanceModifier.height(4.dp))
+        if (size.height.value >= 80) {
+            Text(
+                text = data.locationName,
+                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                maxLines = 1
+            )
+        }
+        if (size.height.value >= 80) {
+            Spacer(modifier = GlanceModifier.height(4.dp))
+        }
         Column(
             modifier = GlanceModifier.fillMaxSize(),
             verticalAlignment = Alignment.Vertical.CenterVertically,
@@ -55,21 +59,21 @@ fun HourlyWeatherWidgetContent(data: HourlyWeatherWidgetData) {
                     ) {
                         Text(
                             text = "${data.item.hour}",
-                            style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                            style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant)
                         )
                         Image(
                             provider = ImageProvider(resId = R.drawable.${data.item.iconPath}),
                             contentDescription = null,
-                            modifier = GlanceModifier.size(32.dp)
+                            modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 28.dp; else -> 32.dp })
                         )
                         Text(
                             text = "${data.item.temperature}",
-                            style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                            style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                         )
-                        if (item.precipAccumulation) {
+                        if ((item.precipAccumulation.isNotEmpty() && size.height.value >= 80)) {
                             Text(
                                 text = "${data.item.precipAccumulation}",
-                                style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                style = TextStyle(fontSize = when { size.height.value < 80 -> 9.sp; else -> 10.sp }, color = GlanceTheme.colors.onSurfaceVariant)
                             )
                         }
                     }

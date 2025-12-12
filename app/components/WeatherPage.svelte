@@ -88,7 +88,7 @@
     let loading = false;
     let provider: ProviderType;
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
-    let weatherData: WeatherData = getCachedWeather(provider, weatherLocation, { model: weatherLocation.omModel, ignoreCache: false }, 0);
+    let weatherData: WeatherData = getCachedWeather(provider, weatherLocation, { model: weatherLocation?.omModel, ignoreCache: false }, 0);
     DEV_LOG && console.log('weatherData', !!weatherData);
     const data_version = ApplicationSettings.getNumber('data_version', -1);
     if (data_version !== DATA_VERSION) {

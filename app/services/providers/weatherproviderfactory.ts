@@ -58,7 +58,7 @@ function getCacheKey(providerId: string, weatherLocation: WeatherLocation, optio
  */
 export function getCachedWeather(providerId: string, weatherLocation: WeatherLocation, options?: GetWeatherOptions & { ignoreCache?: boolean }, maxAge = CACHE_EXPIRY_MS): WeatherData | null {
     try {
-        if (options?.ignoreCache) {
+        if (options?.ignoreCache || !weatherLocation) {
             return null;
         }
         const cacheKey = getCacheKey(providerId, weatherLocation, options);

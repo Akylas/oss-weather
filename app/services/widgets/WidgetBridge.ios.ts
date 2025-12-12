@@ -1,11 +1,6 @@
-// app/services/widgets/ios/IOSWidgetBridge.ts
-// iOS-specific widget bridge using shared logic
-
-import { Application, Device, File, knownFolders, path } from '@nativescript/core';
-import { WidgetDataManager, isDefaultLocation } from './WidgetDataManager';
-import { WidgetConfigManager } from './WidgetConfigManager';
 import WidgetBridgeBase from './WidgetBridge.common';
-import { WeatherWidgetData } from './WidgetTypes';
+import { WidgetConfigManager } from './WidgetConfigManager';
+import { WidgetDataManager } from './WidgetDataManager';
 
 const TAG = '[WidgetBridge.iOS]';
 
@@ -21,24 +16,24 @@ export class WidgetBridge extends WidgetBridgeBase {
         super();
         this.dataManager = new WidgetDataManager();
         this.setupAppGroupContainer();
-        this.observeWidgetEvents();
+        // this.observeWidgetEvents();
     }
 
     /**
      * Observe widget lifecycle events from extension
      */
     private widgetEventObserver: any;
+    private widgetEventObserverCallbackFunctionRef: any;
     private observeWidgetEvents() {
         try {
             // Listen for Darwin notifications from widget extension
-            this.widgetEventObserver = new interop.Reference<any>();
+            this.widgetEventObserver = new interop.Reference<any>(interop.types.void);
+            this.widgetEventObserverCallbackFunctionRef = new interop.FunctionReference(observerCallback);
             CFNotificationCenterAddObserver(
                 CFNotificationCenterGetDarwinNotifyCenter(),
                 this.widgetEventObserver,
-                (center, observer, name, object, userInfo) => {
-                    this.handleWidgetEvent();
-                },
-                'com.akylas.weather.widgetEvent' as any,
+                this.widgetEventObserverCallbackFunctionRef,
+                'com.akylas.weather.widgetEvent',
                 null,
                 CFNotificationSuspensionBehavior.DeliverImmediately
             );
@@ -52,7 +47,7 @@ export class WidgetBridge extends WidgetBridgeBase {
     /**
      * Handle widget event from extension
      */
-    private handleWidgetEvent() {
+    public handleWidgetEvent() {
         try {
             const data = WidgetUtils.dataForKey('last_widget_event');
             if (data) {
@@ -510,3 +505,6 @@ export class WidgetBridge extends WidgetBridgeBase {
     }
 }
 export const widgetService = new WidgetBridge();
+function observerCallback(center, observer, name, object, userInfo) {
+    widgetService.handleWidgetEvent();
+}

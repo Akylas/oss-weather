@@ -71,109 +71,13 @@ class DailyWeatherWidget : WeatherWidget() {
         isLarge: Boolean
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering daily content for ${data.locationName}, isLarge=$isLarge")
-
-        WidgetComposables.WidgetContainer() {
-            // Header
-            WidgetComposables.LocationHeader( data.locationName, 14.sp)
-            
-            Spacer(modifier = GlanceModifier.height(8.dp))
-            
-            // Daily forecast items
-            LazyColumn(
-                modifier = GlanceModifier.fillMaxSize()
-            ) {
-                items(data.dailyData) { day ->
-                    DailyItem( day, isLarge)
-                }
-            }
-        }
-    }
-
-    @SuppressLint("RestrictedApi")
-    @Composable
-    private fun DailyItem(
-        day: DailyData,
-        showExtraData: Boolean,
-    ) {
-        Row(modifier = GlanceModifier.fillMaxWidth()) {
-            Spacer(modifier = GlanceModifier.height(4.dp).fillMaxWidth())
-            WidgetComposables.CardItem() {
-                // Day name
-                Text(
-                    text = day.day,
-                    style = TextStyle(
-                        color = GlanceTheme.colors.onBackground,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    modifier = GlanceModifier.defaultWeight(),
-                    maxLines = 1
-                )
-
-                Spacer(modifier = GlanceModifier.width(8.dp))
-
-                // Weather icon - bigger
-                WidgetComposables.WeatherIcon( day.iconPath, day.description, 28.dp)
-
-                Spacer(modifier = GlanceModifier.width(8.dp))
-
-                // Temperature range
-                Row(
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.End,
-                    modifier = GlanceModifier.defaultWeight()
-                ) {
-                    // Add precipAccumulation before temperatures
-                    if (day.precipAccumulation.isNotEmpty() && day.precipAccumulation != "0mm" && day.precipAccumulation != "0\"") {
-                        WidgetComposables.PrecipitationText(day.precipAccumulation, 10.sp)
-                        Spacer(modifier = GlanceModifier.width(6.dp))
-                    }
-
-                    Text(
-                        text = day.temperatureHigh,
-                        style = TextStyle(
-                            color = GlanceTheme.colors.onBackground,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
-                        ),
-                        maxLines = 1
-                    )
-
-                    Spacer(modifier = GlanceModifier.width(4.dp))
-
-                    Text(
-                        text = day.temperatureLow,
-                        style = TextStyle(
-                            color = GlanceTheme.colors.onSurfaceVariant,
-                            fontSize = 13.sp
-                        ),
-                        maxLines = 1
-                    )
-                }
-
-                if (showExtraData) {
-                    Spacer(modifier = GlanceModifier.width(8.dp))
-
-                    // Precipitation chance
-                    if (day.precipitation.isNotEmpty() && day.precipitation != "0%") {
-                        WidgetComposables.DataLabel(
-                            "💧",
-                            day.precipitation,
-                            useAccentColor = true
-                        )
-                    }
-
-                    // Wind speed
-                    if (day.windSpeed.isNotEmpty()) {
-                        WidgetComposables.DataLabel(
-                            "💨",
-                            day.windSpeed,
-                            useAccentColor = false
-                        )
-                    }
-                }
-            }
-        }
-
+        
+        // Use the generated content from JSON layout definition
+        val size = if (isLarge) DpSize(260.dp, 400.dp) else DpSize(260.dp, 200.dp)
+        com.akylas.weather.widgets.generated.DailyWeatherWidgetContent.Content(
+            modifier = GlanceModifier,
+            data = data,
+            size = size
+        )
     }
 }

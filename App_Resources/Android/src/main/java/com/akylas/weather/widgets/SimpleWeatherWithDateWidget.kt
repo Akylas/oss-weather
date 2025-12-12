@@ -117,75 +117,12 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
         size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather with date for ${data.locationName}")
-
-        // Support down to 50dp height
-        val padding = when {
-            size.height < 60.dp -> 2.dp
-            size.height < 80.dp -> 4.dp
-            else -> 6.dp
-        }
         
-        val isVerySmall = size.height < 60.dp
-
-        WidgetComposables.WidgetContainer(padding = padding) {
-            Column(
-                modifier = modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Date
-                val dateFontSize = when {
-                    isVerySmall -> 10.sp
-                    size.height < 80.dp -> 12.sp
-                    else -> 14.sp
-                }
-                
-                val dateFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
-                val currentDate = dateFormat.format(Date())
-                
-                Text(
-                    text = currentDate,
-                    style = TextStyle(
-                        fontSize = dateFontSize,
-                        color = GlanceTheme.colors.onSurface
-                    ),
-                    maxLines = 1
-                )
-                
-                // Weather info
-                Row(
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Bigger icon
-                    val iconSize = when {
-                        isVerySmall -> 24.dp
-                        size.height < 80.dp -> 32.dp
-                        else -> 40.dp
-                    }
-                    
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-                    
-                    Spacer(modifier = GlanceModifier.width(if (isVerySmall) 4.dp else 8.dp))
-                    
-                    val tempFontSize = when {
-                        isVerySmall -> 16.sp
-                        size.height < 80.dp -> 20.sp
-                        else -> 24.sp
-                    }
-                    
-                    WidgetComposables.TemperatureText(data.temperature, tempFontSize)
-                }
-                
-                // Location
-                val locationFontSize = when {
-                    isVerySmall -> 9.sp
-                    size.height < 80.dp -> 11.sp
-                    else -> 12.sp
-                }
-                
-                WidgetComposables.LocationHeader(data.locationName, locationFontSize, maxLines = 1)
-            }
-        }
+        // Use the generated content from JSON layout definition
+        com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent.Content(
+            modifier = modifier,
+            data = data,
+            size = size
+        )
     }
 }

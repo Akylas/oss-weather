@@ -66,94 +66,12 @@ class HourlyWeatherWidget : WeatherWidget() {
         size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering hourly content for ${data.locationName}")
-
-        // Support smaller heights
-        val padding = when {
-            size.height < 60.dp -> 2.dp
-            size.height < 80.dp -> 4.dp
-            else -> 6.dp
-        }
         
-        val isSmall = size.height < 80.dp
-
-        WidgetComposables.WidgetContainer(padding = padding) {
-            Column(modifier = GlanceModifier.fillMaxSize()) {
-                if (!isSmall) {
-                    WidgetComposables.LocationHeader(data.locationName, 14.sp)
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                }
-
-                Row(
-                    modifier = GlanceModifier.fillMaxSize()
-                ) {
-                    data.hourlyData.take(8).forEachIndexed { index, hour ->
-                        HourlyItem(hour, size)
-                    }
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun HourlyItem(
-        hour: HourlyData,
-        size: DpSize
-    ) {
-        val isVerySmall = size.height < 60.dp
-        val isSmall = size.height < 80.dp
-        
-        Column(
-            modifier = GlanceModifier
-                .width(56.dp)
-                .fillMaxHeight()
-                .padding(horizontal = 4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalAlignment = Alignment.Vertical.Top
-        ) {
-            // Time
-            val timeFontSize = if (isVerySmall) 9.sp else 11.sp
-            Text(
-                text = hour.time,
-                style = TextStyle(
-                    fontSize = timeFontSize,
-                    color = WidgetTheme.colors.onSurfaceVariant
-                ),
-                maxLines = 1
-            )
-            
-            if (!isVerySmall) {
-                Spacer(modifier = GlanceModifier.height(2.dp))
-            }
-            
-            // Icon - bigger
-            val iconSize = when {
-                isVerySmall -> 24.dp
-                isSmall -> 28.dp
-                else -> 32.dp
-            }
-            WidgetComposables.WeatherIcon(hour.iconPath, hour.description, iconSize)
-            
-            if (!isVerySmall) {
-                Spacer(modifier = GlanceModifier.height(2.dp))
-            }
-            
-            // Temperature
-            val tempFontSize = if (isVerySmall) 12.sp else 14.sp
-            Text(
-                text = hour.temperature,
-                style = TextStyle(
-                    fontSize = tempFontSize,
-                    fontWeight = FontWeight.Bold,
-                    color = WidgetTheme.colors.onSurface
-                ),
-                maxLines = 1
-            )
-            
-            // Add precipAccumulation if present and not very small
-            if (!isVerySmall && hour.precipAccumulation.isNotEmpty() && hour.precipAccumulation != "0mm" && hour.precipAccumulation != "0\"") {
-                Spacer(modifier = GlanceModifier.height(2.dp))
-                WidgetComposables.PrecipitationText(hour.precipAccumulation, if (isSmall) 9.sp else 10.sp)
-            }
-        }
+        // Use the generated content from JSON layout definition
+        com.akylas.weather.widgets.generated.HourlyWeatherWidgetContent.Content(
+            modifier = GlanceModifier,
+            data = data,
+            size = size
+        )
     }
 }

@@ -3,6 +3,8 @@
  * Parses JSON widget layouts and renders them as HTML for preview generation
  */
 
+import { evaluateExpression, isExpression } from '../mapbox-expressions';
+
 // Color mapping for theme colors
 const THEME_COLORS: Record<string, string> = {
     onSurface: '#E6E1E5',
@@ -90,6 +92,16 @@ export interface RenderContext {
     index?: number;
     assetsBaseUrl?: string;
     themeVars?: Record<string, string>;
+}
+
+/**
+ * Resolve a property value that might be a Mapbox expression or literal
+ */
+function resolveValue(value: any, context: RenderContext): any {
+    if (isExpression(value)) {
+        return evaluateExpression(value, context);
+    }
+    return value;
 }
 
 /**

@@ -4,6 +4,7 @@
  */
 
 import { Color, FlexboxLayout, GridLayout, Image, Label, ScrollView, StackLayout, View } from '@nativescript/core';
+import { evaluateExpression, isExpression } from '../mapbox-expressions';
 
 // Color mapping for theme colors
 const THEME_COLORS: Record<string, string> = {
@@ -88,6 +89,16 @@ export interface RenderContext {
     size: { width: number; height: number };
     item?: any; // For forEach loops
     index?: number;
+}
+
+/**
+ * Resolve a property value that might be a Mapbox expression or literal
+ */
+function resolveValue(value: any, context: RenderContext): any {
+    if (isExpression(value)) {
+        return evaluateExpression(value, context);
+    }
+    return value;
 }
 
 /**

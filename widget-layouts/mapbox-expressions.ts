@@ -77,9 +77,9 @@ export function evaluateExpression(expr: Expression, context: any): any {
         case '>=':
             return evaluateExpression(args[0], context) >= evaluateExpression(args[1], context);
         case '==':
-            return evaluateExpression(args[0], context) == evaluateExpression(args[1], context);
+            return evaluateExpression(args[0], context) === evaluateExpression(args[1], context);
         case '!=':
-            return evaluateExpression(args[0], context) != evaluateExpression(args[1], context);
+            return evaluateExpression(args[0], context) !== evaluateExpression(args[1], context);
         
         // Logical
         case '!':
@@ -92,18 +92,17 @@ export function evaluateExpression(expr: Expression, context: any): any {
         // Conditional (case statement)
         case 'case': {
             for (let i = 0; i < args.length - 1; i += 2) {
-                if (i + 1 < args.length) {
-                    const condition = evaluateExpression(args[i], context);
-                    if (condition) {
-                        return evaluateExpression(args[i + 1], context);
-                    }
+                const condition = evaluateExpression(args[i], context);
+                if (condition) {
+                    return evaluateExpression(args[i + 1], context);
                 }
             }
-            // Last arg is the fallback
+            // Last arg is the fallback (always present for odd-length args)
             if (args.length % 2 === 1) {
                 return evaluateExpression(args[args.length - 1], context);
             }
-            return undefined;
+            // If no fallback provided and no conditions matched, return null
+            return null;
         }
         
         default:

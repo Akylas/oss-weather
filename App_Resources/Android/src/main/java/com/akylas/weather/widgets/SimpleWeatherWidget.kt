@@ -77,77 +77,12 @@ class SimpleWeatherWidget : WeatherWidget() {
         size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather content for ${data.locationName}")
-
-        // Adjust padding based on size
-        val padding = when {
-            size.width < 100.dp -> 4.dp
-            size.width < 150.dp -> 6.dp
-            else -> 8.dp
-        }
-
-        WidgetComposables.WidgetContainer(padding = padding) {
-            if (size.width < 80.dp) {
-                // Very Small widget: Vertical layout with large icon and small temp
-                Column(
-                    modifier = modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = GlanceModifier.defaultWeight())
-
-                    // Large icon
-                    val iconSize = (size.width.value * 0.5f).dp.coerceAtLeast(32.dp)
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-
-                    // Small temperature
-                    WidgetComposables.TemperatureText(data.temperature, 14.sp)
-
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-
-                    // Location at bottom, scaled with size
-                    val locationFontSize = (size.width.value / 15).coerceIn(8f, 12f).sp
-                    WidgetComposables.LocationHeader(data.locationName, locationFontSize, maxLines = 1)
-                }
-            } else if (size.width < 200.dp) {
-                // Small widget: Vertical layout
-                Column(
-                    modifier = modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    WidgetComposables.LocationHeader(data.locationName, 12.sp)
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-
-                    // Bigger icon - 40% of width
-                    val iconSize = (size.width.value * 0.4f).dp.coerceAtLeast(48.dp)
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                    WidgetComposables.TemperatureText(data.temperature, 32.sp)
-                }
-            } else {
-                // Medium widget: More spacious layout with bigger icon
-                Column(
-                    modifier = modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    WidgetComposables.LocationHeader(data.locationName, 16.sp)
-                    Spacer(modifier = GlanceModifier.height(8.dp))
-
-                    // Bigger icon
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, 72.dp)
-
-                    Spacer(modifier = GlanceModifier.height(8.dp))
-                    WidgetComposables.TemperatureText(data.temperature, 48.sp)
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                    if (data.description.isNotEmpty()) {
-                        WidgetComposables.DescriptionText(data.description, 14.sp)
-                    }
-                }
-            }
-        }
+        
+        // Use the generated content from JSON layout definition
+        com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent.Content(
+            modifier = modifier,
+            data = data,
+            size = size
+        )
     }
 }

@@ -14,117 +14,102 @@
     "type": "solid",
     "color": "widgetBackground"
   },
-  "variants": [
-    {
-      "condition": "size.width < 80",
-      "layout": {
-        "type": "column",
-        "alignment": "center",
-        "crossAlignment": "center",
-        "padding": 4,
-        "children": [
-          { "type": "spacer", "flex": 1 },
-          {
-            "type": "image",
-            "src": "{{iconPath}}",
-            "size": 32,
-            "visibleIf": "iconPath"
-          },
-          { "type": "spacer", "size": 4 },
-          {
-            "type": "label",
-            "text": "{{temperature}}",
-            "fontSize": 14,
-            "fontWeight": "bold",
-            "color": "onSurface",
-            "textAlign": "center"
-          },
-          { "type": "spacer", "size": 4 },
-          {
-            "type": "label",
-            "text": "{{locationName}}",
-            "fontSize": 8,
-            "color": "onSurfaceVariant",
-            "textAlign": "center",
-            "maxLines": 1
-          }
-        ]
-      }
-    },
-    {
-      "condition": "size.width < 200",
-      "layout": {
-        "type": "column",
-        "alignment": "center",
-        "crossAlignment": "center",
-        "padding": 6,
-        "children": [
-          {
-            "type": "label",
-            "text": "{{locationName}}",
-            "fontSize": 12,
-            "color": "onSurfaceVariant",
-            "textAlign": "center",
-            "maxLines": 1
-          },
-          { "type": "spacer", "flex": 1 },
-          {
-            "type": "image",
-            "src": "{{iconPath}}",
-            "size": 48,
-            "visibleIf": "iconPath"
-          },
-          { "type": "spacer", "flex": 1 },
-          {
-            "type": "label",
-            "text": "{{temperature}}",
-            "fontSize": 32,
-            "fontWeight": "bold",
-            "color": "onSurface",
-            "textAlign": "center"
-          }
-        ]
-      }
-    }
-  ],
   "layout": {
     "type": "column",
     "alignment": "center",
     "crossAlignment": "center",
-    "padding": 8,
     "children": [
       {
-        "type": "label",
-        "text": "{{locationName}}",
-        "fontSize": 16,
-        "color": "onSurfaceVariant",
-        "textAlign": "center",
-        "maxLines": 1
+        "type": "conditional",
+        "condition": "size.width >= 80",
+        "then": {
+          "type": "label",
+          "text": "{{locationName}}",
+          "fontSize": {
+            "if": [
+              { "condition": "size.width >= 200", "value": 16 },
+              { "default": 12 }
+            ]
+          },
+          "color": "onSurfaceVariant",
+          "textAlign": "center",
+          "maxLines": 1
+        }
       },
-      { "type": "spacer", "size": 8 },
+      {
+        "type": "spacer",
+        "flex": {
+          "if": [
+            { "condition": "size.width < 200", "value": 1 }
+          ]
+        },
+        "size": {
+          "if": [
+            { "condition": "size.width >= 200", "value": 8 }
+          ]
+        }
+      },
       {
         "type": "image",
         "src": "{{iconPath}}",
-        "size": 72,
+        "size": {
+          "if": [
+            { "condition": "size.width < 80", "value": 32 },
+            { "condition": "size.width < 200", "value": 48 },
+            { "default": 72 }
+          ]
+        },
         "visibleIf": "iconPath"
       },
-      { "type": "spacer", "size": 8 },
+      {
+        "type": "spacer",
+        "flex": {
+          "if": [
+            { "condition": "size.width >= 80 && size.width < 200", "value": 1 }
+          ]
+        },
+        "size": {
+          "if": [
+            { "condition": "size.width < 80", "value": 4 },
+            { "condition": "size.width >= 200", "value": 8 }
+          ]
+        }
+      },
       {
         "type": "label",
         "text": "{{temperature}}",
-        "fontSize": 48,
+        "fontSize": {
+          "if": [
+            { "condition": "size.width < 80", "value": 14 },
+            { "condition": "size.width < 200", "value": 32 },
+            { "default": 48 }
+          ]
+        },
         "fontWeight": "bold",
         "color": "onSurface",
         "textAlign": "center"
       },
-      { "type": "spacer", "size": 4 },
+      {
+        "type": "spacer",
+        "size": 4,
+        "visibleIf": "size.width < 80 || size.width >= 200"
+      },
+      {
+        "type": "label",
+        "text": "{{locationName}}",
+        "fontSize": 8,
+        "color": "onSurfaceVariant",
+        "textAlign": "center",
+        "maxLines": 1,
+        "visibleIf": "size.width < 80"
+      },
       {
         "type": "label",
         "text": "{{description}}",
         "fontSize": 14,
         "color": "onSurfaceVariant",
         "textAlign": "center",
-        "visibleIf": "description"
+        "visibleIf": "description && size.width >= 200"
       }
     ]
   }

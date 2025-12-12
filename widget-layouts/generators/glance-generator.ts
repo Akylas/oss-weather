@@ -7,34 +7,40 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+interface ConditionalValue<T> {
+    if: Array<{ condition?: string; value?: T; default?: T }>;
+}
+
+type PropertyValue<T> = T | ConditionalValue<T>;
+
 interface LayoutElement {
     type: string;
     id?: string;
     visible?: boolean;
     visibleIf?: string;
-    padding?: number;
-    paddingHorizontal?: number;
-    paddingVertical?: number;
-    margin?: number;
-    spacing?: number;
+    padding?: PropertyValue<number>;
+    paddingHorizontal?: PropertyValue<number>;
+    paddingVertical?: PropertyValue<number>;
+    margin?: PropertyValue<number>;
+    spacing?: PropertyValue<number>;
     alignment?: string;
     crossAlignment?: string;
-    width?: number | string;
-    height?: number | string;
-    flex?: number;
-    backgroundColor?: string;
-    cornerRadius?: number;
+    width?: PropertyValue<number | string>;
+    height?: PropertyValue<number | string>;
+    flex?: PropertyValue<number>;
+    backgroundColor?: PropertyValue<string>;
+    cornerRadius?: PropertyValue<number>;
     children?: LayoutElement[];
     // Element-specific
     text?: string;
-    fontSize?: number;
-    fontWeight?: string;
-    color?: string;
+    fontSize?: PropertyValue<number>;
+    fontWeight?: PropertyValue<string>;
+    color?: PropertyValue<string>;
     textAlign?: string;
-    maxLines?: number;
+    maxLines?: PropertyValue<number>;
     src?: string;
-    size?: number;
-    thickness?: number;
+    size?: PropertyValue<number>;
+    thickness?: PropertyValue<number>;
     direction?: string;
     items?: string;
     limit?: number;
@@ -138,6 +144,92 @@ function convertBinding(text: string): string {
 }
 
 /**
+ * Check if a property value is conditional
+ */
+function isConditionalValue<T>(value: PropertyValue<T>): value is ConditionalValue<T> {
+    return typeof value === 'object' && value !== null && 'if' in value;
+}
+
+/**
+ * Generate Kotlin code for a conditional property value
+ */
+function generateConditionalProperty<T>(
+    propName: string,
+    value: PropertyValue<T>,
+    formatter: (val: T) => string
+): { variableName: string; declaration: string } | null {
+    if (!isConditionalValue(value)) {
+        return null;
+    }
+
+    const varName = `${propName}Value`;
+    const lines: string[] = [];
+    
+    lines.push(`val ${varName} = when {`);
+    
+    for (const clause of value.if) {
+        if (clause.condition && clause.value !== undefined) {
+            const kotlinCondition = toKotlinCondition(clause.condition);
+            lines.push(`    ${kotlinCondition} -> ${formatter(clause.value)}`);
+        } else if (clause.default !== undefined) {
+            lines.push(`    else -> ${formatter(clause.default)}`);
+        }
+    }
+    
+    // If no explicit default, add a fallback
+    const hasDefault = value.if.some(c => c.default !== undefined);
+    if (!hasDefault && value.if.length > 0 && value.if[0].value !== undefined) {
+        lines.push(`    else -> ${formatter(value.if[0].value)}`);
+    }
+    
+    lines.push(`}`);
+    
+    return {
+        variableName: varName,
+        declaration: lines.join('\n            ')
+    };
+}
+
+/**
+ * Resolve a property value to its Kotlin expression
+ */
+function resolvePropertyValue<T>(
+    value: PropertyValue<T> | undefined,
+    formatter: (val: T) => string,
+    defaultValue?: string
+): string {
+    if (value === undefined) {
+        return defaultValue || '';
+    }
+    
+    if (!isConditionalValue(value)) {
+        return formatter(value as T);
+    }
+    
+    // For conditional values in expressions, we'll generate a when expression inline
+    const lines: string[] = ['when {'];
+    
+    for (const clause of value.if) {
+        if (clause.condition && clause.value !== undefined) {
+            const kotlinCondition = toKotlinCondition(clause.condition);
+            lines.push(`    ${kotlinCondition} -> ${formatter(clause.value)}`);
+        } else if (clause.default !== undefined) {
+            lines.push(`    else -> ${formatter(clause.default)}`);
+        }
+    }
+    
+    // If no explicit default, add a fallback
+    const hasDefault = value.if.some(c => c.default !== undefined);
+    if (!hasDefault && value.if.length > 0 && value.if[0].value !== undefined) {
+        lines.push(`    else -> ${formatter(value.if[0].value)}`);
+    }
+    
+    lines.push('}');
+    
+    return lines.join('\n                ');
+}
+
+/**
  * Convert condition expression to Kotlin
  * Note: Most operators are identical between JS and Kotlin
  */
@@ -158,20 +250,38 @@ function generateElement(element: LayoutElement, indent: string = '            '
 
     if (wrapWithIf) {
         // For simple property checks like "iconPath" or "description", check if not empty
-        const propName = element.visibleIf.trim();
-        const isPropCheck = /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(propName);
-
-        if (isPropCheck) {
+        const visibleIfExpr = element.visibleIf.trim();
+        
+        // Check if it's a simple property name or contains operators/functions
+        const isSimpleProp = /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(visibleIfExpr) && !visibleIfExpr.includes('size.');
+        
+        if (isSimpleProp) {
             // Simple property check - wrap with isNotEmpty
-            const parts = propName.split('.');
+            const parts = visibleIfExpr.split('.');
             if (parts[0] === 'item') {
-                lines.push(`${indent}if (${propName}.isNotEmpty()) {`);
+                lines.push(`${indent}if (${visibleIfExpr}.isNotEmpty()) {`);
             } else {
-                lines.push(`${indent}if (data.${propName}.isNotEmpty()) {`);
+                lines.push(`${indent}if (data.${visibleIfExpr}.isNotEmpty()) {`);
             }
         } else {
-            // Complex condition - use as-is
-            const condition = element.visibleIf.replace(/size\.width/g, 'size.width.value').replace(/size\.height/g, 'size.height.value');
+            // Complex condition - convert to Kotlin
+            let condition = visibleIfExpr
+                .replace(/size\.width/g, 'size.width.value')
+                .replace(/size\.height/g, 'size.height.value')
+                .replace(/&&/g, '&&')
+                .replace(/\|\|/g, '||');
+            
+            // Handle property references in conditions (e.g., "description && size.width >= 200")
+            // Replace bare property names with data.property, but not those already prefixed
+            condition = condition.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)\b(?!\s*\.)/g, (match, prop) => {
+                // Don't replace size, data, item, true, false, or other keywords
+                if (['size', 'data', 'item', 'true', 'false', 'value', 'width', 'height'].includes(prop)) {
+                    return match;
+                }
+                // This is likely a data property
+                return `data.${prop}.isNotEmpty()`;
+            });
+            
             lines.push(`${indent}if (${condition}) {`);
         }
     }
@@ -312,17 +422,40 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     const rawText = convertBinding(element.text || '');
     // Don't escape $ for string interpolation, but escape quotes
     const text = rawText.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    const fontSize = element.fontSize || 14;
-    const fontWeight = KOTLIN_FONT_WEIGHTS[element.fontWeight || 'normal'] || 'FontWeight.Normal';
-    const color = toGlanceColor(element.color);
+    
+    // Handle conditional fontSize
+    const fontSizeExpr = resolvePropertyValue(
+        element.fontSize,
+        (v) => `${v}.sp`,
+        '14.sp'
+    );
+    
+    // Handle conditional fontWeight
+    const fontWeightExpr = resolvePropertyValue(
+        element.fontWeight,
+        (v) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal',
+        'FontWeight.Normal'
+    );
+    
+    // Handle conditional color
+    const colorExpr = resolvePropertyValue(
+        element.color,
+        (v) => toGlanceColor(v),
+        'GlanceTheme.colors.onSurface'
+    );
+    
+    // Handle conditional maxLines
+    const maxLinesExpr = element.maxLines !== undefined 
+        ? resolvePropertyValue(element.maxLines, (v) => `${v}`, undefined)
+        : undefined;
 
-    const style = `style = TextStyle(fontSize = ${fontSize}.sp, fontWeight = ${fontWeight}, color = ${color})`;
+    const style = `style = TextStyle(fontSize = ${fontSizeExpr}, fontWeight = ${fontWeightExpr}, color = ${colorExpr})`;
 
-    if (element.maxLines) {
+    if (maxLinesExpr) {
         lines.push(`${indent}Text(`);
         lines.push(`${indent}    text = "${text}",`);
         lines.push(`${indent}    ${style},`);
-        lines.push(`${indent}    maxLines = ${element.maxLines}`);
+        lines.push(`${indent}    maxLines = ${maxLinesExpr}`);
         lines.push(`${indent})`);
     } else {
         lines.push(`${indent}Text(text = "${text}", ${style})`);
@@ -334,17 +467,23 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
 function generateImage(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const src = element.src || '';
-    const size = element.size || 24;
+    
+    // Handle conditional size
+    const sizeExpr = resolvePropertyValue(
+        element.size,
+        (v) => `${v}.dp`,
+        '24.dp'
+    );
 
     // For weather icons, use the WidgetComposables helper
     if (src.includes('iconPath')) {
-        lines.push(`${indent}WidgetComposables.WeatherIcon(data.iconPath, data.description, ${size}.dp)`);
+        lines.push(`${indent}WidgetComposables.WeatherIcon(data.iconPath, data.description, ${sizeExpr})`);
     } else {
         const imageSrc = escapeKotlinString(convertBinding(src));
         lines.push(`${indent}Image(`);
         lines.push(`${indent}    provider = ImageProvider(R.drawable.${imageSrc}),`);
         lines.push(`${indent}    contentDescription = null,`);
-        lines.push(`${indent}    modifier = GlanceModifier.size(${size}.dp)`);
+        lines.push(`${indent}    modifier = GlanceModifier.size(${sizeExpr})`);
         lines.push(`${indent})`);
     }
 
@@ -352,10 +491,22 @@ function generateImage(element: LayoutElement, indent: string): string[] {
 }
 
 function generateSpacer(element: LayoutElement, indent: string): string[] {
+    // Check for conditional size or flex
     if (element.size !== undefined) {
-        return [`${indent}Spacer(modifier = GlanceModifier.height(${element.size}.dp))`];
+        const sizeExpr = resolvePropertyValue(
+            element.size,
+            (v) => `${v}.dp`,
+            '0.dp'
+        );
+        return [`${indent}Spacer(modifier = GlanceModifier.height(${sizeExpr}))`];
     }
-    if (element.flex) {
+    if (element.flex !== undefined) {
+        // Flex can be conditional, but if present, we always use defaultWeight
+        if (isConditionalValue(element.flex)) {
+            // Conditional flex means the spacer might be fixed or flexible
+            // For now, we'll just use defaultWeight if flex is present
+            return [`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`];
+        }
         return [`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`];
     }
     return [`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`];

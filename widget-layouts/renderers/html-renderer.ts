@@ -84,42 +84,67 @@ export interface WidgetData {
 }
 
 export interface RenderContext {
-    data: WidgetData;
+    data?: WidgetData;
     size: { width: number; height: number };
     item?: any;
     index?: number;
+    assetsBaseUrl?: string;
+    themeVars?: Record<string, string>;
 }
 
 /**
  * Resolve a color value (theme color or hex)
  */
-function resolveColor(color: string | undefined): string {
-    if (!color) return '';
-    if (color.startsWith('#')) {
-        return color;
-    }
-    return THEME_COLORS[color] || color;
+function resolveColor(color: string | undefined, themeVars: Record<string, string> = THEME_COLORS): string {
+    if (!color) return 'transparent';
+    if (color.startsWith('#')) return color;
+    // theme color like onSurface -> map from themeVars
+    return themeVars[color] ?? color;
 }
 
 /**
  * Resolve a data binding like "{{temperature}}" or "{{item.hour}}"
  */
-function resolveBinding(text: string, context: RenderContext): string {
-    return text.replace(/\{\{([^}]+)\}\}/g, (_, path: string) => {
-        const parts = path.trim().split('.');
-        let value: any = context;
+function formatDataValue(v: any): string {
+    // Accept: "12 °C" (string), 12 (number), or { value: 12, unit: "°C" }
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'string') return v;
+    if (typeof v === 'number') return String(v);
+    if (typeof v === 'object' && 'value' in v) {
+        const val = v.value;
+        const unit = v.unit ?? '';
+        return `${val}${unit ? ' ' + unit : ''}`;
+    }
+    return String(v);
+}
 
-        for (const part of parts) {
-            if (part === 'item' && context.item) {
-                value = context.item;
-            } else if (value && typeof value === 'object') {
-                value = value[part] ?? value.data?.[part];
-            } else {
-                return '';
-            }
+// Convert a binding "{{...}}" into a resolved string/number value
+function resolveBinding(text: string, context: RenderContext): string {
+    if (!text) return '';
+    // Replace all occurrences of mustache bindings with resolved data values
+    // e.g. "Max {{item.temperatureHigh}} / Min {{item.temperatureLow}}"
+    const replaced = text.replace(/\{\{\s*([^}]+)\s*\}\}/g, (_m, expr) => {
+        const parts = (expr || '').trim().split('.');
+        let current: any;
+        if (parts[0] === 'data') {
+            current = context.data;
+            parts.shift();
+        } else if (parts[0] === 'item') {
+            current = context.item;
+            parts.shift();
+        } else if (parts[0] === 'size') {
+            current = context.size;
+            parts.shift();
+        } else {
+            current = context.data;
         }
-        return escapeHtml(value?.toString() ?? '');
+        for (const p of parts) {
+            if (current === undefined || current === null) break;
+            current = current[p];
+        }
+        return formatDataValue(current);
     });
+    return replaced;
 }
 
 /**
@@ -234,8 +259,9 @@ function selectLayout(widget: WidgetLayout, context: RenderContext): LayoutEleme
 /**
  * Build CSS styles object
  */
-function buildStyles(element: LayoutElement): Record<string, string> {
+function buildStyles(element: LayoutElement, context?: RenderContext): Record<string, string> {
     const styles: Record<string, string> = {};
+    const themeVars = context?.themeVars ?? THEME_COLORS;
 
     // Padding
     if (element.padding !== undefined) {
@@ -286,7 +312,7 @@ function buildStyles(element: LayoutElement): Record<string, string> {
 
     // Background
     if (element.backgroundColor) {
-        styles['background-color'] = resolveColor(element.backgroundColor);
+        styles['background-color'] = resolveColor(element.backgroundColor, themeVars);
     }
 
     // Corner radius
@@ -345,7 +371,7 @@ function renderElement(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderColumn(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'column';
 
@@ -399,7 +425,7 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderRow(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'row';
 
@@ -445,7 +471,7 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderStack(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
     styles['position'] = 'relative';
     styles['width'] = '100%';
     styles['height'] = '100%';
@@ -462,7 +488,7 @@ function renderStack(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderLabel(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
 
     if (element.fontSize) {
         styles['font-size'] = `${element.fontSize}px`;
@@ -493,30 +519,49 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
     return `<span style="${stylesToString(styles)}">${text}</span>`;
 }
 
+function hasBinding(s?: string): boolean {
+    return typeof s === 'string' && /\{\{[^}]+\}\}/.test(s);
+}
+
+
+/**
+ * updates to renderImage:
+ * - Accept image element with src JSON that may be an "icon id" (like "01d"), build assetsBaseUrl + id + .png
+ */
 function renderImage(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
 
-    if (element.size) {
-        styles['width'] = `${element.size}px`;
-        styles['height'] = `${element.size}px`;
+    // Enforce sensible defaults so image never balloons beyond its container.
+    // If explicit width/height provided in layout, they'll be present in styles via buildStyles.
+    if (!styles['max-width']) styles['max-width'] = '100%';
+    if (!styles['max-height']) styles['max-height'] = '100%';
+    if (!styles['object-fit']) styles['object-fit'] = 'contain';
+    // Respect explicit width/height while keeping ratio
+    if (!styles['height']) styles['height'] = 'auto';
+
+    const src = element.src ?? '';
+    let actualSrc = src;
+    if (typeof src === 'string') {
+        const assetsBase = context.assetsBaseUrl ?? '/assets/icon_themes/meteocons/images';
+        if (!hasBinding(src) && /^[a-zA-Z0-9_]+$/.test(src)) {
+            actualSrc = `${assetsBase}/${src}.png`;
+        } else if (hasBinding(src)) {
+            const replaced = resolveBinding(src, context);
+            if (/^[a-zA-Z0-9_]+$/.test(replaced)) {
+                actualSrc = `${assetsBase}/${replaced}.png`;
+            } else {
+                actualSrc = replaced;
+            }
+        }
     }
 
-    const src = resolveBinding(element.src || '', context);
-
-    // For weather icons, use emoji placeholders in HTML preview
-    if (!src || src.includes('{{')) {
-        styles['font-size'] = element.size ? `${element.size * 0.8}px` : '32px';
-        styles['display'] = 'flex';
-        styles['align-items'] = 'center';
-        styles['justify-content'] = 'center';
-        return `<span style="${stylesToString(styles)}">☁️</span>`;
-    }
-
-    return `<img src="${src}" style="${stylesToString(styles)}" alt=""/>`;
+    const styleAttr = stylesToString(styles);
+    // Always include style="..." so browser applies CSS; escape src for safety
+    return `<img alt="" src="${escapeHtml(actualSrc)}" style="${escapeHtml(styleAttr)}" />`;
 }
 
 function renderSpacer(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
 
     if (element.size !== undefined) {
         styles['width'] = `${element.size}px`;
@@ -529,17 +574,17 @@ function renderSpacer(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderDivider(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
     styles['height'] = `${element.thickness || 1}px`;
     styles['width'] = '100%';
-    styles['background-color'] = resolveColor(element.color || 'onSurfaceVariant');
+    styles['background-color'] = resolveColor(element.color || 'onSurfaceVariant', context?.themeVars);
     styles['opacity'] = '0.3';
 
     return `<div style="${stylesToString(styles)}"></div>`;
 }
 
 function renderScrollView(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
     styles['overflow-x'] = element.direction === 'horizontal' ? 'auto' : 'hidden';
     styles['overflow-y'] = element.direction === 'horizontal' ? 'hidden' : 'auto';
     styles['display'] = 'flex';
@@ -550,8 +595,9 @@ function renderScrollView(element: LayoutElement, context: RenderContext): strin
 }
 
 function renderForEach(element: LayoutElement, context: RenderContext): string {
-    const parts = element.items.split('.');
-    let items: any[] = context.data as any;
+    const itemsStr = element.items || '';
+    const parts = (itemsStr as string).split('.');
+    let items: any = context.data as any;
     for (const part of parts) {
         items = items?.[part];
     }
@@ -588,7 +634,7 @@ function renderConditional(element: LayoutElement, context: RenderContext): stri
 }
 
 function renderClock(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
 
     if (element.fontSize) {
         styles['font-size'] = `${element.fontSize}px`;
@@ -609,7 +655,7 @@ function renderClock(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderDate(element: LayoutElement, context: RenderContext): string {
-    const styles = buildStyles(element);
+    const styles = buildStyles(element, context);
 
     if (element.fontSize) {
         styles['font-size'] = `${element.fontSize}px`;
@@ -636,8 +682,8 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
 /**
  * Render a complete widget as HTML
  */
-export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }): string {
-    const context: RenderContext = { data, size };
+export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }, themeVars: Record<string, string> = THEME_COLORS): string {
+    const context: RenderContext = { data, size, themeVars };
     const selectedLayout = selectLayout(layout, context);
 
     const containerStyles: Record<string, string> = {
@@ -649,7 +695,7 @@ export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size:
     };
 
     if (layout.background?.color) {
-        containerStyles['background-color'] = resolveColor(layout.background.color);
+        containerStyles['background-color'] = resolveColor(layout.background.color, themeVars);
     }
 
     if (layout.defaultPadding) {
@@ -664,42 +710,53 @@ export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size:
 /**
  * Generate a full HTML page with the widget preview
  */
-export function generateWidgetPreviewPage(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }, backgroundImage?: string): string {
-    const widgetHtml = renderWidgetToHtml(layout, data, size);
+export function generateWidgetPreviewPage(
+    layout: WidgetLayout,
+    data: WidgetData,
+    size: { width: number; height: number },
+    assetsBaseUrl = '/assets/icon_themes/meteocons/images',
+    theme = 'dark'
+): string {
+    // We already have a function to select layout variant; reuse it
+    const usedLayout = selectLayout(layout, { size });
 
-    return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${layout.displayName || layout.name} Preview</title>
+    // simple theme variables - these can be expanded to mirror your svelte $colors
+    const darkVars = {
+        onSurface: '#E6E1E5',
+        onSurfaceVariant: '#CAC4D0',
+        primary: '#D0BCFF',
+        widgetBackground: '#1C1B1F',
+        surface: '#2B2930'
+    };
+    const lightVars = {
+        onSurface: '#0b2736',
+        onSurfaceVariant: '#2a3940',
+        primary: '#0ea5b7',
+        widgetBackground: '#ffffff',
+        surface: '#f6f7f9'
+    };
+    const themeVars = theme === 'light' ? lightVars : darkVars;
+
+    const context: RenderContext = { data, size, assetsBaseUrl, themeVars };
+
+    // Build a small HTML page for this widget
+    const htmlBody = renderElement(usedLayout, context);
+    const css = `
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: ${backgroundImage ? `url('${backgroundImage}')` : 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'};
-            background-size: cover;
-            background-position: center;
-            padding: 20px;
-        }
-        .widget-container {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
+      :root {
+        --bg: ${theme === 'light' ? '#fff' : '#0b0f14'};
+        --fg: ${themeVars.onSurface};
+        --muted: ${themeVars.onSurfaceVariant};
+        background: var(--bg);
+        color: var(--fg);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      }
+      .widget-root { width: ${size.width}px; height: ${size.height}px; box-sizing: border-box; padding: 6px; display:flex; align-items:center; justify-content:center; }
     </style>
-</head>
-<body>
-    <div class="widget-container">
-        ${widgetHtml}
-    </div>
-</body>
-</html>`;
+    `;
+
+    const html = `<!doctype html><html><head><meta charset="utf-8">${css}</head><body class="${theme === 'light' ? 'light' : 'dark'}"><div class="widget-root">${htmlBody}</div></body></html>`;
+    return html;
 }
 
 // Export for Node.js usage

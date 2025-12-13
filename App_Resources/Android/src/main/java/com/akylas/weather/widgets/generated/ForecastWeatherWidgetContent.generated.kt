@@ -16,6 +16,7 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
+import com.akylas.weather.services.widgets.WidgetTheme
 
 /**
  * Generated content for Detailed Forecast
@@ -37,7 +38,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
             Image(
-                provider = ImageProvider(resId = R.drawable.data.iconPath),
+                provider = ImageProvider(data.iconPath),
                 contentDescription = null,
                 modifier = GlanceModifier.size(40.dp)
             )
@@ -48,11 +49,11 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
             ) {
                 Text(
                     text = data.temperature,
-                    style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
                 )
                 Text(
                     text = data.locationName,
-                    style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                    style = TextStyle(fontSize = 11.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
@@ -63,7 +64,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
         )
         Text(
             text = "Hourly Forecast",
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(WidgetTheme.onSurfaceVariant))
         )
         Column(
             modifier = GlanceModifier.fillMaxSize(),
@@ -82,22 +83,22 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
                         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                     ) {
                         Text(
-                            text = "${data.item.hour}",
-                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                            text = "${item.hour}",
+                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                         )
                         Image(
-                            provider = ImageProvider(resId = R.drawable.${data.item.iconPath}),
+                            provider = ImageProvider(item.iconPath),
                             contentDescription = null,
                             modifier = GlanceModifier.size(28.dp)
                         )
                         Text(
-                            text = "${data.item.temperature}",
-                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                            text = "${item.temperature}",
+                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
                         )
                         if (item.precipAccumulation.isNotEmpty()) {
                             Text(
-                                text = "${data.item.precipAccumulation}",
-                                style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                text = "${item.precipAccumulation}",
+                                style = TextStyle(fontSize = 9.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                             )
                         }
                     }
@@ -110,7 +111,7 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
         )
         Text(
             text = "7-Day Forecast",
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(WidgetTheme.onSurfaceVariant))
         )
         Column(
             modifier = GlanceModifier.fillMaxSize(),
@@ -124,11 +125,11 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
                     Text(
-                        text = "${data.item.day}",
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface)
+                        text = "${item.day}",
+                        style = TextStyle(fontSize = 12.sp, color = ColorProvider(WidgetTheme.onSurface))
                     )
                     Image(
-                        provider = ImageProvider(resId = R.drawable.${data.item.iconPath}),
+                        provider = ImageProvider(item.iconPath),
                         contentDescription = null,
                         modifier = GlanceModifier.size(24.dp)
                     )
@@ -139,13 +140,13 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
                     ) {
                         if (item.precipAccumulation.isNotEmpty()) {
                             Text(
-                                text = "${data.item.precipAccumulation}",
-                                style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                text = "${item.precipAccumulation}",
+                                style = TextStyle(fontSize = 10.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                             )
                         }
                         Text(
-                            text = "${data.item.temperatureHigh}/${data.item.temperatureLow}",
-                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                            text = "${item.temperatureHigh}/${item.temperatureLow}",
+                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
                         )
                     }
                 }
@@ -154,24 +155,4 @@ fun ForecastWeatherWidgetContent(data: ForecastWeatherWidgetData) {
     }
 }
 
-data class ForecastWeatherWidgetData(
-    val temperature: String = "",
-    val locationName: String = "",
-    val description: String = "",
-    val iconPath: String = "",
-    val hourlyForecasts: List<HourlyForecast> = emptyList(),
-    val dailyForecasts: List<DailyForecast> = emptyList()
-)
-
-data class HourlyForecast(
-    val time: String = "",
-    val temperature: String = "",
-    val iconPath: String = ""
-)
-
-data class DailyForecast(
-    val date: String = "",
-    val high: String = "",
-    val low: String = "",
-    val iconPath: String = ""
-)
+// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

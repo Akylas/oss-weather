@@ -64,14 +64,14 @@ interface WidgetLayout {
     layout: LayoutElement;
 }
 
-// Color mapping for theme colors
+// Color mapping for theme colors - now using WidgetTheme
 const GLANCE_COLORS: Record<string, string> = {
-    onSurface: 'GlanceTheme.colors.onSurface',
-    onSurfaceVariant: 'GlanceTheme.colors.onSurfaceVariant',
-    primary: 'GlanceTheme.colors.primary',
-    error: 'GlanceTheme.colors.error',
-    widgetBackground: 'GlanceTheme.colors.background',
-    surface: 'GlanceTheme.colors.surface'
+    onSurface: 'ColorProvider(WidgetTheme.onSurface)',
+    onSurfaceVariant: 'ColorProvider(WidgetTheme.onSurfaceVariant)',
+    primary: 'ColorProvider(WidgetTheme.primary)',
+    error: 'ColorProvider(WidgetTheme.error)',
+    widgetBackground: 'ColorProvider(WidgetTheme.widgetBackground)',
+    surface: 'ColorProvider(WidgetTheme.surface)'
 };
 
 // Font weight mapping
@@ -134,7 +134,8 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
                 return prop + '.value';
             }
             if (prop.startsWith('item.')) {
-                return prop; // Keep as-is for forEach items
+                // For forEach items, keep as-is (no data. prefix)
+                return prop;
             }
             return `data.${prop}`;
         }
@@ -195,7 +196,13 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
                 }
             }
             // Last arg is the fallback
-            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context, formatter) : '""';
+            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context, formatter) : (formatter ? formatter('') : '""');
+            
+            // If fallback is null/empty and we need non-null, return first valid value
+            if (fallback === 'null' && pairs.length > 0) {
+                // For cases where we can't have null (like height/width), use first value as default
+                return `when { ${pairs.join('; ')}; else -> ${pairs[pairs.length - 1].split(' -> ')[1]} }`;
+            }
             
             // Return as a single-line when expression for now
             return `when { ${pairs.join('; ')}; else -> ${fallback} }`;
@@ -406,8 +413,14 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     // Compile text (might be template string or expression)
     let textExpr: string;
     if (typeof element.text === 'string' && element.text.includes('{{')) {
-        // Template string like "{{temperature}}"
-        textExpr = element.text.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\${data.${prop}}`);
+        // Template string like "{{temperature}}" or "{{item.temperature}}"
+        textExpr = element.text.replace(/\{\{([^}]+)\}\}/g, (_, prop) => {
+            // If it's an item property, don't add data. prefix
+            if (prop.startsWith('item.')) {
+                return `\${${prop}}`;
+            }
+            return `\${data.${prop}}`;
+        });
         textExpr = `"${textExpr}"`;
     } else {
         textExpr = compilePropertyValue(element.text, (v: string) => `"${v}"`, '""');
@@ -416,8 +429,8 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
     const colorExpr = compilePropertyValue(
         element.color,
-        (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`,
-        'GlanceTheme.colors.onSurface'
+        (v: string) => GLANCE_COLORS[v] || `ColorProvider(Color(0xFF${v}))`,
+        'ColorProvider(WidgetTheme.onSurface)'
     );
     const fontWeightExpr = compilePropertyValue(
         element.fontWeight,
@@ -451,11 +464,17 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
 
     if (styleProps.length > 0) {
         const styleStr = styleProps.join(', ');
-        lines.push(`${indent}    style = TextStyle(${styleStr})`);
+        lines.push(`${indent}    style = TextStyle(${styleStr}),`);
     }
 
     if (maxLinesExpr) {
         lines.push(`${indent}    maxLines = ${maxLinesExpr}`);
+    } else {
+        // Remove trailing comma from style line if no maxLines
+        const lastIdx = lines.length - 1;
+        if (lines[lastIdx].endsWith(',')) {
+            lines[lastIdx] = lines[lastIdx].slice(0, -1);
+        }
     }
 
     lines.push(`${indent})`);
@@ -465,19 +484,25 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
 function generateImage(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
-    // Compile src
+    // Compile src - it's a path string, not a resource ID
     let srcExpr: string;
     if (typeof element.src === 'string' && element.src.includes('{{')) {
-        srcExpr = element.src.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\${data.${prop}}`);
-        srcExpr = `"${srcExpr}"`;
+        // Template string like "{{iconPath}}" or "{{item.iconPath}}"
+        const propName = element.src.replace(/\{\{([^}]+)\}\}/g, '$1');
+        // If it's an item property, don't add data. prefix
+        if (propName.startsWith('item.')) {
+            srcExpr = propName;
+        } else {
+            srcExpr = `data.${propName}`;
+        }
     } else {
-        srcExpr = compilePropertyValue(element.src, (v: string) => `"${v}"`, '""');
+        srcExpr = compilePropertyValue(element.src, (v: string) => `data.${v}`, 'data.iconPath');
     }
 
     const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, '24.dp');
 
     lines.push(`${indent}Image(`);
-    lines.push(`${indent}    provider = ImageProvider(resId = R.drawable.${srcExpr.replace(/"/g, '')}),`);
+    lines.push(`${indent}    provider = ImageProvider(${srcExpr}),`);
     lines.push(`${indent}    contentDescription = null,`);
     lines.push(`${indent}    modifier = GlanceModifier.size(${sizeExpr})`);
     lines.push(`${indent})`);
@@ -491,16 +516,23 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
     const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, undefined);
     const flexExpr = compilePropertyValue(element.flex, (v: number) => String(v), undefined);
 
-    if (sizeExpr && sizeExpr !== 'null') {
+    // Check if sizeExpr contains 'when' with 'null' as a possibility
+    if (sizeExpr && sizeExpr.includes('when') && sizeExpr.includes('null')) {
+        // For conditional spacers that can be null, only generate if condition is true
+        lines.push(`${indent}if (${sizeExpr.match(/when \{ (.+?) ->/)?.[1] || 'true'}) {`);
+        const nonNullSize = sizeExpr.replace(/when \{[^}]+\}/, (match) => {
+            // Extract the first non-null value
+            const firstValue = match.match(/-> ([^;]+\.dp)/)?.[1] || '8.dp';
+            return firstValue;
+        });
+        lines.push(`${indent}    Spacer(modifier = GlanceModifier.height(${nonNullSize}))`);
+        lines.push(`${indent}}`);
+    } else if (sizeExpr && sizeExpr !== 'null' && sizeExpr !== 'undefined') {
         lines.push(`${indent}Spacer(modifier = GlanceModifier.height(${sizeExpr}))`);
     } else if (flexExpr && flexExpr !== 'null') {
         lines.push(`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`);
-    } else {
-        // If both are null, don't generate anything (it's conditional)
-        if (sizeExpr !== 'null' || flexExpr !== 'null') {
-            lines.push(`${indent}Spacer(modifier = GlanceModifier.height(8.dp))`);
-        }
     }
+    // If both are null/undefined, don't generate anything
 
     return lines;
 }
@@ -663,6 +695,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.text.TextStyle');
     lines.push('import androidx.glance.unit.ColorProvider');
     lines.push('import com.akylas.weather.R');
+    lines.push('import com.akylas.weather.services.widgets.WidgetTheme');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);
@@ -680,28 +713,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('}');
     lines.push('');
 
-    // Generate data class
-    lines.push(`data class ${layout.name}Data(`);
-    lines.push('    val temperature: String = "",');
-    lines.push('    val locationName: String = "",');
-    lines.push('    val description: String = "",');
-    lines.push('    val iconPath: String = "",');
-    lines.push('    val hourlyForecasts: List<HourlyForecast> = emptyList(),');
-    lines.push('    val dailyForecasts: List<DailyForecast> = emptyList()');
-    lines.push(')');
-    lines.push('');
-    lines.push('data class HourlyForecast(');
-    lines.push('    val time: String = "",');
-    lines.push('    val temperature: String = "",');
-    lines.push('    val iconPath: String = ""');
-    lines.push(')');
-    lines.push('');
-    lines.push('data class DailyForecast(');
-    lines.push('    val date: String = "",');
-    lines.push('    val high: String = "",');
-    lines.push('    val low: String = "",');
-    lines.push('    val iconPath: String = ""');
-    lines.push(')');
+    // Don't generate data classes - they already exist in WeatherWidgetManager
+    lines.push('// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager');
 
     return lines.join('\n');
 }

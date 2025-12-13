@@ -16,6 +16,7 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
+import com.akylas.weather.services.widgets.WidgetTheme
 
 /**
  * Generated content for Daily Forecast
@@ -33,7 +34,7 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
     ) {
         Text(
             text = data.locationName,
-            style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = 14.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant)),
             maxLines = 1
         )
         Column(
@@ -48,11 +49,11 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
                     Text(
-                        text = "${data.item.day}",
-                        style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface)
+                        text = "${item.day}",
+                        style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(WidgetTheme.onSurface))
                     )
                     Image(
-                        provider = ImageProvider(resId = R.drawable.${data.item.iconPath}),
+                        provider = ImageProvider(item.iconPath),
                         contentDescription = null,
                         modifier = GlanceModifier.size(28.dp)
                     )
@@ -63,8 +64,8 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
                     ) {
                         if (item.precipAccumulation.isNotEmpty()) {
                             Text(
-                                text = "${data.item.precipAccumulation}",
-                                style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                text = "${item.precipAccumulation}",
+                                style = TextStyle(fontSize = 10.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                             )
                         }
                         Row(
@@ -73,12 +74,12 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
                             verticalAlignment = Alignment.Vertical.CenterVertically
                         ) {
                             Text(
-                                text = "${data.item.temperatureHigh}",
-                                style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                                text = "${item.temperatureHigh}",
+                                style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
                             )
                             Text(
-                                text = "${data.item.temperatureLow}",
-                                style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                text = "${item.temperatureLow}",
+                                style = TextStyle(fontSize = 13.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                             )
                         }
                     }
@@ -88,24 +89,4 @@ fun DailyWeatherWidgetContent(data: DailyWeatherWidgetData) {
     }
 }
 
-data class DailyWeatherWidgetData(
-    val temperature: String = "",
-    val locationName: String = "",
-    val description: String = "",
-    val iconPath: String = "",
-    val hourlyForecasts: List<HourlyForecast> = emptyList(),
-    val dailyForecasts: List<DailyForecast> = emptyList()
-)
-
-data class HourlyForecast(
-    val time: String = "",
-    val temperature: String = "",
-    val iconPath: String = ""
-)
-
-data class DailyForecast(
-    val date: String = "",
-    val high: String = "",
-    val low: String = "",
-    val iconPath: String = ""
-)
+// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

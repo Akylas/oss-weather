@@ -16,6 +16,7 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
+import com.akylas.weather.services.widgets.WidgetTheme
 
 /**
  * Generated content for Hourly Forecast
@@ -34,7 +35,7 @@ fun HourlyWeatherWidgetContent(data: HourlyWeatherWidgetData) {
         if (size.height.value >= 80) {
             Text(
                 text = data.locationName,
-                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                style = TextStyle(fontSize = 14.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant)),
                 maxLines = 1
             )
         }
@@ -58,22 +59,22 @@ fun HourlyWeatherWidgetContent(data: HourlyWeatherWidgetData) {
                         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                     ) {
                         Text(
-                            text = "${data.item.hour}",
-                            style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant)
+                            text = "${item.hour}",
+                            style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                         )
                         Image(
-                            provider = ImageProvider(resId = R.drawable.${data.item.iconPath}),
+                            provider = ImageProvider(item.iconPath),
                             contentDescription = null,
                             modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 28.dp; else -> 32.dp })
                         )
                         Text(
-                            text = "${data.item.temperature}",
-                            style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                            text = "${item.temperature}",
+                            style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
                         )
                         if ((item.precipAccumulation.isNotEmpty() && size.height.value >= 80)) {
                             Text(
-                                text = "${data.item.precipAccumulation}",
-                                style = TextStyle(fontSize = when { size.height.value < 80 -> 9.sp; else -> 10.sp }, color = GlanceTheme.colors.onSurfaceVariant)
+                                text = "${item.precipAccumulation}",
+                                style = TextStyle(fontSize = when { size.height.value < 80 -> 9.sp; else -> 10.sp }, color = ColorProvider(WidgetTheme.onSurfaceVariant))
                             )
                         }
                     }
@@ -83,24 +84,4 @@ fun HourlyWeatherWidgetContent(data: HourlyWeatherWidgetData) {
     }
 }
 
-data class HourlyWeatherWidgetData(
-    val temperature: String = "",
-    val locationName: String = "",
-    val description: String = "",
-    val iconPath: String = "",
-    val hourlyForecasts: List<HourlyForecast> = emptyList(),
-    val dailyForecasts: List<DailyForecast> = emptyList()
-)
-
-data class HourlyForecast(
-    val time: String = "",
-    val temperature: String = "",
-    val iconPath: String = ""
-)
-
-data class DailyForecast(
-    val date: String = "",
-    val high: String = "",
-    val low: String = "",
-    val iconPath: String = ""
-)
+// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

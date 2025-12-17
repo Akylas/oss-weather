@@ -66,12 +66,12 @@ interface WidgetLayout {
 
 // Color mapping for theme colors - now using WidgetTheme
 const GLANCE_COLORS: Record<string, string> = {
-    onSurface: 'ColorProvider(WidgetTheme.onSurface)',
-    onSurfaceVariant: 'ColorProvider(WidgetTheme.onSurfaceVariant)',
-    primary: 'ColorProvider(WidgetTheme.primary)',
-    error: 'ColorProvider(WidgetTheme.error)',
-    widgetBackground: 'ColorProvider(WidgetTheme.widgetBackground)',
-    surface: 'ColorProvider(WidgetTheme.surface)'
+    onSurface: 'GlanceTheme.colors.onSurface',
+    onSurfaceVariant: 'GlanceTheme.colors.onSurfaceVariant',
+    primary: 'GlanceTheme.colors.primary',
+    error: 'GlanceTheme.colors.error',
+    widgetBackground: 'GlanceTheme.colors.background',
+    surface: 'GlanceTheme.colors.surface'
 };
 
 // Font weight mapping
@@ -501,11 +501,14 @@ function generateImage(element: LayoutElement, indent: string): string[] {
 
     const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, '24.dp');
 
-    lines.push(`${indent}Image(`);
-    lines.push(`${indent}    provider = ImageProvider(${srcExpr}),`);
-    lines.push(`${indent}    contentDescription = null,`);
-    lines.push(`${indent}    modifier = GlanceModifier.size(${sizeExpr})`);
-    lines.push(`${indent})`);
+    lines.push(`${indent}WeatherWidgetManager.getIconImageProviderFromPath(${srcExpr})?.let { provider ->`);
+    lines.push(`${indent}    Image(`);
+    lines.push(`${indent}       provider = provider,`);
+    // lines.push(`${indent}       contentDescription = description,`);
+    lines.push(`${indent}       modifier = GlanceModifier.size(${sizeExpr})`);
+    lines.push(`${indent}    )`);
+    lines.push(`${indent}}`);
+
 
     return lines;
 }
@@ -684,6 +687,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
     lines.push('import androidx.glance.GlanceModifier');
+    lines.push('import androidx.glance.GlanceTheme');
     lines.push('import androidx.glance.Image');
     lines.push('import androidx.glance.ImageProvider');
     lines.push('import androidx.glance.LocalSize');
@@ -695,7 +699,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.text.TextStyle');
     lines.push('import androidx.glance.unit.ColorProvider');
     lines.push('import com.akylas.weather.R');
-    lines.push('import com.akylas.weather.services.widgets.WidgetTheme');
+    lines.push('import com.akylas.weather.widgets.WeatherWidgetData');
+    lines.push('import com.akylas.weather.widgets.WeatherWidgetManager');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);
@@ -703,7 +708,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(' */');
     lines.push('');
     lines.push('@Composable');
-    lines.push(`fun ${className}(data: ${layout.name}Data) {`);
+    lines.push(`fun ${className}(data: WeatherWidgetData) {`);
     lines.push('    val size = LocalSize.current');
     lines.push('');
 
@@ -714,7 +719,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('');
 
     // Don't generate data classes - they already exist in WeatherWidgetManager
-    lines.push('// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager');
+    lines.push('// Data classes (WeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager');
 
     return lines.join('\n');
 }

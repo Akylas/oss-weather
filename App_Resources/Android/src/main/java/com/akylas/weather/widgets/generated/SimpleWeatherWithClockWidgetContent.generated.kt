@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -16,7 +18,8 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
-import com.akylas.weather.services.widgets.WidgetTheme
+import com.akylas.weather.widgets.WeatherWidgetData
+import com.akylas.weather.widgets.WeatherWidgetManager
 
 /**
  * Generated content for Weather with Clock
@@ -24,8 +27,7 @@ import com.akylas.weather.services.widgets.WidgetTheme
  */
 
 @Composable
-fun SimpleWeatherWithClockWidgetContent(data: SimpleWeatherWithClockWidgetData) {
-    val size = LocalSize.current
+fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
 
     Box(
         modifier = GlanceModifier.fillMaxSize()
@@ -37,7 +39,7 @@ fun SimpleWeatherWithClockWidgetContent(data: SimpleWeatherWithClockWidgetData) 
         ) {
             Text(
                 text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, color = ColorProvider(WidgetTheme.onSurface))
+                style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, color = GlanceTheme.colors.onSurface)
             )
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
@@ -45,15 +47,17 @@ fun SimpleWeatherWithClockWidgetContent(data: SimpleWeatherWithClockWidgetData) 
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 if (data.iconPath.isNotEmpty()) {
-                    Image(
-                        provider = ImageProvider(data.iconPath),
-                        contentDescription = null,
-                        modifier = GlanceModifier.size(when { size.width.value < 100 -> 32.dp; size.width.value < 150 -> 40.dp; else -> 56.dp })
-                    )
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                        Image(
+                           provider = provider,
+                           contentDescription = data.iconPath,
+                           modifier = GlanceModifier.size(when { size.width.value < 100 -> 32.dp; size.width.value < 150 -> 40.dp; else -> 56.dp })
+                        )
+                    }
                 }
                 Text(
                     text = data.temperature,
-                    style = TextStyle(fontSize = when { size.width.value < 100 -> 18.sp; size.width.value < 150 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
+                    style = TextStyle(fontSize = when { size.width.value < 100 -> 18.sp; size.width.value < 150 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
@@ -66,11 +70,11 @@ fun SimpleWeatherWithClockWidgetContent(data: SimpleWeatherWithClockWidgetData) 
             Spacer(modifier = GlanceModifier.defaultWeight())
             Text(
                 text = data.locationName,
-                style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = ColorProvider(WidgetTheme.onSurfaceVariant)),
+                style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant),
                 maxLines = 1
             )
         }
     }
 }
 
-// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager
+// Data classes (WeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

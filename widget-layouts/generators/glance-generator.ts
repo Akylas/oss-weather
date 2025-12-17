@@ -572,9 +572,13 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
         return lines;
     }
 
-    const limit = element.limit || 10;
+    // Compile limit expression if it's a Mapbox expression, otherwise use literal value
+    const limitValue = element.limit || 10;
+    const limitCode = isExpression(limitValue) 
+        ? compileExpression(limitValue, 'value')
+        : limitValue;
 
-    lines.push(`${indent}data.${element.items}.take(${limit}).forEach { item ->`);
+    lines.push(`${indent}data.${element.items}.take(${limitCode}).forEach { item ->`);
     lines.push(generateElement(element.itemTemplate, indent + '    '));
     lines.push(`${indent}}`);
 

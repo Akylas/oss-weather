@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -16,7 +18,8 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
-import com.akylas.weather.services.widgets.WidgetTheme
+import com.akylas.weather.widgets.WeatherWidgetData
+import com.akylas.weather.widgets.WeatherWidgetManager
 
 /**
  * Generated content for Simple Weather
@@ -24,8 +27,7 @@ import com.akylas.weather.services.widgets.WidgetTheme
  */
 
 @Composable
-fun SimpleWeatherWidgetContent(data: SimpleWeatherWidgetData) {
-    val size = LocalSize.current
+fun SimpleWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),
@@ -35,22 +37,24 @@ fun SimpleWeatherWidgetContent(data: SimpleWeatherWidgetData) {
         if (size.width.value >= 80) {
             Text(
                 text = data.locationName,
-                style = TextStyle(fontSize = when { size.width.value >= 200 -> 16.sp; else -> 12.sp }, color = ColorProvider(WidgetTheme.onSurfaceVariant), textAlign = TextAlign.Center),
+                style = TextStyle(fontSize = when { size.width.value >= 200 -> 16.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center),
                 maxLines = 1
             )
         }
         Spacer(modifier = GlanceModifier.height(when { size.width.value >= 200 -> 8.dp; else -> 8.dp }))
         if (data.iconPath.isNotEmpty()) {
-            Image(
-                provider = ImageProvider(data.iconPath),
-                contentDescription = null,
-                modifier = GlanceModifier.size(when { size.width.value < 80 -> 32.dp; size.width.value < 200 -> 48.dp; else -> 72.dp })
-            )
+            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                Image(
+                   provider = provider,
+                   contentDescription = data.iconPath,
+                   modifier = GlanceModifier.size(when { size.width.value < 80 -> 32.dp; size.width.value < 200 -> 48.dp; else -> 72.dp })
+                )
+            }
         }
         Spacer(modifier = GlanceModifier.height(when { size.width.value < 80 -> 4.dp; size.width.value >= 200 -> 8.dp; else -> 8.dp }))
         Text(
             text = data.temperature,
-            style = TextStyle(fontSize = when { size.width.value < 80 -> 14.sp; size.width.value < 200 -> 32.sp; else -> 48.sp }, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface), textAlign = TextAlign.Center)
+            style = TextStyle(fontSize = when { size.width.value < 80 -> 14.sp; size.width.value < 200 -> 32.sp; else -> 48.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Center)
         )
         if ((size.width.value < 80 || size.width.value >= 200)) {
             Spacer(modifier = GlanceModifier.height(4.dp))
@@ -58,17 +62,17 @@ fun SimpleWeatherWidgetContent(data: SimpleWeatherWidgetData) {
         if (size.width.value < 80) {
             Text(
                 text = data.locationName,
-                style = TextStyle(fontSize = 8.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant), textAlign = TextAlign.Center),
+                style = TextStyle(fontSize = 8.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center),
                 maxLines = 1
             )
         }
         if ((data.description.isNotEmpty() && size.width.value >= 200)) {
             Text(
                 text = data.description,
-                style = TextStyle(fontSize = 14.sp, color = ColorProvider(WidgetTheme.onSurfaceVariant), textAlign = TextAlign.Center)
+                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center)
             )
         }
     }
 }
 
-// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager
+// Data classes (WeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

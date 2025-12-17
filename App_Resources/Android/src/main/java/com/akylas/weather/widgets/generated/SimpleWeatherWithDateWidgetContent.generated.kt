@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -16,7 +18,8 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
-import com.akylas.weather.services.widgets.WidgetTheme
+import com.akylas.weather.widgets.WeatherWidgetData
+import com.akylas.weather.widgets.WeatherWidgetManager
 
 /**
  * Generated content for Weather with Date
@@ -24,8 +27,7 @@ import com.akylas.weather.services.widgets.WidgetTheme
  */
 
 @Composable
-fun SimpleWeatherWithDateWidgetContent(data: SimpleWeatherWithDateWidgetData) {
-    val size = LocalSize.current
+fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),
@@ -34,7 +36,7 @@ fun SimpleWeatherWithDateWidgetContent(data: SimpleWeatherWithDateWidgetData) {
     ) {
         Text(
             text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
-            style = TextStyle(fontSize = when { size.height.value < 60 -> 10.sp; size.height.value < 80 -> 12.sp; else -> 14.sp }, color = ColorProvider(WidgetTheme.onSurfaceVariant))
+            style = TextStyle(fontSize = when { size.height.value < 60 -> 10.sp; size.height.value < 80 -> 12.sp; else -> 14.sp }, color = GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.defaultWeight())
         Row(
@@ -43,24 +45,26 @@ fun SimpleWeatherWithDateWidgetContent(data: SimpleWeatherWithDateWidgetData) {
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
             if (data.iconPath.isNotEmpty()) {
-                Image(
-                    provider = ImageProvider(data.iconPath),
-                    contentDescription = null,
-                    modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 32.dp; else -> 40.dp })
-                )
+                WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                    Image(
+                       provider = provider,
+                       contentDescription = data.iconPath,
+                       modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 32.dp; else -> 40.dp })
+                    )
+                }
             }
             Text(
                 text = data.temperature,
-                style = TextStyle(fontSize = when { size.height.value < 60 -> 16.sp; size.height.value < 80 -> 20.sp; else -> 24.sp }, fontWeight = FontWeight.Bold, color = ColorProvider(WidgetTheme.onSurface))
+                style = TextStyle(fontSize = when { size.height.value < 60 -> 16.sp; size.height.value < 80 -> 20.sp; else -> 24.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
             )
         }
         Spacer(modifier = GlanceModifier.defaultWeight())
         Text(
             text = data.locationName,
-            style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; size.height.value < 80 -> 11.sp; else -> 12.sp }, color = ColorProvider(WidgetTheme.onSurfaceVariant)),
+            style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; size.height.value < 80 -> 11.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant),
             maxLines = 1
         )
     }
 }
 
-// Data classes (SimpleWeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager
+// Data classes (WeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

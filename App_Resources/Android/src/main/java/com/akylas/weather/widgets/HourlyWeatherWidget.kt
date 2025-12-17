@@ -69,8 +69,7 @@ class HourlyWeatherWidget : WeatherWidget() {
         WidgetsLogger.d(LOG_TAG, "Rendering hourly content for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
-        com.akylas.weather.widgets.generated.HourlyWeatherWidgetContent.Content(
-            modifier = GlanceModifier,
+        com.akylas.weather.widgets.generated.HourlyWeatherWidgetContent(
             data = data,
             size = size
         )

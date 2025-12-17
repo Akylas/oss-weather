@@ -74,8 +74,7 @@ class DailyWeatherWidget : WeatherWidget() {
         
         // Use the generated content from JSON layout definition
         val size = if (isLarge) DpSize(260.dp, 400.dp) else DpSize(260.dp, 200.dp)
-        com.akylas.weather.widgets.generated.DailyWeatherWidgetContent.Content(
-            modifier = GlanceModifier,
+        com.akylas.weather.widgets.generated.DailyWeatherWidgetContent(
             data = data,
             size = size
         )

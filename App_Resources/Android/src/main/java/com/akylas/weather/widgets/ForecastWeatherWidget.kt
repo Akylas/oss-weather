@@ -70,8 +70,7 @@ class ForecastWeatherWidget : WeatherWidget() {
         WidgetsLogger.d(LOG_TAG, "Rendering forecast content for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
-        com.akylas.weather.widgets.generated.ForecastWeatherWidgetContent.Content(
-            modifier = GlanceModifier,
+        com.akylas.weather.widgets.generated.ForecastWeatherWidgetContent(
             data = data,
             size = size
         )

@@ -72,15 +72,13 @@ class SimpleWeatherWidget : WeatherWidget() {
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
     private fun WeatherContent(
-        modifier: GlanceModifier = GlanceModifier,
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather content for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
-        com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent.Content(
-            modifier = modifier,
+        com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent(
             data = data,
             size = size
         )

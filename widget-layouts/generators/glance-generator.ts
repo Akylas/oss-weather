@@ -504,7 +504,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
     lines.push(`${indent}WeatherWidgetManager.getIconImageProviderFromPath(${srcExpr})?.let { provider ->`);
     lines.push(`${indent}    Image(`);
     lines.push(`${indent}       provider = provider,`);
-    // lines.push(`${indent}       contentDescription = description,`);
+    lines.push(`${indent}       contentDescription = ${srcExpr},`);
     lines.push(`${indent}       modifier = GlanceModifier.size(${sizeExpr})`);
     lines.push(`${indent}    )`);
     lines.push(`${indent}}`);
@@ -686,6 +686,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.compose.ui.graphics.Color');
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
+    lines.push('import androidx.compose.ui.unit.DpSize');
     lines.push('import androidx.glance.GlanceModifier');
     lines.push('import androidx.glance.GlanceTheme');
     lines.push('import androidx.glance.Image');
@@ -708,8 +709,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(' */');
     lines.push('');
     lines.push('@Composable');
-    lines.push(`fun ${className}(data: WeatherWidgetData) {`);
-    lines.push('    val size = LocalSize.current');
+    lines.push(`fun ${className}(data: WeatherWidgetData, size: DpSize) {`);
+    // lines.push('    val size = LocalSize.current');
     lines.push('');
 
     // Generate the main content

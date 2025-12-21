@@ -6,6 +6,7 @@ import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from './WidgetTypes';
 
 const WIDGET_CONFIGS_KEY = 'widget_configs';
 const UPDATE_FREQUENCY_KEY = 'widget_update_frequency';
+const CACHE_TIMEOUT_KEY = 'widget_cache_timeout';
 
 const TAG = '[WidgetConfigManager]';
 
@@ -105,6 +106,33 @@ export class WidgetConfigManager {
                 DEV_LOG && console.log(TAG, 'Updated iOS refresh frequency preference:', minutes);
             } catch (error) {
                 console.error(TAG, 'Failed to update iOS refresh preference:', error);
+            }
+        }
+    }
+
+    /**
+     * Get cache timeout in seconds (for deduplicating widget update requests)
+     */
+    static getCacheTimeout(): number {
+        // Default to 60 seconds
+        return ApplicationSettings.getNumber(CACHE_TIMEOUT_KEY, 60);
+    }
+
+    /**
+     * Set cache timeout in seconds
+     */
+    static setCacheTimeout(seconds: number): void {
+        DEV_LOG && console.log(TAG, 'setCacheTimeout', seconds);
+        ApplicationSettings.setNumber(CACHE_TIMEOUT_KEY, seconds);
+        
+        // Update the widget service cache timeout
+        if (__ANDROID__) {
+            try {
+                import('./WidgetBridge.android').then(({ widgetService }) => {
+                    widgetService.setCacheTimeout(seconds * 1000);
+                });
+            } catch (error) {
+                console.error(TAG, 'Failed to update widget service cache timeout:', error);
             }
         }
     }

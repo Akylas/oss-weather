@@ -57,6 +57,11 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         WidgetsLogger.d(LOG_TAG, "${this::class.simpleName} onUpdate widgetIds=${appWidgetIds.joinToString(",")}")
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+        
+        // Request fresh data for each widget that's being updated
+        appWidgetIds.forEach { widgetId ->
+            WeatherWidgetManager.requestWidgetUpdate(context, widgetId)
+        }
     }
 
     override fun onEnabled(context: Context) {

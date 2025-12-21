@@ -76,6 +76,7 @@
     import ThankYou from '@shared/components/ThankYou.svelte';
     import { OpenMeteoModels } from '~/services/providers/om';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
+    import { notifyWidgetsWeatherUpdated, notifyWidgetsWeatherUpdatedForLocation, isCurrentLocation as isCurrentLocationWidget } from '~/services/widgets/WidgetUpdateService';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -271,6 +272,20 @@
                         mergeWeatherData(weatherData, aqiData);
                         await updateView();
                     }
+                }
+                
+                // Notify widgets that weather data has been updated
+                try {
+                    if (isCurrentLocationWidget(weatherLocation)) {
+                        // This is the current/default location - update default widgets
+                        await notifyWidgetsWeatherUpdated();
+                    } else {
+                        // This is a specific location - update widgets for this location
+                        await notifyWidgetsWeatherUpdatedForLocation(weatherLocation);
+                    }
+                } catch (widgetError) {
+                    // Don't fail the whole refresh if widget update fails
+                    console.error('Failed to update widgets:', widgetError);
                 }
             }
         } catch (err) {

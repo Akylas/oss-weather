@@ -96,7 +96,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
     if (expr === null || expr === undefined) {
         return 'null';
     }
-    
+
     // Literal values
     if (typeof expr === 'string') {
         if (formatter && context === 'value') {
@@ -110,7 +110,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
         }
         return String(expr);
     }
-    
+
     if (!isExpression(expr)) {
         const result = String(expr);
         if (formatter && context === 'value') {
@@ -118,9 +118,9 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
         }
         return result;
     }
-    
+
     const [op, ...args] = expr;
-    
+
     switch (op) {
         // Property access
         case 'get': {
@@ -139,7 +139,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             }
             return `data.${prop}`;
         }
-        
+
         // Check if property exists/has value
         case 'has': {
             const prop = args[0] as string;
@@ -148,7 +148,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             }
             return `data.${prop}.isNotEmpty()`;
         }
-        
+
         // Arithmetic
         case '+':
             return `(${compileExpression(args[0], context, formatter)} + ${compileExpression(args[1], context, formatter)})`;
@@ -158,7 +158,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             return `(${compileExpression(args[0], context, formatter)} * ${compileExpression(args[1], context, formatter)})`;
         case '/':
             return `(${compileExpression(args[0], context, formatter)} / ${compileExpression(args[1], context, formatter)})`;
-        
+
         // Comparison
         case '<':
             return `${compileExpression(args[0], 'condition', undefined)} < ${compileExpression(args[1], 'condition', undefined)}`;
@@ -172,19 +172,19 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             return `${compileExpression(args[0], 'condition', undefined)} == ${compileExpression(args[1], 'condition', undefined)}`;
         case '!=':
             return `${compileExpression(args[0], 'condition', undefined)} != ${compileExpression(args[1], 'condition', undefined)}`;
-        
+
         // Logical
         case '!':
             return `!(${compileExpression(args[0], 'condition', undefined)})`;
         case 'all': {
-            const conditions = args.map(a => compileExpression(a, 'condition', undefined));
+            const conditions = args.map((a) => compileExpression(a, 'condition', undefined));
             return `(${conditions.join(' && ')})`;
         }
         case 'any': {
-            const conditions = args.map(a => compileExpression(a, 'condition', undefined));
+            const conditions = args.map((a) => compileExpression(a, 'condition', undefined));
             return `(${conditions.join(' || ')})`;
         }
-        
+
         // Conditional (case statement)
         case 'case': {
             const pairs: string[] = [];
@@ -196,35 +196,35 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
                 }
             }
             // Last arg is the fallback
-            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context, formatter) : (formatter ? formatter('') : '""');
-            
+            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context, formatter) : formatter ? formatter('') : '""';
+
             // If fallback is null/empty and we need non-null, return first valid value
             if (fallback === 'null' && pairs.length > 0) {
                 // For cases where we can't have null (like height/width), use first value as default
                 return `when { ${pairs.join('; ')}; else -> ${pairs[pairs.length - 1].split(' -> ')[1]} }`;
             }
-            
+
             // Return as a single-line when expression for now
             return `when { ${pairs.join('; ')}; else -> ${fallback} }`;
         }
-        
+
         // String operations
         case 'concat': {
-            const parts = args.map(a => compileExpression(a, context));
+            const parts = args.map((a) => compileExpression(a, context));
             return `"${parts.join(' + ')}"`;
         }
         case 'upcase':
             return `${compileExpression(args[0], context)}.uppercase()`;
         case 'downcase':
             return `${compileExpression(args[0], context)}.lowercase()`;
-        
+
         // Interpolation (for template strings like "{{temperature}}")
         case 'interpolate': {
             const template = args[0] as string;
             // Convert {{prop}} to ${data.prop}
             return `"${template.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\${data.${prop}}`)}"`;
         }
-        
+
         default:
             console.warn(`Unknown expression operator: ${op}`);
             return `/* unknown op: ${op} */`;
@@ -234,20 +234,16 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
 /**
  * Compile a property value that might be a literal or expression
  */
-function compilePropertyValue<T>(
-    value: Expression | undefined,
-    formatter: (v: T) => string,
-    defaultValue?: string
-): string {
+function compilePropertyValue<T>(value: Expression | undefined, formatter: (v: T) => string, defaultValue?: string): string {
     if (value === undefined) {
         return defaultValue || '';
     }
-    
+
     // If it's a literal value, format it directly
     if (!isExpression(value)) {
         return formatter(value as T);
     }
-    
+
     // It's an expression, compile it with formatter
     return compileExpression(value, 'value', formatter);
 }
@@ -427,16 +423,8 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     }
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
-    const colorExpr = compilePropertyValue(
-        element.color,
-        (v: string) => GLANCE_COLORS[v] || `ColorProvider(Color(0xFF${v}))`,
-        'ColorProvider(WidgetTheme.onSurface)'
-    );
-    const fontWeightExpr = compilePropertyValue(
-        element.fontWeight,
-        (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal',
-        undefined
-    );
+    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `ColorProvider(Color(0xFF${v}))`, 'ColorProvider(WidgetTheme.onSurface)');
+    const fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
     const maxLinesExpr = compilePropertyValue(element.maxLines, (v: number) => String(v), undefined);
 
     lines.push(`${indent}Text(`);
@@ -509,7 +497,6 @@ function generateImage(element: LayoutElement, indent: string): string[] {
     lines.push(`${indent}    )`);
     lines.push(`${indent}}`);
 
-
     return lines;
 }
 
@@ -543,16 +530,12 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
 function generateDivider(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const thicknessExpr = compilePropertyValue(element.thickness, (v: number) => `${v}.dp`, '1.dp');
-    const colorExpr = compilePropertyValue(
-        element.color,
-        (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`,
-        'GlanceTheme.colors.onSurfaceVariant'
-    );
+    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurfaceVariant');
 
     lines.push(`${indent}Box(`);
     lines.push(`${indent}    modifier = GlanceModifier.fillMaxWidth().height(${thicknessExpr})`);
     lines.push(`${indent}        .background(${colorExpr})`);
-    lines.push(`${indent})`);
+    lines.push(`${indent}) {}`);
 
     return lines;
 }
@@ -574,9 +557,7 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
 
     // Compile limit expression if it's a Mapbox expression, otherwise use literal value
     const limitValue = element.limit || 10;
-    const limitCode = isExpression(limitValue) 
-        ? compileExpression(limitValue, 'value')
-        : limitValue;
+    const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
 
     lines.push(`${indent}data.${element.items}.take(${limitCode}).forEach { item ->`);
     lines.push(generateElement(element.itemTemplate, indent + '    '));
@@ -617,11 +598,7 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const format12 = element.format12Hour || 'h:mm a';
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
-    const colorExpr = compilePropertyValue(
-        element.color,
-        (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`,
-        'GlanceTheme.colors.onSurface'
-    );
+    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
 
     lines.push(`${indent}Text(`);
     lines.push(`${indent}    text = android.text.format.DateFormat.format("${format24}", System.currentTimeMillis()).toString(),`);
@@ -649,11 +626,7 @@ function generateDate(element: LayoutElement, indent: string): string[] {
     const format = element.format || 'MMM dd, yyyy';
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
-    const colorExpr = compilePropertyValue(
-        element.color,
-        (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`,
-        'GlanceTheme.colors.onSurface'
-    );
+    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
 
     lines.push(`${indent}Text(`);
     lines.push(`${indent}    text = android.text.format.DateFormat.format("${format}", System.currentTimeMillis()).toString(),`);
@@ -742,13 +715,7 @@ function main() {
     }
 
     // Process all widget JSON files (excluding backups and test files)
-    const files = fs.readdirSync(widgetsDir).filter(f => 
-        f.endsWith('.json') && 
-        !f.includes('.refactored') && 
-        !f.includes('.old') && 
-        !f.includes('.mapbox') &&
-        !f.includes('.backup')
-    );
+    const files = fs.readdirSync(widgetsDir).filter((f) => f.endsWith('.json') && !f.includes('.refactored') && !f.includes('.old') && !f.includes('.mapbox') && !f.includes('.backup'));
 
     for (const file of files) {
         const filePath = path.join(widgetsDir, file);

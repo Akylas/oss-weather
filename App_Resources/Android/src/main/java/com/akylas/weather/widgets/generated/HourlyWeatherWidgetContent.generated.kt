@@ -61,7 +61,7 @@ fun HourlyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                     ) {
                         Text(
-                            text = "${item.hour}",
+                            text = "${item.time}",
                             style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant)
                         )
                         WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->

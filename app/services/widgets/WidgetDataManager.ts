@@ -25,6 +25,7 @@ export class WidgetDataManager {
      * Fetch and format weather data for a widget
      */
     async getWidgetWeatherData(config: WidgetConfig): Promise<WeatherWidgetData> {
+        DEV_LOG && console.log('getWidgetWeatherData', JSON.stringify(config));
         // Get location data
         const locationName = config.locationName;
         const latitude = config.latitude;
@@ -135,7 +136,7 @@ export class WidgetDataManager {
         }
 
         formattedData.forecastData = forecastData;
-
+        DEV_LOG && console.log('formatWeatherDataForWidget', JSON.stringify(forecastData));
         return formattedData;
     }
 

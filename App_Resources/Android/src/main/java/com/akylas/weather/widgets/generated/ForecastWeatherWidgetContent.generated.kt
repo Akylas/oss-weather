@@ -65,7 +65,7 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
         Box(
             modifier = GlanceModifier.fillMaxWidth().height(1.dp)
                 .background(GlanceTheme.colors.onSurfaceVariant)
-        )
+        ) {}
         Text(
             text = "Hourly Forecast",
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
@@ -87,7 +87,7 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                     ) {
                         Text(
-                            text = "${item.hour}",
+                            text = "${item.time}",
                             style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
                         )
                         WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
@@ -114,7 +114,7 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
         Box(
             modifier = GlanceModifier.fillMaxWidth().height(1.dp)
                 .background(GlanceTheme.colors.onSurfaceVariant)
-        )
+        ) {}
         Text(
             text = "7-Day Forecast",
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)

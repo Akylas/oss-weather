@@ -137,13 +137,13 @@ class NetworkService extends Observable {
         Application.on(Application.foregroundEvent, this.onAppResume, this);
         startMonitoring(this.onConnectionStateChange.bind(this));
         this.connectionType = getConnectionType();
-        const folder = Folder.fromPath(knownFolders.documents().path).getFolder('cache');
+        const folder = Folder.fromPath(knownFolders.temp().path).getFolder('network_http');
         const diskLocation = folder.path;
         DEV_LOG && console.log('setCache', diskLocation);
 
         https.setCache({
             diskLocation,
-            diskSize: 40 * 1024 * 1024,
+            diskSize: 10 * 1024 * 1024,
             memorySize: 10 * 1024 * 1024
         });
         if (__ANDROID__) {

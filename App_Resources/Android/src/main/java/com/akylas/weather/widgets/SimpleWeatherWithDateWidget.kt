@@ -119,8 +119,7 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
         WidgetsLogger.d(LOG_TAG, "Rendering weather with date for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
-        com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent.Content(
-            modifier = modifier,
+        com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent(
             data = data,
             size = size
         )

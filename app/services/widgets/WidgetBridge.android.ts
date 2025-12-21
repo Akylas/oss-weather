@@ -1,10 +1,10 @@
 // app/services/widgets/android/AndroidWidgetBridge.ts
 // Android-specific widget bridge using shared logic
 
-import { Application, Device, Utils, knownFolders, path } from '@nativescript/core';
-import { WidgetDataManager, isDefaultLocation } from './WidgetDataManager';
-import { WidgetConfigManager } from './WidgetConfigManager';
+import { Utils } from '@nativescript/core';
 import WidgetBridgeBase from './WidgetBridge.common';
+import { WidgetConfigManager } from './WidgetConfigManager';
+import { WidgetDataManager } from './WidgetDataManager';
 import { WeatherWidgetData } from './WidgetTypes';
 
 /**
@@ -16,7 +16,6 @@ export class WidgetBridge extends WidgetBridgeBase {
     constructor() {
         super();
         this.dataManager = new WidgetDataManager();
-        // this.initializeWorkManager();
     }
 
     /**
@@ -57,6 +56,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     private sendWeatherDataToWidget(widgetId: number, data: WeatherWidgetData) {
         try {
+            DEV_LOG && console.log('sendWeatherDataToWidget', widgetId, JSON.stringify(data));
             const context = Utils.android.getApplicationContext();
             const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
             // Update widget

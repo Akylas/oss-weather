@@ -63,7 +63,7 @@
                   "children": [
                     {
                       "type": "label",
-                      "text": "{{item.hour}}",
+                      "text": "{{item.time}}",
                       "fontSize": ["case",
                         ["<", ["get", "size.height"], 60], 9,
                         11

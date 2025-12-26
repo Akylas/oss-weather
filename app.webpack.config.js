@@ -199,8 +199,17 @@ module.exports = (env, params = {}) => {
         if (/address-formatter/i.test(context)) {
             return cb(null, join('~/address-formatter/templates', basename(request)));
         }
+        if (/widget-layouts\/widgets\/samples/i.test(context)) {
+            console.log('externals1', context);
+            return cb(null, join('~/widget-layouts/widgets/samples', basename(request)));
+        }
+        if (/widget-layouts\/widgets/i.test(context)) {
+            console.log('externals2', context);
+            return cb(null, join('~/widget-layouts/widgets', basename(request)));
+        }
         cb();
     });
+
     if (isIOS) {
         supportedColorThemes.forEach((l) => {
             config.externals.push(`~/themes/${l}.json`);
@@ -476,6 +485,35 @@ module.exports = (env, params = {}) => {
         { context, from: '**/*.png', noErrorOnMissing: true, globOptions },
         { context, from: 'assets/**/*', noErrorOnMissing: true, globOptions },
         { context: 'tools', from: 'assets/**/*', noErrorOnMissing: true, globOptions },
+        // Copy widget sample files
+        {
+            context: join(projectRoot, 'widget-layouts', 'widgets'),
+            from: 'samples/*.sample.json',
+            to: 'widget-layouts/widgets/samples/[name][ext]',
+            noErrorOnMissing: true,
+            globOptions,
+            transform: !!production
+                ? {
+                      transformer: (content, path) => Promise.resolve(Buffer.from(JSON.stringify(JSON.parse(content.toString())), 'utf8'))
+                  }
+                : undefined
+        },
+        {
+            context: join(projectRoot, 'widget-layouts', 'widgets'),
+            from: '*.json',
+            to: 'widget-layouts/widgets/[name][ext]',
+            noErrorOnMissing: true,
+            globOptions,
+            transform: !!production
+                ? {
+                      transformer: (content, path) => {
+                          const { name, displayName, description, supportedSizes, ...rest } = JSON.parse(content.toString());
+
+                          return Promise.resolve(Buffer.from(JSON.stringify({ name, displayName, description, supportedSizes }), 'utf8'));
+                      }
+                  }
+                : undefined
+        },
         {
             context,
             from: 'i18n/**/*',

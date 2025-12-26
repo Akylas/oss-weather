@@ -1,19 +1,25 @@
 // app/services/widgets/shared/WidgetConfigManager.ts
 // Shared configuration management for widgets (platform-agnostic)
 
-import { ApplicationSettings, Utils } from '@nativescript/core';
+import { ApplicationSettings } from '@nativescript/core';
 import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from './WidgetTypes';
 
-const WIDGET_CONFIGS_KEY = 'widget_configs';
+const WIDGET_CONFIGS_KEY = 'widget_configs'; // per-instance configs
+const WIDGET_KIND_CONFIGS_KEY = 'widget_kind_configs'; // per-kind default configs
 const UPDATE_FREQUENCY_KEY = 'widget_update_frequency';
 const CACHE_TIMEOUT_KEY = 'widget_cache_timeout';
 
 const TAG = '[WidgetConfigManager]';
 
-export class WidgetConfigManager {
-    static configs: { [k: string]: WidgetConfig };
+export const WIDGET_KINDS = ['SimpleWeatherWidget', 'SimpleWeatherWithDateWidget', 'SimpleWeatherWithClockWidget', 'HourlyWeatherWidget', 'DailyWeatherWidget', 'ForecastWeatherWidget'] as const;
 
-    static loadConfigs() {
+export type WidgetKind = (typeof WIDGET_KINDS)[number];
+
+export class WidgetConfigManager {
+    private static configs: { [widgetId: string]: WidgetConfig };
+    private static kindConfigs: { [kind: string]: WidgetConfig };
+
+    private static loadConfigs() {
         const data = ApplicationSettings.getString(WIDGET_CONFIGS_KEY);
         if (data) {
             try {
@@ -25,10 +31,24 @@ export class WidgetConfigManager {
             this.configs = {};
         }
     }
+
+    private static loadKindConfigs() {
+        const data = ApplicationSettings.getString(WIDGET_KIND_CONFIGS_KEY);
+        if (data) {
+            try {
+                this.kindConfigs = JSON.parse(data);
+            } catch (error) {
+                this.kindConfigs = {};
+            }
+        } else {
+            this.kindConfigs = {};
+        }
+    }
+
     /**
-     * Get all widget configurations
+     * Get all per-instance widget configurations
      */
-    static getAllConfigs() {
+    static getAllConfigs(): { [widgetId: string]: WidgetConfig } {
         if (!this.configs) {
             this.loadConfigs();
         }
@@ -36,19 +56,82 @@ export class WidgetConfigManager {
     }
 
     /**
-     * Get configuration for specific widget
+     * Get all per-kind default configurations
      */
-    static getConfig(widgetId: string): WidgetConfig {
-        const configs = this.getAllConfigs();
-        if (!configs[widgetId]) {
-            this.saveConfig(widgetId, this.createDefaultConfig());
+    static getAllKindConfigs(): { [kind: string]: WidgetConfig } {
+        if (!this.kindConfigs) {
+            this.loadKindConfigs();
         }
-        DEV_LOG && console.log(TAG, 'getConfig', widgetId, configs[widgetId]);
-        return configs[widgetId];
+        return this.kindConfigs;
     }
 
     /**
-     * Save configuration for specific widget
+     * Get configuration for specific widget kind (default settings)
+     */
+    static getKindConfig(widgetKind: string): WidgetConfig {
+        const kindConfigs = this.getAllKindConfigs();
+        if (!kindConfigs[widgetKind]) {
+            kindConfigs[widgetKind] = this.createDefaultConfig();
+            this.saveAllKindConfigs();
+        }
+        return kindConfigs[widgetKind];
+    }
+
+    /**
+     * Save configuration for specific widget kind (default settings)
+     */
+    static saveKindConfig(widgetKind: string, config: WidgetConfig): void {
+        const kindConfigs = this.getAllKindConfigs();
+        kindConfigs[widgetKind] = config;
+        this.saveAllKindConfigs();
+        DEV_LOG && console.log(TAG, 'saveKindConfig', widgetKind, config);
+    }
+
+    /**
+     * Save all kind configurations
+     */
+    private static saveAllKindConfigs(): void {
+        ApplicationSettings.setString(WIDGET_KIND_CONFIGS_KEY, JSON.stringify(this.kindConfigs));
+    }
+
+    /**
+     * Get configuration for specific widget instance
+     * If no instance config exists, returns the kind config
+     */
+    static getConfig(widgetId: string): WidgetConfig {
+        const configs = this.getAllConfigs();
+
+        // If instance config exists, use it
+        if (configs[widgetId]) {
+            DEV_LOG && console.log(TAG, 'getConfig (instance)', widgetId, configs[widgetId]);
+            return configs[widgetId];
+        }
+
+        // Otherwise, try to get kind config if we know the widget kind
+        // This shouldn't normally happen - instances should be created with saveConfig
+        DEV_LOG && console.log(TAG, 'getConfig (no instance found)', widgetId);
+        return this.createDefaultConfig();
+    }
+
+    /**
+     * Create widget instance configuration from kind defaults
+     * Called when a new widget is added
+     */
+    static createInstanceConfig(widgetId: string, widgetKind: string): WidgetConfig {
+        const kindConfig = this.getKindConfig(widgetKind);
+        const instanceConfig = {
+            ...kindConfig,
+            widgetKind
+        };
+
+        this.saveConfig(widgetId, instanceConfig);
+        DEV_LOG && console.log(TAG, 'createInstanceConfig', widgetId, widgetKind, instanceConfig);
+
+        return instanceConfig;
+    }
+
+    /**
+     * Save configuration for specific widget instance
      */
     static saveConfig(widgetId: string, config: WidgetConfig, widgetKind?: string): void {
         const configs = this.getAllConfigs();
@@ -57,22 +140,32 @@ export class WidgetConfigManager {
             widgetKind: widgetKind || config.widgetKind
         };
         this.saveAllConfigs();
+        DEV_LOG && console.log(TAG, 'saveConfig (instance)', widgetId, configs[widgetId]);
     }
 
     /**
-     * Save all configurations
+     * Save all instance configurations
      */
-    static saveAllConfigs(): void {
+    private static saveAllConfigs(): void {
         ApplicationSettings.setString(WIDGET_CONFIGS_KEY, JSON.stringify(this.configs));
     }
 
     /**
-     * Delete configuration for specific widget
+     * Delete configuration for specific widget instance
      */
     static deleteConfig(widgetId: string): void {
         const configs = this.getAllConfigs();
         delete configs[widgetId];
         this.saveAllConfigs();
+        DEV_LOG && console.log(TAG, 'deleteConfig', widgetId);
+    }
+
+    /**
+     * Get all widget IDs for a specific kind
+     */
+    static getInstancesOfKind(widgetKind: string): string[] {
+        const configs = this.getAllConfigs();
+        return Object.keys(configs).filter((id) => configs[id].widgetKind === widgetKind);
     }
 
     /**
@@ -92,20 +185,18 @@ export class WidgetConfigManager {
         // Update native scheduling based on platform
         if (__ANDROID__) {
             try {
-                const context = Utils.android.getApplicationContext();
+                const context = require('@nativescript/core').Utils.android.getApplicationContext();
                 const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
                 widgetManager.setUpdateFrequency(context, minutes);
                 DEV_LOG && console.log(TAG, 'Updated Android WorkManager schedule with frequency:', minutes);
             } catch (error) {
-                console.error(TAG, 'Failed to update Android WorkManager schedule:', error);
+                console.error(TAG, 'Failed to update Android WorkManager schedule:', error, error.stack);
             }
         } else if (__IOS__) {
             try {
-                // iOS: Background refresh is system-controlled, but we can update our preference
-                // The actual refresh will happen when iOS decides based on usage patterns
                 DEV_LOG && console.log(TAG, 'Updated iOS refresh frequency preference:', minutes);
             } catch (error) {
-                console.error(TAG, 'Failed to update iOS refresh preference:', error);
+                console.error(TAG, 'Failed to update iOS refresh preference:', error, error.stack);
             }
         }
     }
@@ -114,7 +205,6 @@ export class WidgetConfigManager {
      * Get cache timeout in seconds (for deduplicating widget update requests)
      */
     static getCacheTimeout(): number {
-        // Default to 60 seconds
         return ApplicationSettings.getNumber(CACHE_TIMEOUT_KEY, 60);
     }
 
@@ -124,21 +214,20 @@ export class WidgetConfigManager {
     static setCacheTimeout(seconds: number): void {
         DEV_LOG && console.log(TAG, 'setCacheTimeout', seconds);
         ApplicationSettings.setNumber(CACHE_TIMEOUT_KEY, seconds);
-        
-        // Update the widget service cache timeout
+
         if (__ANDROID__) {
             try {
                 import('./WidgetBridge.android').then(({ widgetService }) => {
                     widgetService.setCacheTimeout(seconds * 1000);
                 });
             } catch (error) {
-                console.error(TAG, 'Failed to update widget service cache timeout:', error);
+                console.error(TAG, 'Failed to update widget service cache timeout:', error, error.stack);
             }
         }
     }
 
     /**
-     * Create default config for new widget
+     * Create default config
      */
     static createDefaultConfig(): WidgetConfig {
         return {

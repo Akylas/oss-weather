@@ -34,8 +34,8 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
             widgetManager.setWidgetLoading(context, widgetId);
 
             // Then fetch data and update widget
-            widgetService.updateWidget(widgetId + '').catch(error => {
-                console.error(`WidgetUpdateReceiver: Error updating widget ${widgetId}:`, error);
+            widgetService.updateWidget(widgetId + '').catch((error) => {
+                console.error(`WidgetUpdateReceiver: Error updating widget ${widgetId}:`, error, error.stack);
                 widgetManager.setWidgetError(context, widgetId, error.message || 'Update failed');
             });
         } catch (error) {

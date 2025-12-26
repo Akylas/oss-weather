@@ -175,9 +175,9 @@ function toLiteral(v: any): string {
  * Build color token var name for a simple token like onSurface -> colorOnSurface
  */
 function colorTokenToVar(token: string) {
-    if (!token || typeof token !== 'string') return token;
-    const pascal = token[0].toUpperCase() + token.slice(1);
-    return 'color' + pascal;
+    // Convert theme token to camelCase variable name with 'color' prefix
+    const normalized = token.replace(/[^a-zA-Z0-9]/g, '');
+    return `color${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`;
 }
 
 /**
@@ -231,23 +231,92 @@ function collectUsedColorsFromLayout(layout: WidgetLayout, usedColors: Set<strin
 }
 
 /**
- * Build Svelte attribute string: either a svelte expression (binding) or literal
- * Note: we don't export most element props as component props anymore - values are inlined.
+ * Evaluate a Mapbox expression to TypeScript/Svelte expression
  */
+function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
+    if (!Array.isArray(expr)) {
+        if (typeof expr === 'string') {
+            if (expr === 'get') return expr;
+            return JSON.stringify(expr);
+        }
+        return JSON.stringify(expr);
+    }
+
+    const [op, ...args] = expr;
+
+    switch (op) {
+        case 'get': {
+            const path = args[0];
+            if (typeof path === 'string') {
+                // Handle paths like "size.height" or "data.temperature"
+                if (path.startsWith('size.')) {
+                    return path; // size.height, size.width
+                }
+                if (path.startsWith('data.')) {
+                    return path;
+                }
+                if (path.startsWith('item.')) {
+                    return path;
+                }
+                // Default context
+                return `${context}.${path}`;
+            }
+            return JSON.stringify(path);
+        }
+        case 'case': {
+            // ["case", condition1, value1, condition2, value2, ..., fallback]
+            // Convert to nested ternary: condition1 ? value1 : (condition2 ? value2 : fallback)
+            if (args.length === 0) return 'null';
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+
+            // Build from the end backwards to properly nest ternaries
+            let result = evaluateMapboxExpression(args[args.length - 1], context); // fallback
+
+            // Walk backwards through condition/value pairs
+            for (let i = args.length - 3; i >= 0; i -= 2) {
+                const condition = evaluateMapboxExpression(args[i], context);
+                const value = evaluateMapboxExpression(args[i + 1], context);
+                result = `${condition} ? ${value} : ${result}`;
+            }
+
+            return result;
+        }
+        case '<':
+        case '>':
+        case '<=':
+        case '>=':
+        case '==':
+        case '!=': {
+            const left = evaluateMapboxExpression(args[0], context);
+            const right = evaluateMapboxExpression(args[1], context);
+            return `${left} ${op} ${right}`;
+        }
+        case '+':
+        case '-':
+        case '*':
+        case '/': {
+            const left = evaluateMapboxExpression(args[0], context);
+            const right = evaluateMapboxExpression(args[1], context);
+            return `${left} ${op} ${right}`;
+        }
+        default:
+            return JSON.stringify(expr);
+    }
+}
+
 function buildAttribute(widgetName: string, prop: string, value: any, elementPath: string[], defaultPrefix = 'data', usedColors?: Set<string>): string | null {
     if (value === undefined || value === null) return null;
-
     // map layout prop names -> Svelte/NativeScript attribute names
-    const attrMap: Record<string, string> = {
+    const attrMap: Record<string, string | string[]> = {
         alignment: 'verticalAlignment',
         crossAlignment: 'horizontalAlignment',
         textAlign: 'textAlignment',
-        direction: 'orientation',
-        spacing: 'margin'
+        paddingVertical: ['paddingTop', 'paddingBottom'],
+        spacing: 'padding'
     };
     const attrName = attrMap[prop] ?? prop;
 
-    // Visible / visibleIf should map to a `visibility` attribute rather than conditional wrapper
+    // Visible / visibleIf should map to a `visibility` attribute
     if (prop === 'visibleIf') {
         let expr = '';
         if (typeof value === 'string' && hasBinding(value)) {
@@ -255,26 +324,36 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         } else if (typeof value === 'string') {
             expr = normalizeExpr(value, defaultPrefix);
         } else if (typeof value === 'boolean') {
-            expr = value ? 'true' : 'false';
+            // If it's a constant boolean, don't generate visibility attribute if true
+            if (value === true) return null;
+            return `visibility="hidden"`;
         } else {
-            expr = 'true';
+            return null;
         }
         return `visibility={${expr} ? 'visible' : 'hidden'}`;
     }
 
     if (prop === 'visible') {
         if (typeof value === 'boolean') {
-            return `visibility="${value ? 'visible' : 'hidden'}"`;
+            // Don't generate attribute if always visible
+            if (value === true) return null;
+            return `visibility="hidden"`;
         } else if (typeof value === 'string') {
             const expr = hasBinding(value) ? convertBindingToSvelteExpr(value, defaultPrefix) : normalizeExpr(value, defaultPrefix);
-            return `visibility={${expr} ? 'visible' : 'hidden'}`;
+            if (expr !== 'true') {
+                return `visibility={${expr} ? 'visible' : 'hidden'}`;
+            }
         }
         return null;
     }
 
     // handle a 'size' virtual prop: translate into width and height attributes
     if (prop === 'size') {
-        // handle binding / expression / literals
+        if (Array.isArray(value)) {
+            // Mapbox expression
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            return `width={${expr}} height={${expr}}`;
+        }
         if (typeof value === 'string' && hasBinding(value)) {
             const expr = convertBindingToSvelteExpr(value, defaultPrefix);
             return `width={${expr}} height={${expr}}`;
@@ -283,21 +362,39 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             const path = value.startsWith('data.') || value.startsWith('item.') ? value : `${defaultPrefix}.${value}`;
             return `width={${path}} height={${path}}`;
         }
-        // number or string literal
         return `width={${JSON.stringify(value)}} height={${JSON.stringify(value)}}`;
+    }
+
+    // Handle Mapbox expressions (arrays)
+    if (Array.isArray(value)) {
+        let expr = evaluateMapboxExpression(value, defaultPrefix);
+        console.warn('attrName', expr)
+        if (expr === 'data.iconPath') {
+            expr = `\`\${iconService.iconSetFolderPath}/images/\${${expr}}.png\``;
+        }
+        if (Array.isArray(attrName)) {
+            return attrName.map((attr) => `${attr}={${expr}}`).join(' ');
+        }
+        return `${attrName}={${expr}}`;
     }
 
     // handle bindings first
     if (typeof value === 'string' && hasBinding(value)) {
-        const expr = convertBindingToSvelteExpr(value, defaultPrefix);
+        let expr = convertBindingToSvelteExpr(value, defaultPrefix);
+        if (value === '{{item.iconPath}}') {
+            expr = `\`\${iconService.iconSetFolderPath}/images/\${${expr}}.png\``;
+        }
+        console.log('buildAttribute', attrName, value, typeof value, expr);
+        if (Array.isArray(attrName)) {
+            return attrName.map((attr) => `${attr}={${expr}}`).join(' ');
+        }
         return `${attrName}={${expr}}`;
     }
 
-    // items => treat tokens like 'hourlyData' as data path (defaultPrefix override)
+    // items => treat tokens like 'hourlyData' as data path
     if (prop === 'items' && typeof value === 'string') {
         if (value.startsWith('data.') || value.startsWith('item.') || value.startsWith('size.')) {
-            const path = value;
-            return `${attrName}={${path}}`;
+            return `${attrName}={${value}}`;
         } else if (isSimpleToken(value)) {
             const path = `${defaultPrefix}.${value}`;
             return `${attrName}={${path}}`;
@@ -306,38 +403,43 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         }
     }
 
-    // Colors: map tokens to local variables derived from $colors store, hex inline, data/binding handled earlier
+    // Colors: map tokens to local variables derived from $colors store
     if ((prop === 'color' || prop === 'backgroundColor') && typeof value === 'string') {
-        // binding handled above
         const isHex = /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(value);
         if (isHex) {
-            return `${attrName}={${JSON.stringify(value)}}`;
+            return `${attrName}="${value}"`;
         }
-        // If it's an explicit data/item path -> bind to it
         if (value.startsWith('data.') || value.startsWith('item.') || value.startsWith('size.')) {
             return `${attrName}={${value}}`;
         }
-        // If it's a simple token like onSurface -> treat as theme color var and record it
         if (isSimpleToken(value)) {
             const varName = colorTokenToVar(value);
             usedColors?.add(varName);
             return `${attrName}={${varName}}`;
         }
-        // fallback: treat as literal string
-        return `${attrName}={${JSON.stringify(value)}}`;
+        return `${attrName}="${value}"`;
     }
 
     // simple literal -> inline as a literal expression OR string literal
     if (typeof value === 'number' || typeof value === 'boolean') {
+        if (Array.isArray(attrName)) {
+            return attrName.map((attr) => `${attr}={${JSON.stringify(value)}}`).join(' ');
+        }
         return `${attrName}={${JSON.stringify(value)}}`;
     }
     if (typeof value === 'string') {
-        // If the value looks like a data path (explicit), bind it
         if (value.startsWith('data.') || value.startsWith('item.') || value.startsWith('size.')) {
+            if (value === '{{item.iconPath}}') {
+                value = `\`\${iconService.iconSetFolderPath}/images/\${${value}}.png\``;
+            }
+            console.warn('test', attrName, value);
             return `${attrName}={${value}}`;
         }
-        // Otherwise, string literal -> inline as quoted string
-        return `${attrName}={${JSON.stringify(value)}}`;
+        // Use string literals (no curly braces) for constant strings
+        if (Array.isArray(attrName)) {
+            return attrName.map((attr) => `${attr}="${value}"`).join(' ');
+        }
+        return `${attrName}="${value}"`;
     }
 
     return null;
@@ -362,15 +464,15 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
             case 'image':
                 return 'image';
             case 'spacer':
-                return 'stacklayout';
+                return null; // Don't render spacer as element
             case 'divider':
                 return 'stacklayout';
             case 'scrollView':
-                return 'scrollview';
+                return null; // Don't render scrollview, treat children as direct
             case 'forEach':
                 return 'collectionview';
             case 'conditional':
-                return 'fragment'; // handled with {#if}
+                return 'fragment';
             case 'clock':
                 return 'label';
             case 'date':
@@ -382,8 +484,32 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         }
     })();
 
+    // Handle spacer: apply as margin to previous sibling (done in parent)
+    if (elType === 'spacer') {
+        return '';
+    }
+
+    // Handle scrollView: unwrap and render children directly with forEach getting orientation
+    if (elType === 'scrollView') {
+        const children = element.children ?? [];
+        const childMarkups: string[] = [];
+        for (let i = 0; i < children.length; i++) {
+            const childDef = children[i];
+            // If child is a forEach, apply the scrollView's direction to it
+            if (childDef.type === 'forEach' && element.direction) {
+                childDef.direction = element.direction;
+            }
+            const childMarkup = generateMarkup(widgetName, childDef, elementPath, usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) childMarkups.push(childMarkup);
+        }
+        return childMarkups.join('\n');
+    }
+
+    if (!tag) return '';
+
     const attrsArr: string[] = [];
-    // A set of properties that map directly to svelte attribute names (pass-through)
+    const seenAttrs = new Set<string>(); // Track attributes to avoid duplicates
+
     const attributesToMap = [
         'padding',
         'paddingHorizontal',
@@ -391,6 +517,8 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         'margin',
         'marginHorizontal',
         'marginVertical',
+        'marginBottom',
+        'marginRight',
         'width',
         'height',
         'cornerRadius',
@@ -403,7 +531,7 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         'fontSize',
         'fontWeight',
         'textAlign',
-        'textAlignment', // allow actual attr too
+        'textAlignment',
         'maxLines',
         'size',
         'thickness',
@@ -420,97 +548,63 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         if (!attributesToMap.includes(k) && k !== 'text' && k !== 'src' && k !== 'items') continue;
         const v = (element as any)[k];
 
-        // Map 'size' attribute -> width & height; handled inside buildAttribute.
-        if (k === 'size') {
-            const attr = buildAttribute(widgetName, 'size', v, elementPath, defaultPrefix, usedColors);
-            if (attr) attrsArr.push(attr);
-            continue;
-        }
-
-        // We no longer special-case visible/visibleIf to be wrappers; they are attributes now
-        if (k === 'text') {
-            const attr = buildAttribute(widgetName, 'text', v, elementPath, defaultPrefix, usedColors);
-            if (attr) attrsArr.push(attr);
-            continue;
-        }
-        if (k === 'src') {
-            const attr = buildAttribute(widgetName, 'src', v, elementPath, defaultPrefix, usedColors);
-            if (attr) attrsArr.push(attr);
-            continue;
-        }
-        if (k === 'items') {
-            const attr = buildAttribute(widgetName, 'items', v, elementPath, defaultPrefix, usedColors);
-            if (attr) attrsArr.push(attr);
-            continue;
-        }
-        // other attributes map directly but names like alignment / crossAlignment / textAlign are remapped in buildAttribute
         const attr = buildAttribute(widgetName, k, v, elementPath, defaultPrefix, usedColors);
-        if (attr) attrsArr.push(attr);
+        if (attr) {
+            // Extract attribute name to check for duplicates
+            const attrName = attr.split('=')[0].split('{')[0].trim();
+            if (!seenAttrs.has(attrName)) {
+                attrsArr.push(attr);
+                seenAttrs.add(attrName);
+            }
+        }
     }
 
     // For 'row' and 'column' we need orientation prop
-    if (elType === 'column') {
+    if (elType === 'column' && !seenAttrs.has('orientation')) {
         attrsArr.push(`orientation="vertical"`);
-    } else if (elType === 'row') {
+        seenAttrs.add('orientation');
+    } else if (elType === 'row' && !seenAttrs.has('orientation')) {
         attrsArr.push(`orientation="horizontal"`);
-    } else if (elType === 'spacer') {
-        // verticalStretch for flex
-        if (typeof element.flex === 'number') {
-            attrsArr.push(`verticalAlignment="stretch"`);
-        }
-        // if explicit size, map to height (default)
-        if (element.size !== undefined && typeof element.size === 'number') {
-            attrsArr.push(`height={${element.size}}`);
-        }
-    } else if (elType === 'divider') {
+        seenAttrs.add('orientation');
+    } else if (elType === 'divider' && !seenAttrs.has('height')) {
         const thickness = element.thickness ?? 1;
         attrsArr.push(`height={${thickness}}`);
-        // if no color present, use onSurfaceVariant variable
-        if (!element.color) {
+        seenAttrs.add('height');
+        if (!element.color && !seenAttrs.has('backgroundColor')) {
             const defaultVar = colorTokenToVar('onSurfaceVariant');
             usedColors.add(defaultVar);
             attrsArr.push(`backgroundColor={${defaultVar}}`);
+            seenAttrs.add('backgroundColor');
         }
-    // } else if (elType === 'scrollView') {
-    //     const axis = element.direction === 'horizontal' ? 'horizontal' : 'vertical';
-    //     delete element.direction;
-    //     attrsArr.push(`orientation="${axis}"`);
+    } else if (elType === 'forEach') {
+        // Add orientation if specified via direction
+        if (element.direction === 'horizontal' && !seenAttrs.has('orientation')) {
+            attrsArr.push(`orientation="horizontal"`);
+            seenAttrs.add('orientation');
+        }
     }
 
-    // If this is a clock element, render as label with time text
-    if (elType === 'clock') {
-        // override or ensure text attribute uses nowTime()
+    if (elType === 'clock' && !seenAttrs.has('text')) {
         attrsArr.push(`text={nowTime()}`);
+        seenAttrs.add('text');
     }
 
-    // if this is a plain stacklayout without attributes and without children, skip it entirely (no empty wrappers)
-    const children = element.children ?? [];
-    if (tag === 'stacklayout' && attrsArr.length === 0 && children.length === 0 && elType !== 'spacer' && elType !== 'divider') {
-        return '';
-    }
-
-    // Join attributes
     const attrStr = attrsArr.length ? ' ' + attrsArr.join(' ') : '';
 
-    // Now generate children markup
+    // Now generate children markup with spacer handling
     let childrenMarkup = '';
-
-    // Build children with special handling of 'spacer' elements:
-    // - spacer with a numeric size will be applied as margin to the previous element
+    const children = element.children ?? [];
     const childMarkups: string[] = [];
     const parentOrientation = elType === 'row' ? 'horizontal' : 'vertical';
     const marginProp = parentOrientation === 'horizontal' ? 'marginRight' : 'marginBottom';
 
     function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
-        // find the first opening tag for the element (skip initial {#if...} etc.)
         const firstLT = markup.indexOf('<');
         if (firstLT === -1) return markup;
         const closingGT = markup.indexOf('>', firstLT);
         if (closingGT === -1) return markup;
         const openingTag = markup.substring(firstLT, closingGT + 1);
-        // skip if the margin prop is already present on opening tag
         if (openingTag.includes(`${marginName}=`)) return markup;
-        // Insert the margin before the closing '>' of opening tag
         return markup.slice(0, closingGT) + ` ${marginName}={${marginVal}}` + markup.slice(closingGT);
     }
 
@@ -518,61 +612,48 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         const childDef = children[i];
 
         if (childDef.type === 'spacer') {
-            // If spacer specifies a numeric 'size', apply it as margin on the previous child markup (if any)
             const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
             if (sizeVal !== undefined && childMarkups.length > 0) {
                 const idx = childMarkups.length - 1;
                 childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
             }
-            // Don't generate any markup for the spacer itself
             continue;
         }
 
-        // Normal child generation
         const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
         if (childMarkup) childMarkups.push(childMarkup);
     }
-    if (childMarkups.length > 0) {
+
+    if (elType === 'forEach') {
+        usedTemplateImport.val = true;
+
+        // Generate the inner template with item context
+        const innerTemplate = element.itemTemplate ? generateMarkup(widgetName, element.itemTemplate, [...elementPath, 'itemTemplate'], usedTemplateImport, usedColors, 'item') : '';
+
+        if (innerTemplate) {
+            const templateIndent = indent + '    ';
+            childrenMarkup = `\n${templateIndent}<Template let:item>\n${innerTemplate}\n${templateIndent}</Template>\n${indent}`;
+        }
+    } else if (childMarkups.length > 0) {
         childrenMarkup = '\n' + childMarkups.join('\n') + '\n' + indent;
     }
 
-    // For conditional element: the element uses then/else semantics
+    // For conditional element
     if (elType === 'conditional') {
         const condRaw = element.condition ?? 'true';
         let condExpr = 'true';
-        // If binding placeholders present use convertBindingToSvelteExpr; otherwise normalize a plain JS-like expression
         if (typeof condRaw === 'string' && hasBinding(condRaw)) {
             condExpr = convertBindingToSvelteExpr(condRaw, defaultPrefix);
         } else if (typeof condRaw === 'string') {
             condExpr = normalizeExpr(condRaw, defaultPrefix);
         } else {
-            // Not a string, fallback to JSON literal
             condExpr = JSON.stringify(condRaw);
         }
         let thenMarkup = '';
         let elseMarkup = '';
         if (element.then) thenMarkup = generateMarkup(widgetName, element.then, [...elementPath, 'then'], usedTemplateImport, usedColors, defaultPrefix);
         if (element.else) elseMarkup = generateMarkup(widgetName, element.else, [...elementPath, 'else'], usedTemplateImport, usedColors, defaultPrefix);
-        const s = `${indent}{#if ${condExpr}}\n${thenMarkup}\n${indent}{:else}\n${elseMarkup}\n${indent}{/if}`;
-        return s;
-    }
-
-    // Tag markup assembly
-    // special-case <collectionview> because we already generated the inner Template
-    if (elType === 'forEach') {
-        const itemsAttr = buildAttribute(widgetName, 'items', element.items ?? '[]', elementPath, defaultPrefix, usedColors);
-        const start = `${indent}<collectionview ${itemsAttr ?? ''}>`;
-        const end = `${indent}</collectionview>`;
-        return `${start}${childrenMarkup}${end}`;
-    }
-
-    // For scrollview, we keep children in a content StackLayout
-    if (elType === 'scrollView') {
-        const start = `${indent}<scrollview${attrStr}>`;
-        const contentStart = `${indent}    <stacklayout orientation="${element.direction === 'horizontal' ? 'horizontal' : 'vertical'}">`;
-        const contentEnd = `${indent}    </stacklayout>`;
-        const end = `${indent}</scrollview>`;
-        return `${start}\n${contentStart}${childrenMarkup}\n${contentEnd}\n${end}`;
+        return `${indent}{#if ${condExpr}}\n${thenMarkup}\n${indent}{:else}\n${elseMarkup}\n${indent}{/if}`;
     }
 
     // For label with children (cspan or nested elements)
@@ -583,20 +664,17 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
             inner += '\n' + generateMarkup(widgetName, children[i], [...elementPath, `labelChild${i}`], usedTemplateImport, usedColors, defaultPrefix);
         }
         const end = `${indent}</label>`;
-        return `${start}${inner}\n${indent}${end}`;
+        return `${start}${inner}\n${end}`;
     }
 
-    // For simple tags
     const start = `${indent}<${tag}${attrStr}>`;
     const end = `</${tag}>`;
-    // For tags that are self-closing in NS normal UI (imagex), we keep the tag as-is and don't add children
-    const selfClosing = ['image', 'cspan']; // cspan can be self-closing if no text child or use text attribute
+    const selfClosing = ['image', 'cspan'];
     if (selfClosing.includes(tag) && children.length === 0 && !element.text) {
         return `${start}${end}`;
     }
 
-    // For labels with a 'text' attribute we've added attr already; no need for inner text
-    return `${start}${childrenMarkup}\n${indent}${end}`;
+    return `${start}${childrenMarkup}${end}`;
 }
 
 /**
@@ -604,49 +682,49 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
  */
 function generateSvelteComponent(layout: WidgetLayout): string {
     const widgetName = layout.name;
-    // Determine whether we need Template import
     const usedTemplateImport = { val: false };
 
-    // Collect used color variables
     const usedColors = new Set<string>();
-    collectUsedColorsFromLayout(layout, usedColors); // <--- use layout-level collector (includes bg + variants)
-    // ensure default color var used in some elements like divider defaults etc.
+    collectUsedColorsFromLayout(layout, usedColors);
 
-    // Build script block: imports, props, helper functions
-    let script = `<script lang="ts">\n`;
+    // Check if widget uses clock element
+    const usesClock = JSON.stringify(layout).includes('"type":"clock"');
+
+    let script = `<script context="module" lang="ts">\n`;
     script += `    // Auto-generated Svelte Native component for widget "${layout.name}"\n`;
-    // keep Writable import if it's still useful - remove if not necessary
     script += `    import type { Writable } from 'svelte/store';\n`;
-    // CollectionView Template import if needed (conditioned later, but we can keep it; Svelte import removal is optional)
     script += `    import { Template } from '@nativescript-community/svelte-native/components';\n`;
     script += `    import { formatDate, l } from '~/helpers/locale';\n`;
     script += `    import { titlecase } from '@nativescript-community/l';\n`;
-    script += `    import { colors } from '~/variables';\n\n`;
+    script += `    import { iconService } from '~/services/icon';\n`;
+    script += `    import { colors } from '~/variables';\n`;
+    script += `    import type { WeatherWidgetData } from '~/services/widgets/WidgetTypes';\n`;
+    script += `    </script>\n`;
+    script += `    <script lang="ts">\n`;
 
-    // Exported props: data, size
-    script += `    export let data: any = {} as any;\n`;
+    // Export props with proper typing
+    script += `    export let data: WeatherWidgetData;\n`;
     script += `    export let size: { width: number; height: number } = { width: ${layout.supportedSizes?.[0]?.width ?? 160}, height: ${layout.supportedSizes?.[0]?.height ?? 160}};\n\n`;
 
     // If we have used color tokens, generate reactive destructuring from $colors
     if (usedColors.size > 0) {
-        // create comma-separated string of used color variable names
         const vars = Array.from(usedColors).join(', ');
-        script += `    $: ({ ${vars} } = $colors);\n\n`;
+        script += `    $: ({ ${vars} } = $colors);\n`;
     }
 
-    // Additional helpers: format date/time or clock creation - minimal support
-    script += `    function nowTime() { const now = new Date(); return now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0'); }\n`;
+    // Helper functions - only add if used
+    if (usesClock) {
+        script += `\n    function nowTime() {\n`;
+        script += `        const now = new Date();\n`;
+        script += `        return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');\n`;
+        script += `    }\n`;
+    }
 
-    // End script
     script += `</script>\n\n`;
 
-    // Svelte markup generation - detect Template usage while generating
-    const markup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors);
-    // Build top-level style or wrapper element (container)
+    // Build top-level wrapper element (container)
     const wrapperAttrs: string[] = [];
-    // Use provided size prop as wrapper width/height
     wrapperAttrs.push(`width={size.width}`, `height={size.height}`);
-    // background color and default padding
     if (layout.background?.color) {
         const v = layout.background.color;
         const attrBg = buildAttribute(widgetName, 'backgroundColor', v, ['root'], 'data', usedColors);
@@ -655,15 +733,14 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     if (layout.defaultPadding !== undefined) {
         wrapperAttrs.push(`padding={${JSON.stringify(layout.defaultPadding)}}`);
     }
+    wrapperAttrs.push(`class="widget-container"`);
 
-    const wrapperAttrStr = wrapperAttrs.length ? ' ' + wrapperAttrs.join(' ') : '';
+    const wrapperTag = 'gridlayout';
+    const wrapperAttrStr = wrapperAttrs.join(' ');
+    const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data');
 
-    // Clean up repeated blank lines in markup
-    const cleanedMarkup = `${markup}`.replace(/\n{3,}/g, '\n\n').replace(/\n\s+\n/g, '\n');
-
-    const svelteLines = `${script}<gridlayout class="widget-container"${wrapperAttrStr}>\n${cleanedMarkup}\n</gridlayout>\n`;
-
-    return svelteLines;
+    const component = `${script}<${wrapperTag} ${wrapperAttrStr}>\n${bodyMarkup}\n</${wrapperTag}>\n`;
+    return component;
 }
 
 /**

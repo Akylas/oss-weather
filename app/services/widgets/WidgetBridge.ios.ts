@@ -40,7 +40,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             DEV_LOG && console.log(TAG, 'Started observing widget events');
         } catch (error) {
-            console.error(TAG, 'Failed to setup widget event observer:', error);
+            console.error(TAG, 'Failed to setup widget event observer:', error, error.stack);
         }
     }
 
@@ -63,7 +63,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 }
             }
         } catch (error) {
-            console.error(TAG, 'Error handling widget event:', error);
+            console.error(TAG, 'Error handling widget event:', error, error.stack);
         }
     }
 
@@ -83,7 +83,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                     fileManager.createDirectoryAtURLWithIntermediateDirectoriesAttributesError(widgetDataDir, true, null);
                     DEV_LOG && console.log(TAG, 'Created WidgetData directory in App Group');
                 } catch (error) {
-                    console.error(TAG, 'Failed to create WidgetData directory:', error);
+                    console.error(TAG, 'Failed to create WidgetData directory:', error, error.stack);
                 }
             }
         } else {
@@ -110,7 +110,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 const config = configs[widgetId];
                 this.updateWidget(widgetId, config);
             } catch (error) {
-                console.error(TAG, `Error updating widget ${widgetId}:`, error);
+                console.error(TAG, `Error updating widget ${widgetId}:`, error, error.stack);
             }
         }
 
@@ -146,7 +146,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             DEV_LOG && console.log(TAG, `Widget ${widgetId} updated successfully`);
         } catch (error) {
-            console.error(TAG, `Error updating widget ${widgetId}:`, error);
+            console.error(TAG, `Error updating widget ${widgetId}:`, error, error.stack);
             // Write null on error so widget shows fallback
             this.setWidgetError(widgetId, error.message || 'Unknown error');
         }
@@ -166,7 +166,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 console.log(`WidgetBridge: Synced update frequency to iOS: ${frequency} minutes`);
             }
         } catch (error) {
-            console.error('WidgetBridge: Failed to sync update frequency:', error);
+            console.error('WidgetBridge: Failed to sync update frequency:', error, error.stack);
         }
     }
 
@@ -181,7 +181,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             console.log(`WidgetBridge: Updated widget frequency to ${frequency} minutes`);
         } catch (error) {
-            console.error('WidgetBridge: Failed to update frequency:', error);
+            console.error('WidgetBridge: Failed to update frequency:', error, error.stack);
         }
     }
 
@@ -211,7 +211,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             console.log(`WidgetBridge: Saved data for widget ${widgetId}`);
         } catch (error) {
-            console.error('WidgetBridge: Failed to save widget data:', error);
+            console.error('WidgetBridge: Failed to save widget data:', error, error.stack);
         }
     }
 
@@ -261,7 +261,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             return null;
         } catch (error) {
-            console.error(TAG, 'Error getting widget kind:', error);
+            console.error(TAG, 'Error getting widget kind:', error, error.stack);
             return null;
         }
     }
@@ -274,7 +274,7 @@ export class WidgetBridge extends WidgetBridgeBase {
             WidgetUtils.reloadTimelinesOfKind(widgetKind);
             DEV_LOG && console.log(TAG, `Reloaded widget timeline: ${widgetKind}`);
         } catch (error) {
-            console.error(TAG, `Error reloading widget timeline ${widgetKind}:`, error);
+            console.error(TAG, `Error reloading widget timeline ${widgetKind}:`, error, error.stack);
         }
     }
 
@@ -296,7 +296,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 DEV_LOG && console.log(TAG, `Reloaded all widgets (couldn't determine kind for id: ${widgetId})`);
             }
         } catch (error) {
-            console.error(TAG, 'Failed to reload widget:', error);
+            console.error(TAG, 'Failed to reload widget:', error, error.stack);
         }
     }
 
@@ -335,7 +335,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             DEV_LOG && console.log(TAG, `Reloaded ${widgetKinds.length} widget kinds for family: ${family}`);
         } catch (error) {
-            console.error(TAG, `Error reloading widgets for family ${family}:`, error);
+            console.error(TAG, `Error reloading widgets for family ${family}:`, error, error.stack);
         }
     }
 
@@ -439,7 +439,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             return '';
         } catch (error) {
-            console.error(`Error copying icon ${iconName}:`, error);
+            console.error(`Error copying icon ${iconName}:`, error, error.stack);
             return '';
         }
     }
@@ -462,7 +462,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 DEV_LOG && console.log(TAG, `Removed widget data for ${widgetId}`);
             }
         } catch (error) {
-            console.error(TAG, `Error removing widget data for ${widgetId}:`, error);
+            console.error(TAG, `Error removing widget data for ${widgetId}:`, error, error.stack);
         }
     }
 
@@ -475,7 +475,7 @@ export class WidgetBridge extends WidgetBridgeBase {
             WidgetUtils.reloadAllTimelines();
             DEV_LOG && console.log(TAG, 'Reloaded all widget timelines');
         } catch (error) {
-            console.error(TAG, 'Error reloading widget timelines:', error);
+            console.error(TAG, 'Error reloading widget timelines:', error, error.stack);
         }
     }
 

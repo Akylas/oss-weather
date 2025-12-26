@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { View } from '@nativescript/core';
+    import { Screen, View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import { showModal } from '@shared/utils/svelte/ui';
     import { onMount } from 'svelte';
@@ -13,9 +13,45 @@
     import { widgetService } from '~/services/widgets/WidgetBridge';
     import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
-    import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from '~/services/widgets/WidgetTypes';
-    import { selectValue } from '~/utils/ui';
-    import { colors, windowInset } from '~/variables';
+    import { DEFAULT_UPDATE_FREQUENCY, WeatherWidgetData, WidgetConfig } from '~/services/widgets/WidgetTypes';
+    import { selectValue, showPopoverMenu } from '~/utils/ui';
+    import { actionBarHeight, colors, fontScale, windowInset } from '~/variables';
+
+    // Import generated widget components
+    import SimpleWeatherWidgetView from '~/components/widgets/generated/SimpleWeatherWidgetView.generated.svelte';
+    import SimpleWeatherWithDateWidgetView from '~/components/widgets/generated/SimpleWeatherWithDateWidgetView.generated.svelte';
+    import SimpleWeatherWithClockWidgetView from '~/components/widgets/generated/SimpleWeatherWithClockWidgetView.generated.svelte';
+    import HourlyWeatherWidgetView from '~/components/widgets/generated/HourlyWeatherWidgetView.generated.svelte';
+    import DailyWeatherWidgetView from '~/components/widgets/generated/DailyWeatherWidgetView.generated.svelte';
+    import ForecastWeatherWidgetView from '~/components/widgets/generated/ForecastWeatherWidgetView.generated.svelte';
+    import { VerticalPosition } from '@nativescript-community/ui-popover';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
+
+    // Map widget classes to components
+    const widgetComponents = {
+        SimpleWeatherWidget: SimpleWeatherWidgetView,
+        SimpleWeatherWithDateWidget: SimpleWeatherWithDateWidgetView,
+        SimpleWeatherWithClockWidget: SimpleWeatherWithClockWidgetView,
+        HourlyWeatherWidget: HourlyWeatherWidgetView,
+        DailyWeatherWidget: DailyWeatherWidgetView,
+        ForecastWeatherWidget: ForecastWeatherWidgetView
+    };
+
+    // Load sample data helper
+    async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
+        try {
+            const sampleData = (await import(`/widget-layouts/widgets/samples/${widgetClass}.sample.json`)).default;
+            return sampleData[setName] || sampleData.default || null;
+        } catch (error) {
+            console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
+            return null;
+        }
+    }
+    // Load sample data helper
+    async function loadWidgetData(widgetClass: string): Promise<any> {
+        const data = (await import(`/widget-layouts/widgets/${widgetClass}.json`)).default;
+        return data;
+    }
 </script>
 
 <script lang="ts">
@@ -26,6 +62,7 @@
     export let widgetClass: string = '';
     export let widgetId: string = '';
     export let modalMode: boolean = false;
+    export let isKindConfig: boolean = false; // true for per-kind config, false for per-instance
 
     // State
     let config: WidgetConfig = null;
@@ -35,7 +72,10 @@
     let model: string = null;
     let provider: string = null;
     let updateFrequency: number = DEFAULT_UPDATE_FREQUENCY;
-    const previewView: View = null;
+    let previewData: WeatherWidgetData = null;
+    let previewConfig: { name: string; displayName: string; description: string; supportedSizes: { width: number; height: number; family: string }[] } = null;
+    let previewSet: string = 'default';
+    let previewSize: { width: number; height: number; family: string } = null;
 
     // Widget kind display names
     const widgetKindNames = {
@@ -49,7 +89,13 @@
 
     function getWidgetTitle(): string {
         if (widgetClass && widgetKindNames[widgetClass]) {
-            return widgetKindNames[widgetClass];
+            const baseName = widgetKindNames[widgetClass];
+            if (isKindConfig) {
+                return `${baseName} - ${lc('default_settings')}`;
+            } else if (widgetId) {
+                return `${baseName} #${widgetId}`;
+            }
+            return baseName;
         }
         if (widgetId) {
             return `${lc('widget')} #${widgetId}`;
@@ -57,27 +103,36 @@
         return lc('widget_settings');
     }
 
-    onMount(() => {
+    onMount(async () => {
         loadConfig();
         updateFrequency = WidgetConfigManager.getUpdateFrequency();
+        // Load initial preview data
+        if (widgetClass) {
+            previewData = await loadWidgetSample(widgetClass, previewSet);
+            previewConfig = await loadWidgetData(widgetClass);
+            previewSize = previewConfig.supportedSizes[0];
+        }
     });
 
     function loadConfig() {
-        if (widgetId) {
+        if (isKindConfig) {
+            // Load per-kind default config
+            config = WidgetConfigManager.getKindConfig(widgetClass);
+        } else if (widgetId) {
+            // Load per-instance config
             config = WidgetConfigManager.getConfig(widgetId);
-            if (config) {
-                locationName = config.locationName || 'current';
-                latitude = config.latitude;
-                longitude = config.longitude;
-                model = config.model;
-                provider = config.provider;
-            }
+        }
+
+        if (config) {
+            locationName = config.locationName || 'current';
+            latitude = config.latitude;
+            longitude = config.longitude;
+            model = config.model;
+            provider = config.provider;
         }
     }
 
     function saveConfig() {
-        if (!widgetId) return;
-
         const newConfig: WidgetConfig = {
             locationName,
             latitude,
@@ -87,11 +142,18 @@
             widgetKind: widgetClass
         };
 
-        WidgetConfigManager.saveConfig(widgetId, newConfig, widgetClass);
-        showSnack({ message: lc('widget_config_saved') });
+        if (isKindConfig) {
+            // Save per-kind default config
+            WidgetConfigManager.saveKindConfig(widgetClass, newConfig);
+            showSnack({ message: lc('widget_kind_config_saved') });
+        } else if (widgetId) {
+            // Save per-instance config
+            WidgetConfigManager.saveConfig(widgetId, newConfig, widgetClass);
+            showSnack({ message: lc('widget_config_saved') });
 
-        // Trigger widget update using widgetService
-        widgetService.updateWidget(widgetId);
+            // Trigger widget update
+            widgetService.updateWidget(widgetId);
+        }
     }
 
     async function selectLocation() {
@@ -99,6 +161,7 @@
             const SelectCity = (await import('~/components/SelectCity.svelte')).default;
             const result: WeatherLocation = await showModal({
                 page: SelectCity,
+                fullscreen: true,
                 props: {}
             });
             if (result) {
@@ -117,6 +180,7 @@
             const SelectPositionOnMap = (await import('~/components/SelectPositionOnMap.svelte')).default;
             const result: WeatherLocation = await showModal({
                 page: SelectPositionOnMap,
+                fullscreen: true,
                 props: {
                     focusPos: latitude && longitude ? { lat: latitude, lon: longitude } : undefined
                 }
@@ -201,6 +265,68 @@
         }
     }
 
+    async function selectPreviewSet(event) {
+        try {
+            const options = ['default', 'hot', 'storm'].map((set) => ({
+                title: lc(`widget.preview_set.${set}`) || set,
+                type: 'checkbox',
+                boxType: 'circle',
+                value: set === previewSet,
+                data: set
+            }));
+            await showPopoverMenu({
+                options,
+                anchor: event.object,
+                vertPos: VerticalPosition.BELOW,
+                props: {
+                    width: 220 * $fontScale,
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+                    // autoSizeListItem: true
+                },
+
+                onCheckBox: async (item) => {
+                    closePopover();
+                    if (item?.data) {
+                        previewSet = item?.data;
+                        previewData = await loadWidgetSample(widgetClass, previewSet);
+                    }
+                }
+            });
+        } catch (error) {
+            showError(error);
+        }
+    }
+    async function selectPreviewSize(event) {
+        try {
+            const options = previewConfig.supportedSizes.map((set) => ({
+                title: lc(`widget.preview_set.${set.family}`) || set.family,
+                type: 'checkbox',
+                boxType: 'circle',
+                value: set.width === previewSize.width && set.height === previewSize.height,
+                data: set
+            }));
+            await showPopoverMenu({
+                options,
+                anchor: event.object,
+                vertPos: VerticalPosition.BELOW,
+                props: {
+                    width: 220 * $fontScale,
+                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+                    // autoSizeListItem: true
+                },
+
+                onCheckBox: async (item) => {
+                    closePopover();
+                    if (item?.data) {
+                        previewSize = item?.data;
+                    }
+                }
+            });
+        } catch (error) {
+            showError(error);
+        }
+    }
+
     function getLocationDescription(): string {
         if (isDefaultLocation(locationName)) {
             return lc('my_location');
@@ -225,12 +351,10 @@
         return OpenMeteoModels[model] || model;
     }
 
-    function getFrequencyDescription(): string {
-        if (updateFrequency < 60) {
-            return `${updateFrequency} min`;
-        }
-        return updateFrequency === 60 ? '1 hour' : `${updateFrequency / 60} hours`;
-    }
+    $: widgetComponent = widgetClass ? widgetComponents[widgetClass] : null;
+    $: widgetSize = previewSize ?? { width: 160, height: 160 };
+    $: DEV_LOG && console.log('widgetComponent', !!widgetComponent);
+    $: DEV_LOG && console.log('previewData', !!previewData);
 </script>
 
 <page actionBarHidden={true}>
@@ -239,8 +363,30 @@
 
         <scrollview row={1} android:paddingBottom={$windowInset.bottom}>
             <stacklayout padding="0 0 20 0">
-                <!-- Preview Section with home background -->
-                <!-- TODO: show a header with like name of the widget -->
+                <!-- Preview Section -->
+                {#if widgetComponent && previewData && previewSize  }
+                    <stacklayout backgroundColor={colorSurfaceContainer} borderRadius={10} horizontalAlignment="center">
+                        <svelte:component this={widgetComponent} data={previewData} size={widgetSize} />
+                    </stacklayout>
+                    <gridlayout columns="*,*">
+                        <ListItemAutoSize
+                            item={{
+                                title: lc('widget.preview_set'),
+                                subtitle: lc(`widget.preview_set.${previewSet}`) || previewSet
+                            }}
+                            on:tap={selectPreviewSet} />
+                        <ListItemAutoSize
+                            col={1}
+                            item={{
+                                title: lc('widget.preview_size'),
+                                subtitle: lc(previewSize.family)
+                            }}
+                            on:tap={selectPreviewSize} />
+                    </gridlayout>
+                {/if}
+                {#if isKindConfig}
+                    <label class="sectionHeader" text={lc('default_widget_settings_note')} />
+                {/if}
 
                 <!-- Location Section -->
                 <label class="sectionHeader" text={lc('select_location')} />
@@ -262,7 +408,7 @@
                 <ListItemAutoSize
                     item={{
                         title: lc('my_location'),
-                        subtitle: isDefaultLocation(locationName) ? '✓' : ''
+                        subtitle: isDefaultLocation(locationName) ? lc('default_location') : ''
                     }}
                     on:tap={useCurrentLocation} />
 
@@ -283,20 +429,12 @@
                     }}
                     on:tap={selectModel} />
 
-                <!-- Update Frequency Section -->
-                <label class="sectionHeader" text={lc('widget_settings')} />
-
-                <ListItemAutoSize
-                    item={{
-                        title: lc('widget_update_frequency'),
-                        subtitle: getFrequencyDescription()
-                    }}
-                    on:tap={selectUpdateFrequency} />
-
                 <!-- Info Notes -->
-                <label color={colorOnSurfaceVariant} fontSize={12} margin="16 16 0 16" text={lc('widget_configuration_note')} textWrap={true} />
+                <label color={colorOnSurfaceVariant} fontSize={12} margin="16 16 0 16" text={isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note')} textWrap={true} />
 
-                <label color={colorOnSurfaceVariant} fontSize={12} margin="8 16 0 16" text={__ANDROID__ ? lc('widget_android_note') : lc('widget_ios_note')} textWrap={true} />
+                {#if !isKindConfig}
+                    <label color={colorOnSurfaceVariant} fontSize={12} margin="8 16 0 16" text={__ANDROID__ ? lc('widget_android_note') : lc('widget_ios_note')} textWrap={true} />
+                {/if}
             </stacklayout>
         </scrollview>
     </gridlayout>

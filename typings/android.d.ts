@@ -1,7 +1,7 @@
 declare namespace com {
     export namespace tns {
         export class NativeScriptException {
-            static getStackTraceAsString(ex): String;
+            static getStackTraceAsString(ex): string;
         }
     }
 }
@@ -54,6 +54,17 @@ declare namespace com {
                     public getKeepAspectRatio(): boolean;
                     public setResizeThreshold(param0: number): void;
                     public constructor(param0: string);
+                }
+            }
+            export namespace widgets {
+                export class WeatherWidgetManager {
+                    static setWidgetError(context: globalAndroid.content.Context, widgetId: number, arg2: any);
+                    static setWidgetLoading(context: globalAndroid.content.Context, widgetId: number);
+                    static updateWidgetData(context: globalAndroid.content.Context, widgetId: number, data: string);
+                    static getAllActiveWidgetIds(context: globalAndroid.content.Context): java.util.List<string>;
+                    static setUpdateFrequency(context: globalAndroid.content.Context, minutes: number) {
+                        throw new Error('Method not implemented.');
+                    }
                 }
             }
         }

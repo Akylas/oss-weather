@@ -34,14 +34,25 @@ object WeatherWidgetManager {
     private const val WIDGET_UPDATE_WORK_TAG = "weather_widget_update"
     private const val WIDGET_PREFS_FILE = "widget_preferences"
     private const val UPDATE_FREQUENCY_KEY = "widget_update_frequency"
-    private const val WIDGET_CONFIGS_KEY = "widget_configs"
+    private const val WIDGET_CONFIGS_KEY = "widget_configs" // per-instance configs
+    private const val WIDGET_KIND_CONFIGS_KEY = "widget_kind_configs" // per-kind default configs
     private const val ACTIVE_WIDGETS_KEY = "active_widget_ids"
-    private const val WIDGET_DATA_CACHE_KEY = "widget_data_cache" // New
+    private const val WIDGET_DATA_CACHE_KEY = "widget_data_cache"
     private const val DEFAULT_UPDATE_FREQUENCY = 30L
 
     private const val LOG_TAG = "WeatherWidgetManager"
 
     private val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
+
+    // Widget kind constants matching TypeScript
+    private val WIDGET_KINDS = listOf(
+        "SimpleWeatherWidget",
+        "SimpleWeatherWithDateWidget",
+        "SimpleWeatherWithClockWidget",
+        "HourlyWeatherWidget",
+        "DailyWeatherWidget",
+        "ForecastWeatherWidget"
+    )
 
     init {
         WidgetsLogger.d(LOG_TAG, "WeatherWidgetManager loaded")
@@ -94,7 +105,7 @@ object WeatherWidgetManager {
             val jsonObject = JSONObject()
             
             widgetDataCache.forEach { (widgetId, data) ->
-                val dataJson = Json.encodeToString(data)
+                val dataJson = Json.encodeToString(WeatherWidgetData.serializer(), data)
                 jsonObject.put(widgetId.toString(), dataJson)
             }
             
@@ -623,119 +634,7 @@ object WeatherWidgetManager {
         }
     }
 
-    /**
-     * Update specific widget
-     */
-    private fun updateWidget(context: Context, widgetId: Int) {
-        WidgetsLogger.d(LOG_TAG, "updateWidget(widgetId=$widgetId) scanning receivers")
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-
-        // Find which receiver this widget belongs to
-        val receivers = listOf(
-            SimpleWeatherWidgetReceiver::class.java,
-            SimpleWeatherWithDateWidgetReceiver::class.java,
-            SimpleWeatherWithClockWidgetReceiver::class.java,
-            HourlyWeatherWidgetReceiver::class.java,
-            DailyWeatherWidgetReceiver::class.java,
-            ForecastWeatherWidgetReceiver::class.java
-        )
-
-        receivers.forEach { receiverClass ->
-            val widgetIds = appWidgetManager.getAppWidgetIds(
-                ComponentName(context, receiverClass)
-            )
-            if (widgetIds.contains(widgetId)) {
-                WidgetsLogger.d(LOG_TAG, "updateWidget matched receiver ${receiverClass.simpleName} for widgetId=$widgetId")
-                val intent = Intent(context, receiverClass)
-                intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
-                context.sendBroadcast(intent)
-                WidgetsLogger.i(LOG_TAG, "Sent ACTION_APPWIDGET_UPDATE broadcast to ${receiverClass.simpleName} for widgetId=$widgetId")
-            }
-        }
-    }
-
-    /**
-     * Get all widget configurations from SharedPreferences
-     */
-    fun getAllWidgetConfigs(context: Context): Map<Int, WidgetConfig> {
-        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
-        val json = prefs.getString(WIDGET_CONFIGS_KEY, null) ?: run {
-            WidgetsLogger.d(LOG_TAG, "getAllWidgetConfigs() -> no stored configs")
-            return emptyMap()
-        }
-
-        return try {
-            val configs = mutableMapOf<Int, WidgetConfig>()
-            val jsonObject = JSONObject(json)
-            val keys = jsonObject.keys()
-
-            while (keys.hasNext()) {
-                val widgetId = keys.next()
-                val configJson = jsonObject.getJSONObject(widgetId)
-                configs[widgetId.toInt()] = WidgetConfig(
-                    locationName = configJson.optString("locationName", "current"),
-                    latitude = configJson.optDouble("latitude", 0.0),
-                    longitude = configJson.optDouble("longitude", 0.0),
-                    model = configJson.optString("model", "default")
-                )
-            }
-            WidgetsLogger.i(LOG_TAG, "Loaded ${configs.size} widget configurations")
-            configs
-        } catch (e: Exception) {
-            WidgetsLogger.e(LOG_TAG, "Failed to parse widget configurations", e)
-            emptyMap()
-        }
-    }
-
-    /**
-     * Save all widget configurations to SharedPreferences
-     */
-    fun saveAllWidgetConfigs(context: Context, configs: Map<Int, WidgetConfig>) {
-        WidgetsLogger.d(LOG_TAG, "saveAllWidgetConfigs() saving ${configs.size} configs")
-        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
-        val jsonObject = JSONObject()
-
-        configs.forEach { (widgetId, config) ->
-            val configJson = JSONObject().apply {
-                put("locationName", config.locationName)
-                put("latitude", config.latitude)
-                put("longitude", config.longitude)
-                put("model", config.model)
-            }
-            jsonObject.put(widgetId.toString(), configJson)
-        }
-
-        prefs.edit { putString(WIDGET_CONFIGS_KEY, jsonObject.toString()) }
-        WidgetsLogger.i(LOG_TAG, "All widget configurations saved")
-    }
-
-    /**
-     * Load widget configuration for specific widget
-     */
-    fun loadWidgetConfig(context: Context, widgetId: Int): WidgetConfig? {
-        val config = getAllWidgetConfigs(context)[widgetId]
-        WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> ${config != null}")
-        return config
-    }
-
-    /**
-     * Delete widget configuration
-     */
-    fun deleteWidgetConfig(context: Context, widgetId: Int) {
-        WidgetsLogger.d(LOG_TAG, "deleteWidgetConfig(widgetId=$widgetId) called")
-        val configs = getAllWidgetConfigs(context).toMutableMap()
-        configs.remove(widgetId)
-        saveAllWidgetConfigs(context, configs)
-        
-        loadWidgetDataCache(context)
-        widgetDataCache.remove(widgetId)
-        saveWidgetDataCache(context) // Persist after removal
-        
-        WidgetsLogger.i(LOG_TAG, "Deleted config and cache for widgetId=$widgetId")
-    }
-
-    /**
+     /**
      * Decodes a file path into a Bitmap or returns null if that's not possible.
      */
     fun getIconBitmapFromPath(iconFilePath: String?): Bitmap? {
@@ -787,6 +686,313 @@ object WeatherWidgetManager {
             null
         }
     }
+
+    /**
+     * Update specific widget
+     */
+    private fun updateWidget(context: Context, widgetId: Int) {
+        WidgetsLogger.d(LOG_TAG, "updateWidget(widgetId=$widgetId) scanning receivers")
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+
+        // Find which receiver this widget belongs to
+        val receivers = listOf(
+            SimpleWeatherWidgetReceiver::class.java,
+            SimpleWeatherWithDateWidgetReceiver::class.java,
+            SimpleWeatherWithClockWidgetReceiver::class.java,
+            HourlyWeatherWidgetReceiver::class.java,
+            DailyWeatherWidgetReceiver::class.java,
+            ForecastWeatherWidgetReceiver::class.java
+        )
+
+        receivers.forEach { receiverClass ->
+            val widgetIds = appWidgetManager.getAppWidgetIds(
+                ComponentName(context, receiverClass)
+            )
+            if (widgetIds.contains(widgetId)) {
+                WidgetsLogger.d(LOG_TAG, "updateWidget matched receiver ${receiverClass.simpleName} for widgetId=$widgetId")
+                val intent = Intent(context, receiverClass)
+                intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
+                context.sendBroadcast(intent)
+                WidgetsLogger.i(LOG_TAG, "Sent ACTION_APPWIDGET_UPDATE broadcast to ${receiverClass.simpleName} for widgetId=$widgetId")
+            }
+        }
+    }
+
+    /**
+     * Get all per-kind default configurations
+     */
+    @JvmStatic
+    fun getAllKindConfigs(context: Context): Map<String, WidgetConfig> {
+        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
+        val json = prefs.getString(WIDGET_KIND_CONFIGS_KEY, null) ?: run {
+            WidgetsLogger.d(LOG_TAG, "getAllKindConfigs() -> no stored configs")
+            return emptyMap()
+        }
+
+        return try {
+            val configs = mutableMapOf<String, WidgetConfig>()
+            val jsonObject = JSONObject(json)
+            val keys = jsonObject.keys()
+
+            while (keys.hasNext()) {
+                val widgetKind = keys.next()
+                val configJson = jsonObject.getJSONObject(widgetKind)
+                configs[widgetKind] = parseWidgetConfig(configJson)
+            }
+            WidgetsLogger.i(LOG_TAG, "Loaded ${configs.size} widget kind configurations")
+            configs
+        } catch (e: Exception) {
+            WidgetsLogger.e(LOG_TAG, "Failed to parse widget kind configurations", e)
+            emptyMap()
+        }
+    }
+
+    /**
+     * Save all per-kind default configurations
+     */
+    @JvmStatic
+    fun saveAllKindConfigs(context: Context, configs: Map<String, WidgetConfig>) {
+        WidgetsLogger.d(LOG_TAG, "saveAllKindConfigs() saving ${configs.size} configs")
+        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
+        val jsonObject = JSONObject()
+
+        configs.forEach { (widgetKind, config) ->
+            jsonObject.put(widgetKind, widgetConfigToJson(config))
+        }
+
+        prefs.edit { putString(WIDGET_KIND_CONFIGS_KEY, jsonObject.toString()) }
+        WidgetsLogger.i(LOG_TAG, "All widget kind configurations saved")
+    }
+
+    /**
+     * Get configuration for a specific widget kind (default settings)
+     */
+    @JvmStatic
+    fun getKindConfig(context: Context, widgetKind: String): WidgetConfig {
+        val configs = getAllKindConfigs(context)
+        val config = configs[widgetKind]
+        
+        if (config == null) {
+            WidgetsLogger.d(LOG_TAG, "No kind config for $widgetKind, creating default")
+            val defaultConfig = createDefaultConfig()
+            saveKindConfig(context, widgetKind, defaultConfig)
+            return defaultConfig
+        }
+        
+        return config
+    }
+
+    /**
+     * Save configuration for a specific widget kind
+     */
+    @JvmStatic
+    fun saveKindConfig(context: Context, widgetKind: String, config: WidgetConfig) {
+        WidgetsLogger.d(LOG_TAG, "saveKindConfig(widgetKind=$widgetKind)")
+        val configs = getAllKindConfigs(context).toMutableMap()
+        configs[widgetKind] = config
+        saveAllKindConfigs(context, configs)
+    }
+
+    /**
+     * Get all per-instance widget configurations
+     */
+    @JvmStatic
+    fun getAllWidgetConfigs(context: Context): Map<Int, WidgetConfig> {
+        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
+        val json = prefs.getString(WIDGET_CONFIGS_KEY, null) ?: run {
+            WidgetsLogger.d(LOG_TAG, "getAllWidgetConfigs() -> no stored configs")
+            return emptyMap()
+        }
+
+        return try {
+            val configs = mutableMapOf<Int, WidgetConfig>()
+            val jsonObject = JSONObject(json)
+            val keys = jsonObject.keys()
+
+            while (keys.hasNext()) {
+                val widgetId = keys.next()
+                val configJson = jsonObject.getJSONObject(widgetId)
+                configs[widgetId.toInt()] = parseWidgetConfig(configJson)
+            }
+            WidgetsLogger.i(LOG_TAG, "Loaded ${configs.size} widget configurations")
+            configs
+        } catch (e: Exception) {
+            WidgetsLogger.e(LOG_TAG, "Failed to parse widget configurations", e)
+            emptyMap()
+        }
+    }
+
+    /**
+     * Save all per-instance widget configurations
+     */
+    @JvmStatic
+    fun saveAllWidgetConfigs(context: Context, configs: Map<Int, WidgetConfig>) {
+        WidgetsLogger.d(LOG_TAG, "saveAllWidgetConfigs() saving ${configs.size} configs")
+        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
+        val jsonObject = JSONObject()
+
+        configs.forEach { (widgetId, config) ->
+            jsonObject.put(widgetId.toString(), widgetConfigToJson(config))
+        }
+
+        prefs.edit { putString(WIDGET_CONFIGS_KEY, jsonObject.toString()) }
+        WidgetsLogger.i(LOG_TAG, "All widget configurations saved")
+    }
+
+    /**
+     * Create widget instance configuration from kind defaults
+     * Called when a new widget is added
+     */
+    @JvmStatic
+    fun createInstanceConfig(context: Context, widgetId: Int, widgetKind: String): WidgetConfig {
+        WidgetsLogger.d(LOG_TAG, "createInstanceConfig(widgetId=$widgetId, widgetKind=$widgetKind)")
+        
+        // Get kind defaults
+        val kindConfig = getKindConfig(context, widgetKind)
+        
+        // Create instance config with widgetKind set
+        val instanceConfig = kindConfig.copy(widgetKind = widgetKind)
+        
+        // Save instance config
+        saveWidgetConfig(context, widgetId, instanceConfig)
+        
+        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind")
+        return instanceConfig
+    }
+
+    /**
+     * Load widget configuration for specific widget instance
+     * If no instance config exists, creates one from kind defaults
+     */
+    @JvmStatic
+    fun loadWidgetConfig(context: Context, widgetId: Int): WidgetConfig? {
+        val config = getAllWidgetConfigs(context)[widgetId]
+        
+        if (config != null) {
+            WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> found instance config")
+            return config
+        }
+        
+        // No instance config - try to determine widget kind and create from defaults
+        val widgetKind = getWidgetKindForId(context, widgetId)
+        if (widgetKind != null) {
+            WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> creating from kind $widgetKind")
+            return createInstanceConfig(context, widgetId, widgetKind)
+        }
+        
+        WidgetsLogger.w(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> no config found, returning default")
+        return createDefaultConfig()
+    }
+
+    /**
+     * Save widget configuration for specific widget instance
+     */
+    @JvmStatic
+    fun saveWidgetConfig(context: Context, widgetId: Int, config: WidgetConfig) {
+        WidgetsLogger.d(LOG_TAG, "saveWidgetConfig(widgetId=$widgetId)")
+        val configs = getAllWidgetConfigs(context).toMutableMap()
+        configs[widgetId] = config
+        saveAllWidgetConfigs(context, configs)
+    }
+
+    /**
+     * Delete widget configuration and data for specific instance
+     */
+    @JvmStatic
+    fun deleteWidgetConfig(context: Context, widgetId: Int) {
+        WidgetsLogger.d(LOG_TAG, "deleteWidgetConfig(widgetId=$widgetId) called")
+        
+        // Delete instance config
+        val configs = getAllWidgetConfigs(context).toMutableMap()
+        configs.remove(widgetId)
+        saveAllWidgetConfigs(context, configs)
+        
+        // Delete cached data
+        loadWidgetDataCache(context)
+        widgetDataCache.remove(widgetId)
+        saveWidgetDataCache(context)
+        
+        WidgetsLogger.i(LOG_TAG, "Deleted config and cache for widgetId=$widgetId")
+    }
+
+    /**
+     * Get all widget IDs for a specific kind
+     */
+    @JvmStatic
+    fun getInstancesOfKind(context: Context, widgetKind: String): List<Int> {
+        val configs = getAllWidgetConfigs(context)
+        val instances = configs.filter { it.value.widgetKind == widgetKind }.keys.toList()
+        WidgetsLogger.d(LOG_TAG, "getInstancesOfKind($widgetKind) -> ${instances.size} instances")
+        return instances
+    }
+
+    /**
+     * Determine widget kind from widget ID by checking all receivers
+     */
+    private fun getWidgetKindForId(context: Context, widgetId: Int): String? {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        
+        val receiverToKindMap = mapOf(
+            SimpleWeatherWidgetReceiver::class.java to "SimpleWeatherWidget",
+            SimpleWeatherWithDateWidgetReceiver::class.java to "SimpleWeatherWithDateWidget",
+            SimpleWeatherWithClockWidgetReceiver::class.java to "SimpleWeatherWithClockWidget",
+            HourlyWeatherWidgetReceiver::class.java to "HourlyWeatherWidget",
+            DailyWeatherWidgetReceiver::class.java to "DailyWeatherWidget",
+            ForecastWeatherWidgetReceiver::class.java to "ForecastWeatherWidget"
+        )
+        
+        for ((receiverClass, widgetKind) in receiverToKindMap) {
+            val allIds = appWidgetManager.getAppWidgetIds(ComponentName(context, receiverClass))
+            if (widgetId in allIds) {
+                WidgetsLogger.d(LOG_TAG, "Widget $widgetId is of kind $widgetKind")
+                return widgetKind
+            }
+        }
+        
+        WidgetsLogger.w(LOG_TAG, "Could not determine widget kind for $widgetId")
+        return null
+    }
+
+    /**
+     * Parse WidgetConfig from JSONObject
+     */
+    private fun parseWidgetConfig(json: JSONObject): WidgetConfig {
+        return WidgetConfig(
+            locationName = json.optString("locationName", "current"),
+            latitude = json.optDouble("latitude", 0.0),
+            longitude = json.optDouble("longitude", 0.0),
+            model = json.optString("model", "default"),
+            provider = json.optString("provider", null),
+            widgetKind = json.optString("widgetKind", null)
+        )
+    }
+
+    /**
+     * Convert WidgetConfig to JSONObject
+     */
+    private fun widgetConfigToJson(config: WidgetConfig): JSONObject {
+        return JSONObject().apply {
+            put("locationName", config.locationName)
+            put("latitude", config.latitude)
+            put("longitude", config.longitude)
+            put("model", config.model)
+            config.provider?.let { put("provider", it) }
+            config.widgetKind?.let { put("widgetKind", it) }
+        }
+    }
+
+    /**
+     * Create default config
+     */
+    private fun createDefaultConfig(): WidgetConfig {
+        return WidgetConfig(
+            locationName = "current",
+            latitude = 0.0,
+            longitude = 0.0,
+            model = "default"
+        )
+    }
 }
 
 /**
@@ -809,7 +1015,9 @@ data class WidgetConfig(
     val locationName: String = "current",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val model: String = "default"
+    val model: String = "default",
+    val provider: String? = null,
+    val widgetKind: String? = null
 )
 
 /**

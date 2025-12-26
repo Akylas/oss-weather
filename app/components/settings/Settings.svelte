@@ -83,6 +83,7 @@
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
+    import { WIDGET_KINDS, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -606,10 +607,7 @@
                 ];
             case 'widgets':
                 return (page, updateItem) => {
-                    const { WidgetConfigManager } = require('~/services/widgets/WidgetConfigManager');
-                    const { DEFAULT_UPDATE_FREQUENCY } = require('~/services/widgets/WidgetTypes');
                     const configs = WidgetConfigManager.getAllConfigs();
-                    const widgetIds = Object.keys(configs);
                     const updateFrequency = WidgetConfigManager.getUpdateFrequency();
 
                     const widgetKindNames = {
@@ -638,25 +636,45 @@
                         },
                         {
                             type: 'sectionheader',
-                            title: lc('widget_configurations')
+                            title: lc('widget_kind_defaults')
                         }
                     ];
 
-                    // Add configured widgets
-                    widgetIds.forEach((widgetId) => {
-                        const config = configs[widgetId];
-                        const widgetKind = config.widgetKind || 'Widget';
+                    // Add per-kind default configurations
+                    WIDGET_KINDS.forEach((widgetKind) => {
                         const displayName = widgetKindNames[widgetKind] || widgetKind;
                         items.push({
-                            id: 'configure_widget',
-                            widgetId,
+                            id: 'configure_widget_kind',
                             widgetClass: widgetKind,
-                            title: `${displayName} #${widgetId}`,
-                            description: config.locationName === 'current' ? lc('my_location') : config.locationName || ''
+                            title: displayName,
+                            description: lc('default_settings_for_kind')
                         });
                     });
 
-                    if (widgetIds.length === 0) {
+                    // Add configured widget instances grouped by kind
+                    WIDGET_KINDS.forEach((widgetKind) => {
+                        const instanceIds = WidgetConfigManager.getInstancesOfKind(widgetKind);
+
+                        if (instanceIds.length > 0) {
+                            items.push({
+                                type: 'sectionheader',
+                                title: widgetKindNames[widgetKind]
+                            });
+
+                            instanceIds.forEach((widgetId) => {
+                                const config = configs[widgetId];
+                                items.push({
+                                    id: 'configure_widget',
+                                    widgetId,
+                                    widgetClass: widgetKind,
+                                    title: `#${widgetId}`,
+                                    description: config.locationName === 'current' ? lc('my_location') : config.locationName || ''
+                                });
+                            });
+                        }
+                    });
+
+                    if (Object.keys(configs).length === 0) {
                         items.push({
                             type: 'info',
                             title: lc('no_widgets_configured')
@@ -989,6 +1007,19 @@
                         view: ThirdPartySoftwareBottomSheet
                     });
                     break;
+                case 'configure_widget_kind': {
+                    const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                    navigate({
+                        page: ConfigWidget,
+                        props: {
+                            widgetClass: item.widgetClass,
+                            widgetId: null,
+                            modalMode: false,
+                            isKindConfig: true
+                        }
+                    });
+                    break;
+                }
                 case 'configure_widget': {
                     const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
                     navigate({
@@ -996,7 +1027,8 @@
                         props: {
                             widgetClass: item.widgetClass,
                             widgetId: item.widgetId,
-                            modalMode: false
+                            modalMode: false,
+                            isKindConfig: false
                         }
                     });
                     break;

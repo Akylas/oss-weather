@@ -87,7 +87,11 @@ class LiveWidgetPreviewPlugin {
     regenerateComponent(widgetName, filename) {
         console.log(`[LiveWidgetPreview] Regenerating component for: ${filename}`);
 
-        const command = `cd ${join(__dirname, 'widget-layouts')} && npx ts-node renderers/generate-svelte-components.ts ${widgetName}`;
+        // Use the nativescript-svelte-generator with tsx (faster and no compilation needed)
+        const widgetsDir = join(__dirname, 'widget-layouts/widgets');
+        const outputDir = join(__dirname, 'app/components/widgets/generated');
+        const generatorPath = join(__dirname, 'widget-layouts/generators/nativescript-svelte-generator.ts');
+        const command = `cd ${join(__dirname, 'widget-layouts')} && npx tsx "${generatorPath}" "${widgetsDir}" "${outputDir}" "${widgetName}"`;
 
         exec(command, (error, stdout, stderr) => {
             if (error) {
@@ -97,8 +101,17 @@ class LiveWidgetPreviewPlugin {
             }
 
             if (stdout) {
-                console.log(`[LiveWidgetPreview] ✓ ${widgetName} component regenerated`);
+                // Filter out npm warnings and debug console.logs
+                const cleanOutput = stdout
+                    .split('\n')
+                    .filter(line => !line.includes('npm warn') && !line.includes('attrName'))
+                    .join('\n')
+                    .trim();
+                if (cleanOutput) {
+                    console.log(cleanOutput);
+                }
             }
+            console.log(`[LiveWidgetPreview] ✓ ${widgetName} component regenerated`);
         });
     }
 }

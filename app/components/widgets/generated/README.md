@@ -1,65 +1,71 @@
 # Generated Widget Preview Components
 
-This directory contains auto-generated Svelte components for widget previews.
+This directory contains auto-generated Svelte Native components for widget previews. These components are generated from the JSON widget layouts in `widget-layouts/widgets/` using the NativeScript Svelte generator.
 
-## Live Widget Previews
+## DO NOT EDIT MANUALLY
 
-When developing widgets with live previews enabled, changes to widget JSON files will automatically regenerate the corresponding Svelte preview components.
+All files in this directory are automatically generated and will be overwritten. To make changes:
 
-### Usage
+1. Edit the corresponding JSON widget layout in `widget-layouts/widgets/`
+2. Run the generator manually or use live preview mode
 
-1. **Enable live previews** during development:
-   ```bash
-   npm run android -- --env.liveWidgetPreviews
-   # or
-   npm run ios -- --env.liveWidgetPreviews
-   ```
+## Generation
 
-2. **Edit widget JSON** files in `widget-layouts/widgets/`:
-   - `SimpleWeatherWidget.json`
-   - `HourlyWeatherWidget.json`
-   - `DailyWeatherWidget.json`
-   - `ForecastWeatherWidget.json`
-   - `SimpleWeatherWithClockWidget.json`
-   - `SimpleWeatherWithDateWidget.json`
+### Manual Generation
 
-3. **Components automatically regenerate** when JSON files are saved
+Generate all widgets:
+```bash
+cd widget-layouts
+npm run generate:ns
+# or
+npx tsx generators/nativescript-svelte-generator.ts
+```
 
-4. **Use in ConfigWidget** or other components:
-   ```svelte
-   <script>
-       import SimpleWeatherWidgetPreview from '~/components/widgets/generated/SimpleWeatherWidgetPreview.svelte';
-   </script>
+Generate a specific widget:
+```bash
+cd widget-layouts
+npx tsx generators/nativescript-svelte-generator.ts widgets ../app/components/widgets/generated SimpleWeatherWidget
+```
 
-   <SimpleWeatherWidgetPreview 
-       widgetId="1"
-       widgetClass="SimpleWeatherWidget"
-       data={widgetData}
-       size={{ width: 260, height: 120 }}
-   />
-   ```
+### Live Preview Mode
+
+Enable live preview during development to automatically regenerate components when JSON files change:
+
+```bash
+npm run android -- --env.liveWidgetPreviews
+# or
+npm run ios -- --env.liveWidgetPreviews
+```
+
+When enabled:
+- File watcher monitors `widget-layouts/widgets/*.json`
+- Changes trigger automatic component regeneration (300ms debounced)
+- Webpack HMR instantly updates the preview in the running app
+- No manual rebuild required
 
 ## How It Works
 
-1. **LiveWidgetPreviewPlugin** (webpack plugin) watches widget JSON files
-2. When a JSON file changes, it triggers the `generate-svelte-components.ts` script
-3. The script uses the NativeScript renderer to create a Svelte wrapper component
-4. The component is saved here and automatically reloaded by webpack HMR
+1. **Source**: JSON widget layouts define structure, styling, and data bindings using Mapbox-style expressions
+2. **Generator**: `nativescript-svelte-generator.ts` converts JSON to Svelte Native components
+3. **Output**: `.svelte` files in this directory that render widgets using NativeScript views
+4. **Preview**: Components can be used in ConfigWidget for widget configuration preview
 
-## Files
+## Component Structure
 
-- `*Preview.svelte` - Generated preview components (one per widget)
-- These files are **auto-generated** - do not edit manually!
+Generated components follow this pattern:
+- Import NativeScript Svelte Native components
+- Export `data` prop (WeatherWidgetData type)
+- Export `size` prop (width/height)
+- Reactive color variables from `$colors` store
+- Native layout elements (gridlayout, stacklayout, label, image, etc.)
+- Data bindings evaluated at runtime
+- Mapbox expressions compiled to Svelte expressions
 
-## Configuration
+## Architecture
 
-The live preview feature is configured in `app.webpack.config.js`:
-
-```javascript
-new LiveWidgetPreviewPlugin({
-    enabled: env.liveWidgetPreviews,  // Controlled by --env.liveWidgetPreviews
-    widgetsDir: 'widget-layouts/widgets',
-    generatorScript: 'widget-layouts/renderers/generate-svelte-components.ts',
-    debounceMs: 300  // Debounce file changes
-})
-```
+The generator produces components that:
+- Use proven NativeScript Svelte Native patterns
+- Support reactive data updates
+- Handle all widget types (Simple, Hourly, Daily, Forecast, WithClock, WithDate)
+- Include proper TypeScript typing
+- Follow the app's color theming system

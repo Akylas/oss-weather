@@ -744,6 +744,40 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 }
 
 /**
+ * Generate Svelte component for a specific widget
+ */
+export function generateWidgetSvelte(layoutsDir: string, outputDir: string, widgetName: string): void {
+    if (!fs.existsSync(layoutsDir)) {
+        console.error(`Layouts directory not found: ${layoutsDir}`);
+        return;
+    }
+
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const layoutPath = path.join(layoutsDir, `${widgetName}.json`);
+    if (!fs.existsSync(layoutPath)) {
+        console.error(`Widget layout not found: ${layoutPath}`);
+        return;
+    }
+
+    const raw = fs.readFileSync(layoutPath, 'utf-8');
+    let layout: WidgetLayout;
+    try {
+        layout = JSON.parse(raw) as WidgetLayout;
+    } catch (e) {
+        console.error(`Failed to parse ${layoutPath}:`, (e as Error).message);
+        return;
+    }
+
+    const svelte = generateSvelteComponent(layout);
+    const outFile = path.join(outputDir, `${layout.name}View.generated.svelte`);
+    fs.writeFileSync(outFile, svelte, 'utf-8');
+    console.log(`Generated Svelte component: ${outFile}`);
+}
+
+/**
  * Generate Svelte components for all widget layouts found in layoutsDir
  */
 export function generateAllWidgetsSvelte(layoutsDir: string, outputDir: string): void {
@@ -758,19 +792,8 @@ export function generateAllWidgetsSvelte(layoutsDir: string, outputDir: string):
     }
 
     for (const file of widgetFiles) {
-        const layoutPath = path.join(layoutsDir, file);
-        const raw = fs.readFileSync(layoutPath, 'utf-8');
-        let layout: WidgetLayout;
-        try {
-            layout = JSON.parse(raw) as WidgetLayout;
-        } catch (e) {
-            console.error(`Failed to parse ${layoutPath}:`, (e as Error).message);
-            continue;
-        }
-        const svelte = generateSvelteComponent(layout);
-        const outFile = path.join(outputDir, `${layout.name}View.generated.svelte`);
-        fs.writeFileSync(outFile, svelte, 'utf-8');
-        console.log(`Generated Svelte component: ${outFile}`);
+        const widgetName = file.replace('.json', '');
+        generateWidgetSvelte(layoutsDir, outputDir, widgetName);
     }
 }
 
@@ -779,7 +802,15 @@ export function generateAllWidgetsSvelte(layoutsDir: string, outputDir: string):
 const args = process.argv.slice(2);
 const layoutsDir = args[0] || path.join(__dirname, '..', 'widgets');
 const outputDir = args[1] || path.join(__dirname, '..', '..', 'app', 'components', 'widgets', 'generated');
+const specificWidget = args[2]; // Optional: specific widget name to regenerate
 
-generateAllWidgetsSvelte(layoutsDir, outputDir);
-console.log('NativeScript Svelte generation complete!');
+if (specificWidget) {
+    // Generate only the specified widget
+    generateWidgetSvelte(layoutsDir, outputDir, specificWidget);
+    console.log(`NativeScript Svelte generation complete for ${specificWidget}!`);
+} else {
+    // Generate all widgets
+    generateAllWidgetsSvelte(layoutsDir, outputDir);
+    console.log('NativeScript Svelte generation complete!');
+}
 // }

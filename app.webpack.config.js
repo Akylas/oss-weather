@@ -10,7 +10,7 @@ const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./tools/scripts/IgnoreNotFoundExportPlugin');
 const WaitPlugin = require('./tools/scripts/WaitPlugin');
-const LiveWidgetPreviewPlugin = require('./tools/scripts/LiveWidgetPreviewPlugin');
+const LiveWidgetPreviewPlugin = require('./LiveWidgetPreviewPlugin');
 const Fontmin = require('@nativescript-community/fontmin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 

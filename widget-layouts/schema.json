@@ -1,0 +1,307 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Widget Layout Schema",
+  "description": "Cross-platform widget layout definition for weather widgets",
+  "definitions": {
+    "color": {
+      "type": "string",
+      "description": "Color reference: 'onSurface', 'onSurfaceVariant', 'primary', 'error', or hex '#RRGGBB'"
+    },
+    "dataBinding": {
+      "type": "string",
+      "description": "Data path for weather data binding, e.g., 'temperature', 'locationName', 'hourlyData[0].time'"
+    },
+    "sizeValue": {
+      "oneOf": [
+        { "type": "number", "description": "Fixed size in dp/points" },
+        { "type": "string", "pattern": "^\\d+(\\.\\d+)?%$", "description": "Percentage of parent" },
+        { "type": "string", "enum": ["fill", "wrap", "auto"] }
+      ]
+    },
+    "spacing": {
+      "type": "number",
+      "description": "Spacing in dp/points"
+    },
+    "alignment": {
+      "type": "string",
+      "enum": ["start", "center", "end", "spaceBetween", "spaceAround", "spaceEvenly"]
+    },
+    "crossAlignment": {
+      "type": "string", 
+      "enum": ["start", "center", "end", "stretch"]
+    },
+    "fontWeight": {
+      "type": "string",
+      "enum": ["normal", "medium", "bold"]
+    },
+    "baseElement": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Optional element identifier" },
+        "visible": { "type": "boolean", "default": true },
+        "visibleIf": { "type": "string", "description": "Condition for visibility, e.g., 'size.width > 100'" },
+        "padding": { "$ref": "#/definitions/spacing" },
+        "paddingHorizontal": { "$ref": "#/definitions/spacing" },
+        "paddingVertical": { "$ref": "#/definitions/spacing" },
+        "margin": { "$ref": "#/definitions/spacing" },
+        "marginHorizontal": { "$ref": "#/definitions/spacing" },
+        "marginVertical": { "$ref": "#/definitions/spacing" },
+        "width": { "$ref": "#/definitions/sizeValue" },
+        "height": { "$ref": "#/definitions/sizeValue" },
+        "flex": { "type": "number", "description": "Flex weight for layout" },
+        "backgroundColor": { "$ref": "#/definitions/color" },
+        "cornerRadius": { "type": "number" }
+      }
+    },
+    "column": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "column" },
+            "spacing": { "$ref": "#/definitions/spacing" },
+            "alignment": { "$ref": "#/definitions/alignment" },
+            "crossAlignment": { "$ref": "#/definitions/crossAlignment" },
+            "children": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/element" }
+            }
+          },
+          "required": ["type", "children"]
+        }
+      ]
+    },
+    "row": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "row" },
+            "spacing": { "$ref": "#/definitions/spacing" },
+            "alignment": { "$ref": "#/definitions/alignment" },
+            "crossAlignment": { "$ref": "#/definitions/crossAlignment" },
+            "children": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/element" }
+            }
+          },
+          "required": ["type", "children"]
+        }
+      ]
+    },
+    "stack": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "stack" },
+            "alignment": { "$ref": "#/definitions/crossAlignment" },
+            "children": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/element" }
+            }
+          },
+          "required": ["type", "children"]
+        }
+      ]
+    },
+    "label": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "label" },
+            "text": { "type": "string", "description": "Static text or data binding with {{path}}" },
+            "fontSize": { "type": "number" },
+            "fontWeight": { "$ref": "#/definitions/fontWeight" },
+            "color": { "$ref": "#/definitions/color" },
+            "textAlign": { "type": "string", "enum": ["left", "center", "right"] },
+            "maxLines": { "type": "integer" }
+          },
+          "required": ["type", "text"]
+        }
+      ]
+    },
+    "image": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "image" },
+            "src": { "type": "string", "description": "Image source or data binding" },
+            "size": { "type": "number" },
+            "tintColor": { "$ref": "#/definitions/color" },
+            "contentMode": { "type": "string", "enum": ["fit", "fill", "cover"] }
+          },
+          "required": ["type", "src"]
+        }
+      ]
+    },
+    "spacer": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "spacer" },
+            "size": { "type": "number", "description": "Fixed size, or omit for flex spacer" },
+            "flex": { "type": "number", "default": 1 }
+          },
+          "required": ["type"]
+        }
+      ]
+    },
+    "divider": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "divider" },
+            "thickness": { "type": "number", "default": 1 },
+            "color": { "$ref": "#/definitions/color" }
+          },
+          "required": ["type"]
+        }
+      ]
+    },
+    "scrollView": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "scrollView" },
+            "direction": { "type": "string", "enum": ["horizontal", "vertical"], "default": "vertical" },
+            "showIndicators": { "type": "boolean", "default": false },
+            "children": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/element" }
+            }
+          },
+          "required": ["type", "children"]
+        }
+      ]
+    },
+    "forEach": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "forEach" },
+            "items": { "type": "string", "description": "Data path to array, e.g., 'hourlyData'" },
+            "limit": { "type": "integer", "description": "Max items to render" },
+            "itemTemplate": { "$ref": "#/definitions/element" }
+          },
+          "required": ["type", "items", "itemTemplate"]
+        }
+      ]
+    },
+    "conditional": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "conditional" },
+        "condition": { "type": "string", "description": "Condition expression, e.g., 'size.width > 200'" },
+        "then": { "$ref": "#/definitions/element" },
+        "else": { "$ref": "#/definitions/element" }
+      },
+      "required": ["type", "condition", "then"]
+    },
+    "clock": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "clock" },
+            "format24Hour": { "type": "string", "default": "HH:mm" },
+            "format12Hour": { "type": "string", "default": "h:mm a" },
+            "fontSize": { "type": "number" },
+            "fontWeight": { "$ref": "#/definitions/fontWeight" },
+            "color": { "$ref": "#/definitions/color" }
+          },
+          "required": ["type"]
+        }
+      ]
+    },
+    "date": {
+      "allOf": [
+        { "$ref": "#/definitions/baseElement" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "const": "date" },
+            "format": { "type": "string", "default": "EEEE, MMM d" },
+            "style": { "type": "string", "enum": ["date", "time", "relative"], "default": "date" },
+            "fontSize": { "type": "number" },
+            "fontWeight": { "$ref": "#/definitions/fontWeight" },
+            "color": { "$ref": "#/definitions/color" }
+          },
+          "required": ["type"]
+        }
+      ]
+    },
+    "element": {
+      "oneOf": [
+        { "$ref": "#/definitions/column" },
+        { "$ref": "#/definitions/row" },
+        { "$ref": "#/definitions/stack" },
+        { "$ref": "#/definitions/label" },
+        { "$ref": "#/definitions/image" },
+        { "$ref": "#/definitions/spacer" },
+        { "$ref": "#/definitions/divider" },
+        { "$ref": "#/definitions/scrollView" },
+        { "$ref": "#/definitions/forEach" },
+        { "$ref": "#/definitions/conditional" },
+        { "$ref": "#/definitions/clock" },
+        { "$ref": "#/definitions/date" }
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "name": { "type": "string", "description": "Widget name identifier" },
+    "displayName": { "type": "string", "description": "Human-readable name" },
+    "description": { "type": "string" },
+    "supportedSizes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "width": { "type": "number" },
+          "height": { "type": "number" },
+          "family": { "type": "string", "enum": ["small", "medium", "large", "extraLarge"] }
+        }
+      }
+    },
+    "defaultPadding": { "$ref": "#/definitions/spacing" },
+    "background": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["solid", "gradient", "image"] },
+        "color": { "$ref": "#/definitions/color" },
+        "image": { "type": "string" }
+      }
+    },
+    "layout": { "$ref": "#/definitions/element" },
+    "variants": {
+      "type": "array",
+      "description": "Size-specific layout variants",
+      "items": {
+        "type": "object",
+        "properties": {
+          "condition": { "type": "string", "description": "Size condition, e.g., 'size.width < 120'" },
+          "layout": { "$ref": "#/definitions/element" }
+        },
+        "required": ["condition", "layout"]
+      }
+    }
+  },
+  "required": ["name", "layout"]
+}

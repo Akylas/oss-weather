@@ -10,6 +10,7 @@ const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./tools/scripts/IgnoreNotFoundExportPlugin');
 const WaitPlugin = require('./tools/scripts/WaitPlugin');
+const LiveWidgetPreviewPlugin = require('./LiveWidgetPreviewPlugin');
 const Fontmin = require('@nativescript-community/fontmin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
@@ -125,7 +126,8 @@ module.exports = (env, params = {}) => {
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
-        includeDefaultLocation // --env.includeDefaultLocation
+        includeDefaultLocation, // --env.includeDefaultLocation
+        liveWidgetPreviews = false // --env.liveWidgetPreviews
     } = env;
     // console.log('env', env);
     env.appPath = appPath;
@@ -199,8 +201,17 @@ module.exports = (env, params = {}) => {
         if (/address-formatter/i.test(context)) {
             return cb(null, join('~/address-formatter/templates', basename(request)));
         }
+        if (/widget-layouts\/widgets\/samples/i.test(context)) {
+            console.log('externals1', context);
+            return cb(null, join('~/widget-layouts/widgets/samples', basename(request)));
+        }
+        if (/widget-layouts\/widgets/i.test(context)) {
+            console.log('externals2', context);
+            return cb(null, join('~/widget-layouts/widgets', basename(request)));
+        }
         cb();
     });
+
     if (isIOS) {
         supportedColorThemes.forEach((l) => {
             config.externals.push(`~/themes/${l}.json`);
@@ -476,6 +487,35 @@ module.exports = (env, params = {}) => {
         { context, from: '**/*.png', noErrorOnMissing: true, globOptions },
         { context, from: 'assets/**/*', noErrorOnMissing: true, globOptions },
         { context: 'tools', from: 'assets/**/*', noErrorOnMissing: true, globOptions },
+        // Copy widget sample files
+        {
+            context: join(projectRoot, 'widget-layouts', 'widgets'),
+            from: 'samples/*.sample.json',
+            to: 'widget-layouts/widgets/samples/[name][ext]',
+            noErrorOnMissing: true,
+            globOptions,
+            transform: !!production
+                ? {
+                      transformer: (content, path) => Promise.resolve(Buffer.from(JSON.stringify(JSON.parse(content.toString())), 'utf8'))
+                  }
+                : undefined
+        },
+        {
+            context: join(projectRoot, 'widget-layouts', 'widgets'),
+            from: '*.json',
+            to: 'widget-layouts/widgets/[name][ext]',
+            noErrorOnMissing: true,
+            globOptions,
+            transform: !!production
+                ? {
+                      transformer: (content, path) => {
+                          const { name, displayName, description, supportedSizes, ...rest } = JSON.parse(content.toString());
+
+                          return Promise.resolve(Buffer.from(JSON.stringify({ name, displayName, description, supportedSizes }), 'utf8'));
+                      }
+                  }
+                : undefined
+        },
         {
             context,
             from: 'i18n/**/*',
@@ -560,6 +600,19 @@ module.exports = (env, params = {}) => {
     );
 
     config.plugins.push(new SpeedMeasurePlugin());
+
+    // Add LiveWidgetPreviewPlugin for development
+    if (liveWidgetPreviews) {
+        config.plugins.push(
+            new LiveWidgetPreviewPlugin({
+                enabled: true,
+                widgetsDir: join(projectRoot, 'widget-layouts', 'widgets'),
+                generatorScript: join(projectRoot, 'widget-layouts', 'renderers', 'generate-svelte-components.ts'),
+                debounceMs: 300
+            })
+        );
+        console.log('[LiveWidgetPreviews] Enabled - widget JSON changes will trigger Svelte component regeneration');
+    }
 
     config.plugins.unshift(
         new webpack.ProvidePlugin({

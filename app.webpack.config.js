@@ -10,6 +10,7 @@ const { sentryWebpackPlugin } = require('@sentry/webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const IgnoreNotFoundExportPlugin = require('./tools/scripts/IgnoreNotFoundExportPlugin');
 const WaitPlugin = require('./tools/scripts/WaitPlugin');
+const LiveWidgetPreviewPlugin = require('./tools/scripts/LiveWidgetPreviewPlugin');
 const Fontmin = require('@nativescript-community/fontmin');
 const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
 
@@ -125,7 +126,8 @@ module.exports = (env, params = {}) => {
         includeDarkSkyKey, // --env.includeDarkSkyKey
         includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
-        includeDefaultLocation // --env.includeDefaultLocation
+        includeDefaultLocation, // --env.includeDefaultLocation
+        liveWidgetPreviews = false // --env.liveWidgetPreviews
     } = env;
     // console.log('env', env);
     env.appPath = appPath;
@@ -598,6 +600,19 @@ module.exports = (env, params = {}) => {
     );
 
     config.plugins.push(new SpeedMeasurePlugin());
+
+    // Add LiveWidgetPreviewPlugin for development
+    if (liveWidgetPreviews) {
+        config.plugins.push(
+            new LiveWidgetPreviewPlugin({
+                enabled: true,
+                widgetsDir: join(projectRoot, 'widget-layouts', 'widgets'),
+                generatorScript: join(projectRoot, 'widget-layouts', 'renderers', 'generate-svelte-components.ts'),
+                debounceMs: 300
+            })
+        );
+        console.log('[LiveWidgetPreviews] Enabled - widget JSON changes will trigger Svelte component regeneration');
+    }
 
     config.plugins.unshift(
         new webpack.ProvidePlugin({

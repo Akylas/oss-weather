@@ -1,0 +1,3 @@
+# Generated files - do not edit manually
+*.svelte
+!README.md

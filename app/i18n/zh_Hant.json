@@ -347,6 +347,7 @@
     "weather_data_settings": "選擇要顯示的天氣數據及其設定",
     "weather_map": "天氣圖",
     "weather_map_colors": "天氣圖配色方案",
+    "widget_ios_note": "iOS：小工具會在背景自動更新。請先從「小工具庫」加入所需小工具，再於此處進行設定。實際刷新時機將由 iOS 系統自行控制。",
     "wind": "風",
     "wind_bearing": "抗風",
     "wind_beaufort": "蒲福風力等級",

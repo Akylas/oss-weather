@@ -54,6 +54,13 @@ export class WidgetConfigManager {
         }
         return this.configs;
     }
+    /**
+     * Get all per-instance widget configurations
+     */
+    static reloadConfigs() {
+        this.loadKindConfigs();
+        this.loadConfigs();
+    }
 
     /**
      * Get all per-kind default configurations
@@ -100,6 +107,7 @@ export class WidgetConfigManager {
      */
     static getConfig(widgetId: string): WidgetConfig {
         const configs = this.getAllConfigs();
+        DEV_LOG && console.log(TAG, 'getConfig', widgetId, JSON.stringify(configs));
 
         // If instance config exists, use it
         if (configs[widgetId]) {
@@ -117,18 +125,18 @@ export class WidgetConfigManager {
      * Create widget instance configuration from kind defaults
      * Called when a new widget is added
      */
-    static createInstanceConfig(widgetId: string, widgetKind: string): WidgetConfig {
-        const kindConfig = this.getKindConfig(widgetKind);
-        const instanceConfig = {
-            ...kindConfig,
-            widgetKind
-        };
+    // static createInstanceConfig(widgetId: string, widgetKind: string): WidgetConfig {
+    //     const kindConfig = this.getKindConfig(widgetKind);
+    //     const instanceConfig = {
+    //         ...kindConfig,
+    //         widgetKind
+    //     };
 
-        this.saveConfig(widgetId, instanceConfig);
-        DEV_LOG && console.log(TAG, 'createInstanceConfig', widgetId, widgetKind, instanceConfig);
+    //     this.saveConfig(widgetId, instanceConfig);
+    //     DEV_LOG && console.log(TAG, 'createInstanceConfig', widgetId, widgetKind, instanceConfig);
 
-        return instanceConfig;
-    }
+    //     return instanceConfig;
+    // }
 
     /**
      * Save configuration for specific widget instance

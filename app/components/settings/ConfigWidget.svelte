@@ -354,7 +354,8 @@
     $: widgetComponent = widgetClass ? widgetComponents[widgetClass] : null;
     $: widgetSize = previewSize ?? { width: 160, height: 160 };
     $: DEV_LOG && console.log('widgetComponent', !!widgetComponent);
-    $: DEV_LOG && console.log('previewData', !!previewData);
+    $: DEV_LOG && console.log('previewData', JSON.stringify(previewData));
+    $: DEV_LOG && console.log('widgetSize', widgetSize);
 </script>
 
 <page actionBarHidden={true}>
@@ -364,7 +365,7 @@
         <scrollview row={1} android:paddingBottom={$windowInset.bottom}>
             <stacklayout padding="0 0 20 0">
                 <!-- Preview Section -->
-                {#if widgetComponent && previewData && previewSize  }
+                {#if widgetComponent && previewData && previewSize}
                     <stacklayout backgroundColor={colorSurfaceContainer} borderRadius={10} horizontalAlignment="center">
                         <svelte:component this={widgetComponent} data={previewData} size={widgetSize} />
                     </stacklayout>

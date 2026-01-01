@@ -123,8 +123,6 @@ module.exports = (env, params = {}) => {
         accessibility = true,
         playStoreBuild = true, // --env.playStoreBuild
         buildweathermap = true, // --env.buildweathermap
-        includeDarkSkyKey, // --env.includeDarkSkyKey
-        includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
         includeDefaultLocation, // --env.includeDefaultLocation
         liveWidgetPreviews = false // --env.liveWidgetPreviews
@@ -202,11 +200,9 @@ module.exports = (env, params = {}) => {
             return cb(null, join('~/address-formatter/templates', basename(request)));
         }
         if (/widget-layouts\/widgets\/samples/i.test(context)) {
-            console.log('externals1', context);
             return cb(null, join('~/widget-layouts/widgets/samples', basename(request)));
         }
         if (/widget-layouts\/widgets/i.test(context)) {
-            console.log('externals2', context);
             return cb(null, join('~/widget-layouts/widgets', basename(request)));
         }
         cb();
@@ -299,9 +295,6 @@ module.exports = (env, params = {}) => {
         ATMO_DEFAULT_KEY: `"${process.env.ATMO_DEFAULT_KEY}"`,
         MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',
         OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',
-        DARK_SKY_KEY: includeDarkSkyKey ? `"${process.env.DARK_SKY_KEY}"` : 'undefined',
-        CLIMA_CELL_DEFAULT_KEY: `"${process.env.CLIMA_CELL_DEFAULT_KEY}"`,
-        CLIMA_CELL_MY_KEY: includeClimaCellKey ? `"${process.env.CLIMA_CELL_MY_KEY}"` : 'undefined',
         DEFAULT_LOCATION: includeDefaultLocation
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
             : 'undefined'
@@ -608,7 +601,7 @@ module.exports = (env, params = {}) => {
                 enabled: true,
                 widgetsDir: join(projectRoot, 'widget-layouts', 'widgets'),
                 generatorScript: join(projectRoot, 'widget-layouts', 'renderers', 'generate-svelte-components.ts'),
-                debounceMs: 300
+                debounceMs: 0
             })
         );
         console.log('[LiveWidgetPreviews] Enabled - widget JSON changes will trigger Svelte component regeneration');

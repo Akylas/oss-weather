@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 object WeatherWidgetManager {
     private val coroutineScope = MainScope()
     private const val WIDGET_UPDATE_WORK_TAG = "weather_widget_update"
-    private const val WIDGET_PREFS_FILE = "widget_preferences"
+    private const val WIDGET_PREFS_FILE = "prefs.db"
     private const val UPDATE_FREQUENCY_KEY = "widget_update_frequency"
     private const val WIDGET_CONFIGS_KEY = "widget_configs" // per-instance configs
     private const val WIDGET_KIND_CONFIGS_KEY = "widget_kind_configs" // per-kind default configs
@@ -384,6 +384,8 @@ object WeatherWidgetManager {
     fun onWidgetAdded(context: Context, widgetId: Int) {
         WidgetsLogger.i(LOG_TAG, "onWidgetAdded(widgetId=$widgetId)")
         
+        // ensure config exists
+        val config = loadWidgetConfig(context, widgetId);
         // Add to active list
         addActiveWidget(context, widgetId)
         
@@ -419,6 +421,11 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun requestWidgetUpdate(context: Context, widgetId: Int) {
+        // ensure config exists
+        val config = loadWidgetConfig(context, widgetId, false);
+        if (config == null) {
+            return;
+        }
         WidgetsLogger.d(LOG_TAG, "requestWidgetUpdate(widgetId=$widgetId)")
         // Send broadcast to JS side to request weather data
         val intent = Intent("com.akylas.weather.WIDGET_UPDATE_REQUEST")
@@ -426,6 +433,25 @@ object WeatherWidgetManager {
         intent.setPackage(context.packageName)
         context.sendBroadcast(intent)
         WidgetsLogger.i(LOG_TAG, "Sent WIDGET_UPDATE_REQUEST for widgetId=$widgetId")
+        
+    }
+    /**
+     * Request immediate update for a specific widget
+     */
+    @JvmStatic
+    fun sendWidgetAdded(context: Context, widgetId: Int) {
+        // ensure config exists
+        val config = loadWidgetConfig(context, widgetId, false);
+        if (config == null) {
+            return;
+        }
+        WidgetsLogger.d(LOG_TAG, "sendWidgetAdded(widgetId=$widgetId)")
+        // Send broadcast to JS side to request weather data
+        val intent = Intent("com.akylas.weather.WIDGET_ADDED")
+        intent.putExtra("widgetId", widgetId)
+        intent.setPackage(context.packageName)
+        context.sendBroadcast(intent)
+        WidgetsLogger.i(LOG_TAG, "Sent WIDGET_ADDED for widgetId=$widgetId")
         
     }
 
@@ -814,6 +840,7 @@ object WeatherWidgetManager {
                 val widgetId = keys.next()
                 val configJson = jsonObject.getJSONObject(widgetId)
                 configs[widgetId.toInt()] = parseWidgetConfig(configJson)
+                WidgetsLogger.i(LOG_TAG, "Loaded widget configuration ${widgetId.toInt()}:${configs[widgetId.toInt()]}")
             }
             WidgetsLogger.i(LOG_TAG, "Loaded ${configs.size} widget configurations")
             configs
@@ -837,7 +864,7 @@ object WeatherWidgetManager {
         }
 
         prefs.edit { putString(WIDGET_CONFIGS_KEY, jsonObject.toString()) }
-        WidgetsLogger.i(LOG_TAG, "All widget configurations saved")
+        WidgetsLogger.i(LOG_TAG, "All widget configurations saved: ${jsonObject.toString()}")
     }
 
     /**
@@ -857,7 +884,7 @@ object WeatherWidgetManager {
         // Save instance config
         saveWidgetConfig(context, widgetId, instanceConfig)
         
-        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind")
+        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (config:$instanceConfig)")
         return instanceConfig
     }
 
@@ -866,11 +893,12 @@ object WeatherWidgetManager {
      * If no instance config exists, creates one from kind defaults
      */
     @JvmStatic
-    fun loadWidgetConfig(context: Context, widgetId: Int): WidgetConfig? {
+    fun loadWidgetConfig(context: Context, widgetId: Int, canCreate: Boolean = true): WidgetConfig? {
+        WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId)")
         val config = getAllWidgetConfigs(context)[widgetId]
         
         if (config != null) {
-            WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> found instance config")
+            WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> found instance config:$config")
             return config
         }
         
@@ -890,7 +918,7 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun saveWidgetConfig(context: Context, widgetId: Int, config: WidgetConfig) {
-        WidgetsLogger.d(LOG_TAG, "saveWidgetConfig(widgetId=$widgetId)")
+        WidgetsLogger.d(LOG_TAG, "saveWidgetConfig(widgetId=$widgetId, config=$config)")
         val configs = getAllWidgetConfigs(context).toMutableMap()
         configs[widgetId] = config
         saveAllWidgetConfigs(context, configs)
@@ -958,11 +986,12 @@ object WeatherWidgetManager {
      * Parse WidgetConfig from JSONObject
      */
     private fun parseWidgetConfig(json: JSONObject): WidgetConfig {
+        WidgetsLogger.i(LOG_TAG, "parseWidgetConfig ${json.toString()}")
         return WidgetConfig(
             locationName = json.optString("locationName", "current"),
             latitude = json.optDouble("latitude", 0.0),
             longitude = json.optDouble("longitude", 0.0),
-            model = json.optString("model", "default"),
+            model = json.optString("model", null),
             provider = json.optString("provider", null),
             widgetKind = json.optString("widgetKind", null)
         )
@@ -972,11 +1001,12 @@ object WeatherWidgetManager {
      * Convert WidgetConfig to JSONObject
      */
     private fun widgetConfigToJson(config: WidgetConfig): JSONObject {
+        WidgetsLogger.d(LOG_TAG, "widgetConfigToJson $config")
         return JSONObject().apply {
             put("locationName", config.locationName)
             put("latitude", config.latitude)
             put("longitude", config.longitude)
-            put("model", config.model)
+            config.model?.let { put("model", it) }
             config.provider?.let { put("provider", it) }
             config.widgetKind?.let { put("widgetKind", it) }
         }
@@ -988,9 +1018,6 @@ object WeatherWidgetManager {
     private fun createDefaultConfig(): WidgetConfig {
         return WidgetConfig(
             locationName = "current",
-            latitude = 0.0,
-            longitude = 0.0,
-            model = "default"
         )
     }
 }
@@ -1013,9 +1040,9 @@ enum class WidgetLoadingState {
 @Serializable
 data class WidgetConfig(
     val locationName: String = "current",
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
-    val model: String = "default",
+    val latitude: Double? = 0.0,
+    val longitude: Double? = 0.0,
+    val model: String? = null,
     val provider: String? = null,
     val widgetKind: String? = null
 )

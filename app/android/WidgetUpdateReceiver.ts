@@ -17,27 +17,27 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
             const action = intent.getAction();
 
             DEV_LOG && console.log(`WidgetUpdateReceiver: onReceive action=${action}`);
-            if (action !== '__PACKAGE__.WIDGET_UPDATE_REQUEST') {
-                return;
+            if (action === '__PACKAGE__.WIDGET_UPDATE_REQUEST') {
+                const widgetId = intent.getIntExtra('widgetId', -1);
+
+                if (widgetId === -1) {
+                    console.warn('WidgetUpdateReceiver: Received update request with invalid widgetId');
+                    return;
+                }
+
+                DEV_LOG && console.log(`WidgetUpdateReceiver: Received update request for widgetId=${widgetId}`);
+                // Set widget to loading state
+                const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+                widgetManager.setWidgetLoading(context, widgetId);
+
+                // Then fetch data and update widget
+                widgetService.updateWidget(widgetId + '').catch((error) => {
+                    console.error(`WidgetUpdateReceiver: Error updating widget ${widgetId}:`, error, error.stack);
+                    widgetManager.setWidgetError(context, widgetId, error.message || 'Update failed');
+                });
+            } else if (action === '__PACKAGE__.WIDGET_ADDED') {
+                widgetService.reloadConfigs();
             }
-
-            const widgetId = intent.getIntExtra('widgetId', -1);
-
-            if (widgetId === -1) {
-                console.warn('WidgetUpdateReceiver: Received update request with invalid widgetId');
-                return;
-            }
-
-            DEV_LOG && console.log(`WidgetUpdateReceiver: Received update request for widgetId=${widgetId}`);
-            // Set widget to loading state
-            const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
-            widgetManager.setWidgetLoading(context, widgetId);
-
-            // Then fetch data and update widget
-            widgetService.updateWidget(widgetId + '').catch((error) => {
-                console.error(`WidgetUpdateReceiver: Error updating widget ${widgetId}:`, error, error.stack);
-                widgetManager.setWidgetError(context, widgetId, error.message || 'Update failed');
-            });
         } catch (error) {
             console.error('WidgetUpdateReceiver: Error in onReceive:', error, error?.stack);
         }

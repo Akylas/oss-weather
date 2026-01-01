@@ -275,8 +275,7 @@ class WidgetSettings {
         return WidgetConfig(
             locationName: "current",
             latitude: 0.0,
-            longitude: 0.0,
-            model: "default"
+            longitude: 0.0
         )
     }
     
@@ -302,7 +301,7 @@ struct WidgetConfig: Codable {
     var locationName: String = "current"
     var latitude: Double = 0.0
     var longitude: Double = 0.0
-    var model: String = "default"
+    var model: String?
     var provider: String?
     var widgetKind: String?
 }

@@ -55,7 +55,7 @@
             { "type": "divider" },
             {
                 "type": "label",
-                "text": "Hourly Forecast",
+                "text": "widget.hourly.name",
                 "fontSize": 12,
                 "fontWeight": "medium",
                 "color": "onSurfaceVariant"
@@ -116,7 +116,7 @@
             { "type": "divider" },
             {
                 "type": "label",
-                "text": "7-Day Forecast",
+                "text": "widget.daily.name",
                 "fontSize": 12,
                 "fontWeight": "medium",
                 "color": "onSurfaceVariant"

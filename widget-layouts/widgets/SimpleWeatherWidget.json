@@ -9,7 +9,7 @@
         { "width": 120, "height": 120, "family": "small" },
         { "width": 260, "height": 120, "family": "medium" }
     ],
-    "defaultPadding": ["case", ["<", ["get", "size.width"], 80], 2, ["<", ["get", "size.width"], 120], 4, 8],
+    "defaultPadding": ["case", ["<", ["get", "size.width"], 80], 0, ["<", ["get", "size.width"], 120], 4, 8],
     "background": {
         "type": "solid",
         "color": "widgetBackground"
@@ -36,18 +36,18 @@
             {
                 "type": "image",
                 "src": ["get", "iconPath"],
-                "size": ["case", ["<", ["get", "size.width"], 80], 32, ["<", ["get", "size.width"], 200], 48, 72],
+                "size": ["case", ["<=", ["get", "size.width"], 80], 32, ["<", ["get", "size.width"], 200], 56, 72],
                 "visibleIf": ["has", "iconPath"]
             },
             {
                 "type": "spacer",
                 "flex": ["case", ["all", [">=", ["get", "size.width"], 80], ["<", ["get", "size.width"], 200]], 1, null],
-                "size": ["case", ["<", ["get", "size.width"], 80], 4, [">=", ["get", "size.width"], 200], 8, null]
+                "size": ["case", ["<", ["get", "size.width"], 80], 0, [">=", ["get", "size.width"], 200], 8, null]
             },
             {
                 "type": "label",
                 "text": ["get", "temperature"],
-                "fontSize": ["case", ["<", ["get", "size.width"], 80], 14, ["<", ["get", "size.width"], 200], 32, 48],
+                "fontSize": ["case", ["<", ["get", "size.width"], 80], 14, ["case", ["<", ["get", "size.width"], 120], 18, ["<", ["get", "size.width"], 200], 26  , 48]],
                 "fontWeight": "bold",
                 "color": "onSurface",
                 "textAlign": "center"

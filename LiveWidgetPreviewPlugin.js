@@ -9,7 +9,6 @@ const { exec } = require('child_process');
 class LiveWidgetPreviewPlugin {
     constructor(options = {}) {
         this.widgetsDir = options.widgetsDir || join(__dirname, 'widget-layouts/widgets');
-        this.generatorScript = options.generatorScript || join(__dirname, 'widget-layouts/renderers/generate-svelte-components.ts');
         this.enabled = options.enabled || false;
         this.debounceMs = options.debounceMs || 300;
         this.watchers = [];
@@ -35,17 +34,13 @@ class LiveWidgetPreviewPlugin {
 
     startWatching() {
         console.log('[LiveWidgetPreview] Starting to watch widget JSON files...');
-        
+
         try {
-            const watcher = watch(
-                this.widgetsDir,
-                { recursive: false },
-                (eventType, filename) => {
-                    if (filename && filename.endsWith('.json') && !filename.includes('.sample.')) {
-                        this.handleFileChange(filename);
-                    }
+            const watcher = watch(this.widgetsDir, { recursive: false }, (eventType, filename) => {
+                if (filename && filename.endsWith('.json') && !filename.includes('.sample.')) {
+                    this.handleFileChange(filename);
                 }
-            );
+            });
 
             this.watchers.push(watcher);
             console.log('[LiveWidgetPreview] Watching:', this.widgetsDir);
@@ -55,7 +50,7 @@ class LiveWidgetPreviewPlugin {
     }
 
     stopWatching() {
-        this.watchers.forEach(watcher => {
+        this.watchers.forEach((watcher) => {
             try {
                 watcher.close();
             } catch (error) {
@@ -63,13 +58,13 @@ class LiveWidgetPreviewPlugin {
             }
         });
         this.watchers = [];
-        this.debounceTimers.forEach(timer => clearTimeout(timer));
+        this.debounceTimers.forEach((timer) => clearTimeout(timer));
         this.debounceTimers.clear();
     }
 
     handleFileChange(filename) {
         const widgetName = filename.replace('.json', '');
-        
+
         // Clear existing debounce timer for this file
         if (this.debounceTimers.has(filename)) {
             clearTimeout(this.debounceTimers.get(filename));
@@ -104,7 +99,7 @@ class LiveWidgetPreviewPlugin {
                 // Filter out npm warnings and debug console.logs
                 const cleanOutput = stdout
                     .split('\n')
-                    .filter(line => !line.includes('npm warn') && !line.includes('attrName'))
+                    .filter((line) => !line.includes('npm warn') && !line.includes('attrName'))
                     .join('\n')
                     .trim();
                 if (cleanOutput) {

@@ -101,6 +101,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         await Promise.all(widgetsToUpdate.map((widgetId) => this.updateWidget(String(widgetId))));
     }
 
+
     /**
      * Handle widget update request from native side with deduplication
      */

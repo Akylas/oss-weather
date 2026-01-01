@@ -205,6 +205,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="__PACKAGE__.WIDGET_UPDATE_REQUEST" />
+                <action android:name="__PACKAGE__.WIDGET_ADDED" />
             </intent-filter>
         </receiver>
         <receiver

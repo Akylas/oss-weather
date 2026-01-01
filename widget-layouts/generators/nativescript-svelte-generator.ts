@@ -49,6 +49,9 @@ interface LayoutElement {
     size?: number;
     thickness?: number;
     direction?: string;
+    showIndicators?: boolean;
+    scrollBarIndicatorVisible?: boolean;
+
     items?: string;
     limit?: number;
     itemTemplate?: LayoutElement;
@@ -263,6 +266,61 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
             }
             return JSON.stringify(path);
         }
+        case 'has': {
+            // Check if a property exists
+            const path = args[0];
+            if (typeof path === 'string') {
+                if (path.startsWith('item.')) {
+                    return `${path} != null`;
+                }
+                if (path.startsWith('data.')) {
+                    return `${path} != null`;
+                }
+                // Default context
+                return `${context}.${path} != null`;
+            }
+            return 'false';
+        }
+        case 'all': {
+            // Logical AND - all conditions must be true
+            if (args.length === 0) return 'true';
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+
+            const conditions = args.map((arg) => {
+                const evaluated = evaluateMapboxExpression(arg, context);
+                // Wrap complex expressions in parentheses
+                if (evaluated.includes('?') || evaluated.includes('||') || evaluated.includes('&&')) {
+                    return `(${evaluated})`;
+                }
+                return evaluated;
+            });
+            return conditions.join(' && ');
+        }
+        case 'any': {
+            // Logical OR - any condition must be true
+            if (args.length === 0) return 'false';
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+
+            const conditions = args.map((arg) => {
+                const evaluated = evaluateMapboxExpression(arg, context);
+                // Wrap complex expressions in parentheses
+                if (evaluated.includes('?') || evaluated.includes('||') || evaluated.includes('&&')) {
+                    return `(${evaluated})`;
+                }
+                return evaluated;
+            });
+            return conditions.join(' || ');
+        }
+        case 'not': {
+            // Logical NOT
+            if (args.length === 0) return 'true';
+            const condition = evaluateMapboxExpression(args[0], context);
+            // Wrap complex expressions in parentheses
+            if (condition.includes('?') || condition.includes('||') || condition.includes('&&')) {
+                return `!(${condition})`;
+            }
+            return `!${condition}`;
+        }
         case 'case': {
             // ["case", condition1, value1, condition2, value2, ..., fallback]
             // Convert to nested ternary: condition1 ? value1 : (condition2 ? value2 : fallback)
@@ -294,18 +352,39 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
         case '+':
         case '-':
         case '*':
-        case '/': {
+        case '/':
+        case '%': {
             const left = evaluateMapboxExpression(args[0], context);
             const right = evaluateMapboxExpression(args[1], context);
             return `${left} ${op} ${right}`;
         }
+        case 'concat': {
+            // String concatenation
+            const parts = args.map((arg) => evaluateMapboxExpression(arg, context));
+            return parts.join(' + ');
+        }
+        case 'coalesce': {
+            // Return first non-null value
+            if (args.length === 0) return 'null';
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+
+            const values = args.map((arg) => evaluateMapboxExpression(arg, context));
+            // Build nested ternary: val1 != null ? val1 : (val2 != null ? val2 : val3)
+            let result = values[values.length - 1];
+            for (let i = values.length - 2; i >= 0; i--) {
+                result = `${values[i]} != null ? ${values[i]} : ${result}`;
+            }
+            return result;
+        }
         default:
+            console.warn(`[evaluateMapboxExpression] Unsupported operator: ${op}`);
             return JSON.stringify(expr);
     }
 }
 
 function buildAttribute(widgetName: string, prop: string, value: any, elementPath: string[], defaultPrefix = 'data', usedColors?: Set<string>): string | null {
     if (value === undefined || value === null) return null;
+
     // map layout prop names -> Svelte/NativeScript attribute names
     const attrMap: Record<string, string | string[]> = {
         alignment: 'verticalAlignment',
@@ -315,6 +394,11 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         spacing: 'padding'
     };
     const attrName = attrMap[prop] ?? prop;
+
+    // Skip limit - it's handled specially in forEach processing
+    if (prop === 'limit') {
+        return null;
+    }
 
     // Visible / visibleIf should map to a `visibility` attribute
     if (prop === 'visibleIf') {
@@ -327,10 +411,14 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             // If it's a constant boolean, don't generate visibility attribute if true
             if (value === true) return null;
             return `visibility="hidden"`;
+        } else if (Array.isArray(value)) {
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            console.warn('visibilityIf', value, expr, `visibility={(${expr}) ? 'visible' : 'collapsed'}`);
+            return `visibility={(${expr}) ? 'visible' : 'collapsed'}`;
         } else {
             return null;
         }
-        return `visibility={${expr} ? 'visible' : 'hidden'}`;
+        return `visibility={${expr} ? 'visible' : 'collapsed'}`;
     }
 
     if (prop === 'visible') {
@@ -345,6 +433,53 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             }
         }
         return null;
+    }
+
+    // Handle alignment properties with start/end mapping
+    if (prop === 'alignment' || prop === 'verticalAlignment') {
+        const mappedValue = typeof value === 'string' ? mapAlignment(value, true) : value;
+        if (typeof mappedValue === 'string') {
+            return `${attrName}="${mappedValue}"`;
+        }
+        return `${attrName}={${JSON.stringify(mappedValue)}}`;
+    }
+
+    if (prop === 'crossAlignment' || prop === 'horizontalAlignment') {
+        const mappedValue = typeof value === 'string' ? mapAlignment(value, false) : value;
+        if (typeof mappedValue === 'string') {
+            return `${attrName}="${mappedValue}"`;
+        }
+        return `${attrName}={${JSON.stringify(mappedValue)}}`;
+    }
+
+    // Handle font weight mapping
+    if (prop === 'fontWeight') {
+        const weight = mapFontWeight(value);
+        return `${attrName}={${weight}}`;
+    }
+
+    // Handle text property with localization
+    if (prop === 'text') {
+        if (typeof value === 'string') {
+            if (hasBinding(value)) {
+                // Has binding syntax
+                const expr = convertBindingToSvelteExpr(value, defaultPrefix);
+                return `${attrName}={${expr}}`;
+            } else if (value.startsWith('data.') || value.startsWith('item.') || value.startsWith('size.')) {
+                // Direct data path
+                return `${attrName}={${value}}`;
+            } else if (shouldLocalize(value)) {
+                // Static text that should be localized
+                return `${attrName}={lc('${value}')}`;
+            } else {
+                // Static text
+                return `${attrName}="${value}"`;
+            }
+        } else if (Array.isArray(value)) {
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            return `${attrName}={${expr}}`;
+        }
+        return `${attrName}={${JSON.stringify(value)}}`;
     }
 
     // handle a 'size' virtual prop: translate into width and height attributes
@@ -368,7 +503,6 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     // Handle Mapbox expressions (arrays)
     if (Array.isArray(value)) {
         let expr = evaluateMapboxExpression(value, defaultPrefix);
-        console.warn('attrName', expr)
         if (expr === 'data.iconPath') {
             expr = `\`\${iconService.iconSetFolderPath}/images/\${${expr}}.png\``;
         }
@@ -384,7 +518,6 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         if (value === '{{item.iconPath}}') {
             expr = `\`\${iconService.iconSetFolderPath}/images/\${${expr}}.png\``;
         }
-        console.log('buildAttribute', attrName, value, typeof value, expr);
         if (Array.isArray(attrName)) {
             return attrName.map((attr) => `${attr}={${expr}}`).join(' ');
         }
@@ -446,8 +579,63 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 }
 
 /**
- * Generate Svelte markup recursively
+ * Check if a string should be localized
  */
+function shouldLocalize(text: string): boolean {
+    // Don't localize if it's a data binding or expression
+    if (text.startsWith('data.') || text.startsWith('item.') || text.startsWith('size.')) {
+        return false;
+    }
+    // Don't localize if it contains binding syntax
+    if (text.includes('{') || text.includes('}')) {
+        return false;
+    }
+    // Don't localize numbers or very short strings
+    if (/^\d+$/.test(text) || text.length <= 1) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Map font weight names to numeric values
+ */
+function mapFontWeight(weight: string | number): number {
+    if (typeof weight === 'number') {
+        return weight;
+    }
+
+    const weightMap: Record<string, number> = {
+        thin: 100,
+        ultralight: 200,
+        light: 300,
+        normal: 400,
+        regular: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
+        ultrabold: 800,
+        heavy: 800,
+        black: 900
+    };
+
+    const normalized = weight.toLowerCase();
+    return weightMap[normalized] || 400;
+}
+
+/**
+ * Map alignment values to NativeScript equivalents
+ */
+function mapAlignment(value: string, isVertical: boolean): string {
+    const map: Record<string, string> = {
+        start: isVertical ? 'top' : 'left',
+        end: isVertical ? 'bottom' : 'right',
+        center: 'center',
+        stretch: 'stretch'
+    };
+    return map[value] || value;
+}
+
 function generateMarkup(widgetName: string, element: LayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
     const indent = '    '.repeat(elementPath.length + 1);
     const elType = element.type;
@@ -468,7 +656,7 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
             case 'divider':
                 return 'stacklayout';
             case 'scrollView':
-                return null; // Don't render scrollview, treat children as direct
+                return null; // Don't render scrollview, will be handled specially
             case 'forEach':
                 return 'collectionview';
             case 'conditional':
@@ -489,20 +677,50 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         return '';
     }
 
-    // Handle scrollView: unwrap and render children directly with forEach getting orientation
+    // Handle scrollView: check if it contains a forEach, if so merge into collectionview
     if (elType === 'scrollView') {
         const children = element.children ?? [];
-        const childMarkups: string[] = [];
-        for (let i = 0; i < children.length; i++) {
-            const childDef = children[i];
-            // If child is a forEach, apply the scrollView's direction to it
-            if (childDef.type === 'forEach' && element.direction) {
-                childDef.direction = element.direction;
+
+        // Look for forEach in children (could be nested in row/column)
+        const findForEach = (el: LayoutElement): LayoutElement | null => {
+            if (el.type === 'forEach') return el;
+            if (el.children) {
+                for (const child of el.children) {
+                    const found = findForEach(child);
+                    if (found) return found;
+                }
             }
-            const childMarkup = generateMarkup(widgetName, childDef, elementPath, usedTemplateImport, usedColors, defaultPrefix);
-            if (childMarkup) childMarkups.push(childMarkup);
+            return null;
+        };
+
+        const forEachElement = findForEach(element);
+
+        if (forEachElement) {
+            // Merge scrollView properties into forEach element
+            // Map direction to orientation
+            const orientation = element.direction === 'horizontal' ? 'horizontal' : element.direction === 'vertical' ? 'vertical' : undefined;
+
+            const mergedElement = {
+                ...forEachElement,
+                // Use orientation instead of direction
+                ...(orientation && { direction: orientation }),
+                height: element.height || forEachElement.height,
+                width: element.width || forEachElement.width,
+                showIndicators: element.showIndicators,
+                scrollBarIndicatorVisible: element.scrollBarIndicatorVisible
+            };
+
+            // Generate the collectionview with merged properties
+            return generateMarkup(widgetName, mergedElement, elementPath, usedTemplateImport, usedColors, defaultPrefix);
+        } else {
+            // No forEach found, render children directly (unwrap scrollView)
+            const childMarkups: string[] = [];
+            for (let i = 0; i < children.length; i++) {
+                const childMarkup = generateMarkup(widgetName, children[i], elementPath, usedTemplateImport, usedColors, defaultPrefix);
+                if (childMarkup) childMarkups.push(childMarkup);
+            }
+            return childMarkups.join('\n');
         }
-        return childMarkups.join('\n');
     }
 
     if (!tag) return '';
@@ -523,7 +741,6 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         'height',
         'cornerRadius',
         'spacing',
-        'direction',
         'alignment',
         'crossAlignment',
         'backgroundColor',
@@ -541,10 +758,31 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         'row',
         'colSpan',
         'rowSpan',
-        'textWrap'
+        'textWrap',
+        'showIndicators',
+        'scrollBarIndicatorVisible'
     ];
 
+    // Handle limit for forEach by modifying items before processing
+    let itemsValue: string | undefined;
+    if (elType === 'forEach' && element.limit !== undefined) {
+        const itemsPath =
+            typeof element.items === 'string'
+                ? element.items.startsWith('data.') || element.items.startsWith('item.')
+                    ? element.items
+                    : `${defaultPrefix}.${element.items}`
+                : `${defaultPrefix}.items`;
+
+        // Build the slice expression
+        const limitValue = Array.isArray(element.limit) ? evaluateMapboxExpression(element.limit, defaultPrefix) : typeof element.limit === 'number' ? element.limit.toString() : element.limit;
+
+        itemsValue = `${itemsPath}?.slice(0, ${limitValue})`;
+    }
+
     for (const k of Object.keys(element)) {
+        // Skip limit and direction (direction is converted to orientation below)
+        if (k === 'limit' || k === 'direction') continue;
+
         if (!attributesToMap.includes(k) && k !== 'text' && k !== 'src' && k !== 'items') continue;
         const v = (element as any)[k];
 
@@ -577,10 +815,23 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
             seenAttrs.add('backgroundColor');
         }
     } else if (elType === 'forEach') {
-        // Add orientation if specified via direction
-        if (element.direction === 'horizontal' && !seenAttrs.has('orientation')) {
-            attrsArr.push(`orientation="horizontal"`);
+        // Handle orientation from direction property for forEach/collectionview
+        if (element.direction && !seenAttrs.has('orientation')) {
+            const orientation = element.direction === 'horizontal' ? 'horizontal' : 'vertical';
+            attrsArr.push(`orientation="${orientation}"`);
             seenAttrs.add('orientation');
+        }
+
+        // Replace items attribute with sliced version if limit was set
+        if (itemsValue) {
+            const itemsAttrIndex = attrsArr.findIndex((a) => a.startsWith('items='));
+            if (itemsAttrIndex !== -1) {
+                attrsArr[itemsAttrIndex] = `items={${itemsValue}}`;
+            } else {
+                // Items attribute wasn't added yet, add it now
+                attrsArr.push(`items={${itemsValue}}`);
+                seenAttrs.add('items');
+            }
         }
     }
 
@@ -595,16 +846,45 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
     let childrenMarkup = '';
     const children = element.children ?? [];
     const childMarkups: string[] = [];
-    const parentOrientation = elType === 'row' ? 'horizontal' : 'vertical';
+
+    // Determine parent orientation for spacer margin handling
+    const parentOrientation = elType === 'row' || (elType === 'forEach' && element.direction === 'horizontal') ? 'horizontal' : 'vertical';
     const marginProp = parentOrientation === 'horizontal' ? 'marginRight' : 'marginBottom';
 
     function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
         const firstLT = markup.indexOf('<');
         if (firstLT === -1) return markup;
-        const closingGT = markup.indexOf('>', firstLT);
+
+        // Find the actual closing > of the opening tag, accounting for expressions with > or >=
+        let closingGT = -1;
+        let inExpression = false;
+        let braceDepth = 0;
+
+        for (let i = firstLT + 1; i < markup.length; i++) {
+            const char = markup[i];
+
+            if (char === '{') {
+                inExpression = true;
+                braceDepth++;
+            } else if (char === '}') {
+                braceDepth--;
+                if (braceDepth === 0) {
+                    inExpression = false;
+                }
+            } else if (char === '>' && !inExpression && braceDepth === 0) {
+                closingGT = i;
+                break;
+            }
+        }
+
         if (closingGT === -1) return markup;
+
         const openingTag = markup.substring(firstLT, closingGT + 1);
+
+        // Check if margin attribute already exists
         if (openingTag.includes(`${marginName}=`)) return markup;
+
+        // Insert margin attribute before the closing >
         return markup.slice(0, closingGT) + ` ${marginName}={${marginVal}}` + markup.slice(closingGT);
     }
 
@@ -646,6 +926,8 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
             condExpr = convertBindingToSvelteExpr(condRaw, defaultPrefix);
         } else if (typeof condRaw === 'string') {
             condExpr = normalizeExpr(condRaw, defaultPrefix);
+        } else if (Array.isArray(condRaw)) {
+            condExpr = evaluateMapboxExpression(condRaw, defaultPrefix);
         } else {
             condExpr = JSON.stringify(condRaw);
         }
@@ -698,6 +980,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     script += `    import { titlecase } from '@nativescript-community/l';\n`;
     script += `    import { iconService } from '~/services/icon';\n`;
     script += `    import { colors } from '~/variables';\n`;
+    script += `    import { lc } from '~/helpers/locale';\n`;
     script += `    import type { WeatherWidgetData } from '~/services/widgets/WidgetTypes';\n`;
     script += `    </script>\n`;
     script += `    <script lang="ts">\n`;
@@ -731,7 +1014,11 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         if (attrBg) wrapperAttrs.push(attrBg);
     }
     if (layout.defaultPadding !== undefined) {
-        wrapperAttrs.push(`padding={${JSON.stringify(layout.defaultPadding)}}`);
+        let value = layout.defaultPadding;
+        if (Array.isArray(value)) {
+            value = evaluateMapboxExpression(value, '') as any;
+        }
+        wrapperAttrs.push(`padding={${value}}`);
     }
     wrapperAttrs.push(`class="widget-container"`);
 

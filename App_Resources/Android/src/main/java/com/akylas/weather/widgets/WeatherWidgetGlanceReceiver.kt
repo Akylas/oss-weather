@@ -13,6 +13,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.net.Uri
 import java.util.Calendar
 
 private const val LOG_TAG = "WeatherWidgetGlanceReceiver"
@@ -161,6 +162,13 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
         fun scheduleNextClockUpdate(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                // If not, request the SCHEDULE_EXACT_ALARM permission
+                val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                intent.data = (Uri.fromParts("package", context.getPackageName(), null))
+                context.startActivity(intent)
+                return
+            }
             // Create intent to update ALL clock widgets at once
             val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
@@ -178,19 +186,6 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            
-            // Check if alarm is already scheduled
-//            val existingIntent = PendingIntent.getBroadcast(
-//                context,
-//                CLOCK_UPDATE_REQUEST_CODE,
-//                intent,
-//                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-//            )
-//
-//            if (existingIntent != null) {
-//                WidgetsLogger.d(LOG_TAG, "Clock update already scheduled, skipping")
-//                return
-//            }
             
             val now = System.currentTimeMillis()
             val nextMinute = (now / 60000 + 1) * 60000 + 200

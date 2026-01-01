@@ -84,6 +84,8 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
             size.width < 150.dp -> 6.dp
             else -> 8.dp
         }
+        
+        val isLandscape = size.width > size.height && size.width >= 200.dp
 
         WidgetComposables.WidgetContainer(padding = padding) {
             if (size.width < 80.dp) {
@@ -109,6 +111,40 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
                     // Location at bottom, scaled with size
                     val locationFontSize = (size.width.value / 15).coerceIn(8f, 12f).sp
                     WidgetComposables.LocationHeader(data.locationName, locationFontSize, maxLines = 1)
+                }
+            } else if (isLandscape) {
+                // Landscape mode: Icon and temp side by side
+                Row(
+                    modifier = modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Column(
+                        modifier = GlanceModifier.defaultWeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalAlignment = Alignment.Vertical.CenterVertically
+                    ) {
+                        WidgetComposables.WeatherIcon(data.iconPath, data.description, 64.dp)
+                        
+                        Spacer(modifier = GlanceModifier.height(4.dp))
+                        
+                        WidgetComposables.LocationHeader(data.locationName, 12.sp, maxLines = 1)
+                    }
+                    
+                    Spacer(modifier = GlanceModifier.width(8.dp))
+                    
+                    Column(
+                        modifier = GlanceModifier.defaultWeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalAlignment = Alignment.Vertical.CenterVertically
+                    ) {
+                        WidgetComposables.TemperatureText(data.temperature, 40.sp)
+                        
+                        if (data.description.isNotEmpty()) {
+                            Spacer(modifier = GlanceModifier.height(4.dp))
+                            WidgetComposables.DescriptionText(data.description, 12.sp)
+                        }
+                    }
                 }
             } else if (size.width < 200.dp) {
                 // Small widget: Vertical layout

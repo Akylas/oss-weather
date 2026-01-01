@@ -34,13 +34,14 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
     ) {
         Column(
             modifier = GlanceModifier.fillMaxSize(),
-            verticalAlignment = Alignment.Vertical.CenterVertically,
+            verticalAlignment = Alignment.Vertical.Top,
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
             Text(
                 text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
                 style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, color = GlanceTheme.colors.onSurface)
             )
+            Spacer(modifier = GlanceModifier.defaultWeight())
             Row(
                 modifier = GlanceModifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
@@ -60,7 +61,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
                     style = TextStyle(fontSize = when { size.width.value < 100 -> 18.sp; size.width.value < 150 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
             }
-            Spacer(modifier = GlanceModifier.defaultWeight())
+            Spacer(modifier = GlanceModifier.height(4.dp))
         }
         Column(
             modifier = GlanceModifier.fillMaxSize(),

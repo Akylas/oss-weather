@@ -96,7 +96,8 @@ class SimpleWeatherWithClockWidgetOld : WeatherWidget() {
             Box(modifier = modifier.fillMaxSize()) {
                 Column(
                     modifier = GlanceModifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalAlignment = Alignment.Top
                 ) {
                     // Clock at top
                     val clockFontSize = when {
@@ -117,11 +118,10 @@ class SimpleWeatherWithClockWidgetOld : WeatherWidget() {
                         )
                     )
                     
-                    Spacer(modifier = GlanceModifier.height(if (isSmall) 4.dp else 8.dp))
+                    Spacer(modifier = GlanceModifier.defaultWeight())
                     
-                    // Weather info centered
+                    // Weather info centered  
                     Row(
-                        modifier = GlanceModifier.defaultWeight(),
                         verticalAlignment = Alignment.Vertical.CenterVertically,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -144,6 +144,8 @@ class SimpleWeatherWithClockWidgetOld : WeatherWidget() {
                         
                         WidgetComposables.TemperatureText(data.temperature, tempFontSize)
                     }
+                    
+                    Spacer(modifier = GlanceModifier.height(4.dp))
                 }
                 
                 // Location at bottom right, scaled with size

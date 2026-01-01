@@ -4,8 +4,9 @@
   "displayName": "Weather with Date",
   "description": "Shows current date, temperature, weather icon, and location",
   "supportedSizes": [
-    { "width": 80, "height": 50, "family": "small" },
+    { "width": 120, "height": 50, "family": "small" },
     { "width": 120, "height": 80, "family": "small" },
+    { "width": 180, "height": 80, "family": "small" },
     { "width": 260, "height": 120, "family": "medium" }
   ],
   "defaultPadding": 6,
@@ -22,17 +23,30 @@
       ["<", ["get", "size.height"], 80], 4,
       6
     ],
-    "spacing": 0,
+    "spacing": ["case",
+      ["<", ["get", "size.height"], 60], 2,
+      4
+    ],
     "children": [
       {
         "type": "date",
         "style": "date",
         "fontSize": ["case",
-          ["<", ["get", "size.height"], 60], 10,
-          ["<", ["get", "size.height"], 80], 12,
-          14
+          ["<", ["get", "size.width"], 150], ["case",
+            ["<", ["get", "size.height"], 60], 14,
+            ["<", ["get", "size.height"], 80], 18,
+            22
+          ],
+          ["case",
+            ["<", ["get", "size.height"], 80], 20,
+            28
+          ]
         ],
-        "color": "onSurfaceVariant"
+        "fontWeight": ["case",
+          [">=", ["get", "size.width"], 180], "bold",
+          "normal"
+        ],
+        "color": "onSurface"
       },
       { "type": "spacer", "flex": 1 },
       {
@@ -48,9 +62,9 @@
             "type": "image",
             "src": ["get", "iconPath"],
             "size": ["case",
-              ["<", ["get", "size.height"], 60], 24,
-              ["<", ["get", "size.height"], 80], 32,
-              40
+              ["<", ["get", "size.height"], 60], 28,
+              ["<", ["get", "size.height"], 80], 36,
+              48
             ],
             "visibleIf": ["has", "iconPath"]
           },
@@ -58,9 +72,9 @@
             "type": "label",
             "text": ["get", "temperature"],
             "fontSize": ["case",
-              ["<", ["get", "size.height"], 60], 16,
-              ["<", ["get", "size.height"], 80], 20,
-              24
+              ["<", ["get", "size.height"], 60], 18,
+              ["<", ["get", "size.height"], 80], 24,
+              32
             ],
             "fontWeight": "bold",
             "color": "onSurface"

@@ -39,56 +39,101 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
-            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
-                Image(
-                   provider = provider,
-                   contentDescription = data.iconPath,
-                   modifier = GlanceModifier.size(40.dp)
-                )
+            if (data.iconPath.isNotEmpty()) {
+                WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                    Image(
+                       provider = provider,
+                       contentDescription = data.iconPath,
+                       modifier = GlanceModifier.size(48.dp)
+                    )
+                }
             }
             Column(
                 modifier = GlanceModifier.fillMaxSize(),
                 verticalAlignment = Alignment.Vertical.Top,
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
                     text = data.temperature,
-                    style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
                 Text(
                     text = data.locationName,
-                    style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                    style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                    maxLines = 1
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
         }
-        Box(
-            modifier = GlanceModifier.fillMaxWidth().height(1.dp)
-                .background(GlanceTheme.colors.onSurfaceVariant)
-        ) {}
+        Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = "Hourly Forecast",
+            text = "Hourly",
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
         )
+        Spacer(modifier = GlanceModifier.height(4.dp))
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+            verticalAlignment = Alignment.Vertical.CenterVertically
+        ) {
+            data.hourlyData.take(8).forEach { item ->
+                Column(
+                    modifier = GlanceModifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                ) {
+                    Text(
+                        text = "${item.time}",
+                        style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                        maxLines = 1
+                    )
+                    WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
+                        Image(
+                           provider = provider,
+                           contentDescription = item.iconPath,
+                           modifier = GlanceModifier.size(28.dp)
+                        )
+                    }
+                    Text(
+                        text = "${item.temperature}",
+                        style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
+                        maxLines = 1
+                    )
+                    if (item.precipAccumulation.isNotEmpty()) {
+                        Text(
+                            text = "${item.precipAccumulation}",
+                            style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = GlanceModifier.height(8.dp))
+        Text(
+            text = "Daily",
+            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
+        )
+        Spacer(modifier = GlanceModifier.height(4.dp))
         Column(
             modifier = GlanceModifier.fillMaxSize(),
             verticalAlignment = Alignment.Vertical.CenterVertically,
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
-            Row(
-                modifier = GlanceModifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                verticalAlignment = Alignment.Vertical.CenterVertically
+            Column(
+                modifier = GlanceModifier.fillMaxSize(),
+                verticalAlignment = Alignment.Vertical.CenterVertically,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
-                data.hourlyData.take(8).forEach { item ->
-                    Column(
-                        modifier = GlanceModifier.fillMaxSize(),
-                        verticalAlignment = Alignment.Vertical.CenterVertically,
-                        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                data.dailyData.take(10).forEach { item ->
+                    Row(
+                        modifier = GlanceModifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+                        verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
                         Text(
-                            text = "${item.time}",
-                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                            text = "${item.day}",
+                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(Color(0xFFonBackground))),
+                            maxLines = 1
                         )
                         WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
                             Image(
@@ -97,65 +142,48 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                                modifier = GlanceModifier.size(28.dp)
                             )
                         }
-                        Text(
-                            text = "${item.temperature}",
-                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
-                        )
-                        if (item.precipAccumulation.isNotEmpty()) {
+                        Row(
+                            modifier = GlanceModifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.Horizontal.End,
+                            verticalAlignment = Alignment.Vertical.CenterVertically
+                        ) {
+                            if (item.precipAccumulation.isNotEmpty()) {
+                                Text(
+                                    text = "${item.precipAccumulation}",
+                                    style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                )
+                            }
                             Text(
-                                text = "${item.precipAccumulation}",
-                                style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                text = "${item.temperatureHigh}",
+                                style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = ColorProvider(Color(0xFFonBackground))),
+                                maxLines = 1
+                            )
+                            Text(
+                                text = "${item.temperatureLow}",
+                                style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                                maxLines = 1
                             )
                         }
-                    }
-                }
-            }
-        }
-        Box(
-            modifier = GlanceModifier.fillMaxWidth().height(1.dp)
-                .background(GlanceTheme.colors.onSurfaceVariant)
-        ) {}
-        Text(
-            text = "7-Day Forecast",
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
-        )
-        Column(
-            modifier = GlanceModifier.fillMaxSize(),
-            verticalAlignment = Alignment.Vertical.CenterVertically,
-            horizontalAlignment = Alignment.Horizontal.CenterHorizontally
-        ) {
-            data.dailyData.take(when { size.height.value <= 240 -> 3; else -> 5 }).forEach { item ->
-                Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                    verticalAlignment = Alignment.Vertical.CenterVertically
-                ) {
-                    Text(
-                        text = "${item.day}",
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface)
-                    )
-                    WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
-                        Image(
-                           provider = provider,
-                           contentDescription = item.iconPath,
-                           modifier = GlanceModifier.size(24.dp)
-                        )
-                    }
-                    Row(
-                        modifier = GlanceModifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.Horizontal.End,
-                        verticalAlignment = Alignment.Vertical.CenterVertically
-                    ) {
-                        if (item.precipAccumulation.isNotEmpty()) {
-                            Text(
-                                text = "${item.precipAccumulation}",
-                                style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
-                            )
+                        if ((item.precipitation.isNotEmpty() || item.windSpeed.isNotEmpty())) {
+                            Row(
+                                modifier = GlanceModifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+                                verticalAlignment = Alignment.Vertical.CenterVertically
+                            ) {
+                                if (item.precipitation.isNotEmpty()) {
+                                    Text(
+                                        text = "💧${item.precipitation}",
+                                        style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.primary)
+                                    )
+                                }
+                                if (item.windSpeed.isNotEmpty()) {
+                                    Text(
+                                        text = "💨${item.windSpeed}",
+                                        style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                    )
+                                }
+                            }
                         }
-                        Text(
-                            text = "${item.temperatureHigh}/${item.temperatureLow}",
-                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
-                        )
                     }
                 }
             }

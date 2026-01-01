@@ -15,9 +15,18 @@
         "color": "widgetBackground"
     },
     "layout": {
-        "type": "column",
+        "type": ["case", 
+            ["all", ["<", ["get", "size.width"], 80], ["<", ["get", "size.height"], 80]], "column",
+            ["all", [">=", ["get", "size.width"], 200], [">", ["get", "size.width"], ["get", "size.height"]]], "row",
+            "column"
+        ],
         "alignment": "center",
         "crossAlignment": "center",
+        "spacing": ["case", 
+            ["<", ["get", "size.width"], 80], 2,
+            [">=", ["get", "size.width"], 200], 8,
+            4
+        ],
         "children": [
             {
                 "type": "label",
@@ -26,53 +35,94 @@
                 "color": "onSurfaceVariant",
                 "textAlign": "center",
                 "maxLines": 1,
-                "visibleIf": [">=", ["get", "size.width"], 80]
+                "visibleIf": ["all", [">=", ["get", "size.width"], 80], ["<=", ["get", "size.width"], ["get", "size.height"]]]
             },
             {
                 "type": "spacer",
                 "flex": ["case", ["<", ["get", "size.width"], 200], 1, null],
-                "size": ["case", [">=", ["get", "size.width"], 200], 8, null]
+                "size": ["case", [">=", ["get", "size.width"], 200], 8, null],
+                "visibleIf": ["<=", ["get", "size.width"], ["get", "size.height"]]
             },
             {
-                "type": "image",
-                "src": ["get", "iconPath"],
-                "size": ["case", ["<=", ["get", "size.width"], 80], 32, ["<", ["get", "size.width"], 200], 56, 72],
-                "visibleIf": ["has", "iconPath"]
+                "type": "column",
+                "alignment": "center",
+                "crossAlignment": "center",
+                "spacing": 4,
+                "flex": ["case", [">", ["get", "size.width"], ["get", "size.height"]], 1, null],
+                "children": [
+                    {
+                        "type": "image",
+                        "src": ["get", "iconPath"],
+                        "size": ["case", 
+                            ["<", ["get", "size.width"], 80], ["*", ["get", "size.width"], 0.5],
+                            ["<", ["get", "size.width"], 200], ["*", ["get", "size.width"], 0.4],
+                            [">", ["get", "size.width"], ["get", "size.height"]], 64,
+                            72
+                        ],
+                        "visibleIf": ["has", "iconPath"]
+                    }
+                ]
             },
             {
                 "type": "spacer",
                 "flex": ["case", ["all", [">=", ["get", "size.width"], 80], ["<", ["get", "size.width"], 200]], 1, null],
-                "size": ["case", ["<", ["get", "size.width"], 80], 0, [">=", ["get", "size.width"], 200], 8, null]
+                "size": ["case", 
+                    ["<", ["get", "size.width"], 80], 0,
+                    [">=", ["get", "size.width"], 200], 8,
+                    null
+                ],
+                "visibleIf": ["<=", ["get", "size.width"], ["get", "size.height"]]
             },
             {
-                "type": "label",
-                "text": ["get", "temperature"],
-                "fontSize": ["case", ["<", ["get", "size.width"], 80], 14, ["case", ["<", ["get", "size.width"], 120], 18, ["<", ["get", "size.width"], 200], 26  , 48]],
-                "fontWeight": "bold",
-                "color": "onSurface",
-                "textAlign": "center"
-            },
-            {
-                "type": "spacer",
-                "size": 4,
-                "visibleIf": ["any", ["<", ["get", "size.width"], 80], [">=", ["get", "size.width"], 200]]
-            },
-            {
-                "type": "label",
-                "text": ["get", "locationName"],
-                "fontSize": 8,
-                "color": "onSurfaceVariant",
-                "textAlign": "center",
-                "maxLines": 1,
-                "visibleIf": ["<", ["get", "size.width"], 80]
-            },
-            {
-                "type": "label",
-                "text": ["get", "description"],
-                "fontSize": 14,
-                "color": "onSurfaceVariant",
-                "textAlign": "center",
-                "visibleIf": ["all", ["has", "description"], [">=", ["get", "size.width"], 200]]
+                "type": "column",
+                "alignment": "center",
+                "crossAlignment": "center",
+                "spacing": 4,
+                "flex": ["case", [">", ["get", "size.width"], ["get", "size.height"]], 1, null],
+                "children": [
+                    {
+                        "type": "label",
+                        "text": ["get", "temperature"],
+                        "fontSize": ["case", 
+                            ["<", ["get", "size.width"], 80], 14,
+                            ["<", ["get", "size.width"], 120], 22,
+                            ["<", ["get", "size.width"], 200], 32,
+                            [">", ["get", "size.width"], ["get", "size.height"]], 40,
+                            48
+                        ],
+                        "fontWeight": "bold",
+                        "color": "onSurface",
+                        "textAlign": "center"
+                    },
+                    {
+                        "type": "label",
+                        "text": ["get", "locationName"],
+                        "fontSize": ["case", 
+                            ["<", ["get", "size.width"], 80], 8,
+                            [">", ["get", "size.width"], ["get", "size.height"]], 12,
+                            0
+                        ],
+                        "color": "onSurfaceVariant",
+                        "textAlign": "center",
+                        "maxLines": 1,
+                        "visibleIf": ["any", 
+                            ["<", ["get", "size.width"], 80],
+                            [">", ["get", "size.width"], ["get", "size.height"]]
+                        ]
+                    },
+                    {
+                        "type": "label",
+                        "text": ["get", "description"],
+                        "fontSize": 14,
+                        "color": "onSurfaceVariant",
+                        "textAlign": "center",
+                        "visibleIf": ["all", 
+                            ["has", "description"],
+                            [">=", ["get", "size.width"], 200],
+                            ["<=", ["get", "size.width"], ["get", "size.height"]]
+                        ]
+                    }
+                ]
             }
         ]
     }

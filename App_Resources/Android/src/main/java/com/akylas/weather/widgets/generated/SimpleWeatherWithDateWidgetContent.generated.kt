@@ -36,7 +36,7 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
     ) {
         Text(
             text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
-            style = TextStyle(fontSize = when { size.height.value < 60 -> 10.sp; size.height.value < 80 -> 12.sp; else -> 14.sp }, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = when { size.width.value < 150 -> when { size.height.value < 60 -> 14.sp; size.height.value < 80 -> 18.sp; else -> 22.sp }; else -> when { size.height.value < 80 -> 20.sp; else -> 28.sp } }, color = GlanceTheme.colors.onSurface)
         )
         Spacer(modifier = GlanceModifier.defaultWeight())
         Row(
@@ -49,13 +49,13 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
                     Image(
                        provider = provider,
                        contentDescription = data.iconPath,
-                       modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 32.dp; else -> 40.dp })
+                       modifier = GlanceModifier.size(when { size.height.value < 60 -> 28.dp; size.height.value < 80 -> 36.dp; else -> 48.dp })
                     )
                 }
             }
             Text(
                 text = data.temperature,
-                style = TextStyle(fontSize = when { size.height.value < 60 -> 16.sp; size.height.value < 80 -> 20.sp; else -> 24.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                style = TextStyle(fontSize = when { size.height.value < 60 -> 18.sp; size.height.value < 80 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
             )
         }
         Spacer(modifier = GlanceModifier.defaultWeight())

@@ -6,7 +6,7 @@
   "supportedSizes": [
     { "width": 80, "height": 80, "family": "small" },
     { "width": 120, "height": 120, "family": "small" },
-    { "width": 260, "height": 120, "family": "medium" }
+    { "width": 180, "height": 120, "family": "medium" }
   ],
   "defaultPadding": 8,
   "background": {
@@ -23,10 +23,10 @@
     "children": [
       {
         "type": "column",
-        "alignment": "center",
+        "alignment": "start",
         "crossAlignment": "center",
         "spacing": ["case",
-          ["<", ["get", "size.width"], 100], 0,
+          ["<", ["get", "size.width"], 100], 2,
           ["<", ["get", "size.width"], 150], 4,
           8
         ],
@@ -41,13 +41,14 @@
             "fontWeight": "bold",
             "color": "onSurface"
           },
+          { "type": "spacer", "flex": 1 },
           {
             "type": "row",
             "alignment": "center",
             "crossAlignment": "center",
             "spacing": ["case",
               ["<", ["get", "size.width"], 100], 4,
-              ["<", ["get", "size.width"], 150], 4,
+              ["<", ["get", "size.width"], 150], 6,
               8
             ],
             "children": [
@@ -74,7 +75,7 @@
               }
             ]
           },
-          { "type": "spacer", "flex": 1 }
+          { "type": "spacer", "size": 4 }
         ]
       },
       {
@@ -93,7 +94,8 @@
             ],
             "color": "onSurfaceVariant",
             "maxLines": 1,
-            "margin": 2
+            "paddingBottom": 2,
+            "paddingEnd": 2
           }
         ]
       }

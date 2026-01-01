@@ -15,6 +15,7 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.LazyRow
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.layout.*
 import androidx.glance.text.FontWeight
@@ -91,10 +92,10 @@ class ForecastWeatherWidgetOld : WeatherWidget() {
                 
                 Spacer(modifier = GlanceModifier.height(4.dp))
 
-                Row(
+                LazyRow(
                     modifier = GlanceModifier.height(if (isLarge) 80.dp else 70.dp).fillMaxWidth()
                 ) {
-                    data.hourlyData.take(8).forEachIndexed { index, hour ->
+                    items(data.hourlyData.take(8)) { hour ->
                         HourlyForecastItem(hour, isLarge)
                     }
                 }

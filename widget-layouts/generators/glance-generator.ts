@@ -542,9 +542,108 @@ function generateDivider(element: LayoutElement, indent: string): string[] {
 
 function generateScrollView(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-
-    lines.push(`${indent}// ScrollView not directly supported in Glance, using Column`);
-    return generateColumn(element, indent);
+    
+    const direction = element.direction || 'vertical';
+    
+    if (direction === 'horizontal') {
+        // Generate LazyRow for horizontal scrolling
+        lines.push(`${indent}LazyRow {`);
+        if (element.children && element.children.length > 0) {
+            // Check if children contain a forEach, if so handle specially
+            const hasForEach = element.children.some(child => 
+                child.type === 'forEach' || (child.children && child.children.some(c => c.type === 'forEach'))
+            );
+            
+            if (hasForEach) {
+                // Find the forEach element (may be nested in row/column)
+                for (const child of element.children) {
+                    if (child.type === 'forEach') {
+                        // Generate items directly from forEach
+                        if (child.items && child.itemTemplate) {
+                            const limitValue = child.limit || 10;
+                            const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                            
+                            lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
+                            lines.push(generateElement(child.itemTemplate, indent + '        '));
+                            lines.push(`${indent}    }`);
+                        }
+                    } else if (child.children) {
+                        // Check nested children for forEach
+                        for (const nestedChild of child.children) {
+                            if (nestedChild.type === 'forEach') {
+                                if (nestedChild.items && nestedChild.itemTemplate) {
+                                    const limitValue = nestedChild.limit || 10;
+                                    const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                                    
+                                    lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
+                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
+                                    lines.push(`${indent}    }`);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // No forEach, wrap each child in item{}
+                for (const child of element.children) {
+                    lines.push(`${indent}    item {`);
+                    lines.push(generateElement(child, indent + '        '));
+                    lines.push(`${indent}    }`);
+                }
+            }
+        }
+        lines.push(`${indent}}`);
+    } else {
+        // Generate LazyColumn for vertical scrolling
+        lines.push(`${indent}LazyColumn {`);
+        if (element.children && element.children.length > 0) {
+            // Check if children contain a forEach, if so handle specially
+            const hasForEach = element.children.some(child => 
+                child.type === 'forEach' || (child.children && child.children.some(c => c.type === 'forEach'))
+            );
+            
+            if (hasForEach) {
+                // Find the forEach element (may be nested in row/column)
+                for (const child of element.children) {
+                    if (child.type === 'forEach') {
+                        // Generate items directly from forEach
+                        if (child.items && child.itemTemplate) {
+                            const limitValue = child.limit || 10;
+                            const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                            
+                            lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
+                            lines.push(generateElement(child.itemTemplate, indent + '        '));
+                            lines.push(`${indent}    }`);
+                        }
+                    } else if (child.children) {
+                        // Check nested children for forEach
+                        for (const nestedChild of child.children) {
+                            if (nestedChild.type === 'forEach') {
+                                if (nestedChild.items && nestedChild.itemTemplate) {
+                                    const limitValue = nestedChild.limit || 10;
+                                    const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                                    
+                                    lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
+                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
+                                    lines.push(`${indent}    }`);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // No forEach, wrap each child in item{}
+                for (const child of element.children) {
+                    lines.push(`${indent}    item {`);
+                    lines.push(generateElement(child, indent + '        '));
+                    lines.push(`${indent}    }`);
+                }
+            }
+        }
+        lines.push(`${indent}}`);
+    }
+    
+    return lines;
 }
 
 function generateForEach(element: LayoutElement, indent: string): string[] {
@@ -671,6 +770,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.LocalSize');
     lines.push('import androidx.glance.background');
     lines.push('import androidx.glance.layout.*');
+    lines.push('import androidx.glance.appwidget.lazy.LazyColumn');
+    lines.push('import androidx.glance.appwidget.lazy.LazyRow');
     lines.push('import androidx.glance.text.FontWeight');
     lines.push('import androidx.glance.text.Text');
     lines.push('import androidx.glance.text.TextAlign');

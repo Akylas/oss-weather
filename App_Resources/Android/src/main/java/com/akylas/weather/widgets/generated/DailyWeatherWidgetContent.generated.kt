@@ -89,7 +89,7 @@ fun DailyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                     ) {
                         Text(
                             text = "${item.day}",
-                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(Color(0xFFonBackground))),
+                            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                             maxLines = 1
                         )
                         WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
@@ -112,7 +112,7 @@ fun DailyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                             }
                             Text(
                                 text = "${item.temperatureHigh}",
-                                style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = ColorProvider(Color(0xFFonBackground))),
+                                style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                                 maxLines = 1
                             )
                             Text(

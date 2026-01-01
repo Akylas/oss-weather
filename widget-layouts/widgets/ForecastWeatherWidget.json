@@ -143,7 +143,7 @@
                                     "crossAlignment": "center",
                                     "spacing": 8,
                                     "padding": 6,
-                                    "backgroundColor": "cardBackground",
+                                    "backgroundColor": "surface",
                                     "cornerRadius": 8,
                                     "marginBottom": 4,
                                     "children": [
@@ -152,7 +152,7 @@
                                             "text": "{{item.day}}",
                                             "fontSize": 12,
                                             "fontWeight": "medium",
-                                            "color": "onBackground",
+                                            "color": "onSurface",
                                             "flex": 1,
                                             "maxLines": 1
                                         },
@@ -180,7 +180,7 @@
                                                     "text": "{{item.temperatureHigh}}",
                                                     "fontSize": 13,
                                                     "fontWeight": "bold",
-                                                    "color": "onBackground",
+                                                    "color": "onSurface",
                                                     "maxLines": 1
                                                 },
                                                 {

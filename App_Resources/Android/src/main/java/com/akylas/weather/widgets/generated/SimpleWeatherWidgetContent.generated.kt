@@ -29,7 +29,50 @@ import com.akylas.weather.widgets.WeatherWidgetManager
 @Composable
 fun SimpleWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
 
-    // Unknown element type: case,all,<,get,size.width,80,<,get,size.height,80,column,all,>=,get,size.width,200,>,get,size.width,get,size.height,row,column
+    Column(
+        modifier = GlanceModifier.fillMaxSize(),
+        verticalAlignment = Alignment.Vertical.CenterVertically,
+        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+    ) {
+        if (size.width.value >= 80) {
+            Text(
+                text = data.locationName,
+                style = TextStyle(fontSize = when { size.width.value >= 200 -> 16.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center),
+                maxLines = 1
+            )
+        }
+        Spacer(modifier = GlanceModifier.height(when { size.width.value >= 200 -> 8.dp; else -> 8.dp }))
+        if (data.iconPath.isNotEmpty()) {
+            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                Image(
+                   provider = provider,
+                   contentDescription = data.iconPath,
+                   modifier = GlanceModifier.size(when { size.width.value < 80 -> 32.dp; size.width.value < 200 -> 56.dp; else -> 72.dp })
+                )
+            }
+        }
+        Spacer(modifier = GlanceModifier.height(when { size.width.value < 80 -> 0.dp; size.width.value >= 200 -> 8.dp; else -> 8.dp }))
+        Text(
+            text = data.temperature,
+            style = TextStyle(fontSize = when { size.width.value < 80 -> 14.sp; size.width.value < 120 -> 22.sp; size.width.value < 200 -> 32.sp; else -> 48.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Center)
+        )
+        if ((size.width.value < 80 || size.width.value >= 200)) {
+            Spacer(modifier = GlanceModifier.height(4.dp))
+        }
+        if (size.width.value < 80) {
+            Text(
+                text = data.locationName,
+                style = TextStyle(fontSize = 8.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center),
+                maxLines = 1
+            )
+        }
+        if ((data.description.isNotEmpty() && size.width.value >= 200)) {
+            Text(
+                text = data.description,
+                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center)
+            )
+        }
+    }
 }
 
 // Data classes (WeatherWidgetData, HourlyForecast, DailyForecast) are defined in WeatherWidgetManager

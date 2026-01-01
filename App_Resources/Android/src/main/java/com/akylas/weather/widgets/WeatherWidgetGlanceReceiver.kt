@@ -161,6 +161,16 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
         fun scheduleNextClockUpdate(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             
+            // Check if we have permission for exact alarms on Android 12+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    WidgetsLogger.w(LOG_TAG, "Cannot schedule exact alarms - permission not granted. Clock updates will be less accurate.")
+                    // Fall back to inexact alarm or skip scheduling
+                    // You could use setWindow() or setAndAllowWhileIdle() as alternatives
+                    return
+                }
+            }
+            
             // Create intent to update ALL clock widgets at once
             val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE

@@ -9,11 +9,9 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalSize
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.lazy.items
-import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.LazyRow
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.layout.*
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -83,10 +81,10 @@ class HourlyWeatherWidgetOld : WeatherWidget() {
                     Spacer(modifier = GlanceModifier.height(4.dp))
                 }
 
-                Row(
+                LazyRow(
                     modifier = GlanceModifier.fillMaxSize()
                 ) {
-                    data.hourlyData.take(8).forEachIndexed { index, hour ->
+                    items(data.hourlyData.take(8)) { hour ->
                         HourlyItem(hour, size)
                     }
                 }

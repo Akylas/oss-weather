@@ -66,51 +66,59 @@
             },
             { "type": "spacer", "size": 4 },
             {
-                "type": "row",
+                "type": "scrollView",
+                "direction": "horizontal",
+                "showIndicators": false,
                 "height": ["case", [">", ["get", "size.width"], 240], 80, 70],
                 "paddingHorizontal": 8,
                 "children": [
                     {
-                        "type": "forEach",
-                        "items": "hourlyData",
-                        "limit": 8,
-                        "itemTemplate": {
-                            "type": "column",
-                            "alignment": "center",
-                            "crossAlignment": "center",
-                            "width": 50,
-                            "spacing": 2,
-                            "paddingHorizontal": 4,
-                            "children": [
-                                {
-                                    "type": "label",
-                                    "text": "{{item.time}}",
-                                    "fontSize": 10,
-                                    "color": "onSurfaceVariant",
-                                    "maxLines": 1
-                                },
-                                {
-                                    "type": "image",
-                                    "src": "{{item.iconPath}}",
-                                    "size": 28
-                                },
-                                {
-                                    "type": "label",
-                                    "text": "{{item.temperature}}",
-                                    "fontSize": 12,
-                                    "fontWeight": "bold",
-                                    "color": "onSurface",
-                                    "maxLines": 1
-                                },
-                                {
-                                    "type": "label",
-                                    "text": "{{item.precipAccumulation}}",
-                                    "fontSize": 9,
-                                    "color": "onSurfaceVariant",
-                                    "visibleIf": ["has", "item.precipAccumulation"]
+                        "type": "row",
+                        "spacing": 0,
+                        "children": [
+                            {
+                                "type": "forEach",
+                                "items": "hourlyData",
+                                "limit": 8,
+                                "itemTemplate": {
+                                    "type": "column",
+                                    "alignment": "center",
+                                    "crossAlignment": "center",
+                                    "width": 50,
+                                    "spacing": 2,
+                                    "paddingHorizontal": 4,
+                                    "children": [
+                                        {
+                                            "type": "label",
+                                            "text": "{{item.time}}",
+                                            "fontSize": 10,
+                                            "color": "onSurfaceVariant",
+                                            "maxLines": 1
+                                        },
+                                        {
+                                            "type": "image",
+                                            "src": "{{item.iconPath}}",
+                                            "size": 28
+                                        },
+                                        {
+                                            "type": "label",
+                                            "text": "{{item.temperature}}",
+                                            "fontSize": 12,
+                                            "fontWeight": "bold",
+                                            "color": "onSurface",
+                                            "maxLines": 1
+                                        },
+                                        {
+                                            "type": "label",
+                                            "text": "{{item.precipAccumulation}}",
+                                            "fontSize": 9,
+                                            "color": "onSurfaceVariant",
+                                            "visibleIf": ["has", "item.precipAccumulation"]
+                                        }
+                                    ]
                                 }
-                            ]
-                        }
+                            }
+                        ]
                     }
                 ]
             },

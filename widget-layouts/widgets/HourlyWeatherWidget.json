@@ -32,7 +32,7 @@
           "children": [
             {
               "type": "label",
-              "text": ["get", "locationName"],
+              "text": ["get", "data.locationName"],
               "fontSize": 14,
               "color": "onSurfaceVariant",
               "maxLines": 1
@@ -57,7 +57,7 @@
               "type": "column",
               "alignment": "center",
               "crossAlignment": "center",
-              "width": 56,
+              "width": 50,
               "fillHeight": true,
               "paddingHorizontal": 4,
               "spacing": ["case",

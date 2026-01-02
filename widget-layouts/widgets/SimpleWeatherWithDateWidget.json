@@ -58,13 +58,13 @@
                   "children": [
                     {
                       "type": "image",
-                      "src": ["get", "iconPath"],
+                      "src": ["get", "data.iconPath"],
                       "size": 56,
-                      "visibleIf": ["has", "iconPath"]
+                      "visibleIf": ["has", "data.iconPath"]
                     },
                     {
                       "type": "label",
-                      "text": ["get", "temperature"],
+                      "text": ["get", "data.temperature"],
                       "fontSize": 40,
                       "fontWeight": "bold",
                       "color": "onSurface"
@@ -114,17 +114,17 @@
               "children": [
                 {
                   "type": "image",
-                  "src": ["get", "iconPath"],
+                  "src": ["get", "data.iconPath"],
                   "size": ["case",
                     ["<", ["get", "size.height"], 60], 28,
                     ["<", ["get", "size.height"], 80], 36,
                     48
                   ],
-                  "visibleIf": ["has", "iconPath"]
+                  "visibleIf": ["has", "data.iconPath"]
                 },
                 {
                   "type": "label",
-                  "text": ["get", "temperature"],
+                  "text": ["get", "data.temperature"],
                   "fontSize": ["case",
                     ["<", ["get", "size.height"], 60], 18,
                     ["<", ["get", "size.height"], 80], 24,
@@ -145,7 +145,7 @@
       },
       {
         "type": "label",
-        "text": ["get", "locationName"],
+        "text": ["get", "data.locationName"],
         "fontSize": ["case",
           ["<", ["get", "size.height"], 60], 9,
           ["<", ["get", "size.height"], 80], 11,
@@ -156,7 +156,10 @@
         "textAlign": ["case",
           [">=", ["get", "size.width"], 200], "start",
           "center"
-        ]
+        ],
+        "paddingStart": 4,
+        "paddingEnd": 4,
+        "paddingBottom": 2
       }
     ]
   }

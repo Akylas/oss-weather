@@ -29,7 +29,7 @@
             {
               "type": "clock",
               "fontSize": 48,
-              "fontWeight": "bold",
+              "fontWeight": "@setting.clockBold",
               "color": "onSurface",
               "flex": 1
             },
@@ -65,12 +65,13 @@
             { "type": "spacer", "flex": 1 },
             {
               "type": "label",
-              "text": ["get", "locationName"],
+              "text": ["get", "data.locationName"],
               "fontSize": 12,
               "color": "onSurfaceVariant",
               "maxLines": 1,
-              "paddingBottom": 2,
-              "paddingEnd": 2
+              "paddingBottom": 4,
+              "paddingStart": 4,
+              "paddingEnd": 4
             }
           ]
         }
@@ -101,7 +102,7 @@
                 ["<", ["get", "size.width"], 150], 32,
                 48
               ],
-              "fontWeight": "bold",
+              "fontWeight": "@setting.clockBold",
               "color": "onSurface"
             },
             { "type": "spacer", "flex": 1 },
@@ -153,7 +154,7 @@
             { "type": "spacer", "flex": 1 },
             {
               "type": "label",
-              "text": ["get", "locationName"],
+              "text": ["get", "data.locationName"],
               "fontSize": ["case",
                 ["<", ["get", "size.width"], 100], 8,
                 ["<", ["get", "size.width"], 150], 10,
@@ -161,8 +162,9 @@
               ],
               "color": "onSurfaceVariant",
               "maxLines": 1,
-              "paddingBottom": 2,
-              "paddingEnd": 2
+              "paddingBottom": 4,
+              "paddingStart": 4,
+              "paddingEnd": 4
             }
           ]
         }

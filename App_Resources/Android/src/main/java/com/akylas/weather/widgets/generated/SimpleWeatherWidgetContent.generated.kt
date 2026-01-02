@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetTheme
 
 /**
  * Generated content for Simple Weather
@@ -29,7 +31,8 @@ import com.akylas.weather.widgets.WeatherWidgetManager
  */
 
 @Composable
-fun SimpleWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
+fun SimpleWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
+    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
 
     if (size.width.value < 80) {
         Column(

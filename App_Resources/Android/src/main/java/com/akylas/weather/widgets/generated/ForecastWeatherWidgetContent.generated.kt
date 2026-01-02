@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetTheme
 
 /**
  * Generated content for Detailed Forecast
@@ -29,7 +31,8 @@ import com.akylas.weather.widgets.WeatherWidgetManager
  */
 
 @Composable
-fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
+fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
+    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),
@@ -41,35 +44,35 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
-            if (data.iconPath.isNotEmpty()) {
-                WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
-                    Image(
-                       provider = provider,
-                       contentDescription = data.iconPath,
-                       modifier = GlanceModifier.size(48.dp)
-                    )
-                }
-            }
-            Column(
-                modifier = GlanceModifier.fillMaxSize(),
-                verticalAlignment = Alignment.Vertical.Top,
-                horizontalAlignment = Alignment.Horizontal.Start
+            Row(
+                modifier = GlanceModifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Horizontal.Start,
+                verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
+                if (data.data.iconPath.isNotEmpty()) {
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.data.iconPath)?.let { provider ->
+                        Image(
+                           provider = provider,
+                           contentDescription = data.data.iconPath,
+                           modifier = GlanceModifier.size(48.dp)
+                        )
+                    }
+                }
                 Text(
-                    text = data.temperature,
+                    text = data.data.temperature,
                     style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
-                )
-                Text(
-                    text = data.locationName,
-                    style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
-                    maxLines = 1
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
+            Text(
+                text = data.data.locationName,
+                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                maxLines = 1
+            )
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = "Hourly",
+            text = context.getString(context.resources.getIdentifier("hourly", "string", context.packageName)),
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -108,7 +111,7 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = "Daily",
+            text = context.getString(context.resources.getIdentifier("daily", "string", context.packageName)),
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))

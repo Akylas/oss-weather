@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetTheme
 
 /**
  * Generated content for Daily Forecast
@@ -29,7 +31,8 @@ import com.akylas.weather.widgets.WeatherWidgetManager
  */
 
 @Composable
-fun DailyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
+fun DailyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
+    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),
@@ -69,7 +72,7 @@ fun DailyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = "Daily",
+            text = context.getString(context.resources.getIdentifier("daily", "string", context.packageName)),
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))

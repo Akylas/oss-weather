@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetTheme
 
 /**
  * Generated content for Weather with Clock
@@ -29,7 +31,8 @@ import com.akylas.weather.widgets.WeatherWidgetManager
  */
 
 @Composable
-fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
+fun SimpleWeatherWithClockWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
+    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
 
     if (size.width.value >= 180) {
         Box(
@@ -42,7 +45,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
             ) {
                 Text(
                     text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                    style = TextStyle(fontSize = 48.sp, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = 48.sp, fontWeight = if (prefs.getBoolean("widget_clock_bold", true)) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
                 )
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
@@ -72,7 +75,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
             ) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
-                    text = data.locationName,
+                    text = data.data.locationName,
                     style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )
@@ -90,7 +93,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
             ) {
                 Text(
                     text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                    style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, fontWeight = if (prefs.getBoolean("widget_clock_bold", true)) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Row(
@@ -121,7 +124,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
             ) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
-                    text = data.locationName,
+                    text = data.data.locationName,
                     style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )

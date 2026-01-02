@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetTheme
 
 /**
  * Generated content for Weather with Date
@@ -29,7 +31,8 @@ import com.akylas.weather.widgets.WeatherWidgetManager
  */
 
 @Composable
-fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
+fun SimpleWeatherWithDateWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
+    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),
@@ -56,17 +59,17 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
-                        if (data.iconPath.isNotEmpty()) {
-                            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                        if (data.data.iconPath.isNotEmpty()) {
+                            WeatherWidgetManager.getIconImageProviderFromPath(data.data.iconPath)?.let { provider ->
                                 Image(
                                    provider = provider,
-                                   contentDescription = data.iconPath,
+                                   contentDescription = data.data.iconPath,
                                    modifier = GlanceModifier.size(56.dp)
                                 )
                             }
                         }
                         Text(
-                            text = data.temperature,
+                            text = data.data.temperature,
                             style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                         )
                     }
@@ -90,17 +93,17 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
-                    if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                    if (data.data.iconPath.isNotEmpty()) {
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.data.iconPath)?.let { provider ->
                             Image(
                                provider = provider,
-                               contentDescription = data.iconPath,
+                               contentDescription = data.data.iconPath,
                                modifier = GlanceModifier.size(when { size.height.value < 60 -> 28.dp; size.height.value < 80 -> 36.dp; else -> 48.dp })
                             )
                         }
                     }
                     Text(
-                        text = data.temperature,
+                        text = data.data.temperature,
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 18.sp; size.height.value < 80 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
                 }
@@ -108,7 +111,7 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
             }
         }
         Text(
-            text = data.locationName,
+            text = data.data.locationName,
             style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; size.height.value < 80 -> 11.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),
             maxLines = 1
         )

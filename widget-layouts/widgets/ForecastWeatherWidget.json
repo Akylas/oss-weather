@@ -26,33 +26,34 @@
                 "paddingTop": 8,
                 "children": [
                     {
-                        "type": "image",
-                        "src": ["get", "iconPath"],
-                        "size": 48,
-                        "visibleIf": ["has", "iconPath"]
-                    },
-                    {
-                        "type": "column",
+                        "type": "row",
                         "alignment": "start",
-                        "crossAlignment": "start",
+                        "crossAlignment": "center",
+                        "spacing": 8,
                         "children": [
                             {
-                                "type": "label",
-                                "text": ["get", "temperature"],
-                                "fontSize": 32,
-                                "fontWeight": "bold",
-                                "color": "onSurface"
+                                "type": "image",
+                                "src": ["get", "data.iconPath"],
+                                "size": 48,
+                                "visibleIf": ["has", "data.iconPath"]
                             },
                             {
                                 "type": "label",
-                                "text": ["get", "locationName"],
-                                "fontSize": 14,
-                                "color": "onSurfaceVariant",
-                                "maxLines": 1
+                                "text": ["get", "data.temperature"],
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "color": "onSurface"
                             }
                         ]
                     },
-                    { "type": "spacer", "flex": 1 }
+                    { "type": "spacer", "flex": 1 },
+                    {
+                        "type": "label",
+                        "text": ["get", "data.locationName"],
+                        "fontSize": 14,
+                        "color": "onSurfaceVariant",
+                        "maxLines": 1
+                    }
                 ]
             },
             { "type": "spacer", "size": 8 },

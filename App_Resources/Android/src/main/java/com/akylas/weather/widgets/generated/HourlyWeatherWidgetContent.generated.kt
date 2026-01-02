@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,6 +23,7 @@ import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetTheme
 
 /**
  * Generated content for Hourly Forecast
@@ -29,7 +31,8 @@ import com.akylas.weather.widgets.WeatherWidgetManager
  */
 
 @Composable
-fun HourlyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
+fun HourlyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
+    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),
@@ -43,7 +46,7 @@ fun HourlyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 Text(
-                    text = data.locationName,
+                    text = data.data.locationName,
                     style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )

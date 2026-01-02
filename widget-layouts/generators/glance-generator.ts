@@ -418,6 +418,14 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
             return `\${data.${prop}}`;
         });
         textExpr = `"${textExpr}"`;
+    } else if (Array.isArray(element.text)) {
+        // Mapbox expression
+        textExpr = compileExpression(element.text, 'value');
+    } else if (typeof element.text === 'string' && !element.text.includes('data.') && !element.text.includes('item.')) {
+        // Static text string - should be localized
+        // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
+        const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
+        textExpr = `context.getString(context.resources.getIdentifier("${resourceKey}", "string", context.packageName))`;
     } else {
         textExpr = compilePropertyValue(element.text, (v: string) => `"${v}"`, '""');
     }
@@ -695,6 +703,22 @@ function generateClock(element: LayoutElement, indent: string): string[] {
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
     const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
+    
+    // Handle fontWeight - check for @setting.clockBold
+    let fontWeightExpr: string | undefined;
+    if (typeof element.fontWeight === 'string') {
+        if (element.fontWeight.startsWith('@setting.')) {
+            // It's a setting reference
+            const settingName = element.fontWeight.substring(9); // Remove '@setting.' prefix
+            if (settingName === 'clockBold') {
+                fontWeightExpr = 'if (prefs.getBoolean("widget_clock_bold", true)) FontWeight.Bold else FontWeight.Normal';
+            }
+        } else {
+            fontWeightExpr = KOTLIN_FONT_WEIGHTS[element.fontWeight] || 'FontWeight.Normal';
+        }
+    } else if (element.fontWeight) {
+        fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
+    }
 
     lines.push(`${indent}Text(`);
     lines.push(`${indent}    text = android.text.format.DateFormat.format("${format24}", System.currentTimeMillis()).toString(),`);
@@ -702,6 +726,9 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const styleProps: string[] = [];
     if (fontSizeExpr) {
         styleProps.push(`fontSize = ${fontSizeExpr}`);
+    }
+    if (fontWeightExpr) {
+        styleProps.push(`fontWeight = ${fontWeightExpr}`);
     }
     if (colorExpr) {
         styleProps.push(`color = ${colorExpr}`);
@@ -756,6 +783,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(`package ${packageName}`);
     lines.push('');
     lines.push('import androidx.compose.runtime.Composable');
+    lines.push('import android.content.Context');
     lines.push('import androidx.compose.ui.graphics.Color');
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
@@ -777,6 +805,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.R');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetData');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetManager');
+    lines.push('import com.akylas.weather.widgets.WidgetTheme');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);
@@ -784,7 +813,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(' */');
     lines.push('');
     lines.push('@Composable');
-    lines.push(`fun ${className}(data: WeatherWidgetData, size: DpSize) {`);
+    lines.push(`fun ${className}(context: Context, data: WeatherWidgetData, size: DpSize) {`);
+    lines.push('    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)');
     // lines.push('    val size = LocalSize.current');
     lines.push('');
 

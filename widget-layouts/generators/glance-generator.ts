@@ -842,7 +842,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('');
     lines.push('@Composable');
     lines.push(`fun ${className}(context: Context, data: WeatherWidgetData, size: DpSize) {`);
-    lines.push('    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)');
+    lines.push('    val prefs = context.getSharedPreferences("prefs.db", Context.MODE_PRIVATE)');
     // lines.push('    val size = LocalSize.current');
     lines.push('');
 

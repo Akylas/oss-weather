@@ -55,7 +55,7 @@ class HourlyWeatherWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherContent(data = widgetData, size = size)
+                        WeatherContent(context, data = widgetData, size = size)
                     }
                 }
             }
@@ -64,6 +64,7 @@ class HourlyWeatherWidget : WeatherWidget() {
 
     @Composable
     private fun WeatherContent(
+        context: Context,
         data: WeatherWidgetData,
         size: DpSize
     ) {
@@ -71,6 +72,7 @@ class HourlyWeatherWidget : WeatherWidget() {
         
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.HourlyWeatherWidgetContent(
+            context = context,
             data = data,
             size = size
         )

@@ -58,7 +58,7 @@ class DailyWeatherWidget : WeatherWidget() {
                         val size = LocalSize.current
                         val isLarge = size.width > 150.dp
 
-                        WeatherContent( widgetData, isLarge)
+                        WeatherContent( context, widgetData, isLarge)
                     }
                 }
             }
@@ -67,6 +67,7 @@ class DailyWeatherWidget : WeatherWidget() {
 
     @Composable
     private fun WeatherContent(
+        context: Context,
         data: WeatherWidgetData,
         isLarge: Boolean
     ) {
@@ -75,6 +76,7 @@ class DailyWeatherWidget : WeatherWidget() {
         // Use the generated content from JSON layout definition
         val size = if (isLarge) DpSize(260.dp, 400.dp) else DpSize(260.dp, 200.dp)
         com.akylas.weather.widgets.generated.DailyWeatherWidgetContent(
+            context = context,
             data = data,
             size = size
         )

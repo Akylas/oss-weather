@@ -188,7 +188,7 @@
 
         <!-- Widget Configuration Activity -->
         <activity
-            android:name=".widgets.WidgetConfigurationActivity"
+            android:name=".widgets.WidgetConfActivity"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>

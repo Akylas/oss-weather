@@ -63,6 +63,17 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
             }
         }
 
+        if (this.widgetId === -1) {
+            activity.finish();
+            return;
+        }
+
+        const WeatherWidgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+        const config = WeatherWidgetManager.loadWidgetConfig(this, this.widgetId);
+
+        WeatherWidgetManager.addActiveWidget(this, this.widgetId);
+        WeatherWidgetManager.sendWidgetAdded(this, this.widgetId);
+
         if (intent && intent.getAction()) {
             Application.android.notify({
                 eventName: Application.android.activityNewIntentEvent,
@@ -285,6 +296,8 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
 
             // Listen for back button to finish activity with result
             rootView.on('activityBackPressed', (args: AndroidActivityBackPressedEventData) => {
+                const WeatherWidgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+                WeatherWidgetManager.requestWidgetUpdate(this, this.widgetId);
                 args.cancel = true;
                 // Set result OK when closing
                 const resultIntent = new android.content.Intent();
@@ -300,7 +313,7 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
     }
 }
 
-@JavaProxy('__PACKAGE__.WidgetConfActivity')
+@JavaProxy('__PACKAGE__.widgets.WidgetConfActivity')
 @NativeClass
 class Activity extends androidx.appcompat.app.AppCompatActivity {
     isWidgetConfigActivity: boolean;

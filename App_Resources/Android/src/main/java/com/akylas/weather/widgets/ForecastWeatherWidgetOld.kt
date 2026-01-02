@@ -54,7 +54,7 @@ class ForecastWeatherWidgetOld : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherContent(data = widgetData, size = size)
+                        WeatherContent(context, data = widgetData, size = size)
                     }
                 }
             }
@@ -63,6 +63,7 @@ class ForecastWeatherWidgetOld : WeatherWidget() {
 
     @Composable
     private fun WeatherContent(
+        context: Context,
         data: WeatherWidgetData,
         size: DpSize
     ) {

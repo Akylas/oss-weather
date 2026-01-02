@@ -7,7 +7,7 @@
     android:targetCellWidth="2"
     android:targetCellHeight="3"
     android:updatePeriodMillis="0"
-    android:configure="com.akylas.weather.widgets.WidgetConfigurationActivity"
+    android:configure="com.akylas.weather.widgets.WidgetConfActivity"
     android:description="@string/widget.simple.description"
     android:previewImage="@drawable/widget_preview_simple"
     android:resizeMode="horizontal|vertical"

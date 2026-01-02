@@ -58,7 +58,7 @@ class DailyWeatherWidgetOld : WeatherWidget() {
                         val size = LocalSize.current
                         val isLarge = size.width > 150.dp
 
-                        WeatherContent( widgetData, isLarge)
+                        WeatherContent( context, widgetData, isLarge)
                     }
                 }
             }
@@ -67,6 +67,7 @@ class DailyWeatherWidgetOld : WeatherWidget() {
 
     @Composable
     private fun WeatherContent(
+        context: Context,
         data: WeatherWidgetData,
         isLarge: Boolean
     ) {

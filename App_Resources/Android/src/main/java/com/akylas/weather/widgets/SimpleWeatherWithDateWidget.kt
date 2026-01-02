@@ -98,7 +98,7 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherWithDateContent(data = widgetData, size = size)
+                        WeatherWithDateContent(context, data = widgetData, size = size)
                     }
                 }
             }
@@ -112,6 +112,7 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
     private fun WeatherWithDateContent(
+        context: Context,
         modifier: GlanceModifier = GlanceModifier,
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize
@@ -120,6 +121,7 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
         
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent(
+            context = context,
             data = data,
             size = size
         )

@@ -31,48 +31,147 @@ import com.akylas.weather.widgets.WeatherWidgetManager
 @Composable
 fun SimpleWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
 
-    Column(
-        modifier = GlanceModifier.fillMaxSize(),
-        verticalAlignment = Alignment.Vertical.CenterVertically,
-        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
-    ) {
-        if (size.width.value >= 80) {
+    if (size.width.value < 80) {
+        Column(
+            modifier = GlanceModifier.fillMaxSize(),
+            verticalAlignment = Alignment.Vertical.CenterVertically,
+            horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+        ) {
+            Spacer(modifier = GlanceModifier.defaultWeight())
+            if (data.iconPath.isNotEmpty()) {
+                WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                    Image(
+                       provider = provider,
+                       contentDescription = data.iconPath,
+                       modifier = GlanceModifier.size(32.dp)
+                    )
+                }
+            }
+            Spacer(modifier = GlanceModifier.height(4.dp))
+            Text(
+                text = data.temperature,
+                style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+            )
+            Spacer(modifier = GlanceModifier.height(4.dp))
             Text(
                 text = data.locationName,
-                style = TextStyle(fontSize = when { size.width.value >= 200 -> 16.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center),
+                style = TextStyle(fontSize = 8.sp, color = GlanceTheme.colors.onSurfaceVariant),
                 maxLines = 1
             )
         }
-        Spacer(modifier = GlanceModifier.height(when { size.width.value >= 200 -> 8.dp; else -> 8.dp }))
-        if (data.iconPath.isNotEmpty()) {
-            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
-                Image(
-                   provider = provider,
-                   contentDescription = data.iconPath,
-                   modifier = GlanceModifier.size(when { size.width.value < 80 -> 32.dp; size.width.value < 200 -> 56.dp; else -> 72.dp })
-                )
+    }
+    else {
+        if ((size.width.value > size.height.value && size.width.value >= 200)) {
+            Row(
+                modifier = GlanceModifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+                verticalAlignment = Alignment.Vertical.CenterVertically
+            ) {
+                Column(
+                    modifier = GlanceModifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                ) {
+                    if (data.iconPath.isNotEmpty()) {
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                            Image(
+                               provider = provider,
+                               contentDescription = data.iconPath,
+                               modifier = GlanceModifier.size(64.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Text(
+                        text = data.locationName,
+                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface),
+                        maxLines = 1
+                    )
+                }
+                Spacer(modifier = GlanceModifier.height(8.dp))
+                Column(
+                    modifier = GlanceModifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                ) {
+                    Text(
+                        text = data.temperature,
+                        style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    )
+                    if (data.description.isNotEmpty()) {
+                        Spacer(modifier = GlanceModifier.height(4.dp))
+                    }
+                    if (data.description.isNotEmpty()) {
+                        Text(
+                            text = data.description,
+                            style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface)
+                        )
+                    }
+                }
             }
         }
-        Spacer(modifier = GlanceModifier.height(when { size.width.value < 80 -> 0.dp; size.width.value >= 200 -> 8.dp; else -> 8.dp }))
-        Text(
-            text = data.temperature,
-            style = TextStyle(fontSize = when { size.width.value < 80 -> 14.sp; size.width.value < 120 -> 22.sp; size.width.value < 200 -> 32.sp; else -> 48.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Center)
-        )
-        if ((size.width.value < 80 || size.width.value >= 200)) {
-            Spacer(modifier = GlanceModifier.height(4.dp))
-        }
-        if (size.width.value < 80) {
-            Text(
-                text = data.locationName,
-                style = TextStyle(fontSize = 8.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center),
-                maxLines = 1
-            )
-        }
-        if ((data.description.isNotEmpty() && size.width.value >= 200)) {
-            Text(
-                text = data.description,
-                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Center)
-            )
+        else {
+            if (size.width.value < 200) {
+                Column(
+                    modifier = GlanceModifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                ) {
+                    Text(
+                        text = data.locationName,
+                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface)
+                    )
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    if (data.iconPath.isNotEmpty()) {
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                            Image(
+                               provider = provider,
+                               contentDescription = data.iconPath,
+                               modifier = GlanceModifier.size(48.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Text(
+                        text = data.temperature,
+                        style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    )
+                }
+            }
+            else {
+                Column(
+                    modifier = GlanceModifier.fillMaxSize(),
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                ) {
+                    Text(
+                        text = data.locationName,
+                        style = TextStyle(fontSize = 16.sp, color = GlanceTheme.colors.onSurface)
+                    )
+                    Spacer(modifier = GlanceModifier.height(8.dp))
+                    if (data.iconPath.isNotEmpty()) {
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                            Image(
+                               provider = provider,
+                               contentDescription = data.iconPath,
+                               modifier = GlanceModifier.size(72.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = GlanceModifier.height(8.dp))
+                    Text(
+                        text = data.temperature,
+                        style = TextStyle(fontSize = 48.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    )
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    if (data.description.isNotEmpty()) {
+                        Text(
+                            text = data.description,
+                            style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurface)
+                        )
+                    }
+                }
+            }
         }
     }
 }

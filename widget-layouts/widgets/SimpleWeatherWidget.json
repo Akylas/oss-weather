@@ -9,84 +9,202 @@
         { "width": 120, "height": 120, "family": "small" },
         { "width": 260, "height": 120, "family": "medium" }
     ],
-    "defaultPadding": ["case", ["<", ["get", "size.width"], 80], 0, ["<", ["get", "size.width"], 120], 4, 8],
+    "defaultPadding": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8],
     "background": {
         "type": "solid",
         "color": "widgetBackground"
     },
     "layout": {
-        "type": "column",
-        "alignment": "center",
-        "crossAlignment": "center",
-        "children": [
-            {
-                "type": "label",
-                "text": ["get", "locationName"],
-                "fontSize": ["case", [">=", ["get", "size.width"], 200], 16, 12],
-                "color": "onSurfaceVariant",
-                "textAlign": "center",
-                "maxLines": 1,
-                "visibleIf": [">=", ["get", "size.width"], 80]
-            },
-            {
-                "type": "spacer",
-                "flex": ["case", ["<", ["get", "size.width"], 200], 1, null],
-                "size": ["case", [">=", ["get", "size.width"], 200], 8, null]
-            },
-            {
-                "type": "image",
-                "src": ["get", "iconPath"],
-                "size": ["case", 
-                    ["<", ["get", "size.width"], 80], 32,
-                    ["<", ["get", "size.width"], 200], 56,
-                    72
-                ],
-                "visibleIf": ["has", "iconPath"]
-            },
-            {
-                "type": "spacer",
-                "flex": ["case", ["all", [">=", ["get", "size.width"], 80], ["<", ["get", "size.width"], 200]], 1, null],
-                "size": ["case", 
-                    ["<", ["get", "size.width"], 80], 0,
-                    [">=", ["get", "size.width"], 200], 8,
-                    null
+        "type": "conditional",
+        "condition": ["<", ["get", "size.width"], 80],
+        "then": {
+            "type": "column",
+            "alignment": "center",
+            "crossAlignment": "center",
+            "children": [
+                {
+                    "type": "spacer",
+                    "flex": 1
+                },
+                {
+                    "type": "image",
+                    "src": ["get", "iconPath"],
+                    "size": 32,
+                    "visibleIf": ["has", "iconPath"]
+                },
+                {
+                    "type": "spacer",
+                    "size": 4
+                },
+                {
+                    "type": "label",
+                    "text": ["get", "temperature"],
+                    "fontSize": 14,
+                    "fontWeight": "bold",
+                    "color": "onSurface"
+                },
+                {
+                    "type": "spacer",
+                    "size": 4
+                },
+                {
+                    "type": "label",
+                    "text": ["get", "locationName"],
+                    "fontSize": 8,
+                    "color": "onSurfaceVariant",
+                    "maxLines": 1
+                }
+            ]
+        },
+        "else": {
+            "type": "conditional",
+            "condition": ["all", [">", ["get", "size.width"], ["get", "size.height"]], [">=", ["get", "size.width"], 200]],
+            "then": {
+                "type": "row",
+                "alignment": "center",
+                "crossAlignment": "center",
+                "children": [
+                    {
+                        "type": "column",
+                        "flex": 1,
+                        "alignment": "center",
+                        "crossAlignment": "center",
+                        "children": [
+                            {
+                                "type": "image",
+                                "src": ["get", "iconPath"],
+                                "size": 64,
+                                "visibleIf": ["has", "iconPath"]
+                            },
+                            {
+                                "type": "spacer",
+                                "size": 4
+                            },
+                            {
+                                "type": "label",
+                                "text": ["get", "locationName"],
+                                "fontSize": 12,
+                                "color": "onSurface",
+                                "maxLines": 1
+                            }
+                        ]
+                    },
+                    {
+                        "type": "spacer",
+                        "size": 8
+                    },
+                    {
+                        "type": "column",
+                        "flex": 1,
+                        "alignment": "center",
+                        "crossAlignment": "center",
+                        "children": [
+                            {
+                                "type": "label",
+                                "text": ["get", "temperature"],
+                                "fontSize": 40,
+                                "fontWeight": "bold",
+                                "color": "onSurface"
+                            },
+                            {
+                                "type": "spacer",
+                                "size": 4,
+                                "visibleIf": ["has", "description"]
+                            },
+                            {
+                                "type": "label",
+                                "text": ["get", "description"],
+                                "fontSize": 12,
+                                "color": "onSurface",
+                                "visibleIf": ["has", "description"]
+                            }
+                        ]
+                    }
                 ]
             },
-            {
-                "type": "label",
-                "text": ["get", "temperature"],
-                "fontSize": ["case", 
-                    ["<", ["get", "size.width"], 80], 14,
-                    ["<", ["get", "size.width"], 120], 22,
-                    ["<", ["get", "size.width"], 200], 32,
-                    48
-                ],
-                "fontWeight": "bold",
-                "color": "onSurface",
-                "textAlign": "center"
-            },
-            {
-                "type": "spacer",
-                "size": 4,
-                "visibleIf": ["any", ["<", ["get", "size.width"], 80], [">=", ["get", "size.width"], 200]]
-            },
-            {
-                "type": "label",
-                "text": ["get", "locationName"],
-                "fontSize": 8,
-                "color": "onSurfaceVariant",
-                "textAlign": "center",
-                "maxLines": 1,
-                "visibleIf": ["<", ["get", "size.width"], 80]
-            },
-            {
-                "type": "label",
-                "text": ["get", "description"],
-                "fontSize": 14,
-                "color": "onSurfaceVariant",
-                "textAlign": "center",
-                "visibleIf": ["all", ["has", "description"], [">=", ["get", "size.width"], 200]]
+            "else": {
+                "type": "conditional",
+                "condition": ["<", ["get", "size.width"], 200],
+                "then": {
+                    "type": "column",
+                    "alignment": "center",
+                    "crossAlignment": "center",
+                    "children": [
+                        {
+                            "type": "label",
+                            "text": ["get", "locationName"],
+                            "fontSize": 12,
+                            "color": "onSurface"
+                        },
+                        {
+                            "type": "spacer",
+                            "size": 4
+                        },
+                        {
+                            "type": "image",
+                            "src": ["get", "iconPath"],
+                            "size": 48,
+                            "visibleIf": ["has", "iconPath"]
+                        },
+                        {
+                            "type": "spacer",
+                            "size": 4
+                        },
+                        {
+                            "type": "label",
+                            "text": ["get", "temperature"],
+                            "fontSize": 32,
+                            "fontWeight": "bold",
+                            "color": "onSurface"
+                        }
+                    ]
+                },
+                "else": {
+                    "type": "column",
+                    "alignment": "center",
+                    "crossAlignment": "center",
+                    "children": [
+                        {
+                            "type": "label",
+                            "text": ["get", "locationName"],
+                            "fontSize": 16,
+                            "color": "onSurface"
+                        },
+                        {
+                            "type": "spacer",
+                            "size": 8
+                        },
+                        {
+                            "type": "image",
+                            "src": ["get", "iconPath"],
+                            "size": 72,
+                            "visibleIf": ["has", "iconPath"]
+                        },
+                        {
+                            "type": "spacer",
+                            "size": 8
+                        },
+                        {
+                            "type": "label",
+                            "text": ["get", "temperature"],
+                            "fontSize": 48,
+                            "fontWeight": "bold",
+                            "color": "onSurface"
+                        },
+                        {
+                            "type": "spacer",
+                            "size": 4
+                        },
+                        {
+                            "type": "label",
+                            "text": ["get", "description"],
+                            "fontSize": 14,
+                            "color": "onSurface",
+                            "visibleIf": ["has", "description"]
+                        }
+                    ]
+                }
             }
-        ]
+        }
     }
 }

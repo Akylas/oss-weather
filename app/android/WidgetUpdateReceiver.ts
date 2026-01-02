@@ -1,3 +1,4 @@
+import { Application } from '@nativescript/core';
 import { widgetService } from '~/services/widgets/WidgetBridge';
 import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
 
@@ -56,7 +57,10 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                                 console.log('WidgetUpdateReceiver: Clock widget added but SCHEDULE_EXACT_ALARM not granted, opening settings');
 
                                 // Open settings to allow user to grant the permission
-                                context.startActivity(new android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM));
+                                const intent = new android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                                intent.setData(android.net.Uri.parse(`package:${__APP_ID__}`));
+                                const activity = Application.android.startActivity;
+                                activity.startActivity(intent);
                             }
                         }
                     } catch (error) {

@@ -118,16 +118,16 @@ try {
     svelteNative(WeatherPage, {});
 
     setTimeout(async () => {
-        const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
-        navigate({
-            page: ConfigWidget,
-            props: {
-                widgetClass: 'ForecastWeatherWidget',
-                widgetId: null,
-                modalMode: true,
-                isKindConfig: true
-            }
-        });
+        // const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+        // navigate({
+        //     page: ConfigWidget,
+        //     props: {
+        //         widgetClass: 'ForecastWeatherWidget',
+        //         widgetId: null,
+        //         modalMode: true,
+        //         isKindConfig: true
+        //     }
+        // });
     }, 400);
 } catch (error) {
     console.error(error, error.stack);

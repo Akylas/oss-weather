@@ -37,16 +37,24 @@ fun HourlyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         if (size.height.value >= 80) {
-            Text(
-                text = data.locationName,
-                style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
-                maxLines = 1
-            )
+            Column(
+                modifier = GlanceModifier.fillMaxSize(),
+                verticalAlignment = Alignment.Vertical.CenterVertically,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+            ) {
+                Text(
+                    text = data.locationName,
+                    style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                    maxLines = 1
+                )
+                Spacer(modifier = GlanceModifier.height(4.dp))
+            }
         }
-        if (size.height.value >= 80) {
-            Spacer(modifier = GlanceModifier.height(4.dp))
-        }
-        Row {
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+            verticalAlignment = Alignment.Vertical.CenterVertically
+        ) {
             data.hourlyData.take(8).forEach { item ->
                 Column(
                     modifier = GlanceModifier.fillMaxSize(),
@@ -55,7 +63,8 @@ fun HourlyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                 ) {
                     Text(
                         text = "${item.time}",
-                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant)
+                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant),
+                        maxLines = 1
                     )
                     WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
                         Image(
@@ -66,13 +75,23 @@ fun HourlyWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
                     }
                     Text(
                         text = "${item.temperature}",
-                        style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
+                        maxLines = 1
                     )
-                    if ((item.precipAccumulation.isNotEmpty() && size.height.value >= 80)) {
-                        Text(
-                            text = "${item.precipAccumulation}",
-                            style = TextStyle(fontSize = when { size.height.value < 80 -> 9.sp; else -> 10.sp }, color = GlanceTheme.colors.onSurfaceVariant)
-                        )
+                    if ((size.height.value >= 60 && item.precipAccumulation.isNotEmpty())) {
+                        Column(
+                            modifier = GlanceModifier.fillMaxSize(),
+                            verticalAlignment = Alignment.Vertical.CenterVertically,
+                            horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                        ) {
+                            if (size.height.value >= 60) {
+                                Spacer(modifier = GlanceModifier.height(2.dp))
+                            }
+                            Text(
+                                text = "${item.precipAccumulation}",
+                                style = TextStyle(fontSize = when { size.height.value < 80 -> 9.sp; else -> 10.sp }, color = GlanceTheme.colors.onSurfaceVariant)
+                            )
+                        }
                     }
                 }
             }

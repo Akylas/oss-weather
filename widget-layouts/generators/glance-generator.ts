@@ -542,18 +542,16 @@ function generateDivider(element: LayoutElement, indent: string): string[] {
 
 function generateScrollView(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    
+
     const direction = element.direction || 'vertical';
-    
+
     if (direction === 'horizontal') {
         // Generate LazyRow for horizontal scrolling
-        lines.push(`${indent}LazyRow {`);
+        lines.push(`${indent}Row {`);
         if (element.children && element.children.length > 0) {
             // Check if children contain a forEach, if so handle specially
-            const hasForEach = element.children.some(child => 
-                child.type === 'forEach' || (child.children && child.children.some(c => c.type === 'forEach'))
-            );
-            
+            const hasForEach = element.children.some((child) => child.type === 'forEach' || (child.children && child.children.some((c) => c.type === 'forEach')));
+
             if (hasForEach) {
                 // Find the forEach element (may be nested in row/column)
                 for (const child of element.children) {
@@ -562,8 +560,8 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                         if (child.items && child.itemTemplate) {
                             const limitValue = child.limit || 10;
                             const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
-                            
-                            lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
+
+                            lines.push(`${indent}    data.${child.items}.take(${limitCode}).forEach { item ->`);
                             lines.push(generateElement(child.itemTemplate, indent + '        '));
                             lines.push(`${indent}    }`);
                         }
@@ -574,8 +572,8 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                                 if (nestedChild.items && nestedChild.itemTemplate) {
                                     const limitValue = nestedChild.limit || 10;
                                     const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
-                                    
-                                    lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
+
+                                    lines.push(`${indent}    data.${nestedChild.items}.take(${limitCode}).forEach { item ->`);
                                     lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
                                     lines.push(`${indent}    }`);
                                 }
@@ -598,10 +596,8 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
         lines.push(`${indent}LazyColumn {`);
         if (element.children && element.children.length > 0) {
             // Check if children contain a forEach, if so handle specially
-            const hasForEach = element.children.some(child => 
-                child.type === 'forEach' || (child.children && child.children.some(c => c.type === 'forEach'))
-            );
-            
+            const hasForEach = element.children.some((child) => child.type === 'forEach' || (child.children && child.children.some((c) => c.type === 'forEach')));
+
             if (hasForEach) {
                 // Find the forEach element (may be nested in row/column)
                 for (const child of element.children) {
@@ -610,7 +606,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                         if (child.items && child.itemTemplate) {
                             const limitValue = child.limit || 10;
                             const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
-                            
+
                             lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
                             lines.push(generateElement(child.itemTemplate, indent + '        '));
                             lines.push(`${indent}    }`);
@@ -622,7 +618,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                                 if (nestedChild.items && nestedChild.itemTemplate) {
                                     const limitValue = nestedChild.limit || 10;
                                     const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
-                                    
+
                                     lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
                                     lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
                                     lines.push(`${indent}    }`);
@@ -642,7 +638,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
         }
         lines.push(`${indent}}`);
     }
-    
+
     return lines;
 }
 
@@ -771,7 +767,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.background');
     lines.push('import androidx.glance.layout.*');
     lines.push('import androidx.glance.appwidget.lazy.LazyColumn');
-    lines.push('import androidx.glance.appwidget.lazy.LazyRow');
+    lines.push('import androidx.glance.appwidget.lazy.items');
     lines.push('import androidx.glance.text.FontWeight');
     lines.push('import androidx.glance.text.Text');
     lines.push('import androidx.glance.text.TextAlign');

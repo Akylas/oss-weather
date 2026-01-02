@@ -42,7 +42,7 @@ class HourlyWeatherWidget : WeatherWidget() {
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
             val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
-                GlanceTheme(colors = WidgetTheme.colors) {
+            GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()

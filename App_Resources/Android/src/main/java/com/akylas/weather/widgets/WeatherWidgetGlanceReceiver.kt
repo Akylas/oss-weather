@@ -109,21 +109,21 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
  */
 class SimpleWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = SimpleWeatherWidgetOld()
+        get() = SimpleWeatherWidget()
 }
 
 /**
  * Receiver for Simple Weather Widget with Date
  */
 class SimpleWeatherWithDateWidgetReceiver : WeatherWidgetGlanceReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithDateWidgetOld()
+    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithDateWidget()
 }
 
 /**
  * Receiver for Simple Weather Widget with Clock
  */
 class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithClockWidgetOld()
+    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithClockWidget()
     override fun onRestored(context: Context, oldWidgetIds: IntArray, newWidgetIds: IntArray) {
         super.onRestored(context, oldWidgetIds, newWidgetIds)
         scheduleNextClockUpdate(context)
@@ -226,7 +226,7 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class HourlyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = HourlyWeatherWidgetOld()
+        get() = HourlyWeatherWidget()
 }
 
 /**
@@ -234,7 +234,7 @@ class HourlyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class DailyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = DailyWeatherWidgetOld()
+        get() = DailyWeatherWidget()
 }
 
 /**
@@ -242,5 +242,5 @@ class DailyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class ForecastWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = ForecastWeatherWidgetOld()
+        get() = ForecastWeatherWidget()
 }

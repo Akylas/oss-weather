@@ -13,7 +13,7 @@ import androidx.glance.LocalSize
 import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.LazyRow
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -73,8 +73,8 @@ fun ForecastWeatherWidgetContent(data: WeatherWidgetData, size: DpSize) {
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))
-        LazyRow {
-            items(data.hourlyData.take(8)) { item ->
+        Row {
+            data.hourlyData.take(8).forEach { item ->
                 Column(
                     modifier = GlanceModifier.fillMaxSize(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,

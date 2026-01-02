@@ -13,7 +13,7 @@ import androidx.glance.LocalSize
 import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
-import androidx.glance.appwidget.lazy.LazyRow
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign

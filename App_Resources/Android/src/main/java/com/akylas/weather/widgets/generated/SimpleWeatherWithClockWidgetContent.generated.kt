@@ -24,6 +24,7 @@ import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
+import com.akylas.weather.widgets.WidgetConfig
 
 /**
  * Generated content for Weather with Clock
@@ -31,8 +32,7 @@ import com.akylas.weather.widgets.WidgetTheme
  */
 
 @Composable
-fun SimpleWeatherWithClockWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
-    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
+fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     if (size.width.value >= 180) {
         Box(
@@ -45,7 +45,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, data: WeatherWidgetDat
             ) {
                 Text(
                     text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                    style = TextStyle(fontSize = 48.sp, fontWeight = if (prefs.getBoolean("widget_clock_bold", true)) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = 48.sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
                 )
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
@@ -93,7 +93,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, data: WeatherWidgetDat
             ) {
                 Text(
                     text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                    style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, fontWeight = if (prefs.getBoolean("widget_clock_bold", true)) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = when { size.width.value < 100 -> 24.sp; size.width.value < 150 -> 32.sp; else -> 48.sp }, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Row(

@@ -9,6 +9,14 @@
     { "width": 180, "height": 120, "family": "medium" }
   ],
   "defaultPadding": 8,
+  "settings": {
+    "clockBold": {
+      "type": "boolean",
+      "default": true,
+      "title": "Bold Clock",
+      "description": "Display clock time in bold font"
+    }
+  },
   "background": {
     "type": "solid",
     "color": "widgetBackground"
@@ -29,7 +37,7 @@
             {
               "type": "clock",
               "fontSize": 48,
-              "fontWeight": "@setting.clockBold",
+              "fontWeight": "config.settings.clockBold",
               "color": "onSurface",
               "flex": 1
             },
@@ -102,7 +110,7 @@
                 ["<", ["get", "size.width"], 150], 32,
                 48
               ],
-              "fontWeight": "@setting.clockBold",
+              "fontWeight": "config.settings.clockBold",
               "color": "onSurface"
             },
             { "type": "spacer", "flex": 1 },

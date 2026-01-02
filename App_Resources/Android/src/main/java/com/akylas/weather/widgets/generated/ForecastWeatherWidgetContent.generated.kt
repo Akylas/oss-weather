@@ -24,6 +24,7 @@ import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
+import com.akylas.weather.widgets.WidgetConfig
 
 /**
  * Generated content for Detailed Forecast
@@ -31,8 +32,7 @@ import com.akylas.weather.widgets.WidgetTheme
  */
 
 @Composable
-fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
-    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
+fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     Column(
         modifier = GlanceModifier.fillMaxSize(),

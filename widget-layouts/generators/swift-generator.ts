@@ -90,22 +90,21 @@ const SWIFT_FONT_WEIGHTS: Record<string, string> = {
 
 // Helper to check if a value is a settings reference
 function isSetting(value?: string): boolean {
-    return typeof value === 'string' && value.startsWith('@setting.');
+    return typeof value === 'string' && value.startsWith('config.settings.');
 }
 
-// Helper to get setting key from @setting.* syntax
+// Helper to get setting key from config.settings.* syntax
 function getSettingKey(value: string): string {
-    const settingKey = value.substring(9); // Remove '@setting.' prefix
-    // Convert camelCase to snake_case and add widget_ prefix
-    return `widget_${settingKey.replace(/([A-Z])/g, '_$1').toLowerCase()}`;
+    const settingKey = value.substring(16); // Remove 'config.settings.' prefix
+    return settingKey;
 }
 
 // Map a font weight string to a Swift weight token; provide a fallback if missing
-// Now supports @setting.* syntax for dynamic weight from UserDefaults
+// Now supports config.settings.* syntax for dynamic weight from config
 function toSwiftFontWeight(weight?: string, fallback: string = 'normal'): string {
     if (isSetting(weight)) {
         const settingKey = getSettingKey(weight!);
-        return `UserDefaults.standard.bool(forKey: "${settingKey}") ? .bold : .regular`;
+        return `(config.settings?["${settingKey}"] as? Bool ?? true) ? .bold : .regular`;
     }
     const key = (weight ?? fallback ?? 'normal').toLowerCase();
     if (SWIFT_FONT_WEIGHTS[key]) return SWIFT_FONT_WEIGHTS[key];
@@ -584,6 +583,7 @@ struct ${viewName}: View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
+            let config = entry.config ?? WidgetConfig()
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: ${layout.defaultPadding || 8}) {

@@ -452,24 +452,22 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         return `${attrName}={${JSON.stringify(mappedValue)}}`;
     }
 
-    // Handle font weight mapping with @setting support
+    // Handle font weight mapping with config.settings support
     if (prop === 'fontWeight') {
-        if (typeof value === 'string' && value.startsWith('@setting.')) {
-            const settingKey = value.substring(9); // Remove '@setting.' prefix
-            const settingName = `widget_${settingKey.replace(/([A-Z])/g, '_$1').toLowerCase()}`;
-            // Generate ternary for setting
-            return `${attrName}={ApplicationSettings.getBoolean('${settingName}', true) ? 700 : 400}`;
+        if (typeof value === 'string' && value.startsWith('config.settings.')) {
+            const settingKey = value.substring(16); // Remove 'config.settings.' prefix
+            // Generate ternary for setting from config
+            return `${attrName}={config.settings?.${settingKey} ?? true ? 700 : 400}`;
         }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;
     }
     
-    // Handle bold property with @setting support
+    // Handle bold property with config.settings support
     if (prop === 'bold') {
-        if (typeof value === 'string' && value.startsWith('@setting.')) {
-            const settingKey = value.substring(9); // Remove '@setting.' prefix
-            const settingName = `widget_${settingKey.replace(/([A-Z])/g, '_$1').toLowerCase()}`;
-            return `${attrName}={ApplicationSettings.getBoolean('${settingName}', true)}`;
+        if (typeof value === 'string' && value.startsWith('config.settings.')) {
+            const settingKey = value.substring(16); // Remove 'config.settings.' prefix
+            return `${attrName}={config.settings?.${settingKey} ?? true}`;
         }
         return `${attrName}={${JSON.stringify(value)}}`;
     }
@@ -997,11 +995,12 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     script += `    import { iconService } from '~/services/icon';\n`;
     script += `    import { colors } from '~/variables';\n`;
     script += `    import { lc } from '~/helpers/locale';\n`;
-    script += `    import type { WeatherWidgetData } from '~/services/widgets/WidgetTypes';\n`;
+    script += `    import type { WeatherWidgetData, WidgetConfig } from '~/services/widgets/WidgetTypes';\n`;
     script += `    </script>\n`;
     script += `    <script lang="ts">\n`;
 
     // Export props with proper typing
+    script += `    export let config: WidgetConfig;\n`;
     script += `    export let data: WeatherWidgetData;\n`;
     script += `    export let size: { width: number; height: number } = { width: ${layout.supportedSizes?.[0]?.width ?? 160}, height: ${layout.supportedSizes?.[0]?.height ?? 160}};\n\n`;
 

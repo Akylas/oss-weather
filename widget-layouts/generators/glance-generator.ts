@@ -460,7 +460,19 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
     const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `ColorProvider(Color(0xFF${v}))`, 'ColorProvider(WidgetTheme.onSurface)');
-    const fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
+    
+    // Handle fontWeight - check for config.settings
+    let fontWeightExpr: string | undefined;
+    if (typeof element.fontWeight === 'string' && element.fontWeight.startsWith('config.settings.')) {
+        // It's a config setting reference
+        const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
+        if (settingName === 'clockBold') {
+            fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
+        }
+    } else {
+        fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
+    }
+    
     const maxLinesExpr = compilePropertyValue(element.maxLines, (v: number) => String(v), undefined);
 
     lines.push(`${indent}Text(`);
@@ -732,14 +744,14 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
     const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
     
-    // Handle fontWeight - check for @setting.clockBold
+    // Handle fontWeight - check for config.settings
     let fontWeightExpr: string | undefined;
     if (typeof element.fontWeight === 'string') {
-        if (element.fontWeight.startsWith('@setting.')) {
-            // It's a setting reference
-            const settingName = element.fontWeight.substring(9); // Remove '@setting.' prefix
+        if (element.fontWeight.startsWith('config.settings.')) {
+            // It's a config setting reference
+            const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
             if (settingName === 'clockBold') {
-                fontWeightExpr = 'if (prefs.getBoolean("widget_clock_bold", true)) FontWeight.Bold else FontWeight.Normal';
+                fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
             }
         } else {
             fontWeightExpr = KOTLIN_FONT_WEIGHTS[element.fontWeight] || 'FontWeight.Normal';
@@ -834,6 +846,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.widgets.WeatherWidgetData');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetManager');
     lines.push('import com.akylas.weather.widgets.WidgetTheme');
+    lines.push('import com.akylas.weather.widgets.WidgetConfig');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);
@@ -841,8 +854,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(' */');
     lines.push('');
     lines.push('@Composable');
-    lines.push(`fun ${className}(context: Context, data: WeatherWidgetData, size: DpSize) {`);
-    lines.push('    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)');
+    lines.push(`fun ${className}(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {`);
     // lines.push('    val size = LocalSize.current');
     lines.push('');
 

@@ -24,6 +24,7 @@ import com.akylas.weather.R
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
+import com.akylas.weather.widgets.WidgetConfig
 
 /**
  * Generated content for Simple Weather
@@ -31,8 +32,7 @@ import com.akylas.weather.widgets.WidgetTheme
  */
 
 @Composable
-fun SimpleWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: DpSize) {
-    val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
+fun SimpleWeatherWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     if (size.width.value < 80) {
         Column(

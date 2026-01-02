@@ -235,11 +235,39 @@ export class WidgetConfigManager {
     }
 
     /**
-     * Create default config
+     * Get default settings from widget JSON schema
      */
-    static createDefaultConfig(): WidgetConfig {
-        return {
+    private static getDefaultSettings(widgetKind: string): Record<string, any> {
+        // Load widget JSON to get settings schema
+        try {
+            // Widget JSON files define settings with defaults
+            // For now, hardcode known settings - could be loaded from JSON files at runtime
+            const settingsDefaults: Record<string, Record<string, any>> = {
+                'SimpleWeatherWithClockWidget': {
+                    clockBold: true
+                }
+            };
+            return settingsDefaults[widgetKind] || {};
+        } catch (error) {
+            console.error(TAG, 'Failed to load settings defaults for', widgetKind, error);
+            return {};
+        }
+    }
+
+    /**
+     * Create default config with settings initialized from widget schema
+     */
+    static createDefaultConfig(widgetKind?: string): WidgetConfig {
+        const config: WidgetConfig = {
             locationName: 'current'
         };
+        
+        // Initialize settings from widget schema if widgetKind provided
+        if (widgetKind) {
+            config.widgetKind = widgetKind;
+            config.settings = this.getDefaultSettings(widgetKind);
+        }
+        
+        return config;
     }
 }

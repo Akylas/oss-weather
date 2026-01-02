@@ -84,7 +84,7 @@ fun DailyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: D
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
                     Text(
-                        text = "${item.day}",
+                        text = item.day,
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
@@ -102,17 +102,17 @@ fun DailyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: D
                     ) {
                         if (item.precipAccumulation.isNotEmpty()) {
                             Text(
-                                text = "${item.precipAccumulation}",
+                                text = item.precipAccumulation,
                                 style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
                             )
                         }
                         Text(
-                            text = "${item.temperatureHigh}",
+                            text = item.temperatureHigh,
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                             maxLines = 1
                         )
                         Text(
-                            text = "${item.temperatureLow}",
+                            text = item.temperatureLow,
                             style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurfaceVariant),
                             maxLines = 1
                         )

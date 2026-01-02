@@ -75,7 +75,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, data: WeatherWidgetDat
             ) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
-                    text = data.data.locationName,
+                    text = data.locationName,
                     style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )
@@ -124,7 +124,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, data: WeatherWidgetDat
             ) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
-                    text = data.data.locationName,
+                    text = data.locationName,
                     style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )

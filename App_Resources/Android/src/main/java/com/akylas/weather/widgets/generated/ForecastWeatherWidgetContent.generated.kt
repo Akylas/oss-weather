@@ -49,23 +49,23 @@ fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size
                 horizontalAlignment = Alignment.Horizontal.Start,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
-                if (data.data.iconPath.isNotEmpty()) {
-                    WeatherWidgetManager.getIconImageProviderFromPath(data.data.iconPath)?.let { provider ->
+                if (data.iconPath.isNotEmpty()) {
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
                         Image(
                            provider = provider,
-                           contentDescription = data.data.iconPath,
+                           contentDescription = data.iconPath,
                            modifier = GlanceModifier.size(48.dp)
                         )
                     }
                 }
                 Text(
-                    text = data.data.temperature,
+                    text = data.temperature,
                     style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
             Text(
-                text = data.data.locationName,
+                text = data.locationName,
                 style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
                 maxLines = 1
             )
@@ -84,7 +84,7 @@ fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
-                        text = "${item.time}",
+                        text = item.time,
                         style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant),
                         maxLines = 1
                     )
@@ -96,13 +96,13 @@ fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size
                         )
                     }
                     Text(
-                        text = "${item.temperature}",
+                        text = item.temperature,
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
                     if (item.precipAccumulation.isNotEmpty()) {
                         Text(
-                            text = "${item.precipAccumulation}",
+                            text = item.precipAccumulation,
                             style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurfaceVariant)
                         )
                     }
@@ -123,7 +123,7 @@ fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
                     Text(
-                        text = "${item.day}",
+                        text = item.day,
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
@@ -141,17 +141,17 @@ fun ForecastWeatherWidgetContent(context: Context, data: WeatherWidgetData, size
                     ) {
                         if (item.precipAccumulation.isNotEmpty()) {
                             Text(
-                                text = "${item.precipAccumulation}",
+                                text = item.precipAccumulation,
                                 style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
                             )
                         }
                         Text(
-                            text = "${item.temperatureHigh}",
+                            text = item.temperatureHigh,
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                             maxLines = 1
                         )
                         Text(
-                            text = "${item.temperatureLow}",
+                            text = item.temperatureLow,
                             style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurfaceVariant),
                             maxLines = 1
                         )

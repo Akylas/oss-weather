@@ -59,17 +59,17 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, data: WeatherWidgetData
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
-                        if (data.data.iconPath.isNotEmpty()) {
-                            WeatherWidgetManager.getIconImageProviderFromPath(data.data.iconPath)?.let { provider ->
+                        if (data.iconPath.isNotEmpty()) {
+                            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
                                 Image(
                                    provider = provider,
-                                   contentDescription = data.data.iconPath,
+                                   contentDescription = data.iconPath,
                                    modifier = GlanceModifier.size(56.dp)
                                 )
                             }
                         }
                         Text(
-                            text = data.data.temperature,
+                            text = data.temperature,
                             style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                         )
                     }
@@ -93,17 +93,17 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, data: WeatherWidgetData
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
-                    if (data.data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.data.iconPath)?.let { provider ->
+                    if (data.iconPath.isNotEmpty()) {
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
                             Image(
                                provider = provider,
-                               contentDescription = data.data.iconPath,
+                               contentDescription = data.iconPath,
                                modifier = GlanceModifier.size(when { size.height.value < 60 -> 28.dp; size.height.value < 80 -> 36.dp; else -> 48.dp })
                             )
                         }
                     }
                     Text(
-                        text = data.data.temperature,
+                        text = data.temperature,
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 18.sp; size.height.value < 80 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
                 }
@@ -111,7 +111,7 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, data: WeatherWidgetData
             }
         }
         Text(
-            text = data.data.locationName,
+            text = data.locationName,
             style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; size.height.value < 80 -> 11.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),
             maxLines = 1
         )

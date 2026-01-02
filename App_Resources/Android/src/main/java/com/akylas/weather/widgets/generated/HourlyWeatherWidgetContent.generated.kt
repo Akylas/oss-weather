@@ -46,7 +46,7 @@ fun HourlyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: 
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 Text(
-                    text = data.data.locationName,
+                    text = data.locationName,
                     style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )
@@ -65,7 +65,7 @@ fun HourlyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: 
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
-                        text = "${item.time}",
+                        text = item.time,
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant),
                         maxLines = 1
                     )
@@ -77,7 +77,7 @@ fun HourlyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: 
                         )
                     }
                     Text(
-                        text = "${item.temperature}",
+                        text = item.temperature,
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
@@ -91,7 +91,7 @@ fun HourlyWeatherWidgetContent(context: Context, data: WeatherWidgetData, size: 
                                 Spacer(modifier = GlanceModifier.height(2.dp))
                             }
                             Text(
-                                text = "${item.precipAccumulation}",
+                                text = item.precipAccumulation,
                                 style = TextStyle(fontSize = when { size.height.value < 80 -> 9.sp; else -> 10.sp }, color = GlanceTheme.colors.onSurfaceVariant)
                             )
                         }

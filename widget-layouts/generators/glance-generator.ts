@@ -137,6 +137,10 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
                 // For forEach items, keep as-is (no data. prefix)
                 return prop;
             }
+            // Check if prop already starts with "data." to avoid double prefix
+            if (prop.startsWith('data.')) {
+                return prop;
+            }
             return `data.${prop}`;
         }
 
@@ -144,6 +148,10 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
         case 'has': {
             const prop = args[0] as string;
             if (prop.startsWith('item.')) {
+                return `${prop}.isNotEmpty()`;
+            }
+            // Check if prop already starts with "data." to avoid double prefix
+            if (prop.startsWith('data.')) {
                 return `${prop}.isNotEmpty()`;
             }
             return `data.${prop}.isNotEmpty()`;
@@ -410,17 +418,37 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     let textExpr: string;
     if (typeof element.text === 'string' && element.text.includes('{{')) {
         // Template string like "{{temperature}}" or "{{item.temperature}}"
-        textExpr = element.text.replace(/\{\{([^}]+)\}\}/g, (_, prop) => {
-            // If it's an item property, don't add data. prefix
+        // Check if it's a simple single substitution
+        const singleMatch = element.text.match(/^\{\{([^}]+)\}\}$/);
+        if (singleMatch) {
+            // Single property substitution - use directly without string interpolation
+            const prop = singleMatch[1];
             if (prop.startsWith('item.')) {
-                return `\${${prop}}`;
+                textExpr = prop;
+            } else {
+                textExpr = `data.${prop}`;
             }
-            return `\${data.${prop}}`;
-        });
-        textExpr = `"${textExpr}"`;
+        } else {
+            // Complex template with multiple substitutions or text
+            textExpr = element.text.replace(/\{\{([^}]+)\}\}/g, (_, prop) => {
+                // If it's an item property, don't add data. prefix
+                if (prop.startsWith('item.')) {
+                    return `\${${prop}}`;
+                }
+                return `\${data.${prop}}`;
+            });
+            textExpr = `"${textExpr}"`;
+        }
     } else if (Array.isArray(element.text)) {
         // Mapbox expression
-        textExpr = compileExpression(element.text, 'value');
+        const compiled = compileExpression(element.text, 'value');
+        // If the compiled result is a direct property access (no quotes), don't wrap in string interpolation
+        // This handles ["get", "item.precipAccumulation"] -> item.precipAccumulation (not "${item.precipAccumulation}")
+        if (compiled.match(/^(data\.|item\.|size\.)/)) {
+            textExpr = compiled;
+        } else {
+            textExpr = compiled;
+        }
     } else if (typeof element.text === 'string' && !element.text.includes('data.') && !element.text.includes('item.')) {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")

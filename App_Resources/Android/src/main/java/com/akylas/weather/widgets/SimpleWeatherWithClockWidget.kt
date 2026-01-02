@@ -45,6 +45,7 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
             val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground {
@@ -59,7 +60,7 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherWithClockContent(data = widgetData, size = size, context = context)
+                        WeatherWithClockContent(data = widgetData, config = widgetConfig, size = size, context = context)
                     }
                 }
             }
@@ -74,6 +75,7 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
     private fun WeatherWithClockContent(
         modifier: GlanceModifier = GlanceModifier,
         data: WeatherWidgetData = fakeWeatherWidgetData,
+        config: WidgetConfig = WidgetConfig(),
         size: DpSize,
         context: Context
     ) {
@@ -82,6 +84,7 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWithClockWidgetContent(
             context = context,
+            config = config,
             data = data,
             size = size
         )

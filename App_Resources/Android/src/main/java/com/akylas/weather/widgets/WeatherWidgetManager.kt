@@ -800,8 +800,8 @@ object WeatherWidgetManager {
         val config = configs[widgetKind]
         
         if (config == null) {
-            WidgetsLogger.d(LOG_TAG, "No kind config for $widgetKind, creating default")
-            val defaultConfig = createDefaultConfig()
+            WidgetsLogger.d(LOG_TAG, "No kind config for $widgetKind, creating with defaults from JSON")
+            val defaultConfig = initializeKindConfigWithDefaults(context, widgetKind)
             saveKindConfig(context, widgetKind, defaultConfig)
             return defaultConfig
         }
@@ -875,16 +875,24 @@ object WeatherWidgetManager {
     fun createInstanceConfig(context: Context, widgetId: Int, widgetKind: String): WidgetConfig {
         WidgetsLogger.d(LOG_TAG, "createInstanceConfig(widgetId=$widgetId, widgetKind=$widgetKind)")
         
-        // Get kind defaults
+        // Get kind defaults (with settings initialized from JSON)
         val kindConfig = getKindConfig(context, widgetKind)
         
-        // Create instance config with widgetKind set
-        val instanceConfig = kindConfig.copy(widgetKind = widgetKind)
+        // Create instance config with widgetKind set and copy settings
+        val instanceConfig = WidgetConfig(
+            locationName = kindConfig.locationName,
+            latitude = kindConfig.latitude,
+            longitude = kindConfig.longitude,
+            model = kindConfig.model,
+            provider = kindConfig.provider,
+            widgetKind = widgetKind,
+            settings = kindConfig.settings?.toMap() // Create a copy of settings
+        )
         
         // Save instance config
         saveWidgetConfig(context, widgetId, instanceConfig)
         
-        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (config:$instanceConfig)")
+        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (settings=${instanceConfig.settings})")
         return instanceConfig
     }
 
@@ -987,14 +995,44 @@ object WeatherWidgetManager {
      */
     private fun parseWidgetConfig(json: JSONObject): WidgetConfig {
         WidgetsLogger.i(LOG_TAG, "parseWidgetConfig ${json.toString()}")
+        
+        // Parse settings if present
+        val settings = if (json.has("settings")) {
+            parseSettings(json.getJSONObject("settings"))
+        } else {
+            null
+        }
+        
         return WidgetConfig(
             locationName = json.optString("locationName", "current"),
             latitude = json.optDouble("latitude", 0.0),
             longitude = json.optDouble("longitude", 0.0),
             model = json.optString("model", null),
             provider = json.optString("provider", null),
-            widgetKind = json.optString("widgetKind", null)
+            widgetKind = json.optString("widgetKind", null),
+            settings = settings
         )
+    }
+    
+    /**
+     * Parse settings object from JSON
+     */
+    private fun parseSettings(json: JSONObject): Map<String, Any?> {
+        val settings = mutableMapOf<String, Any?>()
+        val keys = json.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            val value = json.get(key)
+            settings[key] = when (value) {
+                is Boolean -> value
+                is Int -> value
+                is Long -> value
+                is Double -> value
+                is String -> value
+                else -> value.toString()
+            }
+        }
+        return settings
     }
 
     /**
@@ -1009,15 +1047,90 @@ object WeatherWidgetManager {
             config.model?.let { put("model", it) }
             config.provider?.let { put("provider", it) }
             config.widgetKind?.let { put("widgetKind", it) }
+            config.settings?.let { 
+                val settingsJson = JSONObject()
+                it.forEach { (key, value) ->
+                    settingsJson.put(key, value)
+                }
+                put("settings", settingsJson)
+            }
         }
     }
 
     /**
      * Create default config
      */
-    private fun createDefaultConfig(): WidgetConfig {
+    @JvmStatic
+    fun createDefaultConfig(): WidgetConfig {
         return WidgetConfig(
             locationName = "current",
+            settings = null
+        )
+    }
+    
+    /**
+     * Load widget JSON schema and extract default settings
+     */
+    private fun loadDefaultSettingsForKind(context: Context, widgetKind: String): Map<String, Any?>? {
+        try {
+            // Map widget kind to JSON file name
+            val jsonFileName = when (widgetKind) {
+                "SimpleWeatherWidget" -> "SimpleWeatherWidget.json"
+                "SimpleWeatherWithDateWidget" -> "SimpleWeatherWithDateWidget.json"
+                "SimpleWeatherWithClockWidget" -> "SimpleWeatherWithClockWidget.json"
+                "HourlyWeatherWidget" -> "HourlyWeatherWidget.json"
+                "DailyWeatherWidget" -> "DailyWeatherWidget.json"
+                "ForecastWeatherWidget" -> "ForecastWeatherWidget.json"
+                else -> return null
+            }
+            
+            // Load JSON from assets
+            val jsonString = context.assets.open("app/widget-layouts/widgets/$jsonFileName").bufferedReader().use { it.readText() }
+            val jsonObject = JSONObject(jsonString)
+            
+            // Extract settings with defaults
+            if (!jsonObject.has("settings")) {
+                return null
+            }
+            
+            val settingsSchema = jsonObject.getJSONObject("settings")
+            val defaultSettings = mutableMapOf<String, Any?>()
+            
+            val keys = settingsSchema.keys()
+            while (keys.hasNext()) {
+                val settingKey = keys.next()
+                val settingDef = settingsSchema.getJSONObject(settingKey)
+                
+                if (settingDef.has("default")) {
+                    val defaultValue = settingDef.get("default")
+                    defaultSettings[settingKey] = when (defaultValue) {
+                        is Boolean -> defaultValue
+                        is Int -> defaultValue
+                        is Long -> defaultValue
+                        is Double -> defaultValue
+                        is String -> defaultValue
+                        else -> defaultValue.toString()
+                    }
+                }
+            }
+            
+            WidgetsLogger.d(LOG_TAG, "Loaded ${defaultSettings.size} default settings for $widgetKind")
+            return if (defaultSettings.isEmpty()) null else defaultSettings
+        } catch (e: Exception) {
+            WidgetsLogger.e(LOG_TAG, "Failed to load default settings for $widgetKind", e)
+            return null
+        }
+    }
+    
+    /**
+     * Initialize kind config with default settings from JSON schema
+     */
+    private fun initializeKindConfigWithDefaults(context: Context, widgetKind: String): WidgetConfig {
+        val defaultSettings = loadDefaultSettingsForKind(context, widgetKind)
+        return WidgetConfig(
+            locationName = "current",
+            widgetKind = widgetKind,
+            settings = defaultSettings
         )
     }
 }
@@ -1044,7 +1157,8 @@ data class WidgetConfig(
     val longitude: Double? = 0.0,
     val model: String? = null,
     val provider: String? = null,
-    val widgetKind: String? = null
+    val widgetKind: String? = null,
+    val settings: Map<String, Any?>? = null
 )
 
 /**

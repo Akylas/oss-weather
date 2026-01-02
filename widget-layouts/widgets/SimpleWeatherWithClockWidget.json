@@ -13,8 +13,8 @@
     "clockBold": {
       "type": "boolean",
       "default": true,
-      "title": "Bold Clock",
-      "description": "Display clock time in bold font"
+      "title": "widget_clock_bold_title",
+      "description": "widget_clock_bold_description"
     }
   },
   "background": {

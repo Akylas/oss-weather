@@ -546,7 +546,8 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
     const direction = element.direction || 'vertical';
 
     if (direction === 'horizontal') {
-        // Generate LazyRow for horizontal scrolling
+        // Generate Row with forEach for horizontal scrolling
+        // Note: Glance does not support LazyRow - only LazyColumn exists
         lines.push(`${indent}Row {`);
         if (element.children && element.children.length > 0) {
             // Check if children contain a forEach, if so handle specially

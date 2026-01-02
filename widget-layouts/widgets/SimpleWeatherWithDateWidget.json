@@ -32,40 +32,48 @@
         "type": "conditional",
         "condition": [">=", ["get", "size.width"], 200],
         "then": {
-          "type": "row",
-          "alignment": "space-between",
-          "crossAlignment": "center",
-          "spacing": 8,
+          "type": "column",
+          "alignment": "start",
+          "crossAlignment": "stretch",
           "children": [
             {
-              "type": "date",
-              "style": "date",
-              "fontSize": 32,
-              "fontWeight": "bold",
-              "color": "onSurface",
-              "flex": 1
-            },
-            {
               "type": "row",
-              "alignment": "end",
+              "alignment": "space-between",
               "crossAlignment": "center",
               "spacing": 8,
               "children": [
                 {
-                  "type": "image",
-                  "src": ["get", "iconPath"],
-                  "size": 56,
-                  "visibleIf": ["has", "iconPath"]
+                  "type": "date",
+                  "style": "date",
+                  "fontSize": 32,
+                  "fontWeight": "bold",
+                  "color": "onSurface",
+                  "flex": 1
                 },
                 {
-                  "type": "label",
-                  "text": ["get", "temperature"],
-                  "fontSize": 40,
-                  "fontWeight": "bold",
-                  "color": "onSurface"
+                  "type": "row",
+                  "alignment": "end",
+                  "crossAlignment": "center",
+                  "spacing": 8,
+                  "children": [
+                    {
+                      "type": "image",
+                      "src": ["get", "iconPath"],
+                      "size": 56,
+                      "visibleIf": ["has", "iconPath"]
+                    },
+                    {
+                      "type": "label",
+                      "text": ["get", "temperature"],
+                      "fontSize": 40,
+                      "fontWeight": "bold",
+                      "color": "onSurface"
+                    }
+                  ]
                 }
               ]
-            }
+            },
+            { "type": "spacer", "size": 4 }
           ]
         },
         "else": {
@@ -127,7 +135,11 @@
                 }
               ]
             },
-            { "type": "spacer", "flex": 1 }
+            { "type": "spacer", "size": ["case",
+              ["<", ["get", "size.height"], 60], 4,
+              ["<", ["get", "size.height"], 80], 6,
+              8
+            ] }
           ]
         }
       },

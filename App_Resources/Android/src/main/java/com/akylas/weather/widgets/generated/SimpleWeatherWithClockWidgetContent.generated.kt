@@ -64,6 +64,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
                     )
                 }
             }
+            Spacer(modifier = GlanceModifier.height(4.dp))
             Column(
                 modifier = GlanceModifier.fillMaxSize(),
                 verticalAlignment = Alignment.Vertical.Bottom,
@@ -111,7 +112,7 @@ fun SimpleWeatherWithClockWidgetContent(data: WeatherWidgetData, size: DpSize) {
                         style = TextStyle(fontSize = when { size.width.value < 100 -> 18.sp; size.width.value < 150 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
                 }
-                Spacer(modifier = GlanceModifier.height(4.dp))
+                Spacer(modifier = GlanceModifier.height(when { size.width.value < 100 -> 4.dp; size.width.value < 150 -> 6.dp; else -> 8.dp }))
             }
             Column(
                 modifier = GlanceModifier.fillMaxSize(),

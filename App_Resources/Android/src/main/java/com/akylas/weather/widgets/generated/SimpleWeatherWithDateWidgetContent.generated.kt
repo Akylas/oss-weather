@@ -37,34 +37,41 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         if (size.width.value >= 200) {
-            Row(
-                modifier = GlanceModifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                verticalAlignment = Alignment.Vertical.CenterVertically
+            Column(
+                modifier = GlanceModifier.fillMaxSize(),
+                verticalAlignment = Alignment.Vertical.Top,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
-                Text(
-                    text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
-                    style = TextStyle(fontSize = 32.sp, color = GlanceTheme.colors.onSurface)
-                )
                 Row(
                     modifier = GlanceModifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Horizontal.End,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
-                    if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
-                            Image(
-                               provider = provider,
-                               contentDescription = data.iconPath,
-                               modifier = GlanceModifier.size(56.dp)
-                            )
-                        }
-                    }
                     Text(
-                        text = data.temperature,
-                        style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
+                        style = TextStyle(fontSize = 32.sp, color = GlanceTheme.colors.onSurface)
                     )
+                    Row(
+                        modifier = GlanceModifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Horizontal.End,
+                        verticalAlignment = Alignment.Vertical.CenterVertically
+                    ) {
+                        if (data.iconPath.isNotEmpty()) {
+                            WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                                Image(
+                                   provider = provider,
+                                   contentDescription = data.iconPath,
+                                   modifier = GlanceModifier.size(56.dp)
+                                )
+                            }
+                        }
+                        Text(
+                            text = data.temperature,
+                            style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        )
+                    }
                 }
+                Spacer(modifier = GlanceModifier.height(4.dp))
             }
         }
         else {
@@ -97,7 +104,7 @@ fun SimpleWeatherWithDateWidgetContent(data: WeatherWidgetData, size: DpSize) {
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 18.sp; size.height.value < 80 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
                 }
-                Spacer(modifier = GlanceModifier.defaultWeight())
+                Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 4.dp; size.height.value < 80 -> 6.dp; else -> 8.dp }))
             }
         }
         Text(

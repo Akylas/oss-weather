@@ -88,8 +88,25 @@ const SWIFT_FONT_WEIGHTS: Record<string, string> = {
     bold: '.bold'
 };
 
+// Helper to check if a value is a settings reference
+function isSetting(value?: string): boolean {
+    return typeof value === 'string' && value.startsWith('@setting.');
+}
+
+// Helper to get setting key from @setting.* syntax
+function getSettingKey(value: string): string {
+    const settingKey = value.substring(9); // Remove '@setting.' prefix
+    // Convert camelCase to snake_case and add widget_ prefix
+    return `widget_${settingKey.replace(/([A-Z])/g, '_$1').toLowerCase()}`;
+}
+
 // Map a font weight string to a Swift weight token; provide a fallback if missing
+// Now supports @setting.* syntax for dynamic weight from UserDefaults
 function toSwiftFontWeight(weight?: string, fallback: string = 'normal'): string {
+    if (isSetting(weight)) {
+        const settingKey = getSettingKey(weight!);
+        return `UserDefaults.standard.bool(forKey: "${settingKey}") ? .bold : .regular`;
+    }
     const key = (weight ?? fallback ?? 'normal').toLowerCase();
     if (SWIFT_FONT_WEIGHTS[key]) return SWIFT_FONT_WEIGHTS[key];
     if (/(bold|700|800|900)/i.test(key)) return SWIFT_FONT_WEIGHTS['bold'];
@@ -341,10 +358,23 @@ function getSingleBindingPath(text?: string): string | null {
     return m ? m[1].trim() : null;
 }
 
+// Helper to check if text should be localized
+function shouldLocalizeText(text?: string): boolean {
+    if (!text || typeof text !== 'string') return false;
+    // Don't localize if it's a data binding
+    if (text.startsWith('data.') || text.startsWith('item.') || text.startsWith('size.')) return false;
+    // Don't localize if it contains binding syntax
+    if (text.includes('{') || text.includes('}')) return false;
+    // Don't localize numbers or very short strings
+    if (/^\d+$/.test(text) || text.length <= 1) return false;
+    return true;
+}
+
 /**
  * Convert text (with optional {{binding}} placeholders) into either:
  * - a pure Swift expression (e.g. `String(describing: data.temperature)`) when the text is a single binding,
  * - or a Swift string literal with interpolations (e.g. `"Temperature: \(String(describing: data.temperature))°"`)
+ * - or a localized string (e.g. `NSLocalizedString("Hourly", comment: "")`) for static text
  *
  * Returns `{ expr, isExpression }`
  */
@@ -352,6 +382,13 @@ function convertBindingToSwift(text: string | undefined): { expr: string; isExpr
     if (!text) return { expr: '""', isExpression: false };
 
     const trimmed = text.trim();
+
+    // Check if this is static text that should be localized
+    if (shouldLocalizeText(trimmed)) {
+        // Convert to lowercase for resource key
+        const key = trimmed.toLowerCase().replace(/\s+/g, '_');
+        return { expr: `NSLocalizedString("${key}", comment: "")`, isExpression: true };
+    }
 
     // Single binding only -> return expression (no quotes)
     const singleMatch = trimmed.match(/^\{\{\s*([^}]+?)\s*\}\}$/);

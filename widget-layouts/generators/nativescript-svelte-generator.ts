@@ -452,10 +452,26 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         return `${attrName}={${JSON.stringify(mappedValue)}}`;
     }
 
-    // Handle font weight mapping
+    // Handle font weight mapping with @setting support
     if (prop === 'fontWeight') {
+        if (typeof value === 'string' && value.startsWith('@setting.')) {
+            const settingKey = value.substring(9); // Remove '@setting.' prefix
+            const settingName = `widget_${settingKey.replace(/([A-Z])/g, '_$1').toLowerCase()}`;
+            // Generate ternary for setting
+            return `${attrName}={ApplicationSettings.getBoolean('${settingName}', true) ? 700 : 400}`;
+        }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;
+    }
+    
+    // Handle bold property with @setting support
+    if (prop === 'bold') {
+        if (typeof value === 'string' && value.startsWith('@setting.')) {
+            const settingKey = value.substring(9); // Remove '@setting.' prefix
+            const settingName = `widget_${settingKey.replace(/([A-Z])/g, '_$1').toLowerCase()}`;
+            return `${attrName}={ApplicationSettings.getBoolean('${settingName}', true)}`;
+        }
+        return `${attrName}={${JSON.stringify(value)}}`;
     }
 
     // Handle text property with localization

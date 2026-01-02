@@ -131,7 +131,7 @@ module.exports = (env, params = {}) => {
     env.appPath = appPath;
     env.appResourcesPath = appResourcesPath;
     env.appComponents = env.appComponents || [];
-    env.appComponents.push('~/android/floatingactivity', '~/android/activity.android', '~/android/WidgetUpdateReceiver', '~/receivers/CommandReceiver');
+    env.appComponents.push('~/android/widgetconfigactivity', '~/android/floatingactivity', '~/android/activity.android', '~/android/WidgetUpdateReceiver', '~/receivers/CommandReceiver');
 
     const ignoredSvelteWarnings = new Set(['a11y-no-onchange', 'a11y-label-has-associated-control', 'illegal-attribute-character']);
 

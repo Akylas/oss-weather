@@ -80,6 +80,7 @@ class SimpleWeatherWidget : WeatherWidget() {
         
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent(
+            context = context,
             data = data,
             size = size
         )

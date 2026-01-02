@@ -43,6 +43,7 @@ class DailyWeatherWidget : WeatherWidget() {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
 
             val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
@@ -58,7 +59,7 @@ class DailyWeatherWidget : WeatherWidget() {
                         val size = LocalSize.current
                         val isLarge = size.width > 150.dp
 
-                        WeatherContent( context, widgetData, isLarge)
+                        WeatherContent(context, config = widgetConfig, data = widgetData, isLarge)
                     }
                 }
             }
@@ -68,6 +69,7 @@ class DailyWeatherWidget : WeatherWidget() {
     @Composable
     private fun WeatherContent(
         context: Context,
+        config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData,
         isLarge: Boolean
     ) {
@@ -77,6 +79,7 @@ class DailyWeatherWidget : WeatherWidget() {
         val size = if (isLarge) DpSize(260.dp, 400.dp) else DpSize(260.dp, 200.dp)
         com.akylas.weather.widgets.generated.DailyWeatherWidgetContent(
             context = context,
+            config = config,
             data = data,
             size = size
         )

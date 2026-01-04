@@ -51,11 +51,11 @@ class SimpleWeatherWidget : WeatherWidget() {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
             
             // Observe widget data from StateFlow - triggers automatic recomposition
-            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val dataMap by WidgetDataStore.widgetData.collectAsState()
             val widgetData = dataMap[widgetId]
             
             // Observe widget config from StateFlow - triggers automatic recomposition when settings change
-            val configMap by WeatherWidgetManager.WidgetConfigStore.widgetConfigs.collectAsState()
+            val configMap by WidgetConfigStore.widgetConfigs.collectAsState()
             val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {

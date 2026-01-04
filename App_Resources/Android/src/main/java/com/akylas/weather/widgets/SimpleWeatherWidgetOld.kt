@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.glance.appwidget.components.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,10 +45,12 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
 
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
+            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
+            val configMap by WidgetConfigStore.widgetConfigs.collectAsState()
+            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             // Observe widget data from StateFlow - triggers automatic recomposition
-            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val dataMap by WidgetDataStore.widgetData.collectAsState()
             val widgetData = dataMap[widgetId]
 
             GlanceTheme(colors = WidgetTheme.colors) {

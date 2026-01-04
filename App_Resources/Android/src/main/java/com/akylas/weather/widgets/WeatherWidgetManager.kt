@@ -19,6 +19,11 @@ import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonElement
+
 import androidx.core.content.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
@@ -26,11 +31,17 @@ import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+
+
 /**
  * Manages weather widget updates and scheduling
  */
 object WeatherWidgetManager {
-    private val coroutineScope = MainScope()
+    private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private const val WIDGET_UPDATE_WORK_TAG = "weather_widget_update"
     private const val WIDGET_PREFS_FILE = "prefs.db"
     private const val UPDATE_FREQUENCY_KEY = "widget_update_frequency"
@@ -115,6 +126,15 @@ object WeatherWidgetManager {
             WidgetsLogger.e(LOG_TAG, "Failed to save widget data cache", e)
         }
     }
+
+    fun deleteWidgetCache(context: Context, widgetId: Int) {
+        WidgetsLogger.d(LOG_TAG, "deleteWidgetCache(widgetId=$widgetId) called")
+       // Delete cached data
+        loadWidgetDataCache(context)
+        widgetDataCache.remove(widgetId)
+        saveWidgetDataCache(context)
+    }
+
 
     /**
      * Get list of active widget IDs from persistent storage
@@ -247,57 +267,50 @@ object WeatherWidgetManager {
         }
     }
 
-     fun reRenderClockWidgets(context: Context) {
-         WidgetsLogger.d(LOG_TAG, "reRenderClockWidgets() called")
-         coroutineScope.launch {
-             SimpleWeatherWithClockWidget().apply { updateAll(context) }
-         }
-    }
-
 
     /**
      * Update only clock widgets (for time changes)
      */
-    @JvmStatic
-    fun updateClockWidgets(context: Context) {
-        WidgetsLogger.d(LOG_TAG, "updateClockWidgets() called")
+    // @JvmStatic
+    // fun updateClockWidgets(context: Context) {
+    //     WidgetsLogger.d(LOG_TAG, "updateClockWidgets() called")
 
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        val clockWidgetIds = appWidgetManager.getAppWidgetIds(
-            ComponentName(context, SimpleWeatherWithClockWidgetReceiver::class.java)
-        )
+    //     val appWidgetManager = AppWidgetManager.getInstance(context)
+    //     val clockWidgetIds = appWidgetManager.getAppWidgetIds(
+    //         ComponentName(context, SimpleWeatherWithClockWidgetReceiver::class.java)
+    //     )
 
-        if (clockWidgetIds.isNotEmpty()) {
-            val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, clockWidgetIds)
-            }
-            context.sendBroadcast(intent)
-            WidgetsLogger.d(LOG_TAG, "Updated ${clockWidgetIds.size} clock widgets")
-        }
-    }
+    //     if (clockWidgetIds.isNotEmpty()) {
+    //         val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
+    //             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+    //             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, clockWidgetIds)
+    //         }
+    //         context.sendBroadcast(intent)
+    //         WidgetsLogger.d(LOG_TAG, "Updated ${clockWidgetIds.size} clock widgets")
+    //     }
+    // }
 
     /**
      * Update only date widgets (for date changes)
      */
-    @JvmStatic
-    fun updateDateWidgets(context: Context) {
-        WidgetsLogger.d(LOG_TAG, "updateDateWidgets() called")
+    // @JvmStatic
+    // fun updateDateWidgets(context: Context) {
+    //     WidgetsLogger.d(LOG_TAG, "updateDateWidgets() called")
 
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-        val dateWidgetIds = appWidgetManager.getAppWidgetIds(
-            ComponentName(context, SimpleWeatherWithDateWidgetReceiver::class.java)
-        )
+    //     val appWidgetManager = AppWidgetManager.getInstance(context)
+    //     val dateWidgetIds = appWidgetManager.getAppWidgetIds(
+    //         ComponentName(context, SimpleWeatherWithDateWidgetReceiver::class.java)
+    //     )
 
-        if (dateWidgetIds.isNotEmpty()) {
-            val intent = Intent(context, SimpleWeatherWithDateWidgetReceiver::class.java).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, dateWidgetIds)
-            }
-            context.sendBroadcast(intent)
-            WidgetsLogger.d(LOG_TAG, "Updated ${dateWidgetIds.size} date widgets")
-        }
-    }
+    //     if (dateWidgetIds.isNotEmpty()) {
+    //         val intent = Intent(context, SimpleWeatherWithDateWidgetReceiver::class.java).apply {
+    //             action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+    //             putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, dateWidgetIds)
+    //         }
+    //         context.sendBroadcast(intent)
+    //         WidgetsLogger.d(LOG_TAG, "Updated ${dateWidgetIds.size} date widgets")
+    //     }
+    // }
 
     /**
      * Schedule periodic widget updates - only schedules if widgets are active
@@ -381,19 +394,16 @@ object WeatherWidgetManager {
     /**
      * Called when a widget is added - ensure updates are scheduled
      */
+    @JvmStatic
     fun onWidgetAdded(context: Context, widgetId: Int) {
         WidgetsLogger.i(LOG_TAG, "onWidgetAdded(widgetId=$widgetId)")
         
         // ensure config exists
-        val config = loadWidgetConfig(context, widgetId);
+        val config = loadWidgetConfig(context, widgetId, true)
+        // reloadConfigs()
         // Add to active list
         addActiveWidget(context, widgetId)
-        
-        // Schedule updates now that we have at least one widget
-//        scheduleWidgetUpdates(context)
-        
-        // Request immediate update for the new widget
-        requestWidgetUpdate(context, widgetId)
+        sendWidgetAdded(context, widgetId)
     }
 
     /**
@@ -407,13 +417,7 @@ object WeatherWidgetManager {
         
         // Delete widget config and data
         deleteWidgetConfig(context, widgetId)
-        
-        // Check if any widgets remain
-//        val activeWidgets = getAllActiveWidgetIds(context)
-//        if (activeWidgets.isEmpty()) {
-//            WidgetsLogger.i(LOG_TAG, "No more active widgets, cancelling scheduled updates")
-//            cancelWidgetUpdates(context)
-//        }
+        deleteWidgetCache(context, widgetId)
     }
 
     /**
@@ -499,12 +503,12 @@ object WeatherWidgetManager {
         val appWidgetManager = AppWidgetManager.getInstance(context)
         
         val receiverToWidgetMap = mapOf(
-            SimpleWeatherWidgetReceiver::class.java to SimpleWeatherWidget::class.java,
-            SimpleWeatherWithDateWidgetReceiver::class.java to SimpleWeatherWithDateWidget::class.java,
-            SimpleWeatherWithClockWidgetReceiver::class.java to SimpleWeatherWithClockWidget::class.java,
-            HourlyWeatherWidgetReceiver::class.java to HourlyWeatherWidget::class.java,
-            DailyWeatherWidgetReceiver::class.java to DailyWeatherWidget::class.java,
-            ForecastWeatherWidgetReceiver::class.java to ForecastWeatherWidget::class.java
+            SimpleWeatherWidgetReceiver::class.java to SimpleWeatherWidgetOld::class.java,
+            SimpleWeatherWithDateWidgetReceiver::class.java to SimpleWeatherWithDateWidgetOld::class.java,
+            SimpleWeatherWithClockWidgetReceiver::class.java to SimpleWeatherWithClockWidgetOld::class.java,
+            HourlyWeatherWidgetReceiver::class.java to HourlyWeatherWidgetOld::class.java,
+            DailyWeatherWidgetReceiver::class.java to DailyWeatherWidgetOld::class.java,
+            ForecastWeatherWidgetReceiver::class.java to ForecastWeatherWidgetOld::class.java
         )
         
         for ((receiverClass, widgetClass) in receiverToWidgetMap) {
@@ -521,6 +525,7 @@ object WeatherWidgetManager {
     * Force a Glance widget to update
     */
     private fun forceGlanceUpdate(context: Context, widgetId: Int) {
+        WidgetsLogger.d(LOG_TAG, "forceGlanceUpdate for widget $widgetId=")
         coroutineScope.launch {
             try {
                 val widgetClass = getGlanceWidgetClass(context, widgetId)
@@ -532,21 +537,23 @@ object WeatherWidgetManager {
                     val glanceIds = glanceManager.getGlanceIds(widgetClass)
                     
                     // Find matching GlanceId
-                    val matchingGlanceId = glanceIds.find { it.toString().hashCode() == widgetId }
+                    val matchingGlanceId = glanceIds.find { glanceManager.getAppWidgetId(it) == widgetId }
+                    WidgetsLogger.d(LOG_TAG, "Updating widget $widgetId of class=${widgetClass}")
                     
                     if (matchingGlanceId != null) {
                         widget.update(context, matchingGlanceId)
-                        WidgetsLogger.d(LOG_TAG, "Updated Glance widget $widgetId")
+                        WidgetsLogger.d(LOG_TAG, "Updated Glance widget ${widgetId}")
                     } else {
                         // Update all widgets of this type
                         widget.updateAll(context)
                         WidgetsLogger.d(LOG_TAG, "Updated all widgets of type ${widgetClass.simpleName}")
                     }
+                    // sendWidgetUpdate(context, widgetId, widgetClass)
                 } else {
-                    WidgetsLogger.w(LOG_TAG, "Could not find widget class for $widgetId")
+                    WidgetsLogger.w(LOG_TAG, "Could not find widget class for ${widgetId}")
                 }
             } catch (e: Exception) {
-                WidgetsLogger.e(LOG_TAG, "Error updating Glance widget $widgetId", e)
+                WidgetsLogger.e(LOG_TAG, "Error updating Glance widget ${widgetId}", e)
             }
         }
     }
@@ -562,7 +569,7 @@ object WeatherWidgetManager {
             widgetDataCache.remove(widgetId)
 
             // Trigger widget update so UI can reflect "no data" state
-            updateWidget(context, widgetId)
+            forceGlanceUpdate(context, widgetId)
             WidgetsLogger.i(LOG_TAG, "Cleared widget data and requested update for widgetId=$widgetId")
             return
         }
@@ -620,7 +627,7 @@ object WeatherWidgetManager {
      * Common handler used by both JSON and object update paths
      */
     private fun handleParsedWidgetData(context: Context, widgetId: Int, data: WeatherWidgetData) {
-        WidgetsLogger.d(LOG_TAG, "handleParsedWidgetData(widgetId=$widgetId, temperature=${data.temperature}, location=${data.locationName})")
+        WidgetsLogger.d(LOG_TAG, "handleParsedWidgetData(widgetId=$widgetId, temperature=${data.temperature}, location=${data.locationName}, loadingState=${data.loadingState})")
         
         loadWidgetDataCache(context)
         widgetDataCache[widgetId] = data
@@ -637,9 +644,7 @@ object WeatherWidgetManager {
     fun clearWidgetData(context: Context, widgetId: Int) {
         WidgetsLogger.d(LOG_TAG, "clearWidgetData(widgetId=$widgetId) called")
         
-        loadWidgetDataCache(context)
-        widgetDataCache.remove(widgetId)
-        saveWidgetDataCache(context) // Persist after removal
+        deleteWidgetCache(context, widgetId) // Persist after removal
         
         updateWidget(context, widgetId)
         WidgetsLogger.i(LOG_TAG, "Cleared widget data for widgetId=$widgetId")
@@ -652,7 +657,7 @@ object WeatherWidgetManager {
         WidgetsLogger.d(LOG_TAG, "parseWeatherWidgetDataFromJson(length=${dataJson.length})")
         return try {
             val parsed = JSON.decodeFromString<WeatherWidgetData>(dataJson)
-            WidgetsLogger.d(LOG_TAG, "parseWeatherWidgetDataFromJson succeeded for widget. temperature=${parsed.temperature} location=${parsed.locationName}")
+            WidgetsLogger.d(LOG_TAG, "parseWeatherWidgetDataFromJson succeeded for widget. temperature=${parsed.temperature} location=${parsed.locationName} state=${parsed.loadingState} errorMessage=${parsed.errorMessage}")
             parsed
         } catch (t: Throwable) {
             WidgetsLogger.e(LOG_TAG, "parseWeatherWidgetDataFromJson failed", t)
@@ -720,29 +725,22 @@ object WeatherWidgetManager {
         WidgetsLogger.d(LOG_TAG, "updateWidget(widgetId=$widgetId) scanning receivers")
         val appWidgetManager = AppWidgetManager.getInstance(context)
 
-        // Find which receiver this widget belongs to
-        val receivers = listOf(
-            SimpleWeatherWidgetReceiver::class.java,
-            SimpleWeatherWithDateWidgetReceiver::class.java,
-            SimpleWeatherWithClockWidgetReceiver::class.java,
-            HourlyWeatherWidgetReceiver::class.java,
-            DailyWeatherWidgetReceiver::class.java,
-            ForecastWeatherWidgetReceiver::class.java
-        )
-
-        receivers.forEach { receiverClass ->
-            val widgetIds = appWidgetManager.getAppWidgetIds(
-                ComponentName(context, receiverClass)
-            )
-            if (widgetIds.contains(widgetId)) {
-                WidgetsLogger.d(LOG_TAG, "updateWidget matched receiver ${receiverClass.simpleName} for widgetId=$widgetId")
-                val intent = Intent(context, receiverClass)
-                intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
-                context.sendBroadcast(intent)
-                WidgetsLogger.i(LOG_TAG, "Sent ACTION_APPWIDGET_UPDATE broadcast to ${receiverClass.simpleName} for widgetId=$widgetId")
-            }
+        val widgetClass = getGlanceWidgetClass(context, widgetId)
+        if (widgetClass != null) {
+            sendWidgetUpdate(context, widgetId, widgetClass)
         }
+    }
+
+    /**
+     * Update specific widget
+     */
+    private fun sendWidgetUpdate(context: Context, widgetId: Int, receiverClass: Class<out GlanceAppWidget>) {
+        WidgetsLogger.d(LOG_TAG, "sendWidgetUpdate matched receiver ${receiverClass.simpleName} for widgetId=$widgetId")
+        val intent = Intent(context, receiverClass)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(widgetId))
+        context.sendBroadcast(intent)
+        WidgetsLogger.i(LOG_TAG, "Sent ACTION_APPWIDGET_UPDATE broadcast to ${receiverClass.simpleName} for widgetId=$widgetId")
     }
 
     /**
@@ -886,7 +884,7 @@ object WeatherWidgetManager {
             model = kindConfig.model,
             provider = kindConfig.provider,
             widgetKind = widgetKind,
-            settings = kindConfig.settings?.toMap() // Create a copy of settings
+            settings = kindConfig.settings?.let { JsonObject(it) } // Create a copy of settings
         )
         
         // Save instance config
@@ -943,12 +941,8 @@ object WeatherWidgetManager {
         val configs = getAllWidgetConfigs(context).toMutableMap()
         configs.remove(widgetId)
         saveAllWidgetConfigs(context, configs)
-        
-        // Delete cached data
-        loadWidgetDataCache(context)
-        widgetDataCache.remove(widgetId)
-        saveWidgetDataCache(context)
-        
+        // reloadConfigs()
+ 
         WidgetsLogger.i(LOG_TAG, "Deleted config and cache for widgetId=$widgetId")
     }
 
@@ -996,13 +990,6 @@ object WeatherWidgetManager {
     private fun parseWidgetConfig(json: JSONObject): WidgetConfig {
         WidgetsLogger.i(LOG_TAG, "parseWidgetConfig ${json.toString()}")
         
-        // Parse settings if present
-        val settings = if (json.has("settings")) {
-            parseSettings(json.getJSONObject("settings"))
-        } else {
-            null
-        }
-        
         return WidgetConfig(
             locationName = json.optString("locationName", "current"),
             latitude = json.optDouble("latitude", 0.0),
@@ -1010,29 +997,8 @@ object WeatherWidgetManager {
             model = json.optString("model", null),
             provider = json.optString("provider", null),
             widgetKind = json.optString("widgetKind", null),
-            settings = settings
+            settings = json.optJSONObject("settings") as JsonObject?
         )
-    }
-    
-    /**
-     * Parse settings object from JSON
-     */
-    private fun parseSettings(json: JSONObject): Map<String, Any?> {
-        val settings = mutableMapOf<String, Any?>()
-        val keys = json.keys()
-        while (keys.hasNext()) {
-            val key = keys.next()
-            val value = json.get(key)
-            settings[key] = when (value) {
-                is Boolean -> value
-                is Int -> value
-                is Long -> value
-                is Double -> value
-                is String -> value
-                else -> value.toString()
-            }
-        }
-        return settings
     }
 
     /**
@@ -1047,13 +1013,7 @@ object WeatherWidgetManager {
             config.model?.let { put("model", it) }
             config.provider?.let { put("provider", it) }
             config.widgetKind?.let { put("widgetKind", it) }
-            config.settings?.let { 
-                val settingsJson = JSONObject()
-                it.forEach { (key, value) ->
-                    settingsJson.put(key, value)
-                }
-                put("settings", settingsJson)
-            }
+            put("settings", config.settings)
         }
     }
 
@@ -1071,18 +1031,10 @@ object WeatherWidgetManager {
     /**
      * Load widget JSON schema and extract default settings
      */
-    private fun loadDefaultSettingsForKind(context: Context, widgetKind: String): Map<String, Any?>? {
+    private fun loadDefaultSettingsForKind(context: Context, widgetKind: String): JsonObject? {
         try {
             // Map widget kind to JSON file name
-            val jsonFileName = when (widgetKind) {
-                "SimpleWeatherWidget" -> "SimpleWeatherWidget.json"
-                "SimpleWeatherWithDateWidget" -> "SimpleWeatherWithDateWidget.json"
-                "SimpleWeatherWithClockWidget" -> "SimpleWeatherWithClockWidget.json"
-                "HourlyWeatherWidget" -> "HourlyWeatherWidget.json"
-                "DailyWeatherWidget" -> "DailyWeatherWidget.json"
-                "ForecastWeatherWidget" -> "ForecastWeatherWidget.json"
-                else -> return null
-            }
+            val jsonFileName = "${widgetKind}.json"
             
             // Load JSON from assets
             val jsonString = context.assets.open("app/widget-layouts/widgets/$jsonFileName").bufferedReader().use { it.readText() }
@@ -1094,7 +1046,7 @@ object WeatherWidgetManager {
             }
             
             val settingsSchema = jsonObject.getJSONObject("settings")
-            val defaultSettings = mutableMapOf<String, Any?>()
+            val defaultSettings = mutableMapOf<String, JsonElement>()
             
             val keys = settingsSchema.keys()
             while (keys.hasNext()) {
@@ -1104,18 +1056,18 @@ object WeatherWidgetManager {
                 if (settingDef.has("default")) {
                     val defaultValue = settingDef.get("default")
                     defaultSettings[settingKey] = when (defaultValue) {
-                        is Boolean -> defaultValue
-                        is Int -> defaultValue
-                        is Long -> defaultValue
-                        is Double -> defaultValue
-                        is String -> defaultValue
-                        else -> defaultValue.toString()
+                        is Boolean -> JsonPrimitive(defaultValue)
+                        is Int -> JsonPrimitive(defaultValue)
+                        is Long -> JsonPrimitive(defaultValue)
+                        is Double -> JsonPrimitive(defaultValue)
+                        is String -> JsonPrimitive(defaultValue)
+                        else -> JsonPrimitive(defaultValue.toString())
                     }
                 }
             }
             
             WidgetsLogger.d(LOG_TAG, "Loaded ${defaultSettings.size} default settings for $widgetKind")
-            return if (defaultSettings.isEmpty()) null else defaultSettings
+            return if (defaultSettings.isEmpty()) null else JsonObject(defaultSettings)
         } catch (e: Exception) {
             WidgetsLogger.e(LOG_TAG, "Failed to load default settings for $widgetKind", e)
             return null
@@ -1158,7 +1110,7 @@ data class WidgetConfig(
     val model: String? = null,
     val provider: String? = null,
     val widgetKind: String? = null,
-    val settings: Map<String, Any?>? = null
+    val settings: JsonObject? = null
 )
 
 /**

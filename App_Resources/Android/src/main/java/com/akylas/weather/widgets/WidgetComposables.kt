@@ -120,16 +120,17 @@ object WidgetComposables {
 
     @Composable
     fun WidgetBackground(
+        enabled: Boolean = true,
         modifier: GlanceModifier = GlanceModifier,
         content: @Composable () -> Unit
     ) {
         Box(
-            modifier = modifier
+            modifier = if (enabled) modifier
                 .fillMaxSize()
                 .background(
                     imageProvider = ImageProvider(R.drawable.app_widget_background),
                     colorFilter = ColorFilter.tint(GlanceTheme.colors.widgetBackground)
-                )
+                ) else  modifier.fillMaxSize()
         ) {
             content()
         }

@@ -84,6 +84,7 @@ class SimpleWeatherWithDateWidgetOld : WeatherWidget() {
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
             val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground {
@@ -98,7 +99,7 @@ class SimpleWeatherWithDateWidgetOld : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherWithDateContent(context, data = widgetData, size = size)
+                        WeatherWithDateContent(context, config = widgetConfig, data = widgetData, size = size)
                     }
                 }
             }
@@ -113,6 +114,7 @@ class SimpleWeatherWithDateWidgetOld : WeatherWidget() {
     @Composable
     private fun WeatherWithDateContent(
         context: Context,
+        config: WidgetConfig = WidgetConfig(),
         modifier: GlanceModifier = GlanceModifier,
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize
@@ -122,6 +124,7 @@ class SimpleWeatherWithDateWidgetOld : WeatherWidget() {
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent(
             context = context,
+            config = config,
             data = data,
             size = size
         )

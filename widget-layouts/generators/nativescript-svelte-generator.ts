@@ -391,6 +391,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         crossAlignment: 'horizontalAlignment',
         textAlign: 'textAlignment',
         paddingVertical: ['paddingTop', 'paddingBottom'],
+        paddingHorizontal: ['paddingLeft', 'paddingRight'],
         spacing: 'padding'
     };
     const attrName = attrMap[prop] ?? prop;
@@ -413,7 +414,6 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             return `visibility="hidden"`;
         } else if (Array.isArray(value)) {
             const expr = evaluateMapboxExpression(value, defaultPrefix);
-            console.warn('visibilityIf', value, expr, `visibility={(${expr}) ? 'visible' : 'collapsed'}`);
             return `visibility={(${expr}) ? 'visible' : 'collapsed'}`;
         } else {
             return null;
@@ -579,7 +579,6 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             if (value === '{{item.iconPath}}') {
                 value = `\`\${iconService.iconSetFolderPath}/images/\${${value}}.png\``;
             }
-            console.warn('test', attrName, value);
             return `${attrName}={${value}}`;
         }
         // Use string literals (no curly braces) for constant strings

@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.LocalSize
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
@@ -38,6 +39,7 @@ class HourlyWeatherWidgetOld : WeatherWidget() {
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
             val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            GlanceTheme(colors = WidgetTheme.colors) {
 
                 WidgetComposables.WidgetBackground {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
@@ -54,6 +56,7 @@ class HourlyWeatherWidgetOld : WeatherWidget() {
                         WeatherContent(context, data = widgetData, size = size)
                     }
                 }
+            }
         }
     }
 
@@ -66,13 +69,9 @@ class HourlyWeatherWidgetOld : WeatherWidget() {
         WidgetsLogger.d(LOG_TAG, "Rendering hourly content for ${data.locationName}")
 
         // Support smaller heights
-        val padding = when {
-            size.height < 60.dp -> 2.dp
-            size.height < 80.dp -> 4.dp
-            else -> 6.dp
-        }
+        val padding = 6.dp
         
-        val isSmall = size.height < 80.dp
+        val isSmall = size.width < 80.dp
 
         WidgetComposables.WidgetContainer(padding = padding) {
             Column(modifier = GlanceModifier.fillMaxSize()) {

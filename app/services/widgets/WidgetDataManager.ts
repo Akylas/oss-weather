@@ -136,7 +136,7 @@ export class WidgetDataManager {
         }
 
         formattedData.forecastData = forecastData;
-        DEV_LOG && console.log('formatWeatherDataForWidget', JSON.stringify(forecastData));
+        // DEV_LOG && console.log('formatWeatherDataForWidget', JSON.stringify(forecastData));
         return formattedData;
     }
 

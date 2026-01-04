@@ -12,7 +12,7 @@ import { WeatherWidgetData } from './WidgetTypes';
  */
 export class WidgetBridge extends WidgetBridgeBase {
     private dataManager: WidgetDataManager;
-    private pendingUpdates: Map<string, Promise<void>> = new Map();
+    private pendingUpdates: Map<string, Promise<WeatherWidgetData>> = new Map();
     private lastUpdateTime: Map<string, number> = new Map();
     private cacheTimeoutMs: number = 60000; // 1 minute cache by default
 
@@ -114,8 +114,7 @@ export class WidgetBridge extends WidgetBridgeBase {
             if (!config || !config.widgetKind) {
                 // Widget was added but we don't know its kind yet
                 // This will be handled by the native side calling with widgetKind
-                console.warn(`No configuration found for widget ${widgetId}`);
-                return;
+                throw new Error(`No configuration found for widget ${widgetId}`);
             }
 
             // Generate cache key based on location to deduplicate requests for same location
@@ -126,7 +125,8 @@ export class WidgetBridge extends WidgetBridgeBase {
             // Check if there's a pending update for this location
             if (this.pendingUpdates.has(cacheKey)) {
                 DEV_LOG && console.log(`Reusing pending update for ${cacheKey}`);
-                await this.pendingUpdates.get(cacheKey);
+                const widgetData = await this.pendingUpdates.get(cacheKey);
+                this.sendWeatherDataToWidget(parseInt(widgetId, 10), widgetData);
                 return;
             }
 
@@ -166,6 +166,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
         // Send data back to native
         this.sendWeatherDataToWidget(parseInt(widgetId, 10), widgetData);
+        return widgetData;
     }
 
     /**

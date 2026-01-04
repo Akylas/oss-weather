@@ -21,6 +21,7 @@ export class WidgetConfigManager {
 
     private static loadConfigs() {
         const data = ApplicationSettings.getString(WIDGET_CONFIGS_KEY);
+        DEV_LOG && console.log('loadConfigs', data);
         if (data) {
             try {
                 this.configs = JSON.parse(data);
@@ -49,6 +50,7 @@ export class WidgetConfigManager {
      * Get all per-instance widget configurations
      */
     static getAllConfigs(): { [widgetId: string]: WidgetConfig } {
+        DEV_LOG && console.log('getAllConfigs', JSON.stringify(this.configs));
         if (!this.configs) {
             this.loadConfigs();
         }
@@ -77,10 +79,10 @@ export class WidgetConfigManager {
      */
     static getKindConfig(widgetKind: string): WidgetConfig {
         const kindConfigs = this.getAllKindConfigs();
-        if (!kindConfigs[widgetKind]) {
-            kindConfigs[widgetKind] = this.createDefaultConfig();
-            this.saveAllKindConfigs();
-        }
+        // if (!kindConfigs[widgetKind]) {
+        //     kindConfigs[widgetKind] = this.createDefaultConfig();
+        //     this.saveAllKindConfigs();
+        // }
         return kindConfigs[widgetKind];
     }
 
@@ -118,7 +120,7 @@ export class WidgetConfigManager {
         // Otherwise, try to get kind config if we know the widget kind
         // This shouldn't normally happen - instances should be created with saveConfig
         DEV_LOG && console.log(TAG, 'getConfig (no instance found)', widgetId);
-        return this.createDefaultConfig();
+        return null;
     }
 
     /**
@@ -243,7 +245,7 @@ export class WidgetConfigManager {
             // Widget JSON files define settings with defaults
             // For now, hardcode known settings - could be loaded from JSON files at runtime
             const settingsDefaults: Record<string, Record<string, any>> = {
-                'SimpleWeatherWithClockWidget': {
+                SimpleWeatherWithClockWidget: {
                     clockBold: true
                 }
             };
@@ -257,17 +259,17 @@ export class WidgetConfigManager {
     /**
      * Create default config with settings initialized from widget schema
      */
-    static createDefaultConfig(widgetKind?: string): WidgetConfig {
-        const config: WidgetConfig = {
-            locationName: 'current'
-        };
-        
-        // Initialize settings from widget schema if widgetKind provided
-        if (widgetKind) {
-            config.widgetKind = widgetKind;
-            config.settings = this.getDefaultSettings(widgetKind);
-        }
-        
-        return config;
-    }
+    // static createDefaultConfig(widgetKind?: string): WidgetConfig {
+    //     const config: WidgetConfig = {
+    //         locationName: 'current'
+    //     };
+
+    //     // Initialize settings from widget schema if widgetKind provided
+    //     if (widgetKind) {
+    //         config.widgetKind = widgetKind;
+    //         config.settings = this.getDefaultSettings(widgetKind);
+    //     }
+
+    //     return config;
+    // }
 }

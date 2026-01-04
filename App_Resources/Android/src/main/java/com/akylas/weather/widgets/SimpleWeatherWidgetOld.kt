@@ -44,9 +44,10 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
             val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {

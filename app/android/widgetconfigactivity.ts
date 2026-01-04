@@ -16,6 +16,7 @@ import { ComponentInstanceInfo } from 'svelte-native/dom';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { onInitRootView } from '~/variables';
 import type ConfigWidget__SvelteComponent_ from '~/components/settings/ConfigWidget.svelte';
+import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
 
 const TAG = '[WidgetConfActivity]';
 const CALLBACKS = '_callbacks';
@@ -31,7 +32,6 @@ export let moduleLoaded: boolean;
 class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCallbacks {
     private _rootView: View;
     private widgetId: number = -1;
-    private widgetClass: string = '';
 
     public getRootView(): View {
         return this._rootView;
@@ -57,22 +57,20 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
         if (intent) {
             const extras = intent.getExtras();
             if (extras) {
-                this.widgetId = extras.getInt(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID, android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID);
-                this.widgetClass = extras.getString('widget_class') || '';
-                DEV_LOG && console.log(TAG, 'Widget ID:', this.widgetId, 'Widget Class:', this.widgetClass);
+                this.widgetId = extras.getInt('appWidgetId', 0);
+                DEV_LOG && console.log(TAG, 'Widget ID:', this.widgetId);
             }
         }
 
         if (this.widgetId === -1) {
+            activity.setResult(android.app.Activity.RESULT_CANCELED);
             activity.finish();
             return;
         }
 
         const WeatherWidgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
-        const config = WeatherWidgetManager.loadWidgetConfig(this, this.widgetId);
-
-        WeatherWidgetManager.addActiveWidget(this, this.widgetId);
-        WeatherWidgetManager.sendWidgetAdded(this, this.widgetId);
+        WeatherWidgetManager.onWidgetAdded(activity, this.widgetId);
+        WidgetConfigManager.reloadConfigs();
 
         if (intent && intent.getAction()) {
             Application.android.notify({
@@ -273,20 +271,13 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
             startThemeHelper(true);
             onInitRootView(true);
 
-            // Check for valid widget ID
-            if (this.widgetId === android.appwidget.AppWidgetManager.INVALID_APPWIDGET_ID) {
-                DEV_LOG && console.log(TAG, 'Invalid widget ID');
-                activity.setResult(android.app.Activity.RESULT_CANCELED);
-                activity.finish();
-                return;
-            }
-
+            const config = WidgetConfigManager.getConfig(String(this.widgetId));
             // Mount ConfigWidget component
             const { resolveComponentElement } = await import('@shared/utils/ui');
             const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
 
             this.componentInstanceInfo = resolveComponentElement(ConfigWidget, {
-                widgetClass: this.widgetClass,
+                widgetClass: config.widgetKind,
                 widgetId: String(this.widgetId),
                 modalMode: true
             }) as ComponentInstanceInfo<GridLayout, ConfigWidget__SvelteComponent_>;
@@ -297,11 +288,11 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
             // Listen for back button to finish activity with result
             rootView.on('activityBackPressed', (args: AndroidActivityBackPressedEventData) => {
                 const WeatherWidgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
-                WeatherWidgetManager.requestWidgetUpdate(this, this.widgetId);
+                WeatherWidgetManager.requestWidgetUpdate(activity, this.widgetId);
                 args.cancel = true;
                 // Set result OK when closing
                 const resultIntent = new android.content.Intent();
-                resultIntent.putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID, this.widgetId);
+                resultIntent.putExtra('appWidgetId', this.widgetId);
                 activity.setResult(android.app.Activity.RESULT_OK, resultIntent);
                 activity.finish();
             });

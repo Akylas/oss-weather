@@ -44,16 +44,20 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
         setupUpdateWorker(context)
         registerThemeChangeReceiver(context);
 
-        // Initialize cache to populate StateFlow
+        // Initialize caches to populate StateFlows
         WeatherWidgetManager.loadWidgetDataCache(context)
+        WeatherWidgetManager.getAllWidgetConfigs(context) // Initializes WidgetConfigStore
 
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
 
             // Observe widget data from StateFlow - triggers automatic recomposition
             val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
             val widgetData = dataMap[widgetId]
+            
+            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
+            val configMap by WeatherWidgetManager.WidgetConfigStore.widgetConfigs.collectAsState()
+            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {

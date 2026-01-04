@@ -66,6 +66,38 @@ object WidgetDataStore {
 }
 
 /**
+ * Reactive config store for widget configurations using StateFlow
+ * Enables automatic widget recomposition when settings change
+ */
+object WidgetConfigStore {
+    private val _widgetConfigs = MutableStateFlow<Map<Int, WidgetConfig>>(emptyMap())
+    val widgetConfigs: StateFlow<Map<Int, WidgetConfig>> = _widgetConfigs.asStateFlow()
+    
+    fun updateWidgetConfig(widgetId: Int, config: WidgetConfig) {
+        _widgetConfigs.update { current ->
+            current + (widgetId to config)
+        }
+        WidgetsLogger.d("WidgetConfigStore", "Updated config for widgetId=$widgetId, total widgets=${_widgetConfigs.value.size}")
+    }
+    
+    fun removeWidgetConfig(widgetId: Int) {
+        _widgetConfigs.update { current ->
+            current - widgetId
+        }
+        WidgetsLogger.d("WidgetConfigStore", "Removed config for widgetId=$widgetId")
+    }
+    
+    fun initializeFromStorage(configs: Map<Int, WidgetConfig>) {
+        _widgetConfigs.value = configs
+        WidgetsLogger.d("WidgetConfigStore", "Initialized with ${configs.size} widget configs")
+    }
+    
+    fun getConfig(widgetId: Int): WidgetConfig? {
+        return _widgetConfigs.value[widgetId]
+    }
+}
+
+/**
  * Manages weather widget updates and scheduling
  */
 object WeatherWidgetManager {
@@ -867,6 +899,14 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun getAllWidgetConfigs(context: Context): Map<Int, WidgetConfig> {
+        // First check if configs are already in StateFlow
+        val cachedConfigs = WidgetConfigStore.widgetConfigs.value
+        if (cachedConfigs.isNotEmpty()) {
+            WidgetsLogger.d(LOG_TAG, "getAllWidgetConfigs() -> returning ${cachedConfigs.size} from StateFlow")
+            return cachedConfigs
+        }
+        
+        // Load from SharedPreferences and initialize StateFlow
         val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
         val json = prefs.getString(WIDGET_CONFIGS_KEY, null) ?: run {
             WidgetsLogger.d(LOG_TAG, "getAllWidgetConfigs() -> no stored configs")
@@ -885,6 +925,10 @@ object WeatherWidgetManager {
                 WidgetsLogger.i(LOG_TAG, "Loaded widget configuration ${widgetId.toInt()}:${configs[widgetId.toInt()]}")
             }
             WidgetsLogger.i(LOG_TAG, "Loaded ${configs.size} widget configurations")
+            
+            // Initialize StateFlow with loaded configs
+            WidgetConfigStore.initializeFromStorage(configs)
+            
             configs
         } catch (e: Exception) {
             WidgetsLogger.e(LOG_TAG, "Failed to parse widget configurations", e)
@@ -972,6 +1016,11 @@ object WeatherWidgetManager {
         val configs = getAllWidgetConfigs(context).toMutableMap()
         configs[widgetId] = config
         saveAllWidgetConfigs(context, configs)
+        
+        // Update StateFlow to trigger reactive recomposition
+        // Only update settings to avoid triggering data refetch
+        WidgetConfigStore.updateWidgetConfig(widgetId, config)
+        WidgetsLogger.i(LOG_TAG, "Updated WidgetConfigStore for widgetId=$widgetId - widgets will recompose automatically")
     }
 
     /**
@@ -985,6 +1034,9 @@ object WeatherWidgetManager {
         val configs = getAllWidgetConfigs(context).toMutableMap()
         configs.remove(widgetId)
         saveAllWidgetConfigs(context, configs)
+        
+        // Remove from StateFlow
+        WidgetConfigStore.removeWidgetConfig(widgetId)
         // reloadConfigs()
  
         WidgetsLogger.i(LOG_TAG, "Deleted config and cache for widgetId=$widgetId")

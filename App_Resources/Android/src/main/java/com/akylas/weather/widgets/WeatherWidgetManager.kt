@@ -1,6 +1,5 @@
 package com.akylas.weather.widgets
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.appwidget.AppWidgetManager
@@ -9,34 +8,29 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.glance.ImageProvider
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.work.*
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import org.json.JSONObject
 import org.json.JSONArray
 import java.io.File
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonElement
 
 import androidx.core.content.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.updateAll
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.update
 
 /**
@@ -63,6 +57,20 @@ object WidgetDataStore {
     fun initializeFromCache(cache: Map<Int, WeatherWidgetData>) {
         _widgetData.value = cache
         WidgetsLogger.d("WidgetDataStore", "Initialized with ${cache.size} cached widgets")
+    }
+    /**
+     * Returns a StateFlow that only emits when the specific widget's data.
+     * This prevents unnecessary recomposition of other widgets when a different widget's data changes.
+     */
+    fun getWidgetDataFlow(widgetId: Int): StateFlow<WeatherWidgetData?> {
+        return _widgetData
+            .map { data -> data[widgetId] }
+            .distinctUntilChanged()
+            .stateIn(
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                started = SharingStarted.Eagerly,
+                initialValue = _widgetData.value[widgetId]
+            )
     }
 }
 
@@ -96,6 +104,21 @@ object WidgetConfigStore {
     fun getConfig(widgetId: Int): WidgetConfig? {
         return _widgetConfigs.value[widgetId]
     }
+    
+    /**
+     * Returns a StateFlow that only emits when the specific widget's settings change.
+     * This prevents unnecessary recomposition of other widgets when a different widget's config changes.
+     */
+    fun getWidgetSettingsFlow(widgetId: Int): StateFlow<JsonObject?> {
+        return widgetConfigs
+            .map { configs -> configs[widgetId]?.settings }
+            .distinctUntilChanged()
+            .stateIn(
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                started = SharingStarted.Eagerly,
+                initialValue = _widgetConfigs.value[widgetId]?.settings
+            )
+    }
 }
 
 /**
@@ -103,7 +126,6 @@ object WidgetConfigStore {
  */
 object WeatherWidgetManager {
     private val coroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
-    private const val WIDGET_UPDATE_WORK_TAG = "weather_widget_update"
     private const val WIDGET_PREFS_FILE = "prefs.db"
     private const val UPDATE_FREQUENCY_KEY = "widget_update_frequency"
     private const val WIDGET_CONFIGS_KEY = "widget_configs" // per-instance configs
@@ -115,16 +137,6 @@ object WeatherWidgetManager {
     private const val LOG_TAG = "WeatherWidgetManager"
 
     private val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
-
-    // Widget kind constants matching TypeScript
-    private val WIDGET_KINDS = listOf(
-        "SimpleWeatherWidget",
-        "SimpleWeatherWithDateWidget",
-        "SimpleWeatherWithClockWidget",
-        "HourlyWeatherWidget",
-        "DailyWeatherWidget",
-        "ForecastWeatherWidget"
-    )
 
     init {
         WidgetsLogger.d(LOG_TAG, "WeatherWidgetManager loaded")
@@ -185,7 +197,7 @@ object WeatherWidgetManager {
                 jsonObject.put(widgetId.toString(), dataJson)
             }
             
-            prefs.edit().putString(WIDGET_DATA_CACHE_KEY, jsonObject.toString()).apply()
+            prefs.edit { putString(WIDGET_DATA_CACHE_KEY, jsonObject.toString()) }
             WidgetsLogger.d(LOG_TAG, "Saved ${widgetDataCache.size} widgets to persisted cache")
         } catch (e: Exception) {
             WidgetsLogger.e(LOG_TAG, "Failed to save widget data cache", e)
@@ -235,7 +247,7 @@ object WeatherWidgetManager {
     private fun saveActiveWidgetIdsToPrefs(context: Context, widgetIds: Set<Int>) {
         val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
         val array = JSONArray(widgetIds.toList())
-        prefs.edit().putString(ACTIVE_WIDGETS_KEY, array.toString()).apply()
+        prefs.edit { putString(ACTIVE_WIDGETS_KEY, array.toString()) }
         WidgetsLogger.d(LOG_TAG, "Saved ${widgetIds.size} active widget IDs to prefs")
     }
 
@@ -467,8 +479,7 @@ object WeatherWidgetManager {
         WidgetsLogger.i(LOG_TAG, "onWidgetAdded(widgetId=$widgetId)")
         
         // ensure config exists
-        val config = loadWidgetConfig(context, widgetId, true)
-        // reloadConfigs()
+        loadWidgetConfig(context, widgetId, true)
         // Add to active list
         addActiveWidget(context, widgetId)
         sendWidgetAdded(context, widgetId)
@@ -494,10 +505,7 @@ object WeatherWidgetManager {
     @JvmStatic
     fun requestWidgetUpdate(context: Context, widgetId: Int) {
         // ensure config exists
-        val config = loadWidgetConfig(context, widgetId, false);
-        if (config == null) {
-            return;
-        }
+        loadWidgetConfig(context, widgetId, false) ?: return
         WidgetsLogger.d(LOG_TAG, "requestWidgetUpdate(widgetId=$widgetId)")
         // Send broadcast to JS side to request weather data
         val intent = Intent("com.akylas.weather.WIDGET_UPDATE_REQUEST")
@@ -513,10 +521,7 @@ object WeatherWidgetManager {
     @JvmStatic
     fun sendWidgetAdded(context: Context, widgetId: Int) {
         // ensure config exists
-        val config = loadWidgetConfig(context, widgetId, false);
-        if (config == null) {
-            return;
-        }
+        loadWidgetConfig(context, widgetId, false) ?: return
         WidgetsLogger.d(LOG_TAG, "sendWidgetAdded(widgetId=$widgetId)")
         // Send broadcast to JS side to request weather data
         val intent = Intent("com.akylas.weather.WIDGET_ADDED")
@@ -800,8 +805,6 @@ object WeatherWidgetManager {
      */
     private fun updateWidget(context: Context, widgetId: Int) {
         WidgetsLogger.d(LOG_TAG, "updateWidget(widgetId=$widgetId) scanning receivers")
-        val appWidgetManager = AppWidgetManager.getInstance(context)
-
         val widgetClass = getGlanceWidgetClass(context, widgetId)
         if (widgetClass != null) {
             sendWidgetUpdate(context, widgetId, widgetClass)
@@ -992,7 +995,7 @@ object WeatherWidgetManager {
         WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId)")
         val config = getAllWidgetConfigs(context)[widgetId]
         
-        if (config != null) {
+        if (config != null || !canCreate) {
             WidgetsLogger.d(LOG_TAG, "loadWidgetConfig(widgetId=$widgetId) -> found instance config:$config")
             return config
         }
@@ -1085,7 +1088,7 @@ object WeatherWidgetManager {
      * Parse WidgetConfig from JSONObject
      */
     private fun parseWidgetConfig(json: JSONObject): WidgetConfig {
-        WidgetsLogger.i(LOG_TAG, "parseWidgetConfig ${json.toString()}")
+        WidgetsLogger.i(LOG_TAG, "parseWidgetConfig $json")
         
         return WidgetConfig(
             locationName = json.optString("locationName", "current"),

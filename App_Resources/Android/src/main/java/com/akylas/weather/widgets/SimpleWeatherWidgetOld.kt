@@ -45,28 +45,28 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
 
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
-            val configMap by WidgetConfigStore.widgetConfigs.collectAsState()
-            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             // Observe widget data from StateFlow - triggers automatic recomposition
-            val dataMap by WidgetDataStore.widgetData.collectAsState()
-            val widgetData = dataMap[widgetId]
+            val widgetData by WidgetDataStore.getWidgetDataFlow(widgetId).collectAsState()
+            
+            // Observe only this widget's settings - prevents unnecessary recomposition from other widgets
+            val widgetSettings by WidgetConfigStore.getWidgetSettingsFlow(widgetId).collectAsState()
+            val widgetConfig = WidgetConfig(settings = widgetSettings)
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
-                    if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: false)) {
+                    if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
-                    } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {
+                    } else if (widgetData!!.loadingState == WidgetLoadingState.LOADING) {
                         WidgetComposables.NoDataContent(WidgetLoadingState.LOADING)
-                    } else if (widgetData.loadingState == WidgetLoadingState.ERROR) {
+                    } else if (widgetData!!.loadingState == WidgetLoadingState.ERROR) {
                         WidgetComposables.NoDataContent(
                             WidgetLoadingState.ERROR,
-                            widgetData.errorMessage
+                            widgetData!!.errorMessage
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherContent(context, data = widgetData, size = size)
+                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
                     }
                 }
             }
@@ -82,6 +82,7 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
     private fun WeatherContent(
         context: Context,
         modifier: GlanceModifier = GlanceModifier,
+        config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize
     ) {

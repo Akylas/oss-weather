@@ -2,6 +2,8 @@ package com.akylas.weather.widgets
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,10 +83,16 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
             ).setInitialDelay(delayUntilNextDay, TimeUnit.MILLISECONDS).build()
         )
 
+        // Initialize cache to populate StateFlow
+        WeatherWidgetManager.loadWidgetDataCache(context)
+
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
             val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
+
+            // Observe widget data from StateFlow - triggers automatic recomposition
+            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val widgetData = dataMap[widgetId]
 
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground {

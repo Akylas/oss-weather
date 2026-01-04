@@ -36,7 +36,34 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.update
 
+/**
+ * Reactive data store for widget data using StateFlow
+ */
+object WidgetDataStore {
+    private val _widgetData = MutableStateFlow<Map<Int, WeatherWidgetData>>(emptyMap())
+    val widgetData: StateFlow<Map<Int, WeatherWidgetData>> = _widgetData.asStateFlow()
+    
+    fun updateWidgetData(widgetId: Int, data: WeatherWidgetData) {
+        _widgetData.update { current ->
+            current + (widgetId to data)
+        }
+        WidgetsLogger.d("WidgetDataStore", "Updated data for widgetId=$widgetId, total widgets=${_widgetData.value.size}")
+    }
+    
+    fun removeWidgetData(widgetId: Int) {
+        _widgetData.update { current ->
+            current - widgetId
+        }
+        WidgetsLogger.d("WidgetDataStore", "Removed data for widgetId=$widgetId")
+    }
+    
+    fun initializeFromCache(cache: Map<Int, WeatherWidgetData>) {
+        _widgetData.value = cache
+        WidgetsLogger.d("WidgetDataStore", "Initialized with ${cache.size} cached widgets")
+    }
+}
 
 /**
  * Manages weather widget updates and scheduling
@@ -70,14 +97,15 @@ object WeatherWidgetManager {
         WidgetsLogger.d(LOG_TAG, "WeatherWidgetManager loaded")
     }
 
-    // Widget data cache - now lazy loaded from prefs
+    // Widget data cache - for persistence only
     private val widgetDataCache = mutableMapOf<Int, WeatherWidgetData>()
     private var cacheLoaded = false
 
     /**
-     * Load widget data cache from SharedPreferences
+     * Load widget data cache from SharedPreferences and initialize StateFlow
+     * Made internal so widgets can ensure cache is loaded before observing StateFlow
      */
-    private fun loadWidgetDataCache(context: Context) {
+    internal fun loadWidgetDataCache(context: Context) {
         if (cacheLoaded) return
         
         val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
@@ -99,6 +127,9 @@ object WeatherWidgetManager {
                 val data = JSON.decodeFromString<WeatherWidgetData>(dataJson)
                 widgetDataCache[widgetId] = data
             }
+            
+            // Initialize StateFlow with cached data
+            WidgetDataStore.initializeFromCache(widgetDataCache.toMap())
             
             WidgetsLogger.i(LOG_TAG, "Loaded ${widgetDataCache.size} widgets from persisted cache")
         } catch (e: Exception) {
@@ -130,10 +161,13 @@ object WeatherWidgetManager {
 
     fun deleteWidgetCache(context: Context, widgetId: Int) {
         WidgetsLogger.d(LOG_TAG, "deleteWidgetCache(widgetId=$widgetId) called")
-       // Delete cached data
+        // Delete cached data
         loadWidgetDataCache(context)
         widgetDataCache.remove(widgetId)
         saveWidgetDataCache(context)
+        
+        // Remove from StateFlow
+        WidgetDataStore.removeWidgetData(widgetId)
     }
 
 
@@ -471,11 +505,11 @@ object WeatherWidgetManager {
             loadingState = WidgetLoadingState.LOADING
         )
         
-        // Update cache
-        widgetDataCache[widgetId] = loadingData
+        // Update StateFlow - triggers automatic recomposition
+        WidgetDataStore.updateWidgetData(widgetId, loadingData)
         
-        // Trigger widget update
-        forceGlanceUpdate(context, widgetId)
+        // Also update cache for persistence
+        widgetDataCache[widgetId] = loadingData
     }
     
     /**
@@ -490,15 +524,17 @@ object WeatherWidgetManager {
             errorMessage = errorMessage
         )
         
-        // Update cache
-        widgetDataCache[widgetId] = errorData
+        // Update StateFlow - triggers automatic recomposition
+        WidgetDataStore.updateWidgetData(widgetId, errorData)
         
-        // Trigger widget update
-        forceGlanceUpdate(context, widgetId)
+        // Also update cache for persistence
+        widgetDataCache[widgetId] = errorData
     }
 
     /**
     * Get the Glance widget class for a widget ID
+    * NOTE: This is no longer used for forcing updates with StateFlow pattern,
+    * but kept for potential future diagnostics
     */
     private fun getGlanceWidgetClass(context: Context, widgetId: Int): Class<out GlanceAppWidget>? {
         val appWidgetManager = AppWidgetManager.getInstance(context)
@@ -523,41 +559,45 @@ object WeatherWidgetManager {
     }
 
     /**
-    * Force a Glance widget to update
+    * DEPRECATED: Force a Glance widget to update
+    * 
+    * This method is no longer used. With the StateFlow-based reactive architecture,
+    * widgets automatically recompose when data changes via collectAsState.
+    * Keeping this commented out for reference during transition period.
     */
-    private fun forceGlanceUpdate(context: Context, widgetId: Int) {
-        WidgetsLogger.d(LOG_TAG, "forceGlanceUpdate for widget $widgetId=")
-        coroutineScope.launch {
-            try {
-                val widgetClass = getGlanceWidgetClass(context, widgetId)
-                
-                if (widgetClass != null) {
-                    val widget = widgetClass.getDeclaredConstructor().newInstance()
-                    
-                    val glanceManager = GlanceAppWidgetManager(context)
-                    val glanceIds = glanceManager.getGlanceIds(widgetClass)
-                    
-                    // Find matching GlanceId
-                    val matchingGlanceId = glanceIds.find { glanceManager.getAppWidgetId(it) == widgetId }
-                    WidgetsLogger.d(LOG_TAG, "Updating widget $widgetId of class=${widgetClass}")
-                    
-                    if (matchingGlanceId != null) {
-                        widget.update(context, matchingGlanceId)
-                        WidgetsLogger.d(LOG_TAG, "Updated Glance widget ${widgetId}")
-                    } else {
-                        // Update all widgets of this type
-                        widget.updateAll(context)
-                        WidgetsLogger.d(LOG_TAG, "Updated all widgets of type ${widgetClass.simpleName}")
-                    }
-                    // sendWidgetUpdate(context, widgetId, widgetClass)
-                } else {
-                    WidgetsLogger.w(LOG_TAG, "Could not find widget class for ${widgetId}")
-                }
-            } catch (e: Exception) {
-                WidgetsLogger.e(LOG_TAG, "Error updating Glance widget ${widgetId}", e)
-            }
-        }
-    }
+    // private fun forceGlanceUpdate(context: Context, widgetId: Int) {
+    //     WidgetsLogger.d(LOG_TAG, "forceGlanceUpdate for widget $widgetId=")
+    //     coroutineScope.launch {
+    //         try {
+    //             val widgetClass = getGlanceWidgetClass(context, widgetId)
+    //             
+    //             if (widgetClass != null) {
+    //                 val widget = widgetClass.getDeclaredConstructor().newInstance()
+    //                 
+    //                 val glanceManager = GlanceAppWidgetManager(context)
+    //                 val glanceIds = glanceManager.getGlanceIds(widgetClass)
+    //                 
+    //                 // Find matching GlanceId
+    //                 val matchingGlanceId = glanceIds.find { glanceManager.getAppWidgetId(it) == widgetId }
+    //                 WidgetsLogger.d(LOG_TAG, "Updating widget $widgetId of class=${widgetClass}")
+    //                 
+    //                 if (matchingGlanceId != null) {
+    //                     widget.update(context, matchingGlanceId)
+    //                     WidgetsLogger.d(LOG_TAG, "Updated Glance widget ${widgetId}")
+    //                 } else {
+    //                     // Update all widgets of this type
+    //                     widget.updateAll(context)
+    //                     WidgetsLogger.d(LOG_TAG, "Updated all widgets of type ${widgetClass.simpleName}")
+    //                 }
+    //                 // sendWidgetUpdate(context, widgetId, widgetClass)
+    //             } else {
+    //                 WidgetsLogger.w(LOG_TAG, "Could not find widget class for ${widgetId}")
+    //             }
+    //         } catch (e: Exception) {
+    //             WidgetsLogger.e(LOG_TAG, "Error updating Glance widget ${widgetId}", e)
+    //         }
+    //     }
+    // }
     /**
      * Update widget with weather data received from JS
      *
@@ -568,10 +608,9 @@ object WeatherWidgetManager {
         if (data == null) {
             WidgetsLogger.i(LOG_TAG, "updateWidgetData(widgetId=$widgetId) received null data -> clearing cache")
             widgetDataCache.remove(widgetId)
+            WidgetDataStore.removeWidgetData(widgetId)
 
-            // Trigger widget update so UI can reflect "no data" state
-            forceGlanceUpdate(context, widgetId)
-            WidgetsLogger.i(LOG_TAG, "Cleared widget data and requested update for widgetId=$widgetId")
+            WidgetsLogger.i(LOG_TAG, "Cleared widget data for widgetId=$widgetId")
             return
         }
 
@@ -615,17 +654,19 @@ object WeatherWidgetManager {
     }
 
     /**
-     * Get cached widget data
+     * Get cached widget data - now reads from StateFlow
      */
     fun getWidgetData(context: Context, widgetId: Int): WeatherWidgetData? {
         loadWidgetDataCache(context)
-        val found = widgetDataCache[widgetId] != null
-        WidgetsLogger.d(LOG_TAG, "getWidgetData(widgetId=$widgetId) -> found=$found")
-        return widgetDataCache[widgetId]
+        // Read from StateFlow for most up-to-date data
+        val data = WidgetDataStore.widgetData.value[widgetId]
+        WidgetsLogger.d(LOG_TAG, "getWidgetData(widgetId=$widgetId) -> found=${data != null}")
+        return data
     }
 
     /**
      * Common handler used by both JSON and object update paths
+     * Now uses StateFlow for reactive updates instead of manual widget.update()
      */
     private fun handleParsedWidgetData(context: Context, widgetId: Int, data: WeatherWidgetData) {
         WidgetsLogger.d(LOG_TAG, "handleParsedWidgetData(widgetId=$widgetId, temperature=${data.temperature}, location=${data.locationName}, loadingState=${data.loadingState})")
@@ -634,8 +675,10 @@ object WeatherWidgetManager {
         widgetDataCache[widgetId] = data
         saveWidgetDataCache(context) // Persist after update
         
-        forceGlanceUpdate(context, widgetId)
-        WidgetsLogger.i(LOG_TAG, "Widget data updated for widgetId=$widgetId")
+        // Update StateFlow - triggers automatic recomposition in all observing widgets
+        WidgetDataStore.updateWidgetData(widgetId, data)
+        
+        WidgetsLogger.i(LOG_TAG, "Widget data updated for widgetId=$widgetId (reactive)")
     }
 
     /**

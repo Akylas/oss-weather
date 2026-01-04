@@ -41,10 +41,14 @@ class DailyWeatherWidgetOld : WeatherWidget() {
         registerThemeChangeReceiver(context);
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
+            val widgetConfig = WeatherWidgetManager.loadWidgetConfig(context, widgetId) ?: WeatherWidgetManager.createDefaultConfig()
 
-            val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            // Observe widget data from StateFlow - triggers automatic recomposition
+            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val widgetData = dataMap[widgetId]
+
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {

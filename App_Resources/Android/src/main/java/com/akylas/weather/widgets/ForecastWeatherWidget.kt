@@ -52,7 +52,7 @@ class ForecastWeatherWidget : WeatherWidget() {
             val widgetData = dataMap[widgetId]
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {

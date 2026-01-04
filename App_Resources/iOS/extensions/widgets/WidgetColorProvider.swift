@@ -1,38 +1,7 @@
 import SwiftUI
 
-/// Provides colors for widgets that automatically adapt to dark mode
-struct WidgetColorProvider {
-    // MARK: - Primary Colors
-    static let background = Color("WidgetBackground", bundle: nil)
-    static let surface = Color("WidgetSurface", bundle: nil)
-    static let widgetBackground = Color("WidgetBackground", bundle: nil)
-    
-    // MARK: - Text Colors
-    static let onSurface = Color("WidgetOnSurface", bundle: nil)
-    static let onSurfaceVariant = Color("WidgetOnSurfaceVariant", bundle: nil)
-    static let onBackground = Color("WidgetOnBackground", bundle: nil)
-    
-    // MARK: - Accent Colors
-    static let primary = Color("WidgetPrimary", bundle: nil)
-    static let accent = Color("WidgetAccent", bundle: nil)
-    
-    // MARK: - Status Colors
-    static let error = Color("WidgetError", bundle: nil)
-    
-    // MARK: - Precipitation Color
-    static let precipitation = Color("WidgetPrecipitation", bundle: nil)
-    
-    // MARK: - Dynamic Color Support (for views that need ColorScheme context)
-    static func adaptiveColor(
-        light: Color,
-        dark: Color,
-        colorScheme: ColorScheme
-    ) -> Color {
-        colorScheme == .dark ? dark : light
-    }
-}
-
 // MARK: - Color Hex Extension
+@available(iOS 14.0, *)
 extension Color {
     /// Creates a color from a hex string
     /// Supports formats: "#RGB", "#RGBA", "#RRGGBB", "#RRGGBBAA"
@@ -70,8 +39,9 @@ extension Color {
     }
 }
 
-// MARK: - Fallback Static Colors (if Asset Catalog not used)
-extension WidgetColorProvider {
+/// Provides colors for widgets that automatically adapt to dark mode
+@available(iOS 14.0, *)
+struct WidgetColorProvider {
     // Background Colors
     static var backgroundLight: Color {
         Color(hex: "#4DA8DA") // RGB(77, 168, 218)
@@ -146,6 +116,7 @@ extension WidgetColorProvider {
 }
 
 // MARK: - Convenience Methods
+@available(iOS 14.0, *)
 extension WidgetColorProvider {
     /// Get background color based on color scheme
     static func backgroundColor(for colorScheme: ColorScheme) -> Color {

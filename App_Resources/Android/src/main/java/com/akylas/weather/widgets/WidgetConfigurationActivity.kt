@@ -36,25 +36,29 @@ class WidgetConfigurationActivity : AppCompatActivity() {
         }
 
         // Create default configuration
-        val defaultConfig = WidgetConfig(
-            locationName = "current",
-            latitude = 0.0,
-            longitude = 0.0,
-            model = "default"
-        )
+        // val defaultConfig = WidgetConfig(
+        //     locationName = "current",
+        //     latitude = 0.0,
+        //     longitude = 0.0,
+        //     model = "default"
+        // )
         
-        // Load all existing configs
-        val allConfigs = WeatherWidgetManager.getAllWidgetConfigs(this).toMutableMap()
-        
-        // Add this widget's config
-        allConfigs[appWidgetId] = defaultConfig
-        
-        // Save all configs
-        WeatherWidgetManager.saveAllWidgetConfigs(this, allConfigs)
+        // // Load all existing configs
+        // val allConfigs = WeatherWidgetManager.getAllWidgetConfigs(this).toMutableMap()
+        // if(allConfigs[appWidgetId] == null) {
+
+        //     // Add this widget's config
+        //     allConfigs[appWidgetId] = defaultConfig
+        //     // Save all configs
+        //     WeatherWidgetManager.saveAllWidgetConfigs(this, allConfigs)
+        // }
+        // ensure config exists
+        val config = WeatherWidgetManager.loadWidgetConfig(this, appWidgetId);
 
         WeatherWidgetManager.addActiveWidget(this, appWidgetId)
+        WeatherWidgetManager.sendWidgetAdded(this, appWidgetId)
         
-        // Request initial data update
+        // // Request initial data update
         WeatherWidgetManager.requestWidgetUpdate(this, appWidgetId)
 
         // Return result

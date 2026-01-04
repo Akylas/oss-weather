@@ -1,13 +1,10 @@
-// app/services/widgets/ios/IOSWidgetBridge.ts
-// iOS-specific widget bridge using shared logic
-
-import { Application, Device, File, knownFolders, path } from '@nativescript/core';
-import { WidgetDataManager, isDefaultLocation } from './WidgetDataManager';
-import { WidgetConfigManager } from './WidgetConfigManager';
 import WidgetBridgeBase from './WidgetBridge.common';
-import { WeatherWidgetData } from './WidgetTypes';
+import { WidgetConfigManager } from './WidgetConfigManager';
+import { WidgetDataManager } from './WidgetDataManager';
 
 const TAG = '[WidgetBridge.iOS]';
+
+const groupId = WidgetUtils.suiteName;
 
 /**
  * Bridge between native iOS widgets and JS weather data
@@ -19,37 +16,40 @@ export class WidgetBridge extends WidgetBridgeBase {
         super();
         this.dataManager = new WidgetDataManager();
         this.setupAppGroupContainer();
-        this.observeWidgetEvents();
+        // this.observeWidgetEvents();
     }
 
     /**
      * Observe widget lifecycle events from extension
      */
     private widgetEventObserver: any;
+    private widgetEventObserverCallbackFunctionRef: any;
     private observeWidgetEvents() {
         try {
             // Listen for Darwin notifications from widget extension
-            const center = CFNotificationCenterGetDarwinNotifyCenter();
-            const callback = (center, observer, name, object, userInfo) => {
-                this.handleWidgetEvent();
-            };
-
-            this.widgetEventObserver = CFNotificationCenterAddObserver(center, null, callback, 'com.akylas.weather.widgetEvent' as any, null, CFNotificationSuspensionBehavior.DeliverImmediately);
+            this.widgetEventObserver = new interop.Reference<any>(interop.types.void);
+            this.widgetEventObserverCallbackFunctionRef = new interop.FunctionReference(observerCallback);
+            CFNotificationCenterAddObserver(
+                CFNotificationCenterGetDarwinNotifyCenter(),
+                this.widgetEventObserver,
+                this.widgetEventObserverCallbackFunctionRef,
+                'com.akylas.weather.widgetEvent',
+                null,
+                CFNotificationSuspensionBehavior.DeliverImmediately
+            );
 
             DEV_LOG && console.log(TAG, 'Started observing widget events');
         } catch (error) {
-            console.error(TAG, 'Failed to setup widget event observer:', error);
+            console.error(TAG, 'Failed to setup widget event observer:', error, error.stack);
         }
     }
 
     /**
      * Handle widget event from extension
      */
-    private handleWidgetEvent() {
+    public handleWidgetEvent() {
         try {
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName('group.com.akylas.weather');
-            const data = userDefaults?.dataForKey('last_widget_event');
-
+            const data = WidgetUtils.dataForKey('last_widget_event');
             if (data) {
                 const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
                 const event = JSON.parse(json.toString());
@@ -63,7 +63,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 }
             }
         } catch (error) {
-            console.error(TAG, 'Error handling widget event:', error);
+            console.error(TAG, 'Error handling widget event:', error, error.stack);
         }
     }
 
@@ -72,9 +72,8 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     private setupAppGroupContainer() {
         // Ensure App Group directory exists
-        const appGroupId = 'group.com.akylas.weather';
         const fileManager = NSFileManager.defaultManager;
-        const containerURL = fileManager.containerURLForSecurityApplicationGroupIdentifier(appGroupId);
+        const containerURL = fileManager.containerURLForSecurityApplicationGroupIdentifier(groupId);
 
         if (containerURL) {
             const widgetDataDir = containerURL.URLByAppendingPathComponent('WidgetData');
@@ -84,7 +83,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                     fileManager.createDirectoryAtURLWithIntermediateDirectoriesAttributesError(widgetDataDir, true, null);
                     DEV_LOG && console.log(TAG, 'Created WidgetData directory in App Group');
                 } catch (error) {
-                    console.error(TAG, 'Failed to create WidgetData directory:', error);
+                    console.error(TAG, 'Failed to create WidgetData directory:', error, error.stack);
                 }
             }
         } else {
@@ -111,7 +110,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 const config = configs[widgetId];
                 this.updateWidget(widgetId, config);
             } catch (error) {
-                console.error(TAG, `Error updating widget ${widgetId}:`, error);
+                console.error(TAG, `Error updating widget ${widgetId}:`, error, error.stack);
             }
         }
 
@@ -147,7 +146,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             DEV_LOG && console.log(TAG, `Widget ${widgetId} updated successfully`);
         } catch (error) {
-            console.error(TAG, `Error updating widget ${widgetId}:`, error);
+            console.error(TAG, `Error updating widget ${widgetId}:`, error, error.stack);
             // Write null on error so widget shows fallback
             this.setWidgetError(widgetId, error.message || 'Unknown error');
         }
@@ -159,7 +158,7 @@ export class WidgetBridge extends WidgetBridgeBase {
     private syncUpdateFrequency() {
         try {
             const frequency = WidgetConfigManager.getUpdateFrequency();
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName('group.com.akylas.weather');
+            const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
 
             if (userDefaults) {
                 userDefaults.setIntegerForKey(frequency, 'widget_update_frequency');
@@ -167,7 +166,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 console.log(`WidgetBridge: Synced update frequency to iOS: ${frequency} minutes`);
             }
         } catch (error) {
-            console.error('WidgetBridge: Failed to sync update frequency:', error);
+            console.error('WidgetBridge: Failed to sync update frequency:', error, error.stack);
         }
     }
 
@@ -176,26 +175,20 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     onUpdateFrequencyChanged(frequency: number) {
         try {
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName('group.com.akylas.weather');
+            WidgetUtils.setValueForKey(frequency, 'widget_update_frequency');
+            // Reload all widget timelines to pick up new frequency
+            WidgetUtils.reloadAllTimelines();
 
-            if (userDefaults) {
-                userDefaults.setIntegerForKey(frequency, 'widget_update_frequency');
-                userDefaults.synchronize();
-
-                // Reload all widget timelines to pick up new frequency
-                WidgetCenter.shared.reloadAllTimelines();
-
-                console.log(`WidgetBridge: Updated widget frequency to ${frequency} minutes`);
-            }
+            console.log(`WidgetBridge: Updated widget frequency to ${frequency} minutes`);
         } catch (error) {
-            console.error('WidgetBridge: Failed to update frequency:', error);
+            console.error('WidgetBridge: Failed to update frequency:', error, error.stack);
         }
     }
 
     private saveWidgetData(widgetId: string, data: any) {
         try {
             const fileManager = NSFileManager.defaultManager;
-            const appGroupId = 'group.com.akylas.weather';
+            const appGroupId = groupId;
             const containerURL = fileManager.containerURLForSecurityApplicationGroupIdentifier(appGroupId);
 
             if (!containerURL) {
@@ -218,7 +211,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             console.log(`WidgetBridge: Saved data for widget ${widgetId}`);
         } catch (error) {
-            console.error('WidgetBridge: Failed to save widget data:', error);
+            console.error('WidgetBridge: Failed to save widget data:', error, error.stack);
         }
     }
 
@@ -248,16 +241,13 @@ export class WidgetBridge extends WidgetBridgeBase {
     private getWidgetKind(widgetId: string): string | null {
         try {
             // Try to get from active widgets stored by WidgetLifecycleManager
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName('group.com.akylas.weather');
-            if (userDefaults) {
-                const data = userDefaults.dataForKey('active_widgets');
-                if (data) {
-                    const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
-                    const activeWidgets = JSON.parse(json.toString());
+            const data = WidgetUtils.dataForKey('active_widgets');
+            if (data) {
+                const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
+                const activeWidgets = JSON.parse(json.toString());
 
-                    if (activeWidgets[widgetId]) {
-                        return activeWidgets[widgetId];
-                    }
+                if (activeWidgets[widgetId]) {
+                    return activeWidgets[widgetId];
                 }
             }
 
@@ -271,7 +261,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             return null;
         } catch (error) {
-            console.error(TAG, 'Error getting widget kind:', error);
+            console.error(TAG, 'Error getting widget kind:', error, error.stack);
             return null;
         }
     }
@@ -281,10 +271,10 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     reloadWidgetTimeline(widgetKind: string) {
         try {
-            WidgetCenter.shared.reloadTimelinesOfKind(widgetKind);
+            WidgetUtils.reloadTimelinesOfKind(widgetKind);
             DEV_LOG && console.log(TAG, `Reloaded widget timeline: ${widgetKind}`);
         } catch (error) {
-            console.error(TAG, `Error reloading widget timeline ${widgetKind}:`, error);
+            console.error(TAG, `Error reloading widget timeline ${widgetKind}:`, error, error.stack);
         }
     }
 
@@ -302,11 +292,11 @@ export class WidgetBridge extends WidgetBridgeBase {
                 this.reloadWidgetTimeline(widgetKind);
             } else {
                 // Fallback to reload all if we can't determine the kind
-                WidgetCenter.shared.reloadAllTimelines();
+                WidgetUtils.reloadAllTimelines();
                 DEV_LOG && console.log(TAG, `Reloaded all widgets (couldn't determine kind for id: ${widgetId})`);
             }
         } catch (error) {
-            console.error(TAG, 'Failed to reload widget:', error);
+            console.error(TAG, 'Failed to reload widget:', error, error.stack);
         }
     }
 
@@ -340,12 +330,12 @@ export class WidgetBridge extends WidgetBridgeBase {
             const widgetKinds = this.getWidgetKindsForFamily(family);
 
             for (const kind of widgetKinds) {
-                WidgetCenter.shared.reloadTimelinesOfKind(kind);
+                WidgetUtils.reloadTimelinesOfKind(kind);
             }
 
             DEV_LOG && console.log(TAG, `Reloaded ${widgetKinds.length} widget kinds for family: ${family}`);
         } catch (error) {
-            console.error(TAG, `Error reloading widgets for family ${family}:`, error);
+            console.error(TAG, `Error reloading widgets for family ${family}:`, error, error.stack);
         }
     }
 
@@ -409,7 +399,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         if (!iconName) return '';
 
         try {
-            const appGroupId = 'group.com.akylas.weather';
+            const appGroupId = groupId;
             const fileManager = NSFileManager.defaultManager;
             const containerURL = fileManager.containerURLForSecurityApplicationGroupIdentifier(appGroupId);
 
@@ -449,7 +439,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             return '';
         } catch (error) {
-            console.error(`Error copying icon ${iconName}:`, error);
+            console.error(`Error copying icon ${iconName}:`, error, error.stack);
             return '';
         }
     }
@@ -459,7 +449,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     private removeWidgetData(widgetId: string) {
         try {
-            const appGroupId = 'group.com.akylas.weather';
+            const appGroupId = groupId;
             const fileManager = NSFileManager.defaultManager;
             const containerURL = fileManager.containerURLForSecurityApplicationGroupIdentifier(appGroupId);
 
@@ -472,7 +462,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 DEV_LOG && console.log(TAG, `Removed widget data for ${widgetId}`);
             }
         } catch (error) {
-            console.error(TAG, `Error removing widget data for ${widgetId}:`, error);
+            console.error(TAG, `Error removing widget data for ${widgetId}:`, error, error.stack);
         }
     }
 
@@ -482,10 +472,10 @@ export class WidgetBridge extends WidgetBridgeBase {
     private reloadAllWidgetTimelines() {
         try {
             // Use WidgetCenter to reload all timelines
-            WidgetCenter.shared.reloadAllTimelines();
+            WidgetUtils.reloadAllTimelines();
             DEV_LOG && console.log(TAG, 'Reloaded all widget timelines');
         } catch (error) {
-            console.error(TAG, 'Error reloading widget timelines:', error);
+            console.error(TAG, 'Error reloading widget timelines:', error, error.stack);
         }
     }
 
@@ -515,3 +505,6 @@ export class WidgetBridge extends WidgetBridgeBase {
     }
 }
 export const widgetService = new WidgetBridge();
+function observerCallback(center, observer, name, object, userInfo) {
+    widgetService.handleWidgetEvent();
+}

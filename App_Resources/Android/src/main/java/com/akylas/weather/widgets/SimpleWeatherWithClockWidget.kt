@@ -2,6 +2,8 @@ package com.akylas.weather.widgets
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,12 +44,23 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
         setupUpdateWorker(context)
         registerThemeChangeReceiver(context);
 
+        // Initialize caches to populate StateFlows
+        WeatherWidgetManager.loadWidgetDataCache(context)
+        WeatherWidgetManager.getAllWidgetConfigs(context) // Initializes WidgetConfigStore
+
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+
+            // Observe widget data from StateFlow - triggers automatic recomposition
+            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val widgetData = dataMap[widgetId]
+            
+            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
+            val configMap by WeatherWidgetManager.WidgetConfigStore.widgetConfigs.collectAsState()
+            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {
@@ -59,7 +72,7 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherWithClockContent(data = widgetData, size = size, context = context)
+                        WeatherWithClockContent(data = widgetData, config = widgetConfig, size = size, context = context)
                     }
                 }
             }
@@ -74,97 +87,18 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
     private fun WeatherWithClockContent(
         modifier: GlanceModifier = GlanceModifier,
         data: WeatherWidgetData = fakeWeatherWidgetData,
+        config: WidgetConfig = WidgetConfig(),
         size: DpSize,
         context: Context
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather with clock for ${data.locationName}")
-
-        // Read clock bold preference
-        val prefs = context.getSharedPreferences("weather_widget_prefs", Context.MODE_PRIVATE)
-        val clockBold = prefs.getBoolean("widget_clock_bold", true)
-
-        // Adjust padding based on size
-        val padding = when {
-            size.width < 100.dp -> 4.dp
-            size.width < 150.dp -> 6.dp
-            else -> 8.dp
-        }
-
-        val isSmall = size.width < 150.dp
-
-        WidgetComposables.WidgetContainer(padding = padding) {
-            Box(modifier = modifier.fillMaxSize()) {
-                Column(
-                    modifier = GlanceModifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Clock at top
-                    val clockFontSize = when {
-                        size.width < 100.dp -> 24.sp
-                        size.width < 150.dp -> 32.sp
-                        else -> 48.sp
-                    }
-                    
-                    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val currentTime = timeFormat.format(Date())
-                    
-                    Text(
-                        text = currentTime,
-                        style = TextStyle(
-                            fontSize = clockFontSize,
-                            fontWeight = if (clockBold) FontWeight.Bold else FontWeight.Normal,
-                            color = GlanceTheme.colors.onSurface
-                        )
-                    )
-                    
-                    Spacer(modifier = GlanceModifier.height(if (isSmall) 4.dp else 8.dp))
-                    
-                    // Weather info centered
-                    Row(
-                        modifier = GlanceModifier.defaultWeight(),
-                        verticalAlignment = Alignment.Vertical.CenterVertically,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // Bigger icon
-                        val iconSize = when {
-                            size.width < 100.dp -> 32.dp
-                            size.width < 150.dp -> 40.dp
-                            else -> 56.dp
-                        }
-                        
-                        WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-                        
-                        Spacer(modifier = GlanceModifier.width(if (isSmall) 4.dp else 8.dp))
-                        
-                        val tempFontSize = when {
-                            size.width < 100.dp -> 18.sp
-                            size.width < 150.dp -> 24.sp
-                            else -> 32.sp
-                        }
-                        
-                        WidgetComposables.TemperatureText(data.temperature, tempFontSize)
-                    }
-                }
-                
-                // Location at bottom right, scaled with size
-                val locationFontSize = when {
-                    size.width < 100.dp -> 8.sp
-                    size.width < 150.dp -> 10.sp
-                    else -> 12.sp
-                }
-                
-                Box(
-                    modifier = GlanceModifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    WidgetComposables.LocationHeader(
-                        data.locationName,
-                        locationFontSize,
-                        maxLines = 1,
-                        modifier = GlanceModifier.padding(bottom = 2.dp, end = 2.dp)
-                    )
-                }
-            }
-        }
+        
+        // Use the generated content from JSON layout definition
+        com.akylas.weather.widgets.generated.SimpleWeatherWithClockWidgetContent(
+            context = context,
+            config = config,
+            data = data,
+            size = size
+        )
     }
 }

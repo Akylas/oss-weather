@@ -13,6 +13,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.net.Uri
 import java.util.Calendar
 
 private const val LOG_TAG = "WeatherWidgetGlanceReceiver"
@@ -57,6 +58,11 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         WidgetsLogger.d(LOG_TAG, "${this::class.simpleName} onUpdate widgetIds=${appWidgetIds.joinToString(",")}")
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+        
+        // Request fresh data for each widget that's being updated
+        appWidgetIds.forEach { widgetId ->
+            WeatherWidgetManager.requestWidgetUpdate(context, widgetId)
+        }
     }
 
     override fun onEnabled(context: Context) {
@@ -103,21 +109,21 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
  */
 class SimpleWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = SimpleWeatherWidget()
+        get() = SimpleWeatherWidgetOld()
 }
 
 /**
  * Receiver for Simple Weather Widget with Date
  */
 class SimpleWeatherWithDateWidgetReceiver : WeatherWidgetGlanceReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithDateWidget()
+    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithDateWidgetOld()
 }
 
 /**
  * Receiver for Simple Weather Widget with Clock
  */
 class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithClockWidget()
+    override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithClockWidgetOld()
     override fun onRestored(context: Context, oldWidgetIds: IntArray, newWidgetIds: IntArray) {
         super.onRestored(context, oldWidgetIds, newWidgetIds)
         scheduleNextClockUpdate(context)
@@ -156,6 +162,16 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
         fun scheduleNextClockUpdate(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             
+            // Check if we have permission for exact alarms on Android 12+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (!alarmManager.canScheduleExactAlarms()) {
+                    WidgetsLogger.w(LOG_TAG, "Cannot schedule exact alarms - permission not granted. Clock updates will be less accurate.")
+                    // Fall back to inexact alarm or skip scheduling
+                    // You could use setWindow() or setAndAllowWhileIdle() as alternatives
+                    return
+                }
+            }
+            
             // Create intent to update ALL clock widgets at once
             val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
@@ -173,19 +189,6 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            
-            // Check if alarm is already scheduled
-//            val existingIntent = PendingIntent.getBroadcast(
-//                context,
-//                CLOCK_UPDATE_REQUEST_CODE,
-//                intent,
-//                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-//            )
-//
-//            if (existingIntent != null) {
-//                WidgetsLogger.d(LOG_TAG, "Clock update already scheduled, skipping")
-//                return
-//            }
             
             val now = System.currentTimeMillis()
             val nextMinute = (now / 60000 + 1) * 60000 + 200
@@ -223,7 +226,7 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class HourlyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = HourlyWeatherWidget()
+        get() = HourlyWeatherWidgetOld()
 }
 
 /**
@@ -231,7 +234,7 @@ class HourlyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class DailyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = DailyWeatherWidget()
+        get() = DailyWeatherWidgetOld()
 }
 
 /**
@@ -239,5 +242,5 @@ class DailyWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class ForecastWeatherWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget
-        get() = ForecastWeatherWidget()
+        get() = ForecastWeatherWidgetOld()
 }

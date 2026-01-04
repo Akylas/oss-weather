@@ -83,6 +83,7 @@
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
+    import { WIDGET_KINDS, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -604,6 +605,84 @@
                         value: ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND)
                     }
                 ];
+            case 'widgets':
+                return (page, updateItem) => {
+                    const configs = WidgetConfigManager.getAllConfigs();
+                    const updateFrequency = WidgetConfigManager.getUpdateFrequency();
+
+                    const widgetKindNames = {
+                        SimpleWeatherWidget: lc('widget.simple.name'),
+                        SimpleWeatherWithDateWidget: lc('widget.withdate.name'),
+                        SimpleWeatherWithClockWidget: lc('widget.withclock.name'),
+                        HourlyWeatherWidget: lc('widget.hourly.name'),
+                        DailyWeatherWidget: lc('widget.daily.name'),
+                        ForecastWeatherWidget: lc('widget.forecast.name')
+                    };
+
+                    const items: any[] = [
+                        {
+                            id: 'widget_update_frequency',
+                            title: lc('widget_update_frequency'),
+                            description: lc('widget_update_frequency_description'),
+                            rightValue: () => {
+                                const freq = WidgetConfigManager.getUpdateFrequency();
+                                return freq < 60 ? `${freq} min` : freq === 60 ? '1 hour' : `${freq / 60} hours`;
+                            }
+                        },
+                        {
+                            id: 'update_all_widgets',
+                            title: lc('update_all_widgets_now'),
+                            description: ''
+                        },
+                        {
+                            type: 'sectionheader',
+                            title: lc('widget_kind_defaults')
+                        }
+                    ];
+
+                    // Add per-kind default configurations
+                    WIDGET_KINDS.forEach((widgetKind) => {
+                        const displayName = widgetKindNames[widgetKind] || widgetKind;
+                        items.push({
+                            id: 'configure_widget_kind',
+                            widgetClass: widgetKind,
+                            title: displayName,
+                            description: lc('default_settings_for_kind')
+                        });
+                    });
+
+                    // Add configured widget instances grouped by kind
+                    WIDGET_KINDS.forEach((widgetKind) => {
+                        const instanceIds = WidgetConfigManager.getInstancesOfKind(widgetKind);
+
+                        if (instanceIds.length > 0) {
+                            items.push({
+                                type: 'sectionheader',
+                                title: widgetKindNames[widgetKind]
+                            });
+
+                            instanceIds.forEach((widgetId) => {
+                                const config = configs[widgetId];
+                                items.push({
+                                    id: 'configure_widget',
+                                    widgetId,
+                                    widgetClass: widgetKind,
+                                    title: `#${widgetId}`,
+                                    description: config.locationName === 'current' ? lc('my_location') : config.locationName || ''
+                                });
+                            });
+                        }
+                    });
+
+                    if (Object.keys(configs).length === 0) {
+                        items.push({
+                            type: 'info',
+                            title: lc('no_widgets_configured')
+                        });
+                    }
+
+                    return items;
+                };
             default:
                 break;
         }
@@ -721,6 +800,13 @@
                         description: lc('geolocation_settings'),
                         icon: 'mdi-map-marker-circle',
                         options: getSubSettings('geolocation')
+                    },
+                    {
+                        id: 'sub_settings',
+                        title: lc('widget_settings'),
+                        description: lc('widget_configurations'),
+                        icon: 'mdi-widgets',
+                        options: getSubSettings('widgets')
                     },
                     {
                         id: 'third_party',
@@ -921,6 +1007,59 @@
                         view: ThirdPartySoftwareBottomSheet
                     });
                     break;
+                case 'configure_widget_kind': {
+                    const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                    navigate({
+                        page: ConfigWidget,
+                        props: {
+                            widgetClass: item.widgetClass,
+                            widgetId: null,
+                            modalMode: false,
+                            isKindConfig: true
+                        }
+                    });
+                    break;
+                }
+                case 'configure_widget': {
+                    const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                    navigate({
+                        page: ConfigWidget,
+                        props: {
+                            widgetClass: item.widgetClass,
+                            widgetId: item.widgetId,
+                            modalMode: false,
+                            isKindConfig: false
+                        }
+                    });
+                    break;
+                }
+                case 'widget_update_frequency': {
+                    const { WidgetConfigManager } = await import('~/services/widgets/WidgetConfigManager');
+                    const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
+                        title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
+                        data: mins
+                    }));
+                    const currentFreq = WidgetConfigManager.getUpdateFrequency();
+                    const result = await selectValue(frequencyOptions, currentFreq, {
+                        title: lc('widget_update_frequency')
+                    });
+                    if (result !== undefined) {
+                        WidgetConfigManager.setUpdateFrequency(result);
+                        showSnack({ message: lc('widget_update_frequency_saved') });
+                        updateItem(item, 'id');
+                    }
+                    break;
+                }
+                case 'update_all_widgets': {
+                    try {
+                        showSnack({ message: lc('updating_all_widgets') });
+                        const { widgetService } = await import('~/services/widgets/WidgetBridge');
+                        await widgetService.updateAllWidgets();
+                    } catch (error) {
+                        showError(error);
+                    }
+                    break;
+                }
                 case 'feedback': {
                     if (SENTRY_ENABLED || !PRODUCTION) {
                         const view = createView(ScrollView);
@@ -1361,6 +1500,9 @@
                 <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
                     <image col={1} height={45} src={item.image()} />
                 </ListItemAutoSize>
+            </Template>
+            <Template key="info" let:item>
+                <label color={colorOnSurfaceVariant} fontSize={14} margin="16" text={item.title} textWrap={true} />
             </Template>
             <Template let:item>
                 <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>

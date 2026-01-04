@@ -20,6 +20,7 @@ import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import WidgetBridgeBase from './services/widgets/WidgetBridge.common';
 import { widgetService } from './services/widgets/WidgetBridge';
+import { navigate } from '@shared/utils/svelte/ui';
 
 try {
     startSentry();
@@ -64,6 +65,10 @@ try {
     registerNativeViewElement('cgroup', () => require('@nativescript-community/ui-canvaslabel').Group);
     registerNativeViewElement('checkbox', () => require('@nativescript-community/ui-checkbox').CheckBox);
     registerNativeViewElement('zoomimage', () => require('@nativescript-community/ui-zoomimage').ZoomImg);
+    // Register WidgetPreview for Android widget preview
+    if (__ANDROID__) {
+        registerNativeViewElement('widgetPreview', () => require('~/android/WidgetPreview').WidgetPreview);
+    }
     DrawerElement.register();
     CollectionViewElement.register();
     SwipeMenuElement.register();
@@ -82,7 +87,7 @@ try {
     Application.on(Application.launchEvent, () => {
         DEV_LOG && console.log('launchEvent');
         if (__IOS__) {
-            Utils.ios.app.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum);
+            UIApplication.sharedApplication.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum);
         }
         startThemeHelper();
         // widgetService.updateAllWidgets();
@@ -111,6 +116,19 @@ try {
     sharedInit();
 
     svelteNative(WeatherPage, {});
+
+    setTimeout(async () => {
+        // const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+        // navigate({
+        //     page: ConfigWidget,
+        //     props: {
+        //         widgetClass: 'ForecastWeatherWidget',
+        //         widgetId: null,
+        //         modalMode: true,
+        //         isKindConfig: true
+        //     }
+        // });
+    }, 400);
 } catch (error) {
     console.error(error, error.stack);
 }

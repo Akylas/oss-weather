@@ -2,6 +2,8 @@ package com.akylas.weather.widgets
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,12 +83,23 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
             ).setInitialDelay(delayUntilNextDay, TimeUnit.MILLISECONDS).build()
         )
 
+        // Initialize caches to populate StateFlows
+        WeatherWidgetManager.loadWidgetDataCache(context)
+        WeatherWidgetManager.getAllWidgetConfigs(context) // Initializes WidgetConfigStore
+
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+
+            // Observe widget data from StateFlow - triggers automatic recomposition
+            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val widgetData = dataMap[widgetId]
+            
+            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
+            val configMap by WeatherWidgetManager.WidgetConfigStore.widgetConfigs.collectAsState()
+            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {
@@ -98,7 +111,7 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherWithDateContent(data = widgetData, size = size)
+                        WeatherWithDateContent(context, config = widgetConfig, data = widgetData, size = size)
                     }
                 }
             }
@@ -112,80 +125,20 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
     private fun WeatherWithDateContent(
+        context: Context,
         modifier: GlanceModifier = GlanceModifier,
+        config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather with date for ${data.locationName}")
-
-        // Support down to 50dp height
-        val padding = when {
-            size.height < 60.dp -> 2.dp
-            size.height < 80.dp -> 4.dp
-            else -> 6.dp
-        }
         
-        val isVerySmall = size.height < 60.dp
-
-        WidgetComposables.WidgetContainer(padding = padding) {
-            Column(
-                modifier = modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Date
-                val dateFontSize = when {
-                    isVerySmall -> 10.sp
-                    size.height < 80.dp -> 12.sp
-                    else -> 14.sp
-                }
-                
-                val dateFormat = SimpleDateFormat("EEE, MMM d", Locale.getDefault())
-                val currentDate = dateFormat.format(Date())
-                
-                Text(
-                    text = currentDate,
-                    style = TextStyle(
-                        fontSize = dateFontSize,
-                        color = GlanceTheme.colors.onSurface
-                    ),
-                    maxLines = 1
-                )
-                
-                // Weather info
-                Row(
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Bigger icon
-                    val iconSize = when {
-                        isVerySmall -> 24.dp
-                        size.height < 80.dp -> 32.dp
-                        else -> 40.dp
-                    }
-                    
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-                    
-                    Spacer(modifier = GlanceModifier.width(if (isVerySmall) 4.dp else 8.dp))
-                    
-                    val tempFontSize = when {
-                        isVerySmall -> 16.sp
-                        size.height < 80.dp -> 20.sp
-                        else -> 24.sp
-                    }
-                    
-                    WidgetComposables.TemperatureText(data.temperature, tempFontSize)
-                }
-                
-                // Location
-                val locationFontSize = when {
-                    isVerySmall -> 9.sp
-                    size.height < 80.dp -> 11.sp
-                    else -> 12.sp
-                }
-                
-                WidgetComposables.LocationHeader(data.locationName, locationFontSize, maxLines = 1)
-            }
-        }
+        // Use the generated content from JSON layout definition
+        com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent(
+            context = context,
+            config = config,
+            data = data,
+            size = size
+        )
     }
 }

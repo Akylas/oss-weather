@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.glance.appwidget.components.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,12 +43,23 @@ class SimpleWeatherWidget : WeatherWidget() {
         setupUpdateWorker(context)
         registerThemeChangeReceiver(context);
 
+        // Initialize caches to populate StateFlows
+        WeatherWidgetManager.loadWidgetDataCache(context)
+        WeatherWidgetManager.getAllWidgetConfigs(context) // Initializes WidgetConfigStore
+
         provideContent {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-            val widgetData = WeatherWidgetManager.getWidgetData(context, widgetId)
+            
+            // Observe widget data from StateFlow - triggers automatic recomposition
+            val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
+            val widgetData = dataMap[widgetId]
+            
+            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
+            val configMap by WeatherWidgetManager.WidgetConfigStore.widgetConfigs.collectAsState()
+            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {
                     if (widgetData == null || widgetData.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData.loadingState == WidgetLoadingState.LOADING) {
@@ -58,7 +71,7 @@ class SimpleWeatherWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherContent(data = widgetData, size = size)
+                        WeatherContent(context, config = widgetConfig, data = widgetData, size = size)
                     }
                 }
             }
@@ -72,82 +85,19 @@ class SimpleWeatherWidget : WeatherWidget() {
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
     private fun WeatherContent(
-        modifier: GlanceModifier = GlanceModifier,
+        context: Context,
+        config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather content for ${data.locationName}")
-
-        // Adjust padding based on size
-        val padding = when {
-            size.width < 100.dp -> 4.dp
-            size.width < 150.dp -> 6.dp
-            else -> 8.dp
-        }
-
-        WidgetComposables.WidgetContainer(padding = padding) {
-            if (size.width < 80.dp) {
-                // Very Small widget: Vertical layout with large icon and small temp
-                Column(
-                    modifier = modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = GlanceModifier.defaultWeight())
-
-                    // Large icon
-                    val iconSize = (size.width.value * 0.5f).dp.coerceAtLeast(32.dp)
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-
-                    // Small temperature
-                    WidgetComposables.TemperatureText(data.temperature, 14.sp)
-
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-
-                    // Location at bottom, scaled with size
-                    val locationFontSize = (size.width.value / 15).coerceIn(8f, 12f).sp
-                    WidgetComposables.LocationHeader(data.locationName, locationFontSize, maxLines = 1)
-                }
-            } else if (size.width < 200.dp) {
-                // Small widget: Vertical layout
-                Column(
-                    modifier = modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    WidgetComposables.LocationHeader(data.locationName, 12.sp)
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-
-                    // Bigger icon - 40% of width
-                    val iconSize = (size.width.value * 0.4f).dp.coerceAtLeast(48.dp)
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, iconSize)
-
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                    WidgetComposables.TemperatureText(data.temperature, 32.sp)
-                }
-            } else {
-                // Medium widget: More spacious layout with bigger icon
-                Column(
-                    modifier = modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    WidgetComposables.LocationHeader(data.locationName, 16.sp)
-                    Spacer(modifier = GlanceModifier.height(8.dp))
-
-                    // Bigger icon
-                    WidgetComposables.WeatherIcon(data.iconPath, data.description, 72.dp)
-
-                    Spacer(modifier = GlanceModifier.height(8.dp))
-                    WidgetComposables.TemperatureText(data.temperature, 48.sp)
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                    if (data.description.isNotEmpty()) {
-                        WidgetComposables.DescriptionText(data.description, 14.sp)
-                    }
-                }
-            }
-        }
+        
+        // Use the generated content from JSON layout definition
+        com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent(
+            context = context,
+            config = config,
+            data = data,
+            size = size
+        )
     }
 }

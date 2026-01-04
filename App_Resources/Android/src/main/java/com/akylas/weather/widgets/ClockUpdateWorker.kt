@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.os.Build
+import android.app.AlarmManager
 import androidx.work.*
 import java.util.concurrent.TimeUnit
 
@@ -45,6 +47,21 @@ class ClockUpdateWorker(
         private const val CLOCK_UPDATE_WORK_TAG = "clock_widget_update"
 
         fun scheduleClockUpdates(context: Context) {
+            // Check if we have permission for exact alarms on Android 12+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+                if (alarmManager?.canScheduleExactAlarms() == false) {
+                    WidgetsLogger.w("ClockUpdateWorker", "Cannot schedule exact alarms - permission not granted")
+                    // Fall back to periodic work request which doesn't require exact alarm permission
+                    schedulePeriodicUpdates(context)
+                    return
+                }
+            }
+            
+            schedulePeriodicUpdates(context)
+        }
+        
+        private fun schedulePeriodicUpdates(context: Context) {
             val updateRequest = PeriodicWorkRequestBuilder<ClockUpdateWorker>(
                 15, // Minimum is 15 minutes for PeriodicWork
                 TimeUnit.MINUTES

@@ -58,12 +58,11 @@ function getCacheKey(providerId: string, weatherLocation: WeatherLocation, optio
  */
 export function getCachedWeather(providerId: string, weatherLocation: WeatherLocation, options?: GetWeatherOptions & { ignoreCache?: boolean }, maxAge = CACHE_EXPIRY_MS): WeatherData | null {
     try {
-        if (options?.ignoreCache) {
+        if (options?.ignoreCache || !weatherLocation) {
             return null;
         }
         const cacheKey = getCacheKey(providerId, weatherLocation, options);
         const cachedJson = ApplicationSettings.getString(cacheKey);
-        DEV_LOG && console.log('getCachedWeather', cacheKey, !!cachedJson);
 
         if (!cachedJson) {
             return null;
@@ -73,6 +72,7 @@ export function getCachedWeather(providerId: string, weatherLocation: WeatherLoc
 
         // Check if cache is still valid (less than 1 minute old)
         const cacheAge = Date.now() - cachedData.time;
+        DEV_LOG && console.log('getCachedWeather', cacheKey, cacheAge, maxAge);
         if (maxAge > 0 && cacheAge > maxAge) {
             // Cache expired, remove it
             ApplicationSettings.remove(cacheKey);

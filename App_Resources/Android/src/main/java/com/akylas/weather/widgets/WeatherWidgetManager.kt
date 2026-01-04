@@ -13,6 +13,10 @@ import androidx.work.*
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import org.json.JSONObject
 import org.json.JSONArray
 import java.io.File
@@ -94,6 +98,21 @@ object WidgetConfigStore {
     
     fun getConfig(widgetId: Int): WidgetConfig? {
         return _widgetConfigs.value[widgetId]
+    }
+    
+    /**
+     * Returns a StateFlow that only emits when the specific widget's settings change.
+     * This prevents unnecessary recomposition of other widgets when a different widget's config changes.
+     */
+    fun getWidgetSettingsFlow(widgetId: Int): StateFlow<Map<String, Any?>?> {
+        return widgetConfigs
+            .map { configs -> configs[widgetId]?.settings }
+            .distinctUntilChanged()
+            .stateIn(
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                started = SharingStarted.Eagerly,
+                initialValue = _widgetConfigs.value[widgetId]?.settings
+            )
     }
 }
 

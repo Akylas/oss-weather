@@ -94,9 +94,9 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
             val dataMap by WeatherWidgetManager.WidgetDataStore.widgetData.collectAsState()
             val widgetData = dataMap[widgetId]
             
-            // Observe widget config from StateFlow - triggers automatic recomposition when settings change
-            val configMap by WeatherWidgetManager.WidgetConfigStore.widgetConfigs.collectAsState()
-            val widgetConfig = configMap[widgetId] ?: WeatherWidgetManager.createDefaultConfig()
+            // Observe only this widget's settings - prevents unnecessary recomposition from other widgets
+            val widgetSettings by WeatherWidgetManager.WidgetConfigStore.getWidgetSettingsFlow(widgetId).collectAsState()
+            val widgetConfig = WidgetConfig(settings = widgetSettings)
 
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: true)) {

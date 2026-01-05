@@ -4,7 +4,4 @@ repositories {
 }
 dependencies {
     classpath 'androidx.benchmark:benchmark-baseline-profile-gradle-plugin:1.4.0'
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21"  // or your version
-    classpath "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.2.21"
-    classpath "org.jetbrains.kotlin:kotlin-serialization:2.2.21"
 }

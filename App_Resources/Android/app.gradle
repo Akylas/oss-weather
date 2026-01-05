@@ -4,11 +4,8 @@ def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 
 apply plugin: "androidx.baselineprofile"
 apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "org.jetbrains.kotlin.plugin.compose"  // Add this line
-apply plugin: 'kotlinx-serialization'
 
 android { 
-  
   // we only enable split if specified as an arg or if in debug and abiFilters is used(through cli)
   def splitEnabled = (gradle.startParameter.taskNames.contains("assembleDebug") && project.hasProperty('abiFilters')) || project.hasProperty('splitEnabled');
   defaultConfig {  
@@ -43,13 +40,6 @@ android {
   compileOptions {
       sourceCompatibility JavaVersion.VERSION_17
       targetCompatibility JavaVersion.VERSION_17
-  }
-
-  buildFeatures {
-      compose = true
-  }
-  composeOptions {
-      kotlinCompilerExtensionVersion = "1.5.3"
   }
   lintOptions {
       checkReleaseBuilds false
@@ -143,39 +133,22 @@ android {
   experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 }
 
-def runCreateProguard = {
-    println("Running createProguard script")
-    exec {
-        workingDir "$USER_PROJECT_ROOT"
-        println("node tools/scripts/createProguard.js ${rootDir} ${getAppResourcesPath()}")
-        commandLine 'node', "tools/scripts/createProguard.js", "${rootDir}", "${getAppResourcesPath()}"
-    }
-}
-
 task createProguard {
-    // don't depend on buildMetadata – we call the logic where needed instead
+    dependsOn 'buildMetadata'
     doLast {
-        runCreateProguard()
+        exec {
+            workingDir "$USER_PROJECT_ROOT"
+            println("node tools/scripts/createProguard.js ${rootDir} ${getAppResourcesPath()}")
+            commandLine 'node', "tools/scripts/createProguard.js", "${rootDir}", "${getAppResourcesPath()}"
+        }
     }
 }
 project.tasks.configureEach {
     if (name =~ /buildMetadata/) {
-        // ensure proguard is generated after buildMetadata finishes if not created already
-        it.doFirst {
-            println("buildMetadata")
-        }
-        it.doLast {
-            runCreateProguard()
-        }
+        it.finalizedBy(createProguard)
     }
-    // ensure proguard is available before any minification run (also catches benchmark variants)
     if (name =~ /minify(Debug|Release)WithR8/) {
-        it.dependsOn("buildMetadata")
-        it.doFirst {
-            println("minify")
-        }
-        // still ensure minify tasks are ordered after the createProguard task if it's scheduled
-        it.mustRunAfter(createProguard)
+        it.dependsOn(createProguard)
     }
 }
 
@@ -212,21 +185,6 @@ dependencies {
 
     implementation "androidx.profileinstaller:profileinstaller:1.4.1"
     baselineProfile project(':baselineprofile')
-
-    // Glance for widgets
-    implementation "androidx.glance:glance-appwidget:1.0.0"
-    implementation "androidx.glance:glance-material3:1.0.0"
-    
-    // WorkManager for scheduling
-    implementation "androidx.work:work-runtime-ktx:2.8.1"
-
-    // Compose dependencies
-    implementation "androidx.compose.ui:ui:1.5.3"
-    implementation "androidx.compose.material3:material3:1.1.2"
-    implementation "androidx.compose.runtime:runtime:1.5.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
-    implementation 'androidx.compose.ui:ui-unit:1.9.4'
-
 }
 
 

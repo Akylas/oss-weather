@@ -184,7 +184,7 @@ class NetworkService extends Observable {
 }
 
 export const networkService = new NetworkService();
-networkService.start();
+
 async function handleRequestResponse<T>(
     response: https.HttpsResponse<https.HttpsResponseLegacy<T>>,
     requestParams: HttpRequestOptions,
@@ -207,7 +207,7 @@ async function handleRequestResponse<T>(
         content = response.reason as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    // DEV_LOG && console.info('handleRequestResponse', statusCode);
+    DEV_LOG && console.info('handleRequestResponse', statusCode);
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {
@@ -265,7 +265,7 @@ export async function request<T = any>(requestParams: HttpRequestOptions, retry 
     requestParams.headers = getRequestHeaders(requestParams);
 
     const requestStartTime = Date.now();
-    DEV_LOG && console.info('request', JSON.stringify(requestParams), new Error().stack);
+    // DEV_LOG && console.info('request', JSON.stringify(requestParams));
     try {
         const response = await https.request<T>(requestParams);
         return handleRequestResponse<T>(response, requestParams, requestStartTime, retry);

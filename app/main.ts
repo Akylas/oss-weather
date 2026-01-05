@@ -11,15 +11,13 @@ import { initialize } from '@nativescript-community/ui-image';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, Utils } from '@nativescript/core';
+import { Application } from '@nativescript/core';
 import { init as sharedInit } from '@shared/index';
 import { startSentry } from '@shared/utils/sentry';
 import { svelteNative } from '@nativescript-community/svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from '@nativescript-community/svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
-import WidgetBridgeBase from './services/widgets/WidgetBridge.common';
-import { widgetService } from './services/widgets/WidgetBridge';
 
 try {
     startSentry();
@@ -79,19 +77,9 @@ try {
     // Trace.enable();
     // on startup we need to ensure theme is loaded because of a mixin
     // on startup we need to say what we are using
+
     Application.on(Application.launchEvent, () => {
-        DEV_LOG && console.log('launchEvent');
-        if (__IOS__) {
-            Utils.ios.app.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum);
-        }
         startThemeHelper();
-        // widgetService.updateAllWidgets();
-    });
-    Application.on(Application.exitEvent, () => {
-        DEV_LOG && console.log('exitEvent');
-        if (widgetService) {
-            widgetService.destroy();
-        }
     });
     themer.createShape('round', {
         cornerFamily: 'rounded' as any,

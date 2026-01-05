@@ -347,6 +347,7 @@
     "weather_data_settings": "选择并设置要显示的天气数据",
     "weather_map": "天气地图",
     "weather_map_colors": "天气地图配色方案",
+    "widget_ios_note": "iOS：小组件会在后台更新。请先在小组件资源库中添加小组件，然后在此处进行配置。iOS 会控制实际刷新时机。",
     "wind": "风力",
     "wind_bearing": "风荷载",
     "wind_beaufort": "蒲福风力等级",

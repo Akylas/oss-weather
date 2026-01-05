@@ -59,10 +59,8 @@
         aqi_providers,
         getAqiProvider,
         getAqiProviderType,
-        getCachedWeather,
         getOMPreferredModel,
         getProviderType,
-        getWeather,
         getWeatherProvider,
         onProviderChanged,
         providers
@@ -88,8 +86,7 @@
     let loading = false;
     let provider: ProviderType;
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
-    let weatherData: WeatherData = getCachedWeather(provider, weatherLocation, { model: weatherLocation.omModel, ignoreCache: false }, 0);
-    DEV_LOG && console.log('weatherData', !!weatherData);
+    let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
     const data_version = ApplicationSettings.getNumber('data_version', -1);
     if (data_version !== DATA_VERSION) {
         ApplicationSettings.setNumber('data_version', DATA_VERSION);
@@ -261,7 +258,8 @@
                 Object.assign(weatherLocation, timezoneData);
                 saveWeatherLocation();
             }
-            weatherData = await getWeather(weatherLocation, { model: weatherLocation.omModel, ignoreCache: true }, provider);
+            weatherData = await getWeatherProvider(weatherLocation.provider).getWeather(weatherLocation, { model: weatherLocation.omModel });
+            DEV_LOG && console.log('refreshWeather', timezoneData, weatherLocation.timezone);
 
             if (weatherData) {
                 await updateView();
@@ -291,7 +289,7 @@
     async function updateView() {
         if (weatherLocation && weatherData) {
             items = prepareItems(weatherLocation, weatherData);
-            // ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
+            ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
         }
     }
 
@@ -993,7 +991,7 @@
     }
 </script>
 
-<page bind:this={page} id="test" actionBarHidden={true}>
+<page id="test" bind:this={page} actionBarHidden={true}>
     <drawer
         bind:this={drawer}
         class="pageContent"

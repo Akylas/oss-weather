@@ -8,7 +8,7 @@
     import { FavoriteLocation, favoriteIcon, favoriteIconColor, toggleFavorite } from '~/helpers/favorites';
     import { l, lc } from '~/helpers/locale';
     import { WeatherLocation, getTimezone, networkService, prepareItems } from '~/services/api';
-    import { getAqiProvider, getProviderType, getWeather, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
+    import { getAqiProvider, getProviderType, getWeatherProvider, onProviderChanged, providers } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, weatherDataService } from '~/services/weatherData';
     import { actionBarButtonHeight, colors } from '~/variables';
 
@@ -35,7 +35,7 @@
         try {
             const usedWeatherData = weatherDataService.allWeatherData;
             const [weatherData, timezoneData] = await Promise.all([
-                getWeather(weatherLocation, { ignoreCache: true }),
+                getWeatherProvider().getWeather(weatherLocation),
                 !!weatherLocation.timezone ? Promise.resolve(undefined) : getTimezone(weatherLocation).catch((err) => console.error(err))
             ]);
             if (timezoneData) {

@@ -35,75 +35,20 @@ object WeatherWidgetManager {
     private const val WIDGET_PREFS_FILE = "widget_preferences"
     private const val UPDATE_FREQUENCY_KEY = "widget_update_frequency"
     private const val WIDGET_CONFIGS_KEY = "widget_configs"
-    private const val ACTIVE_WIDGETS_KEY = "active_widget_ids"
-    private const val WIDGET_DATA_CACHE_KEY = "widget_data_cache" // New
-    private const val DEFAULT_UPDATE_FREQUENCY = 30L
+    private const val ACTIVE_WIDGETS_KEY = "active_widget_ids" // New: Track active widgets
+    private const val DEFAULT_UPDATE_FREQUENCY = 30L // 30 minutes
 
     private const val LOG_TAG = "WeatherWidgetManager"
 
+    // Json parser: ignore unknown keys to be robust with payloads
     private val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
 
     init {
         WidgetsLogger.d(LOG_TAG, "WeatherWidgetManager loaded")
     }
 
-    // Widget data cache - now lazy loaded from prefs
+    // Widget data cache
     private val widgetDataCache = mutableMapOf<Int, WeatherWidgetData>()
-    private var cacheLoaded = false
-
-    /**
-     * Load widget data cache from SharedPreferences
-     */
-    private fun loadWidgetDataCache(context: Context) {
-        if (cacheLoaded) return
-        
-        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
-        val json = prefs.getString(WIDGET_DATA_CACHE_KEY, null)
-        
-        if (json.isNullOrEmpty()) {
-            WidgetsLogger.d(LOG_TAG, "No persisted widget data cache found")
-            cacheLoaded = true
-            return
-        }
-        
-        try {
-            val jsonObject = JSONObject(json)
-            val keys = jsonObject.keys()
-            
-            while (keys.hasNext()) {
-                val widgetId = keys.next().toInt()
-                val dataJson = jsonObject.getString(widgetId.toString())
-                val data = JSON.decodeFromString<WeatherWidgetData>(dataJson)
-                widgetDataCache[widgetId] = data
-            }
-            
-            WidgetsLogger.i(LOG_TAG, "Loaded ${widgetDataCache.size} widgets from persisted cache")
-        } catch (e: Exception) {
-            WidgetsLogger.e(LOG_TAG, "Failed to load widget data cache", e)
-        }
-        
-        cacheLoaded = true
-    }
-
-    /**
-     * Save widget data cache to SharedPreferences
-     */
-    private fun saveWidgetDataCache(context: Context) {
-        try {
-            val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
-            val jsonObject = JSONObject()
-            
-            widgetDataCache.forEach { (widgetId, data) ->
-                val dataJson = Json.encodeToString(data)
-                jsonObject.put(widgetId.toString(), dataJson)
-            }
-            
-            prefs.edit().putString(WIDGET_DATA_CACHE_KEY, jsonObject.toString()).apply()
-            WidgetsLogger.d(LOG_TAG, "Saved ${widgetDataCache.size} widgets to persisted cache")
-        } catch (e: Exception) {
-            WidgetsLogger.e(LOG_TAG, "Failed to save widget data cache", e)
-        }
-    }
 
     /**
      * Get list of active widget IDs from persistent storage
@@ -226,21 +171,52 @@ object WeatherWidgetManager {
     @JvmStatic
     fun reRenderAllWidgets(context: Context) {
         WidgetsLogger.d(LOG_TAG, "reRenderAllWidgets() called")
-        coroutineScope.launch {
-            SimpleWeatherWithClockWidget().apply { updateAll(context) }
-            SimpleWeatherWithDateWidget().apply { updateAll(context) }
-            SimpleWeatherWidget().apply { updateAll(context) }
-            DailyWeatherWidget().apply { updateAll(context) }
-            HourlyWeatherWidget().apply { updateAll(context) }
-            ForecastWeatherWidget().apply { updateAll(context) }
-        }
-    }
+        val activeIds = getActiveWidgetIdsFromPrefs(context)
 
-     fun reRenderClockWidgets(context: Context) {
-         WidgetsLogger.d(LOG_TAG, "reRenderClockWidgets() called")
-         coroutineScope.launch {
-             SimpleWeatherWithClockWidget().apply { updateAll(context) }
-         }
+        if (activeIds.isEmpty()) {
+            WidgetsLogger.i(LOG_TAG, "No active widgets to re-render")
+            return
+        }
+
+        WidgetsLogger.d(LOG_TAG, "Re-rendering ${activeIds.size} active widgets")
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+
+        // List of all widget receivers
+        val receivers = listOf(
+            SimpleWeatherWidgetReceiver::class.java,
+            SimpleWeatherWithDateWidgetReceiver::class.java,
+            SimpleWeatherWithClockWidgetReceiver::class.java,
+            HourlyWeatherWidgetReceiver::class.java,
+            DailyWeatherWidgetReceiver::class.java,
+            ForecastWeatherWidgetReceiver::class.java
+        )
+
+        var totalReRendered = 0
+
+        // For each receiver, find which active widgets belong to it
+        receivers.forEach { receiverClass ->
+            // Get all widget IDs for this receiver type
+            val allWidgetIds = appWidgetManager.getAppWidgetIds(
+                ComponentName(context, receiverClass)
+            )
+
+            // Find which of our active widgets belong to this receiver
+            val activeWidgetsForReceiver = allWidgetIds.filter { it in activeIds }
+
+            if (activeWidgetsForReceiver.isNotEmpty()) {
+                WidgetsLogger.d(LOG_TAG, "Triggering onUpdate for ${activeWidgetsForReceiver.size} ${receiverClass.simpleName} widgets")
+
+                // Trigger onUpdate which will re-render with existing cached data
+                val intent = Intent(context, receiverClass).apply {
+                    action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, activeWidgetsForReceiver.toIntArray())
+                }
+                context.sendBroadcast(intent)
+                totalReRendered += activeWidgetsForReceiver.size
+            }
+        }
+
+        WidgetsLogger.i(LOG_TAG, "Re-rendered $totalReRendered widgets (from ${activeIds.size} active)")
     }
 
 
@@ -291,57 +267,57 @@ object WeatherWidgetManager {
     /**
      * Schedule periodic widget updates - only schedules if widgets are active
      */
-//    @SuppressLint("UseKtx")
-//    @JvmStatic
-//    fun scheduleWidgetUpdates(context: Context, frequencyMinutes: Long = getUpdateFrequency(context)) {
-//        WidgetsLogger.d(LOG_TAG, "scheduleWidgetUpdates(frequencyMinutes=$frequencyMinutes)")
-//
-//        // Check if any widgets are active
-//        val activeWidgets = getAllActiveWidgetIds(context)
-//        if (activeWidgets.isEmpty()) {
-//            WidgetsLogger.i(LOG_TAG, "No active widgets found, cancelling scheduled updates")
-//            cancelWidgetUpdates(context)
-//            return
-//        }
-//
-//        // Save frequency preference
-//        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
-//        prefs.edit { putLong(UPDATE_FREQUENCY_KEY, frequencyMinutes) }
-//        WidgetsLogger.i(LOG_TAG, "Saved update frequency: $frequencyMinutes minutes")
-//
-//        // Build constraints
-//        val constraints = Constraints.Builder()
-//            .setRequiredNetworkType(NetworkType.CONNECTED)
-//            .setRequiresBatteryNotLow(true) // Don't run when battery is low
-//            .build()
-//
-//        // Create periodic work request
-//        val updateRequest = PeriodicWorkRequestBuilder<WeatherWidgetUpdateWorker>(
-//            frequencyMinutes,
-//            TimeUnit.MINUTES
-//        )
-//            .setConstraints(constraints)
-//            .setInitialDelay(0, TimeUnit.MINUTES)
-//            .addTag(WIDGET_UPDATE_WORK_TAG)
-//            .build()
-//
-//        WidgetsLogger.d(LOG_TAG, "Enqueueing WorkManager job with tag $WIDGET_UPDATE_WORK_TAG for ${activeWidgets.size} widgets")
-//        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-//            WIDGET_UPDATE_WORK_TAG,
-//            ExistingPeriodicWorkPolicy.REPLACE,
-//            updateRequest
-//        )
-//        WidgetsLogger.i(LOG_TAG, "Scheduled periodic widget updates every $frequencyMinutes minutes with battery constraint")
-//    }
-//
-//    /**
-//     * Cancel scheduled widget updates
-//     */
-//    @JvmStatic
-//    fun cancelWidgetUpdates(context: Context) {
-//        WidgetsLogger.i(LOG_TAG, "cancelWidgetUpdates() called; cancelling work with tag $WIDGET_UPDATE_WORK_TAG")
-//        WorkManager.getInstance(context).cancelAllWorkByTag(WIDGET_UPDATE_WORK_TAG)
-//    }
+    @SuppressLint("UseKtx")
+    @JvmStatic
+    fun scheduleWidgetUpdates(context: Context, frequencyMinutes: Long = getUpdateFrequency(context)) {
+        WidgetsLogger.d(LOG_TAG, "scheduleWidgetUpdates(frequencyMinutes=$frequencyMinutes)")
+        
+        // Check if any widgets are active
+        val activeWidgets = getAllActiveWidgetIds(context)
+        if (activeWidgets.isEmpty()) {
+            WidgetsLogger.i(LOG_TAG, "No active widgets found, cancelling scheduled updates")
+            cancelWidgetUpdates(context)
+            return
+        }
+
+        // Save frequency preference
+        val prefs = context.getSharedPreferences(WIDGET_PREFS_FILE, Context.MODE_PRIVATE)
+        prefs.edit { putLong(UPDATE_FREQUENCY_KEY, frequencyMinutes) }
+        WidgetsLogger.i(LOG_TAG, "Saved update frequency: $frequencyMinutes minutes")
+
+        // Build constraints
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .setRequiresBatteryNotLow(true) // Don't run when battery is low
+            .build()
+
+        // Create periodic work request
+        val updateRequest = PeriodicWorkRequestBuilder<WeatherWidgetUpdateWorker>(
+            frequencyMinutes,
+            TimeUnit.MINUTES
+        )
+            .setConstraints(constraints)
+            .setInitialDelay(0, TimeUnit.MINUTES)
+            .addTag(WIDGET_UPDATE_WORK_TAG)
+            .build()
+
+        WidgetsLogger.d(LOG_TAG, "Enqueueing WorkManager job with tag $WIDGET_UPDATE_WORK_TAG for ${activeWidgets.size} widgets")
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            WIDGET_UPDATE_WORK_TAG,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            updateRequest
+        )
+        WidgetsLogger.i(LOG_TAG, "Scheduled periodic widget updates every $frequencyMinutes minutes with battery constraint")
+    }
+
+    /**
+     * Cancel scheduled widget updates
+     */
+    @JvmStatic
+    fun cancelWidgetUpdates(context: Context) {
+        WidgetsLogger.i(LOG_TAG, "cancelWidgetUpdates() called; cancelling work with tag $WIDGET_UPDATE_WORK_TAG")
+        WorkManager.getInstance(context).cancelAllWorkByTag(WIDGET_UPDATE_WORK_TAG)
+    }
 
     /**
      * Get current update frequency from preferences
@@ -364,7 +340,7 @@ object WeatherWidgetManager {
         prefs.edit { putLong(UPDATE_FREQUENCY_KEY, frequencyMinutes) }
         
         // Reschedule with new frequency if widgets are active
-        requestAllWidgetsUpdate(context)
+        scheduleWidgetUpdates(context, frequencyMinutes)
     }
 
     /**
@@ -377,7 +353,7 @@ object WeatherWidgetManager {
         addActiveWidget(context, widgetId)
         
         // Schedule updates now that we have at least one widget
-//        scheduleWidgetUpdates(context)
+        scheduleWidgetUpdates(context)
         
         // Request immediate update for the new widget
         requestWidgetUpdate(context, widgetId)
@@ -396,11 +372,11 @@ object WeatherWidgetManager {
         deleteWidgetConfig(context, widgetId)
         
         // Check if any widgets remain
-//        val activeWidgets = getAllActiveWidgetIds(context)
-//        if (activeWidgets.isEmpty()) {
-//            WidgetsLogger.i(LOG_TAG, "No more active widgets, cancelling scheduled updates")
-//            cancelWidgetUpdates(context)
-//        }
+        val activeWidgets = getAllActiveWidgetIds(context)
+        if (activeWidgets.isEmpty()) {
+            WidgetsLogger.i(LOG_TAG, "No more active widgets, cancelling scheduled updates")
+            cancelWidgetUpdates(context)
+        }
     }
 
     /**
@@ -570,42 +546,29 @@ object WeatherWidgetManager {
     }
 
     /**
-     * Get cached widget data
+     * Explicit method to clear widget data
      */
-    fun getWidgetData(context: Context, widgetId: Int): WeatherWidgetData? {
-        loadWidgetDataCache(context)
-        val found = widgetDataCache[widgetId] != null
-        WidgetsLogger.d(LOG_TAG, "getWidgetData(widgetId=$widgetId) -> found=$found")
-        return widgetDataCache[widgetId]
+    @JvmStatic
+    fun clearWidgetData(context: Context, widgetId: Int) {
+        WidgetsLogger.d(LOG_TAG, "clearWidgetData(widgetId=$widgetId) called")
+        widgetDataCache.remove(widgetId)
+
+        updateWidget(context, widgetId)
+        WidgetsLogger.i(LOG_TAG, "Cleared widget data for widgetId=$widgetId")
     }
 
     /**
      * Common handler used by both JSON and object update paths
      */
     private fun handleParsedWidgetData(context: Context, widgetId: Int, data: WeatherWidgetData) {
+
         WidgetsLogger.d(LOG_TAG, "handleParsedWidgetData(widgetId=$widgetId, temperature=${data.temperature}, location=${data.locationName})")
-        
-        loadWidgetDataCache(context)
         widgetDataCache[widgetId] = data
-        saveWidgetDataCache(context) // Persist after update
-        
+
+        // Trigger widget update
+        //updateWidget(context, widgetId)
         forceGlanceUpdate(context, widgetId)
         WidgetsLogger.i(LOG_TAG, "Widget data updated for widgetId=$widgetId")
-    }
-
-    /**
-     * Explicit method to clear widget data
-     */
-    @JvmStatic
-    fun clearWidgetData(context: Context, widgetId: Int) {
-        WidgetsLogger.d(LOG_TAG, "clearWidgetData(widgetId=$widgetId) called")
-        
-        loadWidgetDataCache(context)
-        widgetDataCache.remove(widgetId)
-        saveWidgetDataCache(context) // Persist after removal
-        
-        updateWidget(context, widgetId)
-        WidgetsLogger.i(LOG_TAG, "Cleared widget data for widgetId=$widgetId")
     }
 
     /**
@@ -621,6 +584,15 @@ object WeatherWidgetManager {
             WidgetsLogger.e(LOG_TAG, "parseWeatherWidgetDataFromJson failed", t)
             null
         }
+    }
+
+    /**
+     * Get cached widget data
+     */
+    fun getWidgetData(widgetId: Int): WeatherWidgetData? {
+        val found = widgetDataCache[widgetId] != null
+        WidgetsLogger.d(LOG_TAG, "getWidgetData(widgetId=$widgetId) -> found=$found")
+        return widgetDataCache[widgetId]
     }
 
     /**
@@ -727,11 +699,7 @@ object WeatherWidgetManager {
         val configs = getAllWidgetConfigs(context).toMutableMap()
         configs.remove(widgetId)
         saveAllWidgetConfigs(context, configs)
-        
-        loadWidgetDataCache(context)
         widgetDataCache.remove(widgetId)
-        saveWidgetDataCache(context) // Persist after removal
-        
         WidgetsLogger.i(LOG_TAG, "Deleted config and cache for widgetId=$widgetId")
     }
 
@@ -739,16 +707,24 @@ object WeatherWidgetManager {
      * Decodes a file path into a Bitmap or returns null if that's not possible.
      */
     fun getIconBitmapFromPath(iconFilePath: String?): Bitmap? {
+        WidgetsLogger.d(LOG_TAG, "getIconBitmapFromPath(iconFilePath=$iconFilePath)")
         if (iconFilePath.isNullOrBlank()) {
             WidgetsLogger.d(LOG_TAG, "Icon file path is null or blank")
             return null
         }
         val file = File(iconFilePath)
         if (!file.exists()) {
+            WidgetsLogger.d(LOG_TAG, "Icon file does not exist: ${file.absolutePath}")
             return null
         }
         return try {
-            BitmapFactory.decodeFile(iconFilePath)
+            val bmp = BitmapFactory.decodeFile(iconFilePath)
+            if (bmp != null) {
+                WidgetsLogger.d(LOG_TAG, "Decoded icon bitmap: ${bmp.width}x${bmp.height} from $iconFilePath")
+            } else {
+                WidgetsLogger.w(LOG_TAG, "BitmapFactory.decodeFile returned null for $iconFilePath")
+            }
+            bmp
         } catch (t: Throwable) {
             WidgetsLogger.e(LOG_TAG, "Error decoding icon bitmap from $iconFilePath", t)
             null
@@ -760,8 +736,10 @@ object WeatherWidgetManager {
      * Use this inside widgets where the ImageProvider may be absent.
      */
     fun getIconImageProviderFromPath(iconFilePath: String?): ImageProvider? {
+        WidgetsLogger.d(LOG_TAG, "getIconImageProviderFromPath(iconFilePath=$iconFilePath)")
         val bmp = getIconBitmapFromPath(iconFilePath)
         val provider = bmp?.let { ImageProvider(it) }
+        WidgetsLogger.d(LOG_TAG, "ImageProvider created=${provider != null} for path $iconFilePath")
         return provider
     }
 
@@ -834,11 +812,9 @@ data class WeatherWidgetData(
 data class HourlyData(
     val time: String = "",
     val temperature: String = "",
-    val description: String = "",
     val iconPath: String = "",
     val precipitation: String = "",
-    val windSpeed: String = "",
-    val precipAccumulation: String = "",
+    val windSpeed: String = ""
 )
 
 @Serializable
@@ -849,8 +825,7 @@ data class DailyData(
     val temperatureLow: String = "",
     val windSpeed: String = "",
     val iconPath: String = "",
-    val precipitation: String = "",
-    val precipAccumulation: String = "",
+    val precipitation: String = ""
 )
 
 @Serializable
@@ -861,6 +836,5 @@ data class ForecastData(
     val temperature: String = "",
     val iconPath: String = "",
     val description: String = "",
-    val precipitation: String = "",
-    val precipAccumulation: String = "",
+    val precipitation: String = ""
 )

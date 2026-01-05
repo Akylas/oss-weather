@@ -4,7 +4,7 @@
 import { WeatherProvider } from '~/services/providers/weatherprovider';
 import { WeatherLocation } from '~/services/api';
 import { DailyData, ForecastData, HourlyData, WeatherWidgetData, WidgetConfig } from './WidgetTypes';
-import { Providers, getWeather, getWeatherProvider } from '../providers/weatherproviderfactory';
+import { Providers, getWeatherProvider } from '../providers/weatherproviderfactory';
 import { ApplicationSettings } from '@nativescript/core';
 import { FavoriteLocation } from '~/helpers/favorites';
 import { SETTINGS_WEATHER_LOCATION } from '~/helpers/constants';
@@ -30,6 +30,7 @@ export class WidgetDataManager {
         const latitude = config.latitude;
         const longitude = config.longitude;
         const model = config.model;
+        const provider = getWeatherProvider(config.provider);
 
         // Create location object
         let location: WeatherLocation = {
@@ -46,13 +47,9 @@ export class WidgetDataManager {
 
         // Fetch weather data using WeatherProvider.getWeather
         const weatherData = location
-            ? await getWeather(
-                  location,
-                  {
-                      model
-                  },
-                  config.provider
-              )
+            ? await provider.getWeather(location, {
+                  model
+              })
             : null;
 
         // Format data for widget
@@ -86,7 +83,6 @@ export class WidgetDataManager {
                 temperature: formatWeatherValue(hour, WeatherProps.temperature),
                 iconPath: this.getIconPath(hour.iconId, hour.isDay),
                 precipitation: formatWeatherValue(hour, WeatherProps.precipProbability),
-                precipAccumulation: formatWeatherValue(hour, WeatherProps.precipAccumulation),
                 windSpeed: formatWeatherValue(hour, WeatherProps.windSpeed)
             }));
         }
@@ -98,7 +94,6 @@ export class WidgetDataManager {
                 temperatureHigh: formatWeatherValue(day, WeatherProps.temperatureMax),
                 temperatureLow: formatWeatherValue(day, WeatherProps.temperatureMin),
                 iconPath: this.getIconPath(day.iconId, day.isDay),
-                precipAccumulation: formatWeatherValue(day, WeatherProps.precipAccumulation),
                 precipitation: formatWeatherValue(day, WeatherProps.precipProbability)
             }));
         }
@@ -114,8 +109,7 @@ export class WidgetDataManager {
                     temperature: formatWeatherValue(hour, WeatherProps.temperature),
                     iconPath: this.getIconPath(hour.iconId, hour.isDay),
                     description: hour.description || '',
-                    precipitation: formatWeatherValue(hour, WeatherProps.precipProbability),
-                    precipAccumulation: formatWeatherValue(hour, WeatherProps.precipAccumulation)
+                    precipitation: formatWeatherValue(hour, WeatherProps.precipProbability)
                 });
             });
         }
@@ -128,7 +122,6 @@ export class WidgetDataManager {
                     temperature: formatWeatherValue(day, WeatherProps.temperature),
                     iconPath: this.getIconPath(day.iconId, day.isDay),
                     description: day.description || '',
-                    precipAccumulation: formatWeatherValue(day, WeatherProps.precipAccumulation),
                     precipitation: formatWeatherValue(day, WeatherProps.precipProbability)
                 });
             });
@@ -152,7 +145,7 @@ export class WidgetDataManager {
     }
 
     private formatTime(timestamp: number): string {
-        return formatTime(timestamp, 'LT');
+        return formatTime('timestamp', 'LT');
     }
 
     private formatDateTime(timestamp: number): string {

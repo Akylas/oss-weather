@@ -4,14 +4,234 @@
 import WidgetKit
 import SwiftUI
 
+// MARK: - Gradient Background
+struct GradientBackground: View {
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        LinearGradient(
+            gradient: Gradient(colors: [colors.backgroundGradientStart, colors.backgroundGradientEnd]),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+}
+
+// MARK: - No Data View
+struct NoDataView: View {
+    let loadingState: WidgetLoadingState
+    let errorMessage: String
+    @Environment(\.colorScheme) var colorScheme
+    
+    init(loadingState: WidgetLoadingState = .none, errorMessage: String = "") {
+        self.loadingState = loadingState
+        self.errorMessage = errorMessage
+    }
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        ZStack {
+            GradientBackground()
+            
+            VStack(spacing: 8) {
+                switch loadingState {
+                case .loading:
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: colors.primaryTextColor))
+                        .scaleEffect(1.5)
+                    
+                    Text(WidgetLocalizedStrings.loading)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(colors.primaryTextColor)
+                    
+                case .error:
+                    Text("⚠️")
+                        .font(.system(size: 32))
+                    
+                    Text(errorMessage.isEmpty ? WidgetLocalizedStrings.error_loading : errorMessage)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(colors.primaryTextColor)
+                        .multilineTextAlignment(.center)
+                    
+                    Text(WidgetLocalizedStrings.tapToConfigure)
+                        .font(.system(size: 12))
+                        .foregroundColor(colors.secondaryTextColor)
+                    
+                default:
+                    Text(WidgetLocalizedStrings.noLocationSet)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(colors.primaryTextColor)
+                    
+                    Text(WidgetLocalizedStrings.tapToConfigure)
+                        .font(.system(size: 12))
+                        .foregroundColor(colors.secondaryTextColor)
+                }
+            }
+            .padding()
+        }
+    }
+}
+
+// MARK: - Location Header
+struct LocationHeader: View {
+    let locationName: String
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        Text(locationName)
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(colors.locationTextColor)
+    }
+}
+
+// MARK: - Weather Icon
+struct WeatherIcon: View {
+    let iconPath: String
+    let size: CGFloat
+    
+    init(iconPath: String, size: CGFloat = 64) {
+        self.iconPath = iconPath
+        self.size = size
+    }
+    
+    var body: some View {
+        if let iconImage = WidgetDataProvider.getIconImage(path: iconPath) {
+            Image(uiImage: iconImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+        }
+    }
+}
+
+// MARK: - Temperature Text
+struct TemperatureText: View {
+    let temperature: String
+    let fontSize: CGFloat
+    @Environment(\.colorScheme) var colorScheme
+    
+    init(temperature: String, fontSize: CGFloat = 48) {
+        self.temperature = temperature
+        self.fontSize = fontSize
+    }
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        Text(temperature)
+            .font(.system(size: fontSize, weight: .bold))
+            .foregroundColor(colors.primaryTextColor)
+    }
+}
+
+// MARK: - Description Text
+struct DescriptionText: View {
+    let description: String
+    let fontSize: CGFloat
+    @Environment(\.colorScheme) var colorScheme
+    
+    init(description: String, fontSize: CGFloat = 14) {
+        self.description = description
+        self.fontSize = fontSize
+    }
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        Text(description)
+            .font(.system(size: fontSize))
+            .foregroundColor(colors.secondaryTextColor)
+    }
+}
+
+// MARK: - Card Item
+struct CardItem<Content: View>: View {
+    let content: Content
+    @Environment(\.colorScheme) var colorScheme
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        HStack {
+            content
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(colors.cardBackgroundColor)
+        .cornerRadius(8)
+    }
+}
+
 // MARK: - Simple Weather Widget
+struct SimpleWeatherWidgetEntryView: View {
+    let entry: WeatherEntry
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        ZStack {
+            GradientBackground()
+            
+            if let data = entry.weatherData {
+                switch data.loadingState {
+                case .loaded:
+                    if !data.temperature.isEmpty {
+                        WeatherContentView(data: data)
+                    } else {
+                        NoDataView()
+                    }
+                case .loading:
+                    NoDataView(loadingState: .loading)
+                case .error:
+                    NoDataView(loadingState: .error, errorMessage: data.errorMessage)
+                case .none:
+                    NoDataView()
+                }
+            } else {
+                NoDataView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func WeatherContentView(data: WeatherWidgetData) -> some View {
+        VStack(spacing: 8) {
+            LocationHeader(locationName: data.locationName.isEmpty ? data.locationName : data.locationName)
+            
+            Spacer().frame(height: 8)
+            
+            WeatherIcon(iconPath: data.iconPath)
+            
+            Spacer().frame(height: 8)
+            
+            TemperatureText(temperature: data.temperature)
+            
+            Spacer().frame(height: 4)
+            
+            if !data.description.isEmpty {
+                DescriptionText(description: data.description)
+            }
+        }
+        .padding()
+    }
+}
+
 struct SimpleWeatherWidget: Widget {
     let kind: String = "SimpleWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
-            SimpleWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.background, for: .widget)
+        StaticConfiguration(
+            kind: kind,
+            provider: WeatherTimelineProvider(widgetKind: kind)
+        ) { entry in
+            SimpleWeatherWidgetEntryView(entry: entry)
         }
         .configurationDisplayName(WidgetLocalizedStrings.simpleWeatherName)
         .description(WidgetLocalizedStrings.simpleWeatherDesc)
@@ -19,226 +239,247 @@ struct SimpleWeatherWidget: Widget {
     }
 }
 
-struct SimpleWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
-    @Environment(\.widgetFamily) var family
+
+// MARK: - Simple Weather with Date Widget
+struct SimpleWeatherWithDateWidgetEntryView: View {
+    let entry: WeatherEntry
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
-            let isVerySmall = width < 120
+        ZStack {
+            GradientBackground()
             
-            // Adjust padding based on size
-            let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
-            
-            if entry.data.loadingState != .loaded {
-                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-            } else {
-                WidgetContainer(padding: padding) {
-                    if isVerySmall {
-                        // Very small layout: large icon with small temp
-                        VStack(spacing: 4) {
-                            Spacer()
-                            
-                            // Large icon - 50% of width
-                            WeatherIconView(entry.data.iconPath, description: entry.data.description, 
-                                          size: max(32, width * 0.5))
-                            
-                            // Small temperature
-                            TemperatureText(entry.data.temperature, fontSize: 14)
-                            
-                            // Location at bottom, scaled with size
-                            LocationHeader(entry.data.locationName, 
-                                         fontSize: max(8, min(12, width / 15)),
-                                         maxLines: 1)
-                        }
-                    } else if width < 200 {
-                        // Small widget: vertical layout
-                        VStack(spacing: 4) {
-                            LocationHeader(entry.data.locationName, fontSize: 12)
-                            
-                            Spacer()
-                            
-                            // Bigger icon - 40% of width
-                            WeatherIconView(entry.data.iconPath, description: entry.data.description,
-                                          size: max(48, width * 0.4))
-                            
-                            Spacer()
-                            
-                            TemperatureText(entry.data.temperature, fontSize: 32)
-                        }
+            if let data = entry.weatherData {
+                switch data.loadingState {
+                case .loaded:
+                    if !data.temperature.isEmpty {
+                        WeatherContentView(data: data)
                     } else {
-                        // Medium widget: more spacious layout
-                        VStack(spacing: 8) {
-                            LocationHeader(entry.data.locationName, fontSize: 16)
-                            
-                            Spacer()
-                            
-                            // Bigger icon
-                            WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 72)
-                            
-                            Spacer()
-                            
-                            TemperatureText(entry.data.temperature, fontSize: 48)
-                            
-                            if !entry.data.description.isEmpty {
-                                DescriptionText(entry.data.description, fontSize: 14)
-                            }
-                        }
+                        NoDataView()
                     }
+                case .loading:
+                    NoDataView(loadingState: .loading)
+                case .error:
+                    NoDataView(loadingState: .error, errorMessage: data.errorMessage)
+                case .none:
+                    NoDataView()
                 }
-            }
-        }
-    }
-}
-
-// MARK: - Simple Weather Widget with Clock
-struct SimpleWeatherWithClockWidget: Widget {
-    let kind: String = "SimpleWeatherWithClockWidget"
-    
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
-            SimpleWeatherWithClockWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.background, for: .widget)
-        }
-        .configurationDisplayName(WidgetLocalizedStrings.weatherWithClockName)
-        .description(WidgetLocalizedStrings.weatherWithClockDesc)
-        .supportedFamilies([.systemSmall, .systemMedium])
-    }
-}
-
-struct SimpleWeatherWithClockWidgetView: View {
-    let entry: WeatherTimelineEntry
-    @Environment(\.widgetFamily) var family
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
-            let isSmall = width < 150
-            
-            // Read clock bold setting
-            let clockBold = WidgetSettings.clockBold
-            
-            // Adjust padding based on size
-            let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
-            
-            if entry.data.loadingState != .loaded {
-                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
             } else {
-                WidgetContainer(padding: padding) {
-                    ZStack {
-                        VStack(spacing: isSmall ? 4 : 8) {
-                            // Clock at top
-                            let clockFontSize: CGFloat = width < 100 ? 24 : (width < 150 ? 32 : 48)
-                            Text(entry.date, style: .time)
-                                .font(.system(size: clockFontSize, weight: clockBold ? .bold : .regular))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                            
-                            // Weather info
-                            HStack(spacing: isSmall ? 4 : 8) {
-                                // Bigger icon
-                                let iconSize: CGFloat = width < 100 ? 32 : (width < 150 ? 40 : 56)
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
-                                
-                                let tempFontSize: CGFloat = width < 100 ? 18 : (width < 150 ? 24 : 32)
-                                TemperatureText(entry.data.temperature, fontSize: tempFontSize)
-                            }
-                            
-                            Spacer()
-                        }
-                        
-                        // Location at bottom right, scaled with size
-                        VStack {
-                            Spacer()
-                            HStack {
-                                Spacer()
-                                let locationFontSize: CGFloat = width < 100 ? 8 : (width < 150 ? 10 : 12)
-                                LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
-                                    .padding(.bottom, 2)
-                                    .padding(.trailing, 2)
-                            }
-                        }
-                    }
-                }
+                NoDataView()
             }
         }
     }
+
+    @ViewBuilder
+    private func WeatherContentView(data: WeatherWidgetData) -> some View {
+        VStack(spacing: 8) {
+            if !data.date.isEmpty {
+                DescriptionText(description: data.date, fontSize: 12)
+            }
+            
+            LocationHeader(locationName: data.locationName.isEmpty ? data.locationName : data.locationName)
+            
+            Spacer().frame(height: 8)
+            
+            WeatherIcon(iconPath: data.iconPath)
+            
+            Spacer().frame(height: 8)
+            
+            TemperatureText(temperature: data.temperature, fontSize: 24)
+            
+            Spacer().frame(height: 4)
+            
+            if !data.description.isEmpty {
+                DescriptionText(description: data.description, fontSize: 11)
+            }
+        }
+        .padding()
+    }
 }
 
-// MARK: - Simple Weather Widget with Date
 struct SimpleWeatherWithDateWidget: Widget {
     let kind: String = "SimpleWeatherWithDateWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
-            SimpleWeatherWithDateWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.background, for: .widget)
+        StaticConfiguration(
+            kind: kind,
+            provider: WeatherTimelineProvider(widgetKind: kind)
+        ) { entry in
+            SimpleWeatherWithDateWidgetEntryView(entry: entry)
         }
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithDateName)
         .description(WidgetLocalizedStrings.weatherWithDateDesc)
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemMedium])
     }
 }
 
-struct SimpleWeatherWithDateWidgetView: View {
-    let entry: WeatherTimelineEntry
-    @Environment(\.widgetFamily) var family
+// MARK: - Simple Weather with Clock Widget
+struct SimpleWeatherWithClockWidgetEntryView: View {
+    let entry: WeatherEntry
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        ZStack {
+            GradientBackground()
             
-            // Support down to 50dp (approximately 50 points) height
-            let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
-            let isVerySmall = height < 60
-            
-            if entry.data.loadingState != .loaded {
-                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-            } else {
-                WidgetContainer(padding: padding) {
-                    VStack(spacing: 0) {
-                        // Date
-                        let dateFontSize: CGFloat = isVerySmall ? 10 : (height < 80 ? 12 : 14)
-                        Text(entry.date, style: .date)
-                            .font(.system(size: dateFontSize))
-                            .foregroundColor(WidgetColorProvider.onSurface.opacity(0.7))
-                            .lineLimit(1)
-                        
-                        Spacer()
-                        
-                        // Weather info
-                        HStack(spacing: isVerySmall ? 4 : 8) {
-                            // Bigger icon
-                            let iconSize: CGFloat = isVerySmall ? 24 : (height < 80 ? 32 : 40)
-                            WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
-                            
-                            let tempFontSize: CGFloat = isVerySmall ? 16 : (height < 80 ? 20 : 24)
-                            TemperatureText(entry.data.temperature, fontSize: tempFontSize)
-                        }
-                        
-                        Spacer()
-                        
-                        // Location
-                        let locationFontSize: CGFloat = isVerySmall ? 9 : (height < 80 ? 11 : 12)
-                        LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
+            if let data = entry.weatherData {
+                switch data.loadingState {
+                case .loaded:
+                    if !data.temperature.isEmpty {
+                        WeatherContentView(data: data, colors: colors)
+                    } else {
+                        NoDataView()
                     }
+                case .loading:
+                    NoDataView(loadingState: .loading)
+                case .error:
+                    NoDataView(loadingState: .error, errorMessage: data.errorMessage)
+                case .none:
+                    NoDataView()
+                }
+            } else {
+                NoDataView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func WeatherContentView(data: WeatherWidgetData, colors: WidgetColorProvider) -> some View {
+        HStack(spacing: 16) {
+            // Left side - Clock
+            VStack(alignment: .leading, spacing: 4) {
+                Text(Date(), style: .time)
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundColor(colors.primaryTextColor)
+                    .minimumScaleFactor(0.8)
+                
+                Text(Date(), style: .date)
+                    .font(.system(size: 14))
+                    .foregroundColor(colors.secondaryTextColor)
+                
+                Spacer().frame(height: 8)
+                
+                LocationHeader(locationName: data.locationName.isEmpty ? data.locationName : data.locationName)
+            }
+            
+            Spacer()
+            
+            // Right side - Weather
+            VStack(spacing: 4) {
+                WeatherIcon(iconPath: data.iconPath, size: 56)
+                
+                TemperatureText(temperature: data.temperature, fontSize: 28)
+                
+                if !data.description.isEmpty {
+                    DescriptionText(description: data.description, fontSize: 11)
+                        .lineLimit(1)
                 }
             }
         }
+        .padding(16)
+    }
+}
+
+struct SimpleWeatherWithClockWidget: Widget {
+    let kind: String = "SimpleWeatherWithClockWidget"
+    
+    var body: some WidgetConfiguration {
+        StaticConfiguration(
+            kind: kind,
+            provider: WeatherTimelineProvider(widgetKind: kind)
+        ) { entry in
+            SimpleWeatherWithClockWidgetEntryView(entry: entry)
+        }
+        .configurationDisplayName(WidgetLocalizedStrings.weatherWithClockName)
+        .description(WidgetLocalizedStrings.weatherWithClockDesc)
+        .supportedFamilies([.systemMedium])
     }
 }
 
 // MARK: - Hourly Weather Widget
+struct HourlyWeatherWidgetEntryView: View {
+    let entry: WeatherEntry
+    @Environment(\.colorScheme) var colorScheme
+    
+    var body: some View {
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        ZStack {
+            GradientBackground()
+            
+            if let data = entry.weatherData {
+                switch data.loadingState {
+                case .loaded:
+                    if !data.temperature.isEmpty {
+                        WeatherContentView(data: data)
+                    } else {
+                        NoDataView()
+                    }
+                case .loading:
+                    NoDataView(loadingState: .loading)
+                case .error:
+                    NoDataView(loadingState: .error, errorMessage: data.errorMessage)
+                case .none:
+                    NoDataView()
+                }
+            } else {
+                NoDataView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func WeatherContentView(data: WeatherWidgetData, colors: WidgetColorProvider) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(WidgetLocalizedStrings.hourlyForecast)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(colors.primaryTextColor)
+                Spacer()
+            }
+            .padding(.bottom, 4)
+            
+            if !data.locationName.isEmpty {
+                DescriptionText(description: data.locationName.isEmpty ? data.locationName : data.locationName, fontSize: 11)
+            }
+            
+            ForEach(data.hourlyData.prefix(6), id: \.time) { hour in
+                CardItem {
+                    Text(hour.time)
+                        .font(.system(size: 11))
+                        .foregroundColor(colors.primaryTextColor)
+                        .frame(width: 50, alignment: .leading)
+                    
+                    WeatherIcon(iconPath: hour.iconPath, size: 20)
+                    
+                    Text(hour.temperature)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(colors.primaryTextColor)
+                        .frame(width: 50)
+                    
+                    if !hour.precipitation.isEmpty {
+                        Text("💧 \(hour.precipitation)")
+                            .font(.system(size: 10))
+                            .foregroundColor(colors.accentColor)
+                    }
+                }
+            }
+        }
+        .padding(12)
+    }
+}
+
 struct HourlyWeatherWidget: Widget {
     let kind: String = "HourlyWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
-            HourlyWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.background, for: .widget)
+        StaticConfiguration(
+            kind: kind,
+            provider: WeatherTimelineProvider(widgetKind: kind)
+        ) { entry in
+            HourlyWeatherWidgetEntryView(entry: entry)
         }
         .configurationDisplayName(WidgetLocalizedStrings.hourlyForecastName)
         .description(WidgetLocalizedStrings.hourlyForecastDesc)
@@ -246,86 +487,98 @@ struct HourlyWeatherWidget: Widget {
     }
 }
 
-struct HourlyWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
-    @Environment(\.widgetFamily) var family
+// MARK: - Daily Weather Widget
+struct DailyWeatherWidgetEntryView: View {
+    let entry: WeatherEntry
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        GeometryReader { geometry in
-            let height = geometry.size.height
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        ZStack {
+            GradientBackground()
             
-            // Support smaller heights
-            let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
-            let isVerySmall = height < 60
-            let isSmall = height < 80
-            
-            if entry.data.loadingState != .loaded {
-                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            if let data = entry.weatherData {
+                switch data.loadingState {
+                case .loaded:
+                    if !data.temperature.isEmpty {
+                        WeatherContentView(data: data)
+                    } else {
+                        NoDataView()
+                    }
+                case .loading:
+                    NoDataView(loadingState: .loading)
+                case .error:
+                    NoDataView(loadingState: .error, errorMessage: data.errorMessage)
+                case .none:
+                    NoDataView()
+                }
             } else {
-                WidgetContainer(padding: padding) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        if !isSmall {
-                            LocationHeader(entry.data.locationName, fontSize: 14)
-                            Spacer().frame(height: 4)
-                        }
+                NoDataView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func WeatherContentView(data: WeatherWidgetData, colors: WidgetColorProvider) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(WidgetLocalizedStrings.sevenDayForecast)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(colors.primaryTextColor)
+                Spacer()
+            }
+            .padding(.bottom, 4)
+            
+            if !data.locationName.isEmpty {
+                DescriptionText(description: data.locationName.isEmpty ? data.locationName : data.locationName, fontSize: 11)
+            }
+            
+            ForEach(data.dailyData.prefix(7), id: \.day) { day in
+                CardItem {
+                    Text(day.day)
+                        .font(.system(size: 11))
+                        .foregroundColor(colors.primaryTextColor)
+                        .frame(width: 60, alignment: .leading)
+                    
+                    WeatherIcon(iconPath: day.iconPath, size: 24)
+                    
+                    HStack(spacing: 4) {
+                        Text(day.temperatureHigh)
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(colors.primaryTextColor)
                         
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(entry.data.hourlyData) { hour in
-                                    HourlyItem(hour: hour, height: height, isVerySmall: isVerySmall, isSmall: isSmall)
-                                }
-                            }
-                        }
+                        Text("/")
+                            .font(.system(size: 11))
+                            .foregroundColor(colors.secondaryTextColor)
+                        
+                        Text(day.temperatureLow)
+                            .font(.system(size: 12))
+                            .foregroundColor(colors.secondaryTextColor)
+                    }
+                    .frame(width: 70)
+                    
+                    if !day.precipitation.isEmpty {
+                        Text("💧 \(day.precipitation)")
+                            .font(.system(size: 10))
+                            .foregroundColor(colors.accentColor)
                     }
                 }
             }
         }
+        .padding(12)
     }
 }
 
-struct HourlyItem: View {
-    let hour: HourlyData
-    let height: CGFloat
-    let isVerySmall: Bool
-    let isSmall: Bool
-    
-    var body: some View {
-        VStack(spacing: isVerySmall ? 0 : 2) {
-            // Time
-            let timeFontSize: CGFloat = isVerySmall ? 9 : 11
-            Text(hour.hour)
-                .font(.system(size: timeFontSize))
-                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                .lineLimit(1)
-            
-            // Icon - bigger
-            let iconSize: CGFloat = isVerySmall ? 24 : (isSmall ? 28 : 32)
-            WeatherIconView(hour.iconPath, description: hour.description, size: iconSize)
-            
-            // Temperature
-            let tempFontSize: CGFloat = isVerySmall ? 12 : 14
-            Text(hour.temperature)
-                .font(.system(size: tempFontSize, weight: .bold))
-                .foregroundColor(WidgetColorProvider.onSurface)
-                .lineLimit(1)
-            
-            // Precipitation accumulation
-            if !isVerySmall {
-                PrecipitationText(hour.precipAccumulation, fontSize: isSmall ? 9 : 10)
-            }
-        }
-        .frame(width: 56)
-    }
-}
-
-// MARK: - Daily Weather Widget
 struct DailyWeatherWidget: Widget {
     let kind: String = "DailyWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
-            DailyWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.background, for: .widget)
+        StaticConfiguration(
+            kind: kind,
+            provider: WeatherTimelineProvider(widgetKind: kind)
+        ) { entry in
+            DailyWeatherWidgetEntryView(entry: entry)
         }
         .configurationDisplayName(WidgetLocalizedStrings.dailyForecastName)
         .description(WidgetLocalizedStrings.dailyForecastDesc)
@@ -333,213 +586,116 @@ struct DailyWeatherWidget: Widget {
     }
 }
 
-struct DailyWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
-    @Environment(\.widgetFamily) var family
+// MARK: - Forecast Weather Widget
+struct ForecastWeatherWidgetEntryView: View {
+    let entry: WeatherEntry
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
-        GeometryReader { geometry in
-            let height = geometry.size.height
-            let isLarge = height > 150
+        let colors = WidgetColorProvider.colors(for: colorScheme)
+        
+        ZStack {
+            GradientBackground()
             
-            if entry.data.loadingState != .loaded {
-                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            if let data = entry.weatherData {
+                switch data.loadingState {
+                case .loaded:
+                    if !data.temperature.isEmpty {
+                        WeatherContentView(data: data)
+                    } else {
+                        NoDataView()
+                    }
+                case .loading:
+                    NoDataView(loadingState: .loading)
+                case .error:
+                    NoDataView(loadingState: .error, errorMessage: data.errorMessage)
+                case .none:
+                    NoDataView()
+                }
             } else {
-                WidgetContainer(padding: 8) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        LocationHeader(entry.data.locationName, fontSize: 14)
-                        
-                        VStack(spacing: 0) {
-                            let maxItems = isLarge ? 5 : 3
-                            ForEach(Array(entry.data.dailyData.prefix(maxItems).enumerated()), id: \.element.id) { index, day in
-                                // Add gap between days using a divider with spacing
-                                if index > 0 {
-                                    Spacer().frame(height: 4)
-                                }
-                                DailyItem(day: day, showExtraData: isLarge)
-                            }
-                        }
+                NoDataView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func WeatherContentView(data: WeatherWidgetData, colors: WidgetColorProvider) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header with current weather
+            HStack {
+                VStack(alignment: .leading) {
+                    LocationHeader(locationName: data.locationName.isEmpty ? data.locationName : data.locationName)
+                    
+                    if !data.date.isEmpty {
+                        DescriptionText(description: data.date, fontSize: 10)
+                    }
+                }
+                
+                Spacer()
+                
+                WeatherIcon(iconPath: data.iconPath, size: 36)
+                
+                TemperatureText(temperature: data.temperature, fontSize: 20)
+            }
+            
+            Divider()
+                .background(colors.secondaryTextColor.opacity(0.3))
+            
+            // Forecast items
+            ForEach(data.forecastData.prefix(5), id: \.dateTime) { forecast in
+                CardItem {
+                    Text(forecast.dateTime)
+                        .font(.system(size: 10))
+                        .foregroundColor(colors.primaryTextColor)
+                        .frame(width: 60, alignment: .leading)
+                    
+                    WeatherIcon(iconPath: forecast.iconPath, size: 20)
+                    
+                    Text(forecast.temperature)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(colors.primaryTextColor)
+                        .frame(width: 40)
+                    
+                    Text(forecast.description)
+                        .font(.system(size: 9))
+                        .foregroundColor(colors.secondaryTextColor)
+                        .lineLimit(1)
+                    
+                    if !forecast.precipitation.isEmpty {
+                        Text("💧 \(forecast.precipitation)")
+                            .font(.system(size: 9))
+                            .foregroundColor(colors.accentColor)
                     }
                 }
             }
         }
+        .padding(12)
     }
 }
 
-struct DailyItem: View {
-    let day: DailyData
-    let showExtraData: Bool
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            // Day name
-            Text(day.day)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(WidgetColorProvider.onSurface)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .lineLimit(1)
-            
-            // Weather icon - bigger
-            WeatherIconView(day.iconPath, description: day.description, size: 28)
-            
-            // Temperature range with precipAccumulation
-            HStack(spacing: 6) {
-                PrecipitationText(day.precipAccumulation, fontSize: 10)
-                
-                HStack(spacing: 4) {
-                    Text(day.temperatureHigh)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundColor(WidgetColorProvider.onSurface)
-                    
-                    Text(day.temperatureLow)
-                        .font(.system(size: 13))
-                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .padding(.vertical, 2)
-    }
-}
-
-// MARK: - Forecast Weather Widget
 struct ForecastWeatherWidget: Widget {
     let kind: String = "ForecastWeatherWidget"
     
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: WeatherTimelineProvider()) { entry in
-            ForecastWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.background, for: .widget)
+        StaticConfiguration(
+            kind: kind,
+            provider: WeatherTimelineProvider(widgetKind: kind)
+        ) { entry in
+            ForecastWeatherWidgetEntryView(entry: entry)
         }
         .configurationDisplayName(WidgetLocalizedStrings.detailedForecastName)
         .description(WidgetLocalizedStrings.detailedForecastDesc)
-        .supportedFamilies([.systemLarge, .systemExtraLarge])
-    }
-}
-
-struct ForecastWeatherWidgetView: View {
-    let entry: WeatherTimelineEntry
-    @Environment(\.widgetFamily) var family
-    
-    var body: some View {
-        GeometryReader { geometry in
-            let height = geometry.size.height
-            let isLarge = height > 240
-            
-            if entry.data.loadingState != .loaded {
-                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-            } else {
-                WidgetContainer(padding: 8) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        // Current weather
-                        HStack(spacing: 8) {
-                            WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 40)
-                            
-                            VStack(alignment: .leading) {
-                                TemperatureText(entry.data.temperature, fontSize: 24)
-                                LocationHeader(entry.data.locationName, fontSize: 11)
-                            }
-                            
-                            Spacer()
-                        }
-                        
-                        Divider()
-                        
-                        // Hourly section
-                        Text(WidgetLocalizedStrings.hourlyForecast)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(entry.data.hourlyData.prefix(8)) { hour in
-                                    HourlyForecastItem(hour: hour, isLarge: isLarge)
-                                }
-                            }
-                        }
-                        .frame(height: isLarge ? 80 : 70)
-                        
-                        Divider()
-                        
-                        // Daily section
-                        Text(WidgetLocalizedStrings.sevenDayForecast)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                        
-                        VStack(spacing: 0) {
-                            let maxDays = isLarge ? 5 : 3
-                            ForEach(Array(entry.data.dailyData.prefix(maxDays).enumerated()), id: \.element.id) { index, day in
-                                if index > 0 {
-                                    Spacer().frame(height: 2)
-                                }
-                                DailyForecastItem(day: day)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-struct HourlyForecastItem: View {
-    let hour: HourlyData
-    let isLarge: Bool
-    
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(hour.hour)
-                .font(.system(size: 10))
-                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                .lineLimit(1)
-            
-            WeatherIconView(hour.iconPath, description: hour.description, size: 28)
-            
-            Text(hour.temperature)
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(WidgetColorProvider.onSurface)
-                .lineLimit(1)
-            
-            PrecipitationText(hour.precipAccumulation, fontSize: 9)
-        }
-        .frame(width: 50)
-    }
-}
-
-struct DailyForecastItem: View {
-    let day: DailyData
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            Text(day.day)
-                .font(.system(size: 12))
-                .foregroundColor(WidgetColorProvider.onSurface)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .lineLimit(1)
-            
-            WeatherIconView(day.iconPath, description: day.description, size: 24)
-            
-            HStack(spacing: 6) {
-                PrecipitationText(day.precipAccumulation, fontSize: 10)
-                
-                Text("\(day.temperatureHigh)/\(day.temperatureLow)")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(WidgetColorProvider.onSurface)
-                    .lineLimit(1)
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
-        }
-        .padding(.vertical, 2)
+        .supportedFamilies([.systemMedium, .systemLarge])
     }
 }
 
 // MARK: - Widget Bundle
 @main
-struct AllWeatherWidgets: WidgetBundle {
+struct WeatherWidgetBundle: WidgetBundle {
     var body: some Widget {
         SimpleWeatherWidget()
-        SimpleWeatherWithClockWidget()
         SimpleWeatherWithDateWidget()
+        SimpleWeatherWithClockWidget()
         HourlyWeatherWidget()
         DailyWeatherWidget()
         ForecastWeatherWidget()

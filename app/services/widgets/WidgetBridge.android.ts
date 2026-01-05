@@ -16,7 +16,26 @@ export class WidgetBridge extends WidgetBridgeBase {
     constructor() {
         super();
         this.dataManager = new WidgetDataManager();
-        // this.initializeWorkManager();
+        this.initializeWorkManager();
+    }
+
+    /**
+     * Initialize WorkManager scheduling based on active widgets
+     */
+    private initializeWorkManager() {
+        try {
+            const context = Utils.android.getApplicationContext();
+            const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+
+            // Schedule updates if widgets are present (this will auto-cancel if none exist)
+            const frequency = WidgetConfigManager.getUpdateFrequency();
+            DEV_LOG && console.info('scheduleWidgetUpdates', frequency);
+            widgetManager.scheduleWidgetUpdates(context, frequency);
+
+            console.log('WidgetBridge: Initialized WorkManager scheduling');
+        } catch (error) {
+            console.error('WidgetBridge: Failed to initialize WorkManager:', error, error.stack);
+        }
     }
 
     /**
@@ -27,6 +46,18 @@ export class WidgetBridge extends WidgetBridgeBase {
         const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
         const context = Utils.android.getApplicationContext();
         widgetManager.requestAllWidgetsUpdate(context);
+        // const configs = WidgetConfigManager.getAllConfigs();
+        // for (const widgetId of Object.keys(configs)) {
+        //     try {
+        //         const config = configs[widgetId];
+        //         if (onlyDefaults && isDefaultLocation(config.locationName)) {
+        //             continue;
+        //         }
+        //         await this.updateWidget(widgetId, config);
+        //     } catch (error) {
+        //         console.error(`Error updating widget ${widgetId}:`, error);
+        //     }
+        // }
     }
     /**
      * Handle widget update request from native side

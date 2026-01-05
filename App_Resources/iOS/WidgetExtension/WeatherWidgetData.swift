@@ -30,7 +30,6 @@ struct HourlyData: Codable {
     let temperature: String
     let iconPath: String
     let precipitation: String
-    let precipAccumulation: String
     let windSpeed: String
 }
 
@@ -40,7 +39,6 @@ struct DailyData: Codable {
     let temperatureLow: String
     let iconPath: String
     let precipitation: String
-    let precipAccumulation: String
 }
 
 struct ForecastData: Codable {
@@ -49,7 +47,6 @@ struct ForecastData: Codable {
     let iconPath: String
     let description: String
     let precipitation: String
-    let precipAccumulation: String
 }
 
 class WidgetDataProvider {

@@ -1,17 +1,15 @@
 package com.akylas.weather.widgets
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
-import androidx.glance.LocalContext
+import androidx.glance.action.Action
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.background
@@ -20,21 +18,34 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
 import com.akylas.weather.R
 
+/**
+ * Shared composables for all weather widgets
+ */
 object WidgetComposables {
 
+    /**
+     * Common "No Data" content - shows different states: no config, loading, error
+     */
+    @SuppressLint("RestrictedApi")
     @Composable
     fun NoDataContent(
+        context: Context, 
         loadingState: WidgetLoadingState = WidgetLoadingState.NONE,
         errorMessage: String = ""
     ) {
-        val context = LocalContext.current
+        val textColor = WidgetColorProvider.getPrimaryTextColor(context)
+        val secondaryColor = WidgetColorProvider.getSecondaryTextColor(context)
         val launchIntent = WeatherWidgetManager.createAppLaunchIntent(context)
         val openAction = launchIntent?.let { actionStartActivity(it.component!!) }
+
+
         Box(
             modifier = GlanceModifier
                 .fillMaxSize()
+                .background(WidgetColorProvider.getBackgroundImageProvider(context))
                 .then(if (openAction != null) GlanceModifier.clickable(openAction) else GlanceModifier)
                 .padding(16.dp),
             contentAlignment = Alignment.Center
@@ -45,10 +56,11 @@ object WidgetComposables {
             ) {
                 when (loadingState) {
                     WidgetLoadingState.LOADING -> {
+                        // Loading spinner (using text as Glance doesn't have native spinner)
                         Text(
                             text = "⟳",
                             style = TextStyle(
-                                color = GlanceTheme.colors.onBackground,
+                                color = ColorProvider(textColor),
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -57,7 +69,7 @@ object WidgetComposables {
                         Text(
                             text = context.getString(R.string.widget_loading),
                             style = TextStyle(
-                                color = GlanceTheme.colors.onBackground,
+                                color = ColorProvider(textColor),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
                             )
@@ -68,7 +80,7 @@ object WidgetComposables {
                         Text(
                             text = "⚠️",
                             style = TextStyle(
-                                color = GlanceTheme.colors.error,
+                                color = ColorProvider(textColor),
                                 fontSize = 32.sp
                             )
                         )
@@ -76,7 +88,7 @@ object WidgetComposables {
                         Text(
                             text = errorMessage.ifEmpty { context.getString(R.string.widget_error_loading) },
                             style = TextStyle(
-                                color = GlanceTheme.colors.onBackground,
+                                color = ColorProvider(textColor),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center
@@ -86,7 +98,7 @@ object WidgetComposables {
                         Text(
                             text = context.getString(R.string.widget_tap_configure),
                             style = TextStyle(
-                                color = GlanceTheme.colors.onSurfaceVariant,
+                                color = ColorProvider(secondaryColor),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.Center
                             )
@@ -94,10 +106,11 @@ object WidgetComposables {
                     }
                     
                     else -> {
+                        // No configuration
                         Text(
                             text = context.getString(R.string.widget_no_location),
                             style = TextStyle(
-                                color = GlanceTheme.colors.onBackground,
+                                color = ColorProvider(textColor),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium,
                                 textAlign = TextAlign.Center
@@ -107,7 +120,7 @@ object WidgetComposables {
                         Text(
                             text = context.getString(R.string.widget_tap_configure),
                             style = TextStyle(
-                                color = GlanceTheme.colors.onSurfaceVariant,
+                                color = ColorProvider(secondaryColor),
                                 fontSize = 12.sp,
                                 textAlign = TextAlign.Center
                             )
@@ -118,169 +131,137 @@ object WidgetComposables {
         }
     }
 
-    @Composable
-    fun WidgetBackground(
-        modifier: GlanceModifier = GlanceModifier,
-        content: @Composable () -> Unit
-    ) {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(
-                    imageProvider = ImageProvider(R.drawable.app_widget_background),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.widgetBackground)
-                )
-        ) {
-            content()
-        }
-    }
-
+    /**
+     * Common widget container with background and corner radius
+     */
+    @SuppressLint("RestrictedApi")
     @Composable
     fun WidgetContainer(
-        padding: Dp = 8.dp,
-        modifier: GlanceModifier = GlanceModifier,
-        content: @Composable () -> Unit
+        context: Context,
+        openAction: Action?,
+        content: @Composable ColumnScope.() -> Unit
     ) {
         Box(
-            modifier = modifier
+            modifier = GlanceModifier
                 .fillMaxSize()
-                .padding(padding)
+                .background(WidgetColorProvider.getBackgroundImageProvider(context))
+                .then(if (openAction != null) GlanceModifier.clickable(openAction) else GlanceModifier)
+                .padding(12.dp)
         ) {
-            content()
-        }
-    }
-
-    @Composable
-    fun LocationHeader(
-        locationName: String,
-        fontSize: TextUnit = 14.sp,
-        maxLines: Int = 1,
-        modifier: GlanceModifier = GlanceModifier
-    ) {
-        Text(
-            text = locationName,
-            style = TextStyle(
-                fontSize = fontSize,
-                color = GlanceTheme.colors.onSurface
-            ),
-            maxLines = maxLines,
-            modifier = modifier
-        )
-    }
-
-    @Composable
-    fun WeatherIcon(
-        iconPath: String?,
-        description: String,
-        size: Dp = 48.dp,
-        modifier: GlanceModifier = GlanceModifier
-    ) {
-        WeatherWidgetManager.getIconImageProviderFromPath(iconPath)?.let { provider ->
-            Image(
-                provider = provider,
-                contentDescription = description,
-                modifier = modifier.size(size)
+            Column(
+                modifier = GlanceModifier.fillMaxSize(),
+                content = content
             )
         }
     }
 
+    /**
+     * Location header text
+     */
+    @SuppressLint("RestrictedApi")
     @Composable
-    fun TemperatureText(
-        temperature: String,
-        fontSize: TextUnit = 32.sp,
-        modifier: GlanceModifier = GlanceModifier
-    ) {
+    fun LocationHeader(context: Context, locationName: String, fontSize: androidx.compose.ui.unit.TextUnit = 16.sp) {
         Text(
-            text = temperature,
+            text = locationName,
             style = TextStyle(
+                color = ColorProvider(WidgetColorProvider.getLocationTextColor(context)),
                 fontSize = fontSize,
-                fontWeight = FontWeight.Bold,
-                color = GlanceTheme.colors.onSurface
+                fontWeight = FontWeight.Medium
             ),
-            modifier = modifier
-        )
-    }
-
-    @Composable
-    fun DescriptionText(
-        description: String,
-        fontSize: TextUnit = 14.sp,
-        modifier: GlanceModifier = GlanceModifier
-    ) {
-        Text(
-            text = description,
-            style = TextStyle(
-                fontSize = fontSize,
-                color = GlanceTheme.colors.onSurface
-            ),
-            modifier = modifier
-        )
-    }
-    
-    @Composable
-    fun PrecipitationText(
-        precipAccumulation: String,
-        fontSize: TextUnit = 10.sp,
-        modifier: GlanceModifier = GlanceModifier,
-        useAccentColor: Boolean = false
-    ) {
-        Text(
-            text = precipAccumulation,
-            style = TextStyle(
-                fontSize = fontSize,
-                color = if (useAccentColor) GlanceTheme.colors.primary else GlanceTheme.colors.onSurfaceVariant
-            ),
-            modifier = modifier,
             maxLines = 1
         )
     }
 
+    /**
+     * Weather icon display
+     */
     @Composable
-    fun CurrentWeatherSection(
-        data: WeatherWidgetData,
-        modifier: GlanceModifier = GlanceModifier
+    fun WeatherIcon(
+        context: Context,
+        iconPath: String,
+        description: String,
+        size: Dp = 64.dp
     ) {
-        Row(
-            modifier = modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Vertical.CenterVertically
-        ) {
-            // Weather icon
-            WeatherIcon(data.iconPath, data.description, 40.dp)
-            
-            Spacer(modifier = GlanceModifier.width(8.dp))
-            
-            // Temperature and location
-            Column(
-                modifier = GlanceModifier.defaultWeight()
-            ) {
-                TemperatureText(data.temperature, 24.sp)
-                Spacer(modifier = GlanceModifier.height(2.dp))
-                LocationHeader(data.locationName, 11.sp)
-            }
-            
-            Spacer(modifier = GlanceModifier.defaultWeight())
+        // Weather icon
+        WeatherWidgetManager.getIconImageProviderFromPath(iconPath)?.let { provider ->
+            Image(
+                provider = provider,
+                contentDescription = description,
+                modifier = GlanceModifier.size(size)
+            )
         }
     }
 
+    /**
+     * Temperature text display
+     */
+    @SuppressLint("RestrictedApi")
+    @Composable
+    fun TemperatureText(
+        context: Context,
+        temperature: String,
+        fontSize: androidx.compose.ui.unit.TextUnit = 48.sp
+    ) {
+        Text(
+            text = temperature,
+            style = TextStyle(
+                color = ColorProvider(WidgetColorProvider.getPrimaryTextColor(context)),
+                fontSize = fontSize,
+                fontWeight = FontWeight.Bold
+            ),
+            maxLines = 1
+        )
+    }
+
+    /**
+     * Weather description text
+     */
+    @SuppressLint("RestrictedApi")
+    @Composable
+    fun DescriptionText(
+        context: Context,
+        description: String,
+        fontSize: androidx.compose.ui.unit.TextUnit = 14.sp
+    ) {
+        Text(
+            text = description,
+            style = TextStyle(
+                color = ColorProvider(WidgetColorProvider.getSecondaryTextColor(context)),
+                fontSize = fontSize
+            ),
+            maxLines = 1
+        )
+    }
+
+    /**
+     * Card item container for lists
+     */
+    @SuppressLint("RestrictedApi")
     @Composable
     fun CardItem(
+        context: Context,
         content: @Composable RowScope.() -> Unit
     ) {
         Row(
             modifier = GlanceModifier
                 .fillMaxWidth()
-                .background(GlanceTheme.colors.surface)
+                .background(WidgetColorProvider.getCardBackgroundImageProvider(context))
                 .padding(horizontal = 8.dp, vertical = 6.dp),
             verticalAlignment = Alignment.Vertical.CenterVertically,
             content = content
         )
     }
 
+    /**
+     * Data label with optional icon
+     */
+    @SuppressLint("RestrictedApi")
     @Composable
     fun DataLabel(
+        context: Context,
         icon: String,
         value: String,
-        useAccentColor: Boolean = false
+        color: androidx.compose.ui.graphics.Color? = null
     ) {
         Row(
             verticalAlignment = Alignment.Vertical.CenterVertically,
@@ -289,7 +270,7 @@ object WidgetComposables {
             Text(
                 text = icon,
                 style = TextStyle(
-                    color = if (useAccentColor) GlanceTheme.colors.primary else GlanceTheme.colors.onSurfaceVariant,
+                    color = ColorProvider(color ?: WidgetColorProvider.getSecondaryTextColor(context)),
                     fontSize = 12.sp
                 )
             )
@@ -297,7 +278,7 @@ object WidgetComposables {
             Text(
                 text = value,
                 style = TextStyle(
-                    color = if (useAccentColor) GlanceTheme.colors.primary else GlanceTheme.colors.onSurfaceVariant,
+                    color = ColorProvider(color ?: WidgetColorProvider.getSecondaryTextColor(context)),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Medium
                 )

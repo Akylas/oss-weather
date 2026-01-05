@@ -67,6 +67,11 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                         console.error('WidgetUpdateReceiver: Error checking clock permission:', error);
                     }
                 }
+            } else if (action === '__PACKAGE__.WIDGET_REMOVED') {
+                const widgetId = intent.getIntExtra('widgetId', -1);
+                DEV_LOG && console.log(`WidgetUpdateReceiver: Widget added, widgetId=${widgetId}`);
+
+                widgetService.reloadConfigs();
             }
         } catch (error) {
             console.error('WidgetUpdateReceiver: Error in onReceive:', error, error?.stack);

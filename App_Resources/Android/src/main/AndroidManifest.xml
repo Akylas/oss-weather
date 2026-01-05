@@ -206,6 +206,7 @@
             <intent-filter>
                 <action android:name="__PACKAGE__.WIDGET_UPDATE_REQUEST" />
                 <action android:name="__PACKAGE__.WIDGET_ADDED" />
+                <action android:name="__PACKAGE__.WIDGET_REMOVED" />
             </intent-filter>
         </receiver>
         <receiver

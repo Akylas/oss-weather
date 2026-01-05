@@ -5,14 +5,14 @@ import { WeatherProvider } from '~/services/providers/weatherprovider';
 import { WeatherLocation } from '~/services/api';
 import { DailyData, ForecastData, HourlyData, WeatherWidgetData, WidgetConfig } from './WidgetTypes';
 import { Providers, getWeather, getWeatherProvider } from '../providers/weatherproviderfactory';
-import { ApplicationSettings } from '@nativescript/core';
+import { ApplicationSettings, path } from '@nativescript/core';
 import { FavoriteLocation } from '~/helpers/favorites';
 import { SETTINGS_WEATHER_LOCATION } from '~/helpers/constants';
 import { WeatherProps, formatWeatherValue } from '../weatherData';
 import { WeatherData } from '../providers/weather';
 import dayjs from 'dayjs';
 import { formatDate, formatTime } from '~/helpers/locale';
-import { iconService } from '../icon';
+import { iconService, iconThemesFolder } from '../icon';
 
 export function isDefaultLocation(locationName: string) {
     return !locationName || locationName === 'current' || locationName === 'default';
@@ -57,20 +57,20 @@ export class WidgetDataManager {
             : null;
 
         // Format data for widget
-        return this.formatWeatherDataForWidget(weatherData, location);
+        return this.formatWeatherDataForWidget(weatherData, location, config);
     }
 
     /**
      * Format weather data for widget consumption using formatWeatherValue
      */
-    private formatWeatherDataForWidget(weatherData: WeatherData, location: WeatherLocation): WeatherWidgetData {
+    private formatWeatherDataForWidget(weatherData: WeatherData, location: WeatherLocation, config: WidgetConfig): WeatherWidgetData {
         if (!weatherData) {
             return;
         }
         // Format current weather
         const formattedData: WeatherWidgetData = {
             temperature: formatWeatherValue(weatherData.currently, WeatherProps.temperature),
-            iconPath: this.getIconPath(weatherData.currently.iconId, weatherData.currently.isDay),
+            iconPath: this.getIconPath(weatherData.currently.iconId, weatherData.currently.isDay, config.iconSet),
             description: weatherData.currently?.description || '',
             locationName: location.name || '',
             date: this.formatDate(weatherData.currently?.time || Date.now()),
@@ -85,7 +85,7 @@ export class WidgetDataManager {
             formattedData.hourlyData = weatherData.hourly.slice(0, 24).map((hour) => ({
                 time: this.formatTime(hour.time),
                 temperature: formatWeatherValue(hour, WeatherProps.temperature),
-                iconPath: this.getIconPath(hour.iconId, hour.isDay),
+                iconPath: this.getIconPath(hour.iconId, hour.isDay, config.iconSet),
                 precipitation: formatWeatherValue(hour, WeatherProps.precipProbability),
                 precipAccumulation: formatWeatherValue(hour, WeatherProps.precipAccumulation),
                 windSpeed: formatWeatherValue(hour, WeatherProps.windSpeed)
@@ -98,7 +98,7 @@ export class WidgetDataManager {
                 day: this.formatDayName(day.time),
                 temperatureHigh: formatWeatherValue(day, WeatherProps.temperatureMax),
                 temperatureLow: formatWeatherValue(day, WeatherProps.temperatureMin),
-                iconPath: this.getIconPath(day.iconId, day.isDay),
+                iconPath: this.getIconPath(day.iconId, day.isDay, config.iconSet),
                 precipAccumulation: formatWeatherValue(day, WeatherProps.precipAccumulation),
                 precipitation: formatWeatherValue(day, WeatherProps.precipProbability)
             }));
@@ -113,7 +113,7 @@ export class WidgetDataManager {
                 forecastData.push({
                     dateTime: this.formatDateTime(hour.time),
                     temperature: formatWeatherValue(hour, WeatherProps.temperature),
-                    iconPath: this.getIconPath(hour.iconId, hour.isDay),
+                    iconPath: this.getIconPath(hour.iconId, hour.isDay, config.iconSet),
                     description: hour.description || '',
                     precipitation: formatWeatherValue(hour, WeatherProps.precipProbability),
                     precipAccumulation: formatWeatherValue(hour, WeatherProps.precipAccumulation)
@@ -127,7 +127,7 @@ export class WidgetDataManager {
                 forecastData.push({
                     dateTime: this.formatDateTime(day.time),
                     temperature: formatWeatherValue(day, WeatherProps.temperature),
-                    iconPath: this.getIconPath(day.iconId, day.isDay),
+                    iconPath: this.getIconPath(day.iconId, day.isDay, config.iconSet),
                     description: day.description || '',
                     precipAccumulation: formatWeatherValue(day, WeatherProps.precipAccumulation),
                     precipitation: formatWeatherValue(day, WeatherProps.precipProbability)
@@ -140,9 +140,10 @@ export class WidgetDataManager {
         return formattedData;
     }
 
-    private getIconPath(iconId: number, isDay: boolean): string {
+    private getIconPath(iconId: number, isDay: boolean, iconSet: string): string {
         const icon = iconService.getIcon(iconId, isDay);
-        return `${iconService.iconSetFolderPath}/images/${icon}.png`;
+        const iconSetFolderPath = path.join(iconThemesFolder, iconSet || iconService.iconSet);
+        return `${iconSetFolderPath}/images/${icon}.png`;
     }
 
     /**

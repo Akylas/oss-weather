@@ -304,4 +304,6 @@ struct WidgetConfig: Codable {
     var model: String?
     var provider: String?
     var widgetKind: String?
+    var iconSet: String?
+    // var settings: JsonObject? = null
 }

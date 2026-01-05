@@ -10,6 +10,7 @@ export interface WidgetConfig {
     model?: string;
     provider?: ProviderType;
     widgetKind?: string;
+    iconSet?: string;
     settings?: Record<string, any>;
 }
 

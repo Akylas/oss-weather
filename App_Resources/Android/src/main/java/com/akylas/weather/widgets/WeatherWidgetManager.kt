@@ -497,6 +497,8 @@ object WeatherWidgetManager {
         // Delete widget config and data
         deleteWidgetConfig(context, widgetId)
         deleteWidgetCache(context, widgetId)
+
+        sendWidgetRemoved(context, widgetId)
     }
 
     /**
@@ -529,6 +531,21 @@ object WeatherWidgetManager {
         intent.setPackage(context.packageName)
         context.sendBroadcast(intent)
         WidgetsLogger.i(LOG_TAG, "Sent WIDGET_ADDED for widgetId=$widgetId")
+    }
+    /**
+     * Request immediate update for a specific widget
+     */
+    @JvmStatic
+    fun sendWidgetRemoved(context: Context, widgetId: Int) {
+        // ensure config exists
+        loadWidgetConfig(context, widgetId, false) ?: return
+        WidgetsLogger.d(LOG_TAG, "sendWidgetAdded(widgetId=$widgetId)")
+        // Send broadcast to JS side to request weather data
+        val intent = Intent("com.akylas.weather.WIDGET_REMOVED")
+        intent.putExtra("widgetId", widgetId)
+        intent.setPackage(context.packageName)
+        context.sendBroadcast(intent)
+        WidgetsLogger.i(LOG_TAG, "Sent WIDGET_REMOVED for widgetId=$widgetId")
         
     }
 
@@ -1210,6 +1227,7 @@ data class WidgetConfig(
     val model: String? = null,
     val provider: String? = null,
     val widgetKind: String? = null,
+    val iconSet: String? = null,
     val settings: JsonObject? = null
 )
 

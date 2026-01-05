@@ -24,72 +24,66 @@ struct SimpleWeatherWidgetView: View {
     @Environment(\.widgetFamily) var family
     
     var body: some View {
-        ZStack {
-            // Adaptive background
-            WidgetBackgroundView()
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let height = geometry.size.height
+            let isVerySmall = width < 120
             
-            // Widget content
-            GeometryReader { geometry in
-                let width = geometry.size.width
-                let height = geometry.size.height
-                let isVerySmall = width < 120
-                
-                // Adjust padding based on size
-                let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
-                
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
-                    WidgetContainer(padding: padding) {
-                        if isVerySmall {
-                            // Very small layout: large icon with small temp
-                            VStack(spacing: 4) {
-                                Spacer()
-                                
-                                // Large icon - 50% of width
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, 
-                                            size: max(32, width * 0.5))
-                                
-                                // Small temperature
-                                TemperatureText(entry.data.temperature, fontSize: 14)
-                                
-                                // Location at bottom, scaled with size
-                                LocationHeader(entry.data.locationName, 
-                                            fontSize: max(8, min(12, width / 15)),
-                                            maxLines: 1)
-                            }
-                        } else if width < 200 {
-                            // Small widget: vertical layout
-                            VStack(spacing: 4) {
-                                LocationHeader(entry.data.locationName, fontSize: 12)
-                                
-                                Spacer()
-                                
-                                // Bigger icon - 40% of width
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description,
-                                            size: max(48, width * 0.4))
-                                
-                                Spacer()
-                                
-                                TemperatureText(entry.data.temperature, fontSize: 32)
-                            }
-                        } else {
-                            // Medium widget: more spacious layout
-                            VStack(spacing: 8) {
-                                LocationHeader(entry.data.locationName, fontSize: 16)
-                                
-                                Spacer()
-                                
-                                // Bigger icon
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 72)
-                                
-                                Spacer()
-                                
-                                TemperatureText(entry.data.temperature, fontSize: 48)
-                                
-                                if !entry.data.description.isEmpty {
-                                    DescriptionText(entry.data.description, fontSize: 14)
-                                }
+            // Adjust padding based on size
+            let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
+            
+            if entry.data.loadingState != .loaded {
+                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            } else {
+                WidgetContainer(padding: padding) {
+                    if isVerySmall {
+                        // Very small layout: large icon with small temp
+                        VStack(spacing: 4) {
+                            Spacer()
+                            
+                            // Large icon - 50% of width
+                            WeatherIconView(entry.data.iconPath, description: entry.data.description, 
+                                          size: max(32, width * 0.5))
+                            
+                            // Small temperature
+                            TemperatureText(entry.data.temperature, fontSize: 14)
+                            
+                            // Location at bottom, scaled with size
+                            LocationHeader(entry.data.locationName, 
+                                         fontSize: max(8, min(12, width / 15)),
+                                         maxLines: 1)
+                        }
+                    } else if width < 200 {
+                        // Small widget: vertical layout
+                        VStack(spacing: 4) {
+                            LocationHeader(entry.data.locationName, fontSize: 12)
+                            
+                            Spacer()
+                            
+                            // Bigger icon - 40% of width
+                            WeatherIconView(entry.data.iconPath, description: entry.data.description,
+                                          size: max(48, width * 0.4))
+                            
+                            Spacer()
+                            
+                            TemperatureText(entry.data.temperature, fontSize: 32)
+                        }
+                    } else {
+                        // Medium widget: more spacious layout
+                        VStack(spacing: 8) {
+                            LocationHeader(entry.data.locationName, fontSize: 16)
+                            
+                            Spacer()
+                            
+                            // Bigger icon
+                            WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 72)
+                            
+                            Spacer()
+                            
+                            TemperatureText(entry.data.temperature, fontSize: 48)
+                            
+                            if !entry.data.description.isEmpty {
+                                DescriptionText(entry.data.description, fontSize: 14)
                             }
                         }
                     }
@@ -119,57 +113,51 @@ struct SimpleWeatherWithClockWidgetView: View {
     @Environment(\.widgetFamily) var family
     
     var body: some View {
-        ZStack {
-            // Adaptive background
-            WidgetBackgroundView()
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let height = geometry.size.height
+            let isSmall = width < 150
             
-            // Widget content
-            GeometryReader { geometry in
-                let width = geometry.size.width
-                let height = geometry.size.height
-                let isSmall = width < 150
-                
-                // Read clock bold setting
-                let clockBold = WidgetSettings.clockBold
-                
-                // Adjust padding based on size
-                let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
-                
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
-                    WidgetContainer(padding: padding) {
-                        ZStack {
-                            VStack(spacing: isSmall ? 4 : 8) {
-                                // Clock at top
-                                let clockFontSize: CGFloat = width < 100 ? 24 : (width < 150 ? 32 : 48)
-                                Text(entry.date, style: .time)
-                                    .font(.system(size: clockFontSize, weight: clockBold ? .bold : .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
+            // Read clock bold setting
+            let clockBold = WidgetSettings.clockBold
+            
+            // Adjust padding based on size
+            let padding: CGFloat = width < 100 ? 4 : (width < 150 ? 6 : 8)
+            
+            if entry.data.loadingState != .loaded {
+                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            } else {
+                WidgetContainer(padding: padding) {
+                    ZStack {
+                        VStack(spacing: isSmall ? 4 : 8) {
+                            // Clock at top
+                            let clockFontSize: CGFloat = width < 100 ? 24 : (width < 150 ? 32 : 48)
+                            Text(entry.date, style: .time)
+                                .font(.system(size: clockFontSize, weight: clockBold ? .bold : .regular))
+                                .foregroundColor(WidgetColorProvider.onSurface)
+                            
+                            // Weather info
+                            HStack(spacing: isSmall ? 4 : 8) {
+                                // Bigger icon
+                                let iconSize: CGFloat = width < 100 ? 32 : (width < 150 ? 40 : 56)
+                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
                                 
-                                // Weather info
-                                HStack(spacing: isSmall ? 4 : 8) {
-                                    // Bigger icon
-                                    let iconSize: CGFloat = width < 100 ? 32 : (width < 150 ? 40 : 56)
-                                    WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
-                                    
-                                    let tempFontSize: CGFloat = width < 100 ? 18 : (width < 150 ? 24 : 32)
-                                    TemperatureText(entry.data.temperature, fontSize: tempFontSize)
-                                }
-                                
-                                Spacer()
+                                let tempFontSize: CGFloat = width < 100 ? 18 : (width < 150 ? 24 : 32)
+                                TemperatureText(entry.data.temperature, fontSize: tempFontSize)
                             }
                             
-                            // Location at bottom right, scaled with size
-                            VStack {
+                            Spacer()
+                        }
+                        
+                        // Location at bottom right, scaled with size
+                        VStack {
+                            Spacer()
+                            HStack {
                                 Spacer()
-                                HStack {
-                                    Spacer()
-                                    let locationFontSize: CGFloat = width < 100 ? 8 : (width < 150 ? 10 : 12)
-                                    LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
-                                        .padding(.bottom, 2)
-                                        .padding(.trailing, 2)
-                                }
+                                let locationFontSize: CGFloat = width < 100 ? 8 : (width < 150 ? 10 : 12)
+                                LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
+                                    .padding(.bottom, 2)
+                                    .padding(.trailing, 2)
                             }
                         }
                     }
@@ -199,49 +187,43 @@ struct SimpleWeatherWithDateWidgetView: View {
     @Environment(\.widgetFamily) var family
     
     var body: some View {
-        ZStack {
-            // Adaptive background
-            WidgetBackgroundView()
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let height = geometry.size.height
             
-            // Widget content
-            GeometryReader { geometry in
-                let width = geometry.size.width
-                let height = geometry.size.height
-                
-                // Support down to 50dp (approximately 50 points) height
-                let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
-                let isVerySmall = height < 60
-                
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
-                    WidgetContainer(padding: padding) {
-                        VStack(spacing: 0) {
-                            // Date
-                            let dateFontSize: CGFloat = isVerySmall ? 10 : (height < 80 ? 12 : 14)
-                            Text(entry.date, style: .date)
-                                .font(.system(size: dateFontSize))
-                                .foregroundColor(WidgetColorProvider.onSurface.opacity(0.7))
-                                .lineLimit(1)
+            // Support down to 50dp (approximately 50 points) height
+            let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
+            let isVerySmall = height < 60
+            
+            if entry.data.loadingState != .loaded {
+                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            } else {
+                WidgetContainer(padding: padding) {
+                    VStack(spacing: 0) {
+                        // Date
+                        let dateFontSize: CGFloat = isVerySmall ? 10 : (height < 80 ? 12 : 14)
+                        Text(entry.date, style: .date)
+                            .font(.system(size: dateFontSize))
+                            .foregroundColor(WidgetColorProvider.onSurface.opacity(0.7))
+                            .lineLimit(1)
+                        
+                        Spacer()
+                        
+                        // Weather info
+                        HStack(spacing: isVerySmall ? 4 : 8) {
+                            // Bigger icon
+                            let iconSize: CGFloat = isVerySmall ? 24 : (height < 80 ? 32 : 40)
+                            WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
                             
-                            Spacer()
-                            
-                            // Weather info
-                            HStack(spacing: isVerySmall ? 4 : 8) {
-                                // Bigger icon
-                                let iconSize: CGFloat = isVerySmall ? 24 : (height < 80 ? 32 : 40)
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: iconSize)
-                                
-                                let tempFontSize: CGFloat = isVerySmall ? 16 : (height < 80 ? 20 : 24)
-                                TemperatureText(entry.data.temperature, fontSize: tempFontSize)
-                            }
-                            
-                            Spacer()
-                            
-                            // Location
-                            let locationFontSize: CGFloat = isVerySmall ? 9 : (height < 80 ? 11 : 12)
-                            LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
+                            let tempFontSize: CGFloat = isVerySmall ? 16 : (height < 80 ? 20 : 24)
+                            TemperatureText(entry.data.temperature, fontSize: tempFontSize)
                         }
+                        
+                        Spacer()
+                        
+                        // Location
+                        let locationFontSize: CGFloat = isVerySmall ? 9 : (height < 80 ? 11 : 12)
+                        LocationHeader(entry.data.locationName, fontSize: locationFontSize, maxLines: 1)
                     }
                 }
             }
@@ -269,34 +251,28 @@ struct HourlyWeatherWidgetView: View {
     @Environment(\.widgetFamily) var family
     
     var body: some View {
-        ZStack {
-            // Adaptive background
-            WidgetBackgroundView()
+        GeometryReader { geometry in
+            let height = geometry.size.height
             
-            // Widget content
-            GeometryReader { geometry in
-                let height = geometry.size.height
-                
-                // Support smaller heights
-                let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
-                let isVerySmall = height < 60
-                let isSmall = height < 80
-                
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
-                    WidgetContainer(padding: padding) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            if !isSmall {
-                                LocationHeader(entry.data.locationName, fontSize: 14)
-                                Spacer().frame(height: 4)
-                            }
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(entry.data.hourlyData) { hour in
-                                        HourlyItem(hour: hour, height: height, isVerySmall: isVerySmall, isSmall: isSmall)
-                                    }
+            // Support smaller heights
+            let padding: CGFloat = height < 60 ? 2 : (height < 80 ? 4 : 6)
+            let isVerySmall = height < 60
+            let isSmall = height < 80
+            
+            if entry.data.loadingState != .loaded {
+                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            } else {
+                WidgetContainer(padding: padding) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        if !isSmall {
+                            LocationHeader(entry.data.locationName, fontSize: 14)
+                            Spacer().frame(height: 4)
+                        }
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(entry.data.hourlyData) { hour in
+                                    HourlyItem(hour: hour, height: height, isVerySmall: isVerySmall, isSmall: isSmall)
                                 }
                             }
                         }
@@ -362,31 +338,25 @@ struct DailyWeatherWidgetView: View {
     @Environment(\.widgetFamily) var family
     
     var body: some View {
-        ZStack {
-            // Adaptive background
-            WidgetBackgroundView()
+        GeometryReader { geometry in
+            let height = geometry.size.height
+            let isLarge = height > 150
             
-            // Widget content
-            GeometryReader { geometry in
-                let height = geometry.size.height
-                let isLarge = height > 150
-                
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
-                    WidgetContainer(padding: 8) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            LocationHeader(entry.data.locationName, fontSize: 14)
-                            
-                            VStack(spacing: 0) {
-                                let maxItems = isLarge ? 5 : 3
-                                ForEach(Array(entry.data.dailyData.prefix(maxItems).enumerated()), id: \.element.id) { index, day in
-                                    // Add gap between days using a divider with spacing
-                                    if index > 0 {
-                                        Spacer().frame(height: 4)
-                                    }
-                                    DailyItem(day: day, showExtraData: isLarge)
+            if entry.data.loadingState != .loaded {
+                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            } else {
+                WidgetContainer(padding: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        LocationHeader(entry.data.locationName, fontSize: 14)
+                        
+                        VStack(spacing: 0) {
+                            let maxItems = isLarge ? 5 : 3
+                            ForEach(Array(entry.data.dailyData.prefix(maxItems).enumerated()), id: \.element.id) { index, day in
+                                // Add gap between days using a divider with spacing
+                                if index > 0 {
+                                    Spacer().frame(height: 4)
                                 }
+                                DailyItem(day: day, showExtraData: isLarge)
                             }
                         }
                     }
@@ -452,63 +422,57 @@ struct ForecastWeatherWidgetView: View {
     @Environment(\.widgetFamily) var family
     
     var body: some View {
-        ZStack {
-            // Adaptive background
-            WidgetBackgroundView()
+        GeometryReader { geometry in
+            let height = geometry.size.height
+            let isLarge = height > 240
             
-            // Widget content
-            GeometryReader { geometry in
-                let height = geometry.size.height
-                let isLarge = height > 240
-                
-                if entry.data.loadingState != .loaded {
-                    NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
-                } else {
-                    WidgetContainer(padding: 8) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            // Current weather
+            if entry.data.loadingState != .loaded {
+                NoDataView(state: entry.data.loadingState, errorMessage: entry.data.errorMessage)
+            } else {
+                WidgetContainer(padding: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        // Current weather
+                        HStack(spacing: 8) {
+                            WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 40)
+                            
+                            VStack(alignment: .leading) {
+                                TemperatureText(entry.data.temperature, fontSize: 24)
+                                LocationHeader(entry.data.locationName, fontSize: 11)
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        Divider()
+                        
+                        // Hourly section
+                        Text(WidgetLocalizedStrings.hourlyForecast)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
-                                WeatherIconView(entry.data.iconPath, description: entry.data.description, size: 40)
-                                
-                                VStack(alignment: .leading) {
-                                    TemperatureText(entry.data.temperature, fontSize: 24)
-                                    LocationHeader(entry.data.locationName, fontSize: 11)
-                                }
-                                
-                                Spacer()
-                            }
-                            
-                            Divider()
-                            
-                            // Hourly section
-                            Text(WidgetLocalizedStrings.hourlyForecast)
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(entry.data.hourlyData.prefix(8)) { hour in
-                                        HourlyForecastItem(hour: hour, isLarge: isLarge)
-                                    }
+                                ForEach(entry.data.hourlyData.prefix(8)) { hour in
+                                    HourlyForecastItem(hour: hour, isLarge: isLarge)
                                 }
                             }
-                            .frame(height: isLarge ? 80 : 70)
-                            
-                            Divider()
-                            
-                            // Daily section
-                            Text(WidgetLocalizedStrings.sevenDayForecast)
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            
-                            VStack(spacing: 0) {
-                                let maxDays = isLarge ? 5 : 3
-                                ForEach(Array(entry.data.dailyData.prefix(maxDays).enumerated()), id: \.element.id) { index, day in
-                                    if index > 0 {
-                                        Spacer().frame(height: 2)
-                                    }
-                                    DailyForecastItem(day: day)
+                        }
+                        .frame(height: isLarge ? 80 : 70)
+                        
+                        Divider()
+                        
+                        // Daily section
+                        Text(WidgetLocalizedStrings.sevenDayForecast)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                        
+                        VStack(spacing: 0) {
+                            let maxDays = isLarge ? 5 : 3
+                            ForEach(Array(entry.data.dailyData.prefix(maxDays).enumerated()), id: \.element.id) { index, day in
+                                if index > 0 {
+                                    Spacer().frame(height: 2)
                                 }
+                                DailyForecastItem(day: day)
                             }
                         }
                     }

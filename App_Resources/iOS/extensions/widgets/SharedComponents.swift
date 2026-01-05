@@ -4,7 +4,6 @@ import WidgetKit
 struct WidgetContainer<Content: View>: View {
     let padding: CGFloat
     let content: Content
-    @Environment(\.colorScheme) var colorScheme
     
     init(padding: CGFloat = 8, @ViewBuilder content: () -> Content) {
         self.padding = padding
@@ -22,7 +21,6 @@ struct LocationHeader: View {
     let locationName: String
     let fontSize: CGFloat
     let maxLines: Int
-    @Environment(\.colorScheme) var colorScheme
     
     init(_ locationName: String, fontSize: CGFloat = 14, maxLines: Int = 1) {
         self.locationName = locationName
@@ -33,7 +31,7 @@ struct LocationHeader: View {
     var body: some View {
         Text(locationName)
             .font(.system(size: fontSize))
-            .foregroundColor(WidgetColorProvider.locationText(for: colorScheme))
+            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
             .lineLimit(maxLines)
     }
 }
@@ -42,7 +40,6 @@ struct WeatherIconView: View {
     let iconPath: String?
     let description: String
     let size: CGFloat
-    @Environment(\.colorScheme) var colorScheme
     
     init(_ iconPath: String?, description: String = "", size: CGFloat = 48) {
         self.iconPath = iconPath
@@ -51,8 +48,8 @@ struct WeatherIconView: View {
     }
     
     var body: some View {
-        if let iconPath = iconPath, let image = WidgetDataProvider.getIconImage(path: iconPath) {
-            Image(uiImage: image)
+        if let iconPath = iconPath {
+            Image(iconPath)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: size, height: size)
@@ -61,7 +58,7 @@ struct WeatherIconView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: size, height: size)
-                .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                .foregroundColor(WidgetColorProvider.onSurface)
         }
     }
 }
@@ -69,7 +66,6 @@ struct WeatherIconView: View {
 struct TemperatureText: View {
     let temperature: String
     let fontSize: CGFloat
-    @Environment(\.colorScheme) var colorScheme
     
     init(_ temperature: String, fontSize: CGFloat = 32) {
         self.temperature = temperature
@@ -79,14 +75,13 @@ struct TemperatureText: View {
     var body: some View {
         Text(temperature)
             .font(.system(size: fontSize, weight: .bold))
-            .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+            .foregroundColor(WidgetColorProvider.onSurface)
     }
 }
 
 struct DescriptionText: View {
     let description: String
     let fontSize: CGFloat
-    @Environment(\.colorScheme) var colorScheme
     
     init(_ description: String, fontSize: CGFloat = 14) {
         self.description = description
@@ -96,7 +91,7 @@ struct DescriptionText: View {
     var body: some View {
         Text(description)
             .font(.system(size: fontSize))
-            .foregroundColor(WidgetColorProvider.secondaryText(for: colorScheme))
+            .foregroundColor(WidgetColorProvider.onSurface.opacity(0.8))
     }
 }
 
@@ -113,7 +108,7 @@ struct PrecipitationText: View {
         if !precipAccumulation.isEmpty && precipAccumulation != "0mm" && precipAccumulation != "0\"" {
             Text(precipAccumulation)
                 .font(.system(size: fontSize))
-                .foregroundColor(WidgetColorProvider.precipitationColor)
+                .foregroundColor(Color(red: 0.29, green: 0.56, blue: 0.89)) // #4A90E2
                 .lineLimit(1)
         }
     }
@@ -122,7 +117,6 @@ struct PrecipitationText: View {
 struct NoDataView: View {
     let state: WeatherWidgetData.LoadingState
     let errorMessage: String?
-    @Environment(\.colorScheme) var colorScheme
     
     init(state: WeatherWidgetData.LoadingState = .none, errorMessage: String? = nil) {
         self.state = state
@@ -135,50 +129,21 @@ struct NoDataView: View {
                 ProgressView()
                 Text(WidgetLocalizedStrings.loading)
                     .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onSurface)
             } else if state == .error {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.red)
                 Text(errorMessage ?? WidgetLocalizedStrings.error_loading)
                     .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onSurface)
                     .multilineTextAlignment(.center)
             } else {
                 Image(systemName: "cloud")
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onSurface)
                 Text(WidgetLocalizedStrings.noLocationSet)
                     .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onSurface)
             }
         }
-    }
-}
-
-// MARK: - Widget Background with Gradient
-struct WidgetBackgroundView: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    var body: some View {
-        WidgetColorProvider.backgroundGradient(for: colorScheme)
-            .ignoresSafeArea()
-    }
-}
-
-// MARK: - Card View with Adaptive Background
-struct CardView<Content: View>: View {
-    let content: Content
-    @Environment(\.colorScheme) var colorScheme
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
-    var body: some View {
-        content
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(WidgetColorProvider.cardBackground(for: colorScheme))
-            )
     }
 }

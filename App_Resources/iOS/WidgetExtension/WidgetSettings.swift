@@ -2,7 +2,6 @@
 // Shared settings for widgets
 
 import Foundation
-import WidgetKit
 
 class WidgetSettings {
     static let shared = WidgetSettings()

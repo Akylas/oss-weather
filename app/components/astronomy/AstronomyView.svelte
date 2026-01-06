@@ -176,7 +176,6 @@
         gridLayout?.nativeView.eachChild((d) => {
             bottomLabel?.nativeView?.redraw();
             if (typeof d['invalidate'] === 'function') {
-                DEV_LOG && console.log('redraw1', d);
                 d['invalidate']();
             }
             return true;

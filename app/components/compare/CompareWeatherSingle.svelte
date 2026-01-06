@@ -215,16 +215,12 @@
     }
 
     let checkboxTapTimer;
-    async function onModelTap(item, event) {
+    async function onModelTap(item: Model, event) {
         try {
-            if (item.type === 'checkbox' || item.type === 'switch') {
-                // we dont want duplicate events so let s timeout and see if we clicking diretly on the checkbox
-                const checkboxView: CheckBox = ((event.object as View).parent as View).getViewById('checkbox');
-                checkboxTapTimer = setTimeout(() => {
-                    checkboxView.checked = !checkboxView.checked;
-                }, 10);
-                return;
-            }
+            const checkboxView: CheckBox = ((event.object as View).parent as View).getViewById('checkbox');
+            checkboxTapTimer = setTimeout(() => {
+                checkboxView.checked = !checkboxView.checked;
+            }, 10);
         } catch (error) {
             showError(error);
         }
@@ -239,13 +235,11 @@
             clearTimeout(checkboxTapTimer);
             checkboxTapTimer = null;
         }
-        if (value) {
+        const index = models.indexOf(item.id);
+        if (value && index === -1) {
             models.push(item.id);
-        } else {
-            const index = models.indexOf(item.id);
-            if (index >= 0) {
-                models.splice(index, 1);
-            }
+        } else if (!value && index > -1) {
+            models.splice(index, 1);
         }
         ApplicationSettings.setString('compare_models', JSON.stringify(models));
     }
@@ -257,7 +251,6 @@
             if (index !== currentlySelectedIndex && currentlySelectedIndex !== -1) {
                 possibleDatas.setItem(currentlySelectedIndex, { ...possibleDatas.getItem(currentlySelectedIndex), dailySelected: false, hourlySelected: false });
             }
-            DEV_LOG && console.log('onDataCheckBox1', forecast, item.id, value, currentlySelectedIndex, JSON.stringify(dataToCompare));
             dataToCompare = { ...item, forecast };
             if (forecast === 'hourly') {
                 item.hourlySelected = true;

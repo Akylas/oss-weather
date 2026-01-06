@@ -62,6 +62,7 @@
         "@nativescript-community/ui-canvas": "4.6.43",
         "@nativescript-community/ui-canvaslabel": "1.2.46",
         "@nativescript-community/ui-chart": "2.0.26",
+        "@nativescript-community/ui-checkbox": "2.0.17",
         "@nativescript-community/ui-checkbox": "2.0.16",
         "@nativescript-community/ui-collectionview": "6.0.13",
         "@nativescript-community/ui-collectionview-swipemenu": "6.0.13",

@@ -5,6 +5,7 @@ import { AirQualityProvider } from './airqualityprovider';
 import { MFProvider } from './mf';
 import { OMProvider, OpenMeteoModels } from './om';
 import { OWMProvider } from './owm';
+import { AccuWeatherProvider, AccuWeatherAQIProvider } from './accuweather';
 import { AqiProviderType, ProviderType } from './weather';
 import { WeatherProvider } from './weatherprovider';
 import { AtmoProvider } from './atmo';
@@ -13,12 +14,14 @@ import { DEFAULT_OM_PREFERED_MODEL, SETTINGS_OM_PREFERED_MODEL, SETTINGS_PROVIDE
 export enum Providers {
     MeteoFrance = 'meteofrance',
     OpenWeather = 'openweathermap',
-    OpenMeteo = 'openmeteo'
+    OpenMeteo = 'openmeteo',
+    AccuWeather = 'accuweather'
 }
 
 export enum AirQualityProviders {
     OpenMeteo = 'openmeteo',
-    Atmo = 'atmo'
+    Atmo = 'atmo',
+    AccuWeather = 'accuweather'
 }
 
 export const providers = Object.values(Providers);
@@ -69,6 +72,10 @@ export function getProviderForType(newType: ProviderType): WeatherProvider {
 
         case Providers.MeteoFrance:
             return MFProvider.getInstance();
+
+        case Providers.AccuWeather:
+            return AccuWeatherProvider.getInstance();
+
         case Providers.OpenMeteo:
         default:
             return OMProvider.getInstance();
@@ -78,6 +85,10 @@ export function getAqiProviderForType(newType: AqiProviderType): AirQualityProvi
     switch (newType) {
         case AirQualityProviders.Atmo:
             return AtmoProvider.getInstance();
+
+        case AirQualityProviders.AccuWeather:
+            return AccuWeatherAQIProvider.getInstance();
+
         case AirQualityProviders.OpenMeteo:
         default:
             return OMProvider.getInstance();

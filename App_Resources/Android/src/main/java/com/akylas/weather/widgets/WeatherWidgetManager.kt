@@ -1146,61 +1146,14 @@ object WeatherWidgetManager {
     }
     
     /**
-     * Load widget JSON schema and extract default settings
-     */
-    private fun loadDefaultSettingsForKind(context: Context, widgetKind: String): JsonObject? {
-        try {
-            // Map widget kind to JSON file name
-            val jsonFileName = "${widgetKind}.json"
-            
-            // Load JSON from assets
-            val jsonString = context.assets.open("app/widget-layouts/widgets/$jsonFileName").bufferedReader().use { it.readText() }
-            val jsonObject = JSONObject(jsonString)
-            
-            // Extract settings with defaults
-            if (!jsonObject.has("settings")) {
-                return null
-            }
-            
-            val settingsSchema = jsonObject.getJSONObject("settings")
-            val defaultSettings = mutableMapOf<String, JsonElement>()
-            
-            val keys = settingsSchema.keys()
-            while (keys.hasNext()) {
-                val settingKey = keys.next()
-                val settingDef = settingsSchema.getJSONObject(settingKey)
-                
-                if (settingDef.has("default")) {
-                    val defaultValue = settingDef.get("default")
-                    defaultSettings[settingKey] = when (defaultValue) {
-                        is Boolean -> JsonPrimitive(defaultValue)
-                        is Int -> JsonPrimitive(defaultValue)
-                        is Long -> JsonPrimitive(defaultValue)
-                        is Double -> JsonPrimitive(defaultValue)
-                        is String -> JsonPrimitive(defaultValue)
-                        else -> JsonPrimitive(defaultValue.toString())
-                    }
-                }
-            }
-            
-            WidgetsLogger.d(LOG_TAG, "Loaded ${defaultSettings.size} default settings for $widgetKind")
-            return if (defaultSettings.isEmpty()) null else JsonObject(defaultSettings)
-        } catch (e: Exception) {
-            WidgetsLogger.e(LOG_TAG, "Failed to load default settings for $widgetKind", e)
-            return null
-        }
-    }
-    
-    /**
-     * Initialize kind config with default settings from JSON schema
+     * Initialize kind config with default settings from generated configs
+     * 
+     * NOTE: Settings are now loaded from generated WidgetKindConfigs at build time,
+     * not from runtime JSON parsing. This avoids code duplication and ensures
+     * configs are available immediately at app start.
      */
     private fun initializeKindConfigWithDefaults(context: Context, widgetKind: String): WidgetConfig {
-        val defaultSettings = loadDefaultSettingsForKind(context, widgetKind)
-        return WidgetConfig(
-            locationName = "current",
-            widgetKind = widgetKind,
-            settings = defaultSettings
-        )
+        return WidgetKindConfigs.createDefaultKindConfig(widgetKind)
     }
 }
 

@@ -60,6 +60,7 @@ class WidgetSettings {
     }
     
     /// Get configuration for a specific widget kind (default settings)
+    /// Now uses generated WidgetKindConfigs for default settings
     func getKindConfig(widgetKind: String) -> WidgetConfig {
         var configs = getAllKindConfigs()
         
@@ -67,9 +68,9 @@ class WidgetSettings {
             return config
         }
         
-        // No config exists, create default
-        print("[WidgetSettings] No kind config for \(widgetKind), creating default")
-        let defaultConfig = createDefaultConfig()
+        // No config exists, create default from generated configs
+        print("[WidgetSettings] No kind config for \(widgetKind), creating from generated defaults")
+        let defaultConfig = WidgetKindConfigs.createDefaultKindConfig(widgetKind: widgetKind)
         configs[widgetKind] = defaultConfig
         saveAllKindConfigs(configs)
         return defaultConfig
@@ -271,6 +272,8 @@ class WidgetSettings {
     // MARK: - Helpers
     
     /// Create default configuration
+    /// NOTE: This is deprecated in favor of WidgetKindConfigs.createDefaultKindConfig
+    /// which includes settings from generated configs
     private func createDefaultConfig() -> WidgetConfig {
         return WidgetConfig(
             locationName: "current",
@@ -305,5 +308,97 @@ struct WidgetConfig: Codable {
     var provider: String?
     var widgetKind: String?
     var iconSet: String?
-    // var settings: JsonObject? = null
+    var settings: [String: Any]?
+    
+    enum CodingKeys: String, CodingKey {
+        case locationName, latitude, longitude, model, provider, widgetKind, iconSet, settings
+    }
+    
+    init(locationName: String = "current", latitude: Double = 0.0, longitude: Double = 0.0, model: String? = nil, provider: String? = nil, widgetKind: String? = nil, iconSet: String? = nil, settings: [String: Any]? = nil) {
+        self.locationName = locationName
+        self.latitude = latitude
+        self.longitude = longitude
+        self.model = model
+        self.provider = provider
+        self.widgetKind = widgetKind
+        self.iconSet = iconSet
+        self.settings = settings
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        locationName = try container.decodeIfPresent(String.self, forKey: .locationName) ?? "current"
+        latitude = try container.decodeIfPresent(Double.self, forKey: .latitude) ?? 0.0
+        longitude = try container.decodeIfPresent(Double.self, forKey: .longitude) ?? 0.0
+        model = try container.decodeIfPresent(String.self, forKey: .model)
+        provider = try container.decodeIfPresent(String.self, forKey: .provider)
+        widgetKind = try container.decodeIfPresent(String.self, forKey: .widgetKind)
+        iconSet = try container.decodeIfPresent(String.self, forKey: .iconSet)
+        
+        // Decode settings as [String: Any]
+        if let settingsData = try? container.decodeIfPresent(Data.self, forKey: .settings) {
+            settings = try? JSONSerialization.jsonObject(with: settingsData) as? [String: Any]
+        } else if let settingsDict = try? container.decodeIfPresent([String: AnyCodable].self, forKey: .settings) {
+            settings = settingsDict?.mapValues { $0.value }
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(locationName, forKey: .locationName)
+        try container.encode(latitude, forKey: .latitude)
+        try container.encode(longitude, forKey: .longitude)
+        try container.encodeIfPresent(model, forKey: .model)
+        try container.encodeIfPresent(provider, forKey: .provider)
+        try container.encodeIfPresent(widgetKind, forKey: .widgetKind)
+        try container.encodeIfPresent(iconSet, forKey: .iconSet)
+        
+        // Encode settings
+        if let settings = settings {
+            let settingsData = try JSONSerialization.data(withJSONObject: settings)
+            try container.encode(settingsData, forKey: .settings)
+        }
+    }
+}
+
+// Helper for encoding/decoding Any values
+struct AnyCodable: Codable {
+    let value: Any
+    
+    init(_ value: Any) {
+        self.value = value
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        
+        if let bool = try? container.decode(Bool.self) {
+            value = bool
+        } else if let int = try? container.decode(Int.self) {
+            value = int
+        } else if let double = try? container.decode(Double.self) {
+            value = double
+        } else if let string = try? container.decode(String.self) {
+            value = string
+        } else {
+            value = NSNull()
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        
+        switch value {
+        case let bool as Bool:
+            try container.encode(bool)
+        case let int as Int:
+            try container.encode(int)
+        case let double as Double:
+            try container.encode(double)
+        case let string as String:
+            try container.encode(string)
+        default:
+            try container.encodeNil()
+        }
+    }
 }

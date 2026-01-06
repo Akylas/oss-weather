@@ -12,6 +12,7 @@
     "generate:glance": "tsx generators/glance-generator.ts",
     "generate:ns": "tsx generators/nativescript-svelte-generator.ts",
     "generate:samples": "tsx scripts/generate-samples.ts",
+    "generate:kind-configs": "tsx generators/generate-widget-kind-configs.ts",
     "dev": "vite"
   },
   "dependencies": {

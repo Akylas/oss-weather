@@ -74,7 +74,7 @@
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
     import ThankYou from '@shared/components/ThankYou.svelte';
-    import { getOMPreferredModel, OpenMeteoModels } from '~/services/providers/om';
+    import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
 
     const gps: GPS = new GPS();
@@ -275,7 +275,7 @@
             }
         } catch (err) {
             if (err.statusCode === 403 && providerRequiresApiKey(provider)) {
-                const providerClass = getProviderClass();
+                const providerClass = getProviderClass(provider);
                 providerClass.setApiKey(null);
                 askForApiKey(provider);
             } else {
@@ -454,7 +454,7 @@
             Application.on(Application.orientationChangedEvent, onOrientationChanged);
         }
         if (weatherLocation && providerRequiresApiKey(provider)) {
-            const providerClass = getProviderClass();
+            const providerClass = getProviderClass(provider);
             if (!providerClass.hasApiKey()) {
                 setTimeout(() => askForApiKey(provider), 1000);
             }

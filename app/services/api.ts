@@ -227,10 +227,10 @@ async function handleRequestResponse<T>(
             // if (statusCode === 401 && jsonReturn.error === 'invalid_grant') {
             //     return this.handleRequestRetry(requestParams, retry);
             // }
-            const error = jsonReturn.error_description || jsonReturn.reason || jsonReturn.error || jsonReturn;
+            const error = jsonReturn.error_description || jsonReturn.reason || jsonReturn.error || jsonReturn.Message || jsonReturn;
             throw new HTTPError({
-                statusCode: error.code || statusCode,
-                message: error.error_description || error.form || error.message || error.error || error,
+                statusCode,
+                message: error,
                 requestParams
             });
         }

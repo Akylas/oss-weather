@@ -1,4 +1,4 @@
-import { titlecase } from '@nativescript-community/l';
+import { lc, titlecase } from '@nativescript-community/l';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { getStartOfDay, lang } from '~/helpers/locale';
 import { WeatherLocation, request } from '../api';
@@ -10,6 +10,8 @@ import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES
 import { ApplicationSettings } from '@nativescript/core';
 import dayjs from 'dayjs';
 
+const API_KEY_SETTING = 'owmApiKey';
+
 export class OWMProvider extends WeatherProvider {
     static id = 'openweathermap';
     id = OWMProvider.id;
@@ -17,6 +19,30 @@ export class OWMProvider extends WeatherProvider {
 
     constructor() {
         super();
+    }
+    public static getSettings() {
+        return [
+            {
+                type: 'prompt',
+                valueType: 'string',
+                id: 'setting',
+                key: API_KEY_SETTING,
+                default: () => OWMProvider.owmApiKey,
+                description: lc('api_key_required_description'),
+                title: lc('owm_api_key')
+            },
+            {
+                id: 'setting',
+                valueType: 'string',
+                key: 'owm_one_call_version',
+                title: lc('owm_one_call_version'),
+                values: [
+                    { value: '2.5', title: '2.5' },
+                    { value: '3.0', title: '3.0' }
+                ],
+                rightValue: () => ApplicationSettings.getString('owm_one_call_version', '3.0')
+            }
+        ];
     }
 
     private static async fetch<T = any>(apiVersion: string, apiName: string, queryParams: OWMParams = {}) {
@@ -152,10 +178,10 @@ export class OWMProvider extends WeatherProvider {
     }
 
     static readOwmApiKeySetting() {
-        let key = ApplicationSettings.getString('owmApiKey', OWM_MY_KEY || OWM_DEFAULT_KEY);
+        let key = ApplicationSettings.getString(API_KEY_SETTING, OWM_MY_KEY || OWM_DEFAULT_KEY);
         // DEV_LOG && console.log('readOwmApiKeySetting', key);
         if (!key || key?.length === 0) {
-            ApplicationSettings.remove('owmApiKey');
+            ApplicationSettings.remove(API_KEY_SETTING);
             key = OWM_MY_KEY || OWM_DEFAULT_KEY;
         }
         return key?.trim();
@@ -169,24 +195,32 @@ export class OWMProvider extends WeatherProvider {
         return result;
     }
 
-    public static setOWMApiKey(apiKey) {
-        OWMProvider.owmApiKey = apiKey?.trim();
-        if (OWMProvider.owmApiKey?.length) {
-            ApplicationSettings.setString('owmApiKey', OWMProvider.owmApiKey);
-        } else {
-            ApplicationSettings.remove('owmApiKey');
-        }
+    static getUrl() {
+        return 'https://openweathermap.org';
     }
 
-    public static hasOWMApiKey() {
+
+    public static setApiKey(apiKey) {
+        OWMProvider.owmApiKey = apiKey?.trim();
+        if (OWMProvider.owmApiKey?.length) {
+            ApplicationSettings.setString(API_KEY_SETTING, OWMProvider.owmApiKey);
+        } else {
+            ApplicationSettings.remove(API_KEY_SETTING);
+        }
+    }
+    public requiresApiKey() {
+        return true;
+    }
+
+    public static hasApiKey() {
         return OWMProvider.owmApiKey && OWMProvider.owmApiKey.length && OWMProvider.owmApiKey !== OWM_DEFAULT_KEY;
     }
 
-    public static getOWMApiKey() {
+    public static getApiKey() {
         return OWMProvider.owmApiKey;
     }
 }
-prefs.on('key:owmApiKey', (event) => {
+prefs.on(`key:${API_KEY_SETTING}`, (event) => {
     OWMProvider.owmApiKey = OWMProvider.readOwmApiKeySetting();
 });
 

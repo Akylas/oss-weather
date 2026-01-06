@@ -13,6 +13,24 @@ export abstract class Provider {
         return key;
     }
 
+    static getUrl() {
+        return '';
+    }
+    public static getSettings() {
+        return [];
+    }
+
+    public static requiresApiKey() {
+        return false;
+    }
+    public static hasApiKey(): boolean {
+        return false;
+    }
+    public static getApiKey(): string {
+        return null;
+    }
+    public static setApiKey(key: string) {}
+
     public static getInstance<T extends Provider>(this: new () => T): T {
         // we use static id because prototype.constructor.name might not be uniq when uglified
         const key = this['id'];

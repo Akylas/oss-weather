@@ -1,7 +1,7 @@
 import { ApplicationSettings } from '@nativescript/core';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
-import { getStartOfDay, l } from '~/helpers/locale';
+import { getStartOfDay, l, lc } from '~/helpers/locale';
 import { Pollutants, prepareAirQualityData } from '../airQualityData';
 import { WeatherLocation, request } from '../api';
 import { WeatherProps, weatherDataService } from '../weatherData';
@@ -9,10 +9,12 @@ import { AirQualityProvider } from './airqualityprovider';
 import { Forecast } from './openmeteo';
 import { AirQualityCurrently, AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { WeatherProvider } from './weatherprovider';
-import { getOMPreferredModel } from './weatherproviderfactory';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
+
+export const SETTINGS_OM_PREFERED_MODEL = 'open_meteo_prefered_model';
+export const DEFAULT_OM_PREFERED_MODEL = 'best_match';
 
 const KEY_MAPPING = {
     european_aqi: 'aqi',
@@ -71,7 +73,7 @@ export enum OpenMeteoModels {
     italia_meteo_arpae_icon_2i = 'ItaliaMeteo ARPAE ICON 2I',
     kma_seamless = 'KMA Seamless',
     kma_ldps = 'KMA LDPS',
-    kma_gdps = 'KMA GDPS',
+    kma_gdps = 'KMA GDPS'
 }
 
 export const API_KEY_VALUES = {
@@ -135,6 +137,10 @@ export const API_MAX_VALUES = {
     }
 };
 
+export function getOMPreferredModel() {
+    return ApplicationSettings.getString(SETTINGS_OM_PREFERED_MODEL, DEFAULT_OM_PREFERED_MODEL) as OpenMeteoModels;
+}
+
 export class OMProvider extends WeatherProvider implements AirQualityProvider {
     static id = 'openmeteo';
     id = OMProvider.id;
@@ -144,6 +150,23 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
 
     getModelName(key) {
         return OpenMeteoModels[key];
+    }
+
+    static getUrl() {
+        return 'https://open-meteo.com';
+    }
+    public static getSettings() {
+        return [
+            {
+                key: SETTINGS_OM_PREFERED_MODEL,
+                id: 'setting',
+                valueType: 'string',
+                description: () => OpenMeteoModels[getOMPreferredModel()],
+                title: lc('open_meteo_prefered_model'),
+                currentValue: getOMPreferredModel,
+                values: Object.keys(OpenMeteoModels).map((t) => ({ value: t, title: OpenMeteoModels[t] }))
+            }
+        ];
     }
     private static readonly weatherCodeDescription = {
         0: l('clear'),

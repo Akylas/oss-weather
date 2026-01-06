@@ -1,11 +1,11 @@
-import { titlecase } from '@nativescript-community/l';
+import { lc, titlecase } from '@nativescript-community/l';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherDataType, weatherDataIconColors } from '~/helpers/formatter';
 import { getStartOfDay, lang } from '~/helpers/locale';
 import { WeatherLocation, request } from '../api';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
-import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, FEELS_LIKE_TEMPERATURE } from '~/helpers/constants';
+import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST } from '~/helpers/constants';
 import { prefs } from '../preferences';
 import { AirQualityProvider } from './airqualityprovider';
 import { AirQualityData, CommonAirQualityData } from './weather';
@@ -57,19 +57,31 @@ function mapAccuWeatherIcon(accuIcon: number, isDayTime: boolean): number {
         41: 211, // Partly Cloudy w/ T-Storms (night)
         42: 211, // Mostly Cloudy w/ T-Storms (night)
         43: 600, // Mostly Cloudy w/ Flurries (night)
-        44: 601  // Mostly Cloudy w/ Snow (night)
+        44: 601 // Mostly Cloudy w/ Snow (night)
     };
 
     return iconMap[accuIcon] || 800;
 }
+
+const API_KEY_SETTING = 'accuWeatherApiKey';
 
 export class AccuWeatherProvider extends WeatherProvider {
     static id = 'accuweather';
     id = AccuWeatherProvider.id;
     static accuWeatherApiKey = AccuWeatherProvider.readAccuWeatherApiKeySetting();
 
-    constructor() {
-        super();
+    public static getSettings() {
+        return [
+            {
+                type: 'prompt',
+                valueType: 'string',
+                id: 'setting',
+                key: API_KEY_SETTING,
+                default: () => AccuWeatherProvider.accuWeatherApiKey,
+                description: lc('api_key_required'),
+                title: lc('api_key')
+            }
+        ];
     }
 
     private static async fetch<T = any>(endpoint: string, queryParams: any = {}) {
@@ -90,19 +102,13 @@ export class AccuWeatherProvider extends WeatherProvider {
     }
 
     private static async getLocationKey(lat: number, lon: number): Promise<string> {
-        const result = await AccuWeatherProvider.fetch<any>(
-            `locations/v1/cities/geoposition/search`,
-            {
-                q: `${lat},${lon}`
-            }
-        );
+        const result = await AccuWeatherProvider.fetch<any>(`locations/v1/cities/geoposition/search`, {
+            q: `${lat},${lon}`
+        });
         return result.content.Key;
     }
 
-    public override async getWeather(
-        weatherLocation: WeatherLocation,
-        { current, minutely, warnings }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}
-    ) {
+    public override async getWeather(weatherLocation: WeatherLocation, { current, minutely, warnings }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}) {
         const coords = weatherLocation.coord;
         const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
@@ -112,29 +118,21 @@ export class AccuWeatherProvider extends WeatherProvider {
         const locationKey = await AccuWeatherProvider.getLocationKey(coords.lat, coords.lon);
 
         // Fetch current conditions
-        const currentResult = await AccuWeatherProvider.fetch<any[]>(
-            `currentconditions/v1/${locationKey}`
-        );
+        const currentResult = await AccuWeatherProvider.fetch<any[]>(`currentconditions/v1/${locationKey}`);
         const currentConditions = currentResult.content[0];
 
         // Fetch hourly forecast (12 hours)
-        const hourlyResult = await AccuWeatherProvider.fetch<any[]>(
-            `forecasts/v1/hourly/12hour/${locationKey}`
-        );
+        const hourlyResult = await AccuWeatherProvider.fetch<any[]>(`forecasts/v1/hourly/12hour/${locationKey}`);
 
         // Fetch daily forecast (5 days)
-        const dailyResult = await AccuWeatherProvider.fetch<any>(
-            `forecasts/v1/daily/5day/${locationKey}`
-        );
+        const dailyResult = await AccuWeatherProvider.fetch<any>(`forecasts/v1/daily/5day/${locationKey}`);
 
         const r = {
             time: Date.now(),
             currently: weatherDataIconColors(
                 {
                     time: currentConditions.EpochTime * 1000,
-                    temperature: feelsLikeTemperatures
-                        ? currentConditions.RealFeelTemperature.Metric.Value
-                        : currentConditions.Temperature.Metric.Value,
+                    temperature: feelsLikeTemperatures ? currentConditions.RealFeelTemperature.Metric.Value : currentConditions.Temperature.Metric.Value,
                     apparentTemperature: currentConditions.RealFeelTemperature.Metric.Value,
                     usingFeelsLike: feelsLikeTemperatures,
                     sealevelPressure: currentConditions.Pressure.Metric.Value,
@@ -184,7 +182,7 @@ export class AccuWeatherProvider extends WeatherProvider {
 
                     // Get AQI if available
                     if (data.AirAndPollen) {
-                        const aqiData = data.AirAndPollen.find(item => item.Name === 'AirQuality');
+                        const aqiData = data.AirAndPollen.find((item) => item.Name === 'AirQuality');
                         if (aqiData) {
                             d.aqi = aqiData.Value;
                         }
@@ -212,9 +210,7 @@ export class AccuWeatherProvider extends WeatherProvider {
                 // AccuWeather returns wind speeds in km/h when metric=true, no conversion needed
                 d.windSpeed = Math.round(data.Wind.Speed.Value);
                 d.windGust = Math.round(data.WindGust?.Speed.Value || 0);
-                d.temperature = feelsLikeTemperatures
-                    ? data.RealFeelTemperature.Value
-                    : data.Temperature.Value;
+                d.temperature = feelsLikeTemperatures ? data.RealFeelTemperature.Value : data.Temperature.Value;
                 d.apparentTemperature = data.RealFeelTemperature.Value;
                 d.usingFeelsLike = feelsLikeTemperatures;
                 d.uvIndex = data.UVIndex;
@@ -250,37 +246,33 @@ export class AccuWeatherProvider extends WeatherProvider {
     }
 
     static readAccuWeatherApiKeySetting() {
-        let key = ApplicationSettings.getString('accuWeatherApiKey', ACCUWEATHER_DEFAULT_KEY || '');
+        let key = ApplicationSettings.getString(API_KEY_SETTING, ACCUWEATHER_DEFAULT_KEY || '');
         if (!key || key?.length === 0) {
-            ApplicationSettings.remove('accuWeatherApiKey');
+            ApplicationSettings.remove(API_KEY_SETTING);
             key = ACCUWEATHER_DEFAULT_KEY || '';
         }
         return key?.trim();
     }
 
-    public static setAccuWeatherApiKey(apiKey: string) {
+    public static setApiKey(apiKey: string) {
         AccuWeatherProvider.accuWeatherApiKey = apiKey?.trim();
         if (AccuWeatherProvider.accuWeatherApiKey?.length) {
-            ApplicationSettings.setString('accuWeatherApiKey', AccuWeatherProvider.accuWeatherApiKey);
+            ApplicationSettings.setString(API_KEY_SETTING, AccuWeatherProvider.accuWeatherApiKey);
         } else {
-            ApplicationSettings.remove('accuWeatherApiKey');
+            ApplicationSettings.remove(API_KEY_SETTING);
         }
     }
 
-    public static hasAccuWeatherApiKey() {
-        return (
-            AccuWeatherProvider.accuWeatherApiKey &&
-            AccuWeatherProvider.accuWeatherApiKey.length &&
-            AccuWeatherProvider.accuWeatherApiKey !== ACCUWEATHER_DEFAULT_KEY
-        );
+    public static hasApiKey() {
+        return AccuWeatherProvider.accuWeatherApiKey && AccuWeatherProvider.accuWeatherApiKey.length && AccuWeatherProvider.accuWeatherApiKey !== ACCUWEATHER_DEFAULT_KEY;
     }
 
-    public static getAccuWeatherApiKey() {
+    public static getApiKey() {
         return AccuWeatherProvider.accuWeatherApiKey;
     }
 }
 
-prefs.on('key:accuWeatherApiKey', (event) => {
+prefs.on(`key:${API_KEY_SETTING}`, (event) => {
     AccuWeatherProvider.accuWeatherApiKey = AccuWeatherProvider.readAccuWeatherApiKeySetting();
 });
 
@@ -291,6 +283,10 @@ export class AccuWeatherAQIProvider extends AirQualityProvider {
 
     constructor() {
         super();
+    }
+
+    static getUrl() {
+        return 'https://accuweather.com';
     }
 
     private static async fetch<T = any>(endpoint: string, queryParams: any = {}) {
@@ -309,12 +305,9 @@ export class AccuWeatherAQIProvider extends AirQualityProvider {
     }
 
     private static async getLocationKey(lat: number, lon: number): Promise<string> {
-        const result = await AccuWeatherAQIProvider.fetch<any>(
-            `locations/v1/cities/geoposition/search`,
-            {
-                q: `${lat},${lon}`
-            }
-        );
+        const result = await AccuWeatherAQIProvider.fetch<any>(`locations/v1/cities/geoposition/search`, {
+            q: `${lat},${lon}`
+        });
         return result.content.Key;
     }
 
@@ -326,9 +319,7 @@ export class AccuWeatherAQIProvider extends AirQualityProvider {
         const locationKey = await AccuWeatherAQIProvider.getLocationKey(coords.lat, coords.lon);
 
         // Fetch air quality observations
-        const aqResult = await AccuWeatherAQIProvider.fetch<any[]>(
-            `airquality/v2/observations/${locationKey}`
-        );
+        const aqResult = await AccuWeatherAQIProvider.fetch<any[]>(`airquality/v2/observations/${locationKey}`);
 
         const currentAQ = aqResult.content[0];
 
@@ -346,37 +337,37 @@ export class AccuWeatherAQIProvider extends AirQualityProvider {
 
             // Map pollutants if available
             if (currentAQ.ParticulateMatter2_5 !== undefined) {
-                r.currently.pollutants![Pollutants.PM25] = {
+                r.currently.pollutants[Pollutants.PM25] = {
                     unit: 'μg/m³',
                     value: currentAQ.ParticulateMatter2_5
                 };
             }
             if (currentAQ.ParticulateMatter10 !== undefined) {
-                r.currently.pollutants![Pollutants.PM10] = {
+                r.currently.pollutants[Pollutants.PM10] = {
                     unit: 'μg/m³',
                     value: currentAQ.ParticulateMatter10
                 };
             }
             if (currentAQ.Ozone !== undefined) {
-                r.currently.pollutants![Pollutants.O3] = {
+                r.currently.pollutants[Pollutants.O3] = {
                     unit: 'μg/m³',
                     value: currentAQ.Ozone
                 };
             }
             if (currentAQ.CarbonMonoxide !== undefined) {
-                r.currently.pollutants![Pollutants.CO] = {
+                r.currently.pollutants[Pollutants.CO] = {
                     unit: 'μg/m³',
                     value: currentAQ.CarbonMonoxide
                 };
             }
             if (currentAQ.NitrogenDioxide !== undefined) {
-                r.currently.pollutants![Pollutants.NO2] = {
+                r.currently.pollutants[Pollutants.NO2] = {
                     unit: 'μg/m³',
                     value: currentAQ.NitrogenDioxide
                 };
             }
             if (currentAQ.SulfurDioxide !== undefined) {
-                r.currently.pollutants![Pollutants.SO2] = {
+                r.currently.pollutants[Pollutants.SO2] = {
                     unit: 'μg/m³',
                     value: currentAQ.SulfurDioxide
                 };

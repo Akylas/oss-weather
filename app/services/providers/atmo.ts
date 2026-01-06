@@ -18,7 +18,11 @@ export class AtmoProvider extends AirQualityProvider {
     static apiKey = AtmoProvider.readApiKeySetting();
 
     // name = lc('provider_aqi.atmo');
-    privacyPolicyUrl = 'https://www.atmo-auvergnerhonealpes.fr/article/politique-de-confidentialite';
+    privacyPolicyUrl = `${AtmoProvider.getUrl()}/article/politique-de-confidentialite`;
+
+    static getUrl() {
+        return 'https://www.atmo-auvergnerhonealpes.fr';
+    }
 
     static readApiKeySetting() {
         let key = ApplicationSettings.getString('atmoApiKey', ATMO_DEFAULT_KEY);

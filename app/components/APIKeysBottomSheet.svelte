@@ -5,34 +5,37 @@
     import { OWMProvider } from '~/services/providers/owm';
     import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { openLink } from '~/utils/ui';
+    import { Providers, getProviderClass } from '~/services/providers/weatherproviderfactory';
 
-    const owmApiKey = getString('owmApiKey');
     let canClose = false;
+    export let provider: Providers;
+    const providerClass = getProviderClass();
+    let apiKey = providerClass.getApiKey();
 
     function openWeatherMap() {
         openLink('https://openweathermap.org/api');
     }
 
     function save() {
-        OWMProvider.setOWMApiKey(owmApiKey);
+        providerClass.setApiKey(apiKey);
         closeBottomSheet(true);
     }
 
     const onKeyChange = debounce((e) => {
-        OWMProvider.setOWMApiKey(e.value);
+        apiKey = e.value;
     }, 1000);
 
     $: {
-        canClose = !!owmApiKey && owmApiKey.length === 32;
+        canClose = !!apiKey && apiKey.length > 0;
     }
 </script>
 
 <gesturerootview rows="auto">
     <stacklayout iosIgnoreSafeArea={true} padding="10">
-        <label text={l('api_key_required_description')} textWrap={true} />
+        <label text={l('api_key_required')} textWrap={true} />
         <gridlayout columns="auto,*, auto" marginTop={5} rows="auto">
             <!-- <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10"/> -->
-            <textfield col={1} hint={l('api_key')} placeholder={l('api_key')} text={owmApiKey} on:textChange={onKeyChange} />
+            <textfield col={1} hint={l('api_key')} placeholder={l('api_key')} text={apiKey} on:textChange={onKeyChange} />
             <mdbutton class="icon-btn" col={2} text="mdi-open-in-app" variant="text" on:tap={openWeatherMap} />
         </gridlayout>
         <stacklayout horizontalAlignment="right" marginTop={15} orientation="horizontal">

@@ -294,13 +294,13 @@ module.exports = (env, params = {}) => {
         OWM_DEFAULT_KEY: `"${process.env.OWM_DEFAULT_KEY}"`,
         ATMO_DEFAULT_KEY: `"${process.env.ATMO_DEFAULT_KEY}"`,
         MF_DEFAULT_KEY: '"__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__"',
+        ACCUWEATHER_DEFAULT_KEY: `"${process.env.ACCUWEATHER_DEFAULT_KEY || ''}"`,
         OWM_MY_KEY: includeOWMKey ? `"${process.env.OWM_MY_KEY}"` : 'undefined',
         DEFAULT_LOCATION: includeDefaultLocation
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
             : 'undefined'
     };
-    console.log(config.plugins.map((p) => p.constructor.name));
-    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin' || p.constructor.name === 'CompatDefinePlugin').definitions, defines);
+    Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
 
     const symbolsParser = require('scss-symbols-parser');
     const mdiSymbols = symbolsParser.parseSymbols(readFileSync(resolve(projectRoot, 'node_modules/@mdi/font/scss/_variables.scss')).toString());
@@ -657,6 +657,8 @@ module.exports = (env, params = {}) => {
         );
     }
     // save as long as we dont use calc in css
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /reduce-css-calc$/ }));
+    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /punnycode$/ }));
     config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^url$/ }));
 
     if (!!production && !timeline) {

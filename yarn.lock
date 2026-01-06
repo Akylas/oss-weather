@@ -103,16 +103,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@akylas/nativescript-ios-runtime@npm:8.8.2":
-  version: 8.8.2
-  resolution: "@akylas/nativescript-ios-runtime@npm:8.8.2"
-  checksum: 10/4b7ff246a01c16bd54e30895714e80c572726f03308ac34377d1158e4a6cc9f9d4956acdd3e51276ad7b2d8bc82382625126abace2ae8bec4c9f736a73aa319c
+"@akylas/nativescript-ios-runtime@npm:8.9.6":
+  version: 8.9.6
+  resolution: "@akylas/nativescript-ios-runtime@npm:8.9.6"
+  checksum: 10/440afa81870c523c376dad4598648ccd6436badacd8bbb5d8f123cb7af84944120e4a61991e500aeea5f04fe7e76ea00279c26418a75eb33b79dbe396d96bc40
   languageName: node
   linkType: hard
 
-"@akylas/nativescript-webpack@file:/home/mguillon/dev/nativescript/NativeScript/packages/webpack5/akylas-nativescript-webpack-5.0.25-alpha.1.tgz::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 5.0.25-alpha.1
-  resolution: "@akylas/nativescript-webpack@file:/home/mguillon/dev/nativescript/NativeScript/packages/webpack5/akylas-nativescript-webpack-5.0.25-alpha.1.tgz#/home/mguillon/dev/nativescript/NativeScript/packages/webpack5/akylas-nativescript-webpack-5.0.25-alpha.1.tgz::hash=11db4a&locator=root-workspace-0b6124%40workspace%3A."
+"@akylas/nativescript-webpack@npm:5.0.24":
+  version: 5.0.24
+  resolution: "@akylas/nativescript-webpack@npm:5.0.24"
   dependencies:
     "@babel/core": "npm:^7.23.3"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:~0.6.1"
@@ -135,7 +135,7 @@ __metadata:
     postcss-import: "npm:^16.0.0"
     postcss-loader: "npm:^8.0.0"
     raw-loader: "npm:^4.0.0"
-    react-refresh: "npm:~0.18.0"
+    react-refresh: "npm:~0.17.0"
     sass: "npm:^1.0.0"
     sass-loader: "npm:^16.0.0"
     sax: "npm:^1.0.0"
@@ -152,13 +152,13 @@ __metadata:
     webpack-merge: "npm:^6.0.0"
     webpack-virtual-modules: "npm:^0.4.0"
   peerDependencies:
-    nativescript-vue-template-compiler: ^2.9.3
+    nativescript-vue-template-compiler: ^2.8.1
   peerDependenciesMeta:
     nativescript-vue-template-compiler:
       optional: true
   bin:
     nativescript-webpack: dist/bin/index.js
-  checksum: 10/c7028b0771bdd23281d66325a4d55676351cc8e3902f8240e43db3bc793609f756b8a727587d0d5fa8fcba70690724cd7830ae04d1e1e8ec42849a221e35651f
+  checksum: 10/62ed665ff592fc9f8b1d2a6baf8c1d04446cfc82b56fe46c29674de079d2ed96b1a83d11afaa7f1e017387ff47dfa21cf8feec4b5e6bb0fc9899acec397d3c9c
   languageName: node
   linkType: hard
 
@@ -2325,13 +2325,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/svelte-native@npm:1.0.30":
-  version: 1.0.30
-  resolution: "@nativescript-community/svelte-native@npm:1.0.30"
+"@nativescript-community/svelte-native@npm:1.0.32":
+  version: 1.0.32
+  resolution: "@nativescript-community/svelte-native@npm:1.0.32"
   peerDependencies:
     "@nativescript/core": 8.9.9
     svelte: 4.2.20
-  checksum: 10/416551a5c6907c330a18d12536a549fb2688d2b6a5585c2b743e3364a4131b039fe865c9454ef226bc1da717eca4c81abf1fd30250df54c8af51248a8ce81dfc
+  checksum: 10/989adb85587bb4e62501ffa1ba3365b63388a99d50d9c42138fa769a5b0354ec1493cef11d24d9a281b67e9c97246de4d11c5a2a1aafcd49ab1ebfabadcaad9a
   languageName: node
   linkType: hard
 
@@ -2398,10 +2398,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-checkbox@npm:2.0.16":
-  version: 2.0.16
-  resolution: "@nativescript-community/ui-checkbox@npm:2.0.16"
-  checksum: 10/f47226e209d27e7f45efa8e05ff19592f796790231bb01216d613ef30eeb9f18168bc7bfbbe31b171f923d7e82573e80c0710a57add2e01e5c537962894d42fd
+"@nativescript-community/ui-checkbox@npm:2.0.18":
+  version: 2.0.18
+  resolution: "@nativescript-community/ui-checkbox@npm:2.0.18"
+  checksum: 10/9e92740a672dc14d8a2cfc8ff02f6651faf390d1e07b05319fb86a56eeb46fd045aaf31ac8d9e674b8611898e793fd4bbe1ea4dda862d2d129294b8c0f5331f7
   languageName: node
   linkType: hard
 
@@ -2610,13 +2610,6 @@ __metadata:
   version: 3.0.1
   resolution: "@nativescript-community/universal-links@npm:3.0.1"
   checksum: 10/7eeb26c0a28edb802c1207c6c9c13b2c955e1cfd492a0bbc3420aabd39a2a6fe98ca39089f67c9e59506c1809da3f3b92666349c569b33cc2254d75a70d0cffb
-  languageName: node
-  linkType: hard
-
-"@nativescript/android@npm:8.9.2":
-  version: 8.9.2
-  resolution: "@nativescript/android@npm:8.9.2"
-  checksum: 10/1cfc34f2a90203d62a7638338d817fce43cfdc15ee5273904ec9b0bb405e419eb29365ea87da95be3dd1685a0e2765e2bb4133d0cf48227048bc6f4f9fcd81f8
   languageName: node
   linkType: hard
 
@@ -11642,10 +11635,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-refresh@npm:~0.18.0":
-  version: 0.18.0
-  resolution: "react-refresh@npm:0.18.0"
-  checksum: 10/504c331c19776bf8320c23bad7f80b3a28de03301ed7523b0dd21d3f02bf2b53bbdd5aa52469b187bc90f358614b2ba303c088a0765c95f4f0a68c43a7d67b1d
+"react-refresh@npm:~0.17.0":
+  version: 0.17.0
+  resolution: "react-refresh@npm:0.17.0"
+  checksum: 10/5e94f07d43bb1cfdc9b0c6e0c8c73e754005489950dcff1edb53aa8451d1d69a47b740b195c7c80fb4eb511c56a3585dc55eddd83f0097fb5e015116a1460467
   languageName: node
   linkType: hard
 
@@ -12068,7 +12061,7 @@ __metadata:
     "@akylas/nativescript-app-utils": "npm:2.2.7"
     "@akylas/nativescript-inapp-purchase": "npm:0.0.4"
     "@akylas/nativescript-inappbrowser": "npm:3.1.8"
-    "@akylas/nativescript-ios-runtime": "npm:8.8.2"
+    "@akylas/nativescript-ios-runtime": "npm:8.9.6"
     "@akylas/nativescript-webpack": "npm:5.0.24"
     "@mapbox/to-color": "npm:2.3.0"
     "@mdi/font": "npm:7.4.47"
@@ -12084,13 +12077,13 @@ __metadata:
     "@nativescript-community/perms": "npm:3.0.4"
     "@nativescript-community/preferences": "npm:1.3.2"
     "@nativescript-community/sentry": "npm:4.6.45"
-    "@nativescript-community/svelte-native": "npm:1.0.30"
+    "@nativescript-community/svelte-native": "npm:1.0.32"
     "@nativescript-community/systemui": "npm:1.1.24"
     "@nativescript-community/text": "npm:1.6.17"
     "@nativescript-community/ui-canvas": "npm:4.6.44"
     "@nativescript-community/ui-canvaslabel": "npm:1.2.47"
     "@nativescript-community/ui-chart": "npm:2.0.26"
-    "@nativescript-community/ui-checkbox": "npm:2.0.16"
+    "@nativescript-community/ui-checkbox": "npm:2.0.18"
     "@nativescript-community/ui-collectionview": "npm:6.0.14"
     "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.14"
     "@nativescript-community/ui-document-picker": "npm:1.1.29"
@@ -12114,7 +12107,6 @@ __metadata:
     "@nativescript-community/ui-webview": "npm:1.6.0"
     "@nativescript-community/ui-zoomimage": "npm:5.0.13"
     "@nativescript-community/universal-links": "npm:3.0.1"
-    "@nativescript/android": "npm:8.9.2"
     "@nativescript/core": "npm:8.9.9"
     "@nativescript/iqkeyboardmanager": "npm:2.1.2"
     "@swc/core": "npm:1.13.5"

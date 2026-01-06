@@ -1,5 +1,5 @@
 import { geocodeAddress, networkService, prepareItems } from '~/services/api';
-import { getWeather, getWeatherProvider } from '~/services//providers/weatherproviderfactory';
+import { getWeatherProvider } from '~/services//providers/weatherproviderfactory';
 
 @JavaProxy('__PACKAGE__.CommandReceiver')
 @NativeClass
@@ -13,8 +13,9 @@ export class CommandReceiver extends android.content.BroadcastReceiver {
             const lat = intent.getFloatExtra('lat', -1);
             const lon = intent.getFloatExtra('lon', -1);
             const receivingPackage = intent.getStringExtra('package');
+            networkService.start(); // ensure it is started
             const weatherLocation = await geocodeAddress({ lat, lon });
-            const data = await getWeather(weatherLocation);
+            const data = await getWeatherProvider().getWeather(weatherLocation);
             const responseIntent = new android.content.Intent(`${__APP_ID__}.QUERY_WEATHER_RESULT`);
             responseIntent.putExtra('id', id);
             responseIntent.putExtra('weather', JSON.stringify(prepareItems(weatherLocation, data)));

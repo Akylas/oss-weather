@@ -157,15 +157,12 @@
                             const date = getLocalTime(startTimestamp + entry['deltaHours'] * 3600 * 1000, timezoneOffset);
                             const scaleX = chart.viewPortHandler.scaleX;
                             const hour = date.valueOf() / (3600 * 1000);
+                            const modulo = Math.max(Math.round(timeRange / (scaleX * 10)), 1);
                             if (dataSet.label === WeatherProps.iconId) {
                                 const imageSource = icon as ImageSource;
                                 const iconSize = 30;
                                 // if (date.get('m') === 0) {
-                                const modulo = Math.max(Math.round(timeRange / (scaleX * 10)), 1);
-                                if (
-                                    /* (x > 0 && lastIconX === undefined) || */ /*  x - lastIconX > iconSize || */ Math.abs(hour - lastIconHour) >= modulo ||
-                                    (lastIconHour === undefined && hour % modulo === 0) /*  || (hour % modulo === 0 ) */
-                                ) {
+                                if (Math.abs(hour - lastIconHour) >= modulo || (lastIconHour === undefined && hour % modulo === 0)) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
@@ -176,25 +173,13 @@
                                     );
                                     lastIconHour = hour;
                                 }
-
-                                // canvas.save();
-                                // canvas.scale(0.5, 0.5, x, y);
-                                // canvas.drawBitmap(icon, drawOffsetX, drawOffsetY, null);
-                                // canvas.restore();
-                            } else if (dataSet.label === WeatherProps.windSpeed || dataSet.label === WeatherProps.windBearing) {
-                                const modulo = Math.max(Math.round(timeRange / (scaleX * 10)), 1);
+                            } else if (dataSet.label === WeatherProps.windBearing) {
                                 if (Math.abs(hour - lastWindIconHour) >= modulo || (lastWindIconHour === undefined && hour % modulo === 0)) {
                                     const item = entry as Hourly | DailyData;
                                     const drawOffsetY = 40;
                                     appPaint.setTextSize(10);
                                     appPaint.color = !isEInk ? (item.windSpeed >= 70 ? '#ff0353' : item.windSpeed > 40 ? '#FFBC03' : dataSet.color) : dataSet.color;
                                     canvas.drawText(icon as string, x, drawOffsetY, appPaint);
-
-                                    // if (item.windGust && (!item.windSpeed || (item.windGust > 30 && item.windGust >= 2 * item.windSpeed))) {
-                                    //     wiPaint.setTextSize(6);
-                                    //     wiPaint.color = !isEInk ? (item.windGust >= 80 ? '#ff0353' : item.windGust > 50 ? '#FFBC03' : dataSet.color) : dataSet.color;
-                                    //     canvas.drawText(getWeatherDataIcon(WeatherProps.windGust), x, drawOffsetY + 8, wiPaint);
-                                    // }
                                     lastWindIconHour = hour;
                                 }
                             }

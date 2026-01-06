@@ -11,7 +11,7 @@ import { initialize } from '@nativescript-community/ui-image';
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import { Application, Utils } from '@nativescript/core';
+import { Application } from '@nativescript/core';
 import { init as sharedInit } from '@shared/index';
 import { startSentry } from '@shared/utils/sentry';
 import { svelteNative } from '@nativescript-community/svelte-native';
@@ -21,6 +21,7 @@ import { start as startThemeHelper } from '~/helpers/theme';
 import WidgetBridgeBase from './services/widgets/WidgetBridge.common';
 import { widgetService } from './services/widgets/WidgetBridge';
 import { navigate } from '@shared/utils/svelte/ui';
+import { networkService } from './services/api';
 
 try {
     startSentry();
@@ -84,13 +85,9 @@ try {
     // Trace.enable();
     // on startup we need to ensure theme is loaded because of a mixin
     // on startup we need to say what we are using
+
     Application.on(Application.launchEvent, () => {
-        DEV_LOG && console.log('launchEvent');
-        if (__IOS__) {
-            UIApplication.sharedApplication.setMinimumBackgroundFetchInterval(UIApplicationBackgroundFetchIntervalMinimum);
-        }
         startThemeHelper();
-        // widgetService.updateAllWidgets();
     });
     Application.on(Application.exitEvent, () => {
         DEV_LOG && console.log('exitEvent');
@@ -114,7 +111,7 @@ try {
     });
 
     sharedInit();
-
+    networkService.start();
     svelteNative(WeatherPage, {});
 
     setTimeout(async () => {

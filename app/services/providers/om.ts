@@ -1,7 +1,7 @@
 import { ApplicationSettings } from '@nativescript/core';
 import { FEELS_LIKE_TEMPERATURE, NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
 import { WeatherDataType, aqiDataIconColors, weatherDataIconColors } from '~/helpers/formatter';
-import { getStartOfDay, l } from '~/helpers/locale';
+import { getStartOfDay, l, lc } from '~/helpers/locale';
 import { Pollutants, prepareAirQualityData } from '../airQualityData';
 import { WeatherLocation, request } from '../api';
 import { WeatherProps, weatherDataService } from '../weatherData';
@@ -9,10 +9,12 @@ import { AirQualityProvider } from './airqualityprovider';
 import { Forecast } from './openmeteo';
 import { AirQualityCurrently, AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { WeatherProvider } from './weatherprovider';
-import { getOMPreferredModel } from './weatherproviderfactory';
 // import { Coord, Dailyforecast, Forecast, MFCurrent, MFForecastResult, MFMinutely, MFWarnings, Probabilityforecast } from './meteofrance';
 
 // const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
+
+export const SETTINGS_OM_PREFERED_MODEL = 'open_meteo_prefered_model';
+export const DEFAULT_OM_PREFERED_MODEL = 'best_match';
 
 const KEY_MAPPING = {
     european_aqi: 'aqi',
@@ -34,9 +36,9 @@ export enum OpenMeteoModels {
     bom_access_global = 'BOM Access Global',
     metno_nordic = 'MET Norway Nordic',
     metno_seamless = 'MET Norway Nordic Seamless (with ECMWF)',
-    gfs_seamless = 'GFS Seamless',
-    gfs_global = 'GFS Global',
-    gfs_hrrr = 'GFS HRRR',
+    gfs_seamless = 'NCEP GFS Seamless',
+    gfs_global = 'NCEP GFS Global 0.11°/0.25°',
+    gfs_hrrr = 'NCEP HRRR U.S. Conus',
     gfs_graphcast025 = 'GFS GraphCast',
     icon_seamless = 'DWD Icon Seamless',
     icon_global = 'DWD Icon Global',
@@ -46,18 +48,17 @@ export enum OpenMeteoModels {
     gem_global = 'GEM Global',
     gem_regional = 'GEM Regional',
     gem_hrdps_continental = 'GEM HRDPS Continental',
+    gem_hrdps_west = 'GEM HRDPS West',
     meteofrance_seamless = 'MeteoFrance Seamless',
     meteofrance_arpege_world = 'MeteoFrance Arpege World',
     meteofrance_arpege_europe = 'MeteoFrance Arpege Europe',
     meteofrance_arome_france = ' MeteoFrance Arome France',
     meteofrance_arome_france_hd = 'MeteoFrance Arome France HD',
-    // arpae_cosmo_seamless = 'ARPAE Seamless',
-    // arpae_cosmo_2i = 'ARPAE COSMO 2I',
-    // arpae_cosmo_5m = 'ARPAE COSMO 5M',
     ukmo_seamless = 'UK Met Office Seamless',
     ukmo_global_deterministic_10km = 'UK Met Office Global 10km',
     ukmo_uk_deterministic_2km = 'UK Met Office UK 2km',
     ncep_nbm_conus = 'NCEP NBM U.S. Conus',
+    ncep_nam_conus = 'NCEP NAM U.S. Conus',
     jma_seamless = 'JMA Seamless',
     jma_msm = 'JMA MSM',
     jma_gsm = 'JMA GSM',
@@ -65,7 +66,14 @@ export enum OpenMeteoModels {
     knmi_harmonie_arome_europe = 'KNMI Harmonie Arome Europe',
     knmi_harmonie_arome_netherlands = 'KNMI Harmonie Arome Netherlands',
     dmi_seamless = 'DMI Seamless (with ECMWF)',
-    dmi_harmonie_arome_europe = 'DMI Harmonie Arome Europe'
+    dmi_harmonie_arome_europe = 'DMI Harmonie Arome Europe',
+    meteoswiss_icon_seamless = 'MeteoSwiss ICON Seamless',
+    meteoswiss_icon_ch1 = 'MeteoSwiss ICON CH1',
+    meteoswiss_icon_ch2 = 'MeteoSwiss ICON CH2',
+    italia_meteo_arpae_icon_2i = 'ItaliaMeteo ARPAE ICON 2I',
+    kma_seamless = 'KMA Seamless',
+    kma_ldps = 'KMA LDPS',
+    kma_gdps = 'KMA GDPS'
 }
 
 export const API_KEY_VALUES = {
@@ -129,6 +137,10 @@ export const API_MAX_VALUES = {
     }
 };
 
+export function getOMPreferredModel() {
+    return ApplicationSettings.getString(SETTINGS_OM_PREFERED_MODEL, DEFAULT_OM_PREFERED_MODEL) as OpenMeteoModels;
+}
+
 export class OMProvider extends WeatherProvider implements AirQualityProvider {
     static id = 'openmeteo';
     id = OMProvider.id;
@@ -138,6 +150,23 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
 
     getModelName(key) {
         return OpenMeteoModels[key];
+    }
+
+    static getUrl() {
+        return 'https://open-meteo.com';
+    }
+    public static getSettings() {
+        return [
+            {
+                key: SETTINGS_OM_PREFERED_MODEL,
+                id: 'setting',
+                valueType: 'string',
+                description: () => OpenMeteoModels[getOMPreferredModel()],
+                title: lc('open_meteo_prefered_model'),
+                currentValue: getOMPreferredModel,
+                values: Object.keys(OpenMeteoModels).map((t) => ({ value: t, title: OpenMeteoModels[t] }))
+            }
+        ];
     }
     private static readonly weatherCodeDescription = {
         0: l('clear'),

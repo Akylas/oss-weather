@@ -56,13 +56,13 @@
         "@nativescript-community/perms": "3.0.4",
         "@nativescript-community/preferences": "1.3.2",
         "@nativescript-community/sentry": "4.6.45",
-        "@nativescript-community/svelte-native": "1.0.30",
+        "@nativescript-community/svelte-native": "1.0.32",
         "@nativescript-community/systemui": "1.1.24",
         "@nativescript-community/text": "1.6.17",
         "@nativescript-community/ui-canvas": "4.6.44",
         "@nativescript-community/ui-canvaslabel": "1.2.47",
         "@nativescript-community/ui-chart": "2.0.26",
-        "@nativescript-community/ui-checkbox": "2.0.16",
+        "@nativescript-community/ui-checkbox": "2.0.18",
         "@nativescript-community/ui-collectionview": "6.0.14",
         "@nativescript-community/ui-collectionview-swipemenu": "6.0.14",
         "@nativescript-community/ui-document-picker": "1.1.29",
@@ -95,9 +95,8 @@
     },
     "devDependencies": {
         "@akylas/nativescript-android-runtime": "8.9.2",
-        "@akylas/nativescript-ios-runtime": "8.8.2",
+        "@akylas/nativescript-ios-runtime": "8.9.6",
         "@akylas/nativescript-webpack": "5.0.24",
-        "@nativescript/android": "8.9.2",
         "@nativescript/core": "8.9.9",
         "@swc/core": "1.13.5",
         "@types/geojson": "^7946.0.16",
@@ -118,8 +117,7 @@
         "./map"
     ],
     "resolutions": {
-        "svelte-check@npm:4.3.1": "patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch",
-        "@akylas/nativescript-webpack": "/home/mguillon/dev/nativescript/NativeScript/packages/webpack5/akylas-nativescript-webpack-5.0.25-alpha.1.tgz"
+        "svelte-check@npm:4.3.1": "patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch"
     },
     "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b"
 }

@@ -5,7 +5,7 @@ import { getStartOfDay, lang } from '~/helpers/locale';
 import { WeatherLocation, request } from '../api';
 import { WeatherProvider } from './weatherprovider';
 import { Currently, DailyData, Hourly, WeatherData } from './weather';
-import { NB_DAYS_FORECAST, NB_HOURS_FORECAST } from '~/helpers/constants';
+import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, FEELS_LIKE_TEMPERATURE } from '~/helpers/constants';
 import { prefs } from '../preferences';
 import { AirQualityProvider } from './airqualityprovider';
 import { AirQualityData, CommonAirQualityData } from './weather';
@@ -16,6 +16,7 @@ import { Pollutants } from '../airQualityData';
 function mapAccuWeatherIcon(accuIcon: number, isDayTime: boolean): number {
     // Mapping AccuWeather icons to approximate OWM equivalents
     // https://developer.accuweather.com/weather-icons
+    // Note: Some icon codes (9, 10, 27, 28) are not documented in AccuWeather API
     const iconMap: { [key: number]: number } = {
         1: 800, // Sunny -> Clear
         2: 800, // Mostly Sunny -> Clear
@@ -103,7 +104,7 @@ export class AccuWeatherProvider extends WeatherProvider {
         { current, minutely, warnings }: { warnings?: boolean; minutely?: boolean; current?: boolean } = {}
     ) {
         const coords = weatherLocation.coord;
-        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', false);
+        const feelsLikeTemperatures = ApplicationSettings.getBoolean('feels_like_temperatures', FEELS_LIKE_TEMPERATURE);
         const forecast_days = ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST);
         const forecast_hours = ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST);
 
@@ -140,6 +141,7 @@ export class AccuWeatherProvider extends WeatherProvider {
                     relativeHumidity: currentConditions.RelativeHumidity,
                     dewpoint: currentConditions.DewPoint.Metric.Value,
                     cloudCover: currentConditions.CloudCover,
+                    // AccuWeather returns wind speeds in km/h when metric=true, no conversion needed
                     windSpeed: currentConditions.Wind.Speed.Metric.Value,
                     windGust: currentConditions.WindGust?.Speed.Metric.Value || 0,
                     windBearing: currentConditions.Wind.Direction.Degrees,
@@ -158,6 +160,7 @@ export class AccuWeatherProvider extends WeatherProvider {
                     d.isDay = true;
                     d.iconId = mapAccuWeatherIcon(data.Day.Icon, true);
                     d.description = titlecase(data.Day.IconPhrase);
+                    // AccuWeather returns wind speeds in km/h when metric=true, no conversion needed
                     d.windSpeed = Math.round(data.Day.Wind.Speed.Value);
                     d.windGust = Math.round(data.Day.WindGust?.Speed.Value || 0);
                     d.temperatureMin = data.Temperature.Minimum.Value;
@@ -206,6 +209,7 @@ export class AccuWeatherProvider extends WeatherProvider {
                 d.isDay = data.IsDaylight;
                 d.iconId = mapAccuWeatherIcon(data.WeatherIcon, data.IsDaylight);
                 d.description = titlecase(data.IconPhrase);
+                // AccuWeather returns wind speeds in km/h when metric=true, no conversion needed
                 d.windSpeed = Math.round(data.Wind.Speed.Value);
                 d.windGust = Math.round(data.WindGust?.Speed.Value || 0);
                 d.temperature = feelsLikeTemperatures

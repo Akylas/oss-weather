@@ -9,11 +9,11 @@
 
     let canClose = false;
     export let provider: Providers;
-    const providerClass = getProviderClass();
+    const providerClass = getProviderClass(provider);
     let apiKey = providerClass.getApiKey();
 
-    function openWeatherMap() {
-        openLink('https://openweathermap.org/api');
+    function openWebsite() {
+        openLink(providerClass.getUrl());
     }
 
     function save() {
@@ -36,7 +36,7 @@
         <gridlayout columns="auto,*, auto" marginTop={5} rows="auto">
             <!-- <image width={100} src="https://openweathermap.org/themes/openweathermap/assets/img/logo_white_cropped.png" marginRight="10"/> -->
             <textfield col={1} hint={l('api_key')} placeholder={l('api_key')} text={apiKey} on:textChange={onKeyChange} />
-            <mdbutton class="icon-btn" col={2} text="mdi-open-in-app" variant="text" on:tap={openWeatherMap} />
+            <mdbutton class="icon-btn" col={2} text="mdi-open-in-app" variant="text" on:tap={openWebsite} />
         </gridlayout>
         <stacklayout horizontalAlignment="right" marginTop={15} orientation="horizontal">
             <mdbutton text={l('save')} variant="text" visibility={canClose ? 'visible' : 'collapse'} on:tap={save} />

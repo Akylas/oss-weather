@@ -3,6 +3,7 @@
 
 import { ApplicationSettings } from '@nativescript/core';
 import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from './WidgetTypes';
+import { lc } from '@nativescript-community/l';
 
 const WIDGET_CONFIGS_KEY = 'widget_configs'; // per-instance configs
 const WIDGET_KIND_CONFIGS_KEY = 'widget_kind_configs'; // per-kind default configs
@@ -14,6 +15,15 @@ const TAG = '[WidgetConfigManager]';
 export const WIDGET_KINDS = ['SimpleWeatherWidget', 'SimpleWeatherWithDateWidget', 'SimpleWeatherWithClockWidget', 'HourlyWeatherWidget', 'DailyWeatherWidget', 'ForecastWeatherWidget'] as const;
 
 export type WidgetKind = (typeof WIDGET_KINDS)[number];
+
+export const WIDGET_NAMES = {
+    SimpleWeatherWidget: lc('widget.simple.name'),
+    SimpleWeatherWithDateWidget: lc('widget.withdate.name'),
+    SimpleWeatherWithClockWidget: lc('widget.withclock.name'),
+    HourlyWeatherWidget: lc('widget.hourly.name'),
+    DailyWeatherWidget: lc('widget.daily.name'),
+    ForecastWeatherWidget: lc('widget.forecast.name')
+};
 
 export class WidgetConfigManager {
     private static configs: { [widgetId: string]: WidgetConfig };

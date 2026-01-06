@@ -82,7 +82,7 @@
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
-    import { WIDGET_KINDS, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
+    import { WIDGET_KINDS, WIDGET_NAMES, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -588,14 +588,6 @@
                     const configs = WidgetConfigManager.getAllConfigs();
                     const updateFrequency = WidgetConfigManager.getUpdateFrequency();
 
-                    const widgetKindNames = {
-                        SimpleWeatherWidget: lc('widget.simple.name'),
-                        SimpleWeatherWithDateWidget: lc('widget.withdate.name'),
-                        SimpleWeatherWithClockWidget: lc('widget.withclock.name'),
-                        HourlyWeatherWidget: lc('widget.hourly.name'),
-                        DailyWeatherWidget: lc('widget.daily.name'),
-                        ForecastWeatherWidget: lc('widget.forecast.name')
-                    };
 
                     const items: any[] = [
                         {
@@ -620,7 +612,7 @@
 
                     // Add per-kind default configurations
                     WIDGET_KINDS.forEach((widgetKind) => {
-                        const displayName = widgetKindNames[widgetKind] || widgetKind;
+                        const displayName = WIDGET_NAMES[widgetKind] || widgetKind;
                         items.push({
                             id: 'configure_widget_kind',
                             widgetClass: widgetKind,
@@ -636,7 +628,7 @@
                         if (instanceIds.length > 0) {
                             items.push({
                                 type: 'sectionheader',
-                                title: widgetKindNames[widgetKind]
+                                title: WIDGET_NAMES[widgetKind]
                             });
 
                             instanceIds.forEach((widgetId) => {

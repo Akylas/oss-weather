@@ -11,19 +11,13 @@
     import { OpenMeteoModels } from '~/services/providers/om';
     import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { widgetService } from '~/services/widgets/WidgetBridge';
-    import { WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
+    import { WIDGET_NAMES, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
     import { DEFAULT_UPDATE_FREQUENCY, WeatherWidgetData, WidgetConfig } from '~/services/widgets/WidgetTypes';
     import { hideLoading, selectValue, showPopoverMenu } from '~/utils/ui';
     import { actionBarHeight, colors, fontScale, fonts, onFontScaleChanged, windowInset } from '~/variables';
 
     // Import generated widget components
-    import SimpleWeatherWidgetView from '~/components/widgets/generated/SimpleWeatherWidgetView.generated.svelte';
-    import SimpleWeatherWithDateWidgetView from '~/components/widgets/generated/SimpleWeatherWithDateWidgetView.generated.svelte';
-    import SimpleWeatherWithClockWidgetView from '~/components/widgets/generated/SimpleWeatherWithClockWidgetView.generated.svelte';
-    import HourlyWeatherWidgetView from '~/components/widgets/generated/HourlyWeatherWidgetView.generated.svelte';
-    import DailyWeatherWidgetView from '~/components/widgets/generated/DailyWeatherWidgetView.generated.svelte';
-    import ForecastWeatherWidgetView from '~/components/widgets/generated/ForecastWeatherWidgetView.generated.svelte';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
     import { NativeViewElementNode } from 'svelte-native/dom';
@@ -32,16 +26,6 @@
     import { Template } from 'svelte-native/components';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import IconButton from '@shared/components/IconButton.svelte';
-
-    // Map widget classes to components
-    const widgetComponents = {
-        SimpleWeatherWidget: SimpleWeatherWidgetView,
-        SimpleWeatherWithDateWidget: SimpleWeatherWithDateWidgetView,
-        SimpleWeatherWithClockWidget: SimpleWeatherWithClockWidgetView,
-        HourlyWeatherWidget: HourlyWeatherWidgetView,
-        DailyWeatherWidget: DailyWeatherWidgetView,
-        ForecastWeatherWidget: ForecastWeatherWidgetView
-    };
 
     // Load sample data helper
     async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
@@ -79,20 +63,11 @@
     let previewConfig: { name: string; displayName: string; description: string; supportedSizes: { width: number; height: number; family: string }[] } = null;
     let previewSet: string = 'default';
     let previewSize: { width: number; height: number; family: string } = null;
-
-    // Widget kind display names
-    const widgetKindNames = {
-        SimpleWeatherWidget: lc('widget.simple.name'),
-        SimpleWeatherWithDateWidget: lc('widget.withdate.name'),
-        SimpleWeatherWithClockWidget: lc('widget.withclock.name'),
-        HourlyWeatherWidget: lc('widget.hourly.name'),
-        DailyWeatherWidget: lc('widget.daily.name'),
-        ForecastWeatherWidget: lc('widget.forecast.name')
-    };
+    loadConfig();
 
     function getWidgetTitle(): string {
-        if (widgetClass && widgetKindNames[widgetClass]) {
-            const baseName = widgetKindNames[widgetClass];
+        if (widgetClass && WIDGET_NAMES[widgetClass]) {
+            const baseName = WIDGET_NAMES[widgetClass];
             if (isKindConfig) {
                 return `${baseName} - ${lc('default_settings')}`;
             } else if (widgetId) {
@@ -107,7 +82,6 @@
     }
 
     onMount(async () => {
-        loadConfig();
         // updateFrequency = WidgetConfigManager.getUpdateFrequency();
         // Load initial preview data
         if (widgetClass) {
@@ -118,6 +92,7 @@
     });
 
     function loadConfig() {
+        DEV_LOG && console.log('loadConfig', isKindConfig, widgetId);
         if (isKindConfig) {
             // Load per-kind default config
             config = WidgetConfigManager.getKindConfig(widgetClass);
@@ -354,10 +329,15 @@
     onFontScaleChanged(refreshCollectionViewVisibleItems);
     onThemeChanged(refreshCollectionView);
 
-    $: widgetComponent = widgetClass ? widgetComponents[widgetClass] : null;
+    let widgetComponent = null;
+    if (widgetClass) {
+        import(`~/components/widgets/generated/${widgetClass}.generated.svelte`).then((component) => {
+            widgetComponent = component;
+        });
+    }
     $: widgetSize = previewSize ?? { width: 160, height: 160 };
 
-    $: DEV_LOG && console.log('widgetComponent', !!widgetComponent);
+    DEV_LOG && console.log('widgetComponent', !!widgetComponent);
     $: DEV_LOG && console.log('previewData', JSON.stringify(previewData));
     $: DEV_LOG && console.log('widgetSize', widgetSize);
 

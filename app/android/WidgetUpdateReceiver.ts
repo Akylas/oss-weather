@@ -49,7 +49,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                     try {
                         const config = WidgetConfigManager.getConfig(String(widgetId));
 
-                        if (config && config.widgetKind === 'SimpleWeatherWithClockWidget') {
+                        if (config && config.widgetKind.indexOf('Clock') !== -1) {
                             DEV_LOG && console.log(`WidgetUpdateReceiver: Widget clock added, widgetId=${widgetId}`);
                             const alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager;
 

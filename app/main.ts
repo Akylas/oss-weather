@@ -18,6 +18,7 @@ import { svelteNative } from '@nativescript-community/svelte-native';
 import { FrameElement, PageElement, registerElement, registerNativeViewElement } from '@nativescript-community/svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
+import { networkService } from './services/api';
 
 try {
     startSentry();
@@ -97,7 +98,7 @@ try {
     });
 
     sharedInit();
-
+    networkService.start();
     svelteNative(WeatherPage, {});
 } catch (error) {
     console.error(error, error.stack);

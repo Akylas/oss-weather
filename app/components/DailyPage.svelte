@@ -76,7 +76,6 @@
     function redraw() {
         topCanvasView?.nativeView?.invalidate();
         stackHolder?.nativeView.eachChild((d) => {
-            DEV_LOG && console.log('redraw', d);
             if (typeof d['invalidate'] === 'function') {
                 d['invalidate']();
             }
@@ -396,8 +395,8 @@
 <page bind:this={page} actionBarHidden={true}>
     <gridlayout class="pageContent" rows="auto,*">
         <scrollview row={1}>
-            <stacklayout bind:this={stackHolder} on:swipe={onSwipe}>
-                <gridlayout columns="*,auto" height={topViewHeight * $fontScale}>
+            <stacklayout bind:this={stackHolder}>
+                <gridlayout columns="*,auto" height={topViewHeight * $fontScale} on:swipe={onSwipe}>
                     <canvasview bind:this={topCanvasView} colSpan={2} paddingBottom={10} paddingLeft={10} paddingRight={10} on:draw={drawOnCanvas} />
                     <WeatherIcon
                         {animated}

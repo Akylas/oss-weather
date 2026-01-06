@@ -49,7 +49,6 @@
         SETTINGS_METRIC_CM_TO_MM,
         SETTINGS_METRIC_TEMP_DECIMAL,
         SETTINGS_MIN_UV_INDEX,
-        SETTINGS_OM_PREFERED_MODEL,
         SETTINGS_PROVIDER,
         SETTINGS_PROVIDER_AQI,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
@@ -78,7 +77,7 @@
     import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
     import { OpenMeteoModels } from '~/services/providers/om';
-    import { aqi_providers, getAqiProviderType, getOMPreferredModel, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
+    import { aqi_providers, getAqiProviderType, getProviderSettins, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
@@ -327,91 +326,70 @@
                     }
                 ];
             case 'providers':
-                return () => [
-                    {
-                        key: SETTINGS_PROVIDER,
-                        id: 'setting',
-                        valueType: 'string',
-                        description: () => lc('provider.' + getProviderType()),
-                        title: lc('provider.title'),
-                        currentValue: getProviderType,
-                        values: providers.map((t) => ({ value: t, title: lc('provider.' + t) }))
-                    },
-                    {
-                        key: SETTINGS_PROVIDER_AQI,
-                        id: 'setting',
-                        valueType: 'string',
-                        description: () => lc('provider_aqi.' + getAqiProviderType()),
-                        title: lc('provider_aqi.title'),
-                        currentValue: getAqiProviderType,
-                        values: aqi_providers.map((t) => ({ value: t, title: lc('provider_aqi.' + t) }))
-                    },
-                    {
-                        key: 'forecast_nb_days',
-                        id: 'setting',
-                        title: lc('forecast_nb_days'),
-                        values: Array.from(Array(MAX_NB_DAYS_FORECAST), (_, index) => ({ value: index + 1, title: index + 1 })),
-                        rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
-                    },
-                    {
-                        key: 'forecast_nb_hours',
-                        id: 'setting',
-                        title: lc('forecast_nb_hours'),
-                        values: Array.from(Array(MAX_NB_DAYS_FORECAST * 2), (_, index) => ({ value: (index + 1) * 12, title: (index + 1) * 12 })),
-                        rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
-                    },
-                    {
-                        key: 'forecast_nb_minutes',
-                        id: 'setting',
-                        title: lc('forecast_nb_minutes'),
-                        values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
-                        rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
-                    },
-                    {
-                        type: 'switch',
-                        id: SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
-                        title: lc('swipe_actionbar_provider'),
-                        description: lc('swipe_actionbar_provider_desc'),
-                        value: ApplicationSettings.getBoolean(SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER)
-                    },
-                    {
-                        type: 'sectionheader',
-                        title: lc('provider.openmeteo')
-                    },
-                    {
-                        key: SETTINGS_OM_PREFERED_MODEL,
-                        id: 'setting',
-                        valueType: 'string',
-                        description: () => OpenMeteoModels[getOMPreferredModel()],
-                        title: lc('open_meteo_prefered_model'),
-                        currentValue: getOMPreferredModel,
-                        values: Object.keys(OpenMeteoModels).map((t) => ({ value: t, title: OpenMeteoModels[t] }))
-                    },
-                    {
-                        type: 'sectionheader',
-                        title: lc('provider.openweathermap')
-                    },
-                    {
-                        type: 'prompt',
-                        valueType: 'string',
-                        id: 'setting',
-                        key: 'owmApiKey',
-                        default: () => ApplicationSettings.getString('owmApiKey'),
-                        description: lc('api_key_required_description'),
-                        title: lc('owm_api_key')
-                    },
-                    {
-                        id: 'setting',
-                        valueType: 'string',
-                        key: 'owm_one_call_version',
-                        title: lc('owm_one_call_version'),
-                        values: [
-                            { value: '2.5', title: '2.5' },
-                            { value: '3.0', title: '3.0' }
-                        ],
-                        rightValue: () => ApplicationSettings.getString('owm_one_call_version', '3.0')
-                    }
-                ];
+                return () => {
+                    const options = [
+                        {
+                            key: SETTINGS_PROVIDER,
+                            id: 'setting',
+                            valueType: 'string',
+                            description: () => lc('provider.' + getProviderType()),
+                            title: lc('provider.title'),
+                            currentValue: getProviderType,
+                            values: providers.map((t) => ({ value: t, title: lc('provider.' + t) }))
+                        },
+                        {
+                            key: SETTINGS_PROVIDER_AQI,
+                            id: 'setting',
+                            valueType: 'string',
+                            description: () => lc('provider_aqi.' + getAqiProviderType()),
+                            title: lc('provider_aqi.title'),
+                            currentValue: getAqiProviderType,
+                            values: aqi_providers.map((t) => ({ value: t, title: lc('provider_aqi.' + t) }))
+                        },
+                        {
+                            key: 'forecast_nb_days',
+                            id: 'setting',
+                            title: lc('forecast_nb_days'),
+                            values: Array.from(Array(MAX_NB_DAYS_FORECAST), (_, index) => ({ value: index + 1, title: index + 1 })),
+                            rightValue: () => ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST)
+                        },
+                        {
+                            key: 'forecast_nb_hours',
+                            id: 'setting',
+                            title: lc('forecast_nb_hours'),
+                            values: Array.from(Array(MAX_NB_DAYS_FORECAST * 2), (_, index) => ({ value: (index + 1) * 12, title: (index + 1) * 12 })),
+                            rightValue: () => ApplicationSettings.getNumber('forecast_nb_hours', NB_HOURS_FORECAST)
+                        },
+                        {
+                            key: 'forecast_nb_minutes',
+                            id: 'setting',
+                            title: lc('forecast_nb_minutes'),
+                            values: Array.from(Array(120), (_, index) => ({ value: index + 1, title: index + 1 })),
+                            rightValue: () => ApplicationSettings.getNumber('forecast_nb_minutes', NB_MINUTES_FORECAST)
+                        },
+                        {
+                            type: 'switch',
+                            id: SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
+                            title: lc('swipe_actionbar_provider'),
+                            description: lc('swipe_actionbar_provider_desc'),
+                            value: ApplicationSettings.getBoolean(SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER)
+                        }
+                    ] as any[];
+                    providers.sort().forEach((provider) => {
+                        const providerSettings = getProviderSettins(provider);
+                        if (providerSettings?.length) {
+                            options.push(
+                                {
+                                    type: 'sectionheader',
+                                    title: lc(`provider.${provider}`)
+                                },
+                                ...providerSettings
+                            );
+                        }
+                    });
+
+                    return options;
+                };
             case 'weather_data':
                 return () => {
                     const currentData = weatherDataService.currentWeatherData;

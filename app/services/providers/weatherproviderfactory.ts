@@ -5,20 +5,23 @@ import { AirQualityProvider } from './airqualityprovider';
 import { MFProvider } from './mf';
 import { OMProvider, OpenMeteoModels } from './om';
 import { OWMProvider } from './owm';
+import { AccuWeatherAQIProvider, AccuWeatherProvider } from './accuweather';
 import { AqiProviderType, ProviderType } from './weather';
 import { WeatherProvider } from './weatherprovider';
 import { AtmoProvider } from './atmo';
-import { DEFAULT_OM_PREFERED_MODEL, SETTINGS_OM_PREFERED_MODEL, SETTINGS_PROVIDER, SETTINGS_PROVIDER_AQI } from '~/helpers/constants';
+import { SETTINGS_PROVIDER, SETTINGS_PROVIDER_AQI } from '~/helpers/constants';
 
 export enum Providers {
     MeteoFrance = 'meteofrance',
     OpenWeather = 'openweathermap',
-    OpenMeteo = 'openmeteo'
+    OpenMeteo = 'openmeteo',
+    AccuWeather = 'accuweather'
 }
 
 export enum AirQualityProviders {
     OpenMeteo = 'openmeteo',
-    Atmo = 'atmo'
+    Atmo = 'atmo',
+    AccuWeather = 'accuweather'
 }
 
 export const providers = Object.values(Providers);
@@ -58,26 +61,39 @@ export function getAqiProviderType(): AqiProviderType {
     return requestedProviderType;
 }
 
-export function getOMPreferredModel() {
-    return ApplicationSettings.getString(SETTINGS_OM_PREFERED_MODEL, DEFAULT_OM_PREFERED_MODEL) as OpenMeteoModels;
+interface ProvidersMap {
+    [Providers.OpenWeather]: typeof OWMProvider;
+    [Providers.MeteoFrance]: typeof MFProvider;
+    [Providers.AccuWeather]: typeof AccuWeatherProvider;
+    [Providers.OpenMeteo]: typeof OMProvider;
 }
+const ProvidersClassMap: ProvidersMap = {
+    [Providers.OpenWeather]: OWMProvider,
+    [Providers.MeteoFrance]: MFProvider,
+    [Providers.AccuWeather]: AccuWeatherProvider,
+    [Providers.OpenMeteo]: OMProvider
+};
 
 export function getProviderForType(newType: ProviderType): WeatherProvider {
-    switch (newType) {
-        case Providers.OpenWeather:
-            return OWMProvider.getInstance();
-
-        case Providers.MeteoFrance:
-            return MFProvider.getInstance();
-        case Providers.OpenMeteo:
-        default:
-            return OMProvider.getInstance();
-    }
+    return ProvidersClassMap[newType].getInstance();
+}
+export function getProviderClass(provider: ProviderType) {
+    return ProvidersClassMap[provider];
+}
+export function getProviderSettins(provider: ProviderType): any[] {
+    return getProviderClass(provider).getSettings();
+}
+export function providerRequiresApiKey(provider: ProviderType) {
+    return getProviderClass(provider).requiresApiKey();
 }
 export function getAqiProviderForType(newType: AqiProviderType): AirQualityProvider {
     switch (newType) {
         case AirQualityProviders.Atmo:
             return AtmoProvider.getInstance();
+
+        case AirQualityProviders.AccuWeather:
+            return AccuWeatherAQIProvider.getInstance();
+
         case AirQualityProviders.OpenMeteo:
         default:
             return OMProvider.getInstance();

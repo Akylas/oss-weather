@@ -20,6 +20,10 @@ export class MFProvider extends WeatherProvider {
     static id = 'meteofrance';
     id = MFProvider.id;
 
+    static getUrl() {
+        return 'https://meteofrance.com';
+    }
+
     private getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: ForecastForecast[], dailyForecast: Dailyforecast) {
         let precipitationTotal = 0;
         let snowfallTotal = 0;

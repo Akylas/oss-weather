@@ -56,13 +56,15 @@
     import { OWMProvider } from '~/services/providers/owm';
     import type { AqiProviderType, DailyData, Hourly, ProviderType, WeatherData } from '~/services/providers/weather';
     import {
+        Providers,
         aqi_providers,
         getAqiProvider,
         getAqiProviderType,
-        getOMPreferredModel,
+        getProviderClass,
         getProviderType,
         getWeatherProvider,
         onProviderChanged,
+        providerRequiresApiKey,
         providers
     } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
@@ -72,7 +74,7 @@
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
     import ThankYou from '@shared/components/ThankYou.svelte';
-    import { OpenMeteoModels } from '~/services/providers/om';
+    import { getOMPreferredModel, OpenMeteoModels } from '~/services/providers/om';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
 
     const gps: GPS = new GPS();
@@ -272,12 +274,10 @@
                 }
             }
         } catch (err) {
-            if (err.statusCode === 403) {
-                if (provider === 'openweathermap') {
-                    await import('~/services/providers/owm');
-                    OWMProvider.setOWMApiKey(null);
-                    askForApiKey();
-                }
+            if (err.statusCode === 403 && providerRequiresApiKey(provider)) {
+                const providerClass = getProviderClass();
+                providerClass.setApiKey(null);
+                askForApiKey(provider);
             } else {
                 showError(err);
             }
@@ -398,7 +398,7 @@
         }
     }
 
-    async function askForApiKey() {
+    async function askForApiKey(provider: Providers) {
         try {
             const ApiKeysBottomSheet = (await import('~/components/APIKeysBottomSheet.svelte')).default;
             const result: boolean = await showBottomSheet({
@@ -407,7 +407,10 @@
                 // skipCollapsedState: isLandscape(),
                 view: ApiKeysBottomSheet,
                 dismissOnBackgroundTap: true,
-                dismissOnDraggingDownSheet: true
+                dismissOnDraggingDownSheet: true,
+                props: {
+                    provider
+                }
             });
             if (result) {
                 refreshWeather();
@@ -450,10 +453,10 @@
         if (__IOS__) {
             Application.on(Application.orientationChangedEvent, onOrientationChanged);
         }
-        if (provider === 'openweathermap') {
-            if (!OWMProvider.hasOWMApiKey() && weatherLocation) {
-                // wait a bit
-                setTimeout(() => askForApiKey(), 1000);
+        if (weatherLocation && providerRequiresApiKey(provider)) {
+            const providerClass = getProviderClass();
+            if (!providerClass.hasApiKey()) {
+                setTimeout(() => askForApiKey(provider), 1000);
             }
         }
 
@@ -991,7 +994,7 @@
     }
 </script>
 
-<page id="test" bind:this={page} actionBarHidden={true}>
+<page bind:this={page} id="test" actionBarHidden={true}>
     <drawer
         bind:this={drawer}
         class="pageContent"

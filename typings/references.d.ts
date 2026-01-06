@@ -9,6 +9,7 @@ declare const OWM_MY_KEY: string;
 declare const DARK_SKY_KEY: string;
 declare const CLIMA_CELL_DEFAULT_KEY: string;
 declare const CLIMA_CELL_MY_KEY: string;
+declare const ACCUWEATHER_DEFAULT_KEY: string;
 declare const DEFAULT_LOCATION: string;
 declare const DEFAULT_PROVIDER: string;
 declare const DEFAULT_PROVIDER_AQI: string;

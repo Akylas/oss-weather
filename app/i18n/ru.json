@@ -252,12 +252,14 @@
     "preferences": "Настройка параметров",
     "pressure": "давление",
     "provider": {
+        "accuweather": "AccuWeather",
         "meteofrance": "MeteoFrance",
         "openmeteo": "Open‐Meteo",
         "openweathermap": "OpenWeather",
         "title": "Источник погоды"
     },
     "provider_aqi": {
+        "accuweather": "AccuWeather",
         "atmo": "ATMO Auvergne-Rhône-Alpes",
         "openmeteo": "Open-Meteo",
         "title": "Источник качества воздуха"

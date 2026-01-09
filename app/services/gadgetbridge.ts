@@ -1,4 +1,4 @@
-import { ApplicationSettings } from '@nativescript/core';
+import { Application, ApplicationSettings } from '@nativescript/core';
 import { WeatherLocation } from './api';
 import { Currently, DailyData, WeatherData } from './providers/weather';
 
@@ -105,12 +105,15 @@ class GadgetbridgeService {
 
     /**
      * Write a 64-bit long value in big-endian format
+     * Converts millisecond timestamp to seconds to avoid precision loss
      */
     private writeLong(buffer: number[], value: number) {
-        // JavaScript numbers are 64-bit floats, so we need to handle large integers carefully
+        // Convert milliseconds to seconds to fit safely in 64-bit
+        const seconds = Math.floor(value / 1000);
+        
         // Split into high and low 32-bit parts
-        const high = Math.floor(value / 0x100000000);
-        const low = value & 0xFFFFFFFF;
+        const high = Math.floor(seconds / 0x100000000);
+        const low = seconds >>> 0; // Ensure unsigned
         
         buffer.push((high >>> 24) & 0xFF);
         buffer.push((high >>> 16) & 0xFF);
@@ -133,13 +136,15 @@ class GadgetbridgeService {
     }
 
     /**
-     * Convert number array to Java byte array
+     * Convert number array to Java byte array with proper sign handling
      */
     private toJavaByteArray(buffer: number[]): any {
         if (__ANDROID__) {
             const javaArray = Array.create('byte', buffer.length);
             for (let i = 0; i < buffer.length; i++) {
-                javaArray[i] = buffer[i];
+                // Convert to signed byte range (-128 to 127)
+                const byte = buffer[i] & 0xFF;
+                javaArray[i] = byte > 127 ? byte - 256 : byte;
             }
             return javaArray;
         }
@@ -155,7 +160,8 @@ class GadgetbridgeService {
         }
 
         try {
-            const context = (global as any).android.app.Application.android.context;
+            // Use proper NativeScript API to get application context
+            const context = Application.android.context;
             
             // Create WeatherGz data
             const currentWeatherGz = this.createCurrentWeatherGz(weatherData.currently);

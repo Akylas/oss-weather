@@ -1229,7 +1229,7 @@
                     ApplicationSettings.setBoolean(item.id, value);
                     if (__ANDROID__) {
                         gadgetbridgeService.setEnabled(value);
-                        showSnack({ message: value ? lc('gadgetbridge_enabled') : lc('gadgetbridge_disabled') });
+                        showSnack({ message: value ? lc('gadgetbridge_enabled_msg') : lc('gadgetbridge_disabled_msg') });
                     }
                     break;
                 default:

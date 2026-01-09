@@ -292,8 +292,8 @@
             items = prepareItems(weatherLocation, weatherData);
             ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
             
-            // Broadcast weather data to Gadgetbridge if enabled
-            if (global.isAndroid) {
+            // Broadcast weather data to Gadgetbridge if enabled (Android only)
+            if (__ANDROID__) {
                 gadgetbridgeService.broadcastWeather(weatherLocation, weatherData);
             }
         }

@@ -550,6 +550,9 @@
                     }
                 ];
             case 'integrations':
+                if (!__ANDROID__) {
+                    return () => [];
+                }
                 return () => [
                     {
                         type: 'switch',
@@ -710,14 +713,22 @@
                         description: lc('geolocation_settings'),
                         icon: 'mdi-map-marker-circle',
                         options: getSubSettings('geolocation')
-                    },
-                    {
-                        id: 'sub_settings',
-                        title: lc('integrations'),
-                        description: lc('integrations_settings'),
-                        icon: 'mdi-link-variant',
-                        options: getSubSettings('integrations')
-                    },
+                    }
+                ] as any)
+                .concat(
+                    __ANDROID__
+                        ? [
+                              {
+                                  id: 'sub_settings',
+                                  title: lc('integrations'),
+                                  description: lc('integrations_settings'),
+                                  icon: 'mdi-link-variant',
+                                  options: getSubSettings('integrations')
+                              }
+                          ]
+                        : ([] as any)
+                )
+                .concat([
                     {
                         id: 'third_party',
                         // rightBtnIcon: 'mdi-chevron-right',
@@ -1216,7 +1227,7 @@
             switch (item.id) {
                 case 'gadgetbridge_enabled':
                     ApplicationSettings.setBoolean(item.id, value);
-                    if (global.isAndroid) {
+                    if (__ANDROID__) {
                         gadgetbridgeService.setEnabled(value);
                         showSnack({ message: value ? lc('gadgetbridge_enabled') : lc('gadgetbridge_disabled') });
                     }

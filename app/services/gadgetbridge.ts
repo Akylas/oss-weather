@@ -136,7 +136,7 @@ class GadgetbridgeService {
      * Convert number array to Java byte array
      */
     private toJavaByteArray(buffer: number[]): any {
-        if (global.isAndroid) {
+        if (__ANDROID__) {
             const javaArray = Array.create('byte', buffer.length);
             for (let i = 0; i < buffer.length; i++) {
                 javaArray[i] = buffer[i];
@@ -150,7 +150,7 @@ class GadgetbridgeService {
      * Broadcast weather data to Gadgetbridge
      */
     broadcastWeather(location: WeatherLocation, weatherData: WeatherData) {
-        if (!this.enabled || !global.isAndroid) {
+        if (!this.enabled || !__ANDROID__) {
             return;
         }
 

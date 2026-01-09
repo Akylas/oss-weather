@@ -4,6 +4,7 @@
 import { ApplicationSettings } from '@nativescript/core';
 import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from './WidgetTypes';
 import { lc } from '@nativescript-community/l';
+import { getDefaultKindConfig } from './WidgetKindConfigs';
 
 const WIDGET_CONFIGS_KEY = 'widget_configs'; // per-instance configs
 const WIDGET_KIND_CONFIGS_KEY = 'widget_kind_configs'; // per-kind default configs
@@ -45,6 +46,7 @@ export class WidgetConfigManager {
 
     private static loadKindConfigs() {
         const data = ApplicationSettings.getString(WIDGET_KIND_CONFIGS_KEY);
+        DEV_LOG && console.log('loadKindConfigs');
         if (data) {
             try {
                 this.kindConfigs = JSON.parse(data);
@@ -93,7 +95,7 @@ export class WidgetConfigManager {
         //     kindConfigs[widgetKind] = this.createDefaultConfig();
         //     this.saveAllKindConfigs();
         // }
-        return kindConfigs[widgetKind];
+        return kindConfigs[widgetKind] || getDefaultKindConfig(widgetKind);
     }
 
     /**

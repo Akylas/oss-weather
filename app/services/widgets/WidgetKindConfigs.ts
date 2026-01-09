@@ -7,18 +7,9 @@
  * extracted from widget JSON schemas.
  */
 
-export interface WidgetKindConfig {
-    locationName: string;
-    latitude?: number;
-    longitude?: number;
-    model?: string | null;
-    provider?: string | null;
-    widgetKind: string;
-    iconSet?: string | null;
-    settings: Record<string, any> | null;
-}
+import { WidgetConfig } from './WidgetTypes';
 
-export const WIDGET_KIND_CONFIGS: Record<string, WidgetKindConfig> = {
+export const WIDGET_KIND_CONFIGS: Record<string, WidgetConfig> = {
     'DailyWeatherWidget': {
         locationName: 'current',
         latitude: 0,
@@ -83,7 +74,7 @@ export const WIDGET_KIND_CONFIGS: Record<string, WidgetKindConfig> = {
     }
 };
 
-export function getDefaultKindConfig(widgetKind: string): WidgetKindConfig | null {
+export function getDefaultKindConfig(widgetKind: string): WidgetConfig | null {
     return WIDGET_KIND_CONFIGS[widgetKind] || null;
 }
 

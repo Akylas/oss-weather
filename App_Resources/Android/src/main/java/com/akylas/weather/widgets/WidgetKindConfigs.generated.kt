@@ -16,7 +16,7 @@ object WidgetKindConfigs {
     val WIDGET_KINDS = listOf("DailyWeatherWidget", "ForecastWeatherWidget", "HourlyWeatherWidget", "SimpleWeatherWidget", "SimpleWeatherWithClockWidget", "SimpleWeatherWithDateWidget")
     
     private val DEFAULT_SETTINGS = mapOf(
-        "SimpleWeatherWithClockWidget" -> JsonObject(mapOf(
+        "SimpleWeatherWithClockWidget" to JsonObject(mapOf(
                 "clockBold" to JsonPrimitive(true)
         ))
     )

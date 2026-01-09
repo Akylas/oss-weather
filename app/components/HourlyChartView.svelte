@@ -89,6 +89,9 @@
     }
 
     function getIcon(iconId, isDay): ImageSource {
+        if (!iconId) {
+            return null;
+        }
         const realIcon = iconService.getIcon(iconId, isDay, false);
         let icon = iconCache[realIcon];
         if (icon) {
@@ -161,8 +164,7 @@
                             if (dataSet.label === WeatherProps.iconId) {
                                 const imageSource = icon as ImageSource;
                                 const iconSize = 30;
-                                // if (date.get('m') === 0) {
-                                if (Math.abs(hour - lastIconHour) >= modulo || (lastIconHour === undefined && hour % modulo === 0)) {
+                                if ((icon && Math.abs(hour - lastIconHour) >= modulo) || (lastIconHour === undefined && hour % modulo === 0)) {
                                     const drawOffsetX = x - iconSize / 2;
                                     const drawOffsetY = 0;
                                     canvas.drawBitmap(
@@ -327,9 +329,11 @@
                                 // result.snow = convertWeatherValueToUnit(d, k, { round: false })[0];
                             } else if (k === WeatherProps.temperature) {
                                 const value = d[k];
+                                if (value !== undefined && value !== null && !isNaN(value)) {
+                                    tempMin = Math.min(tempMin, value);
+                                    tempMax = Math.max(tempMax, value);
+                                }
                                 // result[k] = convertWeatherValueToUnit(d, k, { round: false })[0];
-                                tempMin = Math.min(tempMin, value);
-                                tempMax = Math.max(tempMax, value);
 
                                 // compute values to draw
                                 // TODO: still needs improvement. Some "peaks/trough" are not drawn
@@ -608,7 +612,6 @@
     function updateGradient() {
         const chart = chartView?.nativeView;
         const height = chart.viewPortHandler.contentRect.height();
-
         if (temperatureData && height && (!lastGradient || lastGradient.height !== height || lastGradient.min !== temperatureData.min || lastGradient.max !== temperatureData.max)) {
             lastGradient = generateGradient(5, temperatureData.min, temperatureData.max, height, 0);
             const dataSet = chart.lineData?.getDataSetByLabel(WeatherProps.temperature, false);

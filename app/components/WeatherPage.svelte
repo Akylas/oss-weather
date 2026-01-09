@@ -68,6 +68,7 @@
         providers
     } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
+    import { gadgetbridgeService } from '~/services/gadgetbridge';
     import { parseUrlQueryParameters } from '~/utils/http';
     import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, showToast, tryCatch, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
@@ -290,6 +291,11 @@
         if (weatherLocation && weatherData) {
             items = prepareItems(weatherLocation, weatherData);
             ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
+            
+            // Broadcast weather data to Gadgetbridge if enabled
+            if (global.isAndroid) {
+                gadgetbridgeService.broadcastWeather(weatherLocation, weatherData);
+            }
         }
     }
 

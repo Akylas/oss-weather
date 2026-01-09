@@ -79,6 +79,7 @@
     import { OpenMeteoModels } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderSettins, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
+    import { gadgetbridgeService } from '~/services/gadgetbridge';
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
@@ -548,6 +549,16 @@
                         value: ApplicationSettings.getBoolean('refresh_location_on_pull', false)
                     }
                 ];
+            case 'integrations':
+                return () => [
+                    {
+                        type: 'switch',
+                        id: 'gadgetbridge_enabled',
+                        title: lc('gadgetbridge_enabled'),
+                        description: lc('gadgetbridge_enabled_desc'),
+                        value: ApplicationSettings.getBoolean('gadgetbridge_enabled', false)
+                    }
+                ];
             case 'hourly':
                 return () => [
                     {
@@ -699,6 +710,13 @@
                         description: lc('geolocation_settings'),
                         icon: 'mdi-map-marker-circle',
                         options: getSubSettings('geolocation')
+                    },
+                    {
+                        id: 'sub_settings',
+                        title: lc('integrations'),
+                        description: lc('integrations_settings'),
+                        icon: 'mdi-link-variant',
+                        options: getSubSettings('integrations')
                     },
                     {
                         id: 'third_party',
@@ -1196,6 +1214,13 @@
         try {
             ignoreNextOnCheckBoxChange = true;
             switch (item.id) {
+                case 'gadgetbridge_enabled':
+                    ApplicationSettings.setBoolean(item.id, value);
+                    if (global.isAndroid) {
+                        gadgetbridgeService.setEnabled(value);
+                        showSnack({ message: value ? lc('gadgetbridge_enabled') : lc('gadgetbridge_disabled') });
+                    }
+                    break;
                 default:
                     ApplicationSettings.setBoolean(item.key || item.id, value);
                     break;

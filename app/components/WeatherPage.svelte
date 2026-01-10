@@ -36,6 +36,7 @@
     import {
         EVENT_FAVORITE,
         FavoriteLocation,
+        duplicateFavorite,
         favoriteIcon,
         favoriteIconColor,
         favorites,
@@ -892,6 +893,11 @@
                     id: 'delete',
                     color: colorError,
                     name: lc('remove')
+                },
+                {
+                    icon: 'mdi-content-copy',
+                    id: 'duplicate',
+                    name: lc('duplicate')
                 }
             ];
             if (favItem.timezone === 'Europe/Paris' && isBRABounds(favItem)) {
@@ -955,6 +961,9 @@
                                     break;
                                 case 'om_model':
                                     await selectOMProviderModel(favItem);
+                                    break;
+                                case 'duplicate':
+                                    await duplicateFavorite(favItem);
                                     break;
                                 case 'rename':
                                     result = await prompt({

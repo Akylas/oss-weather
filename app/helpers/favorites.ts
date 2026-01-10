@@ -95,6 +95,7 @@ export function favoriteIcon(item: FavoriteLocation) {
 
 export function getFavoriteKey(item: WeatherLocation) {
     if (item) {
+        DEV_LOG && console.log('getFavoriteKey',    `${item.coord.lat};${item.coord.lon}`);
         return `${item.coord.lat};${item.coord.lon}`;
     }
 }
@@ -178,4 +179,22 @@ export async function toggleFavorite(item: FavoriteLocation, needsConfirmation =
     delete item.startingSide; //for swipemenu
     globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     return item;
+}
+
+export async function duplicateFavorite(item: FavoriteLocation) {
+    const { isFavorite, startingSide, ...toSave } = item;
+    const newItem = JSON.parse(JSON.stringify(toSave));
+    // this is a trick to duplicate while keeping a unique key
+    newItem.coord.lat += 0.00000001;
+    try {
+        const timezonData = await queryTimezone(newItem);
+        if (timezonData) {
+            Object.assign(newItem, timezonData);
+        }
+    } catch (error) {}
+    newItem.isFavorite = true;
+    updateOnSettingChanged = true;
+    favoritesKeys.push(getFavoriteKey(newItem));
+    favorites.push(newItem);
+    globalObservable.notify({ eventName: EVENT_FAVORITE, data: newItem });
 }

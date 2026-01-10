@@ -1,0 +1,16 @@
+Features:
+- added AccuWeather provider
+
+Bug fixes:
+- prevent blank models in compare models list
+- added new OpenMeteo models
+- Compare charts was broken
+- too many wind icons drawing in hourly chart view
+- temperature line sometimes appearing black in chart view
+- confirm favorite removal
+- added ft/s and m/s for speed units
+- better layout for weather data in daily list views
+- models colors in dark theme
+- allow duplicating favorites
+- possible wrong favorite state after addition
+- Translatio

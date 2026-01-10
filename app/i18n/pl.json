@@ -251,12 +251,14 @@
     "preferences": "Preferencje",
     "pressure": "ciśnienie",
     "provider": {
+        "accuweather": "AccuWeather",
         "meteofrance": "Meteo France",
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",
         "title": "Dostawca"
     },
     "provider_aqi": {
+        "accuweather": "AccuWeather",
         "atmo": "ATMO Auvergne-Rhône-Alpes",
         "openmeteo": "Open-Meteo",
         "title": "Dostawca informacji o jakości powietrza"

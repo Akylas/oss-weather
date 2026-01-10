@@ -64,7 +64,8 @@
 
     function generateColor(provider: string) {
         // DEV_LOG && console.log('generateColor', provider, isDarkTheme());
-        return new toColor(provider, { saturation: isDarkTheme() ? 0 : 3, brightness: isDarkTheme() ? 1.6 : 0.9 });
+        return new toColor(provider, { saturation: 3, brightness:  isDarkTheme() ? 1.2 : 0.9 });
+        // return new toColor(provider, { saturation: isDarkTheme() ? 3 : 3, brightness: isDarkTheme() ? 1.6 : 0.9 });
     }
 
     function updateColors() {
@@ -109,6 +110,7 @@
             return acc;
         }, [])
     );
+    DEV_LOG && console.log(modelsList.map(d=>d.color));
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]')).filter(
         (d) => modelsList.findIndex((m) => m.id === d) !== -1
     );
@@ -346,7 +348,6 @@
                             checked={isModelSelected(item)}
                             col={1}
                             ios:marginRight={10}
-                            color={item.color}
                             fillColor={item.color}
                             verticalAlignment="center"
                             on:checkedChange={(e) => onModelCheckBox(item, e)} />

@@ -3,7 +3,7 @@
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { AWebView } from '@nativescript-community/ui-webview';
     import { ZoomImg } from '@nativescript-community/ui-zoomimage';
-    import { AndroidActivityBackPressedEventData, Application, ImageSource, Page, Screen } from '@nativescript/core';
+    import { AndroidActivityBackPressedEventData, Application, ImageSource, Page, Screen, View } from '@nativescript/core';
     import dayjs from 'dayjs';
     import { onDestroy, onMount } from 'svelte';
     import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
@@ -191,7 +191,7 @@
     }
     function onImageLoaded(event: FinalEventData) {
         const imageRatio = event.imageInfo.getWidth() / event.imageInfo.getHeight();
-        const viewRatio = event.object.getMeasuredWidth() / event.object.getMeasuredHeight();
+        const viewRatio = (event.object as View).getMeasuredWidth() / (event.object as View).getMeasuredHeight();
         let zoomScale = 1;
         if (imageRatio > viewRatio) {
             zoomScale = 1 / viewRatio;

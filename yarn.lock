@@ -50,7 +50,7 @@ __metadata:
     eslint-plugin-json: "npm:4.0.1"
     eslint-plugin-prettier: "npm:5.5.4"
     eslint-plugin-sort: "npm:4.0.0"
-    eslint-plugin-svelte: "npm:3.12.3"
+    eslint-plugin-svelte: "npm:3.13.0"
     fork-ts-checker-webpack-plugin: "npm:9.1.0"
     merge-options: "npm:3.0.4"
     merge-properties-files: "npm:1.1.6"
@@ -67,7 +67,7 @@ __metadata:
     stats-webpack-plugin: "npm:0.7.0"
     string-replace-loader: "npm:3.2.0"
     svelte: "npm:4.2.20"
-    svelte-check: "npm:4.3.1"
+    svelte-check: "npm:4.3.5"
     svelte-loader: "npm:3.2.4"
     svelte-native-preprocessor: "npm:~1.0.0"
     svelte-preprocess: "npm:6.0.3"
@@ -7465,9 +7465,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-svelte@npm:3.12.3":
-  version: 3.12.3
-  resolution: "eslint-plugin-svelte@npm:3.12.3"
+"eslint-plugin-svelte@npm:3.13.0":
+  version: 3.13.0
+  resolution: "eslint-plugin-svelte@npm:3.13.0"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.6.1"
     "@jridgewell/sourcemap-codec": "npm:^1.5.0"
@@ -7478,14 +7478,14 @@ __metadata:
     postcss-load-config: "npm:^3.1.4"
     postcss-safe-parser: "npm:^7.0.0"
     semver: "npm:^7.6.3"
-    svelte-eslint-parser: "npm:^1.3.0"
+    svelte-eslint-parser: "npm:^1.4.0"
   peerDependencies:
     eslint: ^8.57.1 || ^9.0.0
     svelte: ^3.37.0 || ^4.0.0 || ^5.0.0
   peerDependenciesMeta:
     svelte:
       optional: true
-  checksum: 10/8ecc3016e000e3761deb6814f80da9f3ffe9663f0ac356bc0e4ffd5c1c766e8fa3b2163360588310c0b2b18113793b25e07183d856766f50cbdf7d574dc7c269
+  checksum: 10/fc6de0807c84b14e61d85847fb18eab5231d940834dbb3c20f3d6787733c05412a912c9abaa912de2fdcf1cc47a9b10acd6d224145f3c65a7e6599dd151765d6
   languageName: node
   linkType: hard
 
@@ -12999,9 +12999,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-check@npm:4.3.1":
-  version: 4.3.1
-  resolution: "svelte-check@npm:4.3.1"
+"svelte-check@npm:4.3.5":
+  version: 4.3.5
+  resolution: "svelte-check@npm:4.3.5"
   dependencies:
     "@jridgewell/trace-mapping": "npm:^0.3.25"
     chokidar: "npm:^4.0.1"
@@ -13013,25 +13013,7 @@ __metadata:
     typescript: ">=5.0.0"
   bin:
     svelte-check: bin/svelte-check
-  checksum: 10/ac2d1e39c032dcc14b27ef462f129a0537b8e1249f9a9aa59f69002eb2f38ba1bcb64d9a0479a8b60c549b957f7fa8ed18698da00074aa4a407dc64a13b2a42d
-  languageName: node
-  linkType: hard
-
-"svelte-check@patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch":
-  version: 4.3.1
-  resolution: "svelte-check@patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch::version=4.3.1&hash=d38fad"
-  dependencies:
-    "@jridgewell/trace-mapping": "npm:^0.3.25"
-    chokidar: "npm:^4.0.1"
-    fdir: "npm:^6.2.0"
-    picocolors: "npm:^1.0.0"
-    sade: "npm:^1.7.4"
-  peerDependencies:
-    svelte: ^4.0.0 || ^5.0.0-next.0
-    typescript: ">=5.0.0"
-  bin:
-    svelte-check: bin/svelte-check
-  checksum: 10/41041e43f8ba37bfbbabea2fa89860054b85d07d75d309c6f60b804de022d0a5e2ddb548054f96b6064fb2e062d53f57e846a1b667bdd88fa100b44305c7d21b
+  checksum: 10/112473f941bf59bbebd7b371ebdaae4144c0f4bdbe6ac4569092cb4ab047dd978388412d1f017cc9c5f8c030e35fdfdd824f2537aab8ed2256d59d7e086f3246
   languageName: node
   linkType: hard
 
@@ -13042,9 +13024,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"svelte-eslint-parser@npm:^1.3.0":
-  version: 1.3.3
-  resolution: "svelte-eslint-parser@npm:1.3.3"
+"svelte-eslint-parser@npm:^1.4.0":
+  version: 1.4.1
+  resolution: "svelte-eslint-parser@npm:1.4.1"
   dependencies:
     eslint-scope: "npm:^8.2.0"
     eslint-visitor-keys: "npm:^4.0.0"
@@ -13057,7 +13039,7 @@ __metadata:
   peerDependenciesMeta:
     svelte:
       optional: true
-  checksum: 10/dbffc0cc1fa92b1b825beae1488735138d6c8bdae58e65b8c568f79f883bc75014f05c61f31312f4e0f9183a81f77e5d80a4042ee57aba9e105652ccb3c412ec
+  checksum: 10/de7f5d4513f76b289b146e4800925ebad2e3ef4888201b6222a4ce907be1a43fde353d220eb6468f75d55efc4e18d61f106c2b360c43609b19ff086c89897e50
   languageName: node
   linkType: hard
 

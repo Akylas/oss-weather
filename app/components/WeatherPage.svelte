@@ -71,7 +71,7 @@
     import { parseUrlQueryParameters } from '~/utils/http';
     import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, showToast, tryCatch, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
-    import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
+    import { actionBarHeight, colors, fontScale, fonts, onFontScaleChanged, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
     import ThankYou from '@shared/components/ThankYou.svelte';
     import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
@@ -505,7 +505,10 @@
     onSettingsChanged(SETTINGS_FEELS_LIKE_TEMPERATURES, refreshWeather);
     onSettingsChanged(SETTINGS_SHOW_CURRENT_DAY_DAILY, updateView);
     onSettingsChanged(SETTINGS_SHOW_DAILY_IN_CURRENTLY, updateView);
-    fontScale.subscribe(updateView);
+    onFontScaleChanged(() => {
+        updateView();
+        favoriteCollectionView.nativeView?.refreshVisibleItems();
+    });
 
     async function showAlerts() {
         if (!weatherData.alerts) {

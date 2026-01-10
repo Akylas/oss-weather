@@ -64,7 +64,7 @@
 
     function generateColor(provider: string) {
         // DEV_LOG && console.log('generateColor', provider, isDarkTheme());
-        return new toColor(provider, { saturation: 3, brightness:  isDarkTheme() ? 1.2 : 0.9 });
+        return new toColor(provider, { saturation: 3, brightness: isDarkTheme() ? 1.2 : 0.9 });
         // return new toColor(provider, { saturation: isDarkTheme() ? 3 : 3, brightness: isDarkTheme() ? 1.6 : 0.9 });
     }
 
@@ -110,7 +110,7 @@
             return acc;
         }, [])
     );
-    DEV_LOG && console.log(modelsList.map(d=>d.color));
+    DEV_LOG && console.log(modelsList.map((d) => d.color));
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]')).filter(
         (d) => modelsList.findIndex((m) => m.id === d) !== -1
     );
@@ -357,7 +357,11 @@
             <mdbutton row={2} text={lc('refresh')} on:tap={refreshData} />
         </gridlayout>
         <gridlayout prop:rightDrawer class="drawer" rows="auto,*,auto" width="300">
-            <label class="actionBarTitle" margin="20 20 20 20" text={$slc('data')} />
+            <gridlayout columns="*,auto,auto" paddingBottom={10} paddingRight={10} android:paddingTop={$windowInset.top}>
+                <label class="actionBarTitle" margin={20} text={$slc('data')} />
+                <label class="actionBarSubtitle" col={1} margin={10} text={$slc('hourly')} verticalAlignment="center" />
+                <label class="actionBarSubtitle" col={2} margin={10} text={$slc('daily')} verticalAlignment="center" />
+            </gridlayout>
             <collectionview bind:this={dataCollectionView} id="data" items={possibleDatas} row={1}>
                 <Template key="sectionheader" let:item>
                     <label class="sectionHeader" text={item.name} />

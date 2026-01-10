@@ -8,6 +8,8 @@ import PolygonLookup from 'polygon-lookup';
 import { AqiProviderType, ProviderType } from '~/services/providers/weather';
 import { SETTINGS_FAVORITES } from './constants';
 import { OpenMeteoModels } from '~/services/providers/om';
+import { confirm } from '@nativescript-community/ui-material-dialogs';
+import { l, lc } from '@nativescript-community/l';
 
 export const EVENT_FAVORITE = 'favorite';
 
@@ -21,7 +23,7 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
     let timezone = location.timezone;
     if (!timezone) {
         if (!timezoneLookUp) {
-              timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
+            timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
         }
         const result = timezoneLookUp.search(location.coord.lon, location.coord.lat);
         timezone = result?.properties.tzid;
@@ -53,11 +55,11 @@ let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 if (favorites.length) {
     const needsSaving = !favorites.getItem(0).timezone;
     Promise.all(
-        favorites.map((f, index) => 
-             queryTimezone(f).then((timezonData) => {
+        favorites.map((f, index) =>
+            queryTimezone(f).then((timezonData) => {
                 Object.assign(f, timezonData);
                 favorites.setItem(index, f);
-            }) 
+            })
         )
     ).then(() => needsSaving && ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites)));
 }
@@ -138,8 +140,18 @@ export async function setFavoriteAqiProvider(item: FavoriteLocation, provider: A
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }
 }
-export async function toggleFavorite(item: FavoriteLocation) {
+export async function toggleFavorite(item: FavoriteLocation, needsConfirmation = false) {
     if (isFavorite(item)) {
+        if (needsConfirmation) {
+            const result = await confirm({
+                title: lc('remove_favorite'),
+                okButtonText: l('remove'),
+                cancelButtonText: l('cancel')
+            });
+            if (!result) {
+                return;
+            }
+        }
         const key = getFavoriteKey(item);
         item.isFavorite = false;
         const index = favoritesKeys.indexOf(key);

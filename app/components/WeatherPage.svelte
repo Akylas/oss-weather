@@ -1052,7 +1052,7 @@
                     variant="text"
                     verticalAlignment="middle"
                     visibility={weatherLocation ? 'visible' : 'collapse'}
-                    on:tap={() => toggleFavorite(weatherLocation)} />
+                    on:tap={() => toggleFavorite(weatherLocation, true)} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"

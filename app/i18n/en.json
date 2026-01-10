@@ -269,6 +269,7 @@
     "refresh_location_on_pull": "Fetch current location when swiping down on main view",
     "relative_humidity": "relative humidity",
     "remove": "remove",
+    "remove_favorite": "remove favorite",
     "rename": "rename",
     "reset": "Reset",
     "restart": "restart",

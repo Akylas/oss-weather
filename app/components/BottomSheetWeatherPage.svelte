@@ -86,8 +86,8 @@
         const newProvider = providers[newIndex % providers.length];
         ApplicationSettings.setString('provider', newProvider);
     }
-    async function toggleItemFavorite(item: FavoriteLocation) {
-        weatherLocation = await toggleFavorite(item);
+    async function toggleItemFavorite(item: FavoriteLocation, confirmRemoval?: boolean) {
+        weatherLocation = await toggleFavorite(item, confirmRemoval);
     }
 </script>
 
@@ -103,7 +103,7 @@
             variant="text"
             verticalAlignment="middle"
             visibility={weatherLocation ? 'visible' : 'collapse'}
-            on:tap={() => toggleItemFavorite(weatherLocation)} />
+            on:tap={() => toggleItemFavorite(weatherLocation, true)} />
     </CActionBar>
     <label
         backgroundColor={new Color(colorBackground).setAlpha(100).hex}

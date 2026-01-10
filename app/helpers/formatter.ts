@@ -32,7 +32,9 @@ export function toImperialUnit(unit: UNITS, imperial = imperialUnits) {
         case UNITS.SpeedKm:
             return 'mph';
         case UNITS.SpeedM:
-            return 'ft/h';
+            return UNITS.FPH;
+        case UNITS.SpeedMS:
+            return UNITS.FPS;
         default:
             return unit;
     }
@@ -98,9 +100,9 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
             shouldRound = true;
             if (unit === UNITS.Feet) {
                 value *= 3.28084;
-                digits = 100;
+                // digits = 100;
             } else if (unit === UNITS.Inch) {
-                digits = 100;
+                // digits = 100;
                 value *= 39.3701;
             } else if (unit === UNITS.Miles) {
                 digits = 10;
@@ -112,7 +114,7 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
             break;
         case UNITS.PressureHpa:
             shouldRound = true;
-            digits = 10;
+            // digits = 10;
             if (unit === UNITS.kPa) {
                 value /= 10;
             } else if (unit === UNITS.MMHg) {
@@ -127,8 +129,12 @@ export function convertValueToUnit(value: any, unit: UNITS, defaultUnit: UNITS, 
                 value *= 0.6213712;
             } else if (unit === UNITS.FPH) {
                 value *= 3280.84;
+            } else if (unit === UNITS.FPS) {
+                value *= 3280.84 / 3600;
             } else if (unit === UNITS.SpeedM) {
                 value *= 1000;
+            } else if (unit === UNITS.SpeedMS) {
+                value /= 3.6;
             } else if (unit === UNITS.Knot) {
                 value /= 1.852;
             }

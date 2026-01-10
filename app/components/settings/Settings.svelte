@@ -73,7 +73,7 @@
     } from '~/helpers/constants';
     import { clock_24, getLocaleDisplayName, l, lc, onLanguageChanged, selectLanguage, slc } from '~/helpers/locale';
     import { getColorThemeDisplayName, getThemeDisplayName, onThemeChanged, selectColorTheme, selectTheme } from '~/helpers/theme';
-    import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
+    import { AVAILABLE_UINTS, UNITS, UNIT_FAMILIES } from '~/helpers/units';
     import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
     import { OpenMeteoModels } from '~/services/providers/om';
@@ -236,7 +236,7 @@
                         valueType: 'string',
                         title: lc('temperature'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Temperature],
-                        values: [UNITS.Celcius, UNITS.Fahrenheit].map((u) => ({ title: u, value: u }))
+                        values: AVAILABLE_UINTS[UNIT_FAMILIES.Temperature].map((u) => ({ title: u, value: u }))
                     },
                     {
                         id: 'store_setting',
@@ -246,7 +246,7 @@
                         valueType: 'string',
                         title: lc('distance'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Distance],
-                        values: [UNITS.Kilometers, UNITS.Miles, UNITS.Meters, UNITS.Feet, UNITS.Inch].map((u) => ({ title: u, value: u }))
+                        values: AVAILABLE_UINTS[UNIT_FAMILIES.Distance].map((u) => ({ title: u, value: u }))
                     },
                     {
                         id: 'store_setting',
@@ -256,7 +256,7 @@
                         valueType: 'string',
                         title: lc('precipitation'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Precipitation],
-                        values: [UNITS.Inch, UNITS.MM, UNITS.CM].map((u) => ({ title: u, value: u }))
+                        values: AVAILABLE_UINTS[UNIT_FAMILIES.Precipitation].map((u) => ({ title: u, value: u }))
                     },
                     {
                         id: 'store_setting',
@@ -266,7 +266,7 @@
                         valueType: 'string',
                         title: lc('snow'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.DistanceSmall],
-                        values: [UNITS.Inch, UNITS.MM, UNITS.CM].map((u) => ({ title: u, value: u }))
+                        values: AVAILABLE_UINTS[UNIT_FAMILIES.DistanceSmall].map((u) => ({ title: u, value: u }))
                     },
                     {
                         id: 'store_setting',
@@ -276,7 +276,7 @@
                         valueType: 'string',
                         title: lc('speed'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Speed],
-                        values: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.MPH, UNITS.FPH, UNITS.Knot].map((u) => ({ title: u, value: u }))
+                        values: AVAILABLE_UINTS[UNIT_FAMILIES.Speed].map((u) => ({ title: u, value: u }))
                     },
                     {
                         id: 'store_setting',
@@ -286,7 +286,7 @@
                         valueType: 'string',
                         title: lc('pressure'),
                         rightValue: () => unitsSettings[UNIT_FAMILIES.Pressure],
-                        values: [UNITS.PressureHpa].map((u) => ({ title: u, value: u }))
+                        values: AVAILABLE_UINTS[UNIT_FAMILIES.Pressure].map((u) => ({ title: u, value: u }))
                     }
                 ];
             case 'icons':

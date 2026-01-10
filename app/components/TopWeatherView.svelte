@@ -71,7 +71,7 @@
     prefs.on(`key:${SETTINGS_MAIN_CHART_SHOW_WIND}`, () => {
         showWind = ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND);
         if (showWind) {
-            dataToShow = [...new Set(dataToShow.concat([WeatherProps.windSpeed]))];
+            dataToShow = [...new Set([WeatherProps.windSpeed].concat(dataToShow))];
         } else {
             dataToShow = dataToShow.filter((d) => d !== WeatherProps.windSpeed);
         }
@@ -387,7 +387,7 @@
             textPaint.setTextAlign(Align.LEFT);
             canvas.save();
             const staticLayout = new StaticLayout(item.description, textPaint, width, LayoutAlignment.ALIGN_OPPOSITE, 1, 0, false);
-            canvas.translate(w - width - 10, h - iconsBottom - staticLayout.getHeight() -  textPaint.textSize * 1.4);
+            canvas.translate(w - width - 10, h - iconsBottom - staticLayout.getHeight() - textPaint.textSize * 1.4);
             staticLayout.draw(canvas);
             canvas.restore();
         }

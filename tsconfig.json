@@ -9,7 +9,7 @@
             "kiss-orm/*": ["node_modules/@akylas/kiss-orm/*"],
             "@nativescript/core": ["node_modules/@akylas/nativescript"],
             "@nativescript/core/*": ["node_modules/@akylas/nativescript/*"],
-            "svelte-native": ["./node_modules/@nativescript-community/svelte-nativem"],
+            "svelte-native": ["./node_modules/@nativescript-community/svelte-native"],
             "svelte-native/*": ["./node_modules/@nativescript-community/svelte-native/*"],
         }
     },

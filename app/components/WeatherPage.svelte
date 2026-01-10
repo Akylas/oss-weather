@@ -60,6 +60,7 @@
         aqi_providers,
         getAqiProvider,
         getAqiProviderType,
+        getCachedWeather,
         getProviderClass,
         getProviderType,
         getWeatherProvider,
@@ -76,6 +77,7 @@
     import ThankYou from '@shared/components/ThankYou.svelte';
     import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
+    import { isCurrentLocation as isCurrentLocationWidget, notifyWidgetsWeatherUpdated, notifyWidgetsWeatherUpdatedForLocation } from '~/services/widgets/WidgetUpdateService';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -88,7 +90,8 @@
     let loading = false;
     let provider: ProviderType;
     let weatherLocation: FavoriteLocation = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
-    let weatherData: WeatherData = JSON.parse(ApplicationSettings.getString('lastWeatherData', 'null'));
+    let weatherData: WeatherData = getCachedWeather(provider, weatherLocation, { model: weatherLocation?.omModel, ignoreCache: false }, 0);
+    DEV_LOG && console.log('weatherData', !!weatherData);
     const data_version = ApplicationSettings.getNumber('data_version', -1);
     if (data_version !== DATA_VERSION) {
         ApplicationSettings.setNumber('data_version', DATA_VERSION);
@@ -272,6 +275,20 @@
                         await updateView();
                     }
                 }
+
+                // Notify widgets that weather data has been updated
+                try {
+                    if (isCurrentLocationWidget(weatherLocation)) {
+                        // This is the current/default location - update default widgets
+                        await notifyWidgetsWeatherUpdated();
+                    } else {
+                        // This is a specific location - update widgets for this location
+                        await notifyWidgetsWeatherUpdatedForLocation(weatherLocation);
+                    }
+                } catch (widgetError) {
+                    // Don't fail the whole refresh if widget update fails
+                    console.error('Failed to update widgets:', widgetError);
+                }
             }
         } catch (err) {
             if (err.statusCode === 403 && providerRequiresApiKey(provider)) {
@@ -289,7 +306,7 @@
     async function updateView() {
         if (weatherLocation && weatherData) {
             items = prepareItems(weatherLocation, weatherData);
-            ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
+            // ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
         }
     }
 

@@ -6,10 +6,11 @@ import { MFProvider } from './mf';
 import { OMProvider, OpenMeteoModels } from './om';
 import { OWMProvider } from './owm';
 import { AccuWeatherAQIProvider, AccuWeatherProvider } from './accuweather';
-import { AqiProviderType, ProviderType } from './weather';
-import { WeatherProvider } from './weatherprovider';
+import { AqiProviderType, ProviderType, WeatherData } from './weather';
+import { GetWeatherOptions, WeatherProvider } from './weatherprovider';
 import { AtmoProvider } from './atmo';
 import { SETTINGS_PROVIDER, SETTINGS_PROVIDER_AQI } from '~/helpers/constants';
+import { WeatherLocation } from '../api';
 
 export enum Providers {
     MeteoFrance = 'meteofrance',
@@ -108,4 +109,111 @@ function setWeatherProvider(newType: ProviderType): WeatherProvider {
 function setAirQualityProvider(newType: AqiProviderType): AirQualityProvider {
     currentAirQualityProvider = getAqiProviderForType(newType);
     return currentAirQualityProvider;
+}
+
+const WEATHER_CACHE_PREFIX = 'weather_cache_';
+const CACHE_EXPIRY_MS = 60000; // 1 minute
+/**
+ * Generate cache key from provider, location, and options
+ */
+function getCacheKey(providerId: string, weatherLocation: WeatherLocation, options?: GetWeatherOptions & { ignoreCache?: boolean }): string {
+    const { coord } = weatherLocation;
+    const { ignoreCache, ...optionsForKey } = options;
+
+    const optionsStr = options ? JSON.stringify(optionsForKey) : '';
+    return `${WEATHER_CACHE_PREFIX}${providerId}_${coord.lat}_${coord.lon}_${optionsStr}`;
+}
+
+/**
+ * Get cached weather data if valid
+ */
+export function getCachedWeather(providerId: string, weatherLocation: WeatherLocation, options?: GetWeatherOptions & { ignoreCache?: boolean }, maxAge = CACHE_EXPIRY_MS): WeatherData | null {
+    try {
+        if (options?.ignoreCache || !weatherLocation) {
+            return null;
+        }
+        const cacheKey = getCacheKey(providerId, weatherLocation, options);
+        const cachedJson = ApplicationSettings.getString(cacheKey);
+
+        if (!cachedJson) {
+            return null;
+        }
+
+        const cachedData: WeatherData = JSON.parse(cachedJson);
+
+        // Check if cache is still valid (less than 1 minute old)
+        const cacheAge = Date.now() - cachedData.time;
+        DEV_LOG && console.log('getCachedWeather', cacheKey, cacheAge, maxAge);
+        if (maxAge > 0 && cacheAge > maxAge) {
+            // Cache expired, remove it
+            ApplicationSettings.remove(cacheKey);
+            return null;
+        }
+
+        return cachedData;
+    } catch (error) {
+        console.error('Error reading weather cache:', error);
+        return null;
+    }
+}
+
+/**
+ * Save weather data to cache
+ */
+function setCachedWeather(providerId: string, weatherLocation: WeatherLocation, data: WeatherData, options?: GetWeatherOptions): void {
+    try {
+        const cacheKey = getCacheKey(providerId, weatherLocation, options);
+        ApplicationSettings.setString(cacheKey, JSON.stringify(data));
+    } catch (error) {
+        console.error('Error saving weather cache:', error);
+    }
+}
+
+/**
+ * Clear cache for specific location and options
+ */
+export function clearWeatherCache(providerId: string, weatherLocation: WeatherLocation, options?: GetWeatherOptions): void {
+    try {
+        const cacheKey = getCacheKey(providerId, weatherLocation, options);
+        ApplicationSettings.remove(cacheKey);
+    } catch (error) {
+        console.error('Error clearing weather cache:', error);
+    }
+}
+
+/**
+ * Clear all weather caches
+ */
+export function clearAllWeatherCaches(): void {
+    try {
+        const allKeys = ApplicationSettings.getAllKeys();
+
+        allKeys.forEach((key) => {
+            if (key.startsWith(WEATHER_CACHE_PREFIX)) {
+                ApplicationSettings.remove(key);
+            }
+        });
+    } catch (error) {
+        console.error('Error clearing all weather caches:', error);
+    }
+}
+
+export async function getWeather(weatherLocation: WeatherLocation, options?: GetWeatherOptions & { ignoreCache?: boolean }, providerType?: ProviderType) {
+    const provider = providerType ? getProviderForType(providerType) : getWeatherProvider();
+    const providerId = provider.id;
+
+    // Try to get from cache first
+    const cachedData = getCachedWeather(providerId, weatherLocation, options);
+    DEV_LOG && console.log('getWeather', providerId, weatherLocation.coord, weatherLocation.timezone, !!cachedData);
+    if (cachedData) {
+        return cachedData;
+    }
+
+    // Fetch fresh data
+    const data = await provider.getWeather(weatherLocation, options);
+
+    // Save to cache
+    setCachedWeather(providerId, weatherLocation, data, options);
+
+    return data;
 }

@@ -3,7 +3,7 @@ import { prefs } from './preferences';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { ANIMATIONS_ENABLED } from '~/helpers/constants';
 
-const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
+export const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
 export const onIconPackChanged = createGlobalEventListener('iconPack');
 export const onIconAnimationsChanged = createGlobalEventListener('iconAnimations');
 

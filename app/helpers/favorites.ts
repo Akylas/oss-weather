@@ -95,7 +95,7 @@ export function favoriteIcon(item: FavoriteLocation) {
 
 export function getFavoriteKey(item: WeatherLocation) {
     if (item) {
-        DEV_LOG && console.log('getFavoriteKey',    `${item.coord.lat};${item.coord.lon}`);
+        DEV_LOG && console.log('getFavoriteKey', `${item.coord.lat};${item.coord.lon}`);
         return `${item.coord.lat};${item.coord.lon}`;
     }
 }
@@ -162,19 +162,18 @@ export async function toggleFavorite(item: FavoriteLocation, needsConfirmation =
             favorites.splice(index, 1);
         }
     } else {
-        const { isFavorite, startingSide, ...toSave } = item;
-        // if (!item.timezone) {
         try {
             const timezonData = await queryTimezone(item);
             if (timezonData) {
-                Object.assign(toSave, timezonData);
+                Object.assign(item, timezonData);
             }
         } catch (error) {}
         // }
         item.isFavorite = true;
+        delete item.startingSide;
         updateOnSettingChanged = true;
         favoritesKeys.push(getFavoriteKey(item));
-        favorites.push(toSave);
+        favorites.push(item);
     }
     delete item.startingSide; //for swipemenu
     globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });

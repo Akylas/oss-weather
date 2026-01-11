@@ -273,6 +273,11 @@
                         await updateView();
                     }
                 }
+
+                // Broadcast weather data to Gadgetbridge if enabled (Android only)
+                if (__ANDROID__) {
+                    gadgetbridgeService.broadcastWeather(weatherLocation, weatherData);
+                }
             }
         } catch (err) {
             if (err.statusCode === 403 && providerRequiresApiKey(provider)) {
@@ -291,11 +296,6 @@
         if (weatherLocation && weatherData) {
             items = prepareItems(weatherLocation, weatherData);
             ApplicationSettings.setString('lastWeatherData', JSON.stringify(weatherData));
-
-            // Broadcast weather data to Gadgetbridge if enabled (Android only)
-            if (__ANDROID__) {
-                gadgetbridgeService.broadcastWeather(weatherLocation, weatherData);
-            }
         }
     }
 

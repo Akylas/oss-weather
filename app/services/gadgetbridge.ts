@@ -50,7 +50,6 @@ class GadgetbridgeService {
                 const date = dayjs.utc(d.time);
                 const times = getTimes(date as any, location.coord.lat, location.coord.lon);
                 const moontimes = getMoonTimes(date as any, location.coord.lat, location.coord.lon);
-                DEV_LOG && console.log('times', times);
                 d.sunsetTime = dayjs.utc(times.sunsetStart.valueOf()).valueOf();
                 d.sunriseTime = dayjs.utc(times.sunriseEnd.valueOf()).valueOf();
                 d['moonRise'] = dayjs.utc(moontimes.rise.valueOf()).valueOf();
@@ -69,7 +68,7 @@ class GadgetbridgeService {
             const GadgetbridgeServiceClass = com.akylas.weather.gadgetbridge.GadgetbridgeService;
             GadgetbridgeServiceClass.broadcastWeather(context, weatherDataJson, locationJson);
 
-            DEV_LOG && console.log('[Gadgetbridge] Weather data sent to native service for broadcasting');
+            DEV_LOG && console.log('[Gadgetbridge] Weather data sent to native service for broadcasting', Date.now());
         } catch (error) {
             console.error('[Gadgetbridge] Failed to broadcast weather:', error, error.stack);
         }

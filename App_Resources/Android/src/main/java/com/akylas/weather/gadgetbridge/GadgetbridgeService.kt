@@ -15,7 +15,7 @@ import kotlin.concurrent.thread
  */
 class GadgetbridgeService {
     companion object {
-        private const val TAG = "JS"
+        private const val TAG = "GadgetbridgeService"
         private const val ACTION = "nodomain.freeyourgadget.gadgetbridge.ACTION_GENERIC_WEATHER"
         
         /**
@@ -41,14 +41,26 @@ class GadgetbridgeService {
                     val weatherGz = gzipCompress(gadgetbridgeDataArray.toString())
                     
                     // Send broadcast
-                    val intent = Intent(ACTION)
-                    intent.putExtra("WeatherGz", weatherGz)
-                    intent.putExtra("WeatherJson", gadgetbridgeData.toString())
-                    intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+                    // val intent = Intent(ACTION)
+                    // intent.putExtra("WeatherGz", weatherGz)
+                    // intent.putExtra("WeatherJson", gadgetbridgeData.toString())
+                    // intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+                    val packages = listOf(
+                        "nodomain.freeyourgadget.gadgetbridge",
+                        "nodomain.freeyourgadget.gadgetbridge.nightly"
+                    )
+                    val gadgetbridgeDataString = gadgetbridgeData.toString()
+                    packages.forEach { pkg ->
+                        val intent = Intent(ACTION).apply {
+                            setPackage(pkg)
+                            putExtra("WeatherGz", weatherGz)
+                            putExtra("WeatherJson", gadgetbridgeDataString)
+                        }
+                        context.sendBroadcast(intent)
+                    }
                     
-                    context.sendBroadcast(intent)
                     
-                    Log.d(TAG, "Weather data broadcasted to Gadgetbridge: ${gadgetbridgeData.optString("location")}")
+                    // Log.d(TAG, "Weather data broadcasted to Gadgetbridge: ${gadgetbridgeData.optString("location")}")
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to broadcast weather to Gadgetbridge", e)
                 }

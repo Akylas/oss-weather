@@ -15,7 +15,7 @@ import kotlin.concurrent.thread
  */
 class GadgetbridgeService {
     companion object {
-        private const val TAG = "GadgetbridgeService"
+        private const val TAG = "JS"
         private const val ACTION = "nodomain.freeyourgadget.gadgetbridge.ACTION_GENERIC_WEATHER"
         
         /**
@@ -42,6 +42,7 @@ class GadgetbridgeService {
                     val intent = Intent(ACTION)
                     intent.putExtra("WeatherGz", weatherGz)
                     intent.putExtra("WeatherJson", gadgetbridgeData.toString())
+                    intent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
                     
                     context.sendBroadcast(intent)
                     
@@ -92,6 +93,9 @@ class GadgetbridgeService {
                     result.put("precipProbability", today.optInt("precipProbability", 0))
                     result.put("sunRise", (today.optLong("sunriseTime", 0) / 1000).toInt())
                     result.put("sunSet", (today.optLong("sunsetTime", 0) / 1000).toInt())
+                    result.put("moonRise", (today.optLong("moonRise", 0) / 1000).toInt())
+                    result.put("moonSet", (today.optLong("moonSet", 0) / 1000).toInt())
+                    result.put("moonPhase", today.optInt("moonPhase", 0))
                 }
                 
                 // Daily forecasts (skip first day, include up to 7 days)
@@ -111,6 +115,9 @@ class GadgetbridgeService {
                         forecast.put("precipProbability", day.optInt("precipProbability", 0))
                         forecast.put("sunRise", (day.optLong("sunriseTime", 0) / 1000).toInt())
                         forecast.put("sunSet", (day.optLong("sunsetTime", 0) / 1000).toInt())
+                        forecast.put("moonRise", (day.optLong("moonRise", 0) / 1000).toInt())
+                        forecast.put("moonSet", (day.optLong("moonSet", 0) / 1000).toInt())
+                        forecast.put("moonPhase", day.optInt("moonPhase", 0))
                         forecasts.put(forecast)
                     }
                     result.put("forecasts", forecasts)

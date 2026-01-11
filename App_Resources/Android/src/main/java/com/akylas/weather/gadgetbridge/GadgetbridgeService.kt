@@ -32,11 +32,13 @@ class GadgetbridgeService {
                     val weatherData = JSONObject(weatherDataJson)
                     val location = JSONObject(locationJson)
                     
-                    // Build Gadgetbridge data
+                    // Build Gadgetbridge data array (Gadgetbridge expects an array even for single location)
+                    val gadgetbridgeDataArray = JSONArray()
                     val gadgetbridgeData = buildGadgetbridgeData(weatherData, location)
+                    gadgetbridgeDataArray.put(gadgetbridgeData)
                     
-                    // Compress with GZIP
-                    val weatherGz = gzipCompress(gadgetbridgeData.toString())
+                    // Compress with GZIP - send as array
+                    val weatherGz = gzipCompress(gadgetbridgeDataArray.toString())
                     
                     // Send broadcast
                     val intent = Intent(ACTION)
@@ -46,7 +48,7 @@ class GadgetbridgeService {
                     
                     context.sendBroadcast(intent)
                     
-                    Log.d(TAG, "Weather data broadcasted successfully to Gadgetbridge")
+                    Log.d(TAG, "Weather data broadcasted to Gadgetbridge: ${gadgetbridgeData.optString("location")}")
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to broadcast weather to Gadgetbridge", e)
                 }
@@ -83,6 +85,9 @@ class GadgetbridgeService {
                     result.put("dewPoint", kelvinFromCelsius(current.optDouble("dewpoint", 0.0)))
                     result.put("pressure", current.optDouble("sealevelPressure", 0.0).toFloat())
                     result.put("cloudCover", current.optInt("cloudCover", 0))
+                    
+                    // Add air quality data if available
+                    addAirQualityData(result, current)
                 }
                 
                 // Today's min/max from first daily entry
@@ -118,6 +123,10 @@ class GadgetbridgeService {
                         forecast.put("moonRise", (day.optLong("moonRise", 0) / 1000).toInt())
                         forecast.put("moonSet", (day.optLong("moonSet", 0) / 1000).toInt())
                         forecast.put("moonPhase", day.optInt("moonPhase", 0))
+                        
+                        // Add air quality data for daily forecast if available
+                        addAirQualityData(forecast, day)
+                        
                         forecasts.put(forecast)
                     }
                     result.put("forecasts", forecasts)
@@ -147,6 +156,49 @@ class GadgetbridgeService {
             }
             
             return result
+        }
+        
+        /**
+         * Add air quality data to result object if available
+         */
+        private fun addAirQualityData(result: JSONObject, data: JSONObject) {
+            // Check if AQI is available
+            val aqi = data.optInt("aqi", -1)
+            if (aqi > 0) {
+                val airQuality = JSONObject()
+                airQuality.put("aqi", aqi)
+                
+                // Get pollutants if available
+                val pollutants = data.optJSONObject("pollutants")
+                pollutants?.let { p ->
+                    // CO (convert from mg/m³ to µg/m³ if needed, or use as is)
+                    p.optJSONObject("co")?.let { co ->
+                        airQuality.put("co", co.optDouble("value", 0.0).toFloat())
+                    }
+                    // NO2 (µg/m³)
+                    p.optJSONObject("no2")?.let { no2 ->
+                        airQuality.put("no2", no2.optDouble("value", 0.0).toFloat())
+                    }
+                    // O3 (µg/m³)
+                    p.optJSONObject("o3")?.let { o3 ->
+                        airQuality.put("o3", o3.optDouble("value", 0.0).toFloat())
+                    }
+                    // PM10 (µg/m³)
+                    p.optJSONObject("pm10")?.let { pm10 ->
+                        airQuality.put("pm10", pm10.optDouble("value", 0.0).toFloat())
+                    }
+                    // PM2.5 (µg/m³)
+                    p.optJSONObject("pm2_5")?.let { pm25 ->
+                        airQuality.put("pm25", pm25.optDouble("value", 0.0).toFloat())
+                    }
+                    // SO2 (µg/m³)
+                    p.optJSONObject("so2")?.let { so2 ->
+                        airQuality.put("so2", so2.optDouble("value", 0.0).toFloat())
+                    }
+                }
+                
+                result.put("airQuality", airQuality)
+            }
         }
         
         /**

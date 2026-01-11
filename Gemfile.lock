@@ -49,6 +49,7 @@ GEM
     babosa (1.0.4)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.2)
+    bcrypt_pbkdf (1.1.2-x86_64-darwin)
     benchmark (0.5.0)
     bigdecimal (4.0.1)
     claide (1.1.0)
@@ -191,6 +192,7 @@ GEM
       net-ssh (~> 5.1, >= 5.1.0)
     fastlane-sirp (1.0.0)
       sysrandom (~> 1.0)
+    ffi (1.17.3-x86_64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
     fourflusher (2.3.1)
     fuzzy_match (2.0.4)
@@ -314,6 +316,7 @@ GEM
       xcpretty (~> 0.2, >= 0.0.7)
 
 PLATFORMS
+  x86_64-darwin-24
   x86_64-linux
 
 DEPENDENCIES

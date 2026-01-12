@@ -53,6 +53,8 @@ export interface LayoutElement {
     marginVertical?: number;
     width?: number | string;
     height?: number | string;
+    fillWidth?: boolean;
+    fillHeight?: boolean;
     flex?: number;
     backgroundColor?: string;
     cornerRadius?: number;
@@ -277,49 +279,67 @@ function buildStyles(element: LayoutElement, context?: RenderContext): Record<st
 
     // Padding
     if (element.padding !== undefined) {
-        styles['padding'] = `${element.padding}px`;
+        const paddingValue = resolveValue(element.padding, context);
+        styles['padding'] = `${paddingValue}px`;
     }
     if (element.paddingHorizontal !== undefined) {
-        styles['padding-left'] = `${element.paddingHorizontal}px`;
-        styles['padding-right'] = `${element.paddingHorizontal}px`;
+        const paddingValue = resolveValue(element.paddingHorizontal, context);
+        styles['padding-left'] = `${paddingValue}px`;
+        styles['padding-right'] = `${paddingValue}px`;
     }
     if (element.paddingVertical !== undefined) {
-        styles['padding-top'] = `${element.paddingVertical}px`;
-        styles['padding-bottom'] = `${element.paddingVertical}px`;
+        const paddingValue = resolveValue(element.paddingVertical, context);
+        styles['padding-top'] = `${paddingValue}px`;
+        styles['padding-bottom'] = `${paddingValue}px`;
     }
 
     // Margin
     if (element.margin !== undefined) {
-        styles['margin'] = `${element.margin}px`;
+        const marginValue = resolveValue(element.margin, context);
+        styles['margin'] = `${marginValue}px`;
     }
     if (element.marginHorizontal !== undefined) {
-        styles['margin-left'] = `${element.marginHorizontal}px`;
-        styles['margin-right'] = `${element.marginHorizontal}px`;
+        const marginValue = resolveValue(element.marginHorizontal, context);
+        styles['margin-left'] = `${marginValue}px`;
+        styles['margin-right'] = `${marginValue}px`;
     }
     if (element.marginVertical !== undefined) {
-        styles['margin-top'] = `${element.marginVertical}px`;
-        styles['margin-bottom'] = `${element.marginVertical}px`;
+        const marginValue = resolveValue(element.marginVertical, context);
+        styles['margin-top'] = `${marginValue}px`;
+        styles['margin-bottom'] = `${marginValue}px`;
     }
 
-    // Size
-    if (element.width !== undefined) {
-        if (typeof element.width === 'number') {
-            styles['width'] = `${element.width}px`;
-        } else if (element.width === 'fill') {
+    // Size - handle fillWidth/fillHeight, expressions, and literal values
+    if (element.fillWidth) {
+        styles['width'] = '100%';
+    } else if (element.width !== undefined) {
+        const widthValue = resolveValue(element.width, context);
+        if (typeof widthValue === 'number') {
+            styles['width'] = `${widthValue}px`;
+        } else if (widthValue === 'fill') {
             styles['width'] = '100%';
+        } else if (typeof widthValue === 'string') {
+            styles['width'] = widthValue;
         }
     }
-    if (element.height !== undefined) {
-        if (typeof element.height === 'number') {
-            styles['height'] = `${element.height}px`;
-        } else if (element.height === 'fill') {
+    
+    if (element.fillHeight) {
+        styles['height'] = '100%';
+    } else if (element.height !== undefined) {
+        const heightValue = resolveValue(element.height, context);
+        if (typeof heightValue === 'number') {
+            styles['height'] = `${heightValue}px`;
+        } else if (heightValue === 'fill') {
             styles['height'] = '100%';
+        } else if (typeof heightValue === 'string') {
+            styles['height'] = heightValue;
         }
     }
 
     // Flex
     if (element.flex !== undefined) {
-        styles['flex'] = element.flex.toString();
+        const flexValue = resolveValue(element.flex, context);
+        styles['flex'] = flexValue.toString();
     }
 
     // Background
@@ -329,7 +349,8 @@ function buildStyles(element: LayoutElement, context?: RenderContext): Record<st
 
     // Corner radius
     if (element.cornerRadius !== undefined) {
-        styles['border-radius'] = `${element.cornerRadius}px`;
+        const radiusValue = resolveValue(element.cornerRadius, context);
+        styles['border-radius'] = `${radiusValue}px`;
     }
 
     return styles;
@@ -386,10 +407,19 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'column';
+    
+    // Ensure column stretches if fillHeight is true
+    if (element.fillHeight) {
+        styles['height'] = '100%';
+    }
+    if (element.fillWidth) {
+        styles['width'] = '100%';
+    }
 
     // Alignment
     if (element.alignment) {
-        switch (element.alignment) {
+        const alignment = resolveValue(element.alignment, context);
+        switch (alignment) {
             case 'start':
                 styles['justify-content'] = 'flex-start';
                 break;
@@ -411,7 +441,8 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
         }
     }
     if (element.crossAlignment) {
-        switch (element.crossAlignment) {
+        const crossAlignment = resolveValue(element.crossAlignment, context);
+        switch (crossAlignment) {
             case 'start':
                 styles['align-items'] = 'flex-start';
                 break;
@@ -428,8 +459,9 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     }
 
     // Gap for spacing
-    if (element.spacing) {
-        styles['gap'] = `${element.spacing}px`;
+    if (element.spacing !== undefined) {
+        const spacingValue = resolveValue(element.spacing, context);
+        styles['gap'] = `${spacingValue}px`;
     }
 
     const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
@@ -440,9 +472,18 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'row';
+    
+    // Ensure row stretches if fillWidth is true
+    if (element.fillWidth) {
+        styles['width'] = '100%';
+    }
+    if (element.fillHeight) {
+        styles['height'] = '100%';
+    }
 
     if (element.alignment) {
-        switch (element.alignment) {
+        const alignment = resolveValue(element.alignment, context);
+        switch (alignment) {
             case 'start':
                 styles['justify-content'] = 'flex-start';
                 break;
@@ -458,7 +499,8 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
         }
     }
     if (element.crossAlignment) {
-        switch (element.crossAlignment) {
+        const crossAlignment = resolveValue(element.crossAlignment, context);
+        switch (crossAlignment) {
             case 'start':
                 styles['align-items'] = 'flex-start';
                 break;
@@ -474,8 +516,9 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
         }
     }
 
-    if (element.spacing) {
-        styles['gap'] = `${element.spacing}px`;
+    if (element.spacing !== undefined) {
+        const spacingValue = resolveValue(element.spacing, context);
+        styles['gap'] = `${spacingValue}px`;
     }
 
     const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
@@ -502,33 +545,45 @@ function renderStack(element: LayoutElement, context: RenderContext): string {
 function renderLabel(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
 
+    // Handle fontSize - can be expression or number
     if (element.fontSize) {
-        styles['font-size'] = `${element.fontSize}px`;
+        const fontSizeValue = resolveValue(element.fontSize, context);
+        styles['font-size'] = `${fontSizeValue}px`;
     }
+    
+    // Handle fontWeight - can be expression or string
     if (element.fontWeight) {
-        styles['font-weight'] = FONT_WEIGHTS[element.fontWeight] || '400';
+        const fontWeightValue = resolveValue(element.fontWeight, context);
+        styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
+    
     if (element.color) {
-        styles['color'] = resolveColor(element.color);
+        const colorValue = resolveValue(element.color, context);
+        styles['color'] = resolveColor(colorValue, context?.themeVars);
     }
+    
     if (element.textAlign) {
         styles['text-align'] = element.textAlign;
     }
+    
     if (element.maxLines) {
+        const maxLinesValue = resolveValue(element.maxLines, context);
         // Fallback for browsers that don't support -webkit-line-clamp
         styles['overflow'] = 'hidden';
         styles['text-overflow'] = 'ellipsis';
-        styles['white-space'] = element.maxLines === 1 ? 'nowrap' : 'normal';
+        styles['white-space'] = maxLinesValue === 1 ? 'nowrap' : 'normal';
         // For multi-line truncation (webkit browsers)
-        if (element.maxLines > 1) {
+        if (maxLinesValue > 1) {
             styles['display'] = '-webkit-box';
-            styles['-webkit-line-clamp'] = element.maxLines.toString();
+            styles['-webkit-line-clamp'] = maxLinesValue.toString();
             styles['-webkit-box-orient'] = 'vertical';
         }
     }
 
-    const text = resolveBinding(element.text || '', context);
-    return `<span style="${stylesToString(styles)}">${text}</span>`;
+    // Handle text - can be expression or string
+    const textValue = element.text ? resolveValue(element.text, context) : '';
+    const text = typeof textValue === 'string' ? resolveBinding(textValue, context) : String(textValue);
+    return `<span style="${stylesToString(styles)}">${escapeHtml(text)}</span>`;
 }
 
 function hasBinding(s?: string): boolean {
@@ -539,9 +594,17 @@ function hasBinding(s?: string): boolean {
 /**
  * updates to renderImage:
  * - Accept image element with src JSON that may be an "icon id" (like "01d"), build assetsBaseUrl + id + .png
+ * - Support size property for setting width and height
  */
 function renderImage(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
+
+    // Handle size property - sets both width and height
+    if (element.size !== undefined) {
+        const sizeValue = resolveValue(element.size, context);
+        styles['width'] = `${sizeValue}px`;
+        styles['height'] = `${sizeValue}px`;
+    }
 
     // Enforce sensible defaults so image never balloons beyond its container.
     // If explicit width/height provided in layout, they'll be present in styles via buildStyles.
@@ -549,21 +612,31 @@ function renderImage(element: LayoutElement, context: RenderContext): string {
     if (!styles['max-height']) styles['max-height'] = '100%';
     if (!styles['object-fit']) styles['object-fit'] = 'contain';
     // Respect explicit width/height while keeping ratio
-    if (!styles['height']) styles['height'] = 'auto';
+    if (!styles['height'] && !element.size) styles['height'] = 'auto';
+    if (!styles['width'] && !element.size) styles['width'] = 'auto';
+    
+    // Ensure image doesn't grow
+    if (!styles['flex-shrink']) styles['flex-shrink'] = '0';
 
     const src = element.src ?? '';
     let actualSrc = src;
-    if (typeof src === 'string') {
+    
+    // Handle src - can be expression or string
+    const srcValue = resolveValue(src, context);
+    
+    if (typeof srcValue === 'string') {
         const assetsBase = context.assetsBaseUrl ?? '/assets/icon_themes/meteocons/images';
-        if (!hasBinding(src) && /^[a-zA-Z0-9_]+$/.test(src)) {
-            actualSrc = `${assetsBase}/${src}.png`;
-        } else if (hasBinding(src)) {
-            const replaced = resolveBinding(src, context);
+        if (!hasBinding(srcValue) && /^[a-zA-Z0-9_]+$/.test(srcValue)) {
+            actualSrc = `${assetsBase}/${srcValue}.png`;
+        } else if (hasBinding(srcValue)) {
+            const replaced = resolveBinding(srcValue, context);
             if (/^[a-zA-Z0-9_]+$/.test(replaced)) {
                 actualSrc = `${assetsBase}/${replaced}.png`;
             } else {
                 actualSrc = replaced;
             }
+        } else {
+            actualSrc = srcValue;
         }
     }
 
@@ -576,10 +649,12 @@ function renderSpacer(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
 
     if (element.size !== undefined) {
-        styles['width'] = `${element.size}px`;
-        styles['height'] = `${element.size}px`;
+        const sizeValue = resolveValue(element.size, context);
+        styles['width'] = `${sizeValue}px`;
+        styles['height'] = `${sizeValue}px`;
+        styles['flex-shrink'] = '0';
     } else {
-        styles['flex'] = (element.flex || 1).toString();
+        styles['flex'] = (resolveValue(element.flex, context) || 1).toString();
     }
 
     return `<div style="${stylesToString(styles)}"></div>`;
@@ -597,13 +672,43 @@ function renderDivider(element: LayoutElement, context: RenderContext): string {
 
 function renderScrollView(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
-    styles['overflow-x'] = element.direction === 'horizontal' ? 'auto' : 'hidden';
-    styles['overflow-y'] = element.direction === 'horizontal' ? 'hidden' : 'auto';
+    
+    // Handle scrolling behavior
+    const direction = element.direction || 'vertical';
+    styles['overflow-x'] = direction === 'horizontal' ? 'auto' : 'hidden';
+    styles['overflow-y'] = direction === 'vertical' ? 'auto' : 'hidden';
     styles['display'] = 'flex';
-    styles['flex-direction'] = element.direction === 'horizontal' ? 'row' : 'column';
+    styles['flex-direction'] = direction === 'horizontal' ? 'row' : 'column';
+    
+    // Make sure scrollView doesn't collapse
+    if (direction === 'horizontal' && !styles['width']) {
+        styles['width'] = '100%';
+    }
+    if (direction === 'vertical' && !styles['height']) {
+        styles['flex'] = '1';
+    }
+    
+    // Hide scrollbar indicators if specified
+    if (element.showIndicators === false) {
+        styles['scrollbar-width'] = 'none'; // Firefox
+        styles['-ms-overflow-style'] = 'none'; // IE and Edge
+    }
+
+    // Apply gap for spacing between items if specified
+    if (element.spacing !== undefined) {
+        const spacingValue = resolveValue(element.spacing, context);
+        styles['gap'] = `${spacingValue}px`;
+    }
 
     const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
-    return `<div style="${stylesToString(styles)}">${children}</div>`;
+    
+    // Add webkit scrollbar hiding for showIndicators: false
+    let scrollbarStyles = '';
+    if (element.showIndicators === false) {
+        scrollbarStyles = `<style>.scrollview-no-indicators::-webkit-scrollbar { display: none; }</style>`;
+    }
+    
+    return `${scrollbarStyles}<div class="${element.showIndicators === false ? 'scrollview-no-indicators' : ''}" style="${stylesToString(styles)}">${children}</div>`;
 }
 
 function renderForEach(element: LayoutElement, context: RenderContext): string {
@@ -649,15 +754,22 @@ function renderClock(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
 
     if (element.fontSize) {
-        styles['font-size'] = `${element.fontSize}px`;
+        const fontSizeValue = resolveValue(element.fontSize, context);
+        styles['font-size'] = `${fontSizeValue}px`;
     }
     if (element.fontWeight) {
-        styles['font-weight'] = FONT_WEIGHTS[element.fontWeight] || '400';
+        const fontWeightValue = resolveValue(element.fontWeight, context);
+        styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     if (element.color) {
-        styles['color'] = resolveColor(element.color);
+        const colorValue = resolveValue(element.color, context);
+        styles['color'] = resolveColor(colorValue, context?.themeVars);
     }
-    styles['text-align'] = 'center';
+    if (!element.textAlign) {
+        styles['text-align'] = 'center';
+    } else {
+        styles['text-align'] = element.textAlign;
+    }
 
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
@@ -670,15 +782,22 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
 
     if (element.fontSize) {
-        styles['font-size'] = `${element.fontSize}px`;
+        const fontSizeValue = resolveValue(element.fontSize, context);
+        styles['font-size'] = `${fontSizeValue}px`;
     }
     if (element.fontWeight) {
-        styles['font-weight'] = FONT_WEIGHTS[element.fontWeight] || '400';
+        const fontWeightValue = resolveValue(element.fontWeight, context);
+        styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     if (element.color) {
-        styles['color'] = resolveColor(element.color);
+        const colorValue = resolveValue(element.color, context);
+        styles['color'] = resolveColor(colorValue, context?.themeVars);
     }
-    styles['text-align'] = 'center';
+    if (!element.textAlign) {
+        styles['text-align'] = 'center';
+    } else {
+        styles['text-align'] = element.textAlign;
+    }
 
     const now = new Date();
     const options: Intl.DateTimeFormatOptions = {

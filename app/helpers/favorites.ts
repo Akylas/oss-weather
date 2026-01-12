@@ -146,8 +146,8 @@ export async function toggleFavorite(item: FavoriteLocation, needsConfirmation =
         if (needsConfirmation) {
             const result = await confirm({
                 title: lc('remove_favorite'),
-                okButtonText: l('remove'),
-                cancelButtonText: l('cancel')
+                okButtonText: lc('remove'),
+                cancelButtonText: lc('cancel')
             });
             if (!result) {
                 return;

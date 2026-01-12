@@ -28,6 +28,12 @@ export interface WidgetLayout {
     description?: string;
     supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
+    settings?: Record<string, {
+        type: string;
+        default: any;
+        title?: string;
+        description?: string;
+    }>;
     background?: {
         type: string;
         color?: string;
@@ -94,6 +100,9 @@ export interface RenderContext {
     index?: number;
     assetsBaseUrl?: string;
     themeVars?: Record<string, string>;
+    config?: {
+        settings?: Record<string, any>;
+    };
 }
 
 /**
@@ -564,9 +573,28 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         styles['font-size'] = `${fontSizeValue}px`;
     }
     
-    // Handle fontWeight - can be expression or string
+    // Handle fontWeight - can be expression, string, or config reference
     if (element.fontWeight) {
-        const fontWeightValue = resolveValue(element.fontWeight, context);
+        let fontWeightValue = element.fontWeight;
+        
+        // Handle string literals that reference config settings (e.g., "config.settings.clockBold")
+        if (typeof fontWeightValue === 'string' && fontWeightValue.startsWith('config.')) {
+            const path = fontWeightValue.split('.');
+            let current: any = context;
+            for (const part of path) {
+                if (current === undefined || current === null) break;
+                current = current[part];
+            }
+            // If we got a boolean from config.settings, convert to weight
+            if (typeof current === 'boolean') {
+                fontWeightValue = current ? 'bold' : 'normal';
+            } else {
+                fontWeightValue = current;
+            }
+        } else {
+            fontWeightValue = resolveValue(element.fontWeight, context);
+        }
+        
         styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     
@@ -820,7 +848,26 @@ function renderClock(element: LayoutElement, context: RenderContext): string {
         styles['font-size'] = `${fontSizeValue}px`;
     }
     if (element.fontWeight) {
-        const fontWeightValue = resolveValue(element.fontWeight, context);
+        let fontWeightValue = element.fontWeight;
+        
+        // Handle string literals that reference config settings (e.g., "config.settings.clockBold")
+        if (typeof fontWeightValue === 'string' && fontWeightValue.startsWith('config.')) {
+            const path = fontWeightValue.split('.');
+            let current: any = context;
+            for (const part of path) {
+                if (current === undefined || current === null) break;
+                current = current[part];
+            }
+            // If we got a boolean from config.settings.clockBold, convert to weight
+            if (typeof current === 'boolean') {
+                fontWeightValue = current ? 'bold' : 'normal';
+            } else {
+                fontWeightValue = current;
+            }
+        } else {
+            fontWeightValue = resolveValue(element.fontWeight, context);
+        }
+        
         styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     if (element.color) {
@@ -848,7 +895,26 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
         styles['font-size'] = `${fontSizeValue}px`;
     }
     if (element.fontWeight) {
-        const fontWeightValue = resolveValue(element.fontWeight, context);
+        let fontWeightValue = element.fontWeight;
+        
+        // Handle string literals that reference config settings (e.g., "config.settings.dateBold")
+        if (typeof fontWeightValue === 'string' && fontWeightValue.startsWith('config.')) {
+            const path = fontWeightValue.split('.');
+            let current: any = context;
+            for (const part of path) {
+                if (current === undefined || current === null) break;
+                current = current[part];
+            }
+            // If we got a boolean from config.settings, convert to weight
+            if (typeof current === 'boolean') {
+                fontWeightValue = current ? 'bold' : 'normal';
+            } else {
+                fontWeightValue = current;
+            }
+        } else {
+            fontWeightValue = resolveValue(element.fontWeight, context);
+        }
+        
         styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     if (element.color) {
@@ -877,7 +943,19 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
  * Render a complete widget as HTML
  */
 export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }, themeVars: Record<string, string> = THEME_COLORS, assetsBaseUrl?: string): string {
-    const context: RenderContext = { data, size, themeVars, assetsBaseUrl };
+    // Initialize default config with settings from layout if present
+    const defaultConfig = {
+        settings: {} as Record<string, any>
+    };
+    
+    // Extract default settings from layout.settings if present
+    if (layout.settings) {
+        for (const [key, setting] of Object.entries(layout.settings as Record<string, any>)) {
+            defaultConfig.settings[key] = setting.default ?? true;
+        }
+    }
+    
+    const context: RenderContext = { data, size, themeVars, assetsBaseUrl, config: defaultConfig };
     const selectedLayout = selectLayout(layout, context);
 
     const containerStyles: Record<string, string> = {

@@ -370,7 +370,20 @@ function stylesToString(styles: Record<string, string>): string {
  */
 function renderElement(element: LayoutElement, context: RenderContext): string {
     if (element.visible === false) return '';
-    if (element.visibleIf && !evaluateCondition(element.visibleIf, context)) return '';
+    
+    // Handle visibleIf with Mapbox expressions
+    if (element.visibleIf !== undefined) {
+        let visible = false;
+        if (isExpression(element.visibleIf)) {
+            const result = evaluateExpression(element.visibleIf, context);
+            visible = Boolean(result);
+        } else if (typeof element.visibleIf === 'string') {
+            visible = evaluateCondition(element.visibleIf, context);
+        } else {
+            visible = Boolean(element.visibleIf);
+        }
+        if (!visible) return '';
+    }
 
     switch (element.type) {
         case 'column':
@@ -580,9 +593,18 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         }
     }
 
-    // Handle text - can be expression or string
-    const textValue = element.text ? resolveValue(element.text, context) : '';
-    const text = typeof textValue === 'string' ? resolveBinding(textValue, context) : String(textValue);
+    // Handle text - can be expression (like ["get", "temperature"]) or string with bindings (like "{{item.temperature}}")
+    let text = '';
+    if (element.text) {
+        const textValue = resolveValue(element.text, context);
+        if (typeof textValue === 'string') {
+            // If it contains bindings like {{...}}, resolve them
+            text = resolveBinding(textValue, context);
+        } else {
+            text = String(textValue || '');
+        }
+    }
+    
     return `<span style="${stylesToString(styles)}">${escapeHtml(text)}</span>`;
 }
 
@@ -595,6 +617,8 @@ function hasBinding(s?: string): boolean {
  * updates to renderImage:
  * - Accept image element with src JSON that may be an "icon id" (like "01d"), build assetsBaseUrl + id + .png
  * - Support size property for setting width and height
+ * - Handle Mapbox expressions for src
+ * - Handle data URLs for embedded images
  */
 function renderImage(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
@@ -621,22 +645,45 @@ function renderImage(element: LayoutElement, context: RenderContext): string {
     const src = element.src ?? '';
     let actualSrc = src;
     
-    // Handle src - can be expression or string
+    // Handle src - can be expression like ["get", "iconPath"] or string with bindings like "{{item.iconPath}}"
     const srcValue = resolveValue(src, context);
     
     if (typeof srcValue === 'string') {
         const assetsBase = context.assetsBaseUrl ?? '/assets/icon_themes/meteocons/images';
-        if (!hasBinding(srcValue) && /^[a-zA-Z0-9_]+$/.test(srcValue)) {
-            actualSrc = `${assetsBase}/${srcValue}.png`;
-        } else if (hasBinding(srcValue)) {
+        
+        // If it's already a data URL or full URL, use it as-is
+        if (srcValue.startsWith('data:') || srcValue.startsWith('http://') || srcValue.startsWith('https://') || srcValue.startsWith('file://')) {
+            actualSrc = srcValue;
+        }
+        // Check if it has bindings like {{...}}
+        else if (hasBinding(srcValue)) {
             const replaced = resolveBinding(srcValue, context);
-            if (/^[a-zA-Z0-9_]+$/.test(replaced)) {
+            // If result looks like an icon ID, prepend path
+            if (replaced.startsWith('data:') || replaced.startsWith('http://') || replaced.startsWith('https://') || replaced.startsWith('file://')) {
+                actualSrc = replaced;
+            } else if (/^[a-zA-Z0-9_]+$/.test(replaced)) {
                 actualSrc = `${assetsBase}/${replaced}.png`;
             } else {
                 actualSrc = replaced;
             }
+        } else if (/^[a-zA-Z0-9_]+$/.test(srcValue)) {
+            // Plain icon ID
+            actualSrc = `${assetsBase}/${srcValue}.png`;
         } else {
+            // Full path already
             actualSrc = srcValue;
+        }
+    } else {
+        // If src came from expression evaluation and it's not a string, convert it
+        actualSrc = String(srcValue || '');
+        // Check if it's a data URL or full URL
+        if (actualSrc.startsWith('data:') || actualSrc.startsWith('http://') || actualSrc.startsWith('https://') || actualSrc.startsWith('file://')) {
+            // Use as-is
+        } else {
+            const assetsBase = context.assetsBaseUrl ?? '/assets/icon_themes/meteocons/images';
+            if (/^[a-zA-Z0-9_]+$/.test(actualSrc)) {
+                actualSrc = `${assetsBase}/${actualSrc}.png`;
+            }
         }
     }
 
@@ -739,7 +786,17 @@ function renderForEach(element: LayoutElement, context: RenderContext): string {
 }
 
 function renderConditional(element: LayoutElement, context: RenderContext): string {
-    const condition = evaluateCondition(element.condition, context);
+    let condition = false;
+    
+    // Handle Mapbox-style expressions for condition
+    if (isExpression(element.condition)) {
+        const result = evaluateExpression(element.condition, context);
+        condition = Boolean(result);
+    } else if (typeof element.condition === 'string') {
+        condition = evaluateCondition(element.condition, context);
+    } else {
+        condition = Boolean(element.condition);
+    }
 
     if (condition && element.then) {
         return renderElement(element.then, context);
@@ -813,8 +870,8 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
 /**
  * Render a complete widget as HTML
  */
-export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }, themeVars: Record<string, string> = THEME_COLORS): string {
-    const context: RenderContext = { data, size, themeVars };
+export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size: { width: number; height: number }, themeVars: Record<string, string> = THEME_COLORS, assetsBaseUrl?: string): string {
+    const context: RenderContext = { data, size, themeVars, assetsBaseUrl };
     const selectedLayout = selectLayout(layout, context);
 
     const containerStyles: Record<string, string> = {
@@ -822,20 +879,24 @@ export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size:
         height: `${size.height}px`,
         'border-radius': '16px',
         overflow: 'hidden',
-        'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        'font-family': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        display: 'flex',
+        'flex-direction': 'column'
     };
 
     if (layout.background?.color) {
         containerStyles['background-color'] = resolveColor(layout.background.color, themeVars);
     }
 
-    if (layout.defaultPadding) {
-        containerStyles['padding'] = `${layout.defaultPadding}px`;
+    // Handle defaultPadding - can be expression or number
+    if (layout.defaultPadding !== undefined) {
+        const paddingValue = resolveValue(layout.defaultPadding, context);
+        containerStyles['padding'] = `${paddingValue}px`;
     }
 
     const content = renderElement(selectedLayout, context);
 
-    return `<div style="${stylesToString(containerStyles)}">${content}</div>`;
+    return `<div class="widget-container" style="${stylesToString(containerStyles)}">${content}</div>`;
 }
 
 /**
@@ -849,13 +910,14 @@ export function generateWidgetPreviewPage(
     theme = 'dark'
 ): string {
     // We already have a function to select layout variant; reuse it
-    const usedLayout = selectLayout(layout, { size });
+    const usedLayout = selectLayout(layout, { size, data });
 
     // simple theme variables - these can be expanded to mirror your svelte $colors
     const darkVars = {
         onSurface: '#E6E1E5',
         onSurfaceVariant: '#CAC4D0',
         primary: '#D0BCFF',
+        error: '#F2B8B5',
         widgetBackground: '#1C1B1F',
         surface: '#2B2930'
     };
@@ -863,6 +925,7 @@ export function generateWidgetPreviewPage(
         onSurface: '#0b2736',
         onSurfaceVariant: '#2a3940',
         primary: '#0ea5b7',
+        error: '#dc6c5a',
         widgetBackground: '#ffffff',
         surface: '#f6f7f9'
     };
@@ -870,10 +933,12 @@ export function generateWidgetPreviewPage(
 
     const context: RenderContext = { data, size, assetsBaseUrl, themeVars };
 
-    // Build a small HTML page for this widget
-    const htmlBody = renderElement(usedLayout, context);
+    // Build widget HTML
+    const widgetHtml = renderWidgetToHtml(layout, data, size, themeVars, assetsBaseUrl);
+    
     const css = `
     <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       :root {
         --bg: ${theme === 'light' ? '#fff' : '#0b0f14'};
         --fg: ${themeVars.onSurface};
@@ -882,11 +947,25 @@ export function generateWidgetPreviewPage(
         color: var(--fg);
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
       }
-      .widget-root { width: ${size.width}px; height: ${size.height}px; box-sizing: border-box; padding: 6px; display:flex; align-items:center; justify-content:center; }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+      .widget-root { 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+      }
+      .scrollview-no-indicators::-webkit-scrollbar { 
+        display: none; 
+      }
     </style>
     `;
 
-    const html = `<!doctype html><html><head><meta charset="utf-8">${css}</head><body class="${theme === 'light' ? 'light' : 'dark'}"><div class="widget-root">${htmlBody}</div></body></html>`;
+    const html = `<!doctype html><html><head><meta charset="utf-8">${css}</head><body class="${theme === 'light' ? 'light' : 'dark'}"><div class="widget-root">${widgetHtml}</div></body></html>`;
     return html;
 }
 

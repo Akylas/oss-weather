@@ -32,24 +32,24 @@ const SAMPLE_DATA: WidgetData = {
     temperature: '8°C',
     locationName: 'Grenoble',
     description: 'Partly Cloudy',
-    // Convert local path into embedded data URI so puppeteer can render it inside page.setContent()
-    iconPath: toDataUrlIfLocal(path.resolve(__dirname, '../../app/assets/icon_themes/meteocons/images/200d.png')),
+    // Use icon ID - renderer will convert to path
+    iconPath: '200d',
     hourlyData: [
-        { hour: '12:00', temperature: '8°C', iconPath: 'partly_cloudy', precipAccumulation: '' },
-        { hour: '13:00', temperature: '9°C', iconPath: 'sunny', precipAccumulation: '' },
-        { hour: '14:00', temperature: '10°C', iconPath: 'sunny', precipAccumulation: '' },
-        { hour: '15:00', temperature: '10°C', iconPath: 'cloudy', precipAccumulation: '' },
-        { hour: '16:00', temperature: '9°C', iconPath: 'cloudy', precipAccumulation: '2mm' },
-        { hour: '17:00', temperature: '8°C', iconPath: 'rainy', precipAccumulation: '5mm' },
-        { hour: '18:00', temperature: '7°C', iconPath: 'rainy', precipAccumulation: '3mm' },
-        { hour: '19:00', temperature: '6°C', iconPath: 'cloudy', precipAccumulation: '' }
+        { hour: '12:00', time: '12:00', temperature: '8°C', iconPath: '200d', precipAccumulation: '' },
+        { hour: '13:00', time: '13:00', temperature: '9°C', iconPath: '01d', precipAccumulation: '' },
+        { hour: '14:00', time: '14:00', temperature: '10°C', iconPath: '01d', precipAccumulation: '' },
+        { hour: '15:00', time: '15:00', temperature: '10°C', iconPath: '02d', precipAccumulation: '' },
+        { hour: '16:00', time: '16:00', temperature: '9°C', iconPath: '03d', precipAccumulation: '2mm' },
+        { hour: '17:00', time: '17:00', temperature: '8°C', iconPath: '10d', precipAccumulation: '5mm' },
+        { hour: '18:00', time: '18:00', temperature: '7°C', iconPath: '10d', precipAccumulation: '3mm' },
+        { hour: '19:00', time: '19:00', temperature: '6°C', iconPath: '03d', precipAccumulation: '' }
     ],
     dailyData: [
-        { day: 'Today', temperatureHigh: '10°C', temperatureLow: '5°C', iconPath: 'partly_cloudy', precipAccumulation: '' },
-        { day: 'Tomorrow', temperatureHigh: '12°C', temperatureLow: '6°C', iconPath: 'sunny', precipAccumulation: '' },
-        { day: 'Wednesday', temperatureHigh: '8°C', temperatureLow: '4°C', iconPath: 'rainy', precipAccumulation: '8mm' },
-        { day: 'Thursday', temperatureHigh: '9°C', temperatureLow: '5°C', iconPath: 'cloudy', precipAccumulation: '' },
-        { day: 'Friday', temperatureHigh: '11°C', temperatureLow: '6°C', iconPath: 'sunny', precipAccumulation: '' }
+        { day: 'Today', temperatureHigh: '10°C', temperatureLow: '5°C', iconPath: '200d', precipAccumulation: '' },
+        { day: 'Tomorrow', temperatureHigh: '12°C', temperatureLow: '6°C', iconPath: '01d', precipAccumulation: '' },
+        { day: 'Wednesday', temperatureHigh: '8°C', temperatureLow: '4°C', iconPath: '10d', precipAccumulation: '8mm' },
+        { day: 'Thursday', temperatureHigh: '9°C', temperatureLow: '5°C', iconPath: '03d', precipAccumulation: '' },
+        { day: 'Friday', temperatureHigh: '11°C', temperatureLow: '6°C', iconPath: '01d', precipAccumulation: '' }
     ]
 };
 
@@ -84,12 +84,19 @@ async function generateWidgetImage(browser: Browser, layout: WidgetLayout, size:
             height: size.height + 40
         });
 
-        // Generate HTML content
-        const html = generateWidgetPreviewPage(layout, SAMPLE_DATA, size);
+        // Convert icon paths to data URLs for puppeteer
+        const dataWithDataUrls = convertIconPathsToDataUrls(SAMPLE_DATA);
+        
+        // Generate HTML content - use file:// URL for assets since we're in puppeteer
+        const assetsPath = path.resolve(__dirname, '../../app/assets/icon_themes/meteocons/images');
+        const assetsUrl = pathToFileURL(assetsPath).href;
+        const html = generateWidgetPreviewPage(layout, dataWithDataUrls, size, assetsUrl);
 
-        // Set the content and provide a base URL so relative asset paths inside HTML resolve (if the renderer uses relative paths)
-        const baseUrl = pathToFileURL(path.resolve(__dirname, '../../app')).href;
-        await page.setContent(html, { waitUntil: 'networkidle0', url: baseUrl });
+        // Set the content
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+
+        // Wait a bit for any images to load
+        await page.waitForTimeout(500);
 
         // Wait for the widget container to be visible
         await page.waitForSelector('.widget-container', { visible: true });
@@ -119,6 +126,36 @@ async function generateWidgetImage(browser: Browser, layout: WidgetLayout, size:
     } finally {
         await page.close();
     }
+}
+
+/**
+ * Convert icon paths in widget data to data URLs for puppeteer
+ */
+function convertIconPathsToDataUrls(data: WidgetData): WidgetData {
+    const result = { ...data };
+    
+    // Convert main iconPath
+    if (result.iconPath) {
+        result.iconPath = toDataUrlIfLocal(path.resolve(__dirname, `../../app/assets/icon_themes/meteocons/images/${result.iconPath}.png`)) || result.iconPath;
+    }
+    
+    // Convert hourly data icon paths
+    if (result.hourlyData) {
+        result.hourlyData = result.hourlyData.map(item => ({
+            ...item,
+            iconPath: item.iconPath ? (toDataUrlIfLocal(path.resolve(__dirname, `../../app/assets/icon_themes/meteocons/images/${item.iconPath}.png`)) || item.iconPath) : item.iconPath
+        }));
+    }
+    
+    // Convert daily data icon paths
+    if (result.dailyData) {
+        result.dailyData = result.dailyData.map(item => ({
+            ...item,
+            iconPath: item.iconPath ? (toDataUrlIfLocal(path.resolve(__dirname, `../../app/assets/icon_themes/meteocons/images/${item.iconPath}.png`)) || item.iconPath) : item.iconPath
+        }));
+    }
+    
+    return result;
 }
 
 /**

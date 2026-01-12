@@ -579,6 +579,10 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         styles['text-align'] = element.textAlign;
     }
     
+    // Prevent text overflow
+    styles['word-wrap'] = 'break-word';
+    styles['overflow-wrap'] = 'break-word';
+    
     if (element.maxLines) {
         const maxLinesValue = resolveValue(element.maxLines, context);
         // Fallback for browsers that don't support -webkit-line-clamp
@@ -720,19 +724,20 @@ function renderDivider(element: LayoutElement, context: RenderContext): string {
 function renderScrollView(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
     
-    // Handle scrolling behavior
+    // Handle scrolling behavior - ensure actual scrollability
     const direction = element.direction || 'vertical';
     styles['overflow-x'] = direction === 'horizontal' ? 'auto' : 'hidden';
     styles['overflow-y'] = direction === 'vertical' ? 'auto' : 'hidden';
     styles['display'] = 'flex';
     styles['flex-direction'] = direction === 'horizontal' ? 'row' : 'column';
     
-    // Make sure scrollView doesn't collapse
-    if (direction === 'horizontal' && !styles['width']) {
-        styles['width'] = '100%';
-    }
-    if (direction === 'vertical' && !styles['height']) {
-        styles['flex'] = '1';
+    // Make sure scrollView is scrollable and doesn't collapse
+    if (direction === 'horizontal') {
+        if (!styles['width']) styles['width'] = '100%';
+        styles['flex-wrap'] = 'nowrap'; // Prevent wrapping for horizontal scroll
+    } else {
+        if (!styles['height']) styles['flex'] = '1';
+        styles['min-height'] = '0'; // Allow flex item to shrink below content size
     }
     
     // Hide scrollbar indicators if specified
@@ -755,7 +760,7 @@ function renderScrollView(element: LayoutElement, context: RenderContext): strin
         scrollbarStyles = `<style>.scrollview-no-indicators::-webkit-scrollbar { display: none; }</style>`;
     }
     
-    return `${scrollbarStyles}<div class="${element.showIndicators === false ? 'scrollview-no-indicators' : ''}" style="${stylesToString(styles)}">${children}</div>`;
+    return `${scrollbarStyles}<div class="${element.showIndicators === false ? 'scrollview-no-indicators' : 'scrollview'}" style="${stylesToString(styles)}">${children}</div>`;
 }
 
 function renderForEach(element: LayoutElement, context: RenderContext): string {
@@ -857,8 +862,9 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
     }
 
     const now = new Date();
+    // Use shorter format matching Android (e.g., "Mon, Dec 14" instead of "Monday, December 14")
     const options: Intl.DateTimeFormatOptions = {
-        weekday: 'long',
+        weekday: 'short',
         month: 'short',
         day: 'numeric'
     };
@@ -940,7 +946,7 @@ export function generateWidgetPreviewPage(
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       :root {
-        --bg: ${theme === 'light' ? '#fff' : '#0b0f14'};
+        --bg: ${theme === 'light' ? '#f8f8f8' : '#0b0f14'};
         --fg: ${themeVars.onSurface};
         --muted: ${themeVars.onSurfaceVariant};
         background: var(--bg);
@@ -953,14 +959,26 @@ export function generateWidgetPreviewPage(
         justify-content: center;
         min-height: 100vh;
         padding: 20px;
+        background: var(--bg);
       }
       .widget-root { 
         display: flex; 
         align-items: center; 
         justify-content: center; 
       }
+      .widget-container {
+        background: ${theme === 'light' ? '#ececec' : themeVars.widgetBackground} !important;
+      }
       .scrollview-no-indicators::-webkit-scrollbar { 
         display: none; 
+      }
+      .scrollview::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      .scrollview::-webkit-scrollbar-thumb {
+        background: ${theme === 'light' ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)'};
+        border-radius: 2px;
       }
     </style>
     `;

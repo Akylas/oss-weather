@@ -5,43 +5,43 @@
     "locationName": "Paris",
     "hourlyData": [
       {
-        "hour": "06:00",
+        "time": "06:00",
         "iconPath": "802d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "07:00",
+        "time": "07:00",
         "iconPath": "802d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "08:00",
+        "time": "08:00",
         "iconPath": "802d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "09:00",
+        "time": "09:00",
         "iconPath": "802d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "10:00",
+        "time": "10:00",
         "iconPath": "802d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "11:00",
+        "time": "11:00",
         "iconPath": "802d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       }
     ],
-    "hour": "09:00",
+    "time": "09:00",
     "precipAccumulation": "0 mm",
     "dailyData": [
       {
@@ -103,43 +103,43 @@
     "locationName": "Seville",
     "hourlyData": [
       {
-        "hour": "06:00",
+        "time": "06:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "07:00",
+        "time": "07:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "08:00",
+        "time": "08:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "09:00",
+        "time": "09:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "10:00",
+        "time": "10:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "hour": "11:00",
+        "time": "11:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       }
     ],
-    "hour": "12:00",
+    "time": "12:00",
     "precipAccumulation": "0 mm",
     "dailyData": [
       {
@@ -201,43 +201,43 @@
     "locationName": "Reykjavík",
     "hourlyData": [
       {
-        "hour": "06:00",
+        "time": "06:00",
         "iconPath": "221d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "hour": "07:00",
+        "time": "07:00",
         "iconPath": "221d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "hour": "08:00",
+        "time": "08:00",
         "iconPath": "221d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "hour": "09:00",
+        "time": "09:00",
         "iconPath": "221d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "hour": "10:00",
+        "time": "10:00",
         "iconPath": "221d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "hour": "11:00",
+        "time": "11:00",
         "iconPath": "221d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       }
     ],
-    "hour": "18:00",
+    "time": "18:00",
     "precipAccumulation": "15 mm",
     "dailyData": [
       {

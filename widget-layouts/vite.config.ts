@@ -10,6 +10,17 @@ const widgetsSamplesDir = path.join(widgetsDir, 'samples');
 const appAssetsBase = path.join(rootDir, '..', 'app', 'assets');
 const iconImagesPath = path.join(appAssetsBase, 'icon_themes', 'meteocons', 'images');
 
+// Custom sizes per widget for testing (beyond supportedSizes in JSON)
+// Add additional test sizes for any widget here
+const customSizes: Record<string, Array<{ width: number; height: number }>> = {
+    // Example: test SimpleWeatherWidget at additional sizes
+    // SimpleWeatherWidget: [
+    //     { width: 100, height: 100 },
+    //     { width: 250, height: 120 },
+    //     { width: 300, height: 200 }
+    // ]
+};
+
 function safeReadJSON(filePath: string) {
     try {
         const raw = fsSync.readFileSync(filePath, 'utf-8');
@@ -115,10 +126,14 @@ export default defineConfig({
                                 try {
                                     const raw = await fs.readFile(path.join(widgetsDir, f), 'utf-8');
                                     const layout = JSON.parse(raw);
+                                    // Merge supportedSizes from JSON with customSizes from config
+                                    const baseSizes = layout.supportedSizes || [];
+                                    const extraSizes = customSizes[layout.name] || [];
+                                    const allSizes = [...baseSizes, ...extraSizes];
                                     widgets.push({
                                         name: layout.name,
                                         displayName: layout.displayName,
-                                        supportedSizes: layout.supportedSizes
+                                        supportedSizes: allSizes
                                     });
                                 } catch (e) {
                                     // ignore parse errors

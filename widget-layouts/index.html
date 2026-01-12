@@ -104,6 +104,24 @@
                 border-radius: 8px;
                 overflow: hidden;
                 border: 1px solid rgba(0, 0, 0, 0.12);
+                position: relative;
+            }
+            .frame-wrap.resizing {
+                border: 1px dashed var(--accent);
+            }
+            .resize-handle {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 16px;
+                height: 16px;
+                cursor: nwse-resize;
+                background: var(--accent);
+                opacity: 0.6;
+                border-top-left-radius: 4px;
+            }
+            .resize-handle:hover {
+                opacity: 1;
             }
             .frame-controls {
                 display: flex;
@@ -221,6 +239,64 @@
                 // put a loading placeholder while fetching fragment
                 frameWrap.innerHTML = '<div style="padding:8px;color:var(--muted)">Loading…</div>';
 
+                // Create resize handle
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+                resizeHandle.title = 'Drag to resize';
+
+                // Resize logic
+                let isResizing = false;
+                let startX, startY, startWidth, startHeight;
+                let resizeTimeout;
+
+                resizeHandle.addEventListener('mousedown', (e) => {
+                    isResizing = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startWidth = parseInt(column.dataset.sizeWidth, 10);
+                    startHeight = parseInt(column.dataset.sizeHeight, 10);
+                    frameWrap.classList.add('resizing');
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isResizing) return;
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    const newWidth = Math.max(50, Math.min(800, startWidth + deltaX));
+                    const newHeight = Math.max(50, Math.min(800, startHeight + deltaY));
+                    
+                    // Update size label live
+                    sizeLabel.textContent = `${newWidth}×${newHeight}`;
+                    
+                    // Throttle resize to avoid excessive re-renders
+                    if (resizeTimeout) clearTimeout(resizeTimeout);
+                });
+
+                document.addEventListener('mouseup', async (e) => {
+                    if (!isResizing) return;
+                    isResizing = false;
+                    frameWrap.classList.remove('resizing');
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    const newWidth = Math.max(50, Math.min(800, startWidth + deltaX));
+                    const newHeight = Math.max(50, Math.min(800, startHeight + deltaY));
+                    
+                    // Update dataset
+                    column.dataset.sizeWidth = String(newWidth);
+                    column.dataset.sizeHeight = String(newHeight);
+                    
+                    // Re-fetch fragment at new size
+                    const newSize = { width: newWidth, height: newHeight };
+                    const html = await fetchFragment(widget, newSize, setName, theme);
+                    if (html) {
+                        frameWrap.innerHTML = html;
+                        // Re-add resize handle
+                        frameWrap.appendChild(resizeHandle);
+                    }
+                });
+
                 // fetch fragment and insert it (or remove column on failure)
                 fetchFragment(widget, size, setName, theme)
                     .then((html) => {
@@ -229,6 +305,8 @@
                             return;
                         }
                         frameWrap.innerHTML = html;
+                        // Add resize handle after content loads
+                        frameWrap.appendChild(resizeHandle);
                     })
                     .catch(() => {
                         column.remove();

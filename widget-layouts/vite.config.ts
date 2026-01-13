@@ -31,46 +31,9 @@ function safeReadJSON(filePath: string) {
 }
 
 async function ensureSampleFile(widgetPath: string, widgetName: string) {
-    const samplePath = path.join(widgetPath, `${widgetName}.sample.json`);
+    const samplePath = path.join(widgetPath, 'samples', `${widgetName}.sample.json`);
     const exists = fsSync.existsSync(samplePath);
-    if (!exists) {
-        const defaultSample = {
-            default: {
-                temperature: '17 °C',
-                locationName: 'Paris',
-                description: 'Partly Cloudy',
-                iconPath: '01d',
-                humidity: '73 %',
-                windSpeed: '12 km/h',
-                precipitation: '0 mm',
-                pressure: '1015 hPa',
-                feelsLike: '17 °C'
-            },
-            hot: {
-                temperature: '34 °C',
-                locationName: 'Madrid',
-                description: 'Hot',
-                iconPath: '01d',
-                humidity: '20 %',
-                windSpeed: '6 km/h',
-                precipitation: '0 mm',
-                pressure: '1010 hPa',
-                feelsLike: '36 °C'
-            },
-            storm: {
-                temperature: '10 °C',
-                locationName: 'Reykjavík',
-                description: 'Stormy',
-                iconPath: '11d',
-                humidity: '88 %',
-                windSpeed: '85 km/h',
-                precipitation: '12 mm',
-                pressure: '980 hPa',
-                feelsLike: '7 °C'
-            }
-        };
-        await fs.writeFile(samplePath, JSON.stringify(defaultSample, null, 2), 'utf-8');
-    }
+    console.log('ensureSampleFile', samplePath, exists);
     const raw = await fs.readFile(samplePath, 'utf-8');
     return JSON.parse(raw);
 }
@@ -233,7 +196,7 @@ export default defineConfig({
                             // Load sample set
                             let sampleData: any = {};
                             try {
-                                const samplePath = path.join(widgetsDir, `${name}.sample.json`);
+                                const samplePath = path.join(widgetsDir, 'samples', `${name}.sample.json`);
                                 const sampleRaw = await fs.readFile(samplePath, 'utf-8');
                                 const sampleParsed = JSON.parse(sampleRaw);
                                 sampleData = sampleParsed[setName] ?? sampleParsed.default ?? Object.values(sampleParsed)[0] ?? {};
@@ -243,7 +206,6 @@ export default defineConfig({
 
                             try {
                                 // Use renderWidgetToHtml which returns the wrapper div fragment (no full page)
-                                const assetsBaseUrl = '/assets/icon_themes/meteocons/images';
                                 const fragment = renderWidgetToHtml(
                                     foundLayout,
                                     sampleData,

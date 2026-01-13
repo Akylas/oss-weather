@@ -429,6 +429,7 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'column';
+    styles['pointer-events'] = 'auto'; // Enable interaction
     
     // Ensure column stretches if fillHeight is true
     if (element.fillHeight) {
@@ -436,6 +437,11 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     }
     if (element.fillWidth) {
         styles['width'] = '100%';
+    }
+    
+    // If flex is specified, set it
+    if (element.flex !== undefined) {
+        styles['flex'] = resolveValue(element.flex, context).toString();
     }
 
     // Alignment
@@ -451,12 +457,15 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
             case 'end':
                 styles['justify-content'] = 'flex-end';
                 break;
+            case 'space-between':
             case 'spaceBetween':
                 styles['justify-content'] = 'space-between';
                 break;
+            case 'space-around':
             case 'spaceAround':
                 styles['justify-content'] = 'space-around';
                 break;
+            case 'space-evenly':
             case 'spaceEvenly':
                 styles['justify-content'] = 'space-evenly';
                 break;
@@ -494,6 +503,7 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
     styles['display'] = 'flex';
     styles['flex-direction'] = 'row';
+    styles['pointer-events'] = 'auto'; // Enable interaction
     
     // Ensure row stretches if fillWidth is true
     if (element.fillWidth) {
@@ -501,6 +511,11 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
     }
     if (element.fillHeight) {
         styles['height'] = '100%';
+    }
+    
+    // If flex is specified, set it
+    if (element.flex !== undefined) {
+        styles['flex'] = resolveValue(element.flex, context).toString();
     }
 
     if (element.alignment) {
@@ -515,8 +530,17 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
             case 'end':
                 styles['justify-content'] = 'flex-end';
                 break;
+            case 'space-between':
             case 'spaceBetween':
                 styles['justify-content'] = 'space-between';
+                break;
+            case 'space-around':
+            case 'spaceAround':
+                styles['justify-content'] = 'space-around';
+                break;
+            case 'space-evenly':
+            case 'spaceEvenly':
+                styles['justify-content'] = 'space-evenly';
                 break;
         }
     }
@@ -552,12 +576,14 @@ function renderStack(element: LayoutElement, context: RenderContext): string {
     styles['position'] = 'relative';
     styles['width'] = '100%';
     styles['height'] = '100%';
+    styles['display'] = 'flex';
 
     const children =
         element.children
             ?.map((child, index) => {
                 const childHtml = renderElement(child, context);
-                return `<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">${childHtml}</div>`;
+                // Each child in a stack is absolutely positioned and fills the parent
+                return `<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; pointer-events: none;">${childHtml}</div>`;
             })
             .join('') || '';
 
@@ -604,7 +630,26 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
     }
     
     if (element.textAlign) {
-        styles['text-align'] = element.textAlign;
+        const textAlignValue = resolveValue(element.textAlign, context);
+        styles['text-align'] = textAlignValue;
+    }
+    
+    // Handle paddingStart, paddingEnd, paddingTop, paddingBottom if present
+    if (element.paddingStart !== undefined) {
+        const paddingValue = resolveValue(element.paddingStart, context);
+        styles['padding-left'] = `${paddingValue}px`;
+    }
+    if (element.paddingEnd !== undefined) {
+        const paddingValue = resolveValue(element.paddingEnd, context);
+        styles['padding-right'] = `${paddingValue}px`;
+    }
+    if (element.paddingTop !== undefined) {
+        const paddingValue = resolveValue(element.paddingTop, context);
+        styles['padding-top'] = `${paddingValue}px`;
+    }
+    if (element.paddingBottom !== undefined) {
+        const paddingValue = resolveValue(element.paddingBottom, context);
+        styles['padding-bottom'] = `${paddingValue}px`;
     }
     
     // Prevent text overflow

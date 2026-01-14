@@ -376,6 +376,23 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
             }
             return result;
         }
+        case 'substring': {
+            // ["substring", string, start, length]
+            const str = evaluateMapboxExpression(args[0], context);
+            const start = evaluateMapboxExpression(args[1], context);
+            if (args.length > 2) {
+                const length = evaluateMapboxExpression(args[2], context);
+                return `${str}.substring(${start}, ${start} + ${length})`;
+            }
+            return `${str}.substring(${start})`;
+        }
+        case 'format': {
+            // ["format", dateValue, pattern]
+            const value = evaluateMapboxExpression(args[0], context);
+            const pattern = args[1];
+            // For NativeScript, we'll use a custom formatDate function
+            return `formatDate(${value}, ${JSON.stringify(pattern)})`;
+        }
         default:
             console.warn(`[evaluateMapboxExpression] Unsupported operator: ${op}`);
             return JSON.stringify(expr);

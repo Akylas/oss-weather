@@ -105,6 +105,46 @@ export function evaluateExpression(expr: Expression, context: any): any {
             return null;
         }
         
+        // String operations
+        case 'substring': {
+            const str = String(evaluateExpression(args[0], context) || '');
+            const start = evaluateExpression(args[1], context);
+            const length = args.length > 2 ? evaluateExpression(args[2], context) : undefined;
+            
+            if (length !== undefined) {
+                return str.substring(start, start + length);
+            }
+            return str.substring(start);
+        }
+        
+        // Date/Time formatting
+        case 'format': {
+            const value = evaluateExpression(args[0], context);
+            const pattern = args[1] as string;
+            
+            // If value is a Date or can be converted to Date
+            const date = value instanceof Date ? value : new Date(value);
+            
+            if (isNaN(date.getTime())) {
+                return String(value);
+            }
+            
+            // Simple pattern matching for common formats
+            // For full support, would need a date formatting library
+            if (pattern === 'HH:mm') {
+                return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            } else if (pattern === 'h:mm a') {
+                return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            } else if (pattern === 'EEE, MMM d') {
+                return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            } else if (pattern === 'MMM d, yyyy') {
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            }
+            
+            // Fallback to ISO string
+            return date.toLocaleString();
+        }
+        
         default:
             console.warn(`Unknown expression operator: ${op}`);
             return undefined;

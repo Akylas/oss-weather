@@ -90,7 +90,7 @@
                   "children": [
                     {
                       "type": "label",
-                      "text": "{{item.day}}",
+                      "text": "["get", "item.day"]},
                       "fontSize": 12,
                       "fontWeight": "medium",
                       "color": "onSurface",
@@ -99,7 +99,7 @@
                     },
                     {
                       "type": "image",
-                      "src": "{{item.iconPath}}",
+                      "src": "["get", "item.iconPath"]},
                       "size": 28
                     },
                     {
@@ -111,14 +111,14 @@
                       "children": [
                         {
                           "type": "label",
-                          "text": "{{item.precipAccumulation}}",
+                          "text": "["get", "item.precipAccumulation"]},
                           "fontSize": 10,
                           "color": "onSurfaceVariant",
                           "visibleIf": ["has", "item.precipAccumulation"]
                         },
                         {
                           "type": "label",
-                          "text": "{{item.temperatureHigh}}",
+                          "text": "["get", "item.temperatureHigh"]},
                           "fontSize": 13,
                           "fontWeight": "bold",
                           "color": "onSurface",
@@ -126,7 +126,7 @@
                         },
                         {
                           "type": "label",
-                          "text": "{{item.temperatureLow}}",
+                          "text": "["get", "item.temperatureLow"]},
                           "fontSize": 13,
                           "color": "onSurfaceVariant",
                           "maxLines": 1
@@ -140,14 +140,14 @@
                       "children": [
                         {
                           "type": "label",
-                          "text": "💧{{item.precipitation}}",
+                          "text": ["concat", "💧", ["get", "item.precipitation"]],
                           "fontSize": 10,
                           "color": "primary",
                           "visibleIf": ["has", "item.precipitation"]
                         },
                         {
                           "type": "label",
-                          "text": "💨{{item.windSpeed}}",
+                          "text": ["concat", "💨", ["get", "item.windSpeed"]],
                           "fontSize": 10,
                           "color": "onSurfaceVariant",
                           "visibleIf": ["has", "item.windSpeed"]

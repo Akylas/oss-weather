@@ -67,7 +67,7 @@
               "children": [
                 {
                   "type": "label",
-                  "text": "{{item.time}}",
+                  "text": ["get", "item.time"],
                   "fontSize": ["case",
                     ["<", ["get", "size.height"], 60], 9,
                     11
@@ -77,7 +77,7 @@
                 },
                 {
                   "type": "image",
-                  "src": "{{item.iconPath}}",
+                  "src": ["get", "item.iconPath"],
                   "size": ["case",
                     ["<", ["get", "size.height"], 60], 24,
                     ["<", ["get", "size.height"], 80], 28,
@@ -86,7 +86,7 @@
                 },
                 {
                   "type": "label",
-                  "text": "{{item.temperature}}",
+                  "text": ["get", "item.temperature"],
                   "fontSize": ["case",
                     ["<", ["get", "size.height"], 60], 12,
                     14
@@ -111,7 +111,7 @@
                       },
                       {
                         "type": "label",
-                        "text": "{{item.precipAccumulation}}",
+                        "text": ["get", "item.precipAccumulation"],
                         "fontSize": ["case",
                           ["<", ["get", "size.height"], 80], 9,
                           10

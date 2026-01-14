@@ -219,12 +219,31 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
         // String operations
         case 'concat': {
             const parts = args.map((a) => compileExpression(a, context));
-            return `"${parts.join(' + ')}"`;
+            return parts.join(' + ');
         }
         case 'upcase':
             return `${compileExpression(args[0], context)}.uppercase()`;
         case 'downcase':
             return `${compileExpression(args[0], context)}.lowercase()`;
+        
+        // String operations
+        case 'substring': {
+            const str = compileExpression(args[0], context);
+            const start = compileExpression(args[1], context);
+            if (args.length > 2) {
+                const length = compileExpression(args[2], context);
+                return `${str}.substring(${start}, ${start} + ${length})`;
+            }
+            return `${str}.substring(${start})`;
+        }
+        
+        // Date/Time formatting
+        case 'format': {
+            const value = compileExpression(args[0], context);
+            const pattern = args[1] as string;
+            // Use SimpleDateFormat for Android
+            return `SimpleDateFormat("${pattern}").format(${value})`;
+        }
 
         // Interpolation (for template strings like "{{temperature}}")
         case 'interpolate': {

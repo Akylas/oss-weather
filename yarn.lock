@@ -162,9 +162,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@akylas/nativescript@npm:8.9.10":
-  version: 8.9.10
-  resolution: "@akylas/nativescript@npm:8.9.10"
+"@akylas/nativescript@npm:8.9.12":
+  version: 8.9.12
+  resolution: "@akylas/nativescript@npm:8.9.12"
   dependencies:
     "@csstools/css-calc": "npm:~2.1.2"
     "@csstools/css-color-parser": "npm:^3.0.8"
@@ -177,7 +177,7 @@ __metadata:
     emoji-regex: "npm:^10.3.0"
     reduce-css-calc: "npm:^2.1.8"
     tslib: "npm:^2.6.3"
-  checksum: 10/c892cbdcadbbcd3d41db50f03455cb553d7a64e3bd0c5d47d9d55dc6e0e4549bfe92d8067e00a6ca2c0400e1c5eb909706a2a7bcf983c6ea66dd2e7c28d77bd4
+  checksum: 10/609104d00dd21f4139945c2aface18fe012c0e68bcea5605d0e8d1f5d147454f2f11fe68054b08ab6fce7fe0d95a73aa8637c2f7876e6f77baca20d30e8867ba
   languageName: node
   linkType: hard
 
@@ -2230,10 +2230,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/https@npm:4.1.26":
-  version: 4.1.26
-  resolution: "@nativescript-community/https@npm:4.1.26"
-  checksum: 10/9869d0c12e3d30d91f8a26aa34f60ab4253a40136e94f430e205d701c24f28de0305cc18e438f6697f92384852186d574916c9bd0f4ee83493eddd3ec5558b44
+"@nativescript-community/https@npm:4.1.27":
+  version: 4.1.27
+  resolution: "@nativescript-community/https@npm:4.1.27"
+  checksum: 10/30d88010ac94ac5e0e133c5df163344fd6455db12729ad51af464fa39f065cf367c0f553726b3b636869ca0ba0126cdd4060b542cec93e8e40271980b6df0530
   languageName: node
   linkType: hard
 
@@ -2443,10 +2443,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-image@npm:5.0.13, @nativescript-community/ui-image@npm:^5.0.13":
-  version: 5.0.13
-  resolution: "@nativescript-community/ui-image@npm:5.0.13"
-  checksum: 10/1762e54bf63746c93418975b487f9cae6fd49f832624a1891e5f7f5a4da508a4a96f136663fd735fe807e9f54d8f9b2170d2de9705f3679c9c09dbbd3d3e5655
+"@nativescript-community/ui-image@npm:5.0.14, @nativescript-community/ui-image@npm:^5.0.14":
+  version: 5.0.14
+  resolution: "@nativescript-community/ui-image@npm:5.0.14"
+  checksum: 10/3c66589bf4d820c4070e4ea6eded6e081b85caa27f3deb0250c04b5c9ddefad1d06976149c38817e0f5fb6e314abfffa05ab8a5a313ad3a86f3157880851819a
   languageName: node
   linkType: hard
 
@@ -2597,12 +2597,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-zoomimage@npm:5.0.13":
-  version: 5.0.13
-  resolution: "@nativescript-community/ui-zoomimage@npm:5.0.13"
+"@nativescript-community/ui-zoomimage@npm:5.0.14":
+  version: 5.0.14
+  resolution: "@nativescript-community/ui-zoomimage@npm:5.0.14"
   dependencies:
-    "@nativescript-community/ui-image": "npm:^5.0.13"
-  checksum: 10/4207218f3238e61211598f3f961097f68e3cf31621a4c58e1acb3388e40ae8c7a5ae299721e67a3ea2ca74dd49f13ecc2b4476cc710274a1675e5ec0dcb107e3
+    "@nativescript-community/ui-image": "npm:^5.0.14"
+  checksum: 10/8727e27d31d3cf25237b34f2a4648fa5608ba84ab929921765118d65a4b34a1b6675d2eaa1060c1c0874d625b28c10dd339421dcad4868cd48152422d3813ad4
   languageName: node
   linkType: hard
 
@@ -12055,7 +12055,7 @@ __metadata:
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
     "@akylas/address-formatter": "npm:5.3.1"
-    "@akylas/nativescript": "npm:8.9.10"
+    "@akylas/nativescript": "npm:8.9.12"
     "@akylas/nativescript-android-runtime": "npm:8.9.2"
     "@akylas/nativescript-app-tools": "portal:tools"
     "@akylas/nativescript-app-utils": "npm:2.2.7"
@@ -12071,7 +12071,7 @@ __metadata:
     "@nativescript-community/geocoding": "npm:3.2.1"
     "@nativescript-community/gesturehandler": "npm:2.0.39"
     "@nativescript-community/gps": "npm:3.1.10"
-    "@nativescript-community/https": "npm:4.1.26"
+    "@nativescript-community/https": "npm:4.1.27"
     "@nativescript-community/l": "npm:4.3.10"
     "@nativescript-community/licenses": "npm:2.0.9"
     "@nativescript-community/perms": "npm:3.0.4"
@@ -12088,7 +12088,7 @@ __metadata:
     "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.14"
     "@nativescript-community/ui-document-picker": "npm:1.1.29"
     "@nativescript-community/ui-drawer": "npm:0.1.31"
-    "@nativescript-community/ui-image": "npm:5.0.13"
+    "@nativescript-community/ui-image": "npm:5.0.14"
     "@nativescript-community/ui-label": "npm:1.3.41"
     "@nativescript-community/ui-lottie": "npm:5.0.11"
     "@nativescript-community/ui-material-activityindicator": "npm:7.2.78"
@@ -12105,7 +12105,7 @@ __metadata:
     "@nativescript-community/ui-pulltorefresh": "npm:2.5.3"
     "@nativescript-community/ui-share-file": "npm:1.3.3"
     "@nativescript-community/ui-webview": "npm:1.6.0"
-    "@nativescript-community/ui-zoomimage": "npm:5.0.13"
+    "@nativescript-community/ui-zoomimage": "npm:5.0.14"
     "@nativescript-community/universal-links": "npm:3.0.1"
     "@nativescript/core": "npm:8.9.9"
     "@nativescript/iqkeyboardmanager": "npm:2.1.2"

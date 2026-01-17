@@ -42,6 +42,17 @@ export function evaluateExpression(expr: Expression, context: any): any {
             const parts = prop.split('.');
             let current: any = context;
             
+            // If property starts with "data.", look in context.data
+            if (parts[0] === 'data' && context.data) {
+                current = context.data;
+                parts.shift(); // Remove "data" from the path
+            }
+            // If property doesn't have a prefix and exists in context.data, start there
+            else if (parts.length === 1 && context.data && context.data[parts[0]] !== undefined) {
+                current = context.data;
+            }
+            // Otherwise traverse from context
+            
             for (const part of parts) {
                 if (current === undefined || current === null) {
                     return undefined;

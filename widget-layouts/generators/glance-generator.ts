@@ -401,6 +401,9 @@ function toGlanceHorizontalAlignment(alignment?: string): string {
             return 'Alignment.Horizontal.CenterHorizontally';
         case 'end':
             return 'Alignment.Horizontal.End';
+        case 'space-between':
+        case 'spaceBetween':
+            return 'Alignment.Horizontal.Start'; // Glance doesn't have space-between, use Start as fallback
         default:
             return 'Alignment.Horizontal.CenterHorizontally';
     }
@@ -505,6 +508,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const horizAlign = toGlanceHorizontalAlignment(element.alignment);
     const vertAlign = toGlanceVerticalAlignment(element.crossAlignment);
+    const isSpaceBetween = element.alignment === 'space-between' || element.alignment === 'spaceBetween';
 
     const modifier = buildModifier(element) || 'GlanceModifier';
 
@@ -524,8 +528,15 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     lines.push(`${indent}) {`);
 
     if (element.children) {
-        for (const child of element.children) {
-            lines.push(generateElement(child, indent + '    '));
+        if (isSpaceBetween && element.children.length === 2) {
+            // For space-between with exactly 2 children, use Spacer(modifier = GlanceModifier.defaultWeight())
+            lines.push(generateElement(element.children[0], indent + '    '));
+            lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
+            lines.push(generateElement(element.children[1], indent + '    '));
+        } else {
+            for (const child of element.children) {
+                lines.push(generateElement(child, indent + '    '));
+            }
         }
     }
 

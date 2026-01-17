@@ -39,20 +39,31 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
             modifier = GlanceModifier.fillMaxSize()
         ) {
             Row(
-                modifier = GlanceModifier,
-                spacing = 8.dp,
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                verticalAlignment = Alignment.Vertical.CenterVertically
+                modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(8.dp),
+                horizontalAlignment = Alignment.Horizontal.Start,
+                verticalAlignment = Alignment.Vertical.Top
             ) {
-                Text(
-                    text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
-                    style = TextStyle(fontSize = 48.sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
-                )
-                Row(
+                Column(
                     modifier = GlanceModifier,
-                    spacing = 8.dp,
-                    horizontalAlignment = Alignment.Horizontal.End,
-                    verticalAlignment = Alignment.Vertical.CenterVertically
+                    spacing = 4.dp,
+                    verticalAlignment = Alignment.Vertical.Top,
+                    horizontalAlignment = Alignment.Horizontal.Start
+                ) {
+                    Text(
+                        text = android.text.format.DateFormat.format("HH:mm", System.currentTimeMillis()).toString(),
+                        style = TextStyle(fontSize = 48.sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
+                    )
+                    Text(
+                        text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
+                        style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                    )
+                }
+                Spacer(modifier = GlanceModifier.defaultWeight())
+                Column(
+                    modifier = GlanceModifier,
+                    spacing = 4.dp,
+                    verticalAlignment = Alignment.Vertical.Top,
+                    horizontalAlignment = Alignment.Horizontal.End
                 ) {
                     if (data.iconPath.isNotEmpty()) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
@@ -65,11 +76,10 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
                     }
                     Text(
                         text = data.temperature,
-                        style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
                     )
                 }
             }
-            Spacer(modifier = GlanceModifier.height(4.dp))
             Column(
                 modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Bottom,

@@ -26,26 +26,43 @@
     "condition": [">=", ["get", "size.width"], 180],
     "then": {
       "type": "stack",
-      "padding": 8,
+      "fillWidth": true,
+      "fillHeight": true,
       "children": [
         {
           "type": "row",
           "alignment": "space-between",
-          "crossAlignment": "center",
-          "spacing": 8,
+          "crossAlignment": "start",
+          "fillWidth": true,
+          "fillHeight": true,
+          "padding": 8,
           "children": [
             {
-              "type": "clock",
-              "fontSize": 48,
-              "fontWeight": "config.settings.clockBold",
-              "color": "onSurface",
-              "flex": 1
+              "type": "column",
+              "alignment": "start",
+              "crossAlignment": "start",
+              "spacing": 4,
+              "children": [
+                {
+                  "type": "clock",
+                  "fontSize": 48,
+                  "fontWeight": "config.settings.clockBold",
+                  "color": "onSurface",
+                  "textAlign": "left"
+                },
+                {
+                  "type": "date",
+                  "fontSize": 14,
+                  "color": "onSurfaceVariant",
+                  "textAlign": "left"
+                }
+              ]
             },
             {
-              "type": "row",
-              "alignment": "end",
-              "crossAlignment": "center",
-              "spacing": 8,
+              "type": "column",
+              "alignment": "start",
+              "crossAlignment": "end",
+              "spacing": 4,
               "children": [
                 {
                   "type": "image",
@@ -56,15 +73,15 @@
                 {
                   "type": "label",
                   "text": ["get", "temperature"],
-                  "fontSize": 40,
+                  "fontSize": 32,
                   "fontWeight": "bold",
-                  "color": "onSurface"
+                  "color": "onSurface",
+                  "textAlign": "right"
                 }
               ]
             }
           ]
         },
-        { "type": "spacer", "size": 4 },
         {
           "type": "column",
           "alignment": "end",

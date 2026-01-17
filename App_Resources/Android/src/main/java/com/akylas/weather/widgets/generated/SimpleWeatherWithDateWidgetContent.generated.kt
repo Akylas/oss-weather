@@ -49,13 +49,14 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                 Row(
                     modifier = GlanceModifier,
                     spacing = 8.dp,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+                    horizontalAlignment = Alignment.Horizontal.Start,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
                     Text(
                         text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
                         style = TextStyle(fontSize = 32.sp, color = GlanceTheme.colors.onSurface)
                     )
+                    Spacer(modifier = GlanceModifier.defaultWeight())
                     Row(
                         modifier = GlanceModifier,
                         spacing = 8.dp,

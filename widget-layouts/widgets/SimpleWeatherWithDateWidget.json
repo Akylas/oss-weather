@@ -39,22 +39,37 @@
             {
               "type": "row",
               "alignment": "space-between",
-              "crossAlignment": "center",
-              "spacing": 8,
+              "crossAlignment": "start",
               "children": [
                 {
-                  "type": "date",
-                  "style": "date",
-                  "fontSize": 32,
-                  "fontWeight": "bold",
-                  "color": "onSurface",
-                  "flex": 1
+                  "type": "column",
+                  "alignment": "start",
+                  "crossAlignment": "start",
+                  "flex": 1,
+                  "children": [
+                    {
+                      "type": "date",
+                      "style": "dayMonth",
+                      "fontSize": 20,
+                      "fontWeight": "bold",
+                      "color": "onSurface"
+                    },
+                    {
+                      "type": "spacer",
+                      "size": 2
+                    },
+                    {
+                      "type": "date",
+                      "style": "year",
+                      "fontSize": 14,
+                      "color": "onSurfaceVariant"
+                    }
+                  ]
                 },
                 {
-                  "type": "row",
+                  "type": "column",
                   "alignment": "end",
-                  "crossAlignment": "center",
-                  "spacing": 8,
+                  "crossAlignment": "end",
                   "children": [
                     {
                       "type": "image",
@@ -63,11 +78,16 @@
                       "visibleIf": ["has", "data.iconPath"]
                     },
                     {
+                      "type": "spacer",
+                      "size": 4
+                    },
+                    {
                       "type": "label",
                       "text": ["get", "data.temperature"],
-                      "fontSize": 40,
+                      "fontSize": 24,
                       "fontWeight": "bold",
-                      "color": "onSurface"
+                      "color": "onSurface",
+                      "textAlign": "right"
                     }
                   ]
                 }

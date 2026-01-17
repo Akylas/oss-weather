@@ -49,17 +49,28 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                 Row(
                     modifier = GlanceModifier,
                     horizontalAlignment = Alignment.Horizontal.Start,
-                    verticalAlignment = Alignment.Vertical.CenterVertically
+                    verticalAlignment = Alignment.Vertical.Top
                 ) {
-                    Text(
-                        text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
-                        style = TextStyle(fontSize = 32.sp, color = GlanceTheme.colors.onSurface)
-                    )
+                    Column(
+                        modifier = GlanceModifier.defaultWeight(),
+                        verticalAlignment = Alignment.Vertical.Top,
+                        horizontalAlignment = Alignment.Horizontal.Start
+                    ) {
+                        Text(
+                            text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
+                            style = TextStyle(fontSize = 20.sp, color = GlanceTheme.colors.onSurface)
+                        )
+                        Spacer(modifier = GlanceModifier.height(2.dp))
+                        Text(
+                            text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
+                            style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                        )
+                    }
                     Spacer(modifier = GlanceModifier.defaultWeight())
-                    Row(
+                    Column(
                         modifier = GlanceModifier,
-                        horizontalAlignment = Alignment.Horizontal.End,
-                        verticalAlignment = Alignment.Vertical.CenterVertically
+                        verticalAlignment = Alignment.Vertical.Bottom,
+                        horizontalAlignment = Alignment.Horizontal.End
                     ) {
                         if (data.iconPath.isNotEmpty()) {
                             WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
@@ -70,10 +81,10 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                                 )
                             }
                         }
-                        Spacer(modifier = GlanceModifier.width(8.dp))
+                        Spacer(modifier = GlanceModifier.height(4.dp))
                         Text(
                             text = data.temperature,
-                            style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                            style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
                         )
                     }
                 }

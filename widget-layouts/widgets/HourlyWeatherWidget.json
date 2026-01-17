@@ -31,7 +31,9 @@
                             "type": "label",
                             "text": ["get", "data.locationName"],
                             "fontSize": 14,
-                            "color": "onSurfaceVariant",
+                            "fontWeight": "medium",
+                            "color": "onSurface",
+                            "textAlign": "left",
                             "maxLines": 1
                         },
                         {

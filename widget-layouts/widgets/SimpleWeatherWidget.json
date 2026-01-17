@@ -61,43 +61,13 @@
             "condition": ["all", [">", ["get", "size.width"], ["get", "size.height"]], [">=", ["get", "size.width"], 200]],
             "then": {
                 "type": "row",
-                "alignment": "center",
+                "alignment": "space-between",
                 "crossAlignment": "center",
                 "children": [
                     {
                         "type": "column",
-                        "flex": 1,
-                        "alignment": "center",
-                        "crossAlignment": "center",
-                        "children": [
-                            {
-                                "type": "image",
-                                "src": ["get", "iconPath"],
-                                "size": 64,
-                                "visibleIf": ["has", "iconPath"]
-                            },
-                            {
-                                "type": "spacer",
-                                "size": 4
-                            },
-                            {
-                                "type": "label",
-                                "text": ["get", "locationName"],
-                                "fontSize": 12,
-                                "color": "onSurface",
-                                "maxLines": 1
-                            }
-                        ]
-                    },
-                    {
-                        "type": "spacer",
-                        "size": 8
-                    },
-                    {
-                        "type": "column",
-                        "flex": 1,
-                        "alignment": "center",
-                        "crossAlignment": "center",
+                        "alignment": "start",
+                        "crossAlignment": "start",
                         "children": [
                             {
                                 "type": "label",
@@ -108,6 +78,30 @@
                             },
                             {
                                 "type": "spacer",
+                                "size": 4
+                            },
+                            {
+                                "type": "label",
+                                "text": ["get", "locationName"],
+                                "fontSize": 12,
+                                "color": "onSurfaceVariant",
+                                "maxLines": 1
+                            }
+                        ]
+                    },
+                    {
+                        "type": "column",
+                        "alignment": "end",
+                        "crossAlignment": "end",
+                        "children": [
+                            {
+                                "type": "image",
+                                "src": ["get", "iconPath"],
+                                "size": 64,
+                                "visibleIf": ["has", "iconPath"]
+                            },
+                            {
+                                "type": "spacer",
                                 "size": 4,
                                 "visibleIf": ["has", "description"]
                             },
@@ -115,7 +109,8 @@
                                 "type": "label",
                                 "text": ["get", "description"],
                                 "fontSize": 12,
-                                "color": "onSurface",
+                                "color": "onSurfaceVariant",
+                                "textAlign": "right",
                                 "visibleIf": ["has", "description"]
                             }
                         ]
@@ -131,14 +126,8 @@
                     "crossAlignment": "center",
                     "children": [
                         {
-                            "type": "label",
-                            "text": ["get", "locationName"],
-                            "fontSize": 12,
-                            "color": "onSurface"
-                        },
-                        {
                             "type": "spacer",
-                            "size": 4
+                            "flex": 1
                         },
                         {
                             "type": "image",
@@ -156,6 +145,10 @@
                             "fontSize": 32,
                             "fontWeight": "bold",
                             "color": "onSurface"
+                        },
+                        {
+                            "type": "spacer",
+                            "flex": 1
                         }
                     ]
                 },

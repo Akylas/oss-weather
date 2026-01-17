@@ -68,13 +68,30 @@ fun SimpleWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
         if ((size.width.value > size.height.value && size.width.value >= 200)) {
             Row(
                 modifier = GlanceModifier,
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+                horizontalAlignment = Alignment.Horizontal.Start,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
-                    modifier = GlanceModifier.defaultWeight(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                    modifier = GlanceModifier,
+                    verticalAlignment = Alignment.Vertical.Top,
+                    horizontalAlignment = Alignment.Horizontal.Start
+                ) {
+                    Text(
+                        text = data.temperature,
+                        style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    )
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Text(
+                        text = data.locationName,
+                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                        maxLines = 1
+                    )
+                }
+                Spacer(modifier = GlanceModifier.defaultWeight())
+                Column(
+                    modifier = GlanceModifier,
+                    verticalAlignment = Alignment.Vertical.Bottom,
+                    horizontalAlignment = Alignment.Horizontal.End
                 ) {
                     if (data.iconPath.isNotEmpty()) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
@@ -85,30 +102,13 @@ fun SimpleWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
                             )
                         }
                     }
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                    Text(
-                        text = data.locationName,
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface),
-                        maxLines = 1
-                    )
-                }
-                Spacer(modifier = GlanceModifier.height(8.dp))
-                Column(
-                    modifier = GlanceModifier.defaultWeight(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
-                ) {
-                    Text(
-                        text = data.temperature,
-                        style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
-                    )
                     if (data.description.isNotEmpty()) {
                         Spacer(modifier = GlanceModifier.height(4.dp))
                     }
                     if (data.description.isNotEmpty()) {
                         Text(
                             text = data.description,
-                            style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface)
+                            style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End)
                         )
                     }
                 }
@@ -121,11 +121,7 @@ fun SimpleWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
-                    Text(
-                        text = data.locationName,
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface)
-                    )
-                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Spacer(modifier = GlanceModifier.defaultWeight())
                     if (data.iconPath.isNotEmpty()) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
                             Image(
@@ -140,6 +136,7 @@ fun SimpleWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
                         text = data.temperature,
                         style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
+                    Spacer(modifier = GlanceModifier.defaultWeight())
                 }
             }
             else {

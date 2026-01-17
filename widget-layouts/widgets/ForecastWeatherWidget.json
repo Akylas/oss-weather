@@ -19,17 +19,41 @@
         "children": [
             {
                 "type": "row",
-                "alignment": "start",
-                "crossAlignment": "center",
-                "spacing": 8,
+                "alignment": "space-between",
+                "crossAlignment": "start",
                 "paddingHorizontal": 8,
                 "paddingTop": 8,
                 "children": [
                     {
-                        "type": "row",
+                        "type": "column",
                         "alignment": "start",
-                        "crossAlignment": "center",
-                        "spacing": 8,
+                        "crossAlignment": "start",
+                        "children": [
+                            {
+                                "type": "label",
+                                "text": ["get", "data.temperature"],
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "color": "onSurface"
+                            },
+                            {
+                                "type": "spacer",
+                                "size": 2
+                            },
+                            {
+                                "type": "label",
+                                "text": ["get", "data.locationName"],
+                                "fontSize": 14,
+                                "color": "onSurfaceVariant",
+                                "textAlign": "left",
+                                "maxLines": 1
+                            }
+                        ]
+                    },
+                    {
+                        "type": "column",
+                        "alignment": "end",
+                        "crossAlignment": "end",
                         "children": [
                             {
                                 "type": "image",
@@ -38,21 +62,20 @@
                                 "visibleIf": ["has", "data.iconPath"]
                             },
                             {
+                                "type": "spacer",
+                                "size": 2,
+                                "visibleIf": ["has", "data.description"]
+                            },
+                            {
                                 "type": "label",
-                                "text": ["get", "data.temperature"],
-                                "fontSize": 32,
-                                "fontWeight": "bold",
-                                "color": "onSurface"
+                                "text": ["get", "data.description"],
+                                "fontSize": 12,
+                                "color": "onSurfaceVariant",
+                                "textAlign": "right",
+                                "maxLines": 1,
+                                "visibleIf": ["has", "data.description"]
                             }
                         ]
-                    },
-                    { "type": "spacer", "flex": 1 },
-                    {
-                        "type": "label",
-                        "text": ["get", "data.locationName"],
-                        "fontSize": 14,
-                        "color": "onSurfaceVariant",
-                        "maxLines": 1
                     }
                 ]
             },
@@ -149,79 +172,87 @@
                                 "type": "forEach",
                                 "items": "dailyData",
                                 "itemTemplate": {
-                                    "type": "row",
-                                    "alignment": "center",
-                                    "crossAlignment": "center",
+                                    "type": "column",
                                     "fillWidth": true,
-                                    "spacing": 8,
                                     "padding": 6,
                                     "backgroundColor": "surface",
                                     "cornerRadius": 8,
-                                    "marginVertical": 2,
+                                    "marginBottom": 4,
                                     "children": [
                                         {
-                                            "type": "label",
-                                            "text": ["get", "item.day"],
-                                            "fontSize": 12,
-                                            "fontWeight": "medium",
-                                            "color": "onSurface",
-                                            "flex": 1,
-                                            "maxLines": 1
-                                        },
-                                        {
-                                            "type": "image",
-                                            "src": ["get", "item.iconPath"],
-                                            "size": 28
-                                        },
-                                        {
                                             "type": "row",
-                                            "alignment": "end",
+                                            "alignment": "center",
                                             "crossAlignment": "center",
-                                            "spacing": 6,
-                                            "flex": 1,
                                             "children": [
                                                 {
                                                     "type": "label",
-                                                    "text": ["get", "item.precipAccumulation"],
-                                                    "fontSize": 10,
-                                                    "color": "onSurfaceVariant",
-                                                    "visibleIf": ["has", "item.precipAccumulation"]
-                                                },
-                                                {
-                                                    "type": "label",
-                                                    "text": ["get", "item.temperatureHigh"],
-                                                    "fontSize": 13,
-                                                    "fontWeight": "bold",
+                                                    "text": ["get", "item.day"],
+                                                    "fontSize": 12,
+                                                    "fontWeight": "medium",
                                                     "color": "onSurface",
+                                                    "flex": 1,
                                                     "maxLines": 1
                                                 },
                                                 {
-                                                    "type": "label",
-                                                    "text": ["get", "item.temperatureLow"],
-                                                    "fontSize": 13,
-                                                    "color": "onSurfaceVariant",
-                                                    "maxLines": 1
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "row",
-                                            "spacing": 4,
-                                            "visibleIf": ["any", ["has", "item.precipitation"], ["has", "item.windSpeed"]],
-                                            "children": [
-                                                {
-                                                    "type": "label",
-                                                    "text": ["concat", "💧", ["get", "item.precipitation"]],
-                                                    "fontSize": 10,
-                                                    "color": "primary",
-                                                    "visibleIf": ["has", "item.precipitation"]
+                                                    "type": "image",
+                                                    "src": ["get", "item.iconPath"],
+                                                    "size": 28
                                                 },
                                                 {
-                                                    "type": "label",
-                                                    "text": ["concat", "💨", ["get", "item.windSpeed"]],
-                                                    "fontSize": 10,
-                                                    "color": "onSurfaceVariant",
-                                                    "visibleIf": ["has", "item.windSpeed"]
+                                                    "type": "spacer",
+                                                    "size": 8
+                                                },
+                                                {
+                                                    "type": "column",
+                                                    "alignment": "end",
+                                                    "crossAlignment": "end",
+                                                    "children": [
+                                                        {
+                                                            "type": "row",
+                                                            "alignment": "end",
+                                                            "crossAlignment": "center",
+                                                            "spacing": 6,
+                                                            "children": [
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["get", "item.temperatureHigh"],
+                                                                    "fontSize": 13,
+                                                                    "fontWeight": "bold",
+                                                                    "color": "onSurface",
+                                                                    "maxLines": 1
+                                                                },
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["get", "item.temperatureLow"],
+                                                                    "fontSize": 13,
+                                                                    "color": "onSurfaceVariant",
+                                                                    "maxLines": 1
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "row",
+                                                            "alignment": "end",
+                                                            "crossAlignment": "center",
+                                                            "spacing": 6,
+                                                            "children": [
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["get", "item.precipAccumulation"],
+                                                                    "fontSize": 10,
+                                                                    "color": "onSurfaceVariant",
+                                                                    "visibleIf": ["has", "item.precipAccumulation"]
+                                                                },
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["concat", "💧", ["get", "item.precipitation"]],
+                                                                    "fontSize": 10,
+                                                                    "color": "onSurfaceVariant",
+                                                                    "visibleIf": ["has", "item.precipitation"]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
                                                 }
                                             ]
                                         }

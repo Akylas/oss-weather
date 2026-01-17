@@ -48,7 +48,7 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
             ) {
                 Text(
                     text = data.locationName,
-                    style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Spacer(modifier = GlanceModifier.height(2.dp))

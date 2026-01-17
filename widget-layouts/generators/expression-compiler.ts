@@ -464,7 +464,7 @@ function compileInterpolate(args: Expression[], options: CompilationOptions): st
             return `"${template.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\\(data.${prop})`)}"`;
         case 'javascript':
         case 'typescript':
-            return `\`${template.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\${data.${prop}}\`)}\``;
+            return `\`${template.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\${data.${prop}}`)} \``;
     }
 }
 

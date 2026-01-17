@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * iOS SwiftUI Code Generator
- * Generates SwiftUI widget views from JSON layout definitions
+ * Generates SwiftUI widget views from JSON layout definitions with Mapbox expression support
  *
  * CLI:
  *  -i, --input <layoutsDir>    Input directory with .json layouts (default: ../widgets)
@@ -12,40 +12,45 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { compileExpression, compilePropertyValue } from './expression-compiler';
+import { isExpression, hasTemplateBinding, getSingleBinding } from './shared-utils';
+
+// Mapbox-style expression type
+type Expression = any[] | string | number | boolean;
 
 interface LayoutElement {
     type: string;
     id?: string;
     visible?: boolean;
-    visibleIf?: string;
-    padding?: number;
-    paddingHorizontal?: number;
-    paddingVertical?: number;
-    margin?: number;
-    spacing?: number;
+    visibleIf?: Expression;
+    padding?: Expression;
+    paddingHorizontal?: Expression;
+    paddingVertical?: Expression;
+    margin?: Expression;
+    spacing?: Expression;
     alignment?: string;
     crossAlignment?: string;
-    width?: number | string;
-    height?: number | string;
-    flex?: number;
-    backgroundColor?: string;
-    cornerRadius?: number;
+    width?: Expression;
+    height?: Expression;
+    flex?: Expression;
+    backgroundColor?: Expression;
+    cornerRadius?: Expression;
     children?: LayoutElement[];
     // Element-specific
-    text?: string;
-    fontSize?: number;
-    fontWeight?: string;
-    color?: string;
+    text?: Expression;
+    fontSize?: Expression;
+    fontWeight?: Expression;
+    color?: Expression;
     textAlign?: string;
-    maxLines?: number;
-    src?: string;
-    size?: number;
-    thickness?: number;
+    maxLines?: Expression;
+    src?: Expression;
+    size?: Expression;
+    thickness?: Expression;
     direction?: string;
     items?: string;
-    limit?: number;
+    limit?: Expression;
     itemTemplate?: LayoutElement;
-    condition?: string;
+    condition?: Expression;
     then?: LayoutElement;
     else?: LayoutElement;
     format24Hour?: string;
@@ -88,29 +93,168 @@ const SWIFT_FONT_WEIGHTS: Record<string, string> = {
     bold: '.bold'
 };
 
+// ============================================================================
+// EXPRESSION & TEMPLATE HANDLING
+// ============================================================================
+
+/**
+ * Compile an expression or value to Swift code
+ */
+function compileToSwift(value: Expression | undefined, defaultValue: string = '""'): string {
+    if (value === undefined) return defaultValue;
+    
+    // Handle template strings with {{}} bindings
+    if (typeof value === 'string' && hasTemplateBinding(value)) {
+        return convertTemplateToSwift(value);
+    }
+    
+    // Handle Mapbox expressions
+    if (isExpression(value)) {
+        return compileExpression(value, {
+            platform: 'swift',
+            context: 'value'
+        });
+    }
+    
+    // Handle literal values
+    if (typeof value === 'string') {
+        return `"${escapeSwiftString(value)}"`;
+    }
+    if (typeof value === 'number') {
+        return String(value);
+    }
+    if (typeof value === 'boolean') {
+        return String(value);
+    }
+    
+    return defaultValue;
+}
+
+/**
+ * Compile an expression to Swift condition (for if statements)
+ */
+function compileConditionToSwift(condition: Expression | undefined): string {
+    if (condition === undefined) return 'true';
+    
+    // Handle Mapbox expressions
+    if (isExpression(condition)) {
+        return compileExpression(condition, {
+            platform: 'swift',
+            context: 'condition'
+        });
+    }
+    
+    // Handle string conditions (legacy format)
+    if (typeof condition === 'string') {
+        // Replace size.width/height references
+        return condition.replace(/size\.width/g, 'width').replace(/size\.height/g, 'height');
+    }
+    
+    return 'true';
+}
+
+/**
+ * Convert template string {{property}} to Swift string interpolation
+ */
+function convertTemplateToSwift(template: string): string {
+    // Check if it's a single binding
+    const singleBinding = getSingleBinding(template);
+    if (singleBinding) {
+        const normalized = normalizeDataPath(singleBinding);
+        return `String(describing: ${normalized})`;
+    }
+    
+    // Multiple bindings or mixed text - convert to Swift string interpolation
+    const swiftString = template.replace(/\{\{([^}]+)\}\}/g, (_, prop) => {
+        const normalized = normalizeDataPath(prop.trim());
+        return `\\(String(describing: ${normalized}))`;
+    });
+    
+    return `"${escapeSwiftString(swiftString)}"`;
+}
+
+/**
+ * Normalize a property path for Swift
+ * - 'temperature' -> 'data.temperature'
+ * - 'item.hour' -> 'item.hour' 
+ * - 'data.temperature' -> 'data.temperature'
+ * - 'size.width' -> 'width'
+ */
+function normalizeDataPath(raw: string): string {
+    const p = raw.trim();
+    
+    // Size properties map to geometry variables
+    if (p === 'size.width') return 'width';
+    if (p === 'size.height') return 'height';
+    if (p.startsWith('size.')) return p.replace('size.', '');
+    
+    // Item and data paths are already prefixed
+    if (p.startsWith('data.') || p.startsWith('item.') || p.startsWith('config.')) {
+        return p;
+    }
+    
+    // Add data prefix
+    return `data.${p}`;
+}
+
+/**
+ * Escape string for Swift string literals
+ */
+function escapeSwiftString(str: string): string {
+    // Handle Swift interpolation specially
+    const placeholder = '__SWIFT_INTERP__';
+    const withPlaceholders = str.replace(/\\\(/g, placeholder);
+    const escaped = withPlaceholders.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n');
+    return escaped.replace(new RegExp(placeholder, 'g'), '\\(');
+}
+
+// ============================================================================
+// PROPERTY COMPILATION HELPERS
+// ============================================================================
+
 // Helper to check if a value is a settings reference
-function isSetting(value?: string): boolean {
+function isSetting(value?: string | Expression): boolean {
     return typeof value === 'string' && value.startsWith('config.settings.');
 }
 
 // Helper to get setting key from config.settings.* syntax
 function getSettingKey(value: string): string {
-    const settingKey = value.substring(16); // Remove 'config.settings.' prefix
-    return settingKey;
+    return value.substring(16); // Remove 'config.settings.' prefix
 }
 
-// Map a font weight string to a Swift weight token; provide a fallback if missing
-// Now supports config.settings.* syntax for dynamic weight from config
-function toSwiftFontWeight(weight?: string, fallback: string = 'normal'): string {
+/**
+ * Convert font weight to Swift weight token
+ * Supports both literal values and config.settings.* references
+ */
+function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): string {
+    if (weight === undefined) {
+        return SWIFT_FONT_WEIGHTS[fallback] || '.regular';
+    }
+    
+    // Handle config settings reference
     if (isSetting(weight)) {
-        const settingKey = getSettingKey(weight);
+        const settingKey = getSettingKey(weight as string);
         return `(config.settings?["${settingKey}"] as? Bool ?? true) ? .bold : .regular`;
     }
-    const key = (weight ?? fallback ?? 'normal').toLowerCase();
-    if (SWIFT_FONT_WEIGHTS[key]) return SWIFT_FONT_WEIGHTS[key];
-    if (/(bold|700|800|900)/i.test(key)) return SWIFT_FONT_WEIGHTS['bold'];
-    if (/(med|500|600)/i.test(key)) return SWIFT_FONT_WEIGHTS['medium'];
-    return SWIFT_FONT_WEIGHTS['normal'];
+    
+    // Handle string literals
+    if (typeof weight === 'string') {
+        const key = weight.toLowerCase();
+        if (SWIFT_FONT_WEIGHTS[key]) return SWIFT_FONT_WEIGHTS[key];
+        if (/(bold|700|800|900)/i.test(key)) return SWIFT_FONT_WEIGHTS['bold'];
+        if (/(med|500|600)/i.test(key)) return SWIFT_FONT_WEIGHTS['medium'];
+        return SWIFT_FONT_WEIGHTS['normal'];
+    }
+    
+    // Handle expressions
+    if (isExpression(weight)) {
+        return compileExpression(weight, {
+            platform: 'swift',
+            context: 'value'
+        });
+    }
+    
+    return SWIFT_FONT_WEIGHTS[fallback] || '.regular';
 }
 
 /**
@@ -118,7 +262,7 @@ function toSwiftFontWeight(weight?: string, fallback: string = 'normal'): string
  */
 function toSwiftAlignment(alignment?: string, crossAlignment?: string, isVertical: boolean = true): string {
     if (isVertical) {
-        // For VStack: alignment is horizontal, crossAlignment is vertical
+        // For VStack: crossAlignment is horizontal
         const hAlign = crossAlignment || 'center';
         switch (hAlign) {
             case 'start':
@@ -131,7 +275,7 @@ function toSwiftAlignment(alignment?: string, crossAlignment?: string, isVertica
                 return '.center';
         }
     } else {
-        // For HStack: alignment is vertical
+        // For HStack: crossAlignment is vertical
         const vAlign = crossAlignment || 'center';
         switch (vAlign) {
             case 'start':
@@ -149,36 +293,32 @@ function toSwiftAlignment(alignment?: string, crossAlignment?: string, isVertica
 /**
  * Convert color reference to Swift
  */
-function toSwiftColor(color?: string): string {
-    if (!color) return 'WidgetColorProvider.onSurface';
-    if (color.startsWith('#')) {
-        // Convert hex to SwiftUI Color
-        return `Color(hex: "${color}")`;
-    }
-    return SWIFT_COLORS[color] || 'WidgetColorProvider.onSurface';
-}
-
-/**
- * Convert data binding {{path}} to Swift string interpolation
- */
-function convertBinding(text: string): string {
-    return text.replace(/\{\{([^}]+)\}\}/g, (_, path) => {
-        const parts = path.trim().split('.');
-        if (parts[0] === 'item') {
-            // For forEach item context
-            return `\\(item.${parts.slice(1).join('.')})`;
+function toSwiftColor(color?: Expression): string {
+    if (color === undefined) return 'WidgetColorProvider.onSurface';
+    
+    // Handle string colors
+    if (typeof color === 'string') {
+        if (color.startsWith('#')) {
+            return `Color(hex: "${color}")`;
         }
-        return `\\(data.${path.trim()})`;
-    });
-}
-
-/**
- * Convert condition expression to Swift
- * Note: Most operators are identical between JS and Swift
- */
-function toSwiftCondition(condition: string): string {
-    return condition.replace(/size\.width/g, 'width').replace(/size\.height/g, 'height');
-    // Operators &&, ||, ==, != are the same in Swift
+        return SWIFT_COLORS[color] || 'WidgetColorProvider.onSurface';
+    }
+    
+    // Handle expressions
+    if (isExpression(color)) {
+        return compileExpression(color, {
+            platform: 'swift',
+            context: 'value',
+            formatter: (v: string) => {
+                if (v.startsWith('#')) {
+                    return `Color(hex: "${v}")`;
+                }
+                return SWIFT_COLORS[v] || 'WidgetColorProvider.onSurface';
+            }
+        });
+    }
+    
+    return 'WidgetColorProvider.onSurface';
 }
 
 /**
@@ -188,27 +328,12 @@ function generateElement(element: LayoutElement, indent: string = '             
     const lines: string[] = [];
 
     // Handle visibility condition
-    const wrapWithIf = element.visibleIf ? true : false;
+    const wrapWithIf = element.visibleIf !== undefined;
     const currentIndent = wrapWithIf ? indent + '    ' : indent;
 
     if (wrapWithIf) {
-        // For simple property checks like "iconPath" or "description", check if not empty
-        const propName = element.visibleIf.trim();
-        const isPropCheck = /^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(propName);
-
-        if (isPropCheck) {
-            // Simple property check - wrap with isEmpty
-            const parts = propName.split('.');
-            if (parts[0] === 'item') {
-                lines.push(`${indent}if !${propName}.isEmpty {`);
-            } else {
-                lines.push(`${indent}if !data.${propName}.isEmpty {`);
-            }
-        } else {
-            // Complex condition - use as-is
-            const condition = element.visibleIf.replace(/size\.width/g, 'width').replace(/size\.height/g, 'height');
-            lines.push(`${indent}if ${condition} {`);
-        }
+        const condition = compileConditionToSwift(element.visibleIf);
+        lines.push(`${indent}if ${condition} {`);
     }
 
     switch (element.type) {
@@ -261,7 +386,7 @@ function generateElement(element: LayoutElement, indent: string = '             
 
 function generateColumn(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const spacing = element.spacing ?? 0;
+    const spacing = typeof element.spacing === 'number' ? element.spacing : (element.spacing ? compileToSwift(element.spacing, '0') : 0);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, true);
 
     lines.push(`${indent}VStack(alignment: ${alignment}, spacing: ${spacing}) {`);
@@ -274,9 +399,20 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}}`);
 
-    // Add padding if specified
+    // Add modifiers for padding, background, corner radius
     if (element.padding) {
-        lines[lines.length - 1] += `.padding(${element.padding})`;
+        const paddingValue = typeof element.padding === 'number' ? element.padding : compileToSwift(element.padding, '0');
+        lines[lines.length - 1] += `.padding(${paddingValue})`;
+    }
+    
+    if (element.backgroundColor) {
+        const bgColor = toSwiftColor(element.backgroundColor);
+        lines[lines.length - 1] += `.background(${bgColor})`;
+    }
+    
+    if (element.cornerRadius) {
+        const radius = typeof element.cornerRadius === 'number' ? element.cornerRadius : compileToSwift(element.cornerRadius, '0');
+        lines[lines.length - 1] += `.cornerRadius(${radius})`;
     }
 
     return lines;
@@ -284,7 +420,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
 function generateRow(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const spacing = element.spacing ?? 0;
+    const spacing = typeof element.spacing === 'number' ? element.spacing : (element.spacing ? compileToSwift(element.spacing, '0') : 0);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, false);
 
     lines.push(`${indent}HStack(alignment: ${alignment}, spacing: ${spacing}) {`);
@@ -297,8 +433,20 @@ function generateRow(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}}`);
 
+    // Add modifiers for padding, background, corner radius
     if (element.padding) {
-        lines[lines.length - 1] += `.padding(${element.padding})`;
+        const paddingValue = typeof element.padding === 'number' ? element.padding : compileToSwift(element.padding, '0');
+        lines[lines.length - 1] += `.padding(${paddingValue})`;
+    }
+    
+    if (element.backgroundColor) {
+        const bgColor = toSwiftColor(element.backgroundColor);
+        lines[lines.length - 1] += `.background(${bgColor})`;
+    }
+    
+    if (element.cornerRadius) {
+        const radius = typeof element.cornerRadius === 'number' ? element.cornerRadius : compileToSwift(element.cornerRadius, '0');
+        lines[lines.length - 1] += `.cornerRadius(${radius})`;
     }
 
     return lines;
@@ -317,159 +465,104 @@ function generateStack(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}}`);
 
+    // Add modifiers for padding, background, corner radius
     if (element.padding) {
-        lines[lines.length - 1] += `.padding(${element.padding})`;
+        const paddingValue = typeof element.padding === 'number' ? element.padding : compileToSwift(element.padding, '0');
+        lines[lines.length - 1] += `.padding(${paddingValue})`;
+    }
+    
+    if (element.backgroundColor) {
+        const bgColor = toSwiftColor(element.backgroundColor);
+        lines[lines.length - 1] += `.background(${bgColor})`;
+    }
+    
+    if (element.cornerRadius) {
+        const radius = typeof element.cornerRadius === 'number' ? element.cornerRadius : compileToSwift(element.cornerRadius, '0');
+        lines[lines.length - 1] += `.cornerRadius(${radius})`;
     }
 
     return lines;
 }
 
-function escapeSwiftString(str: string): string {
-    // Escape backslashes and quotes—but avoid escaping the Swift interpolation marker `\(`.
-    // We temporarily replace any `\(` we might have (should only exist for interpolation)
-    // with a placeholder, escape, then restore the interpolation marker.
-    const placeholder = '__SWIFT_INTERP__';
-    // Replace existing \(`s with placeholder (unlikely in user text), to avoid double-escaping
-    const withPlaceholders = str.replace(/\\\(/g, placeholder);
-    // Escape remaining backslashes and double quotes
-    const escaped = withPlaceholders.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-    // Restore the \(
-    return escaped.replace(new RegExp(placeholder, 'g'), '\\(');
-}
-
-/**
- * Normalize a short path into a full path reference for Swift code.
- * - 'temperature' -> 'data.temperature'
- * - 'item.hour' -> 'item.hour'
- * - 'data.temperature' -> 'data.temperature'
- * - 'size.width' -> 'size.width'
- */
-function normalizeDataPath(raw: string): string {
-    const p = raw.trim();
-    if (p.startsWith('data.') || p.startsWith('item.') || p.startsWith('size.')) return p;
-    return `data.${p}`;
-}
-
-// New helper: return single binding content or null if not a pure single binding
-function getSingleBindingPath(text?: string): string | null {
-    if (!text) return null;
-    const m = text.trim().match(/^\{\{\s*([^}]+?)\s*\}\}$/);
-    return m ? m[1].trim() : null;
-}
-
-// Helper to check if text should be localized
-function shouldLocalizeText(text?: string): boolean {
-    if (!text || typeof text !== 'string') return false;
-    // Don't localize if it's a data binding
-    if (text.startsWith('data.') || text.startsWith('item.') || text.startsWith('size.')) return false;
-    // Don't localize if it contains binding syntax
-    if (text.includes('{') || text.includes('}')) return false;
-    // Don't localize numbers or very short strings
-    if (/^\d+$/.test(text) || text.length <= 1) return false;
-    return true;
-}
-
-/**
- * Convert text (with optional {{binding}} placeholders) into either:
- * - a pure Swift expression (e.g. `String(describing: data.temperature)`) when the text is a single binding,
- * - or a Swift string literal with interpolations (e.g. `"Temperature: \(String(describing: data.temperature))°"`)
- * - or a localized string (e.g. `NSLocalizedString("Hourly", comment: "")`) for static text
- *
- * Returns `{ expr, isExpression }`
- */
-function convertBindingToSwift(text: string | undefined): { expr: string; isExpression: boolean } {
-    if (!text) return { expr: '""', isExpression: false };
-
-    const trimmed = text.trim();
-
-    // Check if this is static text that should be localized
-    if (shouldLocalizeText(trimmed)) {
-        // Convert to lowercase for resource key
-        const key = trimmed.toLowerCase().replace(/\s+/g, '_');
-        return { expr: `NSLocalizedString("${key}", comment: "")`, isExpression: true };
-    }
-
-    // Single binding only -> return expression (no quotes)
-    const singleMatch = trimmed.match(/^\{\{\s*([^}]+?)\s*\}\}$/);
-    if (singleMatch) {
-        const path = normalizeDataPath(singleMatch[1]);
-        return { expr: `String(describing: ${path})`, isExpression: true };
-    }
-
-    // Mixed content -> split into plain segments and binding segments
-    const parts = trimmed.split(/(\{\{\s*[^}]+\s*\}\})/g).filter(Boolean);
-    const convertedParts: string[] = parts.map((part) => {
-        const m = part.match(/^\{\{\s*([^}]+?)\s*\}\}$/);
-        if (m) {
-            const path = normalizeDataPath(m[1]);
-            // We want final emitted Swift file to contain `\(String(describing: data.x))` inside a Swift string literal.
-            // Represent that here with a single backslash so that the generator writes `\(` in the file.
-            // In JS source this must be written as '\\(' to represent a single backslash char in the runtime string.
-            return `\\(String(describing: ${path}))`;
-        } else {
-            return escapeSwiftString(part);
-        }
-    });
-
-    return { expr: `"${convertedParts.join('')}"`, isExpression: false };
-}
-
 function generateLabel(element: LayoutElement, indent: string): string[] {
-    const color = toSwiftColor(element.color);
-    const fontWeight = toSwiftFontWeight(element.fontWeight);
-    const fontSize = element.fontSize ?? 12;
-
     const lines: string[] = [];
-
-    // If the text is a single binding like "{{temperature}}" emit a bare Swift expression
-    const singleBindingPath = getSingleBindingPath(element.text);
-    if (singleBindingPath) {
-        const path = normalizeDataPath(singleBindingPath);
-        lines.push(`${indent}Text(String(describing: ${path}))`);
-    } else {
-        const binding = convertBindingToSwift(element.text ?? '');
-        lines.push(`${indent}Text(${binding.expr})`);
-    }
-
+    
+    // Compile text expression
+    const textExpr = compileToSwift(element.text, '""');
+    
+    // Handle simple string literal for Text() - remove quotes if it's a direct expression
+    const isExpression = textExpr.startsWith('String(describing:') || textExpr.startsWith('NSLocalizedString');
+    const textParam = isExpression ? textExpr : textExpr;
+    
+    lines.push(`${indent}Text(${textParam})`);
+    
+    // Font size
+    const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 12;
+    const fontWeight = toSwiftFontWeight(element.fontWeight);
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
-    if (color) lines.push(`${indent}    .foregroundColor(${color})`);
+    
+    // Color
+    const color = toSwiftColor(element.color);
+    lines.push(`${indent}    .foregroundColor(${color})`);
+    
+    // Text alignment
     if (element.textAlign) {
         const align = element.textAlign === 'center' ? 'center' : element.textAlign === 'end' ? 'trailing' : 'leading';
         lines.push(`${indent}    .multilineTextAlignment(.${align})`);
     }
+    
+    // Line limit
     if (element.maxLines) {
-        lines.push(`${indent}    .lineLimit(${element.maxLines})`);
+        const maxLines = typeof element.maxLines === 'number' ? element.maxLines : compileToSwift(element.maxLines, '1');
+        lines.push(`${indent}    .lineLimit(${maxLines})`);
+    }
+    
+    // Add modifiers for padding, background, corner radius
+    if (element.padding) {
+        const paddingValue = typeof element.padding === 'number' ? element.padding : compileToSwift(element.padding, '0');
+        lines[lines.length - 1] += `.padding(${paddingValue})`;
+    }
+    
+    if (element.backgroundColor) {
+        const bgColor = toSwiftColor(element.backgroundColor);
+        lines[lines.length - 1] += `.background(${bgColor})`;
+    }
+    
+    if (element.cornerRadius) {
+        const radius = typeof element.cornerRadius === 'number' ? element.cornerRadius : compileToSwift(element.cornerRadius, '0');
+        lines[lines.length - 1] += `.cornerRadius(${radius})`;
     }
 
     return lines;
 }
 
-// For images we also prefer to use a direct expression when src is a single binding:
 function generateImage(element: LayoutElement, indent: string): string[] {
-    const size = element.size ?? 48;
     const lines: string[] = [];
-
-    const singleBinding = getSingleBindingPath(element.src);
-    if (singleBinding) {
-        const path = normalizeDataPath(singleBinding);
-        // Use WeatherIconView(data.iconPath, description: ..., size: ...)
-        // If you prefer using a different initializer, adapt accordingly
-        lines.push(`${indent}WeatherIconView(${path}, description: data.description, size: ${size})`);
-    } else {
-        // If src is a string literal or mixed content, use the generated approach (escape as necessary)
-        const binding = convertBindingToSwift(element.src ?? '');
-        // In Swift, the icon view expects a normal string or resource name; we pass String(describing:) to be safe in mixed cases.
-        // Use a string literal if binding.isExpression is false (it will be a quoted string)
-        if (binding.isExpression) {
-            lines.push(`${indent}WeatherIconView(${binding.expr}, description: data.description, size: ${size})`);
-        } else {
-            // binding.expr is a quoted string: Text("..."), we need to remove the surrounding quotes to pass to the icon view initializer
-            // strip leading & trailing quotes
-            const quoted = binding.expr;
-            const bare = quoted.startsWith('"') && quoted.endsWith('"') ? quoted.slice(1, -1) : quoted;
-            // escape the string so Swift sees the right content
-            lines.push(`${indent}WeatherIconView(${bare}, description: data.description, size: ${size})`);
-        }
+    const size = typeof element.size === 'number' ? element.size : 48;
+    
+    // Compile src expression
+    const srcExpr = compileToSwift(element.src, '"default_icon"');
+    
+    // Remove quotes if it's a String(describing:) expression
+    const isExpression = srcExpr.startsWith('String(describing:');
+    const srcParam = isExpression ? srcExpr : srcExpr;
+    
+    lines.push(`${indent}WeatherIconView(${srcParam}, description: data.description, size: ${size})`);
+    
+    // Add modifiers for padding, background, corner radius
+    if (element.padding) {
+        const paddingValue = typeof element.padding === 'number' ? element.padding : compileToSwift(element.padding, '0');
+        lines[lines.length - 1] += `.padding(${paddingValue})`;
+    }
+    
+    if (element.backgroundColor) {
+        const bgColor = toSwiftColor(element.backgroundColor);
+        lines[lines.length - 1] += `.background(${bgColor})`;
+    }
+    
+    if (element.cornerRadius) {
+        const radius = typeof element.cornerRadius === 'number' ? element.cornerRadius : compileToSwift(element.cornerRadius, '0');
+        lines[lines.length - 1] += `.cornerRadius(${radius})`;
     }
 
     return lines;
@@ -477,14 +570,16 @@ function generateImage(element: LayoutElement, indent: string): string[] {
 
 function generateSpacer(element: LayoutElement, indent: string): string[] {
     if (element.size !== undefined) {
-        return [`${indent}Spacer().frame(height: ${element.size})`];
+        const size = typeof element.size === 'number' ? element.size : compileToSwift(element.size, '8');
+        return [`${indent}Spacer().frame(height: ${size})`];
     }
     return [`${indent}Spacer()`];
 }
 
 function generateDivider(element: LayoutElement, indent: string): string[] {
     const color = toSwiftColor(element.color || 'onSurfaceVariant');
-    return [`${indent}Divider().background(${color}.opacity(0.3))`];
+    const thickness = typeof element.thickness === 'number' ? element.thickness : (element.thickness ? compileToSwift(element.thickness, '1') : 1);
+    return [`${indent}Divider().frame(height: ${thickness}).background(${color}.opacity(0.3))`];
 }
 
 function generateScrollView(element: LayoutElement, indent: string): string[] {
@@ -513,7 +608,15 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
     const limit = element.limit;
 
     const dataPath = items.includes('.') ? items : `data.${items}`;
-    const prefix = limit ? `${dataPath}.prefix(${limit})` : dataPath;
+    
+    // Handle limit expression
+    let prefix: string;
+    if (limit !== undefined) {
+        const limitValue = typeof limit === 'number' ? limit : compileToSwift(limit, '10');
+        prefix = `${dataPath}.prefix(${limitValue})`;
+    } else {
+        prefix = dataPath;
+    }
 
     lines.push(`${indent}ForEach(Array(${prefix}.enumerated()), id: \\.offset) { index, item in`);
 
@@ -528,7 +631,7 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
 
 function generateConditional(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const condition = toSwiftCondition(element.condition || 'true');
+    const condition = compileConditionToSwift(element.condition);
 
     lines.push(`${indent}if ${condition} {`);
     if (element.then) {
@@ -539,26 +642,36 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
     if (element.else) {
         lines.push(`${indent}else {`);
         lines.push(generateElement(element.else, indent + '    '));
-        lines.push(`${indent}}`);
+        lines[lines.length - 1] += '\n' + `${indent}}`;
     }
 
     return lines;
 }
 
 function generateClock(element: LayoutElement, indent: string): string[] {
-    const fontSize = element.fontSize || 24;
+    const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 24;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'bold');
     const color = toSwiftColor(element.color);
 
-    return [`${indent}Text(Date(), style: .time)`, `${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`, `${indent}    .foregroundColor(${color})`];
+    const lines: string[] = [];
+    lines.push(`${indent}Text(Date(), style: .time)`);
+    lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
+    lines.push(`${indent}    .foregroundColor(${color})`);
+    
+    return lines;
 }
 
 function generateDate(element: LayoutElement, indent: string): string[] {
-    const fontSize = element.fontSize || 14;
+    const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 14;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'normal');
     const color = toSwiftColor(element.color);
 
-    return [`${indent}Text(Date(), style: .date)`, `${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`, `${indent}    .foregroundColor(${color})`];
+    const lines: string[] = [];
+    lines.push(`${indent}Text(Date(), style: .date)`);
+    lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
+    lines.push(`${indent}    .foregroundColor(${color})`);
+    
+    return lines;
 }
 
 /**
@@ -567,6 +680,19 @@ function generateDate(element: LayoutElement, indent: string): string[] {
 function generateWidgetView(layout: WidgetLayout): string {
     const name = layout.name;
     const viewName = `${name}View`;
+    
+    // Handle default padding - it could be an expression
+    let defaultPadding = '8';
+    if (layout.defaultPadding !== undefined) {
+        if (typeof layout.defaultPadding === 'number') {
+            defaultPadding = String(layout.defaultPadding);
+        } else if (isExpression(layout.defaultPadding)) {
+            defaultPadding = compileExpression(layout.defaultPadding, {
+                platform: 'swift',
+                context: 'value'
+            });
+        }
+    }
 
     let code = `// Auto-generated from ${name}.json - DO NOT EDIT MANUALLY
 // Generated by widget-layouts/generators/swift-generator.ts
@@ -586,14 +712,14 @@ struct ${viewName}: View {
             let config = entry.config ?? WidgetConfig()
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: ${layout.defaultPadding || 8}) {
+                WidgetContainer(padding: ${defaultPadding}) {
 `;
 
     // Generate variant conditions
     if (layout.variants && layout.variants.length > 0) {
         for (let i = 0; i < layout.variants.length; i++) {
             const variant = layout.variants[i];
-            const condition = toSwiftCondition(variant.condition);
+            const condition = compileConditionToSwift(variant.condition);
             const keyword = i === 0 ? 'if' : '} else if';
 
             code += `                    ${keyword} ${condition} {\n`;

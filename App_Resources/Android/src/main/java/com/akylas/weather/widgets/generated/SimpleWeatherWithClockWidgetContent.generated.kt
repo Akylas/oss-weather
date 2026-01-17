@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize

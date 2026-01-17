@@ -59,6 +59,7 @@
             { "type": "spacer", "size": 8 },
             {
                 "type": "label",
+                "textAlign": "left",
                 "text": "Hourly",
                 "fontSize": 12,
                 "fontWeight": "medium",
@@ -127,6 +128,7 @@
             {
                 "type": "label",
                 "text": "Daily",
+                "textAlign": "left",
                 "fontSize": 12,
                 "fontWeight": "medium",
                 "color": "onSurfaceVariant",
@@ -150,11 +152,12 @@
                                     "type": "row",
                                     "alignment": "center",
                                     "crossAlignment": "center",
+                                    "fillWidth": true,
                                     "spacing": 8,
                                     "padding": 6,
                                     "backgroundColor": "surface",
                                     "cornerRadius": 8,
-                                    "marginBottom": 4,
+                                    "marginVertical": 2,
                                     "children": [
                                         {
                                             "type": "label",

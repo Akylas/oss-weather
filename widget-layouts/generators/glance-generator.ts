@@ -230,7 +230,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             return `${compileExpression(args[0], context)}.uppercase()`;
         case 'downcase':
             return `${compileExpression(args[0], context)}.lowercase()`;
-        
+
         // String operations
         case 'substring': {
             const str = compileExpression(args[0], context);
@@ -241,7 +241,7 @@ function compileExpression(expr: Expression, context: 'value' | 'condition' = 'v
             }
             return `${str}.substring(${start})`;
         }
-        
+
         // Date/Time formatting
         case 'format': {
             const value = compileExpression(args[0], context);
@@ -490,7 +490,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
         const spacingValue = element.spacing;
         for (let i = 0; i < element.children.length; i++) {
             const child = element.children[i];
-            
+
             // Add spacer before child (except first)
             if (i > 0 && spacingValue !== undefined) {
                 const spacingExpr = compilePropertyValue(spacingValue, (v: number) => `${v}.dp`, undefined);
@@ -498,7 +498,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
                     lines.push(`${indent}    Spacer(modifier = GlanceModifier.height(${spacingExpr}))`);
                 }
             }
-            
+
             lines.push(generateElement(child, indent + '    '));
         }
     }
@@ -526,12 +526,12 @@ function generateRow(element: LayoutElement, indent: string): string[] {
         if (isSpaceBetween && element.children.length > 1) {
             for (let i = 0; i < element.children.length; i++) {
                 const child = element.children[i];
-                
+
                 // Add spacer before child (except first)
                 if (i > 0) {
                     lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
                 }
-                
+
                 lines.push(generateElement(child, indent + '    '));
             }
         } else {
@@ -539,7 +539,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
             const spacingValue = element.spacing;
             for (let i = 0; i < element.children.length; i++) {
                 const child = element.children[i];
-                
+
                 // Add spacer before child (except first)
                 if (i > 0 && spacingValue !== undefined) {
                     const spacingExpr = compilePropertyValue(spacingValue, (v: number) => `${v}.dp`, undefined);
@@ -547,7 +547,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
                         lines.push(`${indent}    Spacer(modifier = GlanceModifier.width(${spacingExpr}))`);
                     }
                 }
-                
+
                 lines.push(generateElement(child, indent + '    '));
             }
         }
@@ -623,7 +623,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
     const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `ColorProvider(Color(0xFF${v}))`, 'ColorProvider(WidgetTheme.onSurface)');
-    
+
     // Handle fontWeight - check for config.settings
     let fontWeightExpr: string | undefined;
     if (typeof element.fontWeight === 'string' && element.fontWeight.startsWith('config.settings.')) {
@@ -635,7 +635,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     } else {
         fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
     }
-    
+
     const maxLinesExpr = compilePropertyValue(element.maxLines, (v: number) => String(v), undefined);
 
     lines.push(`${indent}Text(`);
@@ -910,7 +910,7 @@ function generateClock(element: LayoutElement, indent: string): string[] {
 
     const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
     const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
-    
+
     // Handle fontWeight - check for config.settings
     let fontWeightExpr: string | undefined;
     if (typeof element.fontWeight === 'string') {
@@ -997,6 +997,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.compose.ui.unit.DpSize');
     lines.push('import androidx.glance.GlanceModifier');
     lines.push('import androidx.glance.GlanceTheme');
+    lines.push('import androidx.glance.appwidget.cornerRadius');
     lines.push('import androidx.glance.Image');
     lines.push('import androidx.glance.ImageProvider');
     lines.push('import androidx.glance.LocalSize');

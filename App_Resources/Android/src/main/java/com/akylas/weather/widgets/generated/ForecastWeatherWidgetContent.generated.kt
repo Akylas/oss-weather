@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -76,7 +77,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
             text = context.getString(context.resources.getIdentifier("hourly", "string", context.packageName)),
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))
         Row {
@@ -118,13 +119,13 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
             text = context.getString(context.resources.getIdentifier("daily", "string", context.packageName)),
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant)
+            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))
         LazyColumn {
             items(data.dailyData.take(10)) { item ->
                 Row(
-                    modifier = GlanceModifier.padding(6.dp).background(GlanceTheme.colors.surface).cornerRadius(8.dp),
+                    modifier = GlanceModifier.fillMaxWidth().padding(6.dp).padding(vertical = 2.dp).background(GlanceTheme.colors.surface).cornerRadius(8.dp),
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {

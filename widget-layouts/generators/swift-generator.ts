@@ -103,7 +103,7 @@ function getSettingKey(value: string): string {
 // Now supports config.settings.* syntax for dynamic weight from config
 function toSwiftFontWeight(weight?: string, fallback: string = 'normal'): string {
     if (isSetting(weight)) {
-        const settingKey = getSettingKey(weight!);
+        const settingKey = getSettingKey(weight);
         return `(config.settings?["${settingKey}"] as? Bool ?? true) ? .bold : .regular`;
     }
     const key = (weight ?? fallback ?? 'normal').toLowerCase();
@@ -398,7 +398,7 @@ function convertBindingToSwift(text: string | undefined): { expr: string; isExpr
 
     // Mixed content -> split into plain segments and binding segments
     const parts = trimmed.split(/(\{\{\s*[^}]+\s*\}\})/g).filter(Boolean);
-    const convertedParts: string[] = parts.map(part => {
+    const convertedParts: string[] = parts.map((part) => {
         const m = part.match(/^\{\{\s*([^}]+?)\s*\}\}$/);
         if (m) {
             const path = normalizeDataPath(m[1]);
@@ -697,10 +697,10 @@ export function generateAllWidgets(layoutsDir: string, outputDir: string, widget
         }
 
         // Replace widgetFiles with absolute paths we've resolved
-        widgetFiles = matches.map(p => path.isAbsolute(p) ? p : path.join(layoutsDir, p));
+        widgetFiles = matches.map((p) => (path.isAbsolute(p) ? p : path.join(layoutsDir, p)));
     } else {
         // Already absolute paths from findJsonFiles
-        widgetFiles = widgetFiles.map(f => path.isAbsolute(f) ? f : path.join(layoutsDir, f));
+        widgetFiles = widgetFiles.map((f) => (path.isAbsolute(f) ? f : path.join(layoutsDir, f)));
     }
 
     console.log(`Swift generator: generating ${widgetFiles.length} widget(s) to ${outputDir}`);

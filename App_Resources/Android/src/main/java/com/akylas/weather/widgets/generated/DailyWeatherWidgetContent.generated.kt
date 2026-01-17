@@ -35,12 +35,13 @@ import com.akylas.weather.widgets.WidgetConfig
 fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     Column(
-        modifier = GlanceModifier.fillMaxSize(),
+        modifier = GlanceModifier,
         verticalAlignment = Alignment.Vertical.Top,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         Row(
-            modifier = GlanceModifier.fillMaxWidth(),
+            modifier = GlanceModifier.padding(horizontal = 8.dp),
+            spacing = 8.dp,
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
@@ -54,7 +55,7 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                 }
             }
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Top,
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
@@ -79,7 +80,8 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
         LazyColumn {
             items(data.dailyData.take(10)) { item ->
                 Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier.padding(6.dp).background(GlanceTheme.colors.surface).cornerRadius(8.dp),
+                    spacing = 8.dp,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -96,7 +98,8 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                         )
                     }
                     Row(
-                        modifier = GlanceModifier.fillMaxWidth(),
+                        modifier = GlanceModifier.defaultWeight(),
+                        spacing = 6.dp,
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
@@ -119,7 +122,8 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                     }
                     if (size.width.value > 150) {
                         Row(
-                            modifier = GlanceModifier.fillMaxWidth(),
+                            modifier = GlanceModifier,
+                            spacing = 4.dp,
                             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                             verticalAlignment = Alignment.Vertical.CenterVertically
                         ) {

@@ -35,18 +35,20 @@ import com.akylas.weather.widgets.WidgetConfig
 fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     Column(
-        modifier = GlanceModifier.fillMaxSize(),
+        modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
+        spacing = when { size.height.value < 60 -> 2.dp; else -> 4.dp },
         verticalAlignment = Alignment.Vertical.CenterVertically,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         if (size.width.value >= 200) {
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Top,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier,
+                    spacing = 8.dp,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -55,7 +57,8 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                         style = TextStyle(fontSize = 32.sp, color = GlanceTheme.colors.onSurface)
                     )
                     Row(
-                        modifier = GlanceModifier.fillMaxWidth(),
+                        modifier = GlanceModifier,
+                        spacing = 8.dp,
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
@@ -79,7 +82,8 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
         }
         else {
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
+                spacing = when { size.height.value < 60 -> 2.dp; else -> 4.dp },
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
@@ -89,7 +93,8 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier,
+                    spacing = when { size.height.value < 60 -> 4.dp; else -> 8.dp },
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {

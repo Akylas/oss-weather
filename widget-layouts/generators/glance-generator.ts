@@ -19,11 +19,16 @@ interface LayoutElement {
     paddingHorizontal?: Expression;
     paddingVertical?: Expression;
     margin?: Expression;
+    marginHorizontal?: Expression;
+    marginVertical?: Expression;
     spacing?: Expression;
     alignment?: string;
     crossAlignment?: string;
     width?: Expression;
     height?: Expression;
+    fillWidth?: boolean;
+    fillHeight?: boolean;
+    fillMaxSize?: boolean;
     flex?: Expression;
     backgroundColor?: Expression;
     cornerRadius?: Expression;
@@ -276,6 +281,103 @@ function compilePropertyValue<T>(value: Expression | undefined, formatter: (v: T
 }
 
 /**
+ * Build a GlanceModifier chain from element properties
+ */
+function buildModifier(element: LayoutElement): string {
+    const modifiers: string[] = [];
+
+    // Size modifiers
+    if (element.fillMaxSize) {
+        modifiers.push('fillMaxSize()');
+    } else {
+        if (element.fillWidth) {
+            modifiers.push('fillMaxWidth()');
+        } else if (element.width !== undefined) {
+            const widthExpr = compilePropertyValue(element.width, (v: number) => `${v}.dp`, undefined);
+            if (widthExpr) {
+                modifiers.push(`width(${widthExpr})`);
+            }
+        }
+
+        if (element.fillHeight) {
+            modifiers.push('fillMaxHeight()');
+        } else if (element.height !== undefined) {
+            const heightExpr = compilePropertyValue(element.height, (v: number) => `${v}.dp`, undefined);
+            if (heightExpr) {
+                modifiers.push(`height(${heightExpr})`);
+            }
+        }
+    }
+
+    // Flex/weight modifier
+    if (element.flex !== undefined) {
+        modifiers.push('defaultWeight()');
+    }
+
+    // Padding modifiers
+    if (element.padding !== undefined) {
+        const paddingExpr = compilePropertyValue(element.padding, (v: number) => `${v}.dp`, undefined);
+        if (paddingExpr) {
+            modifiers.push(`padding(${paddingExpr})`);
+        }
+    }
+    if (element.paddingHorizontal !== undefined) {
+        const paddingExpr = compilePropertyValue(element.paddingHorizontal, (v: number) => `${v}.dp`, undefined);
+        if (paddingExpr) {
+            modifiers.push(`padding(horizontal = ${paddingExpr})`);
+        }
+    }
+    if (element.paddingVertical !== undefined) {
+        const paddingExpr = compilePropertyValue(element.paddingVertical, (v: number) => `${v}.dp`, undefined);
+        if (paddingExpr) {
+            modifiers.push(`padding(vertical = ${paddingExpr})`);
+        }
+    }
+
+    // Margin modifiers (use padding as Glance doesn't have margin)
+    if (element.margin !== undefined) {
+        const marginExpr = compilePropertyValue(element.margin, (v: number) => `${v}.dp`, undefined);
+        if (marginExpr) {
+            modifiers.push(`padding(${marginExpr})`);
+        }
+    }
+    if (element.marginHorizontal !== undefined) {
+        const marginExpr = compilePropertyValue(element.marginHorizontal, (v: number) => `${v}.dp`, undefined);
+        if (marginExpr) {
+            modifiers.push(`padding(horizontal = ${marginExpr})`);
+        }
+    }
+    if (element.marginVertical !== undefined) {
+        const marginExpr = compilePropertyValue(element.marginVertical, (v: number) => `${v}.dp`, undefined);
+        if (marginExpr) {
+            modifiers.push(`padding(vertical = ${marginExpr})`);
+        }
+    }
+
+    // Background color
+    if (element.backgroundColor !== undefined) {
+        const colorExpr = compilePropertyValue(element.backgroundColor, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, undefined);
+        if (colorExpr) {
+            modifiers.push(`background(${colorExpr})`);
+        }
+    }
+
+    // Corner radius
+    if (element.cornerRadius !== undefined) {
+        const radiusExpr = compilePropertyValue(element.cornerRadius, (v: number) => `${v}.dp`, undefined);
+        if (radiusExpr) {
+            modifiers.push(`cornerRadius(${radiusExpr})`);
+        }
+    }
+
+    if (modifiers.length === 0) {
+        return '';
+    }
+
+    return 'GlanceModifier.' + modifiers.join('.');
+}
+
+/**
  * Convert alignment to Glance alignment
  */
 function toGlanceVerticalAlignment(alignment?: string): string {
@@ -372,10 +474,19 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
     const vertAlign = toGlanceVerticalAlignment(element.alignment);
     const horizAlign = toGlanceHorizontalAlignment(element.crossAlignment);
 
-    const modifier = 'GlanceModifier.fillMaxSize()';
+    const modifier = buildModifier(element) || 'GlanceModifier';
 
     lines.push(`${indent}Column(`);
     lines.push(`${indent}    modifier = ${modifier},`);
+    
+    // Add spacing parameter if defined
+    if (element.spacing !== undefined) {
+        const spacingExpr = compilePropertyValue(element.spacing, (v: number) => `${v}.dp`, undefined);
+        if (spacingExpr) {
+            lines.push(`${indent}    spacing = ${spacingExpr},`);
+        }
+    }
+    
     lines.push(`${indent}    verticalAlignment = ${vertAlign},`);
     lines.push(`${indent}    horizontalAlignment = ${horizAlign}`);
     lines.push(`${indent}) {`);
@@ -395,10 +506,19 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     const horizAlign = toGlanceHorizontalAlignment(element.alignment);
     const vertAlign = toGlanceVerticalAlignment(element.crossAlignment);
 
-    const modifier = 'GlanceModifier.fillMaxWidth()';
+    const modifier = buildModifier(element) || 'GlanceModifier';
 
     lines.push(`${indent}Row(`);
     lines.push(`${indent}    modifier = ${modifier},`);
+    
+    // Add spacing parameter if defined
+    if (element.spacing !== undefined) {
+        const spacingExpr = compilePropertyValue(element.spacing, (v: number) => `${v}.dp`, undefined);
+        if (spacingExpr) {
+            lines.push(`${indent}    spacing = ${spacingExpr},`);
+        }
+    }
+    
     lines.push(`${indent}    horizontalAlignment = ${horizAlign},`);
     lines.push(`${indent}    verticalAlignment = ${vertAlign}`);
     lines.push(`${indent}) {`);
@@ -573,6 +693,12 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
     const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, undefined);
     const flexExpr = compilePropertyValue(element.flex, (v: number) => String(v), undefined);
 
+    // If flex is defined, use defaultWeight() modifier
+    if (flexExpr && flexExpr !== 'null') {
+        lines.push(`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`);
+        return lines;
+    }
+
     // Check if sizeExpr contains 'when' with 'null' as a possibility
     if (sizeExpr && sizeExpr.includes('when') && sizeExpr.includes('null')) {
         // For conditional spacers that can be null, only generate if condition is true
@@ -586,8 +712,6 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
         lines.push(`${indent}}`);
     } else if (sizeExpr && sizeExpr !== 'null' && sizeExpr !== 'undefined') {
         lines.push(`${indent}Spacer(modifier = GlanceModifier.height(${sizeExpr}))`);
-    } else if (flexExpr && flexExpr !== 'null') {
-        lines.push(`${indent}Spacer(modifier = GlanceModifier.defaultWeight())`);
     }
     // If both are null/undefined, don't generate anything
 

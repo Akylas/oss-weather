@@ -35,13 +35,13 @@ import com.akylas.weather.widgets.WidgetConfig
 fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     Column(
-        modifier = GlanceModifier.fillMaxSize(),
+        modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
         verticalAlignment = Alignment.Vertical.Top,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         if (size.height.value >= 80) {
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
@@ -54,13 +54,14 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
             }
         }
         Row(
-            modifier = GlanceModifier.fillMaxWidth(),
+            modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
             data.hourlyData.take(8).forEach { item ->
                 Column(
-                    modifier = GlanceModifier.fillMaxSize(),
+                    modifier = GlanceModifier.width(50.dp).fillMaxHeight().padding(horizontal = 4.dp),
+                    spacing = when { size.height.value < 60 -> 0.dp; else -> 2.dp },
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
@@ -83,7 +84,7 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
                     )
                     if ((size.height.value >= 60 && item.precipAccumulation.isNotEmpty())) {
                         Column(
-                            modifier = GlanceModifier.fillMaxSize(),
+                            modifier = GlanceModifier,
                             verticalAlignment = Alignment.Vertical.CenterVertically,
                             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                         ) {

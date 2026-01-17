@@ -39,7 +39,8 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
             modifier = GlanceModifier.fillMaxSize()
         ) {
             Row(
-                modifier = GlanceModifier.fillMaxWidth(),
+                modifier = GlanceModifier,
+                spacing = 8.dp,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
@@ -48,7 +49,8 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
                     style = TextStyle(fontSize = 48.sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
                 )
                 Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier,
+                    spacing = 8.dp,
                     horizontalAlignment = Alignment.Horizontal.End,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -69,7 +71,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
             }
             Spacer(modifier = GlanceModifier.height(4.dp))
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Bottom,
                 horizontalAlignment = Alignment.Horizontal.End
             ) {
@@ -87,7 +89,8 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
             modifier = GlanceModifier.fillMaxSize()
         ) {
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
+                spacing = when { size.width.value < 100 -> 2.dp; size.width.value < 150 -> 4.dp; else -> 8.dp },
                 verticalAlignment = Alignment.Vertical.Top,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
@@ -97,7 +100,8 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
                 )
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Row(
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier,
+                    spacing = when { size.width.value < 100 -> 4.dp; size.width.value < 150 -> 6.dp; else -> 8.dp },
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -118,7 +122,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
                 Spacer(modifier = GlanceModifier.height(when { size.width.value < 100 -> 4.dp; size.width.value < 150 -> 6.dp; else -> 8.dp }))
             }
             Column(
-                modifier = GlanceModifier.fillMaxSize(),
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Bottom,
                 horizontalAlignment = Alignment.Horizontal.End
             ) {

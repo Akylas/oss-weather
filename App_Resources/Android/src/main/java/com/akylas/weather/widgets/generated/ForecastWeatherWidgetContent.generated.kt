@@ -83,7 +83,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
         Row {
             data.hourlyData.take(8).forEach { item ->
                 Column(
-                    modifier = GlanceModifier.width(50.dp).padding(horizontal = 4.dp),
+                    modifier = GlanceModifier.width(53.dp).padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {

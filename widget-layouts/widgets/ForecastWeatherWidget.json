@@ -86,7 +86,7 @@
                                     "type": "column",
                                     "alignment": "center",
                                     "crossAlignment": "center",
-                                    "width": 50,
+                                    "width": 53,
                                     "spacing": 2,
                                     "paddingHorizontal": 4,
                                     "children": [

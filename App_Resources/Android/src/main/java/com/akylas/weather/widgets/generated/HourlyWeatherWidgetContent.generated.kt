@@ -44,24 +44,20 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
             Column(
                 modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+                horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
                     text = data.locationName,
                     style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )
-                Spacer(modifier = GlanceModifier.height(4.dp))
+                Spacer(modifier = GlanceModifier.height(2.dp))
             }
         }
-        Row(
-            modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
-            horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-            verticalAlignment = Alignment.Vertical.CenterVertically
-        ) {
+        Row {
             data.hourlyData.take(8).forEach { item ->
                 Column(
-                    modifier = GlanceModifier.width(50.dp).fillMaxHeight().padding(horizontal = 4.dp),
+                    modifier = GlanceModifier.width(53.dp).fillMaxHeight().padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {

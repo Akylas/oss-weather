@@ -521,11 +521,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     // Compile text expression
     const textExpr = compileToSwift(element.text, '""');
     
-    // Handle simple string literal for Text() - remove quotes if it's a direct expression
-    const isExpression = textExpr.startsWith('String(describing:') || textExpr.startsWith('NSLocalizedString');
-    const textParam = isExpression ? textExpr : textExpr;
-    
-    lines.push(`${indent}Text(${textParam})`);
+    lines.push(`${indent}Text(${textExpr})`);
     
     // Font size
     const fontSize = typeof element.fontSize === 'number' ? element.fontSize : DEFAULT_FONT_SIZE;
@@ -574,11 +570,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
     // Compile src expression
     const srcExpr = compileToSwift(element.src, '"default_icon"');
     
-    // Remove quotes if it's a String(describing:) expression
-    const isExpression = srcExpr.startsWith('String(describing:');
-    const srcParam = isExpression ? srcExpr : srcExpr;
-    
-    lines.push(`${indent}WeatherIconView(${srcParam}, description: data.description, size: ${size})`);
+    lines.push(`${indent}WeatherIconView(${srcExpr}, description: data.description, size: ${size})`);
     
     // Add modifiers for padding, background, corner radius
     if (element.padding) {

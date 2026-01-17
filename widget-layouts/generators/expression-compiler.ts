@@ -92,16 +92,15 @@ export function compileExpression(
         if (formatter && context === 'value') {
             return formatter(expr);
         }
-        return platform === 'swift' ? String(expr) : String(expr);
+        return String(expr);
     }
     
     // Not an expression array
     if (!isExpression(expr)) {
-        const result = String(expr);
         if (formatter && context === 'value') {
-            return formatter(result);
+            return formatter(expr);
         }
-        return result;
+        return String(expr);
     }
     
     // Compile expression operators

@@ -69,7 +69,7 @@ export interface BaseLayoutElement {
     thickness?: Expression;
     direction?: string;
     items?: string;
-    limit?: number;
+    limit?: Expression;
     itemTemplate?: BaseLayoutElement;
     condition?: Expression;
     then?: BaseLayoutElement;

@@ -28,12 +28,15 @@ export interface WidgetLayout {
     description?: string;
     supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
-    settings?: Record<string, {
-        type: string;
-        default: any;
-        title?: string;
-        description?: string;
-    }>;
+    settings?: Record<
+        string,
+        {
+            type: string;
+            default: any;
+            title?: string;
+            description?: string;
+        }
+    >;
     background?: {
         type: string;
         color?: string;
@@ -331,7 +334,7 @@ function buildStyles(element: LayoutElement, context?: RenderContext): Record<st
             styles['width'] = widthValue;
         }
     }
-    
+
     if (element.fillHeight) {
         styles['height'] = '100%';
     } else if (element.height !== undefined) {
@@ -379,7 +382,7 @@ function stylesToString(styles: Record<string, string>): string {
  */
 function renderElement(element: LayoutElement, context: RenderContext): string {
     if (element.visible === false) return '';
-    
+
     // Handle visibleIf with Mapbox expressions
     if (element.visibleIf !== undefined) {
         let visible = false;
@@ -430,7 +433,7 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     styles['display'] = 'flex';
     styles['flex-direction'] = 'column';
     styles['pointer-events'] = 'auto'; // Enable interaction
-    
+
     // Ensure column stretches if fillHeight is true
     if (element.fillHeight) {
         styles['height'] = '100%';
@@ -438,7 +441,7 @@ function renderColumn(element: LayoutElement, context: RenderContext): string {
     if (element.fillWidth) {
         styles['width'] = '100%';
     }
-    
+
     // If flex is specified, set it
     if (element.flex !== undefined) {
         styles['flex'] = resolveValue(element.flex, context).toString();
@@ -504,7 +507,7 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
     styles['display'] = 'flex';
     styles['flex-direction'] = 'row';
     styles['pointer-events'] = 'auto'; // Enable interaction
-    
+
     // Ensure row stretches if fillWidth is true
     if (element.fillWidth) {
         styles['width'] = '100%';
@@ -512,7 +515,7 @@ function renderRow(element: LayoutElement, context: RenderContext): string {
     if (element.fillHeight) {
         styles['height'] = '100%';
     }
-    
+
     // If flex is specified, set it
     if (element.flex !== undefined) {
         styles['flex'] = resolveValue(element.flex, context).toString();
@@ -598,11 +601,11 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         const fontSizeValue = resolveValue(element.fontSize, context);
         styles['font-size'] = `${fontSizeValue}px`;
     }
-    
+
     // Handle fontWeight - can be expression, string, or config reference
     if (element.fontWeight) {
         let fontWeightValue = element.fontWeight;
-        
+
         // Handle string literals that reference config settings (e.g., "config.settings.clockBold")
         if (typeof fontWeightValue === 'string' && fontWeightValue.startsWith('config.')) {
             const path = fontWeightValue.split('.');
@@ -620,20 +623,20 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         } else {
             fontWeightValue = resolveValue(element.fontWeight, context);
         }
-        
+
         styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
-    
+
     if (element.color) {
         const colorValue = resolveValue(element.color, context);
         styles['color'] = resolveColor(colorValue, context?.themeVars);
     }
-    
+
     if (element.textAlign) {
         const textAlignValue = resolveValue(element.textAlign, context);
         styles['text-align'] = textAlignValue;
     }
-    
+
     // Handle paddingStart, paddingEnd, paddingTop, paddingBottom if present
     if (element.paddingStart !== undefined) {
         const paddingValue = resolveValue(element.paddingStart, context);
@@ -651,11 +654,28 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
         const paddingValue = resolveValue(element.paddingBottom, context);
         styles['padding-bottom'] = `${paddingValue}px`;
     }
-    
+    if (element.marginLeft !== undefined) {
+        const paddingValue = resolveValue(element.marginLeft, context);
+        styles['margin-left'] = `${paddingValue}px`;
+    }
+    if (element.marginRight !== undefined) {
+        const paddingValue = resolveValue(element.marginRight, context);
+        styles['margin-right'] = `${paddingValue}px`;
+    }
+      
+    if (element.marginTop !== undefined) {
+        const paddingValue = resolveValue(element.marginTop, context);
+        styles['margin-top'] = `${paddingValue}px`;
+    }
+    if (element.marginBottom !== undefined) {
+        const paddingValue = resolveValue(element.marginBottom, context);
+        styles['margin-bottom'] = `${paddingValue}px`;
+    }
+
     // Prevent text overflow
     styles['word-wrap'] = 'break-word';
     styles['overflow-wrap'] = 'break-word';
-    
+
     if (element.maxLines) {
         const maxLinesValue = resolveValue(element.maxLines, context);
         // Fallback for browsers that don't support -webkit-line-clamp
@@ -681,14 +701,13 @@ function renderLabel(element: LayoutElement, context: RenderContext): string {
             text = String(textValue || '');
         }
     }
-    
+
     return `<span style="${stylesToString(styles)}">${escapeHtml(text)}</span>`;
 }
 
 function hasBinding(s?: string): boolean {
     return typeof s === 'string' && /\{\{[^}]+\}\}/.test(s);
 }
-
 
 /**
  * updates to renderImage:
@@ -715,19 +734,19 @@ function renderImage(element: LayoutElement, context: RenderContext): string {
     // Respect explicit width/height while keeping ratio
     if (!styles['height'] && !element.size) styles['height'] = 'auto';
     if (!styles['width'] && !element.size) styles['width'] = 'auto';
-    
+
     // Ensure image doesn't grow
     if (!styles['flex-shrink']) styles['flex-shrink'] = '0';
 
     const src = element.src ?? '';
     let actualSrc = src;
-    
+
     // Handle src - can be expression like ["get", "iconPath"] or string with bindings like "{{item.iconPath}}"
     const srcValue = resolveValue(src, context);
-    
+
     if (typeof srcValue === 'string') {
         const assetsBase = context.assetsBaseUrl ?? '/assets/icon_themes/meteocons/images';
-        
+
         // If it's already a data URL or full URL, use it as-is
         if (srcValue.startsWith('data:') || srcValue.startsWith('http://') || srcValue.startsWith('https://') || srcValue.startsWith('file://')) {
             actualSrc = srcValue;
@@ -796,14 +815,14 @@ function renderDivider(element: LayoutElement, context: RenderContext): string {
 
 function renderScrollView(element: LayoutElement, context: RenderContext): string {
     const styles = buildStyles(element, context);
-    
+
     // Handle scrolling behavior - ensure actual scrollability
     const direction = element.direction || 'vertical';
     styles['overflow-x'] = direction === 'horizontal' ? 'auto' : 'hidden';
     styles['overflow-y'] = direction === 'vertical' ? 'auto' : 'hidden';
     styles['display'] = 'flex';
     styles['flex-direction'] = direction === 'horizontal' ? 'row' : 'column';
-    
+
     // Make sure scrollView is scrollable and doesn't collapse
     if (direction === 'horizontal') {
         if (!styles['width']) styles['width'] = '100%';
@@ -812,7 +831,7 @@ function renderScrollView(element: LayoutElement, context: RenderContext): strin
         if (!styles['height']) styles['flex'] = '1';
         styles['min-height'] = '0'; // Allow flex item to shrink below content size
     }
-    
+
     // Hide scrollbar indicators if specified
     if (element.showIndicators === false) {
         styles['scrollbar-width'] = 'none'; // Firefox
@@ -826,13 +845,13 @@ function renderScrollView(element: LayoutElement, context: RenderContext): strin
     }
 
     const children = element.children?.map((child) => renderElement(child, context)).join('') || '';
-    
+
     // Add webkit scrollbar hiding for showIndicators: false
     let scrollbarStyles = '';
     if (element.showIndicators === false) {
         scrollbarStyles = `<style>.scrollview-no-indicators::-webkit-scrollbar { display: none; }</style>`;
     }
-    
+
     return `${scrollbarStyles}<div class="${element.showIndicators === false ? 'scrollview-no-indicators' : 'scrollview'}" style="${stylesToString(styles)}">${children}</div>`;
 }
 
@@ -865,7 +884,7 @@ function renderForEach(element: LayoutElement, context: RenderContext): string {
 
 function renderConditional(element: LayoutElement, context: RenderContext): string {
     let condition = false;
-    
+
     // Handle Mapbox-style expressions for condition
     if (isExpression(element.condition)) {
         const result = evaluateExpression(element.condition, context);
@@ -894,7 +913,7 @@ function renderClock(element: LayoutElement, context: RenderContext): string {
     }
     if (element.fontWeight) {
         let fontWeightValue = element.fontWeight;
-        
+
         // Handle string literals that reference config settings (e.g., "config.settings.clockBold")
         if (typeof fontWeightValue === 'string' && fontWeightValue.startsWith('config.')) {
             const path = fontWeightValue.split('.');
@@ -912,7 +931,7 @@ function renderClock(element: LayoutElement, context: RenderContext): string {
         } else {
             fontWeightValue = resolveValue(element.fontWeight, context);
         }
-        
+
         styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     if (element.color) {
@@ -941,7 +960,7 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
     }
     if (element.fontWeight) {
         let fontWeightValue = element.fontWeight;
-        
+
         // Handle string literals that reference config settings (e.g., "config.settings.dateBold")
         if (typeof fontWeightValue === 'string' && fontWeightValue.startsWith('config.')) {
             const path = fontWeightValue.split('.');
@@ -959,7 +978,7 @@ function renderDate(element: LayoutElement, context: RenderContext): string {
         } else {
             fontWeightValue = resolveValue(element.fontWeight, context);
         }
-        
+
         styles['font-weight'] = FONT_WEIGHTS[fontWeightValue] || '400';
     }
     if (element.color) {
@@ -992,14 +1011,14 @@ export function renderWidgetToHtml(layout: WidgetLayout, data: WidgetData, size:
     const defaultConfig = {
         settings: {} as Record<string, any>
     };
-    
+
     // Extract default settings from layout.settings if present
     if (layout.settings) {
         for (const [key, setting] of Object.entries(layout.settings as Record<string, any>)) {
             defaultConfig.settings[key] = setting.default ?? true;
         }
     }
-    
+
     const context: RenderContext = { data, size, themeVars, assetsBaseUrl, config: defaultConfig };
     const selectedLayout = selectLayout(layout, context);
 
@@ -1064,7 +1083,7 @@ export function generateWidgetPreviewPage(
 
     // Build widget HTML
     const widgetHtml = renderWidgetToHtml(layout, data, size, themeVars, assetsBaseUrl);
-    
+
     const css = `
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }

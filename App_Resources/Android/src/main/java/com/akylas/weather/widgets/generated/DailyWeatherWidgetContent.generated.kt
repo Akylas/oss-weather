@@ -125,13 +125,13 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                         ) {
                             if (item.precipitation.isNotEmpty()) {
                                 Text(
-                                    text = "💧${item.precipitation}",
+                                    text = "💧" + item.precipitation,
                                     style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.primary)
                                 )
                             }
                             if (item.windSpeed.isNotEmpty()) {
                                 Text(
-                                    text = "💨${item.windSpeed}",
+                                    text = "💨" + item.windSpeed,
                                     style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
                                 )
                             }

@@ -24,6 +24,8 @@
         "spacing": 8,
         "paddingHorizontal": 8,
         "paddingTop": 8,
+        "marginTop": 2,
+        "marginBottom": 2,
         "children": [
           {
             "type": "image",

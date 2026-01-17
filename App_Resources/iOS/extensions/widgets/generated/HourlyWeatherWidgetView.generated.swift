@@ -18,7 +18,7 @@ struct HourlyWeatherWidgetView: View {
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 6) {
                     VStack(alignment: .center, spacing: 0) {
-                        if size.height >= 80 {
+                        if height >= 80 {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 14, weight: .regular))
@@ -31,7 +31,7 @@ struct HourlyWeatherWidgetView: View {
                             HStack(spacing: 8) {
                                 HStack(alignment: .center, spacing: 0) {
                                     ForEach(Array(data.hourlyData.prefix(8).enumerated()), id: \.offset) { index, item in
-                                        VStack(alignment: .center, spacing: size.height < 60 ? 0 : 2) {
+                                        VStack(alignment: .center, spacing: height < 60 ? 0 : 2) {
                                             Text(item.time)
                                                 .font(.system(size: 12, weight: .regular))
                                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
@@ -41,9 +41,9 @@ struct HourlyWeatherWidgetView: View {
                                                 .font(.system(size: 12, weight: .bold))
                                                 .foregroundColor(WidgetColorProvider.onSurface)
                                                 .lineLimit(1)
-                                            if (size.height >= 60 && !item.precipAccumulation.isEmpty) {
+                                            if (height >= 60 && !item.precipAccumulation.isEmpty) {
                                                 VStack(alignment: .center, spacing: 0) {
-                                                    if size.height >= 60 {
+                                                    if height >= 60 {
                                                         Spacer().frame(height: 2)
                                                     }
                                                     Text(item.precipAccumulation)
@@ -56,7 +56,7 @@ struct HourlyWeatherWidgetView: View {
                                 }
                             }
                         }
-                    }.padding(size.height < 60 ? 2 : size.height < 80 ? 4 : 6)
+                    }.padding(height < 60 ? 2 : height < 80 ? 4 : 6)
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)

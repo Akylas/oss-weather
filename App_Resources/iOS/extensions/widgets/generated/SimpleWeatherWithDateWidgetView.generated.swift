@@ -17,8 +17,8 @@ struct SimpleWeatherWithDateWidgetView: View {
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 6) {
-                    VStack(alignment: .center, spacing: size.height < 60 ? 2 : 4) {
-                        if size.width >= 200 {
+                    VStack(alignment: .center, spacing: height < 60 ? 2 : 4) {
+                        if width >= 200 {
                             VStack(alignment: .center, spacing: 0) {
                                 HStack(alignment: .center, spacing: 8) {
                                     Text(Date(), style: .date)
@@ -37,12 +37,12 @@ struct SimpleWeatherWithDateWidgetView: View {
                             }
                         }
                         else {
-                            VStack(alignment: .center, spacing: size.height < 60 ? 2 : 4) {
+                            VStack(alignment: .center, spacing: height < 60 ? 2 : 4) {
                                 Text(Date(), style: .date)
                                     .font(.system(size: 14, weight: .bold))
                                     .foregroundColor(WidgetColorProvider.onSurface)
                                 Spacer()
-                                HStack(alignment: .center, spacing: size.height < 60 ? 4 : 8) {
+                                HStack(alignment: .center, spacing: height < 60 ? 4 : 8) {
                                     if !data.iconPath.isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 48)
                                     }
@@ -50,7 +50,7 @@ struct SimpleWeatherWithDateWidgetView: View {
                                         .font(.system(size: 12, weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                 }
-                                Spacer().frame(height: size.height < 60 ? 4 : size.height < 80 ? 6 : 8)
+                                Spacer().frame(height: height < 60 ? 4 : height < 80 ? 6 : 8)
                             }
                         }
                         Text(data.locationName)
@@ -58,7 +58,7 @@ struct SimpleWeatherWithDateWidgetView: View {
                             .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                             .multilineTextAlignment(.leading)
                             .lineLimit(1)
-                    }.padding(size.height < 60 ? 2 : size.height < 80 ? 4 : 6)
+                    }.padding(height < 60 ? 2 : height < 80 ? 4 : 6)
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)

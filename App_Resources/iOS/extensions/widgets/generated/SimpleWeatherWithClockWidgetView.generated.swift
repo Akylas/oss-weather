@@ -17,7 +17,7 @@ struct SimpleWeatherWithClockWidgetView: View {
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 8) {
-                    if size.width >= 180 {
+                    if width >= 180 {
                         ZStack {
                             HStack(alignment: .top, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 4) {
@@ -49,12 +49,12 @@ struct SimpleWeatherWithClockWidgetView: View {
                     }
                     else {
                         ZStack {
-                            VStack(alignment: .center, spacing: size.width < 100 ? 2 : size.width < 150 ? 4 : 8) {
+                            VStack(alignment: .center, spacing: width < 100 ? 2 : width < 150 ? 4 : 8) {
                                 Text(Date(), style: .time)
                                     .font(.system(size: 24, weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
                                     .foregroundColor(WidgetColorProvider.onSurface)
                                 Spacer()
-                                HStack(alignment: .center, spacing: size.width < 100 ? 4 : size.width < 150 ? 6 : 8) {
+                                HStack(alignment: .center, spacing: width < 100 ? 4 : width < 150 ? 6 : 8) {
                                     if !data.iconPath.isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 48)
                                     }
@@ -62,7 +62,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                                         .font(.system(size: 12, weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                 }
-                                Spacer().frame(height: size.width < 100 ? 4 : size.width < 150 ? 6 : 8)
+                                Spacer().frame(height: width < 100 ? 4 : width < 150 ? 6 : 8)
                             }
                             VStack(alignment: .trailing, spacing: 0) {
                                 Spacer()
@@ -71,7 +71,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                     .lineLimit(1)
                             }
-                        }.padding(size.width < 100 ? 4 : size.width < 150 ? 6 : 8)
+                        }.padding(width < 100 ? 4 : width < 150 ? 6 : 8)
                     }
                 }
             } else {

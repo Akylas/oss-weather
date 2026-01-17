@@ -64,7 +64,7 @@ struct DailyWeatherWidgetView: View {
                                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                                     .lineLimit(1)
                                             }
-                                            if size.width > 150 {
+                                            if width > 150 {
                                                 HStack(alignment: .center, spacing: 4) {
                                                     if !item.precipitation.isEmpty {
                                                         Text("💧" + item.precipitation)

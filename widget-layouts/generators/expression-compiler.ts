@@ -174,11 +174,16 @@ export function compileExpression(
  * Compile "get" operator - property access
  */
 function compileGet(prop: string, platform: Platform, addDataPrefix: boolean): string {
-    // Handle size.width/height specially for some platforms
+    // Handle size.width/height specially - map to direct width/height variables in Swift
     if (prop.startsWith('size.')) {
         const parts = prop.split('.');
-        if (parts.length === 2 && platform === 'kotlin') {
-            return `size.${parts[1]}.value`;
+        if (parts.length === 2) {
+            if (platform === 'kotlin') {
+                return `size.${parts[1]}.value`;
+            } else if (platform === 'swift') {
+                // In Swift, size.width maps to the geometry variable 'width'
+                return parts[1]; // Just return 'width' or 'height'
+            }
         }
         return prop;
     }

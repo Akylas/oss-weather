@@ -16,8 +16,8 @@ struct SimpleWeatherWidgetView: View {
             let config = entry.config ?? WidgetConfig()
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: size.width < 100 ? 4 : size.width < 150 ? 6 : 8) {
-                    if size.width < 80 {
+                WidgetContainer(padding: width < 100 ? 4 : width < 150 ? 6 : 8) {
+                    if width < 80 {
                         VStack(alignment: .center, spacing: 0) {
                             Spacer()
                             if !data.iconPath.isEmpty {
@@ -35,7 +35,7 @@ struct SimpleWeatherWidgetView: View {
                         }
                     }
                     else {
-                        if (size.width > size.height && size.width >= 200) {
+                        if (width > height && width >= 200) {
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
@@ -64,7 +64,7 @@ struct SimpleWeatherWidgetView: View {
                             }
                         }
                         else {
-                            if size.width < 200 {
+                            if width < 200 {
                                 VStack(alignment: .center, spacing: 0) {
                                     Text(data.locationName)
                                         .font(.system(size: 12, weight: .regular))

@@ -15,6 +15,19 @@ import * as path from 'path';
 import { compileExpression, compilePropertyValue } from './expression-compiler';
 import { isExpression, hasTemplateBinding, getSingleBinding } from './shared-utils';
 
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const DEFAULT_FONT_SIZE = 12;
+const DEFAULT_IMAGE_SIZE = 48;
+const DEFAULT_LOOP_LIMIT = 10;
+const DEFAULT_PADDING = 8;
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
 // Mapbox-style expression type
 type Expression = any[] | string | number | boolean;
 
@@ -321,6 +334,24 @@ function toSwiftColor(color?: Expression): string {
     return 'WidgetColorProvider.onSurface';
 }
 
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Calculate spacing value from element property
+ * Handles both literal numbers and expressions
+ */
+function calculateSpacing(element: LayoutElement): number | string {
+    if (element.spacing === undefined) return 0;
+    if (typeof element.spacing === 'number') return element.spacing;
+    return compileToSwift(element.spacing, '0');
+}
+
+// ============================================================================
+// ELEMENT GENERATION FUNCTIONS
+// ============================================================================
+
 /**
  * Generate Swift code for an element
  */
@@ -386,7 +417,7 @@ function generateElement(element: LayoutElement, indent: string = '             
 
 function generateColumn(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const spacing = typeof element.spacing === 'number' ? element.spacing : (element.spacing ? compileToSwift(element.spacing, '0') : 0);
+    const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, true);
 
     lines.push(`${indent}VStack(alignment: ${alignment}, spacing: ${spacing}) {`);
@@ -420,7 +451,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
 function generateRow(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const spacing = typeof element.spacing === 'number' ? element.spacing : (element.spacing ? compileToSwift(element.spacing, '0') : 0);
+    const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, false);
 
     lines.push(`${indent}HStack(alignment: ${alignment}, spacing: ${spacing}) {`);
@@ -497,7 +528,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     lines.push(`${indent}Text(${textParam})`);
     
     // Font size
-    const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 12;
+    const fontSize = typeof element.fontSize === 'number' ? element.fontSize : DEFAULT_FONT_SIZE;
     const fontWeight = toSwiftFontWeight(element.fontWeight);
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
     
@@ -538,7 +569,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
 
 function generateImage(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const size = typeof element.size === 'number' ? element.size : 48;
+    const size = typeof element.size === 'number' ? element.size : DEFAULT_IMAGE_SIZE;
     
     // Compile src expression
     const srcExpr = compileToSwift(element.src, '"default_icon"');
@@ -612,7 +643,7 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
     // Handle limit expression
     let prefix: string;
     if (limit !== undefined) {
-        const limitValue = typeof limit === 'number' ? limit : compileToSwift(limit, '10');
+        const limitValue = typeof limit === 'number' ? limit : compileToSwift(limit, String(DEFAULT_LOOP_LIMIT));
         prefix = `${dataPath}.prefix(${limitValue})`;
     } else {
         prefix = dataPath;
@@ -642,7 +673,7 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
     if (element.else) {
         lines.push(`${indent}else {`);
         lines.push(generateElement(element.else, indent + '    '));
-        lines[lines.length - 1] += '\n' + `${indent}}`;
+        lines.push(`${indent}}`);
     }
 
     return lines;
@@ -682,7 +713,7 @@ function generateWidgetView(layout: WidgetLayout): string {
     const viewName = `${name}View`;
     
     // Handle default padding - it could be an expression
-    let defaultPadding = '8';
+    let defaultPadding = String(DEFAULT_PADDING);
     if (layout.defaultPadding !== undefined) {
         if (typeof layout.defaultPadding === 'number') {
             defaultPadding = String(layout.defaultPadding);

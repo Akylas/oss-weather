@@ -528,8 +528,10 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     lines.push(`${indent}) {`);
 
     if (element.children) {
+        // Handle space-between by inserting Spacer between children
+        // Note: This implementation only works well with exactly 2 children
+        // For more children, the spacing will not be evenly distributed
         if (isSpaceBetween && element.children.length === 2) {
-            // For space-between with exactly 2 children, use Spacer(modifier = GlanceModifier.defaultWeight())
             lines.push(generateElement(element.children[0], indent + '    '));
             lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
             lines.push(generateElement(element.children[1], indent + '    '));

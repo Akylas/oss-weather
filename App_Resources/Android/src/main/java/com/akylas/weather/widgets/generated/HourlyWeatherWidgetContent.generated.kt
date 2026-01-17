@@ -61,7 +61,6 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
             data.hourlyData.take(8).forEach { item ->
                 Column(
                     modifier = GlanceModifier.width(50.dp).fillMaxHeight().padding(horizontal = 4.dp),
-                    spacing = when { size.height.value < 60 -> 0.dp; else -> 2.dp },
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
@@ -70,6 +69,7 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant),
                         maxLines = 1
                     )
+                    Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))
                     WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
                         Image(
                            provider = provider,
@@ -77,11 +77,13 @@ fun HourlyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Wea
                            modifier = GlanceModifier.size(when { size.height.value < 60 -> 24.dp; size.height.value < 80 -> 28.dp; else -> 32.dp })
                         )
                     }
+                    Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))
                     Text(
                         text = item.temperature,
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 12.sp; else -> 14.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
+                    Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))
                     if ((size.height.value >= 60 && item.precipAccumulation.isNotEmpty())) {
                         Column(
                             modifier = GlanceModifier,

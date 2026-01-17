@@ -41,7 +41,6 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
     ) {
         Row(
             modifier = GlanceModifier.padding(horizontal = 8.dp),
-            spacing = 8.dp,
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
@@ -54,6 +53,7 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                     )
                 }
             }
+            Spacer(modifier = GlanceModifier.width(8.dp))
             Column(
                 modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Top,
@@ -69,6 +69,7 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                     maxLines = 1
                 )
             }
+            Spacer(modifier = GlanceModifier.width(8.dp))
             Spacer(modifier = GlanceModifier.defaultWeight())
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
@@ -81,7 +82,6 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
             items(data.dailyData.take(10)) { item ->
                 Row(
                     modifier = GlanceModifier.padding(6.dp).background(GlanceTheme.colors.surface).cornerRadius(8.dp),
-                    spacing = 8.dp,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -90,6 +90,7 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
+                    Spacer(modifier = GlanceModifier.width(8.dp))
                     WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
                         Image(
                            provider = provider,
@@ -97,9 +98,9 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                            modifier = GlanceModifier.size(28.dp)
                         )
                     }
+                    Spacer(modifier = GlanceModifier.width(8.dp))
                     Row(
                         modifier = GlanceModifier.defaultWeight(),
-                        spacing = 6.dp,
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
@@ -109,21 +110,23 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                                 style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
                             )
                         }
+                        Spacer(modifier = GlanceModifier.width(6.dp))
                         Text(
                             text = item.temperatureHigh,
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                             maxLines = 1
                         )
+                        Spacer(modifier = GlanceModifier.width(6.dp))
                         Text(
                             text = item.temperatureLow,
                             style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurfaceVariant),
                             maxLines = 1
                         )
                     }
+                    Spacer(modifier = GlanceModifier.width(8.dp))
                     if (size.width.value > 150) {
                         Row(
                             modifier = GlanceModifier,
-                            spacing = 4.dp,
                             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                             verticalAlignment = Alignment.Vertical.CenterVertically
                         ) {
@@ -133,6 +136,7 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
                                     style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.primary)
                                 )
                             }
+                            Spacer(modifier = GlanceModifier.width(4.dp))
                             if (item.windSpeed.isNotEmpty()) {
                                 Text(
                                     text = "💨" + item.windSpeed,

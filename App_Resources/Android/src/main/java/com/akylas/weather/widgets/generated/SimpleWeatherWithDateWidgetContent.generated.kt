@@ -36,7 +36,6 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
 
     Column(
         modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
-        spacing = when { size.height.value < 60 -> 2.dp; else -> 4.dp },
         verticalAlignment = Alignment.Vertical.CenterVertically,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
@@ -48,7 +47,6 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
             ) {
                 Row(
                     modifier = GlanceModifier,
-                    spacing = 8.dp,
                     horizontalAlignment = Alignment.Horizontal.Start,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -59,7 +57,6 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                     Spacer(modifier = GlanceModifier.defaultWeight())
                     Row(
                         modifier = GlanceModifier,
-                        spacing = 8.dp,
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
@@ -72,6 +69,7 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                                 )
                             }
                         }
+                        Spacer(modifier = GlanceModifier.width(8.dp))
                         Text(
                             text = data.temperature,
                             style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
@@ -84,7 +82,6 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
         else {
             Column(
                 modifier = GlanceModifier,
-                spacing = when { size.height.value < 60 -> 2.dp; else -> 4.dp },
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
@@ -92,10 +89,11 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                     text = android.text.format.DateFormat.format("MMM dd, yyyy", System.currentTimeMillis()).toString(),
                     style = TextStyle(fontSize = when { size.width.value < 150 -> when { size.height.value < 60 -> 14.sp; size.height.value < 80 -> 18.sp; else -> 22.sp }; else -> when { size.height.value < 80 -> 20.sp; else -> 28.sp } }, color = GlanceTheme.colors.onSurface)
                 )
+                Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 2.dp; else -> 4.dp }))
                 Spacer(modifier = GlanceModifier.defaultWeight())
+                Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 2.dp; else -> 4.dp }))
                 Row(
                     modifier = GlanceModifier,
-                    spacing = when { size.height.value < 60 -> 4.dp; else -> 8.dp },
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -108,14 +106,17 @@ fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, d
                             )
                         }
                     }
+                    Spacer(modifier = GlanceModifier.width(when { size.height.value < 60 -> 4.dp; else -> 8.dp }))
                     Text(
                         text = data.temperature,
                         style = TextStyle(fontSize = when { size.height.value < 60 -> 18.sp; size.height.value < 80 -> 24.sp; else -> 32.sp }, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
                 }
+                Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 2.dp; else -> 4.dp }))
                 Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 4.dp; size.height.value < 80 -> 6.dp; else -> 8.dp }))
             }
         }
+        Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 2.dp; else -> 4.dp }))
         Text(
             text = data.locationName,
             style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; size.height.value < 80 -> 11.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),

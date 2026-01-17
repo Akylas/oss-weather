@@ -41,13 +41,11 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
     ) {
         Row(
             modifier = GlanceModifier.padding(horizontal = 8.dp),
-            spacing = 8.dp,
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.CenterVertically
         ) {
             Row(
                 modifier = GlanceModifier,
-                spacing = 8.dp,
                 horizontalAlignment = Alignment.Horizontal.Start,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
@@ -60,12 +58,15 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                         )
                     }
                 }
+                Spacer(modifier = GlanceModifier.width(8.dp))
                 Text(
                     text = data.temperature,
                     style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
             }
+            Spacer(modifier = GlanceModifier.width(8.dp))
             Spacer(modifier = GlanceModifier.defaultWeight())
+            Spacer(modifier = GlanceModifier.width(8.dp))
             Text(
                 text = data.locationName,
                 style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant),
@@ -82,7 +83,6 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
             data.hourlyData.take(8).forEach { item ->
                 Column(
                     modifier = GlanceModifier.width(50.dp).padding(horizontal = 4.dp),
-                    spacing = 2.dp,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
@@ -91,6 +91,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                         style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant),
                         maxLines = 1
                     )
+                    Spacer(modifier = GlanceModifier.height(2.dp))
                     WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
                         Image(
                            provider = provider,
@@ -98,11 +99,13 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                            modifier = GlanceModifier.size(28.dp)
                         )
                     }
+                    Spacer(modifier = GlanceModifier.height(2.dp))
                     Text(
                         text = item.temperature,
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
+                    Spacer(modifier = GlanceModifier.height(2.dp))
                     if (item.precipAccumulation.isNotEmpty()) {
                         Text(
                             text = item.precipAccumulation,
@@ -122,7 +125,6 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
             items(data.dailyData.take(10)) { item ->
                 Row(
                     modifier = GlanceModifier.padding(6.dp).background(GlanceTheme.colors.surface).cornerRadius(8.dp),
-                    spacing = 8.dp,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
@@ -131,6 +133,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
+                    Spacer(modifier = GlanceModifier.width(8.dp))
                     WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
                         Image(
                            provider = provider,
@@ -138,9 +141,9 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                            modifier = GlanceModifier.size(28.dp)
                         )
                     }
+                    Spacer(modifier = GlanceModifier.width(8.dp))
                     Row(
                         modifier = GlanceModifier.defaultWeight(),
-                        spacing = 6.dp,
                         horizontalAlignment = Alignment.Horizontal.End,
                         verticalAlignment = Alignment.Vertical.CenterVertically
                     ) {
@@ -150,21 +153,23 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                                 style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
                             )
                         }
+                        Spacer(modifier = GlanceModifier.width(6.dp))
                         Text(
                             text = item.temperatureHigh,
                             style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
                             maxLines = 1
                         )
+                        Spacer(modifier = GlanceModifier.width(6.dp))
                         Text(
                             text = item.temperatureLow,
                             style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurfaceVariant),
                             maxLines = 1
                         )
                     }
+                    Spacer(modifier = GlanceModifier.width(8.dp))
                     if ((item.precipitation.isNotEmpty() || item.windSpeed.isNotEmpty())) {
                         Row(
                             modifier = GlanceModifier,
-                            spacing = 4.dp,
                             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                             verticalAlignment = Alignment.Vertical.CenterVertically
                         ) {
@@ -174,6 +179,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
                                     style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.primary)
                                 )
                             }
+                            Spacer(modifier = GlanceModifier.width(4.dp))
                             if (item.windSpeed.isNotEmpty()) {
                                 Text(
                                     text = "💨" + item.windSpeed,

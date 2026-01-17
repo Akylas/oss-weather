@@ -481,21 +481,24 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}Column(`);
     lines.push(`${indent}    modifier = ${modifier},`);
-    
-    // Add spacing parameter if defined
-    if (element.spacing !== undefined) {
-        const spacingExpr = compilePropertyValue(element.spacing, (v: number) => `${v}.dp`, undefined);
-        if (spacingExpr) {
-            lines.push(`${indent}    spacing = ${spacingExpr},`);
-        }
-    }
-    
     lines.push(`${indent}    verticalAlignment = ${vertAlign},`);
     lines.push(`${indent}    horizontalAlignment = ${horizAlign}`);
     lines.push(`${indent}) {`);
 
     if (element.children) {
-        for (const child of element.children) {
+        // Insert Spacer composables between children if spacing is defined
+        const spacingValue = element.spacing;
+        for (let i = 0; i < element.children.length; i++) {
+            const child = element.children[i];
+            
+            // Add spacer before child (except first)
+            if (i > 0 && spacingValue !== undefined) {
+                const spacingExpr = compilePropertyValue(spacingValue, (v: number) => `${v}.dp`, undefined);
+                if (spacingExpr) {
+                    lines.push(`${indent}    Spacer(modifier = GlanceModifier.height(${spacingExpr}))`);
+                }
+            }
+            
             lines.push(generateElement(child, indent + '    '));
         }
     }
@@ -514,29 +517,37 @@ function generateRow(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}Row(`);
     lines.push(`${indent}    modifier = ${modifier},`);
-    
-    // Add spacing parameter if defined
-    if (element.spacing !== undefined) {
-        const spacingExpr = compilePropertyValue(element.spacing, (v: number) => `${v}.dp`, undefined);
-        if (spacingExpr) {
-            lines.push(`${indent}    spacing = ${spacingExpr},`);
-        }
-    }
-    
     lines.push(`${indent}    horizontalAlignment = ${horizAlign},`);
     lines.push(`${indent}    verticalAlignment = ${vertAlign}`);
     lines.push(`${indent}) {`);
 
     if (element.children) {
         // Handle space-between by inserting Spacer between children
-        // Note: This implementation only works well with exactly 2 children
-        // For more children, the spacing will not be evenly distributed
-        if (isSpaceBetween && element.children.length === 2) {
-            lines.push(generateElement(element.children[0], indent + '    '));
-            lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
-            lines.push(generateElement(element.children[1], indent + '    '));
+        if (isSpaceBetween && element.children.length > 1) {
+            for (let i = 0; i < element.children.length; i++) {
+                const child = element.children[i];
+                
+                // Add spacer before child (except first)
+                if (i > 0) {
+                    lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
+                }
+                
+                lines.push(generateElement(child, indent + '    '));
+            }
         } else {
-            for (const child of element.children) {
+            // Normal layout with optional spacing
+            const spacingValue = element.spacing;
+            for (let i = 0; i < element.children.length; i++) {
+                const child = element.children[i];
+                
+                // Add spacer before child (except first)
+                if (i > 0 && spacingValue !== undefined) {
+                    const spacingExpr = compilePropertyValue(spacingValue, (v: number) => `${v}.dp`, undefined);
+                    if (spacingExpr) {
+                        lines.push(`${indent}    Spacer(modifier = GlanceModifier.width(${spacingExpr}))`);
+                    }
+                }
+                
                 lines.push(generateElement(child, indent + '    '));
             }
         }

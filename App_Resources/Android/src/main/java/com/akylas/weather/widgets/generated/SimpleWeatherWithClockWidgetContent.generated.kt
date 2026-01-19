@@ -62,31 +62,29 @@ fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, 
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Column(
                     modifier = GlanceModifier,
-                    verticalAlignment = Alignment.Vertical.Top,
-                    horizontalAlignment = Alignment.Horizontal.End
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     if (data.iconPath.isNotEmpty()) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
                             Image(
                                provider = provider,
                                contentDescription = data.iconPath,
-                               modifier = GlanceModifier.size(56.dp)
+                               modifier = GlanceModifier.size(62.dp)
                             )
                         }
                     }
-                    Spacer(modifier = GlanceModifier.height(4.dp))
                     Text(
                         text = data.temperature,
-                        style = TextStyle(fontSize = 32.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
+                        style = TextStyle(fontSize = 28.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
                     )
                 }
             }
             Column(
-                modifier = GlanceModifier,
+                modifier = GlanceModifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Vertical.Bottom,
                 horizontalAlignment = Alignment.Horizontal.End
             ) {
-                Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
                     text = data.locationName,
                     style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),

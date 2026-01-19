@@ -117,7 +117,7 @@ export class WidgetBridge extends WidgetBridgeBase {
             }
 
             // Generate cache key based on location to deduplicate requests for same location
-            const cacheKey = `${config.locationName}_${config.latitude}_${config.longitude}_${config.model}`;
+            const cacheKey = `${config.locationName}_${config.latitude}_${config.longitude}_${config.provider}_${config.model}`;
             const now = Date.now();
             const lastUpdate = this.lastUpdateTime.get(cacheKey) || 0;
 

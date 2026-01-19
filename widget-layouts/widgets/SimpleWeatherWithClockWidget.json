@@ -60,20 +60,19 @@
             },
             {
               "type": "column",
-              "alignment": "start",
-              "crossAlignment": "end",
-              "spacing": 4,
+              "alignment": "center",
+              "crossAlignment": "center",
               "children": [
                 {
                   "type": "image",
                   "src": ["get", "iconPath"],
-                  "size": 56,
+                  "size": 62,
                   "visibleIf": ["has", "iconPath"]
                 },
                 {
                   "type": "label",
                   "text": ["get", "temperature"],
-                  "fontSize": 32,
+                  "fontSize": 28,
                   "fontWeight": "bold",
                   "color": "onSurface",
                   "textAlign": "right"
@@ -84,10 +83,10 @@
         },
         {
           "type": "column",
+          "fillWidth": true,
           "alignment": "end",
           "crossAlignment": "end",
           "children": [
-            { "type": "spacer", "flex": 1 },
             {
               "type": "label",
               "text": ["get", "data.locationName"],
@@ -95,8 +94,7 @@
               "color": "onSurfaceVariant",
               "maxLines": 1,
               "paddingBottom": 4,
-              "paddingStart": 4,
-              "paddingEnd": 4
+              "paddingHorizontal": 14
             }
           ]
         }

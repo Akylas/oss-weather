@@ -1,0 +1,3 @@
+Bug fixes:
+- error while trying to show "dialogs"
+- Translations update

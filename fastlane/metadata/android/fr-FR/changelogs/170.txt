@@ -1,0 +1,2 @@
+Bug fixes:
+- back button not behaving correcty on Android 16+

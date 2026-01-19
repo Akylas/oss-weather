@@ -78,6 +78,7 @@
     "custom_tile_server": "Пользовательский сервер тайлов",
     "custom_tile_server_description": "Вы можете использовать свой собственный сервер тайлов для данных карт",
     "custom_units": "Настраиваемые единицы измерения",
+    "daily": "Ежедневный",
     "daily_date_format": "Формат отображения даты",
     "daily_date_format_description": "Формат, используемый для ежедневной даты в основном представлении списка. Он соответствует правилам формата dayjs",
     "daily_date_format_fulldesc": "Вы можете использовать такой формат %1$s. Также вы можете найти больше узнать %2$s",
@@ -92,6 +93,7 @@
     "divers": "Разное",
     "donate": "Пожалуйста, рассмотрите возможность сделать небольшое пожертвование для поддержки проекта",
     "drizzle": "Изморось",
+    "duplicate": "Создать копию",
     "email": "Почта",
     "email_required": "Требуется правильная почта",
     "enabled_small_weather_data": "Представленные сведения о погоде обозначены маленькой иконкой (при возможности)",
@@ -123,6 +125,10 @@
     "freezing_rain": "Ледяной дождь",
     "french": "Французский",
     "full": "Полнолуние",
+    "gadgetbridge_disabled_msg": "Gadgetbridge отключён",
+    "gadgetbridge_enabled": "Включить поддержку Gadgetbridge",
+    "gadgetbridge_enabled_desc": "Трансляция погоды через Gadgetbridge (формат WeatherGz)",
+    "gadgetbridge_enabled_msg": "Gadgetbridge включён",
     "general": "Общее",
     "geolocation": "Геолокация",
     "geolocation_settings": "Настройки, связанные с геолокацией",
@@ -164,6 +170,8 @@
         "smalltip": "кофе",
         "smalltip_desc": "всё помогает работать ночью!"
     },
+    "integrations": "Интеграции",
+    "integrations_settings": "Сторонние интеграции и подключения",
     "ios": {
         "info": {
             "plist": {
@@ -276,6 +284,7 @@
     "refresh_location_on_pull": "Обновлять местоположение и погоду жестом «потянуть вниз»",
     "relative_humidity": "Относительная влажность",
     "remove": "Удалить",
+    "remove_favorite": "Удалить из избранного",
     "rename": "Переименовать",
     "reset": "Сбросить",
     "restart": "Перезапустить",

@@ -76,7 +76,6 @@
     import { AVAILABLE_UINTS, UNITS, UNIT_FAMILIES } from '~/helpers/units';
     import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
-    import { OpenMeteoModels } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderSettins, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { gadgetbridgeService } from '~/services/gadgetbridge';

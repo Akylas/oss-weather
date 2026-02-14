@@ -75,9 +75,9 @@
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarHeight, colors, fontScale, fonts, onFontScaleChanged, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
-    import ThankYou from '@shared/components/ThankYou.svelte';
     import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
+    import { MFProvider } from '~/services/providers/mf';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -222,7 +222,7 @@
                                     DEV_LOG && console.log('bra lookup', weatherLocation.coord, result);
                                     const massifId = result?.properties.code ?? -1;
                                     if (massifId !== -1) {
-                                        const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        const pdfFile = await MFProvider.getBRA(massifId);
                                         DEV_LOG && console.log('massifId', massifId, typeof massifId, pdfFile.path);
                                         openFile(pdfFile.path);
                                     } else {
@@ -839,7 +839,8 @@
         if (result) {
             try {
                 showLoading();
-                const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
+                const pdfFile = await MFProvider.getBRA(result.id);
+
                 DEV_LOG && console.log('massifId', result.id, pdfFile.path);
                 openFile(pdfFile.path);
             } finally {
@@ -953,7 +954,7 @@
                                     const massifId = result?.properties.code ?? -1;
                                     if (massifId !== -1) {
                                         showLoading();
-                                        const result = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        const result = await MFProvider.getBRA(massifId);
                                         DEV_LOG && console.log('massifId', massifId, result.path);
                                         openFile(result.path);
                                     }

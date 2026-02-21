@@ -6,9 +6,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-
-// Mapbox-style expression type
-type Expression = any[] | string | number | boolean;
+import { compileExpression as compileExpr, compilePropertyValue as compilePropValue, Expression } from './expression-compiler';
+import { isExpression, toPlatformVerticalAlignment, toPlatformHorizontalAlignment, toPlatformFontWeight } from './shared-utils';
+import { buildGlanceModifier, formatColor } from './modifier-builders';
 
 interface LayoutElement {
     type: string;
@@ -69,344 +69,17 @@ interface WidgetLayout {
     layout: LayoutElement;
 }
 
-// Color mapping for theme colors - now using WidgetTheme
-const GLANCE_COLORS: Record<string, string> = {
-    onSurface: 'GlanceTheme.colors.onSurface',
-    onSurfaceVariant: 'GlanceTheme.colors.onSurfaceVariant',
-    primary: 'GlanceTheme.colors.primary',
-    error: 'GlanceTheme.colors.error',
-    widgetBackground: 'GlanceTheme.colors.background',
-    surface: 'GlanceTheme.colors.surface'
-};
 
-// Font weight mapping
-const KOTLIN_FONT_WEIGHTS: Record<string, string> = {
-    normal: 'FontWeight.Normal',
-    medium: 'FontWeight.Medium',
-    bold: 'FontWeight.Bold'
-};
 
 /**
- * Check if a value is a Mapbox expression (array format)
+ * Format a color value for use as a Glance text color (requires ColorProvider wrapper for hex colors)
  */
-function isExpression(value: any): value is any[] {
-    return Array.isArray(value) && value.length > 0 && typeof value[0] === 'string';
-}
-
-/**
- * Evaluate/compile a Mapbox expression to Kotlin code
- */
-function compileExpression(expr: Expression, context: 'value' | 'condition' = 'value', formatter?: (v: any) => string): string {
-    // Handle null/undefined
-    if (expr === null || expr === undefined) {
-        return 'null';
+function formatTextColor(v: string): string {
+    const color = formatColor(v, 'kotlin');
+    if (color.startsWith('Color(')) {
+        return `ColorProvider(${color})`;
     }
-
-    // Literal values
-    if (typeof expr === 'string') {
-        if (formatter && context === 'value') {
-            return formatter(expr);
-        }
-        return context === 'value' ? `"${expr}"` : expr;
-    }
-    if (typeof expr === 'number' || typeof expr === 'boolean') {
-        if (formatter && context === 'value') {
-            return formatter(expr);
-        }
-        return String(expr);
-    }
-
-    if (!isExpression(expr)) {
-        const result = String(expr);
-        if (formatter && context === 'value') {
-            return formatter(result);
-        }
-        return result;
-    }
-
-    const [op, ...args] = expr;
-
-    switch (op) {
-        // Property access
-        case 'get': {
-            const prop = args[0] as string;
-            if (prop.startsWith('size.')) {
-                // size.width -> size.width.value
-                const parts = prop.split('.');
-                if (parts.length === 2) {
-                    return `size.${parts[1]}.value`;
-                }
-                return prop + '.value';
-            }
-            if (prop.startsWith('item.')) {
-                // For forEach items, keep as-is (no data. prefix)
-                return prop;
-            }
-            // Check if prop already starts with "data." to avoid double prefix
-            if (prop.startsWith('data.')) {
-                return prop;
-            }
-            return `data.${prop}`;
-        }
-
-        // Check if property exists/has value
-        case 'has': {
-            const prop = args[0] as string;
-            if (prop.startsWith('item.')) {
-                return `${prop}.isNotEmpty()`;
-            }
-            // Check if prop already starts with "data." to avoid double prefix
-            if (prop.startsWith('data.')) {
-                return `${prop}.isNotEmpty()`;
-            }
-            return `data.${prop}.isNotEmpty()`;
-        }
-
-        // Arithmetic
-        case '+':
-            return `(${compileExpression(args[0], context, formatter)} + ${compileExpression(args[1], context, formatter)})`;
-        case '-':
-            return `(${compileExpression(args[0], context, formatter)} - ${compileExpression(args[1], context, formatter)})`;
-        case '*':
-            return `(${compileExpression(args[0], context, formatter)} * ${compileExpression(args[1], context, formatter)})`;
-        case '/':
-            return `(${compileExpression(args[0], context, formatter)} / ${compileExpression(args[1], context, formatter)})`;
-
-        // Comparison
-        case '<':
-            return `${compileExpression(args[0], 'condition', undefined)} < ${compileExpression(args[1], 'condition', undefined)}`;
-        case '<=':
-            return `${compileExpression(args[0], 'condition', undefined)} <= ${compileExpression(args[1], 'condition', undefined)}`;
-        case '>':
-            return `${compileExpression(args[0], 'condition', undefined)} > ${compileExpression(args[1], 'condition', undefined)}`;
-        case '>=':
-            return `${compileExpression(args[0], 'condition', undefined)} >= ${compileExpression(args[1], 'condition', undefined)}`;
-        case '==':
-            return `${compileExpression(args[0], 'condition', undefined)} == ${compileExpression(args[1], 'condition', undefined)}`;
-        case '!=':
-            return `${compileExpression(args[0], 'condition', undefined)} != ${compileExpression(args[1], 'condition', undefined)}`;
-
-        // Logical
-        case '!':
-            return `!(${compileExpression(args[0], 'condition', undefined)})`;
-        case 'all': {
-            const conditions = args.map((a) => compileExpression(a, 'condition', undefined));
-            return `(${conditions.join(' && ')})`;
-        }
-        case 'any': {
-            const conditions = args.map((a) => compileExpression(a, 'condition', undefined));
-            return `(${conditions.join(' || ')})`;
-        }
-
-        // Conditional (case statement)
-        case 'case': {
-            const pairs: string[] = [];
-            for (let i = 0; i < args.length - 1; i += 2) {
-                if (i + 1 < args.length) {
-                    const condition = compileExpression(args[i], 'condition', undefined);
-                    const value = compileExpression(args[i + 1], context, formatter);
-                    pairs.push(`${condition} -> ${value}`);
-                }
-            }
-            // Last arg is the fallback
-            const fallback = args.length % 2 === 1 ? compileExpression(args[args.length - 1], context, formatter) : formatter ? formatter('') : '""';
-
-            // If fallback is null/empty and we need non-null, return first valid value
-            if (fallback === 'null' && pairs.length > 0) {
-                // For cases where we can't have null (like height/width), use first value as default
-                return `when { ${pairs.join('; ')}; else -> ${pairs[pairs.length - 1].split(' -> ')[1]} }`;
-            }
-
-            // Return as a single-line when expression for now
-            return `when { ${pairs.join('; ')}; else -> ${fallback} }`;
-        }
-
-        // String operations
-        case 'concat': {
-            const parts = args.map((a) => compileExpression(a, context));
-            return parts.join(' + ');
-        }
-        case 'upcase':
-            return `${compileExpression(args[0], context)}.uppercase()`;
-        case 'downcase':
-            return `${compileExpression(args[0], context)}.lowercase()`;
-
-        // String operations
-        case 'substring': {
-            const str = compileExpression(args[0], context);
-            const start = compileExpression(args[1], context);
-            if (args.length > 2) {
-                const length = compileExpression(args[2], context);
-                return `${str}.substring(${start}, ${start} + ${length})`;
-            }
-            return `${str}.substring(${start})`;
-        }
-
-        // Date/Time formatting
-        case 'format': {
-            const value = compileExpression(args[0], context);
-            const pattern = args[1] as string;
-            // Use SimpleDateFormat for Android
-            return `SimpleDateFormat("${pattern}").format(${value})`;
-        }
-
-        // Interpolation (for template strings like "{{temperature}}")
-        case 'interpolate': {
-            const template = args[0] as string;
-            // Convert {{prop}} to ${data.prop}
-            return `"${template.replace(/\{\{([^}]+)\}\}/g, (_, prop) => `\${data.${prop}}`)}"`;
-        }
-
-        default:
-            console.warn(`Unknown expression operator: ${op}`);
-            return `/* unknown op: ${op} */`;
-    }
-}
-
-/**
- * Compile a property value that might be a literal or expression
- */
-function compilePropertyValue<T>(value: Expression | undefined, formatter: (v: T) => string, defaultValue?: string): string {
-    if (value === undefined) {
-        return defaultValue || '';
-    }
-
-    // If it's a literal value, format it directly
-    if (!isExpression(value)) {
-        return formatter(value as T);
-    }
-
-    // It's an expression, compile it with formatter
-    return compileExpression(value, 'value', formatter);
-}
-
-/**
- * Build a GlanceModifier chain from element properties
- */
-function buildModifier(element: LayoutElement): string {
-    const modifiers: string[] = [];
-
-    // Size modifiers
-    if (element.fillMaxSize) {
-        modifiers.push('fillMaxSize()');
-    } else {
-        if (element.fillWidth) {
-            modifiers.push('fillMaxWidth()');
-        } else if (element.width !== undefined) {
-            const widthExpr = compilePropertyValue(element.width, (v: number) => `${v}.dp`, undefined);
-            if (widthExpr) {
-                modifiers.push(`width(${widthExpr})`);
-            }
-        }
-
-        if (element.fillHeight) {
-            modifiers.push('fillMaxHeight()');
-        } else if (element.height !== undefined) {
-            const heightExpr = compilePropertyValue(element.height, (v: number) => `${v}.dp`, undefined);
-            if (heightExpr) {
-                modifiers.push(`height(${heightExpr})`);
-            }
-        }
-    }
-
-    // Flex/weight modifier
-    if (element.flex !== undefined) {
-        modifiers.push('defaultWeight()');
-    }
-
-    // Padding modifiers
-    if (element.padding !== undefined) {
-        const paddingExpr = compilePropertyValue(element.padding, (v: number) => `${v}.dp`, undefined);
-        if (paddingExpr) {
-            modifiers.push(`padding(${paddingExpr})`);
-        }
-    }
-    if (element.paddingHorizontal !== undefined) {
-        const paddingExpr = compilePropertyValue(element.paddingHorizontal, (v: number) => `${v}.dp`, undefined);
-        if (paddingExpr) {
-            modifiers.push(`padding(horizontal = ${paddingExpr})`);
-        }
-    }
-    if (element.paddingVertical !== undefined) {
-        const paddingExpr = compilePropertyValue(element.paddingVertical, (v: number) => `${v}.dp`, undefined);
-        if (paddingExpr) {
-            modifiers.push(`padding(vertical = ${paddingExpr})`);
-        }
-    }
-
-    // Margin modifiers (use padding as Glance doesn't have margin)
-    if (element.margin !== undefined) {
-        const marginExpr = compilePropertyValue(element.margin, (v: number) => `${v}.dp`, undefined);
-        if (marginExpr) {
-            modifiers.push(`padding(${marginExpr})`);
-        }
-    }
-    if (element.marginHorizontal !== undefined) {
-        const marginExpr = compilePropertyValue(element.marginHorizontal, (v: number) => `${v}.dp`, undefined);
-        if (marginExpr) {
-            modifiers.push(`padding(horizontal = ${marginExpr})`);
-        }
-    }
-    if (element.marginVertical !== undefined) {
-        const marginExpr = compilePropertyValue(element.marginVertical, (v: number) => `${v}.dp`, undefined);
-        if (marginExpr) {
-            modifiers.push(`padding(vertical = ${marginExpr})`);
-        }
-    }
-
-    // Background color
-    if (element.backgroundColor !== undefined) {
-        const colorExpr = compilePropertyValue(element.backgroundColor, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, undefined);
-        if (colorExpr) {
-            modifiers.push(`background(${colorExpr})`);
-        }
-    }
-
-    // Corner radius
-    if (element.cornerRadius !== undefined) {
-        const radiusExpr = compilePropertyValue(element.cornerRadius, (v: number) => `${v}.dp`, undefined);
-        if (radiusExpr) {
-            modifiers.push(`cornerRadius(${radiusExpr})`);
-        }
-    }
-
-    if (modifiers.length === 0) {
-        return '';
-    }
-
-    return 'GlanceModifier.' + modifiers.join('.');
-}
-
-/**
- * Convert alignment to Glance alignment
- */
-function toGlanceVerticalAlignment(alignment?: string): string {
-    switch (alignment) {
-        case 'start':
-            return 'Alignment.Vertical.Top';
-        case 'center':
-            return 'Alignment.Vertical.CenterVertically';
-        case 'end':
-            return 'Alignment.Vertical.Bottom';
-        default:
-            return 'Alignment.Vertical.CenterVertically';
-    }
-}
-
-function toGlanceHorizontalAlignment(alignment?: string): string {
-    switch (alignment) {
-        case 'start':
-            return 'Alignment.Horizontal.Start';
-        case 'center':
-            return 'Alignment.Horizontal.CenterHorizontally';
-        case 'end':
-            return 'Alignment.Horizontal.End';
-        case 'space-between':
-        case 'spaceBetween':
-            return 'Alignment.Horizontal.Start'; // Glance doesn't have space-between, use Start as fallback
-        default:
-            return 'Alignment.Horizontal.CenterHorizontally';
-    }
+    return color;
 }
 
 /**
@@ -420,7 +93,7 @@ function generateElement(element: LayoutElement, indent: string = '            '
     const currentIndent = wrapWithIf ? indent + '    ' : indent;
 
     if (wrapWithIf && element.visibleIf !== undefined) {
-        const condition = compileExpression(element.visibleIf, 'condition');
+        const condition = compileExpr(element.visibleIf, { platform: 'kotlin', context: 'condition' });
         lines.push(`${indent}if (${condition}) {`);
     }
 
@@ -474,10 +147,10 @@ function generateElement(element: LayoutElement, indent: string = '            '
 
 function generateColumn(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const vertAlign = toGlanceVerticalAlignment(element.alignment);
-    const horizAlign = toGlanceHorizontalAlignment(element.crossAlignment);
+    const vertAlign = toPlatformVerticalAlignment(element.alignment, 'glance');
+    const horizAlign = toPlatformHorizontalAlignment(element.crossAlignment, 'glance');
 
-    const modifier = buildModifier(element) || 'GlanceModifier';
+    const modifier = buildGlanceModifier(element);
 
     lines.push(`${indent}Column(`);
     lines.push(`${indent}    modifier = ${modifier},`);
@@ -493,7 +166,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
             // Add spacer before child (except first)
             if (i > 0 && spacingValue !== undefined) {
-                const spacingExpr = compilePropertyValue(spacingValue, (v: number) => `${v}.dp`, undefined);
+                const spacingExpr = compilePropValue(spacingValue, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, undefined);
                 if (spacingExpr) {
                     lines.push(`${indent}    Spacer(modifier = GlanceModifier.height(${spacingExpr}))`);
                 }
@@ -509,11 +182,11 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
 function generateRow(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const horizAlign = toGlanceHorizontalAlignment(element.alignment);
-    const vertAlign = toGlanceVerticalAlignment(element.crossAlignment);
+    const horizAlign = toPlatformHorizontalAlignment(element.alignment, 'glance');
+    const vertAlign = toPlatformVerticalAlignment(element.crossAlignment, 'glance');
     const isSpaceBetween = element.alignment === 'space-between' || element.alignment === 'spaceBetween';
 
-    const modifier = buildModifier(element) || 'GlanceModifier';
+    const modifier = buildGlanceModifier(element);
 
     lines.push(`${indent}Row(`);
     lines.push(`${indent}    modifier = ${modifier},`);
@@ -542,7 +215,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
 
                 // Add spacer before child (except first)
                 if (i > 0 && spacingValue !== undefined) {
-                    const spacingExpr = compilePropertyValue(spacingValue, (v: number) => `${v}.dp`, undefined);
+                    const spacingExpr = compilePropValue(spacingValue, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, undefined);
                     if (spacingExpr) {
                         lines.push(`${indent}    Spacer(modifier = GlanceModifier.width(${spacingExpr}))`);
                     }
@@ -604,7 +277,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         }
     } else if (Array.isArray(element.text)) {
         // Mapbox expression
-        const compiled = compileExpression(element.text, 'value');
+        const compiled = compileExpr(element.text, { platform: 'kotlin', context: 'value' });
         // If the compiled result is a direct property access (no quotes), don't wrap in string interpolation
         // This handles ["get", "item.precipAccumulation"] -> item.precipAccumulation (not "${item.precipAccumulation}")
         if (compiled.match(/^(data\.|item\.|size\.)/)) {
@@ -618,11 +291,11 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
         textExpr = `context.getString(context.resources.getIdentifier("${resourceKey}", "string", context.packageName))`;
     } else {
-        textExpr = compilePropertyValue(element.text, (v: string) => `"${v}"`, '""');
+        textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }
 
-    const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
-    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `ColorProvider(Color(0xFF${v}))`, 'ColorProvider(WidgetTheme.onSurface)');
+    const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
+    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'ColorProvider(WidgetTheme.onSurface)');
 
     // Handle fontWeight - check for config.settings
     let fontWeightExpr: string | undefined;
@@ -633,10 +306,10 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
             fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
         }
     } else {
-        fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
+        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
     }
 
-    const maxLinesExpr = compilePropertyValue(element.maxLines, (v: number) => String(v), undefined);
+    const maxLinesExpr = compilePropValue(element.maxLines, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
     lines.push(`${indent}Text(`);
     lines.push(`${indent}    text = ${textExpr},`);
@@ -695,10 +368,10 @@ function generateImage(element: LayoutElement, indent: string): string[] {
             srcExpr = `data.${propName}`;
         }
     } else {
-        srcExpr = compilePropertyValue(element.src, (v: string) => `data.${v}`, 'data.iconPath');
+        srcExpr = compilePropValue(element.src, { platform: 'kotlin', formatter: (v: string) => `data.${v}` }, 'data.iconPath');
     }
 
-    const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, '24.dp');
+    const sizeExpr = compilePropValue(element.size, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, '24.dp');
 
     lines.push(`${indent}WeatherWidgetManager.getIconImageProviderFromPath(${srcExpr})?.let { provider ->`);
     lines.push(`${indent}    Image(`);
@@ -714,8 +387,8 @@ function generateImage(element: LayoutElement, indent: string): string[] {
 function generateSpacer(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
-    const sizeExpr = compilePropertyValue(element.size, (v: number) => `${v}.dp`, undefined);
-    const flexExpr = compilePropertyValue(element.flex, (v: number) => String(v), undefined);
+    const sizeExpr = compilePropValue(element.size, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, undefined);
+    const flexExpr = compilePropValue(element.flex, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
     // If flex is defined, use defaultWeight() modifier
     if (flexExpr && flexExpr !== 'null') {
@@ -744,8 +417,8 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
 
 function generateDivider(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const thicknessExpr = compilePropertyValue(element.thickness, (v: number) => `${v}.dp`, '1.dp');
-    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurfaceVariant');
+    const thicknessExpr = compilePropValue(element.thickness, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, '1.dp');
+    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurfaceVariant');
 
     lines.push(`${indent}Box(`);
     lines.push(`${indent}    modifier = GlanceModifier.fillMaxWidth().height(${thicknessExpr})`);
@@ -775,7 +448,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                         // Generate items directly from forEach
                         if (child.items && child.itemTemplate) {
                             const limitValue = child.limit || 10;
-                            const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                            const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                             lines.push(`${indent}    data.${child.items}.take(${limitCode}).forEach { item ->`);
                             lines.push(generateElement(child.itemTemplate, indent + '        '));
@@ -787,7 +460,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                             if (nestedChild.type === 'forEach') {
                                 if (nestedChild.items && nestedChild.itemTemplate) {
                                     const limitValue = nestedChild.limit || 10;
-                                    const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                                    const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                                     lines.push(`${indent}    data.${nestedChild.items}.take(${limitCode}).forEach { item ->`);
                                     lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
@@ -821,7 +494,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                         // Generate items directly from forEach
                         if (child.items && child.itemTemplate) {
                             const limitValue = child.limit || 10;
-                            const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                            const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                             lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
                             lines.push(generateElement(child.itemTemplate, indent + '        '));
@@ -833,7 +506,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                             if (nestedChild.type === 'forEach') {
                                 if (nestedChild.items && nestedChild.itemTemplate) {
                                     const limitValue = nestedChild.limit || 10;
-                                    const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+                                    const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                                     lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
                                     lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
@@ -868,7 +541,7 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
 
     // Compile limit expression if it's a Mapbox expression, otherwise use literal value
     const limitValue = element.limit || 10;
-    const limitCode = isExpression(limitValue) ? compileExpression(limitValue, 'value') : limitValue;
+    const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
     lines.push(`${indent}data.${element.items}.take(${limitCode}).forEach { item ->`);
     lines.push(generateElement(element.itemTemplate, indent + '    '));
@@ -885,7 +558,7 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
         return lines;
     }
 
-    const condition = compileExpression(element.condition, 'condition');
+    const condition = compileExpr(element.condition, { platform: 'kotlin', context: 'condition' });
 
     lines.push(`${indent}if (${condition}) {`);
     if (element.then) {
@@ -908,8 +581,8 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const format24 = element.format24Hour || 'HH:mm';
     const format12 = element.format12Hour || 'h:mm a';
 
-    const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
-    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
+    const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
+    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight - check for config.settings
     let fontWeightExpr: string | undefined;
@@ -921,10 +594,10 @@ function generateClock(element: LayoutElement, indent: string): string[] {
                 fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
             }
         } else {
-            fontWeightExpr = KOTLIN_FONT_WEIGHTS[element.fontWeight] || 'FontWeight.Normal';
+            fontWeightExpr = toPlatformFontWeight(element.fontWeight as string, 'glance');
         }
     } else if (element.fontWeight) {
-        fontWeightExpr = compilePropertyValue(element.fontWeight, (v: string) => KOTLIN_FONT_WEIGHTS[v] || 'FontWeight.Normal', undefined);
+        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
     }
 
     lines.push(`${indent}Text(`);
@@ -955,8 +628,8 @@ function generateDate(element: LayoutElement, indent: string): string[] {
 
     const format = element.format || 'MMM dd, yyyy';
 
-    const fontSizeExpr = compilePropertyValue(element.fontSize, (v: number) => `${v}.sp`, undefined);
-    const colorExpr = compilePropertyValue(element.color, (v: string) => GLANCE_COLORS[v] || `Color(0xFF${v})`, 'GlanceTheme.colors.onSurface');
+    const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
+    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
     lines.push(`${indent}Text(`);
     lines.push(`${indent}    text = android.text.format.DateFormat.format("${format}", System.currentTimeMillis()).toString(),`);
@@ -1074,4 +747,4 @@ if (require.main === module) {
     main();
 }
 
-export { compileExpression, generateElement, generateKotlinFile };
+export { compileExpr as compileExpression, generateElement, generateKotlinFile };

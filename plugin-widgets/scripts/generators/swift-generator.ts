@@ -188,11 +188,11 @@ function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): st
         return `(config.settings?["${settingKey}"] as? Bool ?? true) ? .bold : .regular`;
     }
 
-    // Handle string literals
+    // Handle string literals (including numeric weight values like '700')
     if (typeof weight === 'string') {
         const key = weight.toLowerCase();
-        if (/(bold|700|800|900)/i.test(key)) return toPlatformFontWeight('bold', 'swift');
-        if (/(med|500|600)/i.test(key)) return toPlatformFontWeight('medium', 'swift');
+        if (/^(700|800|900)$/.test(key)) return toPlatformFontWeight('bold', 'swift');
+        if (/^(500|600)$/.test(key)) return toPlatformFontWeight('medium', 'swift');
         return toPlatformFontWeight(key, 'swift');
     }
 

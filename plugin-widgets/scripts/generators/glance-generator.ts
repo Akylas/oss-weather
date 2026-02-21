@@ -747,4 +747,4 @@ if (require.main === module) {
     main();
 }
 
-export { compileExpr as compileExpression, generateElement, generateKotlinFile };
+export { generateElement, generateKotlinFile };

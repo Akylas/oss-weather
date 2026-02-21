@@ -20,17 +20,25 @@ struct SimpleWeatherWithDateWidgetView: View {
                     VStack(alignment: .center, spacing: height < 60 ? 2 : 4) {
                         if width >= 200 {
                             VStack(alignment: .center, spacing: 0) {
-                                HStack(alignment: .center, spacing: 8) {
-                                    Text(Date(), style: .date)
-                                        .font(.system(size: 32, weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                    HStack(alignment: .center, spacing: 8) {
+                                HStack(alignment: .top, spacing: 0) {
+                                    VStack(alignment: .leading, spacing: 0) {
+                                        Text(Date(), style: .date)
+                                            .font(.system(size: 20, weight: .bold))
+                                            .foregroundColor(WidgetColorProvider.onSurface)
+                                        Spacer().frame(height: 2)
+                                        Text(Date(), style: .date)
+                                            .font(.system(size: 14, weight: .regular))
+                                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    }
+                                    VStack(alignment: .trailing, spacing: 0) {
                                         if !data.iconPath.isEmpty {
                                             WeatherIconView(data.iconPath, description: data.description, size: 56)
                                         }
+                                        Spacer().frame(height: 4)
                                         Text(data.temperature)
-                                            .font(.system(size: 40, weight: .bold))
+                                            .font(.system(size: 24, weight: .bold))
                                             .foregroundColor(WidgetColorProvider.onSurface)
+                                            .multilineTextAlignment(.leading)
                                     }
                                 }
                                 Spacer().frame(height: 4)

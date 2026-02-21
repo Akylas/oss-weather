@@ -20,7 +20,9 @@ export enum UNITS {
     SpeedKm = 'km/h',
     MPH = 'mph',
     FPH = 'ft/h',
+    FPS = 'ft/s',
     SpeedM = 'm/h',
+    SpeedMS = 'm/s',
     Knot = 'kn'
 }
 
@@ -58,4 +60,15 @@ export const DEFAULT_METRIC_UINTS = {
     [UNIT_FAMILIES.Precipitation]: UNITS.MM,
     [UNIT_FAMILIES.Speed]: UNITS.SpeedKm,
     [UNIT_FAMILIES.Pressure]: UNITS.PressureHpa
+};
+export const AVAILABLE_UINTS = {
+    [UNIT_FAMILIES.DistanceSmall]: [UNITS.Inch, UNITS.MM, UNITS.CM],
+    [UNIT_FAMILIES.DistanceVerySmall]: [UNITS.MM],
+    [UNIT_FAMILIES.Uv]: [UNITS.UV],
+    [UNIT_FAMILIES.Percent]: [UNITS.Percent],
+    [UNIT_FAMILIES.Temperature]: [UNITS.Celcius, UNITS.Fahrenheit],
+    [UNIT_FAMILIES.Distance]: [UNITS.Kilometers, UNITS.Miles, UNITS.Meters, UNITS.Feet, UNITS.Inch],
+    [UNIT_FAMILIES.Precipitation]: [UNITS.Inch, UNITS.MM, UNITS.CM],
+    [UNIT_FAMILIES.Speed]: [UNITS.SpeedKm, UNITS.SpeedM, UNITS.SpeedMS, UNITS.MPH, UNITS.FPH, UNITS.FPS, UNITS.Knot],
+    [UNIT_FAMILIES.Pressure]: [UNITS.PressureHpa]
 };

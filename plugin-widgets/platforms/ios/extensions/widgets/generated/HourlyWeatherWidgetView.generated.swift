@@ -21,8 +21,9 @@ struct HourlyWeatherWidgetView: View {
                         if height >= 80 {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
-                                    .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .multilineTextAlignment(.leading)
                                     .lineLimit(1)
                                 Spacer().frame(height: 2)
                             }

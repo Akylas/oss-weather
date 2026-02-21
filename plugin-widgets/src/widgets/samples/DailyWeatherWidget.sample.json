@@ -1,57 +1,53 @@
 {
   "default": {
-    "locationName": "Paris",
     "dailyData": [
       {
         "day": "Mon",
-        "iconPath": "802d",
+        "iconPath": "800d",
         "precipAccumulation": "0 mm",
         "temperatureHigh": "22 °C",
         "temperatureLow": "10 °C"
       },
       {
         "day": "Mon",
-        "iconPath": "802d",
+        "iconPath": "800d",
         "precipAccumulation": "0 mm",
         "temperatureHigh": "22 °C",
         "temperatureLow": "10 °C"
       },
       {
         "day": "Mon",
-        "iconPath": "802d",
+        "iconPath": "800d",
         "precipAccumulation": "0 mm",
         "temperatureHigh": "22 °C",
         "temperatureLow": "10 °C"
       },
       {
         "day": "Mon",
-        "iconPath": "802d",
+        "iconPath": "800d",
         "precipAccumulation": "0 mm",
         "temperatureHigh": "22 °C",
         "temperatureLow": "10 °C"
       },
       {
         "day": "Mon",
-        "iconPath": "802d",
+        "iconPath": "800d",
         "precipAccumulation": "0 mm",
         "temperatureHigh": "22 °C",
         "temperatureLow": "10 °C"
       },
       {
         "day": "Mon",
-        "iconPath": "802d",
+        "iconPath": "800d",
         "precipAccumulation": "0 mm",
         "temperatureHigh": "22 °C",
         "temperatureLow": "10 °C"
       }
     ],
-    "day": "Mon",
-    "iconPath": "802d",
-    "precipAccumulation": "0 mm",
-    "temperatureHigh": "22 °C",
-    "temperatureLow": "10 °C",
     "temperature": "12 °C",
+    "locationName": "Paris",
     "description": "Partly Cloudy",
+    "iconPath": "800d",
     "humidity": "78 %",
     "windSpeed": "12 km/h",
     "precipitation": "0 mm",
@@ -59,7 +55,6 @@
     "feelsLike": ""
   },
   "hot": {
-    "locationName": "Seville",
     "dailyData": [
       {
         "day": "Tue",
@@ -104,13 +99,10 @@
         "temperatureLow": "28 °C"
       }
     ],
-    "day": "Tue",
-    "iconPath": "800d",
-    "precipAccumulation": "0 mm",
-    "temperatureHigh": "36 °C",
-    "temperatureLow": "28 °C",
     "temperature": "31 °C",
+    "locationName": "Seville",
     "description": "Sunny",
+    "iconPath": "800d",
     "humidity": "20 %",
     "windSpeed": "24 km/h",
     "precipitation": "0 mm",
@@ -118,58 +110,54 @@
     "feelsLike": ""
   },
   "storm": {
-    "locationName": "Reykjavík",
     "dailyData": [
       {
         "day": "Thu",
-        "iconPath": "221d",
+        "iconPath": "1200d",
         "precipAccumulation": "15 mm",
         "temperatureHigh": "15 °C",
         "temperatureLow": "5 °C"
       },
       {
         "day": "Thu",
-        "iconPath": "221d",
+        "iconPath": "1200d",
         "precipAccumulation": "15 mm",
         "temperatureHigh": "15 °C",
         "temperatureLow": "5 °C"
       },
       {
         "day": "Thu",
-        "iconPath": "221d",
+        "iconPath": "1200d",
         "precipAccumulation": "15 mm",
         "temperatureHigh": "15 °C",
         "temperatureLow": "5 °C"
       },
       {
         "day": "Thu",
-        "iconPath": "221d",
+        "iconPath": "1200d",
         "precipAccumulation": "15 mm",
         "temperatureHigh": "15 °C",
         "temperatureLow": "5 °C"
       },
       {
         "day": "Thu",
-        "iconPath": "221d",
+        "iconPath": "1200d",
         "precipAccumulation": "15 mm",
         "temperatureHigh": "15 °C",
         "temperatureLow": "5 °C"
       },
       {
         "day": "Thu",
-        "iconPath": "221d",
+        "iconPath": "1200d",
         "precipAccumulation": "15 mm",
         "temperatureHigh": "15 °C",
         "temperatureLow": "5 °C"
       }
     ],
-    "day": "Thu",
-    "iconPath": "221d",
-    "precipAccumulation": "15 mm",
-    "temperatureHigh": "15 °C",
-    "temperatureLow": "5 °C",
     "temperature": "8 °C",
+    "locationName": "Reykjavík",
     "description": "Stormy",
+    "iconPath": "1200d",
     "humidity": "92 %",
     "windSpeed": "82 km/h",
     "precipitation": "15 mm",

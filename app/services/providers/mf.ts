@@ -9,6 +9,8 @@ import { WeatherProvider } from './weatherprovider';
 import { Alert, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { ApplicationSettings } from '@nativescript/core';
 import { NB_DAYS_FORECAST, NB_HOURS_FORECAST, NB_MINUTES_FORECAST } from '~/helpers/constants';
+import { prefs } from '~/services/preferences';
+import { getFile } from '@nativescript-community/https';
 
 const mfApiKey = getString('mfApiKey', MF_DEFAULT_KEY);
 
@@ -16,12 +18,26 @@ interface MFParams extends Partial<Coord> {
     domain?: string;
 }
 
+const API_KEY_SETTING = 'mfApiKey';
+
 export class MFProvider extends WeatherProvider {
     static id = 'meteofrance';
     id = MFProvider.id;
 
     static getUrl() {
         return 'https://meteofrance.com';
+    }
+
+    static getBRA(massifId) {
+        const url = `https://public-api.meteofrance.fr/public/DPBRA/v1/massif/BRA?id-massif=${massifId}&format=pdf`;
+        DEV_LOG && console.log('getBRA', massifId, url , this.apiKey);
+        return getFile({
+            url,
+            method: 'GET',
+            headers: {
+                apikey: this.apiKey
+            }
+        });
     }
 
     private getDaily(weatherLocation: WeatherLocation, hourly: Hourly[], hourlyForecast: ForecastForecast[], dailyForecast: Dailyforecast) {
@@ -508,4 +524,49 @@ export class MFProvider extends WeatherProvider {
         // There are also text blocks with hour by hour evaluation, but it’s way too detailed
         return content.length ? content : null;
     }
+
+    static apiKey = MFProvider.readApiKeySetting();
+
+    static readApiKeySetting() {
+        let key = ApplicationSettings.getString(API_KEY_SETTING, MF_API_KEY || '');
+        if (!key || key?.length === 0) {
+            ApplicationSettings.remove(API_KEY_SETTING);
+            key = MF_API_KEY || '';
+        }
+        return key?.trim();
+    }
+
+    public static setApiKey(apiKey: string) {
+        MFProvider.apiKey = apiKey?.trim();
+        if (MFProvider.apiKey?.length) {
+            ApplicationSettings.setString(API_KEY_SETTING, MFProvider.apiKey);
+        } else {
+            ApplicationSettings.remove(API_KEY_SETTING);
+        }
+    }
+
+    public static hasApiKey() {
+        return MFProvider.apiKey && MFProvider.apiKey.length && MFProvider.apiKey !== ACCUWEATHER_DEFAULT_KEY;
+    }
+
+    public static getApiKey() {
+        return MFProvider.apiKey;
+    }
+    public static getSettings() {
+        return [
+            {
+                type: 'prompt',
+                valueType: 'string',
+                id: 'setting',
+                key: API_KEY_SETTING,
+                default: () => MFProvider.apiKey,
+                description: lc('api_key_required'),
+                title: lc('api_key')
+            }
+        ];
+    }
 }
+
+prefs.on(`key:${API_KEY_SETTING}`, (event) => {
+    MFProvider.apiKey = MFProvider.readApiKeySetting();
+});

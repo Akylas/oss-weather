@@ -18,20 +18,33 @@ struct DailyWeatherWidgetView: View {
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 8) {
                     VStack(alignment: .center, spacing: 0) {
-                        HStack(alignment: .center, spacing: 8) {
-                            if !data.iconPath.isEmpty {
-                                WeatherIconView(data.iconPath, description: data.description, size: 48)
-                            }
+                        HStack(alignment: .top, spacing: 0) {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.temperature)
                                     .font(.system(size: 32, weight: .bold))
                                     .foregroundColor(WidgetColorProvider.onSurface)
+                                Spacer().frame(height: 2)
                                 Text(data.locationName)
                                     .font(.system(size: 14, weight: .regular))
                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .multilineTextAlignment(.leading)
                                     .lineLimit(1)
                             }
-                            Spacer()
+                            VStack(alignment: .trailing, spacing: 0) {
+                                if !data.iconPath.isEmpty {
+                                    WeatherIconView(data.iconPath, description: data.description, size: 48)
+                                }
+                                if !data.description.isEmpty {
+                                    Spacer().frame(height: 2)
+                                }
+                                if !data.description.isEmpty {
+                                    Text(data.description)
+                                        .font(.system(size: 12, weight: .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                        .multilineTextAlignment(.leading)
+                                        .lineLimit(1)
+                                }
+                            }
                         }
                         Spacer().frame(height: 8)
                         Text("Daily")
@@ -43,38 +56,36 @@ struct DailyWeatherWidgetView: View {
                             VStack(spacing: 8) {
                                 VStack(alignment: .center, spacing: 0) {
                                     ForEach(Array(data.dailyData.enumerated()), id: \.offset) { index, item in
-                                        HStack(alignment: .center, spacing: 8) {
-                                            Text(item.day)
-                                                .font(.system(size: 12, weight: .medium))
-                                                .foregroundColor(WidgetColorProvider.onSurface)
-                                                .lineLimit(1)
-                                            WeatherIconView(item.iconPath, description: data.description, size: 28)
-                                            HStack(alignment: .center, spacing: 6) {
-                                                if !item.precipAccumulation.isEmpty {
-                                                    Text(item.precipAccumulation)
-                                                        .font(.system(size: 10, weight: .regular))
-                                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                                }
-                                                Text(item.temperatureHigh)
-                                                    .font(.system(size: 13, weight: .bold))
+                                        VStack(alignment: .center, spacing: 0) {
+                                            HStack(alignment: .center, spacing: 0) {
+                                                Text(item.day)
+                                                    .font(.system(size: 12, weight: .medium))
                                                     .foregroundColor(WidgetColorProvider.onSurface)
                                                     .lineLimit(1)
-                                                Text(item.temperatureLow)
-                                                    .font(.system(size: 13, weight: .regular))
-                                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                                    .lineLimit(1)
-                                            }
-                                            if width > 150 {
-                                                HStack(alignment: .center, spacing: 4) {
-                                                    if !item.precipitation.isEmpty {
-                                                        Text("💧" + item.precipitation)
-                                                            .font(.system(size: 10, weight: .regular))
-                                                            .foregroundColor(WidgetColorProvider.primary)
-                                                    }
-                                                    if !item.windSpeed.isEmpty {
-                                                        Text("💨" + item.windSpeed)
-                                                            .font(.system(size: 10, weight: .regular))
+                                                WeatherIconView(item.iconPath, description: data.description, size: 28)
+                                                Spacer().frame(height: 8)
+                                                VStack(alignment: .trailing, spacing: 0) {
+                                                    HStack(alignment: .center, spacing: 6) {
+                                                        Text(item.temperatureHigh)
+                                                            .font(.system(size: 13, weight: .bold))
+                                                            .foregroundColor(WidgetColorProvider.onSurface)
+                                                            .lineLimit(1)
+                                                        Text(item.temperatureLow)
+                                                            .font(.system(size: 13, weight: .regular))
                                                             .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                                            .lineLimit(1)
+                                                    }
+                                                    HStack(alignment: .center, spacing: 6) {
+                                                        if !item.precipAccumulation.isEmpty {
+                                                            Text(item.precipAccumulation)
+                                                                .font(.system(size: 10, weight: .regular))
+                                                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                                        }
+                                                        if !item.precipitation.isEmpty {
+                                                            Text("💧" + item.precipitation)
+                                                                .font(.system(size: 10, weight: .regular))
+                                                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                                        }
                                                     }
                                                 }
                                             }

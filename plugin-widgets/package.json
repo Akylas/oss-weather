@@ -12,13 +12,14 @@
     "description": "OSS-Weather widgets plugin",
     "types": "module",
     "scripts": {
+        "generate:all": "npm run generate:kind-configs && npm run generate:samples && npm run generate:ns && npm run generate:glance && npm run generate:swift",
         "generate:images": "tsx scripts/generators/generate-images.ts all",
         "generate:images:combined": "tsx scripts/generators/generate-images.ts combined",
         "generate:images:single": "tsx scripts/generators/generate-images.ts single",
         "generate:swift": "tsx scripts/generators/swift-generator.ts",
         "generate:glance": "tsx scripts/generators/glance-generator.ts",
         "generate:ns": "tsx scripts/generators/nativescript-svelte-generator.ts",
-        "generate:samples": "tsx scripts/generate-samples.ts",
+        "generate:samples": "tsx scripts/generators/generate-samples.ts",
         "generate:kind-configs": "tsx scripts/generators/generate-widget-kind-configs.ts",
         "dev": "vite"
     },

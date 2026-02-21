@@ -1,49 +1,47 @@
 {
   "default": {
-    "locationName": "Paris",
     "hourlyData": [
       {
-        "time": "06:00",
-        "iconPath": "802d",
+        "hour": "06:00",
+        "iconPath": "800d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "07:00",
-        "iconPath": "802d",
+        "hour": "07:00",
+        "iconPath": "800d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "08:00",
-        "iconPath": "802d",
+        "hour": "08:00",
+        "iconPath": "800d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "09:00",
-        "iconPath": "802d",
+        "hour": "09:00",
+        "iconPath": "800d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "10:00",
-        "iconPath": "802d",
+        "hour": "10:00",
+        "iconPath": "800d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "11:00",
-        "iconPath": "802d",
+        "hour": "11:00",
+        "iconPath": "800d",
         "temperature": "12 °C",
         "precipAccumulation": "0 mm"
       }
     ],
-    "time": "09:00",
-    "iconPath": "802d",
     "temperature": "12 °C",
-    "precipAccumulation": "0 mm",
+    "locationName": "Paris",
     "description": "Partly Cloudy",
+    "iconPath": "800d",
     "humidity": "78 %",
     "windSpeed": "12 km/h",
     "precipitation": "0 mm",
@@ -51,50 +49,48 @@
     "feelsLike": ""
   },
   "hot": {
-    "locationName": "Seville",
     "hourlyData": [
       {
-        "time": "06:00",
+        "hour": "06:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "07:00",
+        "hour": "07:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "08:00",
+        "hour": "08:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "09:00",
+        "hour": "09:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "10:00",
+        "hour": "10:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       },
       {
-        "time": "11:00",
+        "hour": "11:00",
         "iconPath": "800d",
         "temperature": "31 °C",
         "precipAccumulation": "0 mm"
       }
     ],
-    "time": "12:00",
-    "iconPath": "800d",
     "temperature": "31 °C",
-    "precipAccumulation": "0 mm",
+    "locationName": "Seville",
     "description": "Sunny",
+    "iconPath": "800d",
     "humidity": "20 %",
     "windSpeed": "24 km/h",
     "precipitation": "0 mm",
@@ -102,50 +98,48 @@
     "feelsLike": ""
   },
   "storm": {
-    "locationName": "Reykjavík",
     "hourlyData": [
       {
-        "time": "06:00",
-        "iconPath": "221d",
+        "hour": "06:00",
+        "iconPath": "1200d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "time": "07:00",
-        "iconPath": "221d",
+        "hour": "07:00",
+        "iconPath": "1200d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "time": "08:00",
-        "iconPath": "221d",
+        "hour": "08:00",
+        "iconPath": "1200d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "time": "09:00",
-        "iconPath": "221d",
+        "hour": "09:00",
+        "iconPath": "1200d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "time": "10:00",
-        "iconPath": "221d",
+        "hour": "10:00",
+        "iconPath": "1200d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       },
       {
-        "time": "11:00",
-        "iconPath": "221d",
+        "hour": "11:00",
+        "iconPath": "1200d",
         "temperature": "8 °C",
         "precipAccumulation": "15 mm"
       }
     ],
-    "time": "18:00",
-    "iconPath": "221d",
     "temperature": "8 °C",
-    "precipAccumulation": "15 mm",
+    "locationName": "Reykjavík",
     "description": "Stormy",
+    "iconPath": "1200d",
     "humidity": "92 %",
     "windSpeed": "82 km/h",
     "precipitation": "15 mm",

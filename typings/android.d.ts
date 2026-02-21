@@ -13,6 +13,11 @@ declare namespace com {
                 public static class: java.lang.Class<ImageUtils>;
                 public constructor();
             }
+            export namespace gadgetbridge {
+                export class GadgetbridgeService {
+                    static broadcastWeather(context: globalAndroid.content.Context, weatherDataJson: string, locationJson: string);
+                }
+            }
             export namespace ImageUtils {
                 export class Companion extends java.lang.Object {
                     public static class: java.lang.Class<Companion>;

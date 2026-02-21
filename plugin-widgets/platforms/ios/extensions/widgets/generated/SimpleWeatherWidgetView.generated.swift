@@ -17,7 +17,7 @@ struct SimpleWeatherWidgetView: View {
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: width < 100 ? 4 : width < 150 ? 6 : 8) {
-                    if width < 80 {
+                    if width < 120 {
                         VStack(alignment: .center, spacing: 0) {
                             Spacer()
                             if !data.iconPath.isEmpty {
@@ -32,75 +32,32 @@ struct SimpleWeatherWidgetView: View {
                                 .font(.system(size: 8, weight: .regular))
                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 .lineLimit(1)
-                        }
+                        }.padding(10)
                     }
                     else {
-                        if (width > height && width >= 200) {
-                            HStack(alignment: .center, spacing: 0) {
-                                VStack(alignment: .center, spacing: 0) {
-                                    if !data.iconPath.isEmpty {
-                                        WeatherIconView(data.iconPath, description: data.description, size: 64)
-                                    }
-                                    Spacer().frame(height: 4)
-                                    Text(data.locationName)
-                                        .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                        .lineLimit(1)
-                                }
+                        HStack(alignment: .top, spacing: 0) {
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(data.temperature)
+                                    .font(.system(size: 40, weight: .bold))
+                                    .foregroundColor(WidgetColorProvider.onSurface)
                                 Spacer().frame(height: 8)
-                                VStack(alignment: .center, spacing: 0) {
-                                    Text(data.temperature)
-                                        .font(.system(size: 40, weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                    if !data.description.isEmpty {
-                                        Spacer().frame(height: 4)
-                                    }
-                                    if !data.description.isEmpty {
-                                        Text(data.description)
-                                            .font(.system(size: 12, weight: .regular))
-                                            .foregroundColor(WidgetColorProvider.onSurface)
-                                    }
-                                }
+                                Text(data.locationName)
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .lineLimit(1)
                             }
-                        }
-                        else {
-                            if width < 200 {
-                                VStack(alignment: .center, spacing: 0) {
-                                    Text(data.locationName)
+                            VStack(alignment: .trailing, spacing: 0) {
+                                if !data.iconPath.isEmpty {
+                                    WeatherIconView(data.iconPath, description: data.description, size: 64)
+                                }
+                                if !data.description.isEmpty {
+                                    Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                    Spacer().frame(height: 4)
-                                    if !data.iconPath.isEmpty {
-                                        WeatherIconView(data.iconPath, description: data.description, size: 48)
-                                    }
-                                    Spacer().frame(height: 4)
-                                    Text(data.temperature)
-                                        .font(.system(size: 32, weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                        .multilineTextAlignment(.leading)
                                 }
                             }
-                            else {
-                                VStack(alignment: .center, spacing: 0) {
-                                    Text(data.locationName)
-                                        .font(.system(size: 16, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                    Spacer().frame(height: 8)
-                                    if !data.iconPath.isEmpty {
-                                        WeatherIconView(data.iconPath, description: data.description, size: 72)
-                                    }
-                                    Spacer().frame(height: 8)
-                                    Text(data.temperature)
-                                        .font(.system(size: 48, weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                    Spacer().frame(height: 4)
-                                    if !data.description.isEmpty {
-                                        Text(data.description)
-                                            .font(.system(size: 14, weight: .regular))
-                                            .foregroundColor(WidgetColorProvider.onSurface)
-                                    }
-                                }
-                            }
-                        }
+                        }.padding(10)
                     }
                 }
             } else {

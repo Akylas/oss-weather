@@ -22,9 +22,9 @@
         "svelte-check": "svelte-check --compiler-warnings 'a11y-no-onchange:ignore,a11y-label-has-associated-control:ignore,a11y-autofocus:ignore,illegal-attribute-character:ignore'",
         "sync": "node ./tools/sync.mjs",
         "update": "node ./tools/update.mjs",
-        "setup": "npm run submodules && npm run generate:widget-kind-configs",
+        "setup": "npm run submodules",
         "submodules": "git submodule update --init --recursive",
-        "generate:widget-kind-configs": "cd widget-layouts && npm run generate:kind-configs",
+        "generate:widgets": "cd plugin-widgets && npm run generate:all",
         "build.android.production.playstore": "PLAY_STORE_BUILD=1 npm run build.android.production -- --aab",
         "build.android.production.playstore.sentry": "NS_SENTRY=1 PLAY_STORE_BUILD=1 cross-var ns build android --release --clean --key-store-path $KEYSTORE_PATH --key-store-password $KEYSTORE_PASSWORD --key-store-alias $KEYSTORE_ALIAS --key-store-alias-password $KEYSTORE_ALIAS_PASSWORD --env.adhoc_sentry --env.report --aab --gradleArgs=-PsentryEnabled",
         "set_version": "node tools/scripts/set-version.mjs set-version"
@@ -38,7 +38,7 @@
     "repository": "https://github.com/Akylas/oss-weather",
     "dependencies": {
         "@akylas/address-formatter": "5.3.1",
-        "@akylas/nativescript": "8.9.12",
+        "@akylas/nativescript": "8.9.13",
         "@akylas/nativescript-app-tools": "portal:tools",
         "@akylas/nativescript-app-utils": "2.2.7",
         "@akylas/nativescript-inapp-purchase": "0.0.4",
@@ -119,8 +119,5 @@
         "./map",
         "./plugin-widgets/"
     ],
-    "resolutions": {
-        "svelte-check@npm:4.3.1": "patch:svelte-check@npm%3A4.3.1#~/.yarn/patches/svelte-check-npm-4.3.1-7aa559b153.patch"
-    },
     "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b"
 }

@@ -28,18 +28,17 @@ struct SimpleWeatherWithClockWidgetView: View {
                                         .font(.system(size: 14, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 }
-                                VStack(alignment: .trailing, spacing: 4) {
+                                VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
-                                        WeatherIconView(data.iconPath, description: data.description, size: 56)
+                                        WeatherIconView(data.iconPath, description: data.description, size: 62)
                                     }
                                     Text(data.temperature)
-                                        .font(.system(size: 32, weight: .bold))
+                                        .font(.system(size: 28, weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                         .multilineTextAlignment(.leading)
                                 }
                             }.padding(8)
                             VStack(alignment: .trailing, spacing: 0) {
-                                Spacer()
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)

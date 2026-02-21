@@ -1051,7 +1051,7 @@ function main() {
     }
 
     // Process all widget JSON files (excluding backups and test files)
-    const files = fs.readdirSync(widgetsDir).filter((f) => f.endsWith('.json') && !f.includes('.refactored') && !f.includes('.old') && !f.includes('.mapbox') && !f.includes('.backup'));
+    const files = fs.readdirSync(widgetsDir).filter((f) => f.endsWith('.json'));
 
     for (const file of files) {
         const filePath = path.join(widgetsDir, file);

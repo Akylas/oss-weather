@@ -444,8 +444,7 @@ export class DataService extends Observable {
 
     getItemData(key: WeatherProps, item: CommonWeatherData, type?: 'daily' | 'hourly' | 'currently', options?): CommonData {
         const dataOptions = this.getWeatherDataOptions(key);
-
-        if (!dataOptions || this.allWeatherData.indexOf(WEATHER_DATA_PARENT[key] || key) === -1) {
+        if (!dataOptions || (key !== WeatherProps.temperature && this.allWeatherData.indexOf(WEATHER_DATA_PARENT[key] || key) === -1)) {
             return null;
         }
         const toCheck = (type === 'daily' && key === WeatherProps.apparentTemperature ? item['apparentTemperatureMin'] : item[key]) ?? null;
@@ -485,6 +484,32 @@ export class DataService extends Observable {
                 }
 
                 break;
+            case WeatherProps.temperature:
+                if (type === 'daily') {
+                    if (item.temperatureMin) {
+                        return {
+                            key,
+                            iconFontSize,
+                            paint: mdiPaint,
+                            icon,
+                            value:
+                                formatValueToUnit(item.temperatureMin, propToUnit(key, item), defaultPropUnit(key)) +
+                                '/' +
+                                formatValueToUnit(item.temperatureMax, propToUnit(key, item), defaultPropUnit(key))
+                        };
+                    }
+                } else if (item.temperature) {
+                    return {
+                        key,
+                        // iconColor: tempColor(item[key], -20, 30),
+                        iconFontSize,
+                        paint: mdiPaint,
+                        icon,
+                        value: formatWeatherValue(item, key, options)
+                    };
+                }
+
+                break;
             case WeatherProps.windSpeed:
                 if (item.windSpeed) {
                     const data = convertWeatherValueToUnit(item, key, options);
@@ -498,17 +523,17 @@ export class DataService extends Observable {
                     };
                 }
                 break;
-            case WeatherProps.temperature:
-                // const data = convertWeatherValueToUnit(item, key);
-                return {
-                    key,
-                    iconFontSize,
-                    iconColor: tempColor(item[key], -20, 30),
-                    paint: mdiPaint,
-                    icon,
-                    value: formatWeatherValue(item, key, options)
-                    // subvalue: data[1]
-                };
+            // case WeatherProps.temperature:
+            //     // const data = convertWeatherValueToUnit(item, key);
+            //     return {
+            //         key,
+            //         iconFontSize,
+            //         iconColor: tempColor(item[key], -20, 30),
+            //         paint: mdiPaint,
+            //         icon,
+            //         value: formatWeatherValue(item, key, options)
+            //         // subvalue: data[1]
+            //     };
             case WeatherProps.rainSnowLimit: {
                 const data = convertWeatherValueToUnit(item, key, options);
                 return {

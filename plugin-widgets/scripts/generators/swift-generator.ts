@@ -792,7 +792,8 @@ function findJsonFiles(dir: string): string[] {
  */
 export function generateAllWidgets(layoutsDir: string, outputDir: string, widgetName?: string): void {
     console.log(`Swift generator: scanning layouts in ${layoutsDir}`);
-    let widgetFiles = findJsonFiles(layoutsDir);
+    // let widgetFiles = findJsonFiles(layoutsDir);
+    let widgetFiles = fs.readdirSync(layoutsDir).filter((f) => f.endsWith('.json'));
 
     // Inform the user
     console.log(`Swift generator: found ${widgetFiles.length} layout JSON file(s) under ${layoutsDir}`);
@@ -805,37 +806,23 @@ export function generateAllWidgets(layoutsDir: string, outputDir: string, widget
     if (widgetName) {
         const matches: string[] = [];
 
-        // If widgetName looks like a path to a directory: find .json inside it
-        const candidatePath = path.isAbsolute(widgetName) ? widgetName : path.join(process.cwd(), widgetName);
-        if (fs.existsSync(candidatePath) && fs.statSync(candidatePath).isDirectory()) {
-            matches.push(...findJsonFiles(candidatePath));
-        } else if (widgetName.includes(path.sep) || widgetName.endsWith('.json')) {
-            // If widgetName looks like a file path
-            const candidate = path.isAbsolute(widgetName) ? widgetName : path.resolve(widgetName);
-            if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-                matches.push(candidate);
-            } else {
-                console.error(`Widget file not found: ${candidate}`);
+        // First, exact filename match among discovered files
+        for (const filepath of widgetFiles) {
+            if (path.basename(filepath) === `${widgetName}.json` || path.basename(filepath, '.json') === widgetName) {
+                matches.push(filepath);
             }
-        } else {
-            // First, exact filename match among discovered files
-            for (const filepath of widgetFiles) {
-                if (path.basename(filepath) === `${widgetName}.json` || path.basename(filepath, '.json') === widgetName) {
-                    matches.push(filepath);
-                }
-            }
+        }
 
-            // If none by filename, look inside JSON layout.name to find a matching layout
-            if (matches.length === 0) {
-                for (const f of widgetFiles) {
-                    try {
-                        const layout: WidgetLayout = JSON.parse(fs.readFileSync(f, 'utf-8'));
-                        if (layout.name === widgetName) {
-                            matches.push(f);
-                        }
-                    } catch {
-                        // ignore parse error for this lookup
+        // If none by filename, look inside JSON layout.name to find a matching layout
+        if (matches.length === 0) {
+            for (const f of widgetFiles) {
+                try {
+                    const layout: WidgetLayout = JSON.parse(fs.readFileSync(f, 'utf-8'));
+                    if (layout.name === widgetName) {
+                        matches.push(f);
                     }
+                } catch {
+                    // ignore parse error for this lookup
                 }
             }
         }

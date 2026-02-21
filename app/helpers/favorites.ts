@@ -8,6 +8,8 @@ import PolygonLookup from 'polygon-lookup';
 import { AqiProviderType, ProviderType } from '~/services/providers/weather';
 import { SETTINGS_FAVORITES } from './constants';
 import { OpenMeteoModels } from '~/services/providers/om';
+import { confirm } from '@nativescript-community/ui-material-dialogs';
+import { l, lc } from '@nativescript-community/l';
 
 export const EVENT_FAVORITE = 'favorite';
 
@@ -21,7 +23,7 @@ export async function queryTimezone(location: FavoriteLocation, force = false) {
     let timezone = location.timezone;
     if (!timezone) {
         if (!timezoneLookUp) {
-              timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
+            timezoneLookUp = new PolygonLookup(require('~/timezone/timezonedb.json'));
         }
         const result = timezoneLookUp.search(location.coord.lon, location.coord.lat);
         timezone = result?.properties.tzid;
@@ -53,11 +55,11 @@ let favoritesKeys = favorites.map((f) => `${f.coord.lat};${f.coord.lon}`);
 if (favorites.length) {
     const needsSaving = !favorites.getItem(0).timezone;
     Promise.all(
-        favorites.map((f, index) => 
-             queryTimezone(f).then((timezonData) => {
+        favorites.map((f, index) =>
+            queryTimezone(f).then((timezonData) => {
                 Object.assign(f, timezonData);
                 favorites.setItem(index, f);
-            }) 
+            })
         )
     ).then(() => needsSaving && ApplicationSettings.setString(SETTINGS_FAVORITES, JSON.stringify(favorites)));
 }
@@ -93,6 +95,7 @@ export function favoriteIcon(item: FavoriteLocation) {
 
 export function getFavoriteKey(item: WeatherLocation) {
     if (item) {
+        DEV_LOG && console.log('getFavoriteKey', `${item.coord.lat};${item.coord.lon}`);
         return `${item.coord.lat};${item.coord.lon}`;
     }
 }
@@ -138,8 +141,18 @@ export async function setFavoriteAqiProvider(item: FavoriteLocation, provider: A
         globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     }
 }
-export async function toggleFavorite(item: FavoriteLocation) {
+export async function toggleFavorite(item: FavoriteLocation, needsConfirmation = false) {
     if (isFavorite(item)) {
+        if (needsConfirmation) {
+            const result = await confirm({
+                title: lc('remove_favorite'),
+                okButtonText: lc('remove'),
+                cancelButtonText: lc('cancel')
+            });
+            if (!result) {
+                return;
+            }
+        }
         const key = getFavoriteKey(item);
         item.isFavorite = false;
         const index = favoritesKeys.indexOf(key);
@@ -149,21 +162,38 @@ export async function toggleFavorite(item: FavoriteLocation) {
             favorites.splice(index, 1);
         }
     } else {
-        const { isFavorite, startingSide, ...toSave } = item;
-        // if (!item.timezone) {
         try {
             const timezonData = await queryTimezone(item);
             if (timezonData) {
-                Object.assign(toSave, timezonData);
+                Object.assign(item, timezonData);
             }
         } catch (error) {}
         // }
         item.isFavorite = true;
+        delete item.startingSide;
         updateOnSettingChanged = true;
         favoritesKeys.push(getFavoriteKey(item));
-        favorites.push(toSave);
+        favorites.push(item);
     }
     delete item.startingSide; //for swipemenu
     globalObservable.notify({ eventName: EVENT_FAVORITE, data: item });
     return item;
+}
+
+export async function duplicateFavorite(item: FavoriteLocation) {
+    const { isFavorite, startingSide, ...toSave } = item;
+    const newItem = JSON.parse(JSON.stringify(toSave));
+    // this is a trick to duplicate while keeping a unique key
+    newItem.coord.lat += 0.00000001;
+    try {
+        const timezonData = await queryTimezone(newItem);
+        if (timezonData) {
+            Object.assign(newItem, timezonData);
+        }
+    } catch (error) {}
+    newItem.isFavorite = true;
+    updateOnSettingChanged = true;
+    favoritesKeys.push(getFavoriteKey(newItem));
+    favorites.push(newItem);
+    globalObservable.notify({ eventName: EVENT_FAVORITE, data: newItem });
 }

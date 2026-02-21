@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
     import { GPS } from '@nativescript-community/gps';
-    import { getFile } from '@nativescript-community/https';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
     import { Template } from '@nativescript-community/svelte-native/components';
     import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
@@ -37,6 +36,7 @@
     import {
         EVENT_FAVORITE,
         FavoriteLocation,
+        duplicateFavorite,
         favoriteIcon,
         favoriteIconColor,
         favorites,
@@ -53,7 +53,9 @@
     import { formatTime, getEndOfDay, getStartOfDay, l, lc, lu, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
+    import { gadgetbridgeService } from '~/services/gadgetbridge';
     import { onIconPackChanged } from '~/services/icon';
+    import { MFProvider } from '~/services/providers/mf';
     import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
     import type { AqiProviderType, DailyData, Hourly, ProviderType, WeatherData } from '~/services/providers/weather';
     import {
@@ -73,7 +75,7 @@
     import { parseUrlQueryParameters } from '~/utils/http';
     import { hideLoading, selectValue, showLoading, showPopoverMenu, showToast, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
-    import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
+    import { actionBarHeight, colors, fontScale, fonts, onFontScaleChanged, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
 
     const gps: GPS = new GPS();
@@ -220,7 +222,7 @@
                                     DEV_LOG && console.log('bra lookup', weatherLocation.coord, result);
                                     const massifId = result?.properties.code ?? -1;
                                     if (massifId !== -1) {
-                                        const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        const pdfFile = await MFProvider.getBRA(massifId);
                                         DEV_LOG && console.log('massifId', massifId, typeof massifId, pdfFile.path);
                                         openFile(pdfFile.path);
                                     } else {
@@ -287,6 +289,10 @@
                         // Don't fail the whole refresh if widget update fails
                         console.error('Failed to update widgets:', widgetError);
                     }
+                }
+                // Broadcast weather data to Gadgetbridge if enabled (Android only)
+                if (__ANDROID__) {
+                    gadgetbridgeService.broadcastWeather(weatherLocation, weatherData);
                 }
             }
         } catch (err) {
@@ -521,7 +527,10 @@
     onSettingsChanged(SETTINGS_FEELS_LIKE_TEMPERATURES, refreshWeather);
     onSettingsChanged(SETTINGS_SHOW_CURRENT_DAY_DAILY, updateView);
     onSettingsChanged(SETTINGS_SHOW_DAILY_IN_CURRENTLY, updateView);
-    fontScale.subscribe(updateView);
+    onFontScaleChanged(() => {
+        updateView();
+        favoriteCollectionView.nativeView?.refreshVisibleItems();
+    });
 
     async function showAlerts() {
         if (!weatherData.alerts) {
@@ -845,7 +854,8 @@
         if (result) {
             try {
                 showLoading();
-                const pdfFile = await getFile(`https://www.meteo-montagne.com/pdf/massif_${result.id}.pdf`);
+                const pdfFile = await MFProvider.getBRA(result.id);
+
                 DEV_LOG && console.log('massifId', result.id, pdfFile.path);
                 openFile(pdfFile.path);
             } finally {
@@ -905,6 +915,11 @@
                     id: 'delete',
                     color: colorError,
                     name: lc('remove')
+                },
+                {
+                    icon: 'mdi-content-copy',
+                    id: 'duplicate',
+                    name: lc('duplicate')
                 }
             ];
             if (favItem.timezone === 'Europe/Paris' && isBRABounds(favItem)) {
@@ -954,7 +969,7 @@
                                     const massifId = result?.properties.code ?? -1;
                                     if (massifId !== -1) {
                                         showLoading();
-                                        const result = await getFile(`https://www.meteo-montagne.com/pdf/massif_${massifId}.pdf`);
+                                        const result = await MFProvider.getBRA(massifId);
                                         DEV_LOG && console.log('massifId', massifId, result.path);
                                         openFile(result.path);
                                     }
@@ -968,6 +983,9 @@
                                     break;
                                 case 'om_model':
                                     await selectOMProviderModel(favItem);
+                                    break;
+                                case 'duplicate':
+                                    await duplicateFavorite(favItem);
                                     break;
                                 case 'rename':
                                     result = await prompt({
@@ -1068,7 +1086,7 @@
                     variant="text"
                     verticalAlignment="middle"
                     visibility={weatherLocation ? 'visible' : 'collapse'}
-                    on:tap={() => toggleFavorite(weatherLocation)} />
+                    on:tap={() => toggleFavorite(weatherLocation, true)} />
                 <mdbutton
                     class="actionBarButton"
                     color="#EFB644"

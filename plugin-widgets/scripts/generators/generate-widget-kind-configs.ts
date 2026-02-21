@@ -39,7 +39,7 @@ interface WidgetSchema {
 }
 
 function loadWidgetSchemas(): Map<string, WidgetSchema> {
-    const widgetsDir = join(__dirname, '../src/widgets');
+    const widgetsDir = join(__dirname, '../../src/widgets');
     const schemas = new Map<string, WidgetSchema>();
 
     const files = readdirSync(widgetsDir).filter((f) => f.endsWith('.json') && !f.startsWith('.'));

@@ -15,7 +15,7 @@
     let paint: Paint;
 
     const PADDING_LEFT = 7;
-    const ICON_WIDTH = 60;
+    const ICON_WIDTH = 55;
 </script>
 
 <script lang="ts">
@@ -46,7 +46,6 @@
     }
     function drawOnCanvas({ canvas }: { canvas: Canvas }) {
         const w = canvas.getWidth();
-        const w2 = w / 2;
         const h = canvas.getHeight();
         paint.setColor(item.color);
         if (!isEInk) {
@@ -129,7 +128,7 @@
         switch ($weatherDataLayout) {
             case 'line': {
                 const lineHeight = 20 * $fontScale;
-                const lineWidth = 100 * $fontScale;
+                const lineWidth = Math.min(130 * $fontScale, w / 2 - 70 * $fontScale);
                 const centerX = 70 * $fontScale + lineWidth;
                 const nbLines = Math.ceil(count / 2);
                 const iconsTop = h / 2 - (nbLines / 2) * lineHeight;
@@ -223,11 +222,11 @@
             }
             default:
             case 'default': {
-                const iconsTop = 10 * $fontScale;
+                const iconsTop = h / 2 - 20 * $fontScale;
                 for (let index = 0; index < centeredItemsToDraw.length; index++) {
                     const c = centeredItemsToDraw[index];
 
-                    const x = w / 2 - ((count - 1) / 2 - index) * 45 * $fontScale;
+                    const x = w / 2 - 20 / $fontScale - ((count - 1) / 2 - index) * 45 * $fontScale;
                     const paint = c.paint || textIconPaint;
                     paint.setTextAlign(Align.CENTER);
                     // if (c.customDraw) {

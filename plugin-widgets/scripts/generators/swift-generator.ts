@@ -12,8 +12,17 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { compileExpression } from './expression-compiler';
-import { getSingleBinding, hasTemplateBinding, isExpression } from './shared-utils';
+import { compileExpression, Expression } from './expression-compiler';
+import {
+    BaseLayoutElement,
+    getSingleBinding,
+    getSettingKey,
+    hasTemplateBinding,
+    isExpression,
+    isSettingReference,
+    toPlatformFontWeight
+} from './shared-utils';
+import { DEFAULT_COLOR_MAPS } from './modifier-builders';
 
 // ============================================================================
 // CONSTANTS
@@ -28,50 +37,6 @@ const DEFAULT_PADDING = 8;
 // TYPE DEFINITIONS
 // ============================================================================
 
-// Mapbox-style expression type
-type Expression = any[] | string | number | boolean;
-
-interface LayoutElement {
-    type: string;
-    id?: string;
-    visible?: boolean;
-    visibleIf?: Expression;
-    padding?: Expression;
-    paddingHorizontal?: Expression;
-    paddingVertical?: Expression;
-    margin?: Expression;
-    spacing?: Expression;
-    alignment?: string;
-    crossAlignment?: string;
-    width?: Expression;
-    height?: Expression;
-    flex?: Expression;
-    backgroundColor?: Expression;
-    cornerRadius?: Expression;
-    children?: LayoutElement[];
-    // Element-specific
-    text?: Expression;
-    fontSize?: Expression;
-    fontWeight?: Expression;
-    color?: Expression;
-    textAlign?: string;
-    maxLines?: Expression;
-    src?: Expression;
-    size?: Expression;
-    thickness?: Expression;
-    direction?: string;
-    items?: string;
-    limit?: Expression;
-    itemTemplate?: LayoutElement;
-    condition?: Expression;
-    then?: LayoutElement;
-    else?: LayoutElement;
-    format24Hour?: string;
-    format12Hour?: string;
-    format?: string;
-    style?: string;
-}
-
 interface WidgetLayout {
     name: string;
     displayName?: string;
@@ -84,27 +49,10 @@ interface WidgetLayout {
     };
     variants?: {
         condition: string;
-        layout: LayoutElement;
+        layout: BaseLayoutElement;
     }[];
-    layout: LayoutElement;
+    layout: BaseLayoutElement;
 }
-
-// Color mapping for theme colors
-const SWIFT_COLORS: Record<string, string> = {
-    onSurface: 'WidgetColorProvider.onSurface',
-    onSurfaceVariant: 'WidgetColorProvider.onSurfaceVariant',
-    primary: 'WidgetColorProvider.primary',
-    error: 'WidgetColorProvider.error',
-    widgetBackground: 'WidgetColorProvider.background',
-    surface: 'WidgetColorProvider.surface'
-};
-
-// Font weight mapping
-const SWIFT_FONT_WEIGHTS: Record<string, string> = {
-    normal: '.regular',
-    medium: '.medium',
-    bold: '.bold'
-};
 
 // ============================================================================
 // EXPRESSION & TEMPLATE HANDLING
@@ -225,27 +173,17 @@ function escapeSwiftString(str: string): string {
 // PROPERTY COMPILATION HELPERS
 // ============================================================================
 
-// Helper to check if a value is a settings reference
-function isSetting(value?: string | Expression): boolean {
-    return typeof value === 'string' && value.startsWith('config.settings.');
-}
-
-// Helper to get setting key from config.settings.* syntax
-function getSettingKey(value: string): string {
-    return value.substring(16); // Remove 'config.settings.' prefix
-}
-
 /**
  * Convert font weight to Swift weight token
  * Supports both literal values and config.settings.* references
  */
 function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): string {
     if (weight === undefined) {
-        return SWIFT_FONT_WEIGHTS[fallback] || '.regular';
+        return toPlatformFontWeight(fallback, 'swift');
     }
 
     // Handle config settings reference
-    if (isSetting(weight)) {
+    if (isSettingReference(weight as string)) {
         const settingKey = getSettingKey(weight as string);
         return `(config.settings?["${settingKey}"] as? Bool ?? true) ? .bold : .regular`;
     }
@@ -253,10 +191,9 @@ function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): st
     // Handle string literals
     if (typeof weight === 'string') {
         const key = weight.toLowerCase();
-        if (SWIFT_FONT_WEIGHTS[key]) return SWIFT_FONT_WEIGHTS[key];
-        if (/(bold|700|800|900)/i.test(key)) return SWIFT_FONT_WEIGHTS['bold'];
-        if (/(med|500|600)/i.test(key)) return SWIFT_FONT_WEIGHTS['medium'];
-        return SWIFT_FONT_WEIGHTS['normal'];
+        if (/(bold|700|800|900)/i.test(key)) return toPlatformFontWeight('bold', 'swift');
+        if (/(med|500|600)/i.test(key)) return toPlatformFontWeight('medium', 'swift');
+        return toPlatformFontWeight(key, 'swift');
     }
 
     // Handle expressions
@@ -267,7 +204,7 @@ function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): st
         });
     }
 
-    return SWIFT_FONT_WEIGHTS[fallback] || '.regular';
+    return toPlatformFontWeight(fallback, 'swift');
 }
 
 /**
@@ -314,7 +251,7 @@ function toSwiftColor(color?: Expression): string {
         if (color.startsWith('#')) {
             return `Color(hex: "${color}")`;
         }
-        return SWIFT_COLORS[color] || 'WidgetColorProvider.onSurface';
+        return DEFAULT_COLOR_MAPS.swift[color] || 'WidgetColorProvider.onSurface';
     }
 
     // Handle expressions
@@ -326,7 +263,7 @@ function toSwiftColor(color?: Expression): string {
                 if (v.startsWith('#')) {
                     return `Color(hex: "${v}")`;
                 }
-                return SWIFT_COLORS[v] || 'WidgetColorProvider.onSurface';
+                return DEFAULT_COLOR_MAPS.swift[v] || 'WidgetColorProvider.onSurface';
             }
         });
     }
@@ -342,7 +279,7 @@ function toSwiftColor(color?: Expression): string {
  * Calculate spacing value from element property
  * Handles both literal numbers and expressions
  */
-function calculateSpacing(element: LayoutElement): number | string {
+function calculateSpacing(element: BaseLayoutElement): number | string {
     if (element.spacing === undefined) return 0;
     if (typeof element.spacing === 'number') return element.spacing;
     return compileToSwift(element.spacing, '0');
@@ -355,7 +292,7 @@ function calculateSpacing(element: LayoutElement): number | string {
 /**
  * Generate Swift code for an element
  */
-function generateElement(element: LayoutElement, indent: string = '                '): string {
+function generateElement(element: BaseLayoutElement, indent: string = '                '): string {
     const lines: string[] = [];
 
     // Handle visibility condition
@@ -415,7 +352,7 @@ function generateElement(element: LayoutElement, indent: string = '             
     return lines.join('\n');
 }
 
-function generateColumn(element: LayoutElement, indent: string): string[] {
+function generateColumn(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, true);
@@ -449,7 +386,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateRow(element: LayoutElement, indent: string): string[] {
+function generateRow(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, false);
@@ -483,7 +420,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateStack(element: LayoutElement, indent: string): string[] {
+function generateStack(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
     lines.push(`${indent}ZStack {`);
@@ -515,7 +452,7 @@ function generateStack(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateLabel(element: LayoutElement, indent: string): string[] {
+function generateLabel(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
     // Compile text expression
@@ -563,7 +500,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateImage(element: LayoutElement, indent: string): string[] {
+function generateImage(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const size = typeof element.size === 'number' ? element.size : DEFAULT_IMAGE_SIZE;
 
@@ -591,7 +528,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateSpacer(element: LayoutElement, indent: string): string[] {
+function generateSpacer(element: BaseLayoutElement, indent: string): string[] {
     if (element.size !== undefined) {
         const size = typeof element.size === 'number' ? element.size : compileToSwift(element.size, '8');
         return [`${indent}Spacer().frame(height: ${size})`];
@@ -599,13 +536,13 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
     return [`${indent}Spacer()`];
 }
 
-function generateDivider(element: LayoutElement, indent: string): string[] {
+function generateDivider(element: BaseLayoutElement, indent: string): string[] {
     const color = toSwiftColor(element.color || 'onSurfaceVariant');
     const thickness = typeof element.thickness === 'number' ? element.thickness : element.thickness ? compileToSwift(element.thickness, '1') : 1;
     return [`${indent}Divider().frame(height: ${thickness}).background(${color}.opacity(0.3))`];
 }
 
-function generateScrollView(element: LayoutElement, indent: string): string[] {
+function generateScrollView(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const axis = element.direction === 'horizontal' ? '.horizontal' : '.vertical';
 
@@ -625,7 +562,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateForEach(element: LayoutElement, indent: string): string[] {
+function generateForEach(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const items = element.items || 'items';
     const limit = element.limit;
@@ -652,7 +589,7 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateConditional(element: LayoutElement, indent: string): string[] {
+function generateConditional(element: BaseLayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const condition = compileConditionToSwift(element.condition);
 
@@ -671,7 +608,7 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateClock(element: LayoutElement, indent: string): string[] {
+function generateClock(element: BaseLayoutElement, indent: string): string[] {
     const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 24;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'bold');
     const color = toSwiftColor(element.color);
@@ -684,7 +621,7 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateDate(element: LayoutElement, indent: string): string[] {
+function generateDate(element: BaseLayoutElement, indent: string): string[] {
     const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 14;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'normal');
     const color = toSwiftColor(element.color);

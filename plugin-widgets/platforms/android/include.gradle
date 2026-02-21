@@ -1,0 +1,23 @@
+dependencies {
+
+    implementation "androidx.appcompat:appcompat:$androidXAppCompatVersion"
+	def androidXAppCompatVersion =  project.hasProperty("androidXAppCompat") ? project.androidXAppCompat : "1.1.0"
+
+    def glanceVersion =  project.hasProperty("glanceVersion") ? project.glanceVersion : "1.2.0-rc01"
+    
+    // Glance for widgets
+    implementation "androidx.glance:glance-appwidget:$glanceVersion"
+    implementation "androidx.glance:glance-preview:$glanceVersion"
+    implementation "androidx.glance:glance-appwidget-preview:$glanceVersion"
+    implementation "androidx.glance:glance-material3:$glanceVersion"
+    
+    // WorkManager for scheduling
+    implementation "androidx.work:work-runtime-ktx:2.8.1"
+
+    // Compose dependencies
+    implementation "androidx.compose.ui:ui:1.5.3"
+    implementation "androidx.compose.material3:material3:1.1.2"
+    implementation "androidx.compose.runtime:runtime:1.5.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
+    implementation 'androidx.compose.ui:ui-unit:1.9.4'
+}

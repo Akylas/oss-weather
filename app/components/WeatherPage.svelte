@@ -2,12 +2,15 @@
     import { GPS } from '@nativescript-community/gps';
     import { getFile } from '@nativescript-community/https';
     import { isPermResultAuthorized, request } from '@nativescript-community/perms';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
     import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
     import { confirm, prompt } from '@nativescript-community/ui-material-dialogs';
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
+    import { closePopover } from '@nativescript-community/ui-popover/svelte';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { getUniversalLink, registerUniversalLinkCallback } from '@nativescript-community/universal-links';
     import { Application, ApplicationSettings, Color, ContentView, CoreTypes, EventData, File, Page, Screen, knownFolders, path } from '@nativescript/core';
@@ -16,16 +19,14 @@
     import { globalObservable, navigate, showModal } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
     import type { FeatureCollection, MultiPolygon } from 'geojson';
+    import { isCurrentLocation as isCurrentLocationWidget, notifyWidgetsWeatherUpdated, notifyWidgetsWeatherUpdatedForLocation } from 'plugin-widgets';
     import PolygonLookup from 'polygon-lookup';
     import { onDestroy, onMount } from 'svelte';
-    import { Template } from '@nativescript-community/svelte-native/components';
-    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import WeatherComponent from '~/components/WeatherComponent.svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import {
         DATA_VERSION,
         SETTINGS_FEELS_LIKE_TEMPERATURES,
-        SETTINGS_PROVIDER,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
         SETTINGS_SHOW_DAILY_IN_CURRENTLY,
         SETTINGS_SWIPE_ACTION_BAR_PROVIDER,
@@ -53,7 +54,7 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
     import { onIconPackChanged } from '~/services/icon';
-    import { OWMProvider } from '~/services/providers/owm';
+    import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
     import type { AqiProviderType, DailyData, Hourly, ProviderType, WeatherData } from '~/services/providers/weather';
     import {
         Providers,
@@ -70,14 +71,10 @@
     } from '~/services/providers/weatherproviderfactory';
     import { WeatherProps, mergeWeatherData, onWeatherDataChanged, weatherDataService } from '~/services/weatherData';
     import { parseUrlQueryParameters } from '~/utils/http';
-    import { hideLoading, selectValue, showAlertOptionSelect, showLoading, showPopoverMenu, showToast, tryCatch, tryCatchFunction } from '~/utils/ui';
+    import { hideLoading, selectValue, showLoading, showPopoverMenu, showToast, tryCatchFunction } from '~/utils/ui';
     import { isBRABounds } from '~/utils/utils.common';
     import { actionBarHeight, colors, fontScale, fonts, onSettingsChanged, windowInset } from '~/variables';
     import IconButton from './common/IconButton.svelte';
-    import ThankYou from '@shared/components/ThankYou.svelte';
-    import { OpenMeteoModels, getOMPreferredModel } from '~/services/providers/om';
-    import { closePopover } from '@nativescript-community/ui-popover/svelte';
-    import { isCurrentLocation as isCurrentLocationWidget, notifyWidgetsWeatherUpdated, notifyWidgetsWeatherUpdatedForLocation } from '~/services/widgets/WidgetUpdateService';
 
     const gps: GPS = new GPS();
     const gpsAvailable = gps.hasGPS();
@@ -276,18 +273,20 @@
                     }
                 }
 
-                // Notify widgets that weather data has been updated
-                try {
-                    if (isCurrentLocationWidget(weatherLocation)) {
-                        // This is the current/default location - update default widgets
-                        await notifyWidgetsWeatherUpdated();
-                    } else {
-                        // This is a specific location - update widgets for this location
-                        await notifyWidgetsWeatherUpdatedForLocation(weatherLocation);
+                if (WIDGETS) {
+                    // Notify widgets that weather data has been updated
+                    try {
+                        if (isCurrentLocationWidget(weatherLocation)) {
+                            // This is the current/default location - update default widgets
+                            await notifyWidgetsWeatherUpdated();
+                        } else {
+                            // This is a specific location - update widgets for this location
+                            await notifyWidgetsWeatherUpdatedForLocation(weatherLocation);
+                        }
+                    } catch (widgetError) {
+                        // Don't fail the whole refresh if widget update fails
+                        console.error('Failed to update widgets:', widgetError);
                     }
-                } catch (widgetError) {
-                    // Don't fail the whole refresh if widget update fails
-                    console.error('Failed to update widgets:', widgetError);
                 }
             }
         } catch (err) {

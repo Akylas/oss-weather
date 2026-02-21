@@ -1,0 +1,36 @@
+{
+    "name": "plugin-widgets",
+    "main": "src/index",
+    "typings": "src/index.d.ts",
+    "nativescript": {
+        "platforms": {
+            "ios": "6.2.1",
+            "android": "6.2.1"
+        }
+    },
+    "version": "1.0.0",
+    "description": "OSS-Weather widgets plugin",
+    "types": "module",
+    "scripts": {
+        "generate:images": "tsx scripts/generators/generate-images.ts all",
+        "generate:images:combined": "tsx scripts/generators/generate-images.ts combined",
+        "generate:images:single": "tsx scripts/generators/generate-images.ts single",
+        "generate:swift": "tsx scripts/generators/swift-generator.ts",
+        "generate:glance": "tsx scripts/generators/glance-generator.ts",
+        "generate:ns": "tsx scripts/generators/nativescript-svelte-generator.ts",
+        "generate:samples": "tsx scripts/generate-samples.ts",
+        "generate:kind-configs": "tsx scripts/generators/generate-widget-kind-configs.ts",
+        "dev": "vite"
+    },
+    "dependencies": {
+        "puppeteer": "^24.37.5",
+        "ts-node": "^10.9.2"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.3",
+        "tslib": "^2.8.1",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
+        "vite": "^7.3.1"
+    }
+}

@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
     import { share } from '@akylas/nativescript-app-utils/share';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
@@ -15,8 +17,7 @@
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
-    import { Template } from '@nativescript-community/svelte-native/components';
-    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
+    import { WIDGET_KINDS, WIDGET_NAMES, WidgetConfigManager } from 'plugin-widgets';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import {
@@ -76,13 +77,11 @@
     import { UNITS, UNIT_FAMILIES } from '~/helpers/units';
     import { networkService } from '~/services/api';
     import { iconService } from '~/services/icon';
-    import { OpenMeteoModels } from '~/services/providers/om';
     import { aqi_providers, getAqiProviderType, getProviderSettins, getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { AVAILABLE_WEATHER_DATA, getWeatherDataTitle, weatherDataService } from '~/services/weatherData';
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
-    import { WIDGET_KINDS, WIDGET_NAMES, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -585,73 +584,73 @@
                 ];
             case 'widgets':
                 return (page, updateItem) => {
-                    const configs = WidgetConfigManager.getAllConfigs();
-                    const updateFrequency = WidgetConfigManager.getUpdateFrequency();
-
-
-                    const items: any[] = [
-                        {
-                            id: 'widget_update_frequency',
-                            title: lc('widget_update_frequency'),
-                            description: lc('widget_update_frequency_description'),
-                            rightValue: () => {
-                                const freq = WidgetConfigManager.getUpdateFrequency();
-                                return freq < 60 ? `${freq} min` : freq === 60 ? '1 hour' : `${freq / 60} hours`;
-                            }
-                        },
-                        {
-                            id: 'update_all_widgets',
-                            title: lc('update_all_widgets_now'),
-                            description: ''
-                        },
-                        {
-                            type: 'sectionheader',
-                            title: lc('widget_kind_defaults')
-                        }
-                    ];
-
-                    // Add per-kind default configurations
-                    WIDGET_KINDS.forEach((widgetKind) => {
-                        const displayName = WIDGET_NAMES[widgetKind] || widgetKind;
-                        items.push({
-                            id: 'configure_widget_kind',
-                            widgetClass: widgetKind,
-                            title: displayName,
-                            description: lc('default_settings_for_kind')
-                        });
-                    });
-
-                    // Add configured widget instances grouped by kind
-                    WIDGET_KINDS.forEach((widgetKind) => {
-                        const instanceIds = WidgetConfigManager.getInstancesOfKind(widgetKind);
-
-                        if (instanceIds.length > 0) {
-                            items.push({
+                    if (WIDGETS) {
+                        const configs = WidgetConfigManager.getAllConfigs();
+                        const items: any[] = [
+                            {
+                                id: 'widget_update_frequency',
+                                title: lc('widget_update_frequency'),
+                                description: lc('widget_update_frequency_description'),
+                                rightValue: () => {
+                                    const freq = WidgetConfigManager.getUpdateFrequency();
+                                    return freq < 60 ? `${freq} min` : freq === 60 ? '1 hour' : `${freq / 60} hours`;
+                                }
+                            },
+                            {
+                                id: 'update_all_widgets',
+                                title: lc('update_all_widgets_now'),
+                                description: ''
+                            },
+                            {
                                 type: 'sectionheader',
-                                title: WIDGET_NAMES[widgetKind]
-                            });
+                                title: lc('widget_kind_defaults')
+                            }
+                        ];
 
-                            instanceIds.forEach((widgetId) => {
-                                const config = configs[widgetId];
+                        // Add per-kind default configurations
+                        WIDGET_KINDS.forEach((widgetKind) => {
+                            const displayName = WIDGET_NAMES[widgetKind] || widgetKind;
+                            items.push({
+                                id: 'configure_widget_kind',
+                                widgetClass: widgetKind,
+                                title: displayName,
+                                description: lc('default_settings_for_kind')
+                            });
+                        });
+
+                        // Add configured widget instances grouped by kind
+                        WIDGET_KINDS.forEach((widgetKind) => {
+                            const instanceIds = WidgetConfigManager.getInstancesOfKind(widgetKind);
+
+                            if (instanceIds.length > 0) {
                                 items.push({
-                                    id: 'configure_widget',
-                                    widgetId,
-                                    widgetClass: widgetKind,
-                                    title: `#${widgetId}`,
-                                    description: config.locationName === 'current' ? lc('my_location') : config.locationName || ''
+                                    type: 'sectionheader',
+                                    title: WIDGET_NAMES[widgetKind]
                                 });
+
+                                instanceIds.forEach((widgetId) => {
+                                    const config = configs[widgetId];
+                                    items.push({
+                                        id: 'configure_widget',
+                                        widgetId,
+                                        widgetClass: widgetKind,
+                                        title: `#${widgetId}`,
+                                        description: config.locationName === 'current' ? lc('my_location') : config.locationName || ''
+                                    });
+                                });
+                            }
+                        });
+
+                        if (Object.keys(configs).length === 0) {
+                            items.push({
+                                type: 'info',
+                                title: lc('no_widgets_configured')
                             });
                         }
-                    });
 
-                    if (Object.keys(configs).length === 0) {
-                        items.push({
-                            type: 'info',
-                            title: lc('no_widgets_configured')
-                        });
+                        return items;
                     }
-
-                    return items;
+                    return [];
                 };
             default:
                 break;
@@ -770,14 +769,23 @@
                         description: lc('geolocation_settings'),
                         icon: 'mdi-map-marker-circle',
                         options: getSubSettings('geolocation')
-                    },
-                    {
-                        id: 'sub_settings',
-                        title: lc('widget_settings'),
-                        description: lc('widget_configurations'),
-                        icon: 'mdi-widgets',
-                        options: getSubSettings('widgets')
-                    },
+                    }
+                ] as any)
+                .concat(
+                    WIDGETS
+                        ? [
+                              {
+                                  id: 'sub_settings',
+                                  title: lc('widget_settings'),
+                                  description: lc('widget_settings_desc'),
+                                  icon: 'mdi-widgets',
+                                  options: getSubSettings('widgets')
+                              }
+                          ]
+                        : ([] as any)
+                )
+                .concat([
+                    ,
                     {
                         id: 'third_party',
                         // rightBtnIcon: 'mdi-chevron-right',
@@ -978,55 +986,62 @@
                     });
                     break;
                 case 'configure_widget_kind': {
-                    const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
-                    navigate({
-                        page: ConfigWidget,
-                        props: {
-                            widgetClass: item.widgetClass,
-                            widgetId: null,
-                            modalMode: false,
-                            isKindConfig: true
-                        }
-                    });
+                    if (WIDGETS) {
+                        const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                        navigate({
+                            page: ConfigWidget,
+                            props: {
+                                widgetClass: item.widgetClass,
+                                widgetId: null,
+                                modalMode: false,
+                                isKindConfig: true
+                            }
+                        });
+                    }
                     break;
                 }
                 case 'configure_widget': {
-                    const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
-                    navigate({
-                        page: ConfigWidget,
-                        props: {
-                            widgetClass: item.widgetClass,
-                            widgetId: item.widgetId,
-                            modalMode: false,
-                            isKindConfig: false
-                        }
-                    });
+                    if (WIDGETS) {
+                        const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                        navigate({
+                            page: ConfigWidget,
+                            props: {
+                                widgetClass: item.widgetClass,
+                                widgetId: item.widgetId,
+                                modalMode: false,
+                                isKindConfig: false
+                            }
+                        });
+                    }
                     break;
                 }
                 case 'widget_update_frequency': {
-                    const { WidgetConfigManager } = await import('~/services/widgets/WidgetConfigManager');
-                    const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
-                        title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
-                        data: mins
-                    }));
-                    const currentFreq = WidgetConfigManager.getUpdateFrequency();
-                    const result = await selectValue(frequencyOptions, currentFreq, {
-                        title: lc('widget_update_frequency')
-                    });
-                    if (result !== undefined) {
-                        WidgetConfigManager.setUpdateFrequency(result);
-                        showSnack({ message: lc('widget_update_frequency_saved') });
-                        updateItem(item, 'id');
+                    if (WIDGETS) {
+                        const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
+                            title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
+                            data: mins
+                        }));
+                        const currentFreq = WidgetConfigManager.getUpdateFrequency();
+                        const result = await selectValue(frequencyOptions, currentFreq, {
+                            title: lc('widget_update_frequency')
+                        });
+                        if (result !== undefined) {
+                            WidgetConfigManager.setUpdateFrequency(result);
+                            showSnack({ message: lc('widget_update_frequency_saved') });
+                            updateItem(item, 'id');
+                        }
                     }
                     break;
                 }
                 case 'update_all_widgets': {
-                    try {
-                        showSnack({ message: lc('updating_all_widgets') });
-                        const { widgetService } = await import('~/services/widgets/WidgetBridge');
-                        await widgetService.updateAllWidgets();
-                    } catch (error) {
-                        showError(error);
+                    if (WIDGETS) {
+                        try {
+                            showSnack({ message: lc('updating_all_widgets') });
+                            const { widgetService } = await import('plugin-widgets/WidgetBridge');
+                            await widgetService.updateAllWidgets();
+                        } catch (error) {
+                            showError(error);
+                        }
                     }
                     break;
                 }

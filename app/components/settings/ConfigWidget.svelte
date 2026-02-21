@@ -1,8 +1,9 @@
 <script context="module" lang="ts">
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { ApplicationSettings, ObservableArray, Screen, View } from '@nativescript/core';
+    import { ObservableArray, Screen, View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import { showModal } from '@shared/utils/svelte/ui';
+    import { WIDGET_NAMES, WeatherWidgetData, WidgetConfig, WidgetConfigManager, isDefaultLocation, widgetService } from 'plugin-widgets';
     import { onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
@@ -10,27 +11,22 @@
     import { WeatherLocation } from '~/services/api';
     import { OpenMeteoModels } from '~/services/providers/om';
     import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
-    import { widgetService } from '~/services/widgets/WidgetBridge';
-    import { WIDGET_NAMES, WidgetConfigManager } from '~/services/widgets/WidgetConfigManager';
-    import { isDefaultLocation } from '~/services/widgets/WidgetDataManager';
-    import { DEFAULT_UPDATE_FREQUENCY, WeatherWidgetData, WidgetConfig } from '~/services/widgets/WidgetTypes';
     import { hideLoading, selectValue, showPopoverMenu } from '~/utils/ui';
     import { actionBarHeight, colors, fontScale, fonts, onFontScaleChanged, windowInset } from '~/variables';
 
-    // Import generated widget components
+    import { CheckBox } from '@nativescript-community/ui-checkbox';
+    import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';
-    import { NativeViewElementNode } from 'svelte-native/dom';
-    import { CollectionView } from '@nativescript-community/ui-collectionview';
-    import { onThemeChanged } from '~/helpers/theme';
-    import { Template } from 'svelte-native/components';
-    import { CheckBox } from '@nativescript-community/ui-checkbox';
     import IconButton from '@shared/components/IconButton.svelte';
+    import { Template } from 'svelte-native/components';
+    import { NativeViewElementNode } from 'svelte-native/dom';
+    import { onThemeChanged } from '~/helpers/theme';
 
     // Load sample data helper
     async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
         try {
-            const sampleData = (await import(`/widget-layouts/widgets/samples/${widgetClass}.sample.json`)).default;
+            const sampleData = (await import(`plugin-widgets/data/samples/${widgetClass}.sample.json`)).default;
             return sampleData[setName] || sampleData.default || null;
         } catch (error) {
             console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
@@ -39,7 +35,7 @@
     }
     // Load sample data helper
     async function loadWidgetData(widgetClass: string): Promise<any> {
-        const data = (await import(`/widget-layouts/widgets/${widgetClass}.json`)).default;
+        const data = (await import(`plugin-widgets/data/widgets/${widgetClass}.json`)).default;
         return data;
     }
 </script>
@@ -331,7 +327,7 @@
 
     let widgetComponent = null;
     if (widgetClass) {
-        import(`~/components/widgets/generated/${widgetClass}.generated.svelte`).then((component) => {
+        import(`plugin-widgets/svelte/generated/${widgetClass}.generated.svelte`).then((component) => {
             widgetComponent = component;
         });
     }

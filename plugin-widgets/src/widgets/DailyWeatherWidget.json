@@ -1,0 +1,200 @@
+{
+    "$schema": "../schema.json",
+    "name": "DailyWeatherWidget",
+    "displayName": "Daily Forecast",
+    "description": "Shows daily weather forecast with high/low temperatures",
+    "supportedSizes": [
+        { "width": 260, "height": 120, "family": "medium" },
+        { "width": 260, "height": 200, "family": "large" }
+    ],
+    "defaultPadding": 8,
+    "background": {
+        "type": "solid",
+        "color": "widgetBackground"
+    },
+    "layout": {
+        "type": "column",
+        "alignment": "start",
+        "crossAlignment": "stretch",
+        "children": [
+            {
+                "type": "row",
+                "alignment": "space-between",
+                "crossAlignment": "start",
+                "paddingHorizontal": 8,
+                "paddingTop": 8,
+                "children": [
+                    {
+                        "type": "column",
+                        "alignment": "start",
+                        "crossAlignment": "start",
+                        "children": [
+                            {
+                                "type": "label",
+                                "text": ["get", "temperature"],
+                                "fontSize": 32,
+                                "fontWeight": "bold",
+                                "color": "onSurface"
+                            },
+                            {
+                                "type": "spacer",
+                                "size": 2
+                            },
+                            {
+                                "type": "label",
+                                "text": ["get", "locationName"],
+                                "fontSize": 14,
+                                "color": "onSurfaceVariant",
+                                "textAlign": "left",
+                                "maxLines": 1
+                            }
+                        ]
+                    },
+                    {
+                        "type": "column",
+                        "alignment": "end",
+                        "crossAlignment": "end",
+                        "children": [
+                            {
+                                "type": "image",
+                                "src": ["get", "iconPath"],
+                                "size": 48,
+                                "visibleIf": ["has", "iconPath"]
+                            },
+                            {
+                                "type": "spacer",
+                                "size": 2,
+                                "visibleIf": ["has", "description"]
+                            },
+                            {
+                                "type": "label",
+                                "text": ["get", "description"],
+                                "fontSize": 12,
+                                "color": "onSurfaceVariant",
+                                "textAlign": "right",
+                                "maxLines": 1,
+                                "visibleIf": ["has", "description"]
+                            }
+                        ]
+                    }
+                ]
+            },
+            { "type": "spacer", "size": 8 },
+            {
+                "type": "label",
+                "text": "Daily",
+                "textAlign": "left",
+                "fontSize": 12,
+                "fontWeight": "medium",
+                "color": "onSurfaceVariant",
+                "paddingHorizontal": 8
+            },
+            { "type": "spacer", "size": 4 },
+            {
+                "type": "scrollView",
+                "direction": "vertical",
+                "showIndicators": false,
+                "paddingHorizontal": 8,
+                "children": [
+                    {
+                        "type": "column",
+                        "spacing": 0,
+                        "children": [
+                            {
+                                "type": "forEach",
+                                "items": "dailyData",
+                                "itemTemplate": {
+                                    "type": "column",
+                                    "fillWidth": true,
+                                    "padding": 6,
+                                    "backgroundColor": "surface",
+                                    "cornerRadius": 8,
+                                    "marginBottom": 4,
+                                    "children": [
+                                        {
+                                            "type": "row",
+                                            "alignment": "center",
+                                            "crossAlignment": "center",
+                                            "children": [
+                                                {
+                                                    "type": "label",
+                                                    "text": ["get", "item.day"],
+                                                    "fontSize": 12,
+                                                    "fontWeight": "medium",
+                                                    "color": "onSurface",
+                                                    "flex": 1,
+                                                    "maxLines": 1
+                                                },
+                                                {
+                                                    "type": "image",
+                                                    "src": ["get", "item.iconPath"],
+                                                    "size": 28
+                                                },
+                                                {
+                                                    "type": "spacer",
+                                                    "size": 8
+                                                },
+                                                {
+                                                    "type": "column",
+                                                    "alignment": "end",
+                                                    "crossAlignment": "end",
+                                                    "children": [
+                                                        {
+                                                            "type": "row",
+                                                            "alignment": "end",
+                                                            "crossAlignment": "center",
+                                                            "spacing": 6,
+                                                            "children": [
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["get", "item.temperatureHigh"],
+                                                                    "fontSize": 13,
+                                                                    "fontWeight": "bold",
+                                                                    "color": "onSurface",
+                                                                    "maxLines": 1
+                                                                },
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["get", "item.temperatureLow"],
+                                                                    "fontSize": 13,
+                                                                    "color": "onSurfaceVariant",
+                                                                    "maxLines": 1
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "row",
+                                                            "alignment": "end",
+                                                            "crossAlignment": "center",
+                                                            "spacing": 6,
+                                                            "children": [
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["get", "item.precipAccumulation"],
+                                                                    "fontSize": 10,
+                                                                    "color": "onSurfaceVariant",
+                                                                    "visibleIf": ["has", "item.precipAccumulation"]
+                                                                },
+                                                                {
+                                                                    "type": "label",
+                                                                    "text": ["concat", "💧", ["get", "item.precipitation"]],
+                                                                    "fontSize": 10,
+                                                                    "color": "onSurfaceVariant",
+                                                                    "visibleIf": ["has", "item.precipitation"]
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

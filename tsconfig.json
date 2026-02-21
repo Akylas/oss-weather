@@ -8,7 +8,9 @@
             "kiss-orm": ["node_modules/@akylas/kiss-orm"],
             "kiss-orm/*": ["node_modules/@akylas/kiss-orm/*"],
             "@nativescript/core": ["node_modules/@akylas/nativescript"],
-            "@nativescript/core/*": ["node_modules/@akylas/nativescript/*"]
+            "@nativescript/core/*": ["node_modules/@akylas/nativescript/*"],
+            "plugin-widgets": ["plugin-widgets/src"],
+            "plugin-widgets/*": ["plugin-widgets/src/*"]
         }
     },
     "include": ["app/**/*", "tools/app/**/*", "typings/*.d.ts"],

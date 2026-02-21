@@ -14,6 +14,7 @@ declare const MF_API_KEY: string;
 declare const DEFAULT_LOCATION: string;
 declare const DEFAULT_PROVIDER: string;
 declare const DEFAULT_PROVIDER_AQI: string;
+declare const WIDGETS: boolean;
 
 interface LatLonKeys {
     lat: number;

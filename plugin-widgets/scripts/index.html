@@ -1,0 +1,415 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Widget Previews</title>
+        <style>
+            :root {
+                --bg: #0b0f14;
+                --card: #0f1720;
+                --text: #e8eef2;
+                --muted: #9aa6b2;
+                --accent: #7dd3fc;
+                --panel-border: rgba(255, 255, 255, 0.04);
+            }
+            body.light {
+                --bg: #f5f7fb;
+                --card: #ffffff;
+                --text: #0b2736;
+                --muted: #6b7b88;
+                --accent: #0ea5b7;
+                --panel-border: rgba(2, 6, 23, 0.06);
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--text);
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    'Segoe UI',
+                    Roboto,
+                    'Helvetica Neue',
+                    Arial;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                padding: 18px;
+            }
+            header {
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
+            }
+            h1 {
+                margin: 0;
+                font-size: 18px;
+            }
+            .controls {
+                margin-left: auto;
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            .grid {
+                display: flex;
+                flex-direction: column;
+                gap: 18px;
+            }
+            .widget-row {
+                background: var(--card);
+                border-radius: 12px;
+                box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+                padding: 10px;
+                border: 1px solid var(--panel-border);
+            }
+            .row-head {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            .row-head .title {
+                font-weight: 600;
+            }
+            .row-head .meta {
+                font-size: 12px;
+                color: var(--muted);
+            }
+            .row-body {
+                overflow-x: auto;
+                display: flex;
+                gap: 12px;
+                padding-bottom: 6px;
+                padding-top: 6px;
+            }
+            .size-column {
+                flex: 0 0 auto;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                background: transparent;
+                min-width: 220px;
+                align-items: center;
+            }
+            .size-label {
+                font-size: 12px;
+                color: var(--muted);
+                margin-bottom: 6px;
+            }
+            .frame-wrap {
+                display: block;
+                border-radius: 8px;
+                overflow: hidden;
+                border: 1px solid rgba(0, 0, 0, 0.12);
+                position: relative;
+            }
+            .frame-wrap.resizing {
+                border: 1px dashed var(--accent);
+            }
+            .resize-handle {
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 16px;
+                height: 16px;
+                cursor: nwse-resize;
+                background: var(--accent);
+                opacity: 0.6;
+                border-top-left-radius: 4px;
+            }
+            .resize-handle:hover {
+                opacity: 1;
+            }
+            .frame-controls {
+                display: flex;
+                gap: 6px;
+                align-items: center;
+                justify-content: center;
+                margin-top: 6px;
+            }
+            .small {
+                padding: 2px 8px;
+                border-radius: 6px;
+                background: rgba(255, 255, 255, 0.04);
+                color: var(--muted);
+                border: none;
+                cursor: pointer;
+            }
+            select,
+            button {
+                cursor: pointer;
+            }
+            .set-select {
+                margin-left: 6px;
+            }
+            .theme-toggle {
+                padding: 6px 10px;
+                border-radius: 8px;
+                border: none;
+                background: var(--accent);
+                color: #fff;
+            }
+        </style>
+    </head>
+    <body class="dark">
+        <header>
+            <h1>Widget Previews</h1>
+            <div class="controls">
+                <label for="dataSetSelect">Set: </label>
+                <select id="globalSetSelect"></select>
+                <button id="toggleTheme" class="theme-toggle">Toggle Theme</button>
+            </div>
+        </header>
+
+        <div class="grid" id="content"></div>
+
+        <script type="module">
+            const content = document.getElementById('content');
+            const globalSetSelect = document.getElementById('globalSetSelect');
+            const themeToggleBtn = document.getElementById('toggleTheme');
+
+            // Have global sets: default, hot, storm, cold etc
+            const globalSets = ['default', 'hot', 'storm', 'cold'];
+            function populateGlobalSets() {
+                globalSetSelect.innerHTML = '';
+                for (const s of globalSets) {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    globalSetSelect.appendChild(opt);
+                }
+            }
+            populateGlobalSets();
+
+            async function fetchWidgets() {
+                const resp = await fetch('/api/widgets');
+                return resp.json();
+            }
+
+            async function fetchSamples(widgetName) {
+                try {
+                    const resp = await fetch(`/api/samples?name=${encodeURIComponent(widgetName)}`);
+                    if (!resp.ok) throw new Error('no-samples');
+                    const json = await resp.json();
+                    return json.sets || ['default'];
+                } catch (e) {
+                    return ['default'];
+                }
+            }
+
+            async function fetchFragment(widget, size, setName, theme) {
+                try {
+                    const params = new URLSearchParams({
+                        name: widget.name,
+                        width: String(size.width),
+                        height: String(size.height),
+                        set: setName,
+                        theme
+                    });
+                    const resp = await fetch(`/api/widget-fragment?${params.toString()}`);
+                    if (!resp.ok) return null;
+                    const html = await resp.text();
+                    // An empty string is considered a failed render — return null so we can remove the column
+                    if (!html || html.trim() === '') return null;
+                    return html;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function makeColumn(widget, size, setName, theme) {
+                const column = document.createElement('div');
+                column.className = 'size-column';
+
+                // dataset for later refresh actions (theme toggle)
+                column.dataset.widgetName = widget.name;
+                column.dataset.sizeWidth = String(size.width);
+                column.dataset.sizeHeight = String(size.height);
+                column.dataset.setName = setName;
+
+                const sizeLabel = document.createElement('div');
+                sizeLabel.className = 'size-label';
+                sizeLabel.textContent = `${size.width}×${size.height}`;
+                const frameWrap = document.createElement('div');
+                frameWrap.className = 'frame-wrap';
+
+                // put a loading placeholder while fetching fragment
+                frameWrap.innerHTML = '<div style="padding:8px;color:var(--muted)">Loading…</div>';
+
+                // Create resize handle
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+                resizeHandle.title = 'Drag to resize';
+
+                // Resize logic
+                let isResizing = false;
+                let startX, startY, startWidth, startHeight;
+                let resizeTimeout;
+
+                resizeHandle.addEventListener('mousedown', (e) => {
+                    isResizing = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startWidth = parseInt(column.dataset.sizeWidth, 10);
+                    startHeight = parseInt(column.dataset.sizeHeight, 10);
+                    frameWrap.classList.add('resizing');
+                    e.preventDefault();
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isResizing) return;
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    const newWidth = Math.max(50, Math.min(800, startWidth + deltaX));
+                    const newHeight = Math.max(50, Math.min(800, startHeight + deltaY));
+                    
+                    // Update size label live
+                    sizeLabel.textContent = `${newWidth}×${newHeight}`;
+                    
+                    // Throttle resize to avoid excessive re-renders
+                    if (resizeTimeout) clearTimeout(resizeTimeout);
+                });
+
+                document.addEventListener('mouseup', async (e) => {
+                    if (!isResizing) return;
+                    isResizing = false;
+                    frameWrap.classList.remove('resizing');
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    const newWidth = Math.max(50, Math.min(800, startWidth + deltaX));
+                    const newHeight = Math.max(50, Math.min(800, startHeight + deltaY));
+                    
+                    // Update dataset
+                    column.dataset.sizeWidth = String(newWidth);
+                    column.dataset.sizeHeight = String(newHeight);
+                    
+                    // Re-fetch fragment at new size
+                    const newSize = { width: newWidth, height: newHeight };
+                    const html = await fetchFragment(widget, newSize, setName, theme);
+                    if (html) {
+                        frameWrap.innerHTML = html;
+                        // Re-add resize handle
+                        frameWrap.appendChild(resizeHandle);
+                    }
+                });
+
+                // fetch fragment and insert it (or remove column on failure)
+                fetchFragment(widget, size, setName, theme)
+                    .then((html) => {
+                        if (!html) {
+                            column.remove(); // remove failing column
+                            return;
+                        }
+                        frameWrap.innerHTML = html;
+                        // Add resize handle after content loads
+                        frameWrap.appendChild(resizeHandle);
+                    })
+                    .catch(() => {
+                        column.remove();
+                    });
+
+                column.appendChild(sizeLabel);
+                column.appendChild(frameWrap);
+                return column;
+            }
+
+            function makeRow(widget, sizes, sets) {
+                const row = document.createElement('div');
+                row.className = 'widget-row';
+
+                const head = document.createElement('div');
+                head.className = 'row-head';
+                const title = document.createElement('div');
+                title.className = 'title';
+                title.textContent = widget.displayName || widget.name;
+                const meta = document.createElement('div');
+                meta.className = 'meta';
+                meta.textContent = widget.description || '';
+                const setSel = document.createElement('select');
+                setSel.className = 'set-select';
+                sets.forEach((s) => setSel.appendChild(Object.assign(document.createElement('option'), { value: s, textContent: s })));
+                setSel.value = globalSetSelect.value || sets[0] || 'default';
+                head.appendChild(title);
+                head.appendChild(meta);
+                head.appendChild(setSel);
+
+                const rowBody = document.createElement('div');
+                rowBody.className = 'row-body';
+                const theme = document.body.classList.contains('light') ? 'light' : 'dark';
+
+                for (const s of sizes) {
+                    const col = makeColumn(widget, s, setSel.value, theme);
+                    rowBody.appendChild(col);
+                }
+
+                // update columns on set change
+                setSel.addEventListener('change', async () => {
+                    const newSet = setSel.value;
+                    const newTheme = document.body.classList.contains('light') ? 'light' : 'dark';
+                    // clear and re-create columns
+                    rowBody.innerHTML = '';
+                    for (const s of sizes) {
+                        const col = makeColumn(widget, s, newSet, newTheme);
+                        rowBody.appendChild(col);
+                    }
+                });
+
+                head.appendChild(document.createElement('div'));
+                row.appendChild(head);
+                row.appendChild(rowBody);
+                return row;
+            }
+
+            async function renderAll() {
+                content.innerHTML = '';
+                const widgets = await fetchWidgets();
+                for (const widget of widgets) {
+                    const sizes = widget.supportedSizes && widget.supportedSizes.length ? widget.supportedSizes : [{ width: 160, height: 160 }];
+                    const sets = await fetchSamples(widget.name);
+                    const row = makeRow(widget, sizes, sets);
+                    content.appendChild(row);
+                }
+            }
+
+            globalSetSelect.addEventListener('change', async () => {
+                // update all per-row selects and re-render widgets with selected set
+                const global = globalSetSelect.value;
+                const rows = document.querySelectorAll('.widget-row');
+                for (const row of rows) {
+                    const sel = row.querySelector('.set-select');
+                    if (sel) {
+                        sel.value = global;
+                        sel.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+
+            themeToggleBtn.addEventListener('click', async () => {
+                document.body.classList.toggle('light');
+                const newTheme = document.body.classList.contains('light') ? 'light' : 'dark';
+                // re-fetch fragments for all columns (and remove columns that fail)
+                document.querySelectorAll('.size-column').forEach(async (col) => {
+                    const widgetName = col.dataset.widgetName;
+                    const width = Number(col.dataset.sizeWidth || 160);
+                    const height = Number(col.dataset.sizeHeight || 160);
+                    const setName = col.dataset.setName || globalSetSelect.value || 'default';
+                    const widget = { name: widgetName };
+                    const size = { width, height };
+                    const frag = await fetchFragment(widget, size, setName, newTheme);
+                    const frameWrap = col.querySelector('.frame-wrap');
+                    if (!frag) {
+                        col.remove();
+                    } else if (frameWrap) {
+                        frameWrap.innerHTML = frag;
+                    }
+                });
+            });
+
+            window.addEventListener('load', renderAll);
+        </script>
+    </body>
+</html>

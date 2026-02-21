@@ -2,6 +2,8 @@
 // we need to use lat lon
 import { install as installGestures } from '@nativescript-community/gesturehandler';
 import { setGeoLocationKeys } from '@nativescript-community/gps';
+import { svelteNative } from '@nativescript-community/svelte-native';
+import { FrameElement, PageElement, registerElement, registerNativeViewElement } from '@nativescript-community/svelte-native/dom';
 import { installMixins as installUIMixins } from '@nativescript-community/systemui';
 import { overrideSpanAndFormattedString } from '@nativescript-community/text';
 import SwipeMenuElement from '@nativescript-community/ui-collectionview-swipemenu/svelte';
@@ -14,10 +16,9 @@ import { installMixins, themer } from '@nativescript-community/ui-material-core'
 import { Application } from '@nativescript/core';
 import { init as sharedInit } from '@shared/index';
 import { startSentry } from '@shared/utils/sentry';
-import { svelteNative } from '@nativescript-community/svelte-native';
-import { FrameElement, PageElement, registerElement, registerNativeViewElement } from '@nativescript-community/svelte-native/dom';
 import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
+
 import { networkService } from './services/api';
 
 try {
@@ -82,6 +83,12 @@ try {
     Application.on(Application.launchEvent, () => {
         startThemeHelper();
     });
+    Application.on(Application.exitEvent, async () => {
+        DEV_LOG && console.log('exitEvent');
+        if (WIDGETS) {
+            (await import('plugin-widgets/src/WidgetBridge')).widgetService.destroy();
+        }
+    });
     themer.createShape('round', {
         cornerFamily: 'rounded' as any,
         cornerSize: {
@@ -100,6 +107,19 @@ try {
     sharedInit();
     networkService.start();
     svelteNative(WeatherPage, {});
+
+    setTimeout(async () => {
+        // const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+        // navigate({
+        //     page: ConfigWidget,
+        //     props: {
+        //         widgetClass: 'ForecastWeatherWidget',
+        //         widgetId: null,
+        //         modalMode: true,
+        //         isKindConfig: true
+        //     }
+        // });
+    }, 400);
 } catch (error) {
     console.error(error, error.stack);
 }

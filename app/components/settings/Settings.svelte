@@ -1,5 +1,7 @@
 <script context="module" lang="ts">
     import { share } from '@akylas/nativescript-app-utils/share';
+    import { Template } from '@nativescript-community/svelte-native/components';
+    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
@@ -15,8 +17,7 @@
     import { showError } from '@shared/utils/showError';
     import { navigate } from '@shared/utils/svelte/ui';
     import dayjs from 'dayjs';
-    import { Template } from '@nativescript-community/svelte-native/components';
-    import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
+    import { WIDGET_KINDS, WIDGET_NAMES, WidgetConfigManager } from 'plugin-widgets';
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import {
@@ -595,6 +596,76 @@
                         value: ApplicationSettings.getBoolean(SETTINGS_MAIN_CHART_SHOW_WIND, MAIN_CHART_SHOW_WIND)
                     }
                 ];
+            case 'widgets':
+                return (page, updateItem) => {
+                    if (WIDGETS) {
+                        const configs = WidgetConfigManager.getAllConfigs();
+                        const items: any[] = [
+                            {
+                                id: 'widget_update_frequency',
+                                title: lc('widget_update_frequency'),
+                                description: lc('widget_update_frequency_description'),
+                                rightValue: () => {
+                                    const freq = WidgetConfigManager.getUpdateFrequency();
+                                    return freq < 60 ? `${freq} min` : freq === 60 ? '1 hour' : `${freq / 60} hours`;
+                                }
+                            },
+                            {
+                                id: 'update_all_widgets',
+                                title: lc('update_all_widgets_now'),
+                                description: ''
+                            },
+                            {
+                                type: 'sectionheader',
+                                title: lc('widget_kind_defaults')
+                            }
+                        ];
+
+                        // Add per-kind default configurations
+                        WIDGET_KINDS.forEach((widgetKind) => {
+                            const displayName = WIDGET_NAMES[widgetKind] || widgetKind;
+                            items.push({
+                                id: 'configure_widget_kind',
+                                widgetClass: widgetKind,
+                                title: displayName,
+                                description: lc('default_settings_for_kind')
+                            });
+                        });
+
+                        // Add configured widget instances grouped by kind
+                        WIDGET_KINDS.forEach((widgetKind) => {
+                            const instanceIds = WidgetConfigManager.getInstancesOfKind(widgetKind);
+
+                            if (instanceIds.length > 0) {
+                                items.push({
+                                    type: 'sectionheader',
+                                    title: WIDGET_NAMES[widgetKind]
+                                });
+
+                                instanceIds.forEach((widgetId) => {
+                                    const config = configs[widgetId];
+                                    items.push({
+                                        id: 'configure_widget',
+                                        widgetId,
+                                        widgetClass: widgetKind,
+                                        title: `#${widgetId}`,
+                                        description: config.locationName === 'current' ? lc('my_location') : config.locationName || ''
+                                    });
+                                });
+                            }
+                        });
+
+                        if (Object.keys(configs).length === 0) {
+                            items.push({
+                                type: 'info',
+                                title: lc('no_widgets_configured')
+                            });
+                        }
+
+                        return items;
+                    }
+                    return [];
+                };
             default:
                 break;
         }
@@ -714,6 +785,19 @@
                         options: getSubSettings('geolocation')
                     }
                 ] as any)
+                .concat(
+                    WIDGETS
+                        ? [
+                              {
+                                  id: 'sub_settings',
+                                  title: lc('widget_settings'),
+                                  description: lc('widget_settings_desc'),
+                                  icon: 'mdi-widgets',
+                                  options: getSubSettings('widgets')
+                              }
+                          ]
+                        : ([] as any)
+                )
                 .concat(
                     __ANDROID__
                         ? [
@@ -927,6 +1011,66 @@
                         view: ThirdPartySoftwareBottomSheet
                     });
                     break;
+                case 'configure_widget_kind': {
+                    if (WIDGETS) {
+                        const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                        navigate({
+                            page: ConfigWidget,
+                            props: {
+                                widgetClass: item.widgetClass,
+                                widgetId: null,
+                                modalMode: false,
+                                isKindConfig: true
+                            }
+                        });
+                    }
+                    break;
+                }
+                case 'configure_widget': {
+                    if (WIDGETS) {
+                        const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+                        navigate({
+                            page: ConfigWidget,
+                            props: {
+                                widgetClass: item.widgetClass,
+                                widgetId: item.widgetId,
+                                modalMode: false,
+                                isKindConfig: false
+                            }
+                        });
+                    }
+                    break;
+                }
+                case 'widget_update_frequency': {
+                    if (WIDGETS) {
+                        const frequencyOptions = [15, 30, 60, 120, 240, 360, 720, 1440].map((mins) => ({
+                            title: mins < 60 ? `${mins} min` : mins === 60 ? '1 hour' : `${mins / 60} hours`,
+                            data: mins
+                        }));
+                        const currentFreq = WidgetConfigManager.getUpdateFrequency();
+                        const result = await selectValue(frequencyOptions, currentFreq, {
+                            title: lc('widget_update_frequency')
+                        });
+                        if (result !== undefined) {
+                            WidgetConfigManager.setUpdateFrequency(result);
+                            showSnack({ message: lc('widget_update_frequency_saved') });
+                            updateItem(item, 'id');
+                        }
+                    }
+                    break;
+                }
+                case 'update_all_widgets': {
+                    if (WIDGETS) {
+                        try {
+                            showSnack({ message: lc('updating_all_widgets') });
+                            const { widgetService } = await import('plugin-widgets/WidgetBridge');
+                            await widgetService.updateAllWidgets();
+                        } catch (error) {
+                            showError(error);
+                        }
+                    }
+                    break;
+                }
                 case 'feedback': {
                     if (SENTRY_ENABLED || !PRODUCTION) {
                         const view = createView(ScrollView);
@@ -1374,6 +1518,9 @@
                 <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
                     <image col={1} height={45} src={item.image()} />
                 </ListItemAutoSize>
+            </Template>
+            <Template key="info" let:item>
+                <label color={colorOnSurfaceVariant} fontSize={14} margin="16" text={item.title} textWrap={true} />
             </Template>
             <Template let:item>
                 <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>

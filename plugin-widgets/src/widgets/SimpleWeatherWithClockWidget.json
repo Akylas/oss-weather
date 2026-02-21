@@ -1,0 +1,197 @@
+{
+  "$schema": "../schema.json",
+  "name": "SimpleWeatherWithClockWidget",
+  "displayName": "Weather with Clock",
+  "description": "Shows current time, temperature, weather icon, and location",
+  "supportedSizes": [
+    { "width": 80, "height": 80, "family": "small" },
+    { "width": 120, "height": 120, "family": "small" },
+    { "width": 180, "height": 120, "family": "medium" }
+  ],
+  "defaultPadding": 8,
+  "settings": {
+    "clockBold": {
+      "type": "boolean",
+      "default": true,
+      "title": "widget_clock_bold_title",
+      "description": "widget_clock_bold_description"
+    }
+  },
+  "background": {
+    "type": "solid",
+    "color": "widgetBackground"
+  },
+  "layout": {
+    "type": "conditional",
+    "condition": [">=", ["get", "size.width"], 180],
+    "then": {
+      "type": "stack",
+      "fillWidth": true,
+      "fillHeight": true,
+      "children": [
+        {
+          "type": "row",
+          "alignment": "space-between",
+          "crossAlignment": "start",
+          "fillWidth": true,
+          "fillHeight": true,
+          "padding": 8,
+          "children": [
+            {
+              "type": "column",
+              "alignment": "start",
+              "crossAlignment": "start",
+              "spacing": 4,
+              "children": [
+                {
+                  "type": "clock",
+                  "fontSize": 48,
+                  "fontWeight": "config.settings.clockBold",
+                  "color": "onSurface",
+                  "textAlign": "left"
+                },
+                {
+                  "type": "date",
+                  "fontSize": 14,
+                  "color": "onSurfaceVariant",
+                  "textAlign": "left"
+                }
+              ]
+            },
+            {
+              "type": "column",
+              "alignment": "center",
+              "crossAlignment": "center",
+              "children": [
+                {
+                  "type": "image",
+                  "src": ["get", "iconPath"],
+                  "size": 62,
+                  "visibleIf": ["has", "iconPath"]
+                },
+                {
+                  "type": "label",
+                  "text": ["get", "temperature"],
+                  "fontSize": 28,
+                  "fontWeight": "bold",
+                  "color": "onSurface",
+                  "textAlign": "right"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "column",
+          "fillWidth": true,
+          "alignment": "end",
+          "crossAlignment": "end",
+          "children": [
+            {
+              "type": "label",
+              "text": ["get", "data.locationName"],
+              "fontSize": 12,
+              "color": "onSurfaceVariant",
+              "maxLines": 1,
+              "paddingBottom": 4,
+              "paddingHorizontal": 14
+            }
+          ]
+        }
+      ]
+    },
+    "else": {
+      "type": "stack",
+      "padding": ["case",
+        ["<", ["get", "size.width"], 100], 4,
+        ["<", ["get", "size.width"], 150], 6,
+        8
+      ],
+      "children": [
+        {
+          "type": "column",
+          "alignment": "start",
+          "crossAlignment": "center",
+          "spacing": ["case",
+            ["<", ["get", "size.width"], 100], 2,
+            ["<", ["get", "size.width"], 150], 4,
+            8
+          ],
+          "children": [
+            {
+              "type": "clock",
+              "fontSize": ["case",
+                ["<", ["get", "size.width"], 100], 24,
+                ["<", ["get", "size.width"], 150], 32,
+                48
+              ],
+              "fontWeight": "config.settings.clockBold",
+              "color": "onSurface"
+            },
+            { "type": "spacer", "flex": 1 },
+            {
+              "type": "row",
+              "alignment": "center",
+              "crossAlignment": "center",
+              "spacing": ["case",
+                ["<", ["get", "size.width"], 100], 4,
+                ["<", ["get", "size.width"], 150], 6,
+                8
+              ],
+              "children": [
+                {
+                  "type": "image",
+                  "src": ["get", "iconPath"],
+                  "size": ["case",
+                    ["<", ["get", "size.width"], 100], 32,
+                    ["<", ["get", "size.width"], 150], 40,
+                    56
+                  ],
+                  "visibleIf": ["has", "iconPath"]
+                },
+                {
+                  "type": "label",
+                  "text": ["get", "temperature"],
+                  "fontSize": ["case",
+                    ["<", ["get", "size.width"], 100], 18,
+                    ["<", ["get", "size.width"], 150], 24,
+                    32
+                  ],
+                  "fontWeight": "bold",
+                  "color": "onSurface"
+                }
+              ]
+            },
+            { "type": "spacer", "size": ["case",
+              ["<", ["get", "size.width"], 100], 4,
+              ["<", ["get", "size.width"], 150], 6,
+              8
+            ] }
+          ]
+        },
+        {
+          "type": "column",
+          "alignment": "end",
+          "crossAlignment": "end",
+          "children": [
+            { "type": "spacer", "flex": 1 },
+            {
+              "type": "label",
+              "text": ["get", "data.locationName"],
+              "fontSize": ["case",
+                ["<", ["get", "size.width"], 100], 8,
+                ["<", ["get", "size.width"], 150], 10,
+                12
+              ],
+              "color": "onSurfaceVariant",
+              "maxLines": 1,
+              "paddingBottom": 4,
+              "paddingStart": 4,
+              "paddingEnd": 4
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

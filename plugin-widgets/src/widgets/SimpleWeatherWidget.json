@@ -1,0 +1,120 @@
+{
+    "$schema": "../schema.json",
+    "name": "SimpleWeatherWidget",
+    "displayName": "Simple Weather",
+    "description": "Shows current temperature, weather icon, and location",
+    "supportedSizes": [
+        { "width": 50, "height": 50, "family": "small" },
+        { "width": 80, "height": 80, "family": "small" },
+        { "width": 120, "height": 120, "family": "small" },
+        { "width": 260, "height": 120, "family": "medium" }
+    ],
+    "defaultPadding": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8],
+    "background": {
+        "type": "solid",
+        "color": "widgetBackground"
+    },
+    "layout": {
+        "type": "conditional",
+        "condition": ["<", ["get", "size.width"], 120],
+        "then": {
+            "type": "column",
+            "fillWidth":true,
+            "padding": 10,
+            "fillHeight":true,
+            "alignment": "center",
+            "crossAlignment": "center",
+            "children": [
+                {
+                    "type": "spacer",
+                    "flex": 1
+                },
+                {
+                    "type": "image",
+                    "src": ["get", "iconPath"],
+                    "size": 32,
+                    "visibleIf": ["has", "iconPath"]
+                },
+                {
+                    "type": "spacer",
+                    "size": 4
+                },
+                {
+                    "type": "label",
+                    "text": ["get", "temperature"],
+                    "fontSize": 14,
+                    "fontWeight": "bold",
+                    "color": "onSurface"
+                },
+                {
+                    "type": "spacer",
+                    "size": 4
+                },
+                {
+                    "type": "label",
+                    "text": ["get", "locationName"],
+                    "fontSize": 8,
+                    "color": "onSurfaceVariant",
+                    "maxLines": 1
+                }
+            ]
+        },
+        "else": {
+            "type": "row",
+            "alignment": "center",
+            "fillWidth":true,
+            "padding": 10,
+            "fillHeight":true,
+            "crossAlignment": "start",
+            "children": [
+                {
+                    "type": "column",
+                    "alignment": "center",
+                    "crossAlignment": "start",
+                    "children": [
+                        {
+                            "type": "label",
+                            "text": ["get", "temperature"],
+                            "fontSize": 40,
+                            "fontWeight": "bold",
+                            "color": "onSurface"
+                        },
+                        {
+                            "type": "spacer",
+                            "size": 8
+                        },
+                        {
+                            "type": "label",
+                            "text": ["get", "locationName"],
+                            "fontSize": 12,
+                            "color": "onSurfaceVariant",
+                            "maxLines": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "column",
+                    "alignment": "end",
+                    "crossAlignment": "end",
+                    "children": [
+                        {
+                            "type": "image",
+                            "src": ["get", "iconPath"],
+                            "size": 64,
+                            "visibleIf": ["has", "iconPath"]
+                        },
+                        {
+                            "type": "label",
+                            "text": ["get", "description"],
+                            "fontSize": 12,
+                            "color": "onSurfaceVariant",
+                            "textAlign": "right",
+                            "visibleIf": ["has", "description"]
+                        }
+                    ]
+                }
+            ]
+            
+        }
+    }
+}

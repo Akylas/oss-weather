@@ -1,0 +1,35 @@
+{
+  "default": {
+    "temperature": "12 °C",
+    "locationName": "Paris",
+    "description": "Partly Cloudy",
+    "iconPath": "800d",
+    "humidity": "78 %",
+    "windSpeed": "12 km/h",
+    "precipitation": "0 mm",
+    "pressure": "1015 hPa",
+    "feelsLike": ""
+  },
+  "hot": {
+    "temperature": "31 °C",
+    "locationName": "Seville",
+    "description": "Sunny",
+    "iconPath": "800d",
+    "humidity": "20 %",
+    "windSpeed": "24 km/h",
+    "precipitation": "0 mm",
+    "pressure": "1015 hPa",
+    "feelsLike": ""
+  },
+  "storm": {
+    "temperature": "8 °C",
+    "locationName": "Reykjavík",
+    "description": "Stormy",
+    "iconPath": "1200d",
+    "humidity": "92 %",
+    "windSpeed": "82 km/h",
+    "precipitation": "15 mm",
+    "pressure": "985 hPa",
+    "feelsLike": ""
+  }
+}

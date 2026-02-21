@@ -122,16 +122,16 @@ module.exports = (env, params = {}) => {
         accessibility = true,
         playStoreBuild = true, // --env.playStoreBuild
         buildweathermap = true, // --env.buildweathermap
-        includeDarkSkyKey, // --env.includeDarkSkyKey
-        includeClimaCellKey, // --env.includeClimaCellKey
         includeOWMKey, // --env.includeOWMKey
-        includeDefaultLocation // --env.includeDefaultLocation
+        includeDefaultLocation, // --env.includeDefaultLocation
+        widgets = !!process.env.WITH_WIDGETS // --env.widgets
     } = env;
+    if (widgets) {
+        require('plugin-widgets/nativescript.webpack.config')(env, params);
+    }
     // console.log('env', env);
-    env.appPath = appPath;
-    env.appResourcesPath = appResourcesPath;
     env.appComponents = env.appComponents || [];
-    env.appComponents.push('~/android/floatingactivity', '~/android/activity.android');
+    env.appComponents.push('~/android/floatingactivity', '~/android/activity.android', '~/receivers/CommandReceiver');
 
     const ignoredSvelteWarnings = new Set(['a11y-no-onchange', 'a11y-label-has-associated-control', 'illegal-attribute-character']);
 
@@ -201,6 +201,7 @@ module.exports = (env, params = {}) => {
         }
         cb();
     });
+
     if (isIOS) {
         supportedColorThemes.forEach((l) => {
             config.externals.push(`~/themes/${l}.json`);
@@ -293,7 +294,8 @@ module.exports = (env, params = {}) => {
         MAPTILER_KEY: `"${process.env.MAPTILER_KEY}"`,
         DEFAULT_LOCATION: includeDefaultLocation
             ? '\'{"name":"Grenoble","sys":{"osm_id":80348,"osm_type":"R","extent":[5.6776059,45.2140762,5.7531176,45.1541442],"country":"France","osm_key":"place","osm_value":"city","name":"Grenoble","state":"Auvergne-Rhône-Alpes"},"coord":{"lat":45.1875602,"lon":5.7357819}}\''
-            : 'undefined'
+            : 'undefined',
+        WIDGETS: widgets
     };
     Object.assign(config.plugins.find((p) => p.constructor.name === 'DefinePlugin').definitions, defines);
 
@@ -548,7 +550,8 @@ module.exports = (env, params = {}) => {
             context,
             from: 'timezone/*.json',
             globOptions
-        }
+        },
+        ...(params.copyPatterns || [])
     ];
     config.plugins.unshift(new CopyPlugin({ patterns: copyPatterns }));
 

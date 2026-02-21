@@ -15,56 +15,9 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { BaseLayoutElement, hasTemplateBinding, getSingleBinding } from './shared-utils';
 
 type AnyObj = Record<string, any>;
-
-interface LayoutElement {
-    type: string;
-    id?: string;
-    visible?: boolean;
-    visibleIf?: string;
-    padding?: number;
-    paddingHorizontal?: number;
-    paddingVertical?: number;
-    margin?: number;
-    marginHorizontal?: number;
-    marginVertical?: number;
-    spacing?: number;
-    alignment?: string;
-    crossAlignment?: string;
-    width?: number | string;
-    height?: number | string;
-    flex?: number;
-    backgroundColor?: string;
-    cornerRadius?: number;
-    children?: LayoutElement[];
-    // Element-specific
-    text?: string;
-    fontSize?: number;
-    fontWeight?: string;
-    color?: string;
-    textAlign?: string;
-    maxLines?: number;
-    src?: string;
-    size?: number;
-    thickness?: number;
-    direction?: string;
-    showIndicators?: boolean;
-    scrollBarIndicatorVisible?: boolean;
-
-    items?: string;
-    limit?: number;
-    itemTemplate?: LayoutElement;
-    condition?: string;
-    then?: LayoutElement;
-    else?: LayoutElement;
-    format24Hour?: string;
-    format12Hour?: string;
-    format?: string;
-    style?: string;
-    // cspan-like segments for rich label children
-    childrenInline?: LayoutElement[];
-}
 
 interface WidgetLayout {
     name: string;
@@ -78,24 +31,9 @@ interface WidgetLayout {
     };
     variants?: {
         condition: string;
-        layout: LayoutElement;
+        layout: BaseLayoutElement;
     }[];
-    layout: LayoutElement;
-}
-
-/**
- * Normalize identifier: keep alphanum + underscore
- */
-function sanitize(s: string) {
-    return s.replace(/[^a-zA-Z0-9_]/g, '_');
-}
-
-/**
- * Checks if a string contains a binding placeholder ({{...}})
- */
-function hasBinding(s?: string) {
-    if (!s || typeof s !== 'string') return false;
-    return /\{\{[^}]+\}\}/.test(s);
+    layout: BaseLayoutElement;
 }
 
 /**
@@ -104,14 +42,14 @@ function hasBinding(s?: string) {
  * - If mixed text + bindings: return a template literal expression
  */
 function convertBindingToSvelteExpr(raw: string, defaultPrefix = 'data'): string {
-    if (!raw || !hasBinding(raw)) {
+    if (!raw || !hasTemplateBinding(raw)) {
         return JSON.stringify(raw ?? '');
     }
 
     // Single binding?
-    const single = raw.trim().match(/^\{\{\s*([^}]+)\s*\}\}$/);
-    if (single) {
-        return normalizeExpr(single[1].trim(), defaultPrefix);
+    const singleExpr = getSingleBinding(raw);
+    if (singleExpr !== null) {
+        return normalizeExpr(singleExpr, defaultPrefix);
     }
 
     // Mixed content -> build template literal
@@ -186,12 +124,12 @@ function colorTokenToVar(token: string) {
 /**
  * Collect used color tokens in layout elements (non-hex, non-data path)
  */
-function collectUsedColorsFromElement(element: LayoutElement, usedColors: Set<string>) {
+function collectUsedColorsFromElement(element: BaseLayoutElement, usedColors: Set<string>) {
     const keys = ['color', 'backgroundColor'];
     for (const k of keys) {
         const v = (element as any)[k];
         if (!v || typeof v !== 'string') continue;
-        if (hasBinding(v)) continue;
+        if (hasTemplateBinding(v)) continue;
         if (/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(v)) continue;
         if (isLikelyDataPath(v)) continue;
         // token -> var name
@@ -216,7 +154,7 @@ function collectUsedColorsFromElement(element: LayoutElement, usedColors: Set<st
 function collectUsedColorsFromLayout(layout: WidgetLayout, usedColors: Set<string>) {
     // top-level background
     const bg = layout.background?.color;
-    if (typeof bg === 'string' && !hasBinding(bg) && !/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(bg) && !isLikelyDataPath(bg)) {
+    if (typeof bg === 'string' && !hasTemplateBinding(bg) && !/^#(?:[0-9a-fA-F]{3}){1,2}$/.test(bg) && !isLikelyDataPath(bg)) {
         usedColors.add(colorTokenToVar(bg));
     }
 
@@ -421,7 +359,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     // Visible / visibleIf should map to a `visibility` attribute
     if (prop === 'visibleIf') {
         let expr = '';
-        if (typeof value === 'string' && hasBinding(value)) {
+        if (typeof value === 'string' && hasTemplateBinding(value)) {
             expr = convertBindingToSvelteExpr(value, defaultPrefix);
         } else if (typeof value === 'string') {
             expr = normalizeExpr(value, defaultPrefix);
@@ -444,7 +382,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             if (value === true) return null;
             return `visibility="hidden"`;
         } else if (typeof value === 'string') {
-            const expr = hasBinding(value) ? convertBindingToSvelteExpr(value, defaultPrefix) : normalizeExpr(value, defaultPrefix);
+            const expr = hasTemplateBinding(value) ? convertBindingToSvelteExpr(value, defaultPrefix) : normalizeExpr(value, defaultPrefix);
             if (expr !== 'true') {
                 return `visibility={${expr} ? 'visible' : 'hidden'}`;
             }
@@ -492,7 +430,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     // Handle text property with localization
     if (prop === 'text') {
         if (typeof value === 'string') {
-            if (hasBinding(value)) {
+            if (hasTemplateBinding(value)) {
                 // Has binding syntax
                 const expr = convertBindingToSvelteExpr(value, defaultPrefix);
                 return `${attrName}={${expr}}`;
@@ -520,7 +458,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             const expr = evaluateMapboxExpression(value, defaultPrefix);
             return `width={${expr}} height={${expr}}`;
         }
-        if (typeof value === 'string' && hasBinding(value)) {
+        if (typeof value === 'string' && hasTemplateBinding(value)) {
             const expr = convertBindingToSvelteExpr(value, defaultPrefix);
             return `width={${expr}} height={${expr}}`;
         }
@@ -544,7 +482,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     }
 
     // handle bindings first
-    if (typeof value === 'string' && hasBinding(value)) {
+    if (typeof value === 'string' && hasTemplateBinding(value)) {
         let expr = convertBindingToSvelteExpr(value, defaultPrefix);
         if (value === '{{item.iconPath}}') {
             expr = `\`\${iconService.iconSetFolderPath}/images/\${${expr}}.png\``;
@@ -666,7 +604,7 @@ function mapAlignment(value: string, isVertical: boolean): string {
     return map[value] || value;
 }
 
-function generateMarkup(widgetName: string, element: LayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
+function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
     const indent = '    '.repeat(elementPath.length + 1);
     const elType = element.type;
     const tag = (() => {
@@ -712,7 +650,7 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
         const children = element.children ?? [];
 
         // Look for forEach in children (could be nested in row/column)
-        const findForEach = (el: LayoutElement): LayoutElement | null => {
+        const findForEach = (el: BaseLayoutElement): BaseLayoutElement | null => {
             if (el.type === 'forEach') return el;
             if (el.children) {
                 for (const child of el.children) {
@@ -952,7 +890,7 @@ function generateMarkup(widgetName: string, element: LayoutElement, elementPath:
     if (elType === 'conditional') {
         const condRaw = element.condition ?? 'true';
         let condExpr = 'true';
-        if (typeof condRaw === 'string' && hasBinding(condRaw)) {
+        if (typeof condRaw === 'string' && hasTemplateBinding(condRaw)) {
             condExpr = convertBindingToSvelteExpr(condRaw, defaultPrefix);
         } else if (typeof condRaw === 'string') {
             condExpr = normalizeExpr(condRaw, defaultPrefix);

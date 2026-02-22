@@ -303,7 +303,7 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
     }
 }
 
-@JavaProxy('__PACKAGE__.widgets.WidgetConfActivity')
+@JavaProxy('com.akylas.weather.widgets.WidgetConfActivity')
 @NativeClass
 class Activity extends androidx.appcompat.app.AppCompatActivity {
     isWidgetConfigActivity: boolean;

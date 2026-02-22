@@ -7,7 +7,7 @@ import { WidgetConfigManager } from '../WidgetConfigManager';
  * Handles widget update requests even when app is not running
  */
 @NativeClass()
-@JavaProxy('__PACKAGE__.WidgetUpdateReceiver')
+@JavaProxy('com.akylas.weather.widgets.WidgetUpdateReceiver')
 export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
     constructor() {
         super();
@@ -19,7 +19,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
             const action = intent.getAction();
 
             DEV_LOG && console.log(`WidgetUpdateReceiver: onReceive action=${action}`);
-            if (action === '__PACKAGE__.WIDGET_UPDATE_REQUEST') {
+            if (action === 'com.akylas.weather.WIDGET_UPDATE_REQUEST') {
                 const widgetId = intent.getIntExtra('widgetId', -1);
 
                 if (widgetId === -1) {
@@ -37,7 +37,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                     console.error(`WidgetUpdateReceiver: Error updating widget ${widgetId}:`, error, error.stack);
                     widgetManager.setWidgetError(context, widgetId, error.message || 'Update failed');
                 });
-            } else if (action === '__PACKAGE__.WIDGET_ADDED') {
+            } else if (action === 'com.akylas.weather.WIDGET_ADDED') {
                 const widgetId = intent.getIntExtra('widgetId', -1);
                 DEV_LOG && console.log(`WidgetUpdateReceiver: Widget added, widgetId=${widgetId}`);
 
@@ -67,7 +67,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                         console.error('WidgetUpdateReceiver: Error checking clock permission:', error);
                     }
                 }
-            } else if (action === '__PACKAGE__.WIDGET_REMOVED') {
+            } else if (action === 'com.akylas.weather.WIDGET_REMOVED') {
                 const widgetId = intent.getIntExtra('widgetId', -1);
                 DEV_LOG && console.log(`WidgetUpdateReceiver: Widget added, widgetId=${widgetId}`);
 

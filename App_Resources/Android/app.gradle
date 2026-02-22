@@ -4,6 +4,7 @@ def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 
 apply plugin: "androidx.baselineprofile"
 apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "org.jetbrains.kotlin.plugin.compose"  // Add this line
 
 android { 
   
@@ -207,6 +208,7 @@ dependencies {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
+    implementation "androidx.compose.runtime:runtime:1.5.3"
 
     implementation "androidx.profileinstaller:profileinstaller:1.4.1"
     baselineProfile project(':baselineprofile')

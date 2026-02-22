@@ -1,7 +1,14 @@
+
+apply plugin: "org.jetbrains.kotlin.plugin.compose"  // Add this line
+apply plugin: 'kotlinx-serialization'
+
 dependencies {
 
-    implementation "androidx.appcompat:appcompat:$androidXAppCompatVersion"
 	def androidXAppCompatVersion =  project.hasProperty("androidXAppCompat") ? project.androidXAppCompat : "1.1.0"
+    implementation "androidx.appcompat:appcompat:$androidXAppCompatVersion"
+
+	def androidXMaterial =  project.hasProperty("androidXMaterial") ? project.androidXMaterial : "1.8.0"
+	implementation "com.google.android.material:material:$androidXMaterial"
 
     def glanceVersion =  project.hasProperty("glanceVersion") ? project.glanceVersion : "1.2.0-rc01"
     

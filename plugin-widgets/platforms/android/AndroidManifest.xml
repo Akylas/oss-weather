@@ -110,8 +110,7 @@
         <!-- Widget Configuration Activity -->
         <activity
             android:name=".widgets.WidgetConfActivity"
-            android:exported="true"
-            android:theme="@style/AppTheme">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

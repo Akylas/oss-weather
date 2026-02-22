@@ -4,8 +4,6 @@ def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 
 apply plugin: "androidx.baselineprofile"
 apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "org.jetbrains.kotlin.plugin.compose"  // Add this line
-apply plugin: 'kotlinx-serialization'
 
 android { 
   

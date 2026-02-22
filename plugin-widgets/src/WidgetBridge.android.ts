@@ -190,5 +190,23 @@ export class WidgetBridge extends WidgetBridgeBase {
         this.pendingUpdates.clear();
         this.lastUpdateTime.clear();
     }
+
+    /**
+     * Provide localized strings to the native widget library.
+     *
+     * Call this on app startup and whenever the app language changes so that the native
+     * widget composables can display translated text even when the app is not in the
+     * foreground. The strings are persisted by the native side to SharedPreferences.
+     * ```
+     */
+    public setLocalizedStrings(strings: { loading: string; errorLoading: string; tapConfigure: string; noLocation: string }) {
+        try {
+            const context = Utils.android.getApplicationContext();
+            com.akylas.weather.widgets.WidgetLocalizationProvider.setStrings(context, strings.loading, strings.errorLoading, strings.tapConfigure, strings.noLocation);
+            DEV_LOG && console.log('[WidgetBridge] Localized strings updated');
+        } catch (error) {
+            console.error('[WidgetBridge] Failed to set localized strings:', error, error.stack);
+        }
+    }
 }
 export const widgetService = new WidgetBridge();

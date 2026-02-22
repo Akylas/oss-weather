@@ -20,9 +20,21 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import com.akylas.weather.R
 
 object WidgetComposables {
+
+    // Cache the background drawable resource ID after the first lookup to avoid repeated
+    // reflection-based calls on every recomposition.
+    private var bgResId: Int = 0
+    private var bgResIdResolved: Boolean = false
+
+    private fun resolveBackgroundResId(context: android.content.Context): Int {
+        if (!bgResIdResolved) {
+            bgResId = context.resources.getIdentifier("app_widget_background", "drawable", context.packageName)
+            bgResIdResolved = true
+        }
+        return bgResId
+    }
 
     @Composable
     fun NoDataContent(
@@ -30,6 +42,7 @@ object WidgetComposables {
         errorMessage: String = ""
     ) {
         val context = LocalContext.current
+        WidgetLocalizationProvider.ensureLoaded(context)
         val launchIntent = WeatherWidgetManager.createAppLaunchIntent(context)
         val openAction = launchIntent?.let { actionStartActivity(it.component!!) }
         Box(
@@ -55,7 +68,7 @@ object WidgetComposables {
                         )
                         Spacer(modifier = GlanceModifier.height(8.dp))
                         Text(
-                            text = context.getString(R.string.widget_loading),
+                            text = WidgetLocalizationProvider.loading,
                             style = TextStyle(
                                 color = GlanceTheme.colors.onBackground,
                                 fontSize = 16.sp,
@@ -74,7 +87,7 @@ object WidgetComposables {
                         )
                         Spacer(modifier = GlanceModifier.height(8.dp))
                         Text(
-                            text = errorMessage.ifEmpty { context.getString(R.string.widget_error_loading) },
+                            text = errorMessage.ifEmpty { WidgetLocalizationProvider.errorLoading },
                             style = TextStyle(
                                 color = GlanceTheme.colors.onBackground,
                                 fontSize = 14.sp,
@@ -84,7 +97,7 @@ object WidgetComposables {
                         )
                         Spacer(modifier = GlanceModifier.height(4.dp))
                         Text(
-                            text = context.getString(R.string.widget_tap_configure),
+                            text = WidgetLocalizationProvider.tapConfigure,
                             style = TextStyle(
                                 color = GlanceTheme.colors.onSurfaceVariant,
                                 fontSize = 12.sp,
@@ -95,7 +108,7 @@ object WidgetComposables {
                     
                     else -> {
                         Text(
-                            text = context.getString(R.string.widget_no_location),
+                            text = WidgetLocalizationProvider.noLocation,
                             style = TextStyle(
                                 color = GlanceTheme.colors.onBackground,
                                 fontSize = 16.sp,
@@ -105,7 +118,7 @@ object WidgetComposables {
                         )
                         Spacer(modifier = GlanceModifier.height(4.dp))
                         Text(
-                            text = context.getString(R.string.widget_tap_configure),
+                            text = WidgetLocalizationProvider.tapConfigure,
                             style = TextStyle(
                                 color = GlanceTheme.colors.onSurfaceVariant,
                                 fontSize = 12.sp,
@@ -124,14 +137,17 @@ object WidgetComposables {
         modifier: GlanceModifier = GlanceModifier,
         content: @Composable () -> Unit
     ) {
-        Box(
-            modifier = if (enabled) modifier
-                .fillMaxSize()
-                .background(
-                    imageProvider = ImageProvider(R.drawable.app_widget_background),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.widgetBackground)
-                ) else  modifier.fillMaxSize()
-        ) {
+        val context = LocalContext.current
+        val resId = resolveBackgroundResId(context)
+        val backgroundModifier = when {
+            !enabled -> modifier.fillMaxSize()
+            resId != 0 -> modifier.fillMaxSize().background(
+                imageProvider = ImageProvider(resId),
+                colorFilter = ColorFilter.tint(GlanceTheme.colors.widgetBackground)
+            )
+            else -> modifier.fillMaxSize().background(GlanceTheme.colors.widgetBackground)
+        }
+        Box(modifier = backgroundModifier) {
             content()
         }
     }

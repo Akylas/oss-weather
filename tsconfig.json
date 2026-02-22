@@ -13,6 +13,6 @@
             "plugin-widgets/*": ["plugin-widgets/src/*"]
         }
     },
-    "include": ["app/**/*", "tools/app/**/*", "typings/*.d.ts"],
+    "include": ["app/**/*", "tools/app/**/*", "typings/*.d.ts", "plugin-widgets/typings/*.d.ts"],
     "exclude": ["node_modules", "tools/app/db"]
 }

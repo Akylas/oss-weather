@@ -22,11 +22,6 @@
         <item name="android:padding">@dimen/appWidgetPadding</item>
     </style>
 
-    <dimen name="appWidgetPadding">16dp</dimen>
-    <dimen name="appWidgetRadius">16dp</dimen>
-
-    <color name="appwidget_background">?colorSurface</color>
-
     <!-- The themes below are only used for the preview layouts -->
     <style name="Theme.AppWidget.AppWidgetContainer" parent="Theme.Material3.DynamicColors.DayNight"/>
     <!-- <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.DayNight.BottomSheetDialog">

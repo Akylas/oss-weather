@@ -230,6 +230,7 @@ module.exports = (env, params = {}) => {
     }
     Object.assign(config.resolve.alias, {
         '@shared': resolve(__dirname, 'tools/app'),
+        'plugin-widgets': resolve(__dirname, 'plugin-widgets/src'),
         'kiss-orm': '@akylas/kiss-orm',
         'svelte-native': '@nativescript-community/svelte-native'
     });

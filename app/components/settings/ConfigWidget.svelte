@@ -26,7 +26,7 @@
     // Load sample data helper
     async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
         try {
-            const sampleData = (await import(`plugin-widgets/data/samples/${widgetClass}.sample.json`)).default;
+            const sampleData = (await import(`plugin-widgets/widgets/samples/${widgetClass}.sample.json`)).default;
             return sampleData[setName] || sampleData.default || null;
         } catch (error) {
             console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
@@ -35,7 +35,7 @@
     }
     // Load sample data helper
     async function loadWidgetData(widgetClass: string): Promise<any> {
-        const data = (await import(`plugin-widgets/data/widgets/${widgetClass}.json`)).default;
+        const data = (await import(`plugin-widgets/widgets/${widgetClass}.json`)).default;
         return data;
     }
 </script>

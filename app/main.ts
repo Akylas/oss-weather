@@ -83,14 +83,6 @@ try {
 
     Application.on(Application.launchEvent, async () => {
         startThemeHelper();
-        if (__ANDROID__ && WIDGETS) {
-            (await import('plugin-widgets')).widgetService.setLocalizedStrings({
-                loading: lc('widget.loading'),
-                errorLoading: lc('widget.error_loading'),
-                tapConfigure: lc('widget.tap_configure'),
-                noLocation: lc('widget.no_location')
-            });
-        }
     });
     Application.on(Application.exitEvent, async () => {
         DEV_LOG && console.log('exitEvent');

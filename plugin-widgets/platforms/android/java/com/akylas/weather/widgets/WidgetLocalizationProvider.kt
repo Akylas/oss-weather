@@ -9,16 +9,7 @@ import android.content.Context
  * translated strings. If [setStrings] has not been called in the current process lifetime,
  * [ensureLoaded] falls back to strings previously persisted in SharedPreferences. English
  * defaults are used as a final fallback so the widget always has something to display.
- *
- * Usage from NativeScript (TypeScript/JavaScript):
- * ```
- * com.akylas.weather.widgets.WidgetLocalizationProvider.setStrings(
- *     context,
- *     lc('widget.loading'),
- *     lc('widget.error_loading'),
- *     lc('widget.tap_configure'),
- *     lc('widget.no_location')
- * )
+
  * ```
  */
 object WidgetLocalizationProvider {

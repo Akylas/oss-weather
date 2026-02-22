@@ -20,6 +20,7 @@ import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 
 import { networkService } from './services/api';
+import { lc } from '@nativescript-community/l';
 
 try {
     startSentry();
@@ -80,13 +81,21 @@ try {
     // on startup we need to ensure theme is loaded because of a mixin
     // on startup we need to say what we are using
 
-    Application.on(Application.launchEvent, () => {
+    Application.on(Application.launchEvent, async () => {
         startThemeHelper();
+        if (__ANDROID__ && WIDGETS) {
+            (await import('plugin-widgets')).widgetService.setLocalizedStrings({
+                loading: lc('widget.loading'),
+                errorLoading: lc('widget.error_loading'),
+                tapConfigure: lc('widget.tap_configure'),
+                noLocation: lc('widget.no_location')
+            });
+        }
     });
     Application.on(Application.exitEvent, async () => {
         DEV_LOG && console.log('exitEvent');
         if (WIDGETS) {
-            (await import('plugin-widgets/src/WidgetBridge')).widgetService.destroy();
+            (await import('plugin-widgets')).widgetService.destroy();
         }
     });
     themer.createShape('round', {

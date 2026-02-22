@@ -10,7 +10,7 @@ module.exports = (env, params = {}) => {
         production
     } = env;
     env.appComponents = env.appComponents || [];
-    env.appComponents.push('~/android/widgetconfigactivity', '~/android/WidgetUpdateReceiver');
+    env.appComponents.push('plugin-widgets/android/widgetconfigactivity', 'plugin-widgets/android/WidgetUpdateReceiver');
 
     const projectRoot = params.projectRoot || '../';
     const appResourcesFullPath = resolve(projectRoot, appResourcesPath);

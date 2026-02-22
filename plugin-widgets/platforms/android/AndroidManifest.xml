@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:installLocation="auto">
+    xmlns:tools="http://schemas.android.com/tools"  package="com.akylas.weather.widgets">
     
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:node="remove" />
-    <permission android:name="__PACKAGE__.broadcast"
-        android:protectionLevel="signatureOrSystem"></permission>
     <application>
         <!-- Simple Weather Widget -->
         <receiver
-            android:name="__PACKAGE__.widgets.SimpleWeatherWidgetReceiver"
+            android:name="com.akylas.weather.widgets.SimpleWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
@@ -29,7 +26,7 @@
 
         <!-- Simple Weather Widget with Date -->
         <receiver
-            android:name="__PACKAGE__.widgets.SimpleWeatherWithDateWidgetReceiver"
+            android:name="com.akylas.weather.widgets.SimpleWeatherWithDateWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
@@ -45,7 +42,7 @@
 
         <!-- Simple Weather Widget with Clock -->
         <receiver
-            android:name="__PACKAGE__.widgets.SimpleWeatherWithClockWidgetReceiver"
+            android:name="com.akylas.weather.widgets.SimpleWeatherWithClockWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
@@ -61,7 +58,7 @@
 
         <!-- Hourly Weather Widget -->
         <receiver
-            android:name="__PACKAGE__.widgets.HourlyWeatherWidgetReceiver"
+            android:name="com.akylas.weather.widgets.HourlyWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
@@ -77,7 +74,7 @@
 
         <!-- Daily Weather Widget -->
         <receiver
-            android:name="__PACKAGE__.widgets.DailyWeatherWidgetReceiver"
+            android:name="com.akylas.weather.widgets.DailyWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
@@ -93,7 +90,7 @@
 
         <!-- Forecast Weather Widget -->
         <receiver
-            android:name=".widgets.ForecastWeatherWidgetReceiver"
+            android:name="com.akylas.weather.widgets.ForecastWeatherWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
@@ -109,9 +106,8 @@
 
         <!-- Widget Configuration Activity -->
         <activity
-            android:name=".widgets.WidgetConfActivity"
-            android:exported="true"
-            android:theme="@style/AppTheme">
+            android:name="com.akylas.weather.widgets.WidgetConfActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_ENABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -121,13 +117,13 @@
             </intent-filter>
         </activity>
         <receiver
-            android:name=".WidgetUpdateReceiver"
+            android:name="com.akylas.weather.widgets.WidgetUpdateReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="__PACKAGE__.WIDGET_UPDATE_REQUEST" />
-                <action android:name="__PACKAGE__.WIDGET_ADDED" />
-                <action android:name="__PACKAGE__.WIDGET_REMOVED" />
+                <action android:name="com.akylas.weather.WIDGET_UPDATE_REQUEST" />
+                <action android:name="com.akylas.weather.WIDGET_ADDED" />
+                <action android:name="com.akylas.weather.WIDGET_REMOVED" />
             </intent-filter>
         </receiver>
         <!-- <receiver

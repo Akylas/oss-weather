@@ -20,7 +20,6 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
-import com.akylas.weather.R
 
 object WidgetComposables {
 
@@ -125,12 +124,12 @@ object WidgetComposables {
         content: @Composable () -> Unit
     ) {
         Box(
-            modifier = if (enabled) modifier
-                .fillMaxSize()
-                .background(
+            modifier = modifier.fillMaxSize().then(
+                if (enabled) GlanceModifier.background(
                     imageProvider = ImageProvider(R.drawable.app_widget_background),
                     colorFilter = ColorFilter.tint(GlanceTheme.colors.widgetBackground)
-                ) else  modifier.fillMaxSize()
+                ) else GlanceModifier
+            )
         ) {
             content()
         }

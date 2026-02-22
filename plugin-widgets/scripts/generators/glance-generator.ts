@@ -683,7 +683,6 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.text.TextAlign');
     lines.push('import androidx.glance.text.TextStyle');
     lines.push('import androidx.glance.unit.ColorProvider');
-    lines.push('import com.akylas.weather.R');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetData');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetManager');
     lines.push('import com.akylas.weather.widgets.WidgetTheme');

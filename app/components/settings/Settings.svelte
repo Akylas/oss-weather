@@ -1063,7 +1063,7 @@
                     if (WIDGETS) {
                         try {
                             showSnack({ message: lc('updating_all_widgets') });
-                            const { widgetService } = await import('plugin-widgets/WidgetBridge');
+                            const { widgetService } = await import('plugin-widgets');
                             await widgetService.updateAllWidgets();
                         } catch (error) {
                             showError(error);

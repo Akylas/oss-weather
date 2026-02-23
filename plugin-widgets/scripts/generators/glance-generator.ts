@@ -50,8 +50,6 @@ interface LayoutElement {
     condition?: Expression;
     then?: LayoutElement;
     else?: LayoutElement;
-    format24Hour?: string;
-    format12Hour?: string;
     format?: string;
     style?: string;
 }
@@ -583,9 +581,6 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
 function generateClock(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
-    const format24 = element.format24Hour || 'HH:mm';
-    const format12 = element.format12Hour || 'h:mm a';
-
     const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
@@ -605,15 +600,8 @@ function generateClock(element: LayoutElement, indent: string): string[] {
         fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
     }
 
-    // Determine time expression based on style
-    let timeExpr: string;
-    if (element.style === 'time24' || element.format24Hour) {
-        timeExpr = `android.text.format.DateFormat.format("${format24}", java.util.Date()).toString()`;
-    } else if (element.style === 'time12' || element.format12Hour) {
-        timeExpr = `android.text.format.DateFormat.format("${format12}", java.util.Date()).toString()`;
-    } else {
-        timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
-    }
+    // Always use locale-aware time format (respects system 24h/12h and AM/PM preference)
+    const timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
 
     lines.push(`${indent}Text(`);
     lines.push(`${indent}    text = ${timeExpr},`);

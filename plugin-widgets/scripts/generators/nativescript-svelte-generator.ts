@@ -804,18 +804,8 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     }
 
     if (elType === 'clock' && !seenAttrs.has('text')) {
-        const style = (element as any).style;
-        const format24 = (element as any).format24Hour;
-        const format12 = (element as any).format12Hour;
-        let clockExpr: string;
-        if (style === 'time24' || format24) {
-            clockExpr = `formatDate(new Date(), '${format24 || 'HH:mm'}')`;
-        } else if (style === 'time12' || format12) {
-            clockExpr = `formatDate(new Date(), '${format12 || 'h:mm A'}')`;
-        } else {
-            clockExpr = `nowTime()`;
-        }
-        attrsArr.push(`text={${clockExpr}}`);
+        // Always use locale-aware time (respects system 24h/12h and AM/PM preference)
+        attrsArr.push(`text={nowTime()}`);
         seenAttrs.add('text');
     }
 

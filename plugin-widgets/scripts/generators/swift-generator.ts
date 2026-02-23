@@ -612,25 +612,10 @@ function generateClock(element: BaseLayoutElement, indent: string): string[] {
     const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 24;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'bold');
     const color = toSwiftColor(element.color);
-    const style = (element as any).style as string | undefined;
 
     const lines: string[] = [];
-
-    if (style === 'time24') {
-        lines.push(`${indent}Text({`);
-        lines.push(`${indent}    let f = DateFormatter()`);
-        lines.push(`${indent}    f.dateFormat = "HH:mm"`);
-        lines.push(`${indent}    return f.string(from: Date())`);
-        lines.push(`${indent}}())`);
-    } else if (style === 'time12') {
-        lines.push(`${indent}Text({`);
-        lines.push(`${indent}    let f = DateFormatter()`);
-        lines.push(`${indent}    f.dateFormat = "h:mm a"`);
-        lines.push(`${indent}    return f.string(from: Date())`);
-        lines.push(`${indent}}())`);
-    } else {
-        lines.push(`${indent}Text(Date(), style: .time)`);
-    }
+    // Always use locale-aware time (respects system 24h/12h and AM/PM preference)
+    lines.push(`${indent}Text(Date(), style: .time)`);
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
     lines.push(`${indent}    .foregroundColor(${color})`);
 

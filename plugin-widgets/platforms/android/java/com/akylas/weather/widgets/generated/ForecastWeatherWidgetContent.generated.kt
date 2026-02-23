@@ -1,11 +1,9 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
-import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
@@ -17,21 +15,20 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.akylas.weather.widgets.DailyData
-import com.akylas.weather.widgets.HourlyData
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
-import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
+import kotlin.math.min
 
 /**
  * Generated content for Detailed Forecast
@@ -77,15 +74,28 @@ val fakeErrorWeatherWidgetData = WeatherWidgetData(
 @Preview(widthDp = 260, heightDp = 400)
 @Composable
 private fun Preview() {
+    val fakeWeatherWidgetData = WeatherWidgetData(
+        temperature = "12 °C",
+        locationName = "Paris",
+        description = "Partly Cloudy",
+        iconPath = "icon_themes/meteocons/images/800d.png",
+        hourlyData = listOf(HourlyData(time = "06:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "07:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "08:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "09:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "11:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm")),
+        dailyData = listOf(DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "22 °C", temperatureLow = "10 °C", precipAccumulation = "0 mm"), DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/801d.png", temperatureHigh = "20 °C", temperatureLow = "9 °C", precipAccumulation = "0 mm"), DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm"), DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "18 °C", temperatureLow = "8 °C", precipAccumulation = "0 mm"), DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "21 °C", temperatureLow = "10 °C", precipAccumulation = "0 mm"), DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/803d.png", temperatureHigh = "19 °C", temperatureLow = "9 °C", precipAccumulation = "0 mm")),
+        loadingState = WidgetLoadingState.LOADED
+    )
     ForecastWeatherWidgetContent(
         config = WidgetConfig(), data = fakeWeatherWidgetData,
     )
 }
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 280)
+@Preview(widthDp = 260, heightDp = 120)
 @Composable
 private fun ErrorPreview() {
+    val fakeErrorWeatherWidgetData = WeatherWidgetData(
+        loadingState = WidgetLoadingState.ERROR,
+        errorMessage = "Unable to fetch weather data"
+    )
     GlanceTheme(colors = WidgetTheme.colors) {
         WidgetComposables.WidgetBackground {
             WidgetComposables.NoDataContent(
@@ -100,6 +110,7 @@ private fun ErrorPreview() {
 fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+
     Column(
         modifier = GlanceModifier,
         verticalAlignment = Alignment.Vertical.Top,

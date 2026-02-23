@@ -1,11 +1,9 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
-import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
@@ -17,27 +15,25 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.akylas.weather.widgets.HourlyData
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
-import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
+import kotlin.math.min
 
 /**
  * Generated content for Hourly Forecast
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
-
-
 
 @OptIn(ExperimentalGlancePreviewApi::class)
 
@@ -45,10 +41,10 @@ import com.akylas.weather.widgets.WidgetLoadingState
 @Preview(widthDp = 260, heightDp = 120)
 @Preview(widthDp = 360, heightDp = 150)
 @Composable
-private fun HourlyPreview() {
+private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8 °C",
-        iconPath = "icon_themes/meteocons/images/800d.png",
+        temperature = "12 °C",
+        locationName = "Paris",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",
@@ -71,7 +67,7 @@ private fun HourlyPreview() {
 }
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 80)
+@Preview(widthDp = 260, heightDp = 120)
 @Composable
 private fun ErrorPreview() {
     val fakeErrorWeatherWidgetData = WeatherWidgetData(
@@ -92,6 +88,7 @@ private fun ErrorPreview() {
 fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+
     Column(
         modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
         verticalAlignment = Alignment.Vertical.Top,

@@ -804,7 +804,33 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     }
 
     if (elType === 'clock' && !seenAttrs.has('text')) {
+        // Always use locale-aware time (respects system 24h/12h and AM/PM preference)
         attrsArr.push(`text={nowTime()}`);
+        seenAttrs.add('text');
+    }
+
+    if (elType === 'date' && !seenAttrs.has('text')) {
+        const style = (element as any).style;
+        let dateExpr: string;
+        switch (style) {
+            case 'dayMonth':
+                dateExpr = `formatDate(new Date(), 'MMM D')`;
+                break;
+            case 'fullDate':
+                dateExpr = `formatDate(new Date(), 'LL')`;
+                break;
+            case 'year':
+                dateExpr = `formatDate(new Date(), 'YYYY')`;
+                break;
+            case 'month':
+                dateExpr = `formatDate(new Date(), 'MMMM')`;
+                break;
+            case 'date':
+            default:
+                dateExpr = `formatDate(new Date(), 'll')`;
+                break;
+        }
+        attrsArr.push(`text={${dateExpr}}`);
         seenAttrs.add('text');
     }
 
@@ -967,8 +993,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     // Helper functions - only add if used
     if (usesClock) {
         script += `\n    function nowTime() {\n`;
-        script += `        const now = new Date();\n`;
-        script += `        return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');\n`;
+        script += `        return formatDate(new Date(), 'LT');\n`;
         script += `    }\n`;
     }
 

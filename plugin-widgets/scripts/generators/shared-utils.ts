@@ -74,8 +74,6 @@ export interface BaseLayoutElement {
     condition?: Expression;
     then?: BaseLayoutElement;
     else?: BaseLayoutElement;
-    format24Hour?: string;
-    format12Hour?: string;
     format?: string;
     style?: string;
     [key: string]: any;

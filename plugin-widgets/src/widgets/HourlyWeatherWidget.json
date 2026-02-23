@@ -4,10 +4,26 @@
     "displayName": "Hourly Forecast",
     "description": "Shows hourly weather forecast with icons and temperatures",
     "supportedSizes": [
-        { "width": 260, "height": 60, "family": "medium" },
-        { "width": 260, "height": 80, "family": "medium" },
-        { "width": 260, "height": 120, "family": "medium" },
-        { "width": 360, "height": 180, "family": "large" }
+        {
+            "width": 260,
+            "height": 60,
+            "family": "medium"
+        },
+        {
+            "width": 260,
+            "height": 80,
+            "family": "medium"
+        },
+        {
+            "width": 260,
+            "height": 120,
+            "family": "medium"
+        },
+        {
+            "width": 360,
+            "height": 180,
+            "family": "large"
+        }
     ],
     "defaultPadding": 6,
     "background": {
@@ -18,18 +34,49 @@
         "type": "column",
         "alignment": "start",
         "crossAlignment": "stretch",
-        "padding": ["case", ["<", ["get", "size.height"], 60], 2, ["<", ["get", "size.height"], 80], 4, 6],
+        "padding": [
+            "case",
+            [
+                "<",
+                [
+                    "get",
+                    "size.height"
+                ],
+                60
+            ],
+            2,
+            [
+                "<",
+                [
+                    "get",
+                    "size.height"
+                ],
+                80
+            ],
+            4,
+            6
+        ],
         "children": [
             {
                 "type": "conditional",
-                "condition": [">=", ["get", "size.height"], 80],
+                "condition": [
+                    ">=",
+                    [
+                        "get",
+                        "size.height"
+                    ],
+                    80
+                ],
                 "then": {
                     "type": "column",
                     "crossAlignment": "start",
                     "children": [
                         {
                             "type": "label",
-                            "text": ["get", "data.locationName"],
+                            "text": [
+                                "get",
+                                "data.locationName"
+                            ],
                             "fontSize": 14,
                             "fontWeight": "medium",
                             "color": "onSurface",
@@ -64,43 +111,145 @@
                                     "width": 53,
                                     "fillHeight": true,
                                     "paddingHorizontal": 4,
-                                    "spacing": ["case", ["<", ["get", "size.height"], 60], 0, 2],
+                                    "spacing": [
+                                        "case",
+                                        [
+                                            "<",
+                                            [
+                                                "get",
+                                                "size.height"
+                                            ],
+                                            60
+                                        ],
+                                        0,
+                                        2
+                                    ],
                                     "children": [
                                         {
                                             "type": "label",
-                                            "text": ["get", "item.time"],
-                                            "fontSize": ["case", ["<", ["get", "size.height"], 60], 9, 11],
+                                            "text": [
+                                                "get",
+                                                "item.time"
+                                            ],
+                                            "fontSize": [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "get",
+                                                        "size.height"
+                                                    ],
+                                                    60
+                                                ],
+                                                9,
+                                                11
+                                            ],
                                             "color": "onSurfaceVariant",
                                             "maxLines": 1
                                         },
                                         {
                                             "type": "image",
-                                            "src": ["get", "item.iconPath"],
-                                            "size": ["case", ["<", ["get", "size.height"], 60], 24, ["<", ["get", "size.height"], 80], 28, 32]
+                                            "src": [
+                                                "get",
+                                                "item.iconPath"
+                                            ],
+                                            "size": [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "get",
+                                                        "size.height"
+                                                    ],
+                                                    60
+                                                ],
+                                                24,
+                                                [
+                                                    "<",
+                                                    [
+                                                        "get",
+                                                        "size.height"
+                                                    ],
+                                                    80
+                                                ],
+                                                28,
+                                                32
+                                            ]
                                         },
                                         {
                                             "type": "label",
-                                            "text": ["get", "item.temperature"],
-                                            "fontSize": ["case", ["<", ["get", "size.height"], 60], 12, 14],
+                                            "text": [
+                                                "get",
+                                                "item.temperature"
+                                            ],
+                                            "fontSize": [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "get",
+                                                        "size.height"
+                                                    ],
+                                                    60
+                                                ],
+                                                12,
+                                                14
+                                            ],
                                             "fontWeight": "bold",
                                             "color": "onSurface",
                                             "maxLines": 1
                                         },
                                         {
                                             "type": "conditional",
-                                            "condition": ["all", [">=", ["get", "size.height"], 60], ["has", "item.precipAccumulation"]],
+                                            "condition": [
+                                                "all",
+                                                [
+                                                    ">=",
+                                                    [
+                                                        "get",
+                                                        "size.height"
+                                                    ],
+                                                    60
+                                                ],
+                                                [
+                                                    "has",
+                                                    "item.precipAccumulation"
+                                                ]
+                                            ],
                                             "then": {
                                                 "type": "column",
                                                 "children": [
                                                     {
                                                         "type": "spacer",
                                                         "size": 2,
-                                                        "visibleIf": [">=", ["get", "size.height"], 60]
+                                                        "visibleIf": [
+                                                            ">=",
+                                                            [
+                                                                "get",
+                                                                "size.height"
+                                                            ],
+                                                            60
+                                                        ]
                                                     },
                                                     {
                                                         "type": "label",
-                                                        "text": ["get", "item.precipAccumulation"],
-                                                        "fontSize": ["case", ["<", ["get", "size.height"], 80], 9, 10],
+                                                        "text": [
+                                                            "get",
+                                                            "item.precipAccumulation"
+                                                        ],
+                                                        "fontSize": [
+                                                            "case",
+                                                            [
+                                                                "<",
+                                                                [
+                                                                    "get",
+                                                                    "size.height"
+                                                                ],
+                                                                80
+                                                            ],
+                                                            9,
+                                                            10
+                                                        ],
                                                         "color": "onSurfaceVariant"
                                                     }
                                                 ]
@@ -114,5 +263,70 @@
                 ]
             }
         ]
+    },
+    "generatePreviews": true,
+    "preview": {
+        "sizes": [
+            {
+                "width": 260,
+                "height": 60
+            },
+            {
+                "width": 260,
+                "height": 80
+            },
+            {
+                "width": 260,
+                "height": 120
+            },
+            {
+                "width": 360,
+                "height": 180
+            }
+        ],
+        "fakeData": {
+            "temperature": "12 \u00b0C",
+            "locationName": "Paris",
+            "description": "Partly Cloudy",
+            "iconPath": "icon_themes/meteocons/images/800d.png",
+            "hourlyData": [
+                {
+                    "time": "06:00",
+                    "temperature": "12 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "precipAccumulation": "0 mm"
+                },
+                {
+                    "time": "07:00",
+                    "temperature": "12 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "precipAccumulation": "0 mm"
+                },
+                {
+                    "time": "08:00",
+                    "temperature": "12 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "precipAccumulation": "0 mm"
+                },
+                {
+                    "time": "09:00",
+                    "temperature": "12 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "precipAccumulation": "0 mm"
+                },
+                {
+                    "time": "10:00",
+                    "temperature": "12 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "precipAccumulation": "0 mm"
+                },
+                {
+                    "time": "11:00",
+                    "temperature": "12 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "precipAccumulation": "0 mm"
+                }
+            ]
+        }
     }
 }

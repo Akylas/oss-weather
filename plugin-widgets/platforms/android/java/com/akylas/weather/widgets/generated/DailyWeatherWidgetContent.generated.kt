@@ -1,11 +1,9 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
-import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
@@ -17,36 +15,34 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
-import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
+import kotlin.math.min
 
 /**
  * Generated content for Daily Forecast
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
 
-
-
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 160, heightDp = 300)
-@Preview(widthDp = 260, heightDp = 400)
+@Preview(widthDp = 260, heightDp = 120)
+@Preview(widthDp = 260, heightDp = 200)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8 °C",
-        iconPath = "icon_themes/meteocons/images/800d.png",
+        temperature = "12 °C",
+        locationName = "Paris",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",
@@ -61,21 +57,19 @@ private fun Preview() {
             DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")
         )
     )
-
     DailyWeatherWidgetContent(
         config = WidgetConfig(), data = fakeWeatherWidgetData,
     )
 }
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 200)
+@Preview(widthDp = 260, heightDp = 120)
 @Composable
 private fun ErrorPreview() {
     val fakeErrorWeatherWidgetData = WeatherWidgetData(
         loadingState = WidgetLoadingState.ERROR,
         errorMessage = "Unable to fetch weather data"
     )
-
     GlanceTheme(colors = WidgetTheme.colors) {
         WidgetComposables.WidgetBackground {
             WidgetComposables.NoDataContent(
@@ -90,6 +84,7 @@ private fun ErrorPreview() {
 fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+
     Column(
         modifier = GlanceModifier,
         verticalAlignment = Alignment.Vertical.Top,
@@ -120,7 +115,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.End
             ) {
                 if (data.iconPath.isNotEmpty()) {
-                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, context)?.let { provider ->
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
                            contentDescription = data.iconPath,

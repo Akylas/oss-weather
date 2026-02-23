@@ -50,8 +50,6 @@ interface LayoutElement {
     condition?: Expression;
     then?: LayoutElement;
     else?: LayoutElement;
-    format24Hour?: string;
-    format12Hour?: string;
     format?: string;
     style?: string;
 }
@@ -67,6 +65,11 @@ interface WidgetLayout {
         color?: string;
     };
     layout: LayoutElement;
+    generatePreviews?: boolean;
+    preview?: {
+        sizes?: { width: number; height: number }[];
+        fakeData?: Record<string, any>;
+    };
 }
 
 
@@ -289,7 +292,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
-        textExpr = `context?.getString(context.resources.getIdentifier("${resourceKey}", "string", context.packageName)) ?: "${resourceKey}"`;
+        textExpr = `context?.let { ctx -> ctx.getString(ctx.resources.getIdentifier("${resourceKey}", "string", ctx.packageName)) } ?: "${resourceKey}"`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }
@@ -578,9 +581,6 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
 function generateClock(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
-    const format24 = element.format24Hour || 'HH:mm';
-    const format12 = element.format12Hour || 'h:mm a';
-
     const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
@@ -600,8 +600,11 @@ function generateClock(element: LayoutElement, indent: string): string[] {
         fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
     }
 
+    // Always use locale-aware time format (respects system 24h/12h and AM/PM preference)
+    const timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
+
     lines.push(`${indent}Text(`);
-    lines.push(`${indent}    text = android.text.format.DateFormat.format("${format24}", System.currentTimeMillis()).toString(),`);
+    lines.push(`${indent}    text = ${timeExpr},`);
 
     const styleProps: string[] = [];
     if (fontSizeExpr) {
@@ -626,13 +629,36 @@ function generateClock(element: LayoutElement, indent: string): string[] {
 function generateDate(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
-    const format = element.format || 'MMM dd, yyyy';
-
     const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
+    // Determine date expression based on style
+    let dateExpr: string;
+    if (element.format) {
+        dateExpr = `android.text.format.DateFormat.format("${element.format}", java.util.Date()).toString()`;
+    } else {
+        switch (element.style) {
+            case 'dayMonth':
+                dateExpr = `android.text.format.DateFormat.format("MMM d", java.util.Date()).toString()`;
+                break;
+            case 'fullDate':
+                dateExpr = `android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date())`;
+                break;
+            case 'year':
+                dateExpr = `android.text.format.DateFormat.format("yyyy", java.util.Date()).toString()`;
+                break;
+            case 'month':
+                dateExpr = `android.text.format.DateFormat.format("MMMM", java.util.Date()).toString()`;
+                break;
+            case 'date':
+            default:
+                dateExpr = `android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date())`;
+                break;
+        }
+    }
+
     lines.push(`${indent}Text(`);
-    lines.push(`${indent}    text = android.text.format.DateFormat.format("${format}", System.currentTimeMillis()).toString(),`);
+    lines.push(`${indent}    text = ${dateExpr},`);
 
     const styleProps: string[] = [];
     if (fontSizeExpr) {
@@ -652,6 +678,113 @@ function generateDate(element: LayoutElement, indent: string): string[] {
 }
 
 /**
+ * Generate preview composable functions for a widget layout
+ */
+function generatePreviewBlock(layout: WidgetLayout, className: string): string[] {
+    const lines: string[] = [];
+
+    // Determine preview sizes
+    let sizes: { width: number; height: number }[];
+    if (layout.preview?.sizes && layout.preview.sizes.length > 0) {
+        sizes = layout.preview.sizes;
+    } else if (layout.supportedSizes && layout.supportedSizes.length > 0) {
+        sizes = layout.supportedSizes.map((s) => ({ width: s.width, height: s.height }));
+    } else {
+        sizes = [{ width: 260, height: 120 }];
+    }
+
+    // Build fakeData Kotlin constructor arguments
+    const fakeData = layout.preview?.fakeData;
+    const fakeDataLines: string[] = [];
+
+    if (fakeData) {
+        const scalar = (key: string, v: any) => `        ${key} = "${v}"`;
+
+        const hourlyItem = (item: any) => {
+            const props = [
+                item.time !== undefined ? `time = "${item.time}"` : null,
+                item.temperature !== undefined ? `temperature = "${item.temperature}"` : null,
+                item.iconPath !== undefined ? `iconPath = "${item.iconPath}"` : null,
+                item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
+                item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
+                item.description !== undefined ? `description = "${item.description}"` : null,
+                item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null,
+            ].filter(Boolean);
+            return `HourlyData(${props.join(', ')})`;
+        };
+
+        const dailyItem = (item: any) => {
+            const props = [
+                item.day !== undefined ? `day = "${item.day}"` : null,
+                item.iconPath !== undefined ? `iconPath = "${item.iconPath}"` : null,
+                item.temperatureHigh !== undefined ? `temperatureHigh = "${item.temperatureHigh}"` : null,
+                item.temperatureLow !== undefined ? `temperatureLow = "${item.temperatureLow}"` : null,
+                item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
+                item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null,
+                item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
+                item.description !== undefined ? `description = "${item.description}"` : null,
+            ].filter(Boolean);
+            return `DailyData(${props.join(', ')})`;
+        };
+
+        for (const [key, value] of Object.entries(fakeData)) {
+            switch (key) {
+                case 'temperature':
+                case 'iconPath':
+                case 'description':
+                case 'locationName':
+                case 'date':
+                    fakeDataLines.push(`${scalar(key, value)},`);
+                    break;
+                case 'hourlyData':
+                    fakeDataLines.push(`        hourlyData = listOf(${(value as any[]).map(hourlyItem).join(', ')}),`);
+                    break;
+                case 'dailyData':
+                    fakeDataLines.push(`        dailyData = listOf(${(value as any[]).map(dailyItem).join(', ')}),`);
+                    break;
+            }
+        }
+    }
+    fakeDataLines.push(`        loadingState = WidgetLoadingState.LOADED`);
+
+    // @Preview annotations (one per size)
+    lines.push(`@OptIn(ExperimentalGlancePreviewApi::class)`);
+    for (const size of sizes) {
+        lines.push(`@Preview(widthDp = ${size.width}, heightDp = ${size.height})`);
+    }
+    lines.push(`@Composable`);
+    lines.push(`private fun Preview() {`);
+    lines.push(`    val fakeWeatherWidgetData = WeatherWidgetData(`);
+    lines.push(...fakeDataLines);
+    lines.push(`    )`);
+    lines.push(`    ${className}(`);
+    lines.push(`        config = WidgetConfig(), data = fakeWeatherWidgetData,`);
+    lines.push(`    )`);
+    lines.push(`}`);
+    lines.push(``);
+    lines.push(`@OptIn(ExperimentalGlancePreviewApi::class)`);
+    lines.push(`@Preview(widthDp = 260, heightDp = 120)`);
+    lines.push(`@Composable`);
+    lines.push(`private fun ErrorPreview() {`);
+    lines.push(`    val fakeErrorWeatherWidgetData = WeatherWidgetData(`);
+    lines.push(`        loadingState = WidgetLoadingState.ERROR,`);
+    lines.push(`        errorMessage = "Unable to fetch weather data"`);
+    lines.push(`    )`);
+    lines.push(`    GlanceTheme(colors = WidgetTheme.colors) {`);
+    lines.push(`        WidgetComposables.WidgetBackground {`);
+    lines.push(`            WidgetComposables.NoDataContent(`);
+    lines.push(`                WidgetLoadingState.ERROR,`);
+    lines.push(`                fakeErrorWeatherWidgetData.errorMessage`);
+    lines.push(`            )`);
+    lines.push(`        }`);
+    lines.push(`    }`);
+    lines.push(`}`);
+    lines.push(``);
+
+    return lines;
+}
+
+/**
  * Generate the complete Kotlin file
  */
 function generateKotlinFile(layout: WidgetLayout): string {
@@ -663,11 +796,9 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(`package ${packageName}`);
     lines.push('');
     lines.push('import androidx.compose.runtime.Composable');
-    lines.push('import android.content.Context');
     lines.push('import androidx.compose.ui.graphics.Color');
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
-    lines.push('import androidx.compose.ui.unit.DpSize');
     lines.push('import androidx.glance.GlanceModifier');
     lines.push('import androidx.glance.GlanceTheme');
     lines.push('import androidx.glance.appwidget.cornerRadius');
@@ -688,15 +819,27 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.widgets.WeatherWidgetManager');
     lines.push('import com.akylas.weather.widgets.WidgetTheme');
     lines.push('import com.akylas.weather.widgets.WidgetConfig');
+    lines.push('import androidx.glance.preview.ExperimentalGlancePreviewApi');
+    lines.push('import androidx.glance.preview.Preview');
+    lines.push('import com.akylas.weather.widgets.WidgetComposables');
+    lines.push('import com.akylas.weather.widgets.WidgetLoadingState');
+    lines.push('import kotlin.math.min');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);
     lines.push(' * DO NOT EDIT - This file is auto-generated from JSON layout definitions');
     lines.push(' */');
     lines.push('');
+
+    // Generate preview functions if enabled
+    if (layout.generatePreviews === true) {
+        lines.push(...generatePreviewBlock(layout, className));
+    }
+
     lines.push('@Composable');
-    lines.push(`fun ${className}(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {`);
-    // lines.push('    val size = LocalSize.current');
+    lines.push(`fun ${className}(config: WidgetConfig, data: WeatherWidgetData) {`);
+    lines.push('    val context = LocalContext.current');
+    lines.push('    val size = LocalSize.current');
     lines.push('');
 
     // Generate the main content

@@ -4,24 +4,68 @@
     "displayName": "Simple Weather",
     "description": "Shows current temperature, weather icon, and location",
     "supportedSizes": [
-        { "width": 50, "height": 50, "family": "small" },
-        { "width": 80, "height": 80, "family": "small" },
-        { "width": 120, "height": 120, "family": "small" },
-        { "width": 260, "height": 120, "family": "medium" }
+        {
+            "width": 50,
+            "height": 50,
+            "family": "small"
+        },
+        {
+            "width": 80,
+            "height": 80,
+            "family": "small"
+        },
+        {
+            "width": 120,
+            "height": 120,
+            "family": "small"
+        },
+        {
+            "width": 260,
+            "height": 120,
+            "family": "medium"
+        }
     ],
-    "defaultPadding": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8],
+    "defaultPadding": [
+        "case",
+        [
+            "<",
+            [
+                "get",
+                "size.width"
+            ],
+            100
+        ],
+        4,
+        [
+            "<",
+            [
+                "get",
+                "size.width"
+            ],
+            150
+        ],
+        6,
+        8
+    ],
     "background": {
         "type": "solid",
         "color": "widgetBackground"
     },
     "layout": {
         "type": "conditional",
-        "condition": ["<", ["get", "size.width"], 120],
+        "condition": [
+            "<",
+            [
+                "get",
+                "size.width"
+            ],
+            120
+        ],
         "then": {
             "type": "column",
-            "fillWidth":true,
+            "fillWidth": true,
             "padding": 10,
-            "fillHeight":true,
+            "fillHeight": true,
             "alignment": "center",
             "crossAlignment": "center",
             "children": [
@@ -31,9 +75,15 @@
                 },
                 {
                     "type": "image",
-                    "src": ["get", "iconPath"],
+                    "src": [
+                        "get",
+                        "iconPath"
+                    ],
                     "size": 32,
-                    "visibleIf": ["has", "iconPath"]
+                    "visibleIf": [
+                        "has",
+                        "iconPath"
+                    ]
                 },
                 {
                     "type": "spacer",
@@ -41,7 +91,10 @@
                 },
                 {
                     "type": "label",
-                    "text": ["get", "temperature"],
+                    "text": [
+                        "get",
+                        "temperature"
+                    ],
                     "fontSize": 14,
                     "fontWeight": "bold",
                     "color": "onSurface"
@@ -52,7 +105,10 @@
                 },
                 {
                     "type": "label",
-                    "text": ["get", "locationName"],
+                    "text": [
+                        "get",
+                        "locationName"
+                    ],
                     "fontSize": 8,
                     "color": "onSurfaceVariant",
                     "maxLines": 1
@@ -62,9 +118,9 @@
         "else": {
             "type": "row",
             "alignment": "center",
-            "fillWidth":true,
+            "fillWidth": true,
             "padding": 10,
-            "fillHeight":true,
+            "fillHeight": true,
             "crossAlignment": "start",
             "children": [
                 {
@@ -74,7 +130,10 @@
                     "children": [
                         {
                             "type": "label",
-                            "text": ["get", "temperature"],
+                            "text": [
+                                "get",
+                                "temperature"
+                            ],
                             "fontSize": 40,
                             "fontWeight": "bold",
                             "color": "onSurface"
@@ -85,7 +144,10 @@
                         },
                         {
                             "type": "label",
-                            "text": ["get", "locationName"],
+                            "text": [
+                                "get",
+                                "locationName"
+                            ],
                             "fontSize": 12,
                             "color": "onSurfaceVariant",
                             "maxLines": 1
@@ -99,22 +161,60 @@
                     "children": [
                         {
                             "type": "image",
-                            "src": ["get", "iconPath"],
+                            "src": [
+                                "get",
+                                "iconPath"
+                            ],
                             "size": 64,
-                            "visibleIf": ["has", "iconPath"]
+                            "visibleIf": [
+                                "has",
+                                "iconPath"
+                            ]
                         },
                         {
                             "type": "label",
-                            "text": ["get", "description"],
+                            "text": [
+                                "get",
+                                "description"
+                            ],
                             "fontSize": 12,
                             "color": "onSurfaceVariant",
                             "textAlign": "right",
-                            "visibleIf": ["has", "description"]
+                            "visibleIf": [
+                                "has",
+                                "description"
+                            ]
                         }
                     ]
                 }
             ]
-            
+        }
+    },
+    "generatePreviews": true,
+    "preview": {
+        "sizes": [
+            {
+                "width": 50,
+                "height": 50
+            },
+            {
+                "width": 80,
+                "height": 80
+            },
+            {
+                "width": 120,
+                "height": 120
+            },
+            {
+                "width": 260,
+                "height": 120
+            }
+        ],
+        "fakeData": {
+            "temperature": "12 \u00b0C",
+            "locationName": "Paris",
+            "description": "Partly Cloudy",
+            "iconPath": "icon_themes/meteocons/images/800d.png"
         }
     }
 }

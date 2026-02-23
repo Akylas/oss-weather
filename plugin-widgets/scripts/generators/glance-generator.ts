@@ -292,7 +292,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
-        textExpr = `context?.let { ctx -> ctx.getString(ctx.resources.getIdentifier("${resourceKey}", "string", ctx.packageName)) } ?: "${resourceKey}"`;
+        textExpr = `context.getString(ctx.resources.getIdentifier("${resourceKey}", "string", ctx.packageName))`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }

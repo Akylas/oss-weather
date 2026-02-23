@@ -40,10 +40,10 @@ import com.akylas.weather.widgets.WidgetLoadingState
 
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 50, heightDp = 50)
-@Preview(widthDp = 80, heightDp = 80)
+
 @Preview(widthDp = 120, heightDp = 120)
 @Preview(widthDp = 260, heightDp = 120)
+@Preview(widthDp = 360, heightDp = 150)
 @Composable
 private fun HourlyPreview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
@@ -57,12 +57,12 @@ private fun HourlyPreview() {
         hourlyData = listOf(
             HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
             HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
+            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
+            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
             HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
             HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
-            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
+            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
+            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
         )
     )
     HourlyWeatherWidgetContent(
@@ -99,7 +99,7 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     ) {
         if (size.height.value >= 80) {
             Column(
-                modifier = GlanceModifier,
+                modifier = GlanceModifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {

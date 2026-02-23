@@ -804,7 +804,43 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     }
 
     if (elType === 'clock' && !seenAttrs.has('text')) {
-        attrsArr.push(`text={nowTime()}`);
+        const style = (element as any).style;
+        const format24 = (element as any).format24Hour;
+        const format12 = (element as any).format12Hour;
+        let clockExpr: string;
+        if (style === 'time24' || format24) {
+            clockExpr = `formatDate(new Date(), '${format24 || 'HH:mm'}')`;
+        } else if (style === 'time12' || format12) {
+            clockExpr = `formatDate(new Date(), '${format12 || 'h:mm A'}')`;
+        } else {
+            clockExpr = `nowTime()`;
+        }
+        attrsArr.push(`text={${clockExpr}}`);
+        seenAttrs.add('text');
+    }
+
+    if (elType === 'date' && !seenAttrs.has('text')) {
+        const style = (element as any).style;
+        let dateExpr: string;
+        switch (style) {
+            case 'dayMonth':
+                dateExpr = `formatDate(new Date(), 'MMM D')`;
+                break;
+            case 'fullDate':
+                dateExpr = `formatDate(new Date(), 'LL')`;
+                break;
+            case 'year':
+                dateExpr = `formatDate(new Date(), 'YYYY')`;
+                break;
+            case 'month':
+                dateExpr = `formatDate(new Date(), 'MMMM')`;
+                break;
+            case 'date':
+            default:
+                dateExpr = `formatDate(new Date(), 'll')`;
+                break;
+        }
+        attrsArr.push(`text={${dateExpr}}`);
         seenAttrs.add('text');
     }
 
@@ -967,8 +1003,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     // Helper functions - only add if used
     if (usesClock) {
         script += `\n    function nowTime() {\n`;
-        script += `        const now = new Date();\n`;
-        script += `        return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');\n`;
+        script += `        return formatDate(new Date(), 'LT');\n`;
         script += `    }\n`;
     }
 

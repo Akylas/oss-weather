@@ -612,9 +612,25 @@ function generateClock(element: BaseLayoutElement, indent: string): string[] {
     const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 24;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'bold');
     const color = toSwiftColor(element.color);
+    const style = (element as any).style as string | undefined;
 
     const lines: string[] = [];
-    lines.push(`${indent}Text(Date(), style: .time)`);
+
+    if (style === 'time24') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateFormat = "HH:mm"`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else if (style === 'time12') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateFormat = "h:mm a"`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else {
+        lines.push(`${indent}Text(Date(), style: .time)`);
+    }
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
     lines.push(`${indent}    .foregroundColor(${color})`);
 
@@ -625,9 +641,38 @@ function generateDate(element: BaseLayoutElement, indent: string): string[] {
     const fontSize = typeof element.fontSize === 'number' ? element.fontSize : 14;
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'normal');
     const color = toSwiftColor(element.color);
+    const style = (element as any).style as string | undefined;
 
     const lines: string[] = [];
-    lines.push(`${indent}Text(Date(), style: .date)`);
+
+    if (style === 'dayMonth') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateFormat = "MMM d"`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else if (style === 'fullDate') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateStyle = .long`);
+        lines.push(`${indent}    f.timeStyle = .none`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else if (style === 'year') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateFormat = "yyyy"`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else if (style === 'month') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateFormat = "MMMM"`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else {
+        lines.push(`${indent}Text(Date(), style: .date)`);
+    }
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
     lines.push(`${indent}    .foregroundColor(${color})`);
 

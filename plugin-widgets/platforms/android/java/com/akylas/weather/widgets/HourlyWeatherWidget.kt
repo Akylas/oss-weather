@@ -70,7 +70,6 @@ class HourlyWeatherWidget : WeatherWidget() {
                             widgetData!!.errorMessage
                         )
                     } else {
-                        val size = LocalSize.current
                         WeatherContent(config = widgetConfig, data = widgetData!!)
                     }
                 }

@@ -1,8 +1,6 @@
 package com.akylas.weather.widgets
 
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
-import androidx.glance.appwidget.components.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,7 +64,7 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
+                        WeatherContent(config = widgetConfig, data = widgetData!!, size = size)
                     }
                 }
             }
@@ -80,11 +78,10 @@ class SimpleWeatherWidgetOld : WeatherWidget() {
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
     private fun WeatherContent(
-        context: Context,
         modifier: GlanceModifier = GlanceModifier,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData = fakeWeatherWidgetData,
-        size: DpSize
+        size: DpSize = DpSize(50.dp, 50.dp)
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather content for ${data.locationName}")
 

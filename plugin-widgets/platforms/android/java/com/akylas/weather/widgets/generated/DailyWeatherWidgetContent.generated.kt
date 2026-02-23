@@ -16,6 +16,8 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -30,10 +32,8 @@ import com.akylas.weather.widgets.WidgetConfig
  * Generated content for Daily Forecast
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
-
 @Composable
-fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
-
+fun DailyWeatherWidgetContent(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
     Column(
         modifier = GlanceModifier,
         verticalAlignment = Alignment.Vertical.Top,
@@ -89,7 +89,7 @@ fun DailyWeatherWidgetContent(context: Context, config: WidgetConfig, data: Weat
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = context.getString(context.resources.getIdentifier("daily", "string", context.packageName)),
+            text = context?.getString(context.resources.getIdentifier("daily", "string", context.packageName)) ?: "daily",
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))

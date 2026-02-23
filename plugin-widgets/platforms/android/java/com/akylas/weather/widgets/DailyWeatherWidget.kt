@@ -19,6 +19,8 @@ import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.layout.*
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
@@ -76,9 +78,29 @@ class DailyWeatherWidget : WeatherWidget() {
         }
     }
 
+    val fakeWeatherWidgetData = WeatherWidgetData(
+        temperature = "8C",
+        locationName = "Grenoble"
+    )
+
+
+    @OptIn(ExperimentalGlancePreviewApi::class)
+    @Preview(widthDp = 50, heightDp = 50)
+    @Preview(widthDp = 80, heightDp = 80)
+    @Preview(widthDp = 120, heightDp = 120)
+    @Preview(widthDp = 260, heightDp = 120)
+    @Composable
+    private fun Preview() {
+        WeatherContent(
+            config = WidgetConfig(), data = fakeWeatherWidgetData,
+            size = LocalSize.current,
+            context = null
+        )
+    }
+
     @Composable
     private fun WeatherContent(
-        context: Context,
+        context: Context?,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData,
         size: DpSize

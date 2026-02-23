@@ -1,6 +1,7 @@
 package com.akylas.weather.widgets
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,6 +34,7 @@ class HourlyWeatherWidgetOld : WeatherWidget() {
         )
     )
 
+    @androidx.annotation.RequiresApi(Build.VERSION_CODES.O)
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id)")
         setupUpdateWorker(context)

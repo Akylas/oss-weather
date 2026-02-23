@@ -32,7 +32,7 @@ import com.akylas.weather.widgets.WidgetConfig
  */
 
 @Composable
-fun SimpleWeatherWithClockWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
+fun SimpleWeatherWithClockWidgetContent(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     if (size.width.value >= 180) {
         Box(

@@ -20,12 +20,13 @@ import androidx.glance.layout.*
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
+import com.akylas.weather.widgets.WidgetConfig
+import com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent
 
 private const val LOG_TAG = "SimpleWeatherWidget"
 
 class SimpleWeatherWidget : WeatherWidget() {
 
-    val fakeWeatherWidgetData = WeatherWidgetData(temperature = "8C", locationName = "Grenoble")
     override val sizeMode = SizeMode.Responsive(
         setOf(
             // Very small widget
@@ -77,22 +78,36 @@ class SimpleWeatherWidget : WeatherWidget() {
         }
     }
 
+    val fakeWeatherWidgetData = WeatherWidgetData(
+        temperature = "8C",
+        locationName = "Grenoble"
+    )
+
     @OptIn(ExperimentalGlancePreviewApi::class)
     @Preview(widthDp = 50, heightDp = 50)
     @Preview(widthDp = 80, heightDp = 80)
     @Preview(widthDp = 120, heightDp = 120)
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
+    private fun Preview() {
+        WeatherContent(
+            config = WidgetConfig(), data = fakeWeatherWidgetData,
+            size = LocalSize.current,
+            context = null
+        )
+    }
+
+    @Composable
     private fun WeatherContent(
-        context: Context,
+        context: Context?,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData = fakeWeatherWidgetData,
-        size: DpSize
+        size: DpSize = LocalSize.current
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather content for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
-        com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent(
+        SimpleWeatherWidgetContent(
             context = context,
             config = config,
             data = data,

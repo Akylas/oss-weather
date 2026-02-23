@@ -32,7 +32,7 @@ import com.akylas.weather.widgets.WidgetConfig
  */
 
 @Composable
-fun SimpleWeatherWithDateWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
+fun SimpleWeatherWithDateWidgetContent(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     Column(
         modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),

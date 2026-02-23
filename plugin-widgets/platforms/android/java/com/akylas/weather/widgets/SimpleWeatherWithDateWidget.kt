@@ -35,8 +35,6 @@ private const val LOG_TAG = "SimpleWeatherWithDateWidget"
 
 class SimpleWeatherWithDateWidget : WeatherWidget() {
 
-    val fakeWeatherWidgetData = WeatherWidgetData(temperature = "8C", locationName = "Grenoble")
-    
     override val sizeMode = SizeMode.Responsive(
         setOf(
             // Support down to 50dp height
@@ -117,15 +115,29 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
         }
     }
 
+
+    val fakeWeatherWidgetData = WeatherWidgetData(
+        temperature = "8C",
+        locationName = "Grenoble"
+    )
+
     @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 120, heightDp = 50)
-    @Preview(widthDp = 120, heightDp = 80)
-    @Preview(widthDp = 180, heightDp = 80)
+    @Preview(widthDp = 50, heightDp = 50)
+    @Preview(widthDp = 80, heightDp = 80)
+    @Preview(widthDp = 120, heightDp = 120)
     @Preview(widthDp = 260, heightDp = 120)
     @Composable
+    private fun Preview() {
+        WeatherContent(
+            config = WidgetConfig(), data = fakeWeatherWidgetData,
+            size = LocalSize.current,
+            context = null
+        )
+    }
+
+    @Composable
     private fun WeatherContent(
-        context: Context,
-        modifier: GlanceModifier = GlanceModifier,
+        context: Context?,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData = fakeWeatherWidgetData,
         size: DpSize

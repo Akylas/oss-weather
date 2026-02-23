@@ -32,7 +32,7 @@ import com.akylas.weather.widgets.WidgetConfig
  */
 
 @Composable
-fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
+fun ForecastWeatherWidgetContent(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
     Column(
         modifier = GlanceModifier,
@@ -89,7 +89,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = context.getString(context.resources.getIdentifier("hourly", "string", context.packageName)),
+            text = context?.getString(context.resources.getIdentifier("hourly", "string", context.packageName)) ?: "hourly",
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -131,7 +131,7 @@ fun ForecastWeatherWidgetContent(context: Context, config: WidgetConfig, data: W
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
         Text(
-            text = context.getString(context.resources.getIdentifier("daily", "string", context.packageName)),
+            text = context?.getString(context.resources.getIdentifier("daily", "string", context.packageName)) ?: "daily",
             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
         )
         Spacer(modifier = GlanceModifier.height(4.dp))

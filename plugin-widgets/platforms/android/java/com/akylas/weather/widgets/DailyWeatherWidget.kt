@@ -70,80 +70,21 @@ class DailyWeatherWidget : WeatherWidget() {
                             widgetData!!.errorMessage
                         )
                     } else {
-                        val size = LocalSize.current
-                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
+                        WeatherContent(config = widgetConfig, data = widgetData!!)
                     }
                 }
             }
         }
     }
 
-    val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8 °C",
-        iconPath = "icon_themes/meteocons/images/800d.png",
-        description = "Partly Cloudy",
-        locationName = "Grenoble",
-        date = "Mon, Feb 24",
-        lastUpdate = System.currentTimeMillis(),
-        loadingState = WidgetLoadingState.LOADED,
-        dailyData = listOf(
-            DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "14 km/h"),
-            DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/801d.png", temperatureHigh = "14 °C", temperatureLow = "6 °C", precipAccumulation = "0 mm", precipitation = "10 %", windSpeed = "12 km/h"),
-            DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10 °C", temperatureLow = "5 °C", precipAccumulation = "3 mm", precipitation = "60 %", windSpeed = "18 km/h"),
-            DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/501d.png", temperatureHigh = "9 °C", temperatureLow = "3 °C", precipAccumulation = "8 mm", precipitation = "80 %", windSpeed = "22 km/h"),
-            DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "11 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "20 %", windSpeed = "16 km/h"),
-            DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")
-        )
-    )
-
-    val fakeErrorWeatherWidgetData = WeatherWidgetData(
-        loadingState = WidgetLoadingState.ERROR,
-        errorMessage = "Unable to fetch weather data"
-    )
-
-
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 50, heightDp = 50)
-    @Preview(widthDp = 80, heightDp = 80)
-    @Preview(widthDp = 120, heightDp = 120)
-    @Preview(widthDp = 260, heightDp = 120)
-    @Composable
-    private fun Preview() {
-        WeatherContent(
-            config = WidgetConfig(), data = fakeWeatherWidgetData,
-            size = LocalSize.current,
-            context = null
-        )
-    }
-
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 260, heightDp = 200)
-    @Composable
-    private fun ErrorPreview() {
-        GlanceTheme(colors = WidgetTheme.colors) {
-            WidgetComposables.WidgetBackground {
-                WidgetComposables.NoDataContent(
-                    WidgetLoadingState.ERROR,
-                    fakeErrorWeatherWidgetData.errorMessage
-                )
-            }
-        }
-    }
-
     @Composable
     private fun WeatherContent(
-        context: Context?,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData,
-        size: DpSize
     ) {
-        WidgetsLogger.d(LOG_TAG, "Rendering daily content for ${data.locationName}, size=$size")
-        
         com.akylas.weather.widgets.generated.DailyWeatherWidgetContent(
-            context = context,
             config = config,
             data = data,
-            size = size
         )
     }
 }

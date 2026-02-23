@@ -17,24 +17,81 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.akylas.weather.widgets.HourlyData
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
+import com.akylas.weather.widgets.WidgetLoadingState
 
 /**
  * Generated content for Hourly Forecast
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
 
-@Composable
-fun HourlyWeatherWidgetContent(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
+
+@OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 50, heightDp = 50)
+@Preview(widthDp = 80, heightDp = 80)
+@Preview(widthDp = 120, heightDp = 120)
+@Preview(widthDp = 260, heightDp = 120)
+@Composable
+private fun HourlyPreview() {
+    val fakeWeatherWidgetData = WeatherWidgetData(
+        temperature = "8 °C",
+        iconPath = "icon_themes/meteocons/images/800d.png",
+        description = "Partly Cloudy",
+        locationName = "Grenoble",
+        date = "Mon, Feb 24",
+        lastUpdate = System.currentTimeMillis(),
+        loadingState = WidgetLoadingState.LOADED,
+        hourlyData = listOf(
+            HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
+            HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
+            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
+            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
+            HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
+            HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
+            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
+            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
+        )
+    )
+    HourlyWeatherWidgetContent(
+        config = WidgetConfig(), data = fakeWeatherWidgetData,
+    )
+}
+
+@OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 260, heightDp = 80)
+@Composable
+private fun ErrorPreview() {
+    val fakeErrorWeatherWidgetData = WeatherWidgetData(
+        loadingState = WidgetLoadingState.ERROR,
+        errorMessage = "Unable to fetch weather data"
+    )
+    GlanceTheme(colors = WidgetTheme.colors) {
+        WidgetComposables.WidgetBackground {
+            WidgetComposables.NoDataContent(
+                WidgetLoadingState.ERROR,
+                fakeErrorWeatherWidgetData.errorMessage
+            )
+        }
+    }
+}
+
+@Composable
+fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
+    val context = LocalContext.current
+    val size = LocalSize.current
     Column(
         modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
         verticalAlignment = Alignment.Vertical.Top,

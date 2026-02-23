@@ -130,10 +130,8 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
         
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWithClockWidgetContent(
-            context = context,
             config = config,
             data = data,
-            size = size
         )
     }
 }

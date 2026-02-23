@@ -71,64 +71,13 @@ class HourlyWeatherWidget : WeatherWidget() {
                         )
                     } else {
                         val size = LocalSize.current
-                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
+                        WeatherContent(config = widgetConfig, data = widgetData!!)
                     }
                 }
             }
         }
     }
-    val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8 °C",
-        iconPath = "icon_themes/meteocons/images/800d.png",
-        description = "Partly Cloudy",
-        locationName = "Grenoble",
-        date = "Mon, Feb 24",
-        lastUpdate = System.currentTimeMillis(),
-        loadingState = WidgetLoadingState.LOADED,
-        hourlyData = listOf(
-            HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
-            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
-        )
-    )
 
-    val fakeErrorWeatherWidgetData = WeatherWidgetData(
-        loadingState = WidgetLoadingState.ERROR,
-        errorMessage = "Unable to fetch weather data"
-    )
-
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 50, heightDp = 50)
-    @Preview(widthDp = 80, heightDp = 80)
-    @Preview(widthDp = 120, heightDp = 120)
-    @Preview(widthDp = 260, heightDp = 120)
-    @Composable
-    private fun HourlyPreview() {
-        HourlyWeatherWidgetContent(
-            config = WidgetConfig(), data = fakeWeatherWidgetData,
-            size = LocalSize.current,
-            context = null
-        )
-    }
-
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 260, heightDp = 80)
-    @Composable
-    private fun ErrorPreview() {
-        GlanceTheme(colors = WidgetTheme.colors) {
-            WidgetComposables.WidgetBackground {
-                WidgetComposables.NoDataContent(
-                    WidgetLoadingState.ERROR,
-                    fakeErrorWeatherWidgetData.errorMessage
-                )
-            }
-        }
-    }
 
     @Composable
     private fun WeatherContent(
@@ -137,14 +86,10 @@ class HourlyWeatherWidget : WeatherWidget() {
         data: WeatherWidgetData,
         size: DpSize
     ) {
-        WidgetsLogger.d(LOG_TAG, "Rendering hourly content for ${data.locationName}")
-        
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.HourlyWeatherWidgetContent(
-            context = context,
             config = config,
             data = data,
-            size = size
         )
     }
 }

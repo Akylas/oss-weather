@@ -17,6 +17,8 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -24,17 +26,65 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
+import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
+import com.akylas.weather.widgets.WidgetLoadingState
 
 /**
  * Generated content for Weather with Date
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
 
-@Composable
-fun SimpleWeatherWithDateWidgetContent(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {
 
+
+
+
+@OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 50, heightDp = 50)
+@Preview(widthDp = 80, heightDp = 80)
+@Preview(widthDp = 120, heightDp = 120)
+@Preview(widthDp = 260, heightDp = 120)
+@Composable
+private fun Preview() {
+    val fakeWeatherWidgetData = WeatherWidgetData(
+        temperature = "8 °C",
+        iconPath = "icon_themes/meteocons/images/800d.png",
+        description = "Partly Cloudy",
+        locationName = "Grenoble",
+        date = "Mon, Feb 24",
+        lastUpdate = System.currentTimeMillis(),
+        loadingState = WidgetLoadingState.LOADED
+    )
+
+    SimpleWeatherWithDateWidgetContent(
+        config = WidgetConfig(), data = fakeWeatherWidgetData,
+    )
+}
+
+@OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 260, heightDp = 120)
+@Composable
+private fun ErrorPreview() {
+    val fakeErrorWeatherWidgetData = WeatherWidgetData(
+        loadingState = WidgetLoadingState.ERROR,
+        errorMessage = "Unable to fetch weather data"
+    )
+    GlanceTheme(colors = WidgetTheme.colors) {
+        WidgetComposables.WidgetBackground {
+            WidgetComposables.NoDataContent(
+                WidgetLoadingState.ERROR,
+                fakeErrorWeatherWidgetData.errorMessage
+            )
+        }
+    }
+}
+
+
+@Composable
+fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
+    val context = LocalContext.current
+    val size = LocalSize.current
     Column(
         modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
         verticalAlignment = Alignment.Vertical.CenterVertically,

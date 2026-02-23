@@ -11,6 +11,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.background
 import androidx.glance.layout.*
@@ -66,7 +67,7 @@ fun HourlyWeatherWidgetContent(context: Context?, config: WidgetConfig, data: We
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))
-                    WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
+                    WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
                            contentDescription = item.iconPath,

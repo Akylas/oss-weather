@@ -80,7 +80,7 @@ class SimpleWeatherWidget : WeatherWidget() {
 
     val fakeWeatherWidgetData = WeatherWidgetData(
         temperature = "8 °C",
-        iconPath = "800d",
+        iconPath = "icon_themes/meteocons/images/800d.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",

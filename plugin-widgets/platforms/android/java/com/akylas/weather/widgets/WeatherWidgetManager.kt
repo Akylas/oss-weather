@@ -765,33 +765,47 @@ object WeatherWidgetManager {
     }
 
      /**
-     * Decodes a file path into a Bitmap or returns null if that's not possible.
-     */
-    fun getIconBitmapFromPath(iconFilePath: String?): Bitmap? {
+      * Decodes a file path into a Bitmap or returns null if that's not possible.
+      * First tries to decode from an absolute filesystem path; if the file does not exist
+      * and a Context is provided, falls back to loading from the app's merged assets
+      * (useful for Glance Compose previews and asset-relative paths).
+      */
+    fun getIconBitmapFromPath(iconFilePath: String?, context: Context? = null): Bitmap? {
         if (iconFilePath.isNullOrBlank()) {
             WidgetsLogger.d(LOG_TAG, "Icon file path is null or blank")
             return null
         }
+        // Try absolute path first (works at runtime with NativeScript)
         val file = File(iconFilePath)
-        if (!file.exists()) {
-            return null
+        if (file.exists()) {
+            return try {
+                BitmapFactory.decodeFile(iconFilePath)
+            } catch (t: Throwable) {
+                WidgetsLogger.e(LOG_TAG, "Error decoding icon bitmap from $iconFilePath", t)
+                null
+            }
         }
-        return try {
-            BitmapFactory.decodeFile(iconFilePath)
-        } catch (t: Throwable) {
-            WidgetsLogger.e(LOG_TAG, "Error decoding icon bitmap from $iconFilePath", t)
-            null
+        // Fall back to loading from assets (works in Glance preview and with relative paths)
+        if (context != null) {
+            return try {
+                context.assets.open(iconFilePath).use { stream ->
+                    BitmapFactory.decodeStream(stream)
+                }
+            } catch (t: Throwable) {
+                WidgetsLogger.d(LOG_TAG, "Icon not found in assets: $iconFilePath")
+                null
+            }
         }
+        return null
     }
 
     /**
      * Creates an ImageProvider wrapping the decoded Bitmap or returns null.
      * Use this inside widgets where the ImageProvider may be absent.
+     * Pass a Context to enable fallback loading from the app's assets (required for previews).
      */
-    fun getIconImageProviderFromPath(iconFilePath: String?): ImageProvider? {
-        val bmp = getIconBitmapFromPath(iconFilePath)
-        val provider = bmp?.let { ImageProvider(it) }
-        return provider
+    fun getIconImageProviderFromPath(iconFilePath: String?, context: Context? = null): ImageProvider? {
+        return getIconBitmapFromPath(iconFilePath, context)?.let { ImageProvider(it) }
     }
 
     /**

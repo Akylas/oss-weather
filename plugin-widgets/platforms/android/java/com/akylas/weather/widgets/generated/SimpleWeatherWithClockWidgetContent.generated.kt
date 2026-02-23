@@ -11,6 +11,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.background
 import androidx.glance.layout.*
@@ -65,7 +66,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context?, config: WidgetConfig,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                             Image(
                                provider = provider,
                                contentDescription = data.iconPath,
@@ -114,7 +115,7 @@ fun SimpleWeatherWithClockWidgetContent(context: Context?, config: WidgetConfig,
                     verticalAlignment = Alignment.Vertical.CenterVertically
                 ) {
                     if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                             Image(
                                provider = provider,
                                contentDescription = data.iconPath,

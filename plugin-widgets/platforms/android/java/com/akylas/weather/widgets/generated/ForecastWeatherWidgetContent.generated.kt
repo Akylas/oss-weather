@@ -11,6 +11,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
 import androidx.glance.background
 import androidx.glance.layout.*
@@ -67,7 +68,7 @@ fun ForecastWeatherWidgetContent(context: Context?, config: WidgetConfig, data: 
                 horizontalAlignment = Alignment.Horizontal.End
             ) {
                 if (data.iconPath.isNotEmpty()) {
-                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath)?.let { provider ->
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
                            contentDescription = data.iconPath,
@@ -106,7 +107,7 @@ fun ForecastWeatherWidgetContent(context: Context?, config: WidgetConfig, data: 
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(2.dp))
-                    WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
+                    WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
                            contentDescription = item.iconPath,
@@ -152,7 +153,7 @@ fun ForecastWeatherWidgetContent(context: Context?, config: WidgetConfig, data: 
                             style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
                             maxLines = 1
                         )
-                        WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath)?.let { provider ->
+                        WeatherWidgetManager.getIconImageProviderFromPath(item.iconPath, LocalContext.current)?.let { provider ->
                             Image(
                                provider = provider,
                                contentDescription = item.iconPath,

@@ -79,21 +79,21 @@ class HourlyWeatherWidget : WeatherWidget() {
     }
     val fakeWeatherWidgetData = WeatherWidgetData(
         temperature = "8 °C",
-        iconPath = "800d",
+        iconPath = "icon_themes/meteocons/images/800d.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",
         lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED,
         hourlyData = listOf(
-            HourlyData(time = "06:00", temperature = "6 °C", iconPath = "800d", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "07:00", temperature = "7 °C", iconPath = "800d", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "801d", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "801d", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "10:00", temperature = "12 °C", iconPath = "802d", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "11:00", temperature = "13 °C", iconPath = "802d", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "803d", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
-            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "803d", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
+            HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
+            HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
+            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
+            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/801d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
+            HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
+            HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
+            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
+            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/803d.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
         )
     )
 

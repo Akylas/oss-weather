@@ -175,7 +175,7 @@ object WidgetComposables {
         size: Dp = 48.dp,
         modifier: GlanceModifier = GlanceModifier
     ) {
-        WeatherWidgetManager.getIconImageProviderFromPath(iconPath)?.let { provider ->
+        WeatherWidgetManager.getIconImageProviderFromPath(iconPath, LocalContext.current)?.let { provider ->
             Image(
                 provider = provider,
                 contentDescription = description,

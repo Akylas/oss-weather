@@ -373,7 +373,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
 
     const sizeExpr = compilePropValue(element.size, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, '24.dp');
 
-    lines.push(`${indent}WeatherWidgetManager.getIconImageProviderFromPath(${srcExpr})?.let { provider ->`);
+    lines.push(`${indent}WeatherWidgetManager.getIconImageProviderFromPath(${srcExpr}, LocalContext.current)?.let { provider ->`);
     lines.push(`${indent}    Image(`);
     lines.push(`${indent}       provider = provider,`);
     lines.push(`${indent}       contentDescription = ${srcExpr},`);
@@ -673,6 +673,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.appwidget.cornerRadius');
     lines.push('import androidx.glance.Image');
     lines.push('import androidx.glance.ImageProvider');
+    lines.push('import androidx.glance.LocalContext');
     lines.push('import androidx.glance.LocalSize');
     lines.push('import androidx.glance.background');
     lines.push('import androidx.glance.layout.*');

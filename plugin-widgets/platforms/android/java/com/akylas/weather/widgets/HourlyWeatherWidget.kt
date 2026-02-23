@@ -81,10 +81,8 @@ class HourlyWeatherWidget : WeatherWidget() {
 
     @Composable
     private fun WeatherContent(
-        context: Context?,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData,
-        size: DpSize
     ) {
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.HourlyWeatherWidgetContent(

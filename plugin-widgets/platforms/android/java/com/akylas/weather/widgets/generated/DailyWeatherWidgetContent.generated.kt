@@ -26,6 +26,7 @@ import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
@@ -36,13 +37,12 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 120)
-@Preview(widthDp = 260, heightDp = 200)
+@Preview(widthDp = 160, heightDp = 300)
+@Preview(widthDp = 260, heightDp = 400)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
         temperature = "12 °C",
-        locationName = "Paris",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",

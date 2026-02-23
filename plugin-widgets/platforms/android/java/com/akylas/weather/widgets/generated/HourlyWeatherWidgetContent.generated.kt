@@ -26,6 +26,7 @@ import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.HourlyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
@@ -46,7 +47,6 @@ private fun Preview() {
         temperature = "12 °C",
         locationName = "Paris",
         description = "Partly Cloudy",
-        locationName = "Grenoble",
         date = "Mon, Feb 24",
         lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED,

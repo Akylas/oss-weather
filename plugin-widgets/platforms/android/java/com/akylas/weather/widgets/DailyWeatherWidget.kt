@@ -79,8 +79,26 @@ class DailyWeatherWidget : WeatherWidget() {
     }
 
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8C",
-        locationName = "Grenoble"
+        temperature = "8 °C",
+        iconPath = "800d",
+        description = "Partly Cloudy",
+        locationName = "Grenoble",
+        date = "Mon, Feb 24",
+        lastUpdate = System.currentTimeMillis(),
+        loadingState = WidgetLoadingState.LOADED,
+        dailyData = listOf(
+            DailyData(day = "Mon", iconPath = "800d", temperatureHigh = "12 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "14 km/h"),
+            DailyData(day = "Tue", iconPath = "801d", temperatureHigh = "14 °C", temperatureLow = "6 °C", precipAccumulation = "0 mm", precipitation = "10 %", windSpeed = "12 km/h"),
+            DailyData(day = "Wed", iconPath = "500d", temperatureHigh = "10 °C", temperatureLow = "5 °C", precipAccumulation = "3 mm", precipitation = "60 %", windSpeed = "18 km/h"),
+            DailyData(day = "Thu", iconPath = "501d", temperatureHigh = "9 °C", temperatureLow = "3 °C", precipAccumulation = "8 mm", precipitation = "80 %", windSpeed = "22 km/h"),
+            DailyData(day = "Fri", iconPath = "802d", temperatureHigh = "11 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "20 %", windSpeed = "16 km/h"),
+            DailyData(day = "Sat", iconPath = "800d", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")
+        )
+    )
+
+    val fakeErrorWeatherWidgetData = WeatherWidgetData(
+        loadingState = WidgetLoadingState.ERROR,
+        errorMessage = "Unable to fetch weather data"
     )
 
 
@@ -96,6 +114,20 @@ class DailyWeatherWidget : WeatherWidget() {
             size = LocalSize.current,
             context = null
         )
+    }
+
+    @OptIn(ExperimentalGlancePreviewApi::class)
+    @Preview(widthDp = 260, heightDp = 200)
+    @Composable
+    private fun ErrorPreview() {
+        GlanceTheme(colors = WidgetTheme.colors) {
+            WidgetComposables.WidgetBackground {
+                WidgetComposables.NoDataContent(
+                    WidgetLoadingState.ERROR,
+                    fakeErrorWeatherWidgetData.errorMessage
+                )
+            }
+        }
     }
 
     @Composable

@@ -77,8 +77,18 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
     }
 
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8C",
-        locationName = "Grenoble"
+        temperature = "8 °C",
+        iconPath = "800d",
+        description = "Partly Cloudy",
+        locationName = "Grenoble",
+        date = "Mon, Feb 24",
+        lastUpdate = System.currentTimeMillis(),
+        loadingState = WidgetLoadingState.LOADED
+    )
+
+    val fakeErrorWeatherWidgetData = WeatherWidgetData(
+        loadingState = WidgetLoadingState.ERROR,
+        errorMessage = "Unable to fetch weather data"
     )
 
     @OptIn(ExperimentalGlancePreviewApi::class)
@@ -93,6 +103,20 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
             size = LocalSize.current,
             context = null
         )
+    }
+
+    @OptIn(ExperimentalGlancePreviewApi::class)
+    @Preview(widthDp = 260, heightDp = 120)
+    @Composable
+    private fun ErrorPreview() {
+        GlanceTheme(colors = WidgetTheme.colors) {
+            WidgetComposables.WidgetBackground {
+                WidgetComposables.NoDataContent(
+                    WidgetLoadingState.ERROR,
+                    fakeErrorWeatherWidgetData.errorMessage
+                )
+            }
+        }
     }
 
     @Composable

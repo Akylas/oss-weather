@@ -289,7 +289,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
-        textExpr = `context.getString(context.resources.getIdentifier("${resourceKey}", "string", context.packageName))`;
+        textExpr = `context?.getString(context.resources.getIdentifier("${resourceKey}", "string", context.packageName)) ?: "${resourceKey}"`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }
@@ -694,7 +694,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(' */');
     lines.push('');
     lines.push('@Composable');
-    lines.push(`fun ${className}(context: Context, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {`);
+    lines.push(`fun ${className}(context: Context?, config: WidgetConfig, data: WeatherWidgetData, size: DpSize) {`);
     // lines.push('    val size = LocalSize.current');
     lines.push('');
 

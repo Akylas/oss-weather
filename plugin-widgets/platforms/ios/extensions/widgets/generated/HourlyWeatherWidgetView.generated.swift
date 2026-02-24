@@ -17,7 +17,7 @@ struct HourlyWeatherWidgetView: View {
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 6) {
-                    VStack(alignment: .center, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
                         if height >= 80 {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
@@ -26,7 +26,7 @@ struct HourlyWeatherWidgetView: View {
                                     .multilineTextAlignment(.leading)
                                     .lineLimit(1)
                                 Spacer().frame(height: 2)
-                            }
+                            }.frame(maxWidth: .infinity)
                         }
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
@@ -34,12 +34,12 @@ struct HourlyWeatherWidgetView: View {
                                     ForEach(Array(data.hourlyData.prefix(8).enumerated()), id: \.offset) { index, item in
                                         VStack(alignment: .center, spacing: height < 60 ? 0 : 2) {
                                             Text(item.time)
-                                                .font(.system(size: 12, weight: .regular))
+                                                .font(.system(size: height < 60 ? 9 : 11, weight: .regular))
                                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                                 .lineLimit(1)
-                                            WeatherIconView(item.iconPath, description: data.description, size: 48)
+                                            WeatherIconView(item.iconPath, description: data.description, size: height < 60 ? 24 : height < 80 ? 28 : 32)
                                             Text(item.temperature)
-                                                .font(.system(size: 12, weight: .bold))
+                                                .font(.system(size: height < 60 ? 12 : 14, weight: .bold))
                                                 .foregroundColor(WidgetColorProvider.onSurface)
                                                 .lineLimit(1)
                                             if (height >= 60 && !item.precipAccumulation.isEmpty) {
@@ -48,11 +48,11 @@ struct HourlyWeatherWidgetView: View {
                                                         Spacer().frame(height: 2)
                                                     }
                                                     Text(item.precipAccumulation)
-                                                        .font(.system(size: 12, weight: .regular))
+                                                        .font(.system(size: height < 80 ? 9 : 10, weight: .regular))
                                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                                 }
                                             }
-                                        }
+                                        }.frame(width: 53).frame(maxHeight: .infinity).padding(.horizontal, 4)
                                     }
                                 }
                             }

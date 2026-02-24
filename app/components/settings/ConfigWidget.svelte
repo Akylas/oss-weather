@@ -56,9 +56,15 @@
     let config: WidgetConfig = null;
     // let updateFrequency: number = DEFAULT_UPDATE_FREQUENCY;
     let previewData: WeatherWidgetData = null;
-    let previewConfig: { name: string; displayName: string; description: string; supportedSizes: { width: number; height: number; family: string }[] } = null;
+    let previewConfig: {
+        name: string;
+        displayName: string;
+        description: string;
+        supportedSizes: { width: number; height: number; family: string }[];
+        preview: { sizes: { width: number; height: number }[] };
+    } = null;
     let previewSet: string = 'default';
-    let previewSize: { width: number; height: number; family: string } = null;
+    let previewSize: { width: number; height: number } = null;
     loadConfig();
 
     function getWidgetTitle(): string {
@@ -80,10 +86,11 @@
     onMount(async () => {
         // updateFrequency = WidgetConfigManager.getUpdateFrequency();
         // Load initial preview data
+        DEV_LOG && console.log('onMount', widgetClass);
         if (widgetClass) {
             previewData = await loadWidgetSample(widgetClass, previewSet);
             previewConfig = await loadWidgetData(widgetClass);
-            previewSize = previewConfig.supportedSizes[0];
+            previewSize = previewConfig.preview.sizes[0];
         }
     });
 
@@ -251,8 +258,8 @@
     }
     async function selectPreviewSize(event) {
         try {
-            const options = previewConfig.supportedSizes.map((set) => ({
-                title: lc(`widget.preview_set.${set.family}`) || set.family,
+            const options = previewConfig.preview.sizes.map((set) => ({
+                title: set['family'] ? lc(`widget.preview_set.${set['family']}`) : `${set.width}x${set.height}`,
                 type: 'checkbox',
                 boxType: 'circle',
                 value: set.width === previewSize.width && set.height === previewSize.height,
@@ -327,8 +334,9 @@
 
     let widgetComponent = null;
     if (widgetClass) {
-        import(`plugin-widgets/svelte/generated/${widgetClass}.generated.svelte`).then((component) => {
-            widgetComponent = component;
+        import(`plugin-widgets/svelte/generated/${widgetClass}View.generated.svelte`).then((component) => {
+            DEV_LOG && console.log('widgetComponent', component);
+            widgetComponent = component.default;
         });
     }
     $: widgetSize = previewSize ?? { width: 160, height: 160 };
@@ -348,7 +356,7 @@
                 {
                     id: 'preview_size',
                     title: lc('widget.preview_size'),
-                    description: () => lc(previewSize.family)
+                    description: () => lc(previewSize['family'] || `${previewSize.width}x${previewSize.height}`)
                 }
             ] as any[]
         )

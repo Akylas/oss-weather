@@ -15,32 +15,44 @@
     export let size: { width: number; height: number } = { width: 120, height: 50};
 
     $: ({ colorWidgetBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
+
+    function nowTime() {
+        return formatDate(new Date(), 'LT');
+    }
 </script>
 
-<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={6} class="widget-container">
-        <stacklayout verticalAlignment="center" horizontalAlignment="stretch" padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
-            {#if size.width >= 200}
-                <stacklayout verticalAlignment="top" horizontalAlignment="stretch" orientation="vertical">
-                    <stacklayout verticalAlignment="space-between" horizontalAlignment="left" orientation="horizontal" marginBottom={4}>
-                        <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical">
-                            <label fontSize={20} fontWeight={700} color={colorOnSurface} marginBottom={2}></label>
-                            <label fontSize={14} color={colorOnSurfaceVariant}></label>
-                        </stacklayout>
-                        <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">
-                            <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={56} height={56} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} marginBottom={4}></image>
-                            <label text={data.temperature} fontSize={24} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
-                        </stacklayout>
+<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={4} class="widget-container">
+        {#if size.width >= 180}
+            <gridlayout padding={4}>
+                <stacklayout padding={8} verticalAlignment="top" horizontalAlignment="center" orientation="horizontal">
+                    <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical">
+                        <label fontSize={48} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} text={nowTime()} marginBottom={4}></label>
+                        <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'll')}></label>
+                    </stacklayout>
+                    <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
+                        <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
+                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.2],15]} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
+                        <label text={data.description} fontSize={["min",["*",["get","size.width"],0.04],15]} color={colorOnSurface} textAlignment="right"></label>
                     </stacklayout>
                 </stacklayout>
-            {:else}
-                <stacklayout verticalAlignment="center" horizontalAlignment="center" padding={size.height < 60 ? 2 : 4} orientation="vertical">
-                    <label fontSize={size.width < 150 ? size.height < 60 ? 14 : size.height < 80 ? 18 : 22 : size.height < 80 ? 20 : 28} fontWeight={700} color={colorOnSurface}></label>
-                    <stacklayout verticalAlignment="center" horizontalAlignment="center" padding={size.height < 60 ? 4 : 8} orientation="horizontal">
-                        <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.height < 60 ? 28 : size.height < 80 ? 36 : 48} height={size.height < 60 ? 28 : size.height < 80 ? 36 : 48} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                        <label text={data.temperature} fontSize={size.height < 60 ? 18 : size.height < 80 ? 24 : 32} fontWeight={700} color={colorOnSurface}></label>
+                <stacklayout verticalAlignment="bottom" horizontalAlignment="left" orientation="vertical">
+                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
+                </stacklayout>
+            </gridlayout>
+        {:else}
+            <gridlayout padding={3}>
+                <stacklayout verticalAlignment="top" horizontalAlignment="center" orientation="vertical">
+                    <stacklayout horizontalAlignment={["case",["<=",["get","size.height"],50],"end","center"]} orientation="vertical">
+                        <label fontSize={["min",["*",["get","size.height"],0.24],40]} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} textAlignment={size.height <= 50 ? "right" : "left"} text={nowTime()}></label>
+                    </stacklayout>
+                    <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="horizontal">
+                        <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} height={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
+                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.2],20]} fontWeight={700} color={colorOnSurface}></label>
                     </stacklayout>
                 </stacklayout>
-            {/if}
-            <label text={data.locationName} fontSize={size.height < 60 ? 9 : size.height < 80 ? 11 : 12} color={colorOnSurfaceVariant} maxLines={1} textAlignment={size.width >= 200 ? "start" : "center"}></label>
-        </stacklayout>
+                <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">
+                    <label text={data.locationName} fontSize={size.width < 100 ? 8 : size.width < 150 ? 10 : 12} color={colorOnSurfaceVariant} maxLines={1}></label>
+                </stacklayout>
+            </gridlayout>
+        {/if}
 </gridlayout>

@@ -16,51 +16,60 @@ struct SimpleWeatherWithClockWidgetView: View {
             let config = entry.config ?? WidgetConfig()
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: 8) {
+                WidgetContainer(padding: 4) {
                     if width >= 180 {
                         ZStack {
-                            HStack(alignment: .top, spacing: 0) {
-                                VStack(alignment: .leading, spacing: 4) {
+                            HStack(alignment: .center, spacing: 0) {
+                                VStack(alignment: .leading, spacing: 0) {
                                     Text(Date(), style: .time)
                                         .font(.system(size: 48, weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
                                         .foregroundColor(WidgetColorProvider.onSurface)
+                                    Spacer().frame(height: 4)
                                     Text(Date(), style: .date)
                                         .font(.system(size: 14, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 }
+                                Spacer()
                                 VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 62)
                                     }
                                     Text(data.temperature)
-                                        .font(.system(size: 28, weight: .bold))
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .multilineTextAlignment(.leading)
+                                    Text(data.description)
+                                        .font(.system(size: 12, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                         .multilineTextAlignment(.leading)
                                 }
                             }.padding(8)
-                            VStack(alignment: .trailing, spacing: 0) {
+                            VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                     .lineLimit(1)
                             }
-                        }
+                        }.padding(4)
                     }
                     else {
                         ZStack {
-                            VStack(alignment: .center, spacing: width < 100 ? 2 : width < 150 ? 4 : 8) {
-                                Text(Date(), style: .time)
-                                    .font(.system(size: 24, weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
-                                Spacer()
-                                HStack(alignment: .center, spacing: width < 100 ? 4 : width < 150 ? 6 : 8) {
+                            VStack(alignment: .center, spacing: 0) {
+                                VStack(alignment: .center, spacing: 0) {
+                                    Text(Date(), style: .time)
+                                        .font(.system(size: 24, weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                }
+                                HStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 48)
                                     }
+                                    Spacer().frame(height: width < 100 ? 4 : width < 150 ? 6 : 8)
                                     Text(data.temperature)
                                         .font(.system(size: 12, weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                 }
+                                Spacer().frame(height: width < 100 ? 2 : width < 150 ? 4 : 8)
                                 Spacer().frame(height: width < 100 ? 4 : width < 150 ? 6 : 8)
                             }
                             VStack(alignment: .trailing, spacing: 0) {
@@ -70,7 +79,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                     .lineLimit(1)
                             }
-                        }.padding(width < 100 ? 4 : width < 150 ? 6 : 8)
+                        }.padding(3)
                     }
                 }
             } else {

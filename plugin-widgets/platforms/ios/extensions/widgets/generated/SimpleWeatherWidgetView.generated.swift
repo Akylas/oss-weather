@@ -16,48 +16,50 @@ struct SimpleWeatherWidgetView: View {
             let config = entry.config ?? WidgetConfig()
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: width < 100 ? 4 : width < 150 ? 6 : 8) {
+                WidgetContainer(padding: 6) {
                     if width < 120 {
                         VStack(alignment: .center, spacing: 0) {
-                            Spacer()
-                            if !data.iconPath.isEmpty {
-                                WeatherIconView(data.iconPath, description: data.description, size: 32)
+                            VStack(alignment: .center, spacing: 0) {
+                                if !data.iconPath.isEmpty {
+                                    WeatherIconView(data.iconPath, description: data.description, size: 48)
+                                }
+                                Text(data.temperature)
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundColor(WidgetColorProvider.onSurface)
                             }
-                            Spacer().frame(height: 4)
-                            Text(data.temperature)
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                            Spacer().frame(height: 4)
                             Text(data.locationName)
                                 .font(.system(size: 8, weight: .regular))
                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 .lineLimit(1)
-                        }.padding(10)
+                        }.padding(3)
                     }
                     else {
-                        HStack(alignment: .top, spacing: 0) {
-                            VStack(alignment: .leading, spacing: 0) {
-                                Text(data.temperature)
-                                    .font(.system(size: 40, weight: .bold))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
-                                Spacer().frame(height: 8)
-                                Text(data.locationName)
-                                    .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                    .lineLimit(1)
-                            }
-                            VStack(alignment: .trailing, spacing: 0) {
-                                if !data.iconPath.isEmpty {
-                                    WeatherIconView(data.iconPath, description: data.description, size: 64)
+                        ZStack {
+                            Text(data.locationName)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                .lineLimit(1)
+                            HStack(alignment: .center, spacing: 0) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text(data.temperature)
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
                                 }
-                                if !data.description.isEmpty {
+                                VStack(alignment: .trailing, spacing: 0) {
+                                    if !data.iconPath.isEmpty {
+                                        WeatherIconView(data.iconPath, description: data.description, size: 64)
+                                    }
+                                }
+                            }
+                            if !data.description.isEmpty {
+                                ZStack {
                                     Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                         .multilineTextAlignment(.leading)
                                 }
                             }
-                        }.padding(10)
+                        }.padding(6)
                     }
                 }
             } else {

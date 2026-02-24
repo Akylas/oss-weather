@@ -190,10 +190,10 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
+            { "width": 260, "height": 120 },
             { "width": 120, "height": 50 },
             { "width": 80, "height": 80 },
             { "width": 120, "height": 120 },
-            { "width": 260, "height": 120 },
             { "width": 260, "height": 260 }
         ],
         "fakeData": {

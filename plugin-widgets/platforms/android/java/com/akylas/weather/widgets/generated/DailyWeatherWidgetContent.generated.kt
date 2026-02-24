@@ -37,6 +37,7 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 300, heightDp = 200)
 @Preview(widthDp = 160, heightDp = 300)
 @Preview(widthDp = 260, heightDp = 400)
 @Composable

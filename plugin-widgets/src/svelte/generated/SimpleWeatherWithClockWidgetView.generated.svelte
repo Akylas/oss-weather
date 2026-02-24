@@ -12,40 +12,42 @@
     <script lang="ts">
     export let config: WidgetConfig;
     export let data: WeatherWidgetData;
-    export let size: { width: number; height: number } = { width: 80, height: 80};
+    export let size: { width: number; height: number } = { width: 120, height: 50};
 
     $: ({ colorWidgetBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
 
     function nowTime() {
-        const now = new Date();
-        return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        return formatDate(new Date(), 'LT');
     }
 </script>
 
-<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={8} class="widget-container">
+<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={4} class="widget-container">
         {#if size.width >= 180}
-            <gridlayout>
-                <stacklayout verticalAlignment="space-between" horizontalAlignment="left" padding={8} orientation="horizontal">
-                    <stacklayout verticalAlignment="top" horizontalAlignment="left" padding={4} orientation="vertical">
-                        <label fontSize={48} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} textAlignment="left" text={nowTime()}></label>
-                        <label fontSize={14} color={colorOnSurfaceVariant} textAlignment="left"></label>
+            <gridlayout padding={4}>
+                <stacklayout padding={8} verticalAlignment="top" horizontalAlignment="center" orientation="horizontal">
+                    <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical">
+                        <label fontSize={["min",["*",["get","size.width"],0.15],50]} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} text={nowTime()} marginBottom={4}></label>
+                        <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'll')}></label>
                     </stacklayout>
                     <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                        <label text={data.temperature} fontSize={28} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
+                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.2],15]} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
+                        <label text={data.description} fontSize={["min",["*",["get","size.width"],0.04],15]} color={colorOnSurface} textAlignment="right"></label>
                     </stacklayout>
                 </stacklayout>
-                <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">
-                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1} paddingLeft={14} paddingRight={14}></label>
+                <stacklayout verticalAlignment="bottom" horizontalAlignment="left" orientation="vertical">
+                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
                 </stacklayout>
             </gridlayout>
         {:else}
-            <gridlayout padding={size.width < 100 ? 4 : size.width < 150 ? 6 : 8}>
-                <stacklayout verticalAlignment="top" horizontalAlignment="center" padding={size.width < 100 ? 2 : size.width < 150 ? 4 : 8} orientation="vertical">
-                    <label fontSize={size.width < 100 ? 24 : size.width < 150 ? 32 : 48} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} text={nowTime()}></label>
-                    <stacklayout verticalAlignment="center" horizontalAlignment="center" padding={size.width < 100 ? 4 : size.width < 150 ? 6 : 8} orientation="horizontal">
+            <gridlayout padding={3}>
+                <stacklayout verticalAlignment="top" horizontalAlignment="center" orientation="vertical">
+                    <stacklayout horizontalAlignment={["case",["<=",["get","size.height"],50],"end","center"]} orientation="vertical">
+                        <label fontSize={["min",["*",["get","size.height"],0.24],40]} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} textAlignment={size.height <= 50 ? "right" : "left"} text={nowTime()}></label>
+                    </stacklayout>
+                    <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="horizontal">
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} height={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                        <label text={data.temperature} fontSize={size.width < 100 ? 18 : size.width < 150 ? 24 : 32} fontWeight={700} color={colorOnSurface}></label>
+                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.2],20]} fontWeight={700} color={colorOnSurface}></label>
                     </stacklayout>
                 </stacklayout>
                 <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">

@@ -217,6 +217,7 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
+            { "width": 300, "height": 200 },
             { "width": 160, "height": 300 },
             { "width": 260, "height": 400 }
         ],

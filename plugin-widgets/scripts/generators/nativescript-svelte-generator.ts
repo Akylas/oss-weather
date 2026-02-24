@@ -428,6 +428,20 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         return `${attrName}={${JSON.stringify(mappedValue)}}`;
     }
 
+    // fillWidth/fillHeight/fillMaxSize -> NativeScript stretch alignment
+    if (prop === 'fillWidth') {
+        if (value === true) return `horizontalAlignment="stretch"`;
+        return null;
+    }
+    if (prop === 'fillHeight') {
+        if (value === true) return `verticalAlignment="stretch"`;
+        return null;
+    }
+    if (prop === 'fillMaxSize') {
+        if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
+        return null;
+    }
+
     // Handle font weight mapping with config.settings support
     if (prop === 'fontWeight') {
         if (typeof value === 'string' && value.startsWith('config.settings.')) {
@@ -628,12 +642,16 @@ function mapAlignment(value: string, isVertical: boolean): string {
 function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
     const indent = '    '.repeat(elementPath.length + 1);
     const elType = element.type;
+
+    // Detect if this row/column has any flex children -> needs GridLayout
+    const hasFlex1Children = (elType === 'row' || elType === 'column') && (element.children ?? []).some((c) => c.flex !== undefined);
+
     const tag = (() => {
         switch (elType) {
             case 'column':
-                return 'stacklayout';
+                return hasFlex1Children ? 'gridlayout' : 'stacklayout';
             case 'row':
-                return 'stacklayout';
+                return hasFlex1Children ? 'gridlayout' : 'stacklayout';
             case 'stack':
                 return 'gridlayout';
             case 'label':
@@ -749,7 +767,10 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         'rowSpan',
         'textWrap',
         'showIndicators',
-        'scrollBarIndicatorVisible'
+        'scrollBarIndicatorVisible',
+        'fillWidth',
+        'fillHeight',
+        'fillMaxSize'
     ];
 
     // Handle limit for forEach by modifying items before processing
@@ -777,21 +798,43 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
         const attr = buildAttribute(widgetName, k, v, elementPath, defaultPrefix, usedColors);
         if (attr) {
-            // Extract attribute name to check for duplicates
-            const attrName = attr.split('=')[0].split('{')[0].trim();
-            if (!seenAttrs.has(attrName)) {
+            // Extract all attribute names from attr (handles multi-attr returns like "width={X} height={X}")
+            const attrNames = attr.match(/[a-zA-Z_][a-zA-Z0-9_]*(?==)/g) ?? [attr.split('=')[0].split('{')[0].trim()];
+            const firstAttrName = attrNames[0];
+            if (!seenAttrs.has(firstAttrName)) {
                 attrsArr.push(attr);
-                seenAttrs.add(attrName);
+                for (const an of attrNames) seenAttrs.add(an);
             }
         }
     }
 
-    // For 'row' and 'column' we need orientation prop
+    // For 'row' and 'column' we need orientation prop (or rows/columns for GridLayout)
     if (elType === 'column' && !seenAttrs.has('orientation')) {
-        attrsArr.push(`orientation="vertical"`);
+        if (hasFlex1Children) {
+            // Build GridLayout rows definition: '*' for flex children, 'auto' for others
+            // Fixed-size spacers (no flex) are handled as margins, they don't occupy a grid slot
+            const rowDefs: string[] = [];
+            for (const child of element.children ?? []) {
+                if (child.type === 'spacer' && child.flex === undefined) continue; // margin only
+                rowDefs.push(child.flex !== undefined ? '*' : 'auto');
+            }
+            attrsArr.push(`rows="${rowDefs.join(',')}"`);
+        } else {
+            attrsArr.push(`orientation="vertical"`);
+        }
         seenAttrs.add('orientation');
     } else if (elType === 'row' && !seenAttrs.has('orientation')) {
-        attrsArr.push(`orientation="horizontal"`);
+        if (hasFlex1Children) {
+            // Build GridLayout columns definition
+            const colDefs: string[] = [];
+            for (const child of element.children ?? []) {
+                if (child.type === 'spacer' && child.flex === undefined) continue; // margin only
+                colDefs.push(child.flex !== undefined ? '*' : 'auto');
+            }
+            attrsArr.push(`columns="${colDefs.join(',')}"`);
+        } else {
+            attrsArr.push(`orientation="horizontal"`);
+        }
         seenAttrs.add('orientation');
     } else if (elType === 'divider' && !seenAttrs.has('height')) {
         const thickness = element.thickness ?? 1;
@@ -866,27 +909,24 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     const parentOrientation = elType === 'row' || (elType === 'forEach' && element.direction === 'horizontal') ? 'horizontal' : 'vertical';
     const marginProp = parentOrientation === 'horizontal' ? 'marginRight' : 'marginBottom';
 
-    function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
+    /**
+     * Insert an attribute into the opening tag of the first element in a markup string.
+     * Handles nested expressions (e.g. {condition ? 'a' : 'b'}) correctly.
+     */
+    function addAttrToMarkup(markup: string, attrName: string, attrVal: string | number): string {
         const firstLT = markup.indexOf('<');
         if (firstLT === -1) return markup;
 
-        // Find the actual closing > of the opening tag, accounting for expressions with > or >=
         let closingGT = -1;
-        let inExpression = false;
         let braceDepth = 0;
 
         for (let i = firstLT + 1; i < markup.length; i++) {
             const char = markup[i];
-
             if (char === '{') {
-                inExpression = true;
                 braceDepth++;
             } else if (char === '}') {
                 braceDepth--;
-                if (braceDepth === 0) {
-                    inExpression = false;
-                }
-            } else if (char === '>' && !inExpression && braceDepth === 0) {
+            } else if (char === '>' && braceDepth === 0) {
                 closingGT = i;
                 break;
             }
@@ -895,28 +935,64 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         if (closingGT === -1) return markup;
 
         const openingTag = markup.substring(firstLT, closingGT + 1);
+        if (openingTag.includes(`${attrName}=`)) return markup; // already present
 
-        // Check if margin attribute already exists
-        if (openingTag.includes(`${marginName}=`)) return markup;
-
-        // Insert margin attribute before the closing >
-        return markup.slice(0, closingGT) + ` ${marginName}={${marginVal}}` + markup.slice(closingGT);
+        const valStr = typeof attrVal === 'number' ? `{${attrVal}}` : `="${attrVal}"`;
+        return markup.slice(0, closingGT) + ` ${attrName}=${valStr}` + markup.slice(closingGT);
     }
 
-    for (let i = 0; i < children.length; i++) {
-        const childDef = children[i];
+    function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
+        return addAttrToMarkup(markup, marginName, marginVal);
+    }
 
-        if (childDef.type === 'spacer') {
-            const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
-            if (sizeVal !== undefined && childMarkups.length > 0) {
-                const idx = childMarkups.length - 1;
-                childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
+    if (hasFlex1Children) {
+        // GridLayout mode: assign col/row slots to each child, flex spacers occupy * slots silently
+        const isRow = elType === 'row';
+        const slotAttr = isRow ? 'col' : 'row';
+        let slotIdx = 0;
+
+        for (let i = 0; i < children.length; i++) {
+            const childDef = children[i];
+
+            if (childDef.type === 'spacer' && childDef.flex === undefined) {
+                // Fixed-size spacer: add margin to previous sibling, no slot consumed
+                const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
+                if (sizeVal !== undefined && childMarkups.length > 0) {
+                    const idx = childMarkups.length - 1;
+                    childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
+                }
+                continue;
             }
-            continue;
-        }
 
-        const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
-        if (childMarkup) childMarkups.push(childMarkup);
+            if (childDef.type === 'spacer' && childDef.flex !== undefined) {
+                // Flex spacer: occupies a * slot in the grid, no markup needed
+                slotIdx++;
+                continue;
+            }
+
+            // Regular child: generate markup and inject col/row slot index
+            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) {
+                childMarkups.push(addAttrToMarkup(childMarkup, slotAttr, slotIdx));
+            }
+            slotIdx++;
+        }
+    } else {
+        for (let i = 0; i < children.length; i++) {
+            const childDef = children[i];
+
+            if (childDef.type === 'spacer') {
+                const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
+                if (sizeVal !== undefined && childMarkups.length > 0) {
+                    const idx = childMarkups.length - 1;
+                    childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
+                }
+                continue;
+            }
+
+            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) childMarkups.push(childMarkup);
+        }
     }
 
     if (elType === 'forEach') {

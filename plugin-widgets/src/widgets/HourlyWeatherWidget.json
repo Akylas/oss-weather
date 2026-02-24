@@ -87,7 +87,8 @@
                             "type": "spacer",
                             "size": 2
                         }
-                    ]
+                    ],
+                    "fillWidth": true
                 }
             },
             {

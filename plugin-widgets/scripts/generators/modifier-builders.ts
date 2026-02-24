@@ -198,24 +198,41 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
             modifiers.push(`padding(${paddingExpr})`);
         }
     }
-    if (element.paddingHorizontal !== undefined) {
-        const paddingExpr = compilePropertyValue(element.paddingHorizontal, {
+    // Combine paddingHorizontal + paddingVertical into a single call when both present
+    if (element.paddingHorizontal !== undefined && element.paddingVertical !== undefined) {
+        const hExpr = compilePropertyValue(element.paddingHorizontal, {
             platform: 'kotlin',
             context: 'value',
             formatter: (v: number) => formatDimension(v, 'kotlin')
         });
-        if (paddingExpr) {
-            modifiers.push(`padding(horizontal = ${paddingExpr})`);
+        const vExpr = compilePropertyValue(element.paddingVertical, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => formatDimension(v, 'kotlin')
+        });
+        if (hExpr && vExpr) {
+            modifiers.push(`padding(horizontal = ${hExpr}, vertical = ${vExpr})`);
         }
-    }
-    if (element.paddingVertical !== undefined) {
-        const paddingExpr = compilePropertyValue(element.paddingVertical, {
-            platform: 'kotlin',
-            context: 'value',
-            formatter: (v: number) => formatDimension(v, 'kotlin')
-        });
-        if (paddingExpr) {
-            modifiers.push(`padding(vertical = ${paddingExpr})`);
+    } else {
+        if (element.paddingHorizontal !== undefined) {
+            const paddingExpr = compilePropertyValue(element.paddingHorizontal, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => formatDimension(v, 'kotlin')
+            });
+            if (paddingExpr) {
+                modifiers.push(`padding(horizontal = ${paddingExpr})`);
+            }
+        }
+        if (element.paddingVertical !== undefined) {
+            const paddingExpr = compilePropertyValue(element.paddingVertical, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => formatDimension(v, 'kotlin')
+            });
+            if (paddingExpr) {
+                modifiers.push(`padding(vertical = ${paddingExpr})`);
+            }
         }
     }
     // Individual side padding modifiers
@@ -232,12 +249,14 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
                 context: 'value',
                 formatter: (v: number) => formatDimension(v, 'kotlin')
             });
-            if (expr && expr.includes('.dp')) {
-                modifiers.push(`padding(${side} = ${expr})`);
-            } else if (expr) {
-                // Expression result needs .dp appended
-                const unwrapped = expr.replace(/^\((.+)\)$/, '$1');
-                modifiers.push(`padding(${side} = (${unwrapped}).dp)`);
+            if (expr) {
+                // If the expression already produces .dp values (e.g. when expressions, literals),
+                // use it directly. Otherwise wrap with .dp.
+                if (expr.includes('.dp') || expr.startsWith('when')) {
+                    modifiers.push(`padding(${side} = ${expr})`);
+                } else {
+                    modifiers.push(`padding(${side} = (${expr}).dp)`);
+                }
             }
         }
     }

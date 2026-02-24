@@ -1,11 +1,9 @@
 package com.akylas.weather.widgets.generated
 
 import androidx.compose.runtime.Composable
-import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.DpSize
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.appwidget.cornerRadius
@@ -17,8 +15,6 @@ import androidx.glance.background
 import androidx.glance.layout.*
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
@@ -26,9 +22,11 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
-import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
 
@@ -37,8 +35,6 @@ import kotlin.math.min
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
 
-
-
 @OptIn(ExperimentalGlancePreviewApi::class)
 @Preview(widthDp = 50, heightDp = 50)
 @Preview(widthDp = 80, heightDp = 80)
@@ -46,7 +42,6 @@ import kotlin.math.min
 @Preview(widthDp = 260, heightDp = 120)
 @Composable
 private fun Preview() {
-
     val fakeWeatherWidgetData = WeatherWidgetData(
         temperature = "8 °C",
         iconPath = "icon_themes/weathericons/images/800d.png",
@@ -65,7 +60,6 @@ private fun Preview() {
 @Preview(widthDp = 260, heightDp = 120)
 @Composable
 private fun ErrorPreview() {
-
     val fakeErrorWeatherWidgetData = WeatherWidgetData(
         loadingState = WidgetLoadingState.ERROR,
         errorMessage = "Unable to fetch weather data"
@@ -84,38 +78,32 @@ private fun ErrorPreview() {
 fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+
     if (size.width.value < 120) {
         Column(
             modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(3.dp),
-            horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+            verticalAlignment = Alignment.Vertical.CenterVertically,
+            horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 if (data.iconPath.isNotEmpty()) {
-                    WeatherWidgetManager.getIconImageProviderFromPath(
-                        data.iconPath,
-                        context
-                    )?.let { provider ->
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
-                            provider = provider,
-                            contentDescription = data.iconPath,
-                            modifier = GlanceModifier.size((size.width.value * 0.44).dp)
+                           provider = provider,
+                           contentDescription = data.iconPath,
+                           modifier = GlanceModifier.size((size.width.value * 0.44f).dp)
                         )
                     }
                 }
                 Text(
                     text = data.temperature,
-                    style = TextStyle(
-                        fontSize = (size.width.value * 0.2).sp,
-                        fontWeight = FontWeight.Bold,
-                        color = GlanceTheme.colors.onSurface
-                    )
+                    style = TextStyle(fontSize = (size.width.value * 0.2f).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                 )
             }
-
             Text(
                 text = data.locationName,
                 style = TextStyle(fontSize = 8.sp, color = GlanceTheme.colors.onSurfaceVariant),
@@ -125,9 +113,8 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     }
     else {
         Box(
-            modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(6.dp),
+            modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(6.dp)
         ) {
-
             Text(
                 text = data.locationName,
                 style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
@@ -136,6 +123,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             Row(
                 modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                 horizontalAlignment = Alignment.Horizontal.Start,
+                verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
                     modifier = GlanceModifier.fillMaxHeight(),
@@ -144,17 +132,16 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 ) {
                     Text(
                         text = data.temperature,
-                        style = TextStyle(fontSize = min(size.width.value * 0.16, 30.0).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        style = TextStyle(fontSize = (min((size.width.value * 0.16f), 30.0f)).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
-
                 }
                 Column(
-                    modifier = GlanceModifier.fillMaxHeight().fillMaxWidth(),
+                    modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.End
                 ) {
                     if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, context)?.let { provider ->
+                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                             Image(
                                provider = provider,
                                contentDescription = data.iconPath,
@@ -164,14 +151,11 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     }
                 }
             }
-
             if (data.description.isNotEmpty()) {
                 Box(
-                    modifier = GlanceModifier
-                        .fillMaxWidth().fillMaxHeight(),
+                    modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                     contentAlignment = Alignment.BottomEnd
                 ) {
-
                     Text(
                         text = data.description,
                         style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End)

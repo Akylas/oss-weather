@@ -316,6 +316,10 @@ function generateStack(element: LayoutElement, indent: string): string[] {
 function generateLabel(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
+    // Build modifier for the text element (padding support)
+    const textModifier = buildGlanceModifier(element);
+    const hasModifier = textModifier !== 'GlanceModifier';
+
     // Compile text (might be template string or expression)
     let textExpr: string;
     if (typeof element.text === 'string' && element.text.includes('{{')) {
@@ -348,7 +352,9 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
-        textExpr = `context.getString(\n        context.resources.getIdentifier(\n            "${resourceKey}",\n            "string",\n            context.packageName\n        )\n    )`;
+        const i1 = indent + '    '; // text = line indent
+        const i2 = i1 + '    ';    // getIdentifier args indent
+        textExpr = `context.getString(\n${i2}context.resources.getIdentifier(\n${i2}    "${resourceKey}",\n${i2}    "string",\n${i2}    context.packageName\n${i2})\n${i1})`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }
@@ -371,6 +377,9 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     const maxLinesExpr = compilePropValue(element.maxLines, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
     lines.push(`${indent}Text(`);
+    if (hasModifier) {
+        lines.push(`${indent}    modifier = ${textModifier},`);
+    }
     lines.push(`${indent}    text = ${textExpr},`);
 
     // Build style
@@ -854,6 +863,10 @@ function generateKotlinFile(layout: WidgetLayout): string {
     const className = `${layout.name}Content`;
     const packageName = 'com.akylas.weather.widgets.generated';
 
+    const fakeData = layout.preview?.fakeData;
+    const needsHourlyData = fakeData && Array.isArray(fakeData.hourlyData) && fakeData.hourlyData.length > 0;
+    const needsDailyData = fakeData && Array.isArray(fakeData.dailyData) && fakeData.dailyData.length > 0;
+
     const lines: string[] = [];
 
     lines.push(`package ${packageName}`);
@@ -884,6 +897,12 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.widgets.WidgetConfig');
     lines.push('import androidx.glance.preview.ExperimentalGlancePreviewApi');
     lines.push('import androidx.glance.preview.Preview');
+    if (needsHourlyData) {
+        lines.push('import com.akylas.weather.widgets.HourlyData');
+    }
+    if (needsDailyData) {
+        lines.push('import com.akylas.weather.widgets.DailyData');
+    }
     lines.push('import com.akylas.weather.widgets.WidgetComposables');
     lines.push('import com.akylas.weather.widgets.WidgetLoadingState');
     lines.push('import kotlin.math.min');

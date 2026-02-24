@@ -105,35 +105,24 @@ class SimpleWeatherWithDateWidgetOld : WeatherWidget() {
                             widgetData!!.errorMessage
                         )
                     } else {
-                        val size = LocalSize.current
-                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
+                        WeatherContent(config = widgetConfig, data = widgetData!!)
                     }
                 }
             }
         }
     }
 
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 120, heightDp = 50)
-    @Preview(widthDp = 120, heightDp = 80)
-    @Preview(widthDp = 180, heightDp = 80)
-    @Preview(widthDp = 260, heightDp = 120)
     @Composable
     private fun WeatherContent(
-        context: Context,
         config: WidgetConfig = WidgetConfig(),
-        modifier: GlanceModifier = GlanceModifier,
         data: WeatherWidgetData = fakeWeatherWidgetData,
-        size: DpSize
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather with date for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWithDateWidgetContent(
-            context = context,
             config = config,
             data = data,
-            size = size
         )
     }
 }

@@ -6,24 +6,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.LocalSize
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.components.Scaffold
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.*
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
-import androidx.glance.text.FontWeight
-import androidx.glance.text.Text
-import androidx.glance.text.TextStyle
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
-import java.text.SimpleDateFormat
-import java.util.*
 
 private const val LOG_TAG = "SimpleWeatherWithClockWidget"
 
@@ -68,48 +59,25 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
                             widgetData!!.errorMessage
                         )
                     } else {
-                        val size = LocalSize.current
-                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
+                        WeatherContent(config = widgetConfig, data = widgetData!!)
                     }
                 }
             }
         }
     }
 
-    val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8C",
-        locationName = "Grenoble"
-    )
-
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 50, heightDp = 50)
-    @Preview(widthDp = 80, heightDp = 80)
-    @Preview(widthDp = 120, heightDp = 120)
-    @Preview(widthDp = 260, heightDp = 120)
-    @Composable
-    private fun Preview() {
-        WeatherContent(
-            config = WidgetConfig(), data = fakeWeatherWidgetData,
-            size = LocalSize.current,
-            context = null
-        )
-    }
 
     @Composable
     private fun WeatherContent(
-        context: Context?,
         config: WidgetConfig = WidgetConfig(),
-        data: WeatherWidgetData = fakeWeatherWidgetData,
-        size: DpSize
+        data: WeatherWidgetData
     ) {
         WidgetsLogger.d(LOG_TAG, "Rendering weather with clock for ${data.locationName}")
         
         // Use the generated content from JSON layout definition
         com.akylas.weather.widgets.generated.SimpleWeatherWithClockWidgetContent(
-            context = context,
             config = config,
             data = data,
-            size = size
         )
     }
 }

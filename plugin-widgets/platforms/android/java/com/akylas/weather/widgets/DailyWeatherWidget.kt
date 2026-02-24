@@ -70,48 +70,21 @@ class DailyWeatherWidget : WeatherWidget() {
                             widgetData!!.errorMessage
                         )
                     } else {
-                        val size = LocalSize.current
-                        WeatherContent(context, config = widgetConfig, data = widgetData!!, size = size)
+                        WeatherContent(config = widgetConfig, data = widgetData!!)
                     }
                 }
             }
         }
     }
 
-    val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8C",
-        locationName = "Grenoble"
-    )
-
-
-    @OptIn(ExperimentalGlancePreviewApi::class)
-    @Preview(widthDp = 50, heightDp = 50)
-    @Preview(widthDp = 80, heightDp = 80)
-    @Preview(widthDp = 120, heightDp = 120)
-    @Preview(widthDp = 260, heightDp = 120)
-    @Composable
-    private fun Preview() {
-        WeatherContent(
-            config = WidgetConfig(), data = fakeWeatherWidgetData,
-            size = LocalSize.current,
-            context = null
-        )
-    }
-
     @Composable
     private fun WeatherContent(
-        context: Context?,
         config: WidgetConfig = WidgetConfig(),
         data: WeatherWidgetData,
-        size: DpSize
     ) {
-        WidgetsLogger.d(LOG_TAG, "Rendering daily content for ${data.locationName}, size=$size")
-        
         com.akylas.weather.widgets.generated.DailyWeatherWidgetContent(
-            context = context,
             config = config,
             data = data,
-            size = size
         )
     }
 }

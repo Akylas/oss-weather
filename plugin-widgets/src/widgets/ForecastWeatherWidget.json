@@ -1,5 +1,5 @@
 {
-    "$schema": "../schema.json",
+    "$schema": "../../schema.json",
     "name": "ForecastWeatherWidget",
     "displayName": "Detailed Forecast",
     "description": "Shows current weather, hourly and daily forecasts",
@@ -76,13 +76,21 @@
                 "size": 8
             },
             {
-                "type": "label",
-                "textAlign": "left",
-                "text": "Hourly",
-                "fontSize": 12,
-                "fontWeight": "medium",
-                "color": "onSurfaceVariant",
-                "paddingHorizontal": 8
+                "type": "column",
+                "alignment": "start",
+                "crossAlignment": "start",
+                "fillWidth": true,
+                "children": [
+                    {
+                        "type": "label",
+                        "text": "Hourly",
+                        "textAlign": "left",
+                        "fontSize": 12,
+                        "fontWeight": "medium",
+                        "color": "onSurfaceVariant",
+                        "paddingHorizontal": 8
+                    }
+                ]
             },
             {
                 "type": "spacer",
@@ -145,16 +153,24 @@
             },
             {
                 "type": "spacer",
-                "size": 8
+                "size": 16
             },
             {
-                "type": "label",
-                "text": "Daily",
-                "textAlign": "left",
-                "fontSize": 12,
-                "fontWeight": "medium",
-                "color": "onSurfaceVariant",
-                "paddingHorizontal": 8
+                "type": "column",
+                "alignment": "start",
+                "crossAlignment": "start",
+                "fillWidth": true,
+                "children": [
+                    {
+                        "type": "label",
+                        "text": "Daily",
+                        "textAlign": "left",
+                        "fontSize": 12,
+                        "fontWeight": "medium",
+                        "color": "onSurfaceVariant",
+                        "paddingHorizontal": 8
+                    }
+                ]
             },
             {
                 "type": "spacer",

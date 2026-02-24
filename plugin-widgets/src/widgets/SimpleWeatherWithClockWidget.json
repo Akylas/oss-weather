@@ -1,5 +1,5 @@
 {
-    "$schema": "../schema.json",
+    "$schema": "../../schema.json",
     "name": "SimpleWeatherWithClockWidget",
     "displayName": "Weather with Clock",
     "description": "Shows a clock with current weather information",
@@ -8,7 +8,7 @@
         { "width": 80, "height": 80, "family": "small" },
         { "width": 120, "height": 120, "family": "small" },
         { "width": 260, "height": 120, "family": "medium" },
-        { "width": 260, "height": 260, "family": "large" }
+        { "width": 360, "height": 260, "family": "large" }
     ],
     "defaultPadding": 4,
     "background": { "type": "solid", "color": "widgetBackground" },
@@ -38,7 +38,7 @@
                             "children": [
                                 {
                                     "type": "clock",
-                                    "fontSize": 48,
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
                                     "fontWeight": "config.settings.clockBold",
                                     "color": "onSurface"
                                 },

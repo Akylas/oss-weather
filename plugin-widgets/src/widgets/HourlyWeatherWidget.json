@@ -1,5 +1,5 @@
 {
-    "$schema": "../schema.json",
+    "$schema": "../../schema.json",
     "name": "HourlyWeatherWidget",
     "displayName": "Hourly Forecast",
     "description": "Shows hourly weather forecast with icons and temperatures",

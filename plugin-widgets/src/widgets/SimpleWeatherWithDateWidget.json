@@ -1,5 +1,5 @@
 {
-    "$schema": "../schema.json",
+    "$schema": "../../schema.json",
     "name": "SimpleWeatherWithDateWidget",
     "displayName": "Weather with Date",
     "description": "Shows current date with weather information",

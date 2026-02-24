@@ -1,5 +1,5 @@
 {
-    "$schema": "../schema.json",
+    "$schema": "../../schema.json",
     "name": "SimpleWeatherWidget",
     "displayName": "Simple Weather",
     "description": "Shows current temperature, weather icon, and location",

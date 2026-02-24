@@ -131,17 +131,23 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
             }
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
-        Text(
-            modifier = GlanceModifier.padding(horizontal = 8.dp),
-            text = context.getString(
-                context.resources.getIdentifier(
-                    "hourly",
-                    "string",
-                    context.packageName
-                )
-            ),
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
-        )
+        Column(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Vertical.Top,
+            horizontalAlignment = Alignment.Horizontal.Start
+        ) {
+            Text(
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
+                text = context.getString(
+                    context.resources.getIdentifier(
+                        "hourly",
+                        "string",
+                        context.packageName
+                    )
+                ),
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
+            )
+        }
         Spacer(modifier = GlanceModifier.height(4.dp))
         Row {
             data.hourlyData.take(8).forEach { item ->
@@ -179,18 +185,24 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 }
             }
         }
-        Spacer(modifier = GlanceModifier.height(8.dp))
-        Text(
-            modifier = GlanceModifier.padding(horizontal = 8.dp),
-            text = context.getString(
-                context.resources.getIdentifier(
-                    "daily",
-                    "string",
-                    context.packageName
-                )
-            ),
-            style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
-        )
+        Spacer(modifier = GlanceModifier.height(16.dp))
+        Column(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Vertical.Top,
+            horizontalAlignment = Alignment.Horizontal.Start
+        ) {
+            Text(
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
+                text = context.getString(
+                    context.resources.getIdentifier(
+                        "daily",
+                        "string",
+                        context.packageName
+                    )
+                ),
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
+            )
+        }
         Spacer(modifier = GlanceModifier.height(4.dp))
         LazyColumn {
             items(data.dailyData.take(10)) { item ->

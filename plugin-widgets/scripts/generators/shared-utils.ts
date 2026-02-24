@@ -427,7 +427,7 @@ export function toPlatformVerticalAlignment(alignment: string | undefined, platf
 /**
  * Theme color names used across platforms
  */
-export const THEME_COLOR_NAMES = ['onSurface', 'onSurfaceVariant', 'primary', 'error', 'widgetBackground', 'surface'] as const;
+export const THEME_COLOR_NAMES = ['onSurface', 'onSurfaceVariant', 'primary', 'error', 'widgetBackground', 'surface', 'surfaceVariant'] as const;
 
 /**
  * Check if a color value is a theme color name

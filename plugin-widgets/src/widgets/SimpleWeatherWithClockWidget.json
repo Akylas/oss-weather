@@ -2,80 +2,61 @@
     "$schema": "../schema.json",
     "name": "SimpleWeatherWithClockWidget",
     "displayName": "Weather with Clock",
-    "description": "Shows current time, temperature, weather icon, and location",
+    "description": "Shows a clock with current weather information",
     "supportedSizes": [
-        {
-            "width": 80,
-            "height": 80,
-            "family": "small"
-        },
-        {
-            "width": 120,
-            "height": 120,
-            "family": "small"
-        },
-        {
-            "width": 180,
-            "height": 120,
-            "family": "medium"
-        }
+        { "width": 120, "height": 50, "family": "small" },
+        { "width": 80, "height": 80, "family": "small" },
+        { "width": 120, "height": 120, "family": "small" },
+        { "width": 260, "height": 120, "family": "medium" },
+        { "width": 260, "height": 260, "family": "large" }
     ],
-    "defaultPadding": 8,
+    "defaultPadding": 4,
+    "background": { "type": "solid", "color": "widgetBackground" },
     "settings": {
-        "clockBold": {
-            "type": "boolean",
-            "default": true,
-            "title": "widget_clock_bold_title",
-            "description": "widget_clock_bold_description"
-        }
-    },
-    "background": {
-        "type": "solid",
-        "color": "widgetBackground"
+        "clockBold": { "type": "boolean", "default": true, "title": "Bold clock" }
     },
     "layout": {
         "type": "conditional",
-        "condition": [
-            ">=",
-            [
-                "get",
-                "size.width"
-            ],
-            180
-        ],
+        "condition": [">=", ["get", "size.width"], 180],
         "then": {
             "type": "stack",
-            "fillWidth": true,
-            "fillHeight": true,
+            "fillMaxSize": true,
+            "padding": 4,
             "children": [
                 {
                     "type": "row",
-                    "alignment": "space-between",
-                    "crossAlignment": "start",
                     "fillWidth": true,
                     "fillHeight": true,
                     "padding": 8,
+                    "alignment": "start",
+                    "crossAlignment": "center",
                     "children": [
                         {
                             "type": "column",
                             "alignment": "start",
                             "crossAlignment": "start",
-                            "spacing": 4,
                             "children": [
                                 {
                                     "type": "clock",
                                     "fontSize": 48,
                                     "fontWeight": "config.settings.clockBold",
-                                    "color": "onSurface",
-                                    "textAlign": "left"
+                                    "color": "onSurface"
+                                },
+                                {
+                                    "type": "spacer",
+                                    "size": 4
                                 },
                                 {
                                     "type": "date",
+                                    "style": "date",
                                     "fontSize": 14,
-                                    "color": "onSurfaceVariant",
-                                    "textAlign": "left"
+                                    "color": "onSurfaceVariant"
                                 }
                             ]
+                        },
+                        {
+                            "type": "spacer",
+                            "flex": 1
                         },
                         {
                             "type": "column",
@@ -84,24 +65,22 @@
                             "children": [
                                 {
                                     "type": "image",
-                                    "src": [
-                                        "get",
-                                        "iconPath"
-                                    ],
+                                    "src": ["get", "iconPath"],
                                     "size": 62,
-                                    "visibleIf": [
-                                        "has",
-                                        "iconPath"
-                                    ]
+                                    "visibleIf": ["has", "iconPath"]
                                 },
                                 {
                                     "type": "label",
-                                    "text": [
-                                        "get",
-                                        "temperature"
-                                    ],
-                                    "fontSize": 28,
+                                    "text": ["get", "temperature"],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 15],
                                     "fontWeight": "bold",
+                                    "color": "onSurface",
+                                    "textAlign": "right"
+                                },
+                                {
+                                    "type": "label",
+                                    "text": ["get", "description"],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.04], 15],
                                     "color": "onSurface",
                                     "textAlign": "right"
                                 }
@@ -113,19 +92,14 @@
                     "type": "column",
                     "fillWidth": true,
                     "alignment": "end",
-                    "crossAlignment": "end",
+                    "crossAlignment": "start",
                     "children": [
                         {
                             "type": "label",
-                            "text": [
-                                "get",
-                                "data.locationName"
-                            ],
+                            "text": ["get", "locationName"],
                             "fontSize": 12,
                             "color": "onSurfaceVariant",
-                            "maxLines": 1,
-                            "paddingBottom": 4,
-                            "paddingHorizontal": 14
+                            "maxLines": 1
                         }
                     ]
                 }
@@ -133,175 +107,50 @@
         },
         "else": {
             "type": "stack",
-            "padding": [
-                "case",
-                [
-                    "<",
-                    [
-                        "get",
-                        "size.width"
-                    ],
-                    100
-                ],
-                4,
-                [
-                    "<",
-                    [
-                        "get",
-                        "size.width"
-                    ],
-                    150
-                ],
-                6,
-                8
-            ],
+            "fillMaxSize": true,
+            "padding": 3,
             "children": [
                 {
                     "type": "column",
+                    "fillMaxSize": true,
+                    "paddingTop": ["case", ["<=", ["get", "size.height"], 50], 0, 10],
                     "alignment": "start",
                     "crossAlignment": "center",
-                    "spacing": [
-                        "case",
-                        [
-                            "<",
-                            [
-                                "get",
-                                "size.width"
-                            ],
-                            100
-                        ],
-                        2,
-                        [
-                            "<",
-                            [
-                                "get",
-                                "size.width"
-                            ],
-                            150
-                        ],
-                        4,
-                        8
-                    ],
                     "children": [
                         {
-                            "type": "clock",
-                            "fontSize": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    100
-                                ],
-                                24,
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    150
-                                ],
-                                32,
-                                48
-                            ],
-                            "fontWeight": "config.settings.clockBold",
-                            "color": "onSurface"
-                        },
-                        {
-                            "type": "spacer",
-                            "flex": 1
+                            "type": "column",
+                            "fillWidth": true,
+                            "crossAlignment": ["case", ["<=", ["get", "size.height"], 50], "end", "center"],
+                            "children": [
+                                {
+                                    "type": "clock",
+                                    "fontSize": ["min", ["*", ["get", "size.height"], 0.24], 40],
+                                    "fontWeight": "config.settings.clockBold",
+                                    "color": "onSurface",
+                                    "textAlign": ["case", ["<=", ["get", "size.height"], 50], "right", "left"]
+                                }
+                            ]
                         },
                         {
                             "type": "row",
                             "alignment": "center",
                             "crossAlignment": "center",
-                            "spacing": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    100
-                                ],
-                                4,
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    150
-                                ],
-                                6,
-                                8
-                            ],
                             "children": [
                                 {
                                     "type": "image",
-                                    "src": [
-                                        "get",
-                                        "iconPath"
-                                    ],
-                                    "size": [
-                                        "case",
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.width"
-                                            ],
-                                            100
-                                        ],
-                                        32,
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.width"
-                                            ],
-                                            150
-                                        ],
-                                        40,
-                                        56
-                                    ],
-                                    "visibleIf": [
-                                        "has",
-                                        "iconPath"
-                                    ]
+                                    "src": ["get", "iconPath"],
+                                    "size": ["case", ["<", ["get", "size.width"], 100], 32, ["<", ["get", "size.width"], 150], 40, 56],
+                                    "visibleIf": ["has", "iconPath"]
+                                },
+                                {
+                                    "type": "spacer",
+                                    "direction": "horizontal",
+                                    "size": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8]
                                 },
                                 {
                                     "type": "label",
-                                    "text": [
-                                        "get",
-                                        "temperature"
-                                    ],
-                                    "fontSize": [
-                                        "case",
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.width"
-                                            ],
-                                            100
-                                        ],
-                                        18,
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.width"
-                                            ],
-                                            150
-                                        ],
-                                        24,
-                                        32
-                                    ],
+                                    "text": ["get", "temperature"],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
                                     "fontWeight": "bold",
                                     "color": "onSurface"
                                 }
@@ -309,28 +158,11 @@
                         },
                         {
                             "type": "spacer",
-                            "size": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    100
-                                ],
-                                4,
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    150
-                                ],
-                                6,
-                                8
-                            ]
+                            "size": ["case", ["<", ["get", "size.width"], 100], 2, ["<", ["get", "size.width"], 150], 4, 8]
+                        },
+                        {
+                            "type": "spacer",
+                            "size": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8]
                         }
                     ]
                 },
@@ -345,37 +177,10 @@
                         },
                         {
                             "type": "label",
-                            "text": [
-                                "get",
-                                "data.locationName"
-                            ],
-                            "fontSize": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    100
-                                ],
-                                8,
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    150
-                                ],
-                                10,
-                                12
-                            ],
+                            "text": ["get", "locationName"],
+                            "fontSize": ["case", ["<", ["get", "size.width"], 100], 8, ["<", ["get", "size.width"], 150], 10, 12],
                             "color": "onSurfaceVariant",
-                            "maxLines": 1,
-                            "paddingBottom": 4,
-                            "paddingStart": 4,
-                            "paddingEnd": 4
+                            "maxLines": 1
                         }
                     ]
                 }
@@ -385,24 +190,18 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            {
-                "width": 80,
-                "height": 80
-            },
-            {
-                "width": 120,
-                "height": 120
-            },
-            {
-                "width": 180,
-                "height": 120
-            }
+            { "width": 120, "height": 50 },
+            { "width": 80, "height": 80 },
+            { "width": 120, "height": 120 },
+            { "width": 260, "height": 120 },
+            { "width": 260, "height": 260 }
         ],
         "fakeData": {
-            "temperature": "12 \u00b0C",
-            "locationName": "Paris",
+            "temperature": "8 \u00b0C",
+            "iconPath": "icon_themes/meteocons/images/800d.png",
             "description": "Partly Cloudy",
-            "iconPath": "icon_themes/meteocons/images/800d.png"
+            "locationName": "Grenoble",
+            "date": "Mon, Feb 24"
         }
     }
 }

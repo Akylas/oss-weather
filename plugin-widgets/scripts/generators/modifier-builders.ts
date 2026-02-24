@@ -43,7 +43,8 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         primary: 'GlanceTheme.colors.primary',
         error: 'GlanceTheme.colors.error',
         widgetBackground: 'GlanceTheme.colors.background',
-        surface: 'GlanceTheme.colors.surface'
+        surface: 'GlanceTheme.colors.surface',
+        surfaceVariant: 'GlanceTheme.colors.surfaceVariant'
     },
     swift: {
         onSurface: 'WidgetColorProvider.onSurface',
@@ -215,6 +216,29 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
         });
         if (paddingExpr) {
             modifiers.push(`padding(vertical = ${paddingExpr})`);
+        }
+    }
+    // Individual side padding modifiers
+    const paddingSides: { key: string; side: string }[] = [
+        { key: 'paddingTop', side: 'top' },
+        { key: 'paddingBottom', side: 'bottom' },
+        { key: 'paddingLeft', side: 'start' },
+        { key: 'paddingRight', side: 'end' }
+    ];
+    for (const { key, side } of paddingSides) {
+        if (element[key] !== undefined) {
+            const expr = compilePropertyValue(element[key], {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => formatDimension(v, 'kotlin')
+            });
+            if (expr && expr.includes('.dp')) {
+                modifiers.push(`padding(${side} = ${expr})`);
+            } else if (expr) {
+                // Expression result needs .dp appended
+                const unwrapped = expr.replace(/^\((.+)\)$/, '$1');
+                modifiers.push(`padding(${side} = (${unwrapped}).dp)`);
+            }
         }
     }
 

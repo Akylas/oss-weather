@@ -47,6 +47,7 @@
             "type": "stack",
             "fillWidth": true,
             "fillHeight": true,
+            "padding": 4,
             "children": [
                 {
                     "type": "row",
@@ -133,28 +134,9 @@
         },
         "else": {
             "type": "stack",
-            "padding": [
-                "case",
-                [
-                    "<",
-                    [
-                        "get",
-                        "size.width"
-                    ],
-                    100
-                ],
-                4,
-                [
-                    "<",
-                    [
-                        "get",
-                        "size.width"
-                    ],
-                    150
-                ],
-                6,
-                8
-            ],
+            "fillWidth": true,
+            "fillHeight": true,
+            "padding": 3,
             "children": [
                 {
                     "type": "column",
@@ -386,6 +368,10 @@
     "preview": {
         "sizes": [
             {
+                "width": 120,
+                "height": 50
+            },
+            {
                 "width": 80,
                 "height": 80
             },
@@ -394,15 +380,20 @@
                 "height": 120
             },
             {
-                "width": 180,
+                "width": 260,
                 "height": 120
+            },
+            {
+                "width": 260,
+                "height": 260
             }
         ],
         "fakeData": {
-            "temperature": "12 \u00b0C",
-            "locationName": "Paris",
+            "temperature": "8 \u00b0C",
+            "locationName": "Grenoble",
             "description": "Partly Cloudy",
-            "iconPath": "icon_themes/meteocons/images/800d.png"
+            "iconPath": "icon_themes/meteocons/images/800d.png",
+            "date": "Mon, Feb 24"
         }
     }
 }

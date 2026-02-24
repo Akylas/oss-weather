@@ -18,6 +18,10 @@ interface LayoutElement {
     padding?: Expression;
     paddingHorizontal?: Expression;
     paddingVertical?: Expression;
+    paddingTop?: Expression;
+    paddingBottom?: Expression;
+    paddingStart?: Expression;
+    paddingEnd?: Expression;
     margin?: Expression;
     marginHorizontal?: Expression;
     marginVertical?: Expression;
@@ -32,13 +36,14 @@ interface LayoutElement {
     flex?: Expression;
     backgroundColor?: Expression;
     cornerRadius?: Expression;
+    contentAlignment?: string;
     children?: LayoutElement[];
     // Element-specific
     text?: Expression;
     fontSize?: Expression;
     fontWeight?: Expression;
     color?: Expression;
-    textAlign?: string;
+    textAlign?: Expression;
     maxLines?: Expression;
     src?: Expression;
     size?: Expression;
@@ -236,8 +241,27 @@ function generateRow(element: LayoutElement, indent: string): string[] {
 function generateStack(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
+    const modifier = buildGlanceModifier(element);
+
+    // contentAlignment mapping
+    const contentAlignmentMap: Record<string, string> = {
+        topStart: 'Alignment.TopStart',
+        topCenter: 'Alignment.TopCenter',
+        topEnd: 'Alignment.TopEnd',
+        centerStart: 'Alignment.CenterStart',
+        center: 'Alignment.Center',
+        centerEnd: 'Alignment.CenterEnd',
+        bottomStart: 'Alignment.BottomStart',
+        bottomCenter: 'Alignment.BottomCenter',
+        bottomEnd: 'Alignment.BottomEnd'
+    };
+
     lines.push(`${indent}Box(`);
-    lines.push(`${indent}    modifier = GlanceModifier.fillMaxSize()`);
+    lines.push(`${indent}    modifier = ${modifier}${element.contentAlignment ? ',' : ''}`);
+    if (element.contentAlignment) {
+        const alignExpr = contentAlignmentMap[element.contentAlignment] || 'Alignment.TopStart';
+        lines.push(`${indent}    contentAlignment = ${alignExpr}`);
+    }
     lines.push(`${indent}) {`);
 
     if (element.children) {
@@ -292,7 +316,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
-        textExpr = `context.getString(ctx.resources.getIdentifier("${resourceKey}", "string", ctx.packageName))`;
+        textExpr = `context.getString(context.resources.getIdentifier("${resourceKey}", "string", context.packageName))`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }
@@ -331,10 +355,22 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     if (element.textAlign) {
         const alignMap: Record<string, string> = {
             left: 'TextAlign.Start',
+            start: 'TextAlign.Start',
             center: 'TextAlign.Center',
-            right: 'TextAlign.End'
+            right: 'TextAlign.End',
+            end: 'TextAlign.End'
         };
-        styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        if (isExpression(element.textAlign)) {
+            // Expression-based textAlign
+            const textAlignExpr = compileExpr(element.textAlign, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: string) => alignMap[v] || 'TextAlign.Start'
+            });
+            styleProps.push(`textAlign = ${textAlignExpr}`);
+        } else if (typeof element.textAlign === 'string') {
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        }
     }
 
     if (styleProps.length > 0) {
@@ -616,6 +652,25 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     if (colorExpr) {
         styleProps.push(`color = ${colorExpr}`);
     }
+    if (element.textAlign) {
+        const alignMap: Record<string, string> = {
+            left: 'TextAlign.Start',
+            start: 'TextAlign.Start',
+            center: 'TextAlign.Center',
+            right: 'TextAlign.End',
+            end: 'TextAlign.End'
+        };
+        if (isExpression(element.textAlign)) {
+            const textAlignExpr = compileExpr(element.textAlign, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: string) => alignMap[v] || 'TextAlign.Start'
+            });
+            styleProps.push(`textAlign = ${textAlignExpr}`);
+        } else if (typeof element.textAlign === 'string') {
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        }
+    }
 
     if (styleProps.length > 0) {
         lines.push(`${indent}    style = TextStyle(${styleProps.join(', ')})`);
@@ -631,6 +686,12 @@ function generateDate(element: LayoutElement, indent: string): string[] {
 
     const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+
+    // Handle fontWeight
+    let fontWeightExpr: string | undefined;
+    if (element.fontWeight) {
+        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
+    }
 
     // Determine date expression based on style
     let dateExpr: string;
@@ -664,8 +725,23 @@ function generateDate(element: LayoutElement, indent: string): string[] {
     if (fontSizeExpr) {
         styleProps.push(`fontSize = ${fontSizeExpr}`);
     }
+    if (fontWeightExpr) {
+        styleProps.push(`fontWeight = ${fontWeightExpr}`);
+    }
     if (colorExpr) {
         styleProps.push(`color = ${colorExpr}`);
+    }
+    if (element.textAlign) {
+        const alignMap: Record<string, string> = {
+            left: 'TextAlign.Start',
+            start: 'TextAlign.Start',
+            center: 'TextAlign.Center',
+            right: 'TextAlign.End',
+            end: 'TextAlign.End'
+        };
+        if (typeof element.textAlign === 'string') {
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        }
     }
 
     if (styleProps.length > 0) {
@@ -745,6 +821,7 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
             }
         }
     }
+    fakeDataLines.push(`        lastUpdate = System.currentTimeMillis(),`);
     fakeDataLines.push(`        loadingState = WidgetLoadingState.LOADED`);
 
     // @Preview annotations (one per size)
@@ -824,6 +901,18 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.widgets.WidgetComposables');
     lines.push('import com.akylas.weather.widgets.WidgetLoadingState');
     lines.push('import kotlin.math.min');
+
+    // Conditional imports based on data usage
+    const fakeData = layout.preview?.fakeData;
+    const layoutStr = JSON.stringify(layout.layout);
+    const hasHourlyData = (fakeData && 'hourlyData' in fakeData) || layoutStr.includes('"hourlyData"');
+    const hasDailyData = (fakeData && 'dailyData' in fakeData) || layoutStr.includes('"dailyData"');
+    if (hasHourlyData) {
+        lines.push('import com.akylas.weather.widgets.HourlyData');
+    }
+    if (hasDailyData) {
+        lines.push('import com.akylas.weather.widgets.DailyData');
+    }
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);

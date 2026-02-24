@@ -43,7 +43,8 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         primary: 'GlanceTheme.colors.primary',
         error: 'GlanceTheme.colors.error',
         widgetBackground: 'GlanceTheme.colors.background',
-        surface: 'GlanceTheme.colors.surface'
+        surface: 'GlanceTheme.colors.surface',
+        surfaceVariant: 'GlanceTheme.colors.surfaceVariant'
     },
     swift: {
         onSurface: 'WidgetColorProvider.onSurface',
@@ -51,7 +52,8 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         primary: 'WidgetColorProvider.primary',
         error: 'WidgetColorProvider.error',
         widgetBackground: 'WidgetColorProvider.background',
-        surface: 'WidgetColorProvider.surface'
+        surface: 'WidgetColorProvider.surface',
+        surfaceVariant: 'WidgetColorProvider.surfaceVariant'
     },
     javascript: {
         onSurface: '#E6E1E5',
@@ -215,6 +217,50 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
         });
         if (paddingExpr) {
             modifiers.push(`padding(vertical = ${paddingExpr})`);
+        }
+    }
+
+    if (element.paddingTop !== undefined) {
+        const paddingExpr = compilePropertyValue(element.paddingTop, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => formatDimension(v, 'kotlin')
+        });
+        if (paddingExpr) {
+            modifiers.push(`padding(top = ${paddingExpr})`);
+        }
+    }
+
+    if (element.paddingBottom !== undefined) {
+        const paddingExpr = compilePropertyValue(element.paddingBottom, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => formatDimension(v, 'kotlin')
+        });
+        if (paddingExpr) {
+            modifiers.push(`padding(bottom = ${paddingExpr})`);
+        }
+    }
+
+    if (element.paddingStart !== undefined) {
+        const paddingExpr = compilePropertyValue(element.paddingStart, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => formatDimension(v, 'kotlin')
+        });
+        if (paddingExpr) {
+            modifiers.push(`padding(start = ${paddingExpr})`);
+        }
+    }
+
+    if (element.paddingEnd !== undefined) {
+        const paddingExpr = compilePropertyValue(element.paddingEnd, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => formatDimension(v, 'kotlin')
+        });
+        if (paddingExpr) {
+            modifiers.push(`padding(end = ${paddingExpr})`);
         }
     }
 

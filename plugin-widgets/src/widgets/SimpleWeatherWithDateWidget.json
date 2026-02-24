@@ -400,12 +400,12 @@
                 "height": 50
             },
             {
-                "width": 120,
+                "width": 80,
                 "height": 80
             },
             {
-                "width": 180,
-                "height": 80
+                "width": 120,
+                "height": 120
             },
             {
                 "width": 260,
@@ -413,10 +413,11 @@
             }
         ],
         "fakeData": {
-            "temperature": "12 \u00b0C",
-            "locationName": "Paris",
+            "temperature": "8 \u00b0C",
+            "locationName": "Grenoble",
             "description": "Partly Cloudy",
-            "iconPath": "icon_themes/meteocons/images/800d.png"
+            "iconPath": "icon_themes/meteocons/images/800d.png",
+            "date": "Mon, Feb 24"
         }
     }
 }

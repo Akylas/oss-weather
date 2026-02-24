@@ -148,6 +148,12 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
         case 'substring':
             return compileSubstring(args, options);
 
+        // Math
+        case 'min':
+            return compileMin(args, options);
+        case 'max':
+            return compileMax(args, options);
+
         // Date/Time formatting
         case 'format':
             return compileFormat(args, options);
@@ -220,9 +226,13 @@ function compileHas(prop: string, platform: Platform, addDataPrefix: boolean): s
 // ============================================================================
 
 function compileArithmetic(op: '+' | '-' | '*' | '/', args: Expression[], options: CompilationOptions): string {
-    const left = compileExpression(args[0], { ...options, context: 'value' });
-    const right = compileExpression(args[1], { ...options, context: 'value' });
-    return `(${left} ${op} ${right})`;
+    const left = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const right = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+    const result = `(${left} ${op} ${right})`;
+    if (options.formatter) {
+        return options.formatter(result);
+    }
+    return result;
 }
 
 // ============================================================================
@@ -405,6 +415,30 @@ function compileSubstring(args: Expression[], options: CompilationOptions): stri
         case 'typescript':
             return `${str}.substring(${start})`;
     }
+}
+
+// ============================================================================
+// MATH OPERATORS
+// ============================================================================
+
+function compileMin(args: Expression[], options: CompilationOptions): string {
+    const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const b = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+    const result = `min(${a}, ${b})`;
+    if (options.formatter) {
+        return options.formatter(result);
+    }
+    return result;
+}
+
+function compileMax(args: Expression[], options: CompilationOptions): string {
+    const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const b = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+    const result = `max(${a}, ${b})`;
+    if (options.formatter) {
+        return options.formatter(result);
+    }
+    return result;
 }
 
 // ============================================================================

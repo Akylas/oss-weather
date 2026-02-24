@@ -268,12 +268,8 @@
     "preview": {
         "sizes": [
             {
-                "width": 260,
-                "height": 60
-            },
-            {
-                "width": 260,
-                "height": 80
+                "width": 120,
+                "height": 120
             },
             {
                 "width": 260,
@@ -281,50 +277,71 @@
             },
             {
                 "width": 360,
-                "height": 180
+                "height": 150
             }
         ],
         "fakeData": {
             "temperature": "12 \u00b0C",
             "locationName": "Paris",
             "description": "Partly Cloudy",
+            "date": "Mon, Feb 24",
             "iconPath": "icon_themes/meteocons/images/800d.png",
             "hourlyData": [
                 {
                     "time": "06:00",
-                    "temperature": "12 \u00b0C",
+                    "temperature": "6 \u00b0C",
                     "iconPath": "icon_themes/meteocons/images/800d.png",
-                    "precipAccumulation": "0 mm"
+                    "precipAccumulation": "0 mm",
+                    "windSpeed": "10 km/h"
                 },
                 {
                     "time": "07:00",
-                    "temperature": "12 \u00b0C",
+                    "temperature": "7 \u00b0C",
                     "iconPath": "icon_themes/meteocons/images/800d.png",
-                    "precipAccumulation": "0 mm"
+                    "precipAccumulation": "0 mm",
+                    "windSpeed": "10 km/h"
                 },
                 {
                     "time": "08:00",
-                    "temperature": "12 \u00b0C",
-                    "iconPath": "icon_themes/meteocons/images/800d.png",
-                    "precipAccumulation": "0 mm"
+                    "temperature": "8 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/802d.png",
+                    "precipAccumulation": "0 mm",
+                    "windSpeed": "12 km/h"
                 },
                 {
                     "time": "09:00",
-                    "temperature": "12 \u00b0C",
-                    "iconPath": "icon_themes/meteocons/images/800d.png",
-                    "precipAccumulation": "0 mm"
+                    "temperature": "10 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/500n.png",
+                    "precipAccumulation": "0 mm",
+                    "windSpeed": "12 km/h"
                 },
                 {
                     "time": "10:00",
                     "temperature": "12 \u00b0C",
-                    "iconPath": "icon_themes/meteocons/images/800d.png",
-                    "precipAccumulation": "0 mm"
+                    "iconPath": "icon_themes/meteocons/images/802d.png",
+                    "precipAccumulation": "0 mm",
+                    "windSpeed": "14 km/h"
                 },
                 {
                     "time": "11:00",
-                    "temperature": "12 \u00b0C",
-                    "iconPath": "icon_themes/meteocons/images/800d.png",
-                    "precipAccumulation": "0 mm"
+                    "temperature": "13 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/802d.png",
+                    "precipAccumulation": "0 mm",
+                    "windSpeed": "14 km/h"
+                },
+                {
+                    "time": "12:00",
+                    "temperature": "14 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/500n.png",
+                    "precipAccumulation": "0.2 mm",
+                    "windSpeed": "16 km/h"
+                },
+                {
+                    "time": "13:00",
+                    "temperature": "14 \u00b0C",
+                    "iconPath": "icon_themes/meteocons/images/500n.png",
+                    "precipAccumulation": "0.5 mm",
+                    "windSpeed": "16 km/h"
                 }
             ]
         }

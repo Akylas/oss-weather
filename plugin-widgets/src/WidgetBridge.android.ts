@@ -173,7 +173,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     private sendWeatherDataToWidget(widgetId: number, data: WeatherWidgetData) {
         try {
-            DEV_LOG && console.log('sendWeatherDataToWidget', widgetId, JSON.stringify(data));
+            // DEV_LOG && console.log('sendWeatherDataToWidget', widgetId, JSON.stringify(data));
             const context = Utils.android.getApplicationContext();
             const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
             // Update widget

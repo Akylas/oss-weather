@@ -31,8 +31,8 @@
                     </stacklayout>
                     <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.2],15]} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
-                        <label text={data.description} fontSize={["min",["*",["get","size.width"],0.04],15]} color={colorOnSurface} textAlignment="right"></label>
+                        <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 15)} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
+                        <label text={data.description} fontSize={Math.min(size.width * 0.04, 15)} color={colorOnSurface} textAlignment="right"></label>
                     </stacklayout>
                 </stacklayout>
                 <stacklayout verticalAlignment="bottom" horizontalAlignment="left" orientation="vertical">
@@ -42,12 +42,12 @@
         {:else}
             <gridlayout padding={3}>
                 <stacklayout verticalAlignment="top" horizontalAlignment="center" orientation="vertical">
-                    <stacklayout horizontalAlignment={["case",["<=",["get","size.height"],50],"end","center"]} orientation="vertical">
-                        <label fontSize={["min",["*",["get","size.height"],0.24],40]} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} textAlignment={size.height <= 50 ? "right" : "left"} text={nowTime()}></label>
+                    <stacklayout horizontalAlignment={size.height <= 50 ? "end" : "center"} orientation="vertical">
+                        <label fontSize={Math.min(size.height * 0.24, 40)} fontWeight={config.settings?.clockBold ?? true ? 700 : 400} color={colorOnSurface} textAlignment={size.height <= 50 ? "right" : "left"} text={nowTime()}></label>
                     </stacklayout>
                     <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="horizontal">
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} height={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.2],20]} fontWeight={700} color={colorOnSurface}></label>
+                        <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 20)} fontWeight={700} color={colorOnSurface}></label>
                     </stacklayout>
                 </stacklayout>
                 <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">

@@ -17,7 +17,7 @@ struct DailyWeatherWidgetView: View {
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 8) {
-                    VStack(alignment: .center, spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
                         HStack(alignment: .top, spacing: 0) {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
@@ -38,15 +38,15 @@ struct DailyWeatherWidgetView: View {
                                     Text(data.description)
                                         .font(.system(size: 11, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                        .multilineTextAlignment(.leading)
+                                        .multilineTextAlignment(.trailing)
                                         .lineLimit(1)
                                 }
                             }
-                        }.padding(8)
+                        }.frame(maxWidth: .infinity).padding(8)
                         Text("Daily")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading)
+                            .multilineTextAlignment(.leading).padding(.horizontal, 8)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(spacing: 8) {
@@ -86,9 +86,9 @@ struct DailyWeatherWidgetView: View {
                                                             }
                                                         }
                                                     }
-                                                }
-                                            }.background(WidgetColorProvider.onSurface).cornerRadius(8)
-                                        }.padding(2)
+                                                }.frame(maxWidth: .infinity)
+                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                        }.frame(maxWidth: .infinity).padding(2)
                                     }
                                 }
                             }

@@ -296,6 +296,16 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
             const right = evaluateMapboxExpression(args[1], context);
             return `${left} ${op} ${right}`;
         }
+        case 'min': {
+            const a = evaluateMapboxExpression(args[0], context);
+            const b = evaluateMapboxExpression(args[1], context);
+            return `Math.min(${a}, ${b})`;
+        }
+        case 'max': {
+            const a = evaluateMapboxExpression(args[0], context);
+            const b = evaluateMapboxExpression(args[1], context);
+            return `Math.max(${a}, ${b})`;
+        }
         case 'concat': {
             // String concatenation
             const parts = args.map((arg) => evaluateMapboxExpression(arg, context));
@@ -392,6 +402,12 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 
     // Handle alignment properties with start/end mapping
     if (prop === 'alignment' || prop === 'verticalAlignment') {
+        if (Array.isArray(value)) {
+            // Expression-based alignment - compile it with mapped values
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            // wrap in a ternary if it uses string values that need mapping
+            return `${attrName}={${expr}}`;
+        }
         const mappedValue = typeof value === 'string' ? mapAlignment(value, true) : value;
         if (typeof mappedValue === 'string') {
             return `${attrName}="${mappedValue}"`;
@@ -400,6 +416,11 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     }
 
     if (prop === 'crossAlignment' || prop === 'horizontalAlignment') {
+        if (Array.isArray(value)) {
+            // Expression-based alignment
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            return `${attrName}={${expr}}`;
+        }
         const mappedValue = typeof value === 'string' ? mapAlignment(value, false) : value;
         if (typeof mappedValue === 'string') {
             return `${attrName}="${mappedValue}"`;

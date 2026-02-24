@@ -52,7 +52,8 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         primary: 'WidgetColorProvider.primary',
         error: 'WidgetColorProvider.error',
         widgetBackground: 'WidgetColorProvider.background',
-        surface: 'WidgetColorProvider.surface'
+        surface: 'WidgetColorProvider.surface',
+        surfaceVariant: 'WidgetColorProvider.surfaceVariant'
     },
     javascript: {
         onSurface: '#E6E1E5',

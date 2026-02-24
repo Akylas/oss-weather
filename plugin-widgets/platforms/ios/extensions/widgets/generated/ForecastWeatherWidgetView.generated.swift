@@ -38,16 +38,16 @@ struct ForecastWeatherWidgetView: View {
                                     Text(data.description)
                                         .font(.system(size: 11, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                        .multilineTextAlignment(.leading)
+                                        .multilineTextAlignment(.trailing)
                                         .lineLimit(1)
                                 }
                             }
-                        }.padding(8)
+                        }.frame(maxWidth: .infinity).padding(8)
                         Spacer().frame(height: 8)
                         Text("Hourly")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading)
+                            .multilineTextAlignment(.leading).padding(.horizontal, 8)
                         Spacer().frame(height: 4)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
@@ -68,7 +68,7 @@ struct ForecastWeatherWidgetView: View {
                                                     .font(.system(size: 9, weight: .regular))
                                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                             }
-                                        }
+                                        }.frame(width: 53).padding(.horizontal, 4)
                                     }
                                 }
                             }
@@ -77,7 +77,7 @@ struct ForecastWeatherWidgetView: View {
                         Text("Daily")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading)
+                            .multilineTextAlignment(.leading).padding(.horizontal, 8)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(spacing: 8) {
@@ -117,9 +117,9 @@ struct ForecastWeatherWidgetView: View {
                                                             }
                                                         }
                                                     }
-                                                }
-                                            }.background(WidgetColorProvider.onSurface).cornerRadius(8)
-                                        }.padding(2)
+                                                }.frame(maxWidth: .infinity)
+                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                        }.frame(maxWidth: .infinity).padding(2)
                                     }
                                 }
                             }

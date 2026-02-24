@@ -31,7 +31,7 @@
                 <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
                 <stacklayout verticalAlignment="top" orientation="horizontal">
                     <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical">
-                        <label text={data.temperature} fontSize={["min",["*",["get","size.width"],0.16],30]} fontWeight={700} color={colorOnSurface}></label>
+                        <label text={data.temperature} fontSize={Math.min(size.width * 0.16, 30)} fontWeight={700} color={colorOnSurface}></label>
                     </stacklayout>
                     <stacklayout verticalAlignment="center" horizontalAlignment="right" orientation="vertical">
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={64} height={64} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>

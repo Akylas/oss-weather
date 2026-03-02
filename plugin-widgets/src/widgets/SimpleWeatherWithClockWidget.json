@@ -28,12 +28,12 @@
                     "fillWidth": true,
                     "fillHeight": true,
                     "padding": 8,
-                    "alignment": "start",
+                    "alignment": "center",
                     "crossAlignment": "center",
                     "children": [
                         {
                             "type": "column",
-                            "alignment": "start",
+                            "alignment": "center",
                             "crossAlignment": "start",
                             "children": [
                                 {

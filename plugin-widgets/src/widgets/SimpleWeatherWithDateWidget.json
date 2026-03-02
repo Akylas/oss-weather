@@ -27,17 +27,19 @@
                     "fillWidth": true,
                     "fillHeight": true,
                     "padding": 8,
-                    "alignment": "start",
+                    "alignment": "center",
                     "crossAlignment": "center",
                     "children": [
                         {
                             "type": "column",
-                            "alignment": "start",
+                            "alignment": "center",
                             "crossAlignment": "start",
                             "children": [
                                 {
-                                    "type": "clock",
+                                    "type": "date",
+                                    "style": "date",
                                     "fontSize": 48,
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 48],
                                     "fontWeight": "config.settings.clockBold",
                                     "color": "onSurface"
                                 },
@@ -65,6 +67,7 @@
                                 {
                                     "type": "image",
                                     "src": ["get", "iconPath"],
+                                    "crossAlignment": "end",
                                     "size": 62,
                                     "visibleIf": ["has", "iconPath"]
                                 },

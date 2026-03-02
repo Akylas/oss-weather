@@ -17,7 +17,7 @@
     $: ({ colorWidgetBackground, colorOnSurfaceVariant, colorOnSurface, colorSurfaceVariant } = $colors);
 </script>
 
-<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={8} class="widget-container">
+<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
         <stacklayout verticalAlignment="top" horizontalAlignment="stretch" orientation="vertical">
             <gridlayout verticalAlignment="top" horizontalAlignment="left" padding={8} columns="auto,*,auto">
                 <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical" col={0}>
@@ -29,12 +29,14 @@
                     <label text={data.description} fontSize={11} color={colorOnSurfaceVariant} textAlignment="right" maxLines={1} visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
                 </stacklayout>
             </gridlayout>
-            <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} marginBottom={4}></label>
+            <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical" marginBottom={4}>
+                <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8}></label>
+            </stacklayout>
             <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical">
                 <Template let:item>
-                <stacklayout horizontalAlignment="stretch" padding={2} verticalAlignment="center" orientation="vertical">
-                    <stacklayout horizontalAlignment="stretch" paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} verticalAlignment="center" orientation="vertical">
-                        <gridlayout horizontalAlignment="stretch" verticalAlignment="center" columns="auto,*,auto,*,auto">
+                <stacklayout padding={2} verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
+                    <stacklayout paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
+                        <gridlayout verticalAlignment="center" horizontalAlignment="center" columns="auto,*,auto,*,auto">
                             <label text={item.day} fontSize={12} fontWeight={500} color={colorOnSurface} maxLines={1} col={0}></label>
                             <image src={item.iconPath} width={36} height={36} col={2}></image>
                             <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical" col={4}>

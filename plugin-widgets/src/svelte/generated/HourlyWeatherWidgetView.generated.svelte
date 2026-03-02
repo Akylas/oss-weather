@@ -17,7 +17,7 @@
     $: ({ colorWidgetBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
 </script>
 
-<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={6} class="widget-container">
+<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
         <stacklayout verticalAlignment="top" horizontalAlignment="stretch" padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
             {#if size.height >= 80}
                 <stacklayout horizontalAlignment="left" orientation="vertical">

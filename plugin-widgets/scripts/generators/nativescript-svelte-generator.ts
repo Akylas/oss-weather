@@ -15,7 +15,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { BaseLayoutElement, hasTemplateBinding, getSingleBinding } from './shared-utils';
+import { BaseLayoutElement, getSingleBinding, hasTemplateBinding } from './shared-utils';
 
 type AnyObj = Record<string, any>;
 
@@ -409,10 +409,12 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             return `${attrName}={${expr}}`;
         }
         const mappedValue = typeof value === 'string' ? mapAlignment(value, true) : value;
-        if (typeof mappedValue === 'string') {
-            return `${attrName}="${mappedValue}"`;
+        if (mappedValue !== undefined) {
+            if (typeof mappedValue === 'string') {
+                return `${attrName}="${mappedValue}"`;
+            }
+            return `${attrName}={${JSON.stringify(mappedValue)}}`;
         }
-        return `${attrName}={${JSON.stringify(mappedValue)}}`;
     }
 
     if (prop === 'crossAlignment' || prop === 'horizontalAlignment') {
@@ -430,15 +432,15 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 
     // fillWidth/fillHeight/fillMaxSize -> NativeScript stretch alignment
     if (prop === 'fillWidth') {
-        if (value === true) return `horizontalAlignment="stretch"`;
+        // if (value === true) return `horizontalAlignment="stretch"`;
         return null;
     }
     if (prop === 'fillHeight') {
-        if (value === true) return `verticalAlignment="stretch"`;
+        // if (value === true) return `verticalAlignment="stretch"`;
         return null;
     }
     if (prop === 'fillMaxSize') {
-        if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
+        // if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
         return null;
     }
 
@@ -447,17 +449,17 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         if (typeof value === 'string' && value.startsWith('config.settings.')) {
             const settingKey = value.substring(16); // Remove 'config.settings.' prefix
             // Generate ternary for setting from config
-            return `${attrName}={config.settings?.${settingKey} ?? true ? 700 : 400}`;
+            return `${attrName}={config?.settings?.${settingKey} ?? true ? "bold" : undefined}`;
         }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;
     }
-    
+
     // Handle bold property with config.settings support
     if (prop === 'bold') {
         if (typeof value === 'string' && value.startsWith('config.settings.')) {
             const settingKey = value.substring(16); // Remove 'config.settings.' prefix
-            return `${attrName}={config.settings?.${settingKey} ?? true}`;
+            return `${attrName}={config?.settings?.${settingKey} ?? true}`;
         }
         return `${attrName}={${JSON.stringify(value)}}`;
     }
@@ -630,11 +632,11 @@ function mapFontWeight(weight: string | number): number {
  * Map alignment values to NativeScript equivalents
  */
 function mapAlignment(value: string, isVertical: boolean): string {
-    const map: Record<string, string> = {
+    const map: Record<string, string | undefined> = {
         start: isVertical ? 'top' : 'left',
         end: isVertical ? 'bottom' : 'right',
         center: 'center',
-        stretch: 'stretch'
+        stretch: undefined
     };
     return map[value] || value;
 }
@@ -1104,13 +1106,13 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         const attrBg = buildAttribute(widgetName, 'backgroundColor', v, ['root'], 'data', usedColors);
         if (attrBg) wrapperAttrs.push(attrBg);
     }
-    if (layout.defaultPadding !== undefined) {
-        let value = layout.defaultPadding;
-        if (Array.isArray(value)) {
-            value = evaluateMapboxExpression(value, '') as any;
-        }
-        wrapperAttrs.push(`padding={${value}}`);
-    }
+    // if (layout.defaultPadding !== undefined) {
+    //     let value = layout.defaultPadding;
+    //     if (Array.isArray(value)) {
+    //         value = evaluateMapboxExpression(value, '') as any;
+    //     }
+    //     wrapperAttrs.push(`padding={${value}}`);
+    // }
     wrapperAttrs.push(`class="widget-container"`);
 
     const wrapperTag = 'gridlayout';

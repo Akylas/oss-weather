@@ -710,7 +710,16 @@ function generateDate(element: LayoutElement, indent: string): string[] {
     } else {
         switch (element.style) {
             case 'dayMonth':
-                dateExpr = `android.text.format.DateFormat.format("MMM d", java.util.Date()).toString()`;
+                dateExpr = `run {
+                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
+                    if (mediumFormat is java.text.SimpleDateFormat) {
+                        var pattern = mediumFormat.toPattern()
+                        pattern = pattern.replace(Regex("[\\\\s,./-]*y+[\\\\s,./-]*"), "").trim()
+                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
+                    } else {
+                        mediumFormat.format(java.util.Date())
+                    }
+                }`;
                 break;
             case 'fullDate':
                 dateExpr = `android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date())`;

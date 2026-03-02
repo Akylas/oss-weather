@@ -36,10 +36,10 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 260, heightDp = 120)
 @Preview(widthDp = 120, heightDp = 50)
 @Preview(widthDp = 80, heightDp = 80)
 @Preview(widthDp = 120, heightDp = 120)
-@Preview(widthDp = 260, heightDp = 120)
 @Preview(widthDp = 260, heightDp = 260)
 @Composable
 private fun Preview() {
@@ -86,12 +86,12 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
         ) {
             Row(
                 modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(8.dp),
-                horizontalAlignment = Alignment.Horizontal.Start,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
                     modifier = GlanceModifier,
-                    verticalAlignment = Alignment.Vertical.Top,
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.Start
                 ) {
                     Text(

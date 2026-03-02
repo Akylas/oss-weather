@@ -24,8 +24,8 @@
 <gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
         {#if size.width >= 180}
             <gridlayout padding={4}>
-                <gridlayout padding={8} verticalAlignment="top" horizontalAlignment="center" columns="auto,*,auto">
-                    <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical" col={0}>
+                <gridlayout padding={8} verticalAlignment="center" horizontalAlignment="center" columns="auto,*,auto">
+                    <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical" col={0}>
                         <label fontSize={Math.min(size.width * 0.15, 50)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} text={nowTime()} marginBottom={4}></label>
                         <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'll')}></label>
                     </stacklayout>

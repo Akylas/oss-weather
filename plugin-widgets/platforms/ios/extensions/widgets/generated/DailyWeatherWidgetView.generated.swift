@@ -43,10 +43,12 @@ struct DailyWeatherWidgetView: View {
                                 }
                             }
                         }.frame(maxWidth: .infinity).padding(8)
-                        Text("Daily")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Daily")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                        }.frame(maxWidth: .infinity)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(spacing: 8) {

@@ -880,7 +880,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         let dateExpr: string;
         switch (style) {
             case 'dayMonth':
-                dateExpr = `formatDate(new Date(), 'MMM D')`;
+                dateExpr = `formatDateWithoutYear(new Date(), 'll')`;
                 break;
             case 'fullDate':
                 dateExpr = `formatDate(new Date(), 'LL')`;
@@ -1064,12 +1064,16 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     // Check if widget uses clock element
     const usesClock = JSON.stringify(layout).includes('"type":"clock"');
+    // Check if widget uses dayMonth date style (needs formatDateWithoutYear helper)
+    const usesDayMonth = JSON.stringify(layout).includes('"style":"dayMonth"');
 
     let script = `<script context="module" lang="ts">\n`;
     script += `    // Auto-generated Svelte Native component for widget "${layout.name}"\n`;
     script += `    import type { Writable } from 'svelte/store';\n`;
     script += `    import { Template } from '@nativescript-community/svelte-native/components';\n`;
-    script += `    import { formatDate, l } from '~/helpers/locale';\n`;
+    const localeImports = ['formatDate', 'l'];
+    if (usesDayMonth) localeImports.push('formatDateWithoutYear');
+    script += `    import { ${localeImports.join(', ')} } from '~/helpers/locale';\n`;
     script += `    import { titlecase } from '@nativescript-community/l';\n`;
     script += `    import { iconService } from '~/services/icon';\n`;
     script += `    import { colors } from '~/variables';\n`;

@@ -22,7 +22,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(Date(), style: .time)
-                                        .font(.system(size: 48, weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
+                                        .font(.system(size: min((width * 0.15), 50), weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                     Spacer().frame(height: 4)
                                     Text(Date(), style: .date)

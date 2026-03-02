@@ -44,10 +44,12 @@ struct ForecastWeatherWidgetView: View {
                             }
                         }.frame(maxWidth: .infinity).padding(8)
                         Spacer().frame(height: 8)
-                        Text("Hourly")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Hourly")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                        }.frame(maxWidth: .infinity)
                         Spacer().frame(height: 4)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
@@ -73,11 +75,13 @@ struct ForecastWeatherWidgetView: View {
                                 }
                             }
                         }
-                        Spacer().frame(height: 8)
-                        Text("Daily")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                        Spacer().frame(height: 16)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Daily")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                        }.frame(maxWidth: .infinity)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(spacing: 8) {

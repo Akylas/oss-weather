@@ -756,7 +756,7 @@ function generateDate(element: BaseLayoutElement, indent: string): string[] {
     if (style === 'dayMonth') {
         lines.push(`${indent}Text({`);
         lines.push(`${indent}    let f = DateFormatter()`);
-        lines.push(`${indent}    f.dateFormat = "MMM d"`);
+        lines.push(`${indent}    f.setLocalizedDateFormatFromTemplate("MMMd")`);
         lines.push(`${indent}    return f.string(from: Date())`);
         lines.push(`${indent}}())`);
     } else if (style === 'fullDate') {

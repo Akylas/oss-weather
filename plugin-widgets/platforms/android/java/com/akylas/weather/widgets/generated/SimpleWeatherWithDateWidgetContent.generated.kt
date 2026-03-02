@@ -36,10 +36,10 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 260, heightDp = 120)
 @Preview(widthDp = 120, heightDp = 50)
 @Preview(widthDp = 80, heightDp = 80)
 @Preview(widthDp = 120, heightDp = 120)
-@Preview(widthDp = 260, heightDp = 120)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
@@ -85,17 +85,17 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
         ) {
             Row(
                 modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(8.dp),
-                horizontalAlignment = Alignment.Horizontal.Start,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
                     modifier = GlanceModifier,
-                    verticalAlignment = Alignment.Vertical.Top,
+                    verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.Start
                 ) {
                     Text(
-                        text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                        style = TextStyle(fontSize = 48.sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
+                        text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
+                        style = TextStyle(fontSize = (min((size.width.value * 0.17f), 48.0f)).sp, color = GlanceTheme.colors.onSurface)
                     )
                     Spacer(modifier = GlanceModifier.height(4.dp))
                     Text(

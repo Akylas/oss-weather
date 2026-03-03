@@ -1003,56 +1003,94 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     }
 
     /**
+     * Inject a list of attribute strings into each branch of a {#if}/{:else} block.
+     * Depth-tracks nested {#if} blocks so only top-level {:else}/{/if} are used as boundaries.
+     * Branches are processed from last to first to avoid index-shift issues when content lengths change.
+     */
+    function injectAttrsIntoBranches(block: string, attrsToInject: string[]): string {
+        // Walk through lines to find top-level branch boundaries
+        const branchStarts: number[] = [];
+        const branchEnds: number[] = [];
+        let depth = 0;
+        let pos = block.indexOf('\n') + 1; // skip the opening {#if ...} line
+        branchStarts.push(pos);
+
+        while (pos < block.length) {
+            const lineEnd = block.indexOf('\n', pos);
+            const line = lineEnd === -1 ? block.slice(pos) : block.slice(pos, lineEnd);
+            const trimLine = line.trimStart();
+
+            if (/^\{#(if|each|await)\b/.test(trimLine)) {
+                depth++;
+            } else if (/^\{\/(if|each|await)\b/.test(trimLine)) {
+                if (depth === 0) {
+                    branchEnds.push(pos);
+                    break;
+                }
+                depth--;
+            } else if (/^\{:else\b/.test(trimLine) && depth === 0) {
+                // {:else} and {:else if} are the branch delimiters for {#if}
+                branchEnds.push(pos);
+                const newStart = lineEnd !== -1 ? lineEnd + 1 : block.length;
+                branchStarts.push(newStart);
+            }
+            pos = lineEnd !== -1 ? lineEnd + 1 : block.length;
+        }
+
+        // Process branches from last to first to avoid offset shifts
+        let result = block;
+        for (let b = branchStarts.length - 1; b >= 0; b--) {
+            const start = branchStarts[b];
+            const end = branchEnds[b]; // may be undefined if no matching {/if} found
+            if (end === undefined || end <= start) continue; // skip malformed or empty branches
+            const branchContent = result.slice(start, end);
+            if (!branchContent.includes('<')) continue;
+            let injected = branchContent;
+            for (const attr of attrsToInject) {
+                injected = injectAttrIntoMarkup(injected, attr);
+            }
+            if (injected !== branchContent) {
+                result = result.slice(0, start) + injected + result.slice(end);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Inject alignment attributes from a container (column/row) into a child markup string.
      * In NativeScript, alignment of children is set on the children, not on the container.
      * - column parent: crossAlignment → horizontalAlignment on child, alignment → verticalAlignment on child
      * - row parent: crossAlignment → verticalAlignment on child, alignment → horizontalAlignment on child
+     * For {#if} conditional blocks, injects into each branch's root element.
+     * For {#each} blocks, skips (each-item templates handle their own alignment).
      */
     function injectParentAlignmentAttrs(childMarkup: string): string {
         if (elType !== 'column' && elType !== 'row') return childMarkup;
-        const trimmed = childMarkup.trimStart();
-        if (trimmed.startsWith('{#if ')) {
-            // Recurse into then/else branches of the conditional so alignment is applied
-            // to each branch's root element (mirrors Glance's Column/Row alignment behaviour).
-            // Handles both forms:
-            //   with else:    {ws}{#if cond}\n{then}\n{ws}{:else}\n{else}\n{ws}{/if}
-            //   without else: {ws}{#if cond}\n{then}\n{ws}{/if}
-            const wsLen = childMarkup.length - trimmed.length;
-            const leadingWS = childMarkup.substring(0, wsLen);
-            const elseToken = `\n${leadingWS}{:else}\n`;
-            const endToken = `\n${leadingWS}{/if}`;
-            const elsePos = childMarkup.indexOf(elseToken);
-            const endPos = elsePos !== -1
-                ? childMarkup.indexOf(endToken, elsePos + elseToken.length)
-                : childMarkup.indexOf(endToken);
-            if (endPos === -1) return childMarkup;
-            const firstNl = childMarkup.indexOf('\n');
-            const ifLine = childMarkup.substring(0, firstNl + 1); // "{ws}{#if cond}\n"
-            const footer = childMarkup.substring(endPos); // "\n{ws}{/if}"
-            if (elsePos === -1) {
-                // No {:else} branch — process only then content
-                const thenContent = childMarkup.substring(firstNl + 1, endPos);
-                const newThen = thenContent.trim() ? injectParentAlignmentAttrs(thenContent) : thenContent;
-                return `${ifLine}${newThen}${footer}`;
-            }
-            const thenContent = childMarkup.substring(firstNl + 1, elsePos); // then branch
-            const elseContent = childMarkup.substring(elsePos + elseToken.length, endPos); // else branch
-            const newThen = thenContent.trim() ? injectParentAlignmentAttrs(thenContent) : thenContent;
-            const newElse = elseContent.trim() ? injectParentAlignmentAttrs(elseContent) : elseContent;
-            return `${ifLine}${newThen}${elseToken}${newElse}${footer}`;
-        }
-        if (trimmed.startsWith('{')) return childMarkup; // other Svelte directives – skip
-        let m = childMarkup;
         const isColumnParent = elType === 'column';
+        const attrsToInject: string[] = [];
         // crossAlignment is the cross-axis: horizontal for columns, vertical for rows
         if (element.crossAlignment !== undefined) {
             const attr = buildAlignmentAttrStr(element.crossAlignment, isColumnParent ? 'horizontalAlignment' : 'verticalAlignment', !isColumnParent);
-            if (attr) m = injectAttrIntoMarkup(m, attr);
+            if (attr) attrsToInject.push(attr);
         }
         // alignment is the main-axis: vertical for columns, horizontal for rows
         if (element.alignment !== undefined) {
             const attr = buildAlignmentAttrStr(element.alignment, isColumnParent ? 'verticalAlignment' : 'horizontalAlignment', isColumnParent);
-            if (attr) m = injectAttrIntoMarkup(m, attr);
+            if (attr) attrsToInject.push(attr);
+        }
+        if (attrsToInject.length === 0) return childMarkup;
+
+        const trimmed = childMarkup.trimStart();
+        // For {#if} blocks: inject into each branch's root element
+        if (trimmed.startsWith('{#if')) {
+            return injectAttrsIntoBranches(childMarkup, attrsToInject);
+        }
+        // For {#each} or other Svelte control blocks: skip (not applicable here)
+        if (trimmed.startsWith('{')) return childMarkup;
+
+        let m = childMarkup;
+        for (const attr of attrsToInject) {
+            m = injectAttrIntoMarkup(m, attr);
         }
         return m;
     }

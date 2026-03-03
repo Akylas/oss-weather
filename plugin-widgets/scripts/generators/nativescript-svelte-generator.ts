@@ -830,12 +830,19 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     // For 'row' and 'column' we need orientation prop (or rows/columns for GridLayout)
     if (elType === 'column' && !seenAttrs.has('orientation')) {
         if (hasFlex1Children) {
-            // Build GridLayout rows definition: '*' for flex children, 'auto' for others
-            // Fixed-size spacers (no flex) are handled as margins, they don't occupy a grid slot
+            // Build GridLayout rows definition: '*' for flex spacers, fixed dp for numeric spacers, 'auto' for others
             const rowDefs: string[] = [];
             for (const child of element.children ?? []) {
-                if (child.type === 'spacer' && child.flex === undefined) continue; // margin only
-                rowDefs.push(child.flex !== undefined ? '*' : 'auto');
+                if (child.type === 'spacer') {
+                    if (child.flex !== undefined) {
+                        rowDefs.push('*');
+                    } else {
+                        // Use explicit size if numeric; expression-based sizes use 'auto' (absolutelayout measures itself)
+                        rowDefs.push(typeof (child as any).size === 'number' ? `${(child as any).size}` : 'auto');
+                    }
+                } else {
+                    rowDefs.push(child.flex !== undefined ? '*' : 'auto');
+                }
             }
             attrsArr.push(`rows="${rowDefs.join(',')}"`);
         } else {
@@ -847,8 +854,15 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
             // Build GridLayout columns definition
             const colDefs: string[] = [];
             for (const child of element.children ?? []) {
-                if (child.type === 'spacer' && child.flex === undefined) continue; // margin only
-                colDefs.push(child.flex !== undefined ? '*' : 'auto');
+                if (child.type === 'spacer') {
+                    if (child.flex !== undefined) {
+                        colDefs.push('*');
+                    } else {
+                        colDefs.push(typeof (child as any).size === 'number' ? `${(child as any).size}` : 'auto');
+                    }
+                } else {
+                    colDefs.push(child.flex !== undefined ? '*' : 'auto');
+                }
             }
             attrsArr.push(`columns="${colDefs.join(',')}"`);
         } else {
@@ -921,14 +935,16 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
     const attrStr = attrsArr.length ? ' ' + attrsArr.join(' ') : '';
 
-    // Now generate children markup with spacer handling
+    // Now generate children markup
     let childrenMarkup = '';
     const children = element.children ?? [];
     const childMarkups: string[] = [];
 
-    // Determine parent orientation for spacer margin handling
+    // Indentation for direct children elements (one level deeper than current element)
+    const childIndent = indent + '    ';
+
+    // Orientation for spacer sizing (horizontal spacer needs width, vertical needs height)
     const parentOrientation = elType === 'row' || (elType === 'forEach' && element.direction === 'horizontal') ? 'horizontal' : 'vertical';
-    const marginProp = parentOrientation === 'horizontal' ? 'marginRight' : 'marginBottom';
 
     /**
      * Inject a complete attribute string (e.g. `horizontalAlignment="center"` or `col={2}`)
@@ -966,10 +982,6 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     function addAttrToMarkup(markup: string, attrName: string, attrVal: string | number): string {
         const valStr = typeof attrVal === 'number' ? `{${attrVal}}` : `="${attrVal}"`;
         return injectAttrIntoMarkup(markup, `${attrName}=${valStr}`);
-    }
-
-    function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
-        return addAttrToMarkup(markup, marginName, marginVal);
     }
 
     /**
@@ -1015,7 +1027,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     }
 
     if (hasFlex1Children) {
-        // GridLayout mode: assign col/row slots to each child, flex spacers occupy * slots silently
+        // GridLayout mode: assign col/row slots to each child; spacers occupy their slot
         const isRow = elType === 'row';
         const slotAttr = isRow ? 'col' : 'row';
         let slotIdx = 0;
@@ -1023,27 +1035,25 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         for (let i = 0; i < children.length; i++) {
             const childDef = children[i];
 
-            if (childDef.type === 'spacer' && childDef.flex === undefined) {
-                // Fixed-size spacer: add margin to previous sibling, no slot consumed
-                const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
-                if (sizeVal !== undefined && childMarkups.length > 0) {
-                    const idx = childMarkups.length - 1;
-                    childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
+            if (childDef.type === 'spacer') {
+                if (childDef.flex !== undefined) {
+                    // Flex spacer: occupies a * slot in the grid, no markup needed
+                    slotIdx++;
+                } else {
+                    // Fixed spacer: render as absolutelayout in its own grid slot
+                    const rawSize = (childDef as any).size;
+                    const sizeExpr = Array.isArray(rawSize) ? evaluateMapboxExpression(rawSize, defaultPrefix) : typeof rawSize === 'number' ? String(rawSize) : '0';
+                    const dimAttr = isRow ? `width={${sizeExpr}}` : `height={${sizeExpr}}`;
+                    childMarkups.push(`${childIndent}<absolutelayout ${dimAttr} ${slotAttr}={${slotIdx}}></absolutelayout>`);
+                    slotIdx++;
                 }
                 continue;
             }
 
-            if (childDef.type === 'spacer' && childDef.flex !== undefined) {
-                // Flex spacer: occupies a * slot in the grid, no markup needed
-                slotIdx++;
-                continue;
-            }
-
-            // Regular child: generate markup, inject col/row slot index, then parent alignment
+            // Regular child: generate markup and inject col/row slot index
             let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
             if (childMarkup) {
                 childMarkup = addAttrToMarkup(childMarkup, slotAttr, slotIdx);
-                childMarkup = injectParentAlignmentAttrs(childMarkup);
                 childMarkups.push(childMarkup);
             }
             slotIdx++;
@@ -1053,24 +1063,22 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
             const childDef = children[i];
 
             if (childDef.type === 'spacer') {
-                const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
-                if (sizeVal !== undefined && childMarkups.length > 0) {
-                    const idx = childMarkups.length - 1;
-                    childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
-                }
+                // Render spacer as absolutelayout with explicit dimension
+                const rawSize = (childDef as any).size;
+                const sizeExpr = Array.isArray(rawSize) ? evaluateMapboxExpression(rawSize, defaultPrefix) : typeof rawSize === 'number' ? String(rawSize) : '0';
+                const dimAttr = parentOrientation === 'horizontal' ? `width={${sizeExpr}}` : `height={${sizeExpr}}`;
+                childMarkups.push(`${childIndent}<absolutelayout ${dimAttr}></absolutelayout>`);
                 continue;
             }
 
-            let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
-            if (childMarkup) {
-                childMarkup = injectParentAlignmentAttrs(childMarkup);
-                childMarkups.push(childMarkup);
-            }
+            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) childMarkups.push(childMarkup);
         }
     }
 
-    // Single-child collapse: if a column/row/stack has exactly 1 real child and no flex layout,
-    // remove the container wrapper and merge its attributes directly into the child element.
+    // Single-child collapse: check BEFORE injecting parent alignment.
+    // When collapsing, skip alignment injection here so the outer parent can inject its own
+    // alignment after the collapse (avoiding stale inner-container alignment on the merged element).
     const canCollapse = (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
     if (canCollapse) {
         const SKIP_ATTRS = new Set(['orientation', 'rows', 'columns', 'items', 'showIndicators', 'scrollBarIndicatorVisible']);
@@ -1082,6 +1090,12 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
             }
         }
         return collapsed;
+    }
+
+    // Apply parent container alignment to all children (after collapse check so collapsed
+    // elements don't carry stale inner-container alignment that blocks outer parent injection)
+    for (let i = 0; i < childMarkups.length; i++) {
+        childMarkups[i] = injectParentAlignmentAttrs(childMarkups[i]);
     }
 
     if (elType === 'forEach') {

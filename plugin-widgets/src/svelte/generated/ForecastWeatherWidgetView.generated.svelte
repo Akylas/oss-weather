@@ -19,7 +19,7 @@
 
 <gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
         <stacklayout orientation="vertical">
-            <gridlayout padding={8} horizontalAlignment="stretch" columns="auto,*,auto" verticalAlignment="top" marginBottom={8}>
+            <gridlayout padding={8} columns="auto,*,auto" horizontalAlignment="center" verticalAlignment="top">
                 <stacklayout orientation="vertical" col={0} verticalAlignment="top" horizontalAlignment="left">
                     <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} textAlignment="left" maxLines={1} horizontalAlignment="left" verticalAlignment="top"></label>
                     <label text={data.temperature} fontSize={26} fontWeight={700} color={colorOnSurface} horizontalAlignment="left" verticalAlignment="top"></label>
@@ -29,8 +29,10 @@
                     <label text={data.description} fontSize={11} color={colorOnSurfaceVariant} textAlignment="right" maxLines={1} visibility={(data.description != null) ? 'visible' : 'collapsed'} horizontalAlignment="right" verticalAlignment="bottom"></label>
                 </stacklayout>
             </gridlayout>
-                <label text={lc('Hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top" marginBottom={4}></label>
-            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" colWidth="auto" horizontalAlignment="center" verticalAlignment="top" marginBottom={16}>
+            <absolutelayout height={8} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
+                <label text={lc('Hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="center" verticalAlignment="top"></label>
+            <absolutelayout height={4} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
+            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" colWidth="auto" horizontalAlignment="center" verticalAlignment="top">
                 <Template let:item>
                 <stacklayout width={53} padding={2} paddingLeft={4} paddingRight={4} orientation="vertical">
                     <label text={item.time} fontSize={10} color={colorOnSurfaceVariant} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
@@ -40,10 +42,12 @@
                 </stacklayout>
                 </Template>
             </collectionview>
-                <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top" marginBottom={4}></label>
+            <absolutelayout height={16} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
+                <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="center" verticalAlignment="top"></label>
+            <absolutelayout height={4} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
             <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical" colWidth="auto" horizontalAlignment="center" verticalAlignment="top">
                 <Template let:item>
-                        <gridlayout horizontalAlignment="stretch" columns="auto,*,auto,*,auto" verticalAlignment="center" paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} padding={2}>
+                        <gridlayout columns="auto,*,auto,*,auto" paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} padding={2}>
                             <label text={item.day} fontSize={12} fontWeight={500} color={colorOnSurface} maxLines={1} col={0} verticalAlignment="center" horizontalAlignment="center"></label>
                             <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={36} height={36} col={2} verticalAlignment="center" horizontalAlignment="center"></image>
                             <stacklayout orientation="vertical" col={4} verticalAlignment="center" horizontalAlignment="center">

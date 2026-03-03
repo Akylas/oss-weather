@@ -117,6 +117,12 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
         case '/':
             return compileArithmetic(op, args, options);
 
+        // Math functions
+        case 'min':
+            return compileMathMin(args, options);
+        case 'max':
+            return compileMathMax(args, options);
+
         // Comparison
         case '<':
         case '<=':
@@ -220,9 +226,68 @@ function compileHas(prop: string, platform: Platform, addDataPrefix: boolean): s
 // ============================================================================
 
 function compileArithmetic(op: '+' | '-' | '*' | '/', args: Expression[], options: CompilationOptions): string {
-    const left = compileExpression(args[0], { ...options, context: 'value' });
-    const right = compileExpression(args[1], { ...options, context: 'value' });
+    // Don't pass formatter to sub-expressions - units only apply to the final result
+    const left = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const right = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+
+    // For Kotlin, Float (size.*.value) mixed with Double literals needs explicit Float suffix
+    if (options.platform === 'kotlin') {
+        const leftIsFloat = left.includes('.value');
+        const rightIsFloat = right.includes('.value');
+        if (leftIsFloat || rightIsFloat) {
+            return `(${ensureKotlinFloat(left)} ${op} ${ensureKotlinFloat(right)})`;
+        }
+    }
+
     return `(${left} ${op} ${right})`;
+}
+
+/**
+ * Ensure numeric literals in an expression use Float suffix for Kotlin
+ * Converts e.g. "0.16" -> "0.16f", "30.0" -> "30.0f", "30" -> "30.0f"
+ */
+function ensureKotlinFloat(expr: string): string {
+    // Replace bare decimal float literals (not already suffixed with 'f')
+    let result = expr.replace(/\b(\d+\.\d+)(?![fF\d])\b/g, '$1f');
+    // Replace bare integer literals with float form (e.g., "30" -> "30.0f")
+    // Only match standalone integers not followed by '.', 'f', 'F', or another digit
+    result = result.replace(/\b(\d+)(?![fF.\d])\b/g, '$1.0f');
+    return result;
+}
+
+function compileMathMin(args: Expression[], options: CompilationOptions): string {
+    const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const b = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+
+    if (options.platform === 'kotlin') {
+        // Ensure Float compatibility when size values are involved
+        const needsFloat = a.includes('.value') || b.includes('.value');
+        if (needsFloat) {
+            return `min(${ensureKotlinFloat(a)}, ${ensureKotlinFloat(b)})`;
+        }
+        return `min(${a}, ${b})`;
+    }
+    if (options.platform === 'swift') {
+        return `min(${a}, ${b})`;
+    }
+    return `Math.min(${a}, ${b})`;
+}
+
+function compileMathMax(args: Expression[], options: CompilationOptions): string {
+    const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const b = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+
+    if (options.platform === 'kotlin') {
+        const needsFloat = a.includes('.value') || b.includes('.value');
+        if (needsFloat) {
+            return `max(${ensureKotlinFloat(a)}, ${ensureKotlinFloat(b)})`;
+        }
+        return `max(${a}, ${b})`;
+    }
+    if (options.platform === 'swift') {
+        return `max(${a}, ${b})`;
+    }
+    return `Math.max(${a}, ${b})`;
 }
 
 // ============================================================================

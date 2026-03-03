@@ -1,315 +1,158 @@
 {
-    "$schema": "../schema.json",
+    "$schema": "../../schema.json",
     "name": "SimpleWeatherWithDateWidget",
     "displayName": "Weather with Date",
-    "description": "Shows current date, temperature, weather icon, and location",
+    "description": "Shows current date with weather information",
     "supportedSizes": [
-        {
-            "width": 120,
-            "height": 50,
-            "family": "small"
-        },
-        {
-            "width": 120,
-            "height": 80,
-            "family": "small"
-        },
-        {
-            "width": 180,
-            "height": 80,
-            "family": "small"
-        },
-        {
-            "width": 260,
-            "height": 120,
-            "family": "medium"
-        }
+        { "width": 120, "height": 50, "family": "small" },
+        { "width": 80, "height": 80, "family": "small" },
+        { "width": 120, "height": 120, "family": "small" },
+        { "width": 260, "height": 120, "family": "medium" }
     ],
-    "defaultPadding": 6,
-    "background": {
-        "type": "solid",
-        "color": "widgetBackground"
+    "defaultPadding": 4,
+    "background": { "type": "solid", "color": "widgetBackground" },
+    "settings": {
+        "clockBold": { "type": "boolean", "default": true, "title": "Bold clock" }
     },
     "layout": {
-        "type": "column",
-        "alignment": "center",
-        "crossAlignment": "stretch",
-        "padding": [
-            "case",
-            [
-                "<",
-                [
-                    "get",
-                    "size.height"
-                ],
-                60
-            ],
-            2,
-            [
-                "<",
-                [
-                    "get",
-                    "size.height"
-                ],
-                80
-            ],
-            4,
-            6
-        ],
-        "spacing": [
-            "case",
-            [
-                "<",
-                [
-                    "get",
-                    "size.height"
-                ],
-                60
-            ],
-            2,
-            4
-        ],
-        "children": [
-            {
-                "type": "conditional",
-                "condition": [
-                    ">=",
-                    [
-                        "get",
-                        "size.width"
-                    ],
-                    200
-                ],
-                "then": {
-                    "type": "column",
-                    "alignment": "start",
-                    "crossAlignment": "stretch",
+        "type": "conditional",
+        "condition": [">=", ["get", "size.width"], 180],
+        "then": {
+            "type": "stack",
+            "fillMaxSize": true,
+            "padding": 4,
+            "children": [
+                {
+                    "type": "row",
+                    "fillWidth": true,
+                    "fillHeight": true,
+                    "padding": 8,
+                    "alignment": "center",
+                    "crossAlignment": "center",
                     "children": [
                         {
-                            "type": "row",
-                            "alignment": "space-between",
+                            "type": "column",
+                            "alignment": "center",
                             "crossAlignment": "start",
                             "children": [
                                 {
-                                    "type": "column",
-                                    "alignment": "start",
-                                    "crossAlignment": "start",
-                                    "flex": 1,
-                                    "children": [
-                                        {
-                                            "type": "date",
-                                            "style": "dayMonth",
-                                            "fontSize": 20,
-                                            "fontWeight": "bold",
-                                            "color": "onSurface"
-                                        },
-                                        {
-                                            "type": "spacer",
-                                            "size": 2
-                                        },
-                                        {
-                                            "type": "date",
-                                            "style": "year",
-                                            "fontSize": 14,
-                                            "color": "onSurfaceVariant"
-                                        }
-                                    ]
+                                    "type": "date",
+                                    "style": "dayMonth",
+                                    "fontSize": 48,
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 48],
+                                    "fontWeight": "config.settings.clockBold",
+                                    "color": "onSurface"
                                 },
                                 {
-                                    "type": "column",
-                                    "alignment": "end",
-                                    "crossAlignment": "end",
-                                    "children": [
-                                        {
-                                            "type": "image",
-                                            "src": [
-                                                "get",
-                                                "data.iconPath"
-                                            ],
-                                            "size": 56,
-                                            "visibleIf": [
-                                                "has",
-                                                "data.iconPath"
-                                            ]
-                                        },
-                                        {
-                                            "type": "spacer",
-                                            "size": 4
-                                        },
-                                        {
-                                            "type": "label",
-                                            "text": [
-                                                "get",
-                                                "data.temperature"
-                                            ],
-                                            "fontSize": 24,
-                                            "fontWeight": "bold",
-                                            "color": "onSurface",
-                                            "textAlign": "right"
-                                        }
-                                    ]
+                                    "type": "spacer",
+                                    "size": 4
+                                },
+                                {
+                                    "type": "date",
+                                    "style": "year",
+                                    "fontSize": 14,
+                                    "color": "onSurfaceVariant"
                                 }
                             ]
-                        },
-                        {
-                            "type": "spacer",
-                            "size": 4
-                        }
-                    ]
-                },
-                "else": {
-                    "type": "column",
-                    "alignment": "center",
-                    "crossAlignment": "center",
-                    "spacing": [
-                        "case",
-                        [
-                            "<",
-                            [
-                                "get",
-                                "size.height"
-                            ],
-                            60
-                        ],
-                        2,
-                        4
-                    ],
-                    "children": [
-                        {
-                            "type": "date",
-                            "style": "date",
-                            "fontSize": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.width"
-                                    ],
-                                    150
-                                ],
-                                [
-                                    "case",
-                                    [
-                                        "<",
-                                        [
-                                            "get",
-                                            "size.height"
-                                        ],
-                                        60
-                                    ],
-                                    14,
-                                    [
-                                        "<",
-                                        [
-                                            "get",
-                                            "size.height"
-                                        ],
-                                        80
-                                    ],
-                                    18,
-                                    22
-                                ],
-                                [
-                                    "case",
-                                    [
-                                        "<",
-                                        [
-                                            "get",
-                                            "size.height"
-                                        ],
-                                        80
-                                    ],
-                                    20,
-                                    28
-                                ]
-                            ],
-                            "fontWeight": "bold",
-                            "color": "onSurface"
                         },
                         {
                             "type": "spacer",
                             "flex": 1
                         },
                         {
-                            "type": "row",
+                            "type": "column",
                             "alignment": "center",
                             "crossAlignment": "center",
-                            "spacing": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.height"
-                                    ],
-                                    60
-                                ],
-                                4,
-                                8
-                            ],
                             "children": [
                                 {
                                     "type": "image",
-                                    "src": [
-                                        "get",
-                                        "data.iconPath"
-                                    ],
-                                    "size": [
-                                        "case",
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.height"
-                                            ],
-                                            60
-                                        ],
-                                        28,
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.height"
-                                            ],
-                                            80
-                                        ],
-                                        36,
-                                        48
-                                    ],
-                                    "visibleIf": [
-                                        "has",
-                                        "data.iconPath"
-                                    ]
+                                    "src": ["get", "iconPath"],
+                                    "crossAlignment": "end",
+                                    "size": 62,
+                                    "visibleIf": ["has", "iconPath"]
                                 },
                                 {
                                     "type": "label",
-                                    "text": [
-                                        "get",
-                                        "data.temperature"
-                                    ],
-                                    "fontSize": [
-                                        "case",
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.height"
-                                            ],
-                                            60
-                                        ],
-                                        18,
-                                        [
-                                            "<",
-                                            [
-                                                "get",
-                                                "size.height"
-                                            ],
-                                            80
-                                        ],
-                                        24,
-                                        32
-                                    ],
+                                    "text": ["get", "temperature"],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 15],
+                                    "fontWeight": "bold",
+                                    "color": "onSurface",
+                                    "textAlign": "right"
+                                },
+                                {
+                                    "type": "label",
+                                    "text": ["get", "description"],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.04], 15],
+                                    "color": "onSurface",
+                                    "textAlign": "right"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "column",
+                    "fillWidth": true,
+                    "alignment": "start",
+                    "crossAlignment": "start",
+                    "children": [
+                        {
+                            "type": "label",
+                            "text": ["get", "locationName"],
+                            "fontSize": 12,
+                            "color": "onSurfaceVariant",
+                            "maxLines": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        "else": {
+            "type": "stack",
+            "fillMaxSize": true,
+            "padding": 3,
+            "children": [
+                {
+                    "type": "column",
+                    "fillMaxSize": true,
+                    "paddingTop": ["case", ["<=", ["get", "size.height"], 50], 0, 10],
+                    "alignment": "start",
+                    "crossAlignment": "center",
+                    "children": [
+                        {
+                            "type": "column",
+                            "fillWidth": true,
+                            "crossAlignment": ["case", ["<=", ["get", "size.height"], 50], "end", "center"],
+                            "children": [
+                                {
+                                    "type": "clock",
+                                    "fontSize": ["min", ["*", ["get", "size.height"], 0.24], 40],
+                                    "fontWeight": "config.settings.clockBold",
+                                    "color": "onSurface",
+                                    "textAlign": ["case", ["<=", ["get", "size.height"], 50], "right", "left"]
+                                }
+                            ]
+                        },
+                        {
+                            "type": "row",
+                            "alignment": "center",
+                            "crossAlignment": "center",
+                            "children": [
+                                {
+                                    "type": "image",
+                                    "src": ["get", "iconPath"],
+                                    "size": ["case", ["<", ["get", "size.width"], 100], 32, ["<", ["get", "size.width"], 150], 40, 56],
+                                    "visibleIf": ["has", "iconPath"]
+                                },
+                                {
+                                    "type": "spacer",
+                                    "direction": "horizontal",
+                                    "size": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8]
+                                },
+                                {
+                                    "type": "label",
+                                    "text": ["get", "temperature"],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
                                     "fontWeight": "bold",
                                     "color": "onSurface"
                                 }
@@ -317,106 +160,49 @@
                         },
                         {
                             "type": "spacer",
-                            "size": [
-                                "case",
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.height"
-                                    ],
-                                    60
-                                ],
-                                4,
-                                [
-                                    "<",
-                                    [
-                                        "get",
-                                        "size.height"
-                                    ],
-                                    80
-                                ],
-                                6,
-                                8
-                            ]
+                            "size": ["case", ["<", ["get", "size.width"], 100], 2, ["<", ["get", "size.width"], 150], 4, 8]
+                        },
+                        {
+                            "type": "spacer",
+                            "size": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8]
+                        }
+                    ]
+                },
+                {
+                    "type": "column",
+                    "alignment": "end",
+                    "crossAlignment": "end",
+                    "children": [
+                        {
+                            "type": "spacer",
+                            "flex": 1
+                        },
+                        {
+                            "type": "label",
+                            "text": ["get", "locationName"],
+                            "fontSize": ["case", ["<", ["get", "size.width"], 100], 8, ["<", ["get", "size.width"], 150], 10, 12],
+                            "color": "onSurfaceVariant",
+                            "maxLines": 1
                         }
                     ]
                 }
-            },
-            {
-                "type": "label",
-                "text": [
-                    "get",
-                    "data.locationName"
-                ],
-                "fontSize": [
-                    "case",
-                    [
-                        "<",
-                        [
-                            "get",
-                            "size.height"
-                        ],
-                        60
-                    ],
-                    9,
-                    [
-                        "<",
-                        [
-                            "get",
-                            "size.height"
-                        ],
-                        80
-                    ],
-                    11,
-                    12
-                ],
-                "color": "onSurfaceVariant",
-                "maxLines": 1,
-                "textAlign": [
-                    "case",
-                    [
-                        ">=",
-                        [
-                            "get",
-                            "size.width"
-                        ],
-                        200
-                    ],
-                    "start",
-                    "center"
-                ],
-                "paddingStart": 4,
-                "paddingEnd": 4,
-                "paddingBottom": 2
-            }
-        ]
+            ]
+        }
     },
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            {
-                "width": 120,
-                "height": 50
-            },
-            {
-                "width": 120,
-                "height": 80
-            },
-            {
-                "width": 180,
-                "height": 80
-            },
-            {
-                "width": 260,
-                "height": 120
-            }
+            { "width": 260, "height": 120 },
+            { "width": 120, "height": 50 },
+            { "width": 80, "height": 80 },
+            { "width": 120, "height": 120 }
         ],
         "fakeData": {
-            "temperature": "12 \u00b0C",
-            "locationName": "Paris",
+            "temperature": "8 \u00b0C",
+            "iconPath": "800d",
             "description": "Partly Cloudy",
-            "iconPath": "icon_themes/meteocons/images/800d.png"
+            "locationName": "Grenoble",
+            "date": "Mon, Feb 24"
         }
     }
 }

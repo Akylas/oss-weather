@@ -2,7 +2,7 @@
     // Auto-generated Svelte Native component for widget "SimpleWeatherWithDateWidget"
     import type { Writable } from 'svelte/store';
     import { Template } from '@nativescript-community/svelte-native/components';
-    import { formatDate, l } from '~/helpers/locale';
+    import { formatDate, l, formatDateWithoutYear } from '~/helpers/locale';
     import { titlecase } from '@nativescript-community/l';
     import { iconService } from '~/services/icon';
     import { colors } from '~/variables';
@@ -15,32 +15,44 @@
     export let size: { width: number; height: number } = { width: 120, height: 50};
 
     $: ({ colorWidgetBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
+
+    function nowTime() {
+        return formatDate(new Date(), 'LT');
+    }
 </script>
 
-<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={6} class="widget-container">
-        <stacklayout verticalAlignment="center" horizontalAlignment="stretch" padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
-            {#if size.width >= 200}
-                <stacklayout verticalAlignment="top" horizontalAlignment="stretch" orientation="vertical">
-                    <stacklayout verticalAlignment="space-between" horizontalAlignment="left" orientation="horizontal" marginBottom={4}>
-                        <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical">
-                            <label fontSize={20} fontWeight={700} color={colorOnSurface} marginBottom={2}></label>
-                            <label fontSize={14} color={colorOnSurfaceVariant}></label>
-                        </stacklayout>
-                        <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">
-                            <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={56} height={56} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} marginBottom={4}></image>
-                            <label text={data.temperature} fontSize={24} fontWeight={700} color={colorOnSurface} textAlignment="right"></label>
-                        </stacklayout>
+<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
+        {#if size.width >= 180}
+            <gridlayout padding={4}>
+                <gridlayout padding={8} columns="auto,*,auto">
+                    <stacklayout orientation="vertical" col={0} verticalAlignment="center" horizontalAlignment="center">
+                        <label fontSize={Math.min(size.width * 0.17, 48)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} text={formatDateWithoutYear(new Date(), 'll')} horizontalAlignment="left" verticalAlignment="center"></label>
+                        <absolutelayout height={4} horizontalAlignment="left" verticalAlignment="center"></absolutelayout>
+                        <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'YYYY')} horizontalAlignment="left" verticalAlignment="center"></label>
                     </stacklayout>
-                </stacklayout>
-            {:else}
-                <stacklayout verticalAlignment="center" horizontalAlignment="center" padding={size.height < 60 ? 2 : 4} orientation="vertical">
-                    <label fontSize={size.width < 150 ? size.height < 60 ? 14 : size.height < 80 ? 18 : 22 : size.height < 80 ? 20 : 28} fontWeight={700} color={colorOnSurface}></label>
-                    <stacklayout verticalAlignment="center" horizontalAlignment="center" padding={size.height < 60 ? 4 : 8} orientation="horizontal">
-                        <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.height < 60 ? 28 : size.height < 80 ? 36 : 48} height={size.height < 60 ? 28 : size.height < 80 ? 36 : 48} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                        <label text={data.temperature} fontSize={size.height < 60 ? 18 : size.height < 80 ? 24 : 32} fontWeight={700} color={colorOnSurface}></label>
+                    <stacklayout orientation="vertical" col={2} verticalAlignment="center" horizontalAlignment="center">
+                        <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} horizontalAlignment="right" width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
+                        <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 15)} fontWeight={700} color={colorOnSurface} textAlignment="right" horizontalAlignment="center" verticalAlignment="center"></label>
+                        <label text={data.description} fontSize={Math.min(size.width * 0.04, 15)} color={colorOnSurface} textAlignment="right" horizontalAlignment="center" verticalAlignment="center"></label>
                     </stacklayout>
+                </gridlayout>
+                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
+            </gridlayout>
+        {:else}
+            <gridlayout padding={3}>
+                <stacklayout orientation="vertical">
+                        <label fontSize={Math.min(size.height * 0.24, 40)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} textAlignment={size.height <= 50 ? "right" : "left"} text={nowTime()} horizontalAlignment="center" verticalAlignment="top"></label>
+                    <stacklayout orientation="horizontal" horizontalAlignment="center" verticalAlignment="top">
+                        <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} height={size.width < 100 ? 32 : size.width < 150 ? 40 : 56} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center" horizontalAlignment="center"></image>
+                        <absolutelayout width={size.width < 100 ? 4 : size.width < 150 ? 6 : 8} verticalAlignment="center" horizontalAlignment="center"></absolutelayout>
+                        <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 20)} fontWeight={700} color={colorOnSurface} verticalAlignment="center" horizontalAlignment="center"></label>
+                    </stacklayout>
+                    <absolutelayout height={size.width < 100 ? 2 : size.width < 150 ? 4 : 8} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
+                    <absolutelayout height={size.width < 100 ? 4 : size.width < 150 ? 6 : 8} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
                 </stacklayout>
-            {/if}
-            <label text={data.locationName} fontSize={size.height < 60 ? 9 : size.height < 80 ? 11 : 12} color={colorOnSurfaceVariant} maxLines={1} textAlignment={size.width >= 200 ? "start" : "center"}></label>
-        </stacklayout>
+                <gridlayout rows="*,auto">
+                    <label text={data.locationName} fontSize={size.width < 100 ? 8 : size.width < 150 ? 10 : 12} color={colorOnSurfaceVariant} maxLines={1} row={1} horizontalAlignment="right" verticalAlignment="bottom"></label>
+                </gridlayout>
+            </gridlayout>
+        {/if}
 </gridlayout>

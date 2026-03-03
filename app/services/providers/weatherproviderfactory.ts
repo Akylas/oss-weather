@@ -204,7 +204,7 @@ export async function getWeather(weatherLocation: WeatherLocation, options?: Get
 
     // Try to get from cache first
     const cachedData = getCachedWeather(providerId, weatherLocation, options);
-    DEV_LOG && console.log('getWeather', providerId, weatherLocation.coord, weatherLocation.timezone, !!cachedData);
+    DEV_LOG && console.log('getWeather', providerId, weatherLocation.coord, weatherLocation.timezone, weatherLocation.timezoneOffset, !!cachedData);
     if (cachedData) {
         return cachedData;
     }

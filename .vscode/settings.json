@@ -3,10 +3,9 @@
         "schema": true
     },
     "editor.snippetSuggestions": "top",
-    "i18n-ally.localesPaths": ["app/i18n"],
-    "i18n-ally.keystyle": "nested",
+    "i18n-ally-next.keystyle": "nested",
     "less.validate": false,
-    "i18n-ally.sourceLanguage": "en",
+    "i18n-ally-next.sourceLanguage": "en",
     "typescript.tsdk": "node_modules/typescript/lib",
     "search.exclude": {
         "app/**/*.js": true
@@ -62,5 +61,6 @@
     "debug.javascript.defaultRuntimeExecutable": {
         "pwa-node": "/Users/mguillon/.local/share/mise/shims/node"
     },
-    "python.defaultInterpreterPath": "/Users/mguillon/.local/share/mise/installs/python/3.11.13/bin/python"
+    "python.defaultInterpreterPath": "/Users/mguillon/.local/share/mise/installs/python/3.11.13/bin/python",
+    "i18n-ally-next.localesPaths": ["app/i18n"],
 }

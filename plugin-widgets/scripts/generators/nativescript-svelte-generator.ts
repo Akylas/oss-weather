@@ -435,15 +435,15 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 
     // fillWidth/fillHeight/fillMaxSize -> NativeScript stretch alignment
     if (prop === 'fillWidth') {
-        if (value === true) return `horizontalAlignment="stretch"`;
+        // if (value === true) return `horizontalAlignment="stretch"`;
         return null;
     }
     if (prop === 'fillHeight') {
-        if (value === true) return `verticalAlignment="stretch"`;
+        // if (value === true) return `verticalAlignment="stretch"`;
         return null;
     }
     if (prop === 'fillMaxSize') {
-        if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
+        // if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
         return null;
     }
 
@@ -869,8 +869,10 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         // Handle orientation from direction property for forEach/collectionview
         if (element.direction && !seenAttrs.has('orientation')) {
             const orientation = element.direction === 'horizontal' ? 'horizontal' : 'vertical';
-            attrsArr.push(`orientation="${orientation}"`);
             seenAttrs.add('orientation');
+            attrsArr.push(`orientation="${orientation}"`);
+            seenAttrs.add('colWidth');
+            attrsArr.push(`colWidth="auto"`);
         }
 
         // Replace items attribute with sliced version if limit was set
@@ -1001,20 +1003,12 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         const isColumnParent = elType === 'column';
         // crossAlignment is the cross-axis: horizontal for columns, vertical for rows
         if (element.crossAlignment !== undefined) {
-            const attr = buildAlignmentAttrStr(
-                element.crossAlignment,
-                isColumnParent ? 'horizontalAlignment' : 'verticalAlignment',
-                !isColumnParent
-            );
+            const attr = buildAlignmentAttrStr(element.crossAlignment, isColumnParent ? 'horizontalAlignment' : 'verticalAlignment', !isColumnParent);
             if (attr) m = injectAttrIntoMarkup(m, attr);
         }
         // alignment is the main-axis: vertical for columns, horizontal for rows
         if (element.alignment !== undefined) {
-            const attr = buildAlignmentAttrStr(
-                element.alignment,
-                isColumnParent ? 'verticalAlignment' : 'horizontalAlignment',
-                isColumnParent
-            );
+            const attr = buildAlignmentAttrStr(element.alignment, isColumnParent ? 'verticalAlignment' : 'horizontalAlignment', isColumnParent);
             if (attr) m = injectAttrIntoMarkup(m, attr);
         }
         return m;
@@ -1077,11 +1071,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
     // Single-child collapse: if a column/row/stack has exactly 1 real child and no flex layout,
     // remove the container wrapper and merge its attributes directly into the child element.
-    const canCollapse =
-        (elType === 'column' || elType === 'row' || elType === 'stack') &&
-        !hasFlex1Children &&
-        childMarkups.length === 1 &&
-        !childMarkups[0].trimStart().startsWith('{');
+    const canCollapse = (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
     if (canCollapse) {
         const SKIP_ATTRS = new Set(['orientation', 'rows', 'columns', 'items', 'showIndicators', 'scrollBarIndicatorVisible']);
         let collapsed = childMarkups[0];

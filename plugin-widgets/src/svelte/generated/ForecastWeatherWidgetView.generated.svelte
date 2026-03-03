@@ -30,7 +30,7 @@
                 </stacklayout>
             </gridlayout>
                 <label text={lc('Hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top" marginBottom={4}></label>
-            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" horizontalAlignment="center" verticalAlignment="top" marginBottom={16}>
+            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" colWidth="auto" horizontalAlignment="center" verticalAlignment="top" marginBottom={16}>
                 <Template let:item>
                 <stacklayout width={53} padding={2} paddingLeft={4} paddingRight={4} orientation="vertical">
                     <label text={item.time} fontSize={10} color={colorOnSurfaceVariant} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
@@ -41,7 +41,7 @@
                 </Template>
             </collectionview>
                 <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top" marginBottom={4}></label>
-            <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical" horizontalAlignment="center" verticalAlignment="top">
+            <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical" colWidth="auto" horizontalAlignment="center" verticalAlignment="top">
                 <Template let:item>
                         <gridlayout horizontalAlignment="stretch" columns="auto,*,auto,*,auto" verticalAlignment="center" paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} padding={2}>
                             <label text={item.day} fontSize={12} fontWeight={500} color={colorOnSurface} maxLines={1} col={0} verticalAlignment="center" horizontalAlignment="center"></label>

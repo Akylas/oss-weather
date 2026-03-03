@@ -224,13 +224,13 @@
         "fakeData": {
             "temperature": "12 \u00b0C",
             "description": "Partly Cloudy",
-            "iconPath": "icon_themes/meteocons/images/802d.png",
+            "iconPath": "802d",
             "locationName": "Grenoble",
             "date": "Mon, Feb 24",
             "dailyData": [
                 {
                     "day": "Mon",
-                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "iconPath": "800d",
                     "temperatureHigh": "12 \u00b0C",
                     "temperatureLow": "4 \u00b0C",
                     "precipAccumulation": "0 mm",
@@ -239,7 +239,7 @@
                 },
                 {
                     "day": "Tue",
-                    "iconPath": "icon_themes/meteocons/images/802d.png",
+                    "iconPath": "802d",
                     "temperatureHigh": "14 \u00b0C",
                     "temperatureLow": "6 \u00b0C",
                     "precipAccumulation": "0 mm",
@@ -248,7 +248,7 @@
                 },
                 {
                     "day": "Wed",
-                    "iconPath": "icon_themes/meteocons/images/500d.png",
+                    "iconPath": "500d",
                     "temperatureHigh": "10 \u00b0C",
                     "temperatureLow": "5 \u00b0C",
                     "precipAccumulation": "3 mm",
@@ -257,7 +257,7 @@
                 },
                 {
                     "day": "Thu",
-                    "iconPath": "icon_themes/meteocons/images/503.png",
+                    "iconPath": "503",
                     "temperatureHigh": "9 \u00b0C",
                     "temperatureLow": "3 \u00b0C",
                     "precipAccumulation": "8 mm",
@@ -266,7 +266,7 @@
                 },
                 {
                     "day": "Fri",
-                    "iconPath": "icon_themes/meteocons/images/802d.png",
+                    "iconPath": "802d",
                     "temperatureHigh": "11 \u00b0C",
                     "temperatureLow": "4 \u00b0C",
                     "precipAccumulation": "0 mm",
@@ -275,7 +275,7 @@
                 },
                 {
                     "day": "Sat",
-                    "iconPath": "icon_themes/meteocons/images/800d.png",
+                    "iconPath": "800d",
                     "temperatureHigh": "15 \u00b0C",
                     "temperatureLow": "7 \u00b0C",
                     "precipAccumulation": "0 mm",

@@ -24,7 +24,7 @@
             {:else}
 
             {/if}
-            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" horizontalAlignment="stretch" verticalAlignment="top">
+            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" colWidth="auto" horizontalAlignment="stretch" verticalAlignment="top">
                 <Template let:item>
                 <stacklayout width={53} verticalAlignment="stretch" paddingLeft={4} paddingRight={4} padding={size.height < 60 ? 0 : 2} orientation="vertical">
                     <label text={item.time} fontSize={size.height < 60 ? 9 : 11} color={colorOnSurfaceVariant} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>

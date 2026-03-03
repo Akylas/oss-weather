@@ -803,7 +803,7 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
             const props = [
                 item.time !== undefined ? `time = "${item.time}"` : null,
                 item.temperature !== undefined ? `temperature = "${item.temperature}"` : null,
-                item.iconPath !== undefined ? `iconPath = "${item.iconPath}"` : null,
+                item.iconPath !== undefined ? `iconPath = "icon_themes/meteocons/images/${item.iconPath}.png"` : null,
                 item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
                 item.description !== undefined ? `description = "${item.description}"` : null,
@@ -815,7 +815,7 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
         const dailyItem = (item: any) => {
             const props = [
                 item.day !== undefined ? `day = "${item.day}"` : null,
-                item.iconPath !== undefined ? `iconPath = "${item.iconPath}"` : null,
+                item.iconPath !== undefined ? `iconPath = "icon_themes/meteocons/images/${item.iconPath}.png"` : null,
                 item.temperatureHigh !== undefined ? `temperatureHigh = "${item.temperatureHigh}"` : null,
                 item.temperatureLow !== undefined ? `temperatureLow = "${item.temperatureLow}"` : null,
                 item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
@@ -829,11 +829,13 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
         for (const [key, value] of Object.entries(fakeData)) {
             switch (key) {
                 case 'temperature':
-                case 'iconPath':
                 case 'description':
                 case 'locationName':
                 case 'date':
                     fakeDataLines.push(`${scalar(key, value)},`);
+                    break;
+                case 'iconPath':
+                    fakeDataLines.push(`${scalar(key, `icon_themes/meteocons/images/${value}.png`)},`);
                     break;
                 case 'hourlyData':
                     fakeDataLines.push(`        hourlyData = listOf(${(value as any[]).map(hourlyItem).join(', ')}),`);

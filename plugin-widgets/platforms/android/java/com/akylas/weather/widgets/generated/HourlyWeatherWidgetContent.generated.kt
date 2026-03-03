@@ -37,9 +37,9 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 360, heightDp = 150)
 @Preview(widthDp = 120, heightDp = 120)
 @Preview(widthDp = 260, heightDp = 120)
-@Preview(widthDp = 360, heightDp = 150)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(

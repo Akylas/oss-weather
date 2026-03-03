@@ -198,7 +198,7 @@
         ],
         "fakeData": {
             "temperature": "8 \u00b0C",
-            "iconPath": "icon_themes/meteocons/images/800d.png",
+            "iconPath": "800d",
             "description": "Partly Cloudy",
             "locationName": "Grenoble",
             "date": "Mon, Feb 24"

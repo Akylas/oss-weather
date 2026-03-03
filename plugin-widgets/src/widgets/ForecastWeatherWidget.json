@@ -309,23 +309,23 @@
             "temperature": "12 \u00b0C",
             "locationName": "Paris",
             "description": "Partly Cloudy",
-            "iconPath": "icon_themes/meteocons/images/800d.png",
+            "iconPath": "800d",
             "date": "Mon, Feb 24",
             "hourlyData": [
-                { "time": "06:00", "temperature": "6 \u00b0C", "iconPath": "icon_themes/meteocons/images/800d.png", "precipAccumulation": "0 mm" },
-                { "time": "07:00", "temperature": "7 \u00b0C", "iconPath": "icon_themes/meteocons/images/800d.png", "precipAccumulation": "0 mm" },
-                { "time": "08:00", "temperature": "8 \u00b0C", "iconPath": "icon_themes/meteocons/images/802d.png", "precipAccumulation": "0 mm" },
-                { "time": "09:00", "temperature": "10 \u00b0C", "iconPath": "icon_themes/meteocons/images/500n.png", "precipAccumulation": "0 mm" },
-                { "time": "10:00", "temperature": "12 \u00b0C", "iconPath": "icon_themes/meteocons/images/802d.png", "precipAccumulation": "0 mm" },
-                { "time": "11:00", "temperature": "13 \u00b0C", "iconPath": "icon_themes/meteocons/images/802d.png", "precipAccumulation": "0 mm" }
+                { "time": "06:00", "temperature": "6 \u00b0C", "iconPath": "800d", "precipAccumulation": "0 mm" },
+                { "time": "07:00", "temperature": "7 \u00b0C", "iconPath": "800d", "precipAccumulation": "0 mm" },
+                { "time": "08:00", "temperature": "8 \u00b0C", "iconPath": "802d", "precipAccumulation": "0 mm" },
+                { "time": "09:00", "temperature": "10 \u00b0C", "iconPath": "500n", "precipAccumulation": "0 mm" },
+                { "time": "10:00", "temperature": "12 \u00b0C", "iconPath": "802d", "precipAccumulation": "0 mm" },
+                { "time": "11:00", "temperature": "13 \u00b0C", "iconPath": "802d", "precipAccumulation": "0 mm" }
             ],
             "dailyData": [
-                { "day": "Mon", "iconPath": "icon_themes/meteocons/images/800d.png", "temperatureHigh": "12 \u00b0C", "temperatureLow": "4 \u00b0C", "precipAccumulation": "0 mm" },
-                { "day": "Tue", "iconPath": "icon_themes/meteocons/images/801d.png", "temperatureHigh": "14 \u00b0C", "temperatureLow": "6 \u00b0C", "precipAccumulation": "0 mm" },
-                { "day": "Wed", "iconPath": "icon_themes/meteocons/images/500d.png", "temperatureHigh": "10 \u00b0C", "temperatureLow": "5 \u00b0C", "precipAccumulation": "0 mm" },
-                { "day": "Thu", "iconPath": "icon_themes/meteocons/images/802d.png", "temperatureHigh": "9 \u00b0C", "temperatureLow": "3 \u00b0C", "precipAccumulation": "0 mm" },
-                { "day": "Fri", "iconPath": "icon_themes/meteocons/images/800d.png", "temperatureHigh": "11 \u00b0C", "temperatureLow": "4 \u00b0C", "precipAccumulation": "0 mm" },
-                { "day": "Sat", "iconPath": "icon_themes/meteocons/images/803d.png", "temperatureHigh": "15 \u00b0C", "temperatureLow": "7 \u00b0C", "precipAccumulation": "0 mm" }
+                { "day": "Mon", "iconPath": "800d", "temperatureHigh": "12 \u00b0C", "temperatureLow": "4 \u00b0C", "precipAccumulation": "0 mm" },
+                { "day": "Tue", "iconPath": "801d", "temperatureHigh": "14 \u00b0C", "temperatureLow": "6 \u00b0C", "precipAccumulation": "0 mm" },
+                { "day": "Wed", "iconPath": "500d", "temperatureHigh": "10 \u00b0C", "temperatureLow": "5 \u00b0C", "precipAccumulation": "0 mm" },
+                { "day": "Thu", "iconPath": "802d", "temperatureHigh": "9 \u00b0C", "temperatureLow": "3 \u00b0C", "precipAccumulation": "0 mm" },
+                { "day": "Fri", "iconPath": "800d", "temperatureHigh": "11 \u00b0C", "temperatureLow": "4 \u00b0C", "precipAccumulation": "0 mm" },
+                { "day": "Sat", "iconPath": "803d", "temperatureHigh": "15 \u00b0C", "temperatureLow": "7 \u00b0C", "precipAccumulation": "0 mm" }
             ]
         }
     }

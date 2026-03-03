@@ -44,7 +44,7 @@ import kotlin.math.min
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
         temperature = "8 °C",
-        iconPath = "icon_themes/weathericons/images/800d.png",
+        iconPath = "icon_themes/meteocons/images/icon_themes/weathericons/images/800d.png.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",

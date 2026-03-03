@@ -19,24 +19,24 @@
 
 <gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
         {#if size.width < 120}
-            <gridlayout padding={3} horizontalAlignment="center" rows="*,auto">
-                <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical" row={0}>
+            <stacklayout padding={3} horizontalAlignment="center" orientation="vertical">
+                <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
                     <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.width * 0.44} height={size.width * 0.44} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
                     <label text={data.temperature} fontSize={size.width * 0.2} fontWeight={700} color={colorOnSurface}></label>
                 </stacklayout>
-                <label text={data.locationName} fontSize={8} color={colorOnSurfaceVariant} maxLines={1} row={1}></label>
-            </gridlayout>
+                <label text={data.locationName} fontSize={8} color={colorOnSurfaceVariant} maxLines={1}></label>
+            </stacklayout>
         {:else}
             <gridlayout padding={6}>
-                <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
-                <stacklayout verticalAlignment="top" orientation="horizontal">
-                    <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical">
+                <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} horizontalAlignment="left" maxLines={1}></label>
+                <gridlayout verticalAlignment="center" columns="*,auto">
+                    <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical" col={0}>
                         <label text={data.temperature} fontSize={Math.min(size.width * 0.16, 30)} fontWeight={700} color={colorOnSurface}></label>
                     </stacklayout>
-                    <stacklayout verticalAlignment="center" horizontalAlignment="right" orientation="vertical">
+                    <stacklayout verticalAlignment="center" horizontalAlignment="right" orientation="vertical" col={1}>
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={64} height={64} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
                     </stacklayout>
-                </stacklayout>
+                </gridlayout>
                 <gridlayout visibility={(data.description != null) ? 'visible' : 'collapsed'}>
                     <label text={data.description} fontSize={12} color={colorOnSurfaceVariant} textAlignment="right"></label>
                 </gridlayout>

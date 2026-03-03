@@ -26,7 +26,7 @@
             <gridlayout padding={4}>
                 <gridlayout padding={8} verticalAlignment="center" horizontalAlignment="center" columns="auto,*,auto">
                     <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical" col={0}>
-                        <label fontSize={Math.min(size.width * 0.15, 50)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} text={nowTime()} marginBottom={4}></label>
+                        <label fontSize={Math.min(size.width * 0.17, 50)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} text={nowTime()} marginBottom={4}></label>
                         <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'll')}></label>
                     </stacklayout>
                     <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical" col={2}>
@@ -35,7 +35,7 @@
                         <label text={data.description} fontSize={Math.min(size.width * 0.04, 15)} color={colorOnSurface} textAlignment="right"></label>
                     </stacklayout>
                 </gridlayout>
-                <stacklayout verticalAlignment="bottom" horizontalAlignment="left" orientation="vertical">
+                <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical">
                     <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
                 </stacklayout>
             </gridlayout>

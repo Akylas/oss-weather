@@ -30,7 +30,7 @@
                 <Template let:item>
                 <stacklayout verticalAlignment="center" horizontalAlignment="center" width={53} paddingLeft={4} paddingRight={4} padding={size.height < 60 ? 0 : 2} orientation="vertical">
                     <label text={item.time} fontSize={size.height < 60 ? 9 : 11} color={colorOnSurfaceVariant} maxLines={1}></label>
-                    <image src={item.iconPath} width={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} height={size.height < 60 ? 24 : size.height < 80 ? 28 : 32}></image>
+                    <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} height={size.height < 60 ? 24 : size.height < 80 ? 28 : 32}></image>
                     <label text={item.temperature} fontSize={size.height < 60 ? 12 : 14} fontWeight={700} color={colorOnSurface} maxLines={1}></label>
                     {#if size.height >= 60 && item.precipAccumulation != null}
                         <stacklayout orientation="vertical">

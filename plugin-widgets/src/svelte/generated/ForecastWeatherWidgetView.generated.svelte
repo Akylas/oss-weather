@@ -36,7 +36,7 @@
                 <Template let:item>
                 <stacklayout verticalAlignment="center" horizontalAlignment="center" width={53} padding={2} paddingLeft={4} paddingRight={4} orientation="vertical">
                     <label text={item.time} fontSize={10} color={colorOnSurfaceVariant} maxLines={1}></label>
-                    <image src={item.iconPath} width={28} height={28}></image>
+                    <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={28} height={28}></image>
                     <label text={item.temperature} fontSize={12} fontWeight={700} color={colorOnSurface} maxLines={1}></label>
                     <label text={item.precipAccumulation} fontSize={9} color={colorOnSurfaceVariant} visibility={(item.precipAccumulation != null) ? 'visible' : 'collapsed'}></label>
                 </stacklayout>
@@ -51,7 +51,7 @@
                     <stacklayout paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
                         <gridlayout verticalAlignment="center" horizontalAlignment="center" columns="auto,*,auto,*,auto">
                             <label text={item.day} fontSize={12} fontWeight={500} color={colorOnSurface} maxLines={1} col={0}></label>
-                            <image src={item.iconPath} width={36} height={36} col={2}></image>
+                            <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={36} height={36} col={2}></image>
                             <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical" col={4}>
                                 <stacklayout verticalAlignment="bottom" horizontalAlignment="center" padding={6} orientation="horizontal">
                                     <label text={item.temperatureHigh} fontSize={13} fontWeight={700} color={colorOnSurface} maxLines={1}></label>

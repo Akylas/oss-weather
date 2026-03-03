@@ -94,12 +94,21 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                     horizontalAlignment = Alignment.Horizontal.Start
                 ) {
                     Text(
-                        text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
-                        style = TextStyle(fontSize = (min((size.width.value * 0.17f), 48.0f)).sp, color = GlanceTheme.colors.onSurface)
+                        text = run {
+                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
+                    if (mediumFormat is java.text.SimpleDateFormat) {
+                        var pattern = mediumFormat.toPattern()
+                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
+                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
+                    } else {
+                        mediumFormat.format(java.util.Date())
+                    }
+                },
+                        style = TextStyle(fontSize = (min((size.width.value * 0.17f), 48.0f)).sp, color = GlanceTheme.colors.onSurface, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal)
                     )
                     Spacer(modifier = GlanceModifier.height(4.dp))
                     Text(
-                        text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
+                        text = android.text.format.DateFormat.format("yyyy", java.util.Date()).toString(),
                         style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
                     )
                 }
@@ -130,7 +139,7 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
             }
             Column(
                 modifier = GlanceModifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Vertical.Bottom,
+                verticalAlignment = Alignment.Vertical.Top,
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(

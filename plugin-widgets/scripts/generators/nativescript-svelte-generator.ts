@@ -197,6 +197,9 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
                     return path;
                 }
                 if (path.startsWith('item.')) {
+                    if (path === 'item.iconPath') {
+                        return `\`\${iconService.iconSetFolderPath}/images/\${${path}}.png\``;
+                    }
                     return path;
                 }
                 // Default context

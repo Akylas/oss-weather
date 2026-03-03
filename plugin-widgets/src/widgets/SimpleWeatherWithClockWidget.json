@@ -38,7 +38,7 @@
                             "children": [
                                 {
                                     "type": "clock",
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 50],
                                     "fontWeight": "config.settings.clockBold",
                                     "color": "onSurface"
                                 },
@@ -91,7 +91,7 @@
                 {
                     "type": "column",
                     "fillWidth": true,
-                    "alignment": "end",
+                    "alignment": "start",
                     "crossAlignment": "start",
                     "children": [
                         {

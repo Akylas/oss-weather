@@ -86,7 +86,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             horizontalAlignment = Alignment.Horizontal.CenterHorizontally
         ) {
             Column(
-                modifier = GlanceModifier.fillMaxWidth().defaultWeight(),
+                modifier = GlanceModifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Vertical.CenterVertically,
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
@@ -122,11 +122,11 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             )
             Row(
                 modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
-                horizontalAlignment = Alignment.Horizontal.Start,
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
-                    modifier = GlanceModifier.fillMaxHeight(),
+                    modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.Start
                 ) {
@@ -136,7 +136,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     )
                 }
                 Column(
-                    modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
+                    modifier = GlanceModifier.fillMaxHeight(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.End
                 ) {

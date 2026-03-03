@@ -37,7 +37,7 @@
                             "children": [
                                 {
                                     "type": "date",
-                                    "style": "date",
+                                    "style": "dayMonth",
                                     "fontSize": 48,
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 48],
                                     "fontWeight": "config.settings.clockBold",
@@ -49,7 +49,7 @@
                                 },
                                 {
                                     "type": "date",
-                                    "style": "date",
+                                    "style": "year",
                                     "fontSize": 14,
                                     "color": "onSurfaceVariant"
                                 }
@@ -93,7 +93,7 @@
                 {
                     "type": "column",
                     "fillWidth": true,
-                    "alignment": "end",
+                    "alignment": "start",
                     "crossAlignment": "start",
                     "children": [
                         {

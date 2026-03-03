@@ -2,7 +2,7 @@
     // Auto-generated Svelte Native component for widget "SimpleWeatherWithDateWidget"
     import type { Writable } from 'svelte/store';
     import { Template } from '@nativescript-community/svelte-native/components';
-    import { formatDate, l } from '~/helpers/locale';
+    import { formatDate, l, formatDateWithoutYear } from '~/helpers/locale';
     import { titlecase } from '@nativescript-community/l';
     import { iconService } from '~/services/icon';
     import { colors } from '~/variables';
@@ -26,8 +26,8 @@
             <gridlayout padding={4}>
                 <gridlayout padding={8} verticalAlignment="center" horizontalAlignment="center" columns="auto,*,auto">
                     <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical" col={0}>
-                        <label fontSize={Math.min(size.width * 0.17, 48)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} text={formatDate(new Date(), 'll')} marginBottom={4}></label>
-                        <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'll')}></label>
+                        <label fontSize={Math.min(size.width * 0.17, 48)} fontWeight={config?.settings?.clockBold ?? true ? "bold" : undefined} color={colorOnSurface} text={formatDateWithoutYear(new Date(), 'll')} marginBottom={4}></label>
+                        <label fontSize={14} color={colorOnSurfaceVariant} text={formatDate(new Date(), 'YYYY')}></label>
                     </stacklayout>
                     <stacklayout verticalAlignment="center" horizontalAlignment="center" orientation="vertical" col={2}>
                         <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} horizontalAlignment="right" width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
@@ -35,7 +35,7 @@
                         <label text={data.description} fontSize={Math.min(size.width * 0.04, 15)} color={colorOnSurface} textAlignment="right"></label>
                     </stacklayout>
                 </gridlayout>
-                <stacklayout verticalAlignment="bottom" horizontalAlignment="left" orientation="vertical">
+                <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical">
                     <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
                 </stacklayout>
             </gridlayout>

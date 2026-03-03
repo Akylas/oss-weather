@@ -24,7 +24,6 @@
                 {
                     "type": "column",
                     "fillWidth": true,
-                    "flex": 1,
                     "alignment": "center",
                     "crossAlignment": "center",
                     "children": [
@@ -63,17 +62,19 @@
                     "text": ["get", "locationName"],
                     "fontSize": 12,
                     "color": "onSurfaceVariant",
+                    "crossAlignment": "start",
                     "maxLines": 1
                 },
                 {
                     "type": "row",
                     "fillWidth": true,
                     "fillHeight": true,
-                    "alignment": "start",
+                    "alignment": "center",
                     "children": [
                         {
                             "type": "column",
                             "fillHeight": true,
+                            "flex": 1,
                             "alignment": "center",
                             "crossAlignment": "start",
                             "children": [
@@ -89,7 +90,6 @@
                         {
                             "type": "column",
                             "fillHeight": true,
-                            "fillWidth": true,
                             "alignment": "center",
                             "crossAlignment": "end",
                             "children": [

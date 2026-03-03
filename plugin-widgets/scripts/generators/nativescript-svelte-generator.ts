@@ -435,15 +435,15 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 
     // fillWidth/fillHeight/fillMaxSize -> NativeScript stretch alignment
     if (prop === 'fillWidth') {
-        // if (value === true) return `horizontalAlignment="stretch"`;
+        if (value === true) return `horizontalAlignment="stretch"`;
         return null;
     }
     if (prop === 'fillHeight') {
-        // if (value === true) return `verticalAlignment="stretch"`;
+        if (value === true) return `verticalAlignment="stretch"`;
         return null;
     }
     if (prop === 'fillMaxSize') {
-        // if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
+        if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
         return null;
     }
 
@@ -753,8 +753,6 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         'height',
         'cornerRadius',
         'spacing',
-        'alignment',
-        'crossAlignment',
         'backgroundColor',
         'color',
         'fontSize',
@@ -798,7 +796,23 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         // Skip limit and direction (direction is converted to orientation below)
         if (k === 'limit' || k === 'direction') continue;
 
-        if (!attributesToMap.includes(k) && k !== 'text' && k !== 'src' && k !== 'items') continue;
+        if (!attributesToMap.includes(k) && k !== 'text' && k !== 'src' && k !== 'items') {
+            // alignment/crossAlignment on non-container elements (labels, images inside a stack) still apply directly
+            if ((k === 'alignment' || k === 'crossAlignment') && elType !== 'column' && elType !== 'row') {
+                // These position the element itself within a parent stack overlay
+                const v = (element as any)[k];
+                const attr = buildAttribute(widgetName, k, v, elementPath, defaultPrefix, usedColors);
+                if (attr) {
+                    const attrNames = attr.match(/[a-zA-Z_][a-zA-Z0-9_]*(?==)/g) ?? [attr.split('=')[0].split('{')[0].trim()];
+                    const firstAttrName = attrNames[0];
+                    if (!seenAttrs.has(firstAttrName)) {
+                        attrsArr.push(attr);
+                        for (const an of attrNames) seenAttrs.add(an);
+                    }
+                }
+            }
+            continue;
+        }
         const v = (element as any)[k];
 
         const attr = buildAttribute(widgetName, k, v, elementPath, defaultPrefix, usedColors);
@@ -915,10 +929,11 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     const marginProp = parentOrientation === 'horizontal' ? 'marginRight' : 'marginBottom';
 
     /**
-     * Insert an attribute into the opening tag of the first element in a markup string.
-     * Handles nested expressions (e.g. {condition ? 'a' : 'b'}) correctly.
+     * Inject a complete attribute string (e.g. `horizontalAlignment="center"` or `col={2}`)
+     * into the opening tag of the first element in a markup string.
+     * Does nothing if the attribute is already present or if the markup starts with a block expression.
      */
-    function addAttrToMarkup(markup: string, attrName: string, attrVal: string | number): string {
+    function injectAttrIntoMarkup(markup: string, fullAttr: string): string {
         const firstLT = markup.indexOf('<');
         if (firstLT === -1) return markup;
 
@@ -939,15 +954,70 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
         if (closingGT === -1) return markup;
 
+        const attrName = fullAttr.split('=')[0].trim();
         const openingTag = markup.substring(firstLT, closingGT + 1);
         if (openingTag.includes(`${attrName}=`)) return markup; // already present
 
+        return markup.slice(0, closingGT) + ` ${fullAttr}` + markup.slice(closingGT);
+    }
+
+    function addAttrToMarkup(markup: string, attrName: string, attrVal: string | number): string {
         const valStr = typeof attrVal === 'number' ? `{${attrVal}}` : `="${attrVal}"`;
-        return markup.slice(0, closingGT) + ` ${attrName}=${valStr}` + markup.slice(closingGT);
+        return injectAttrIntoMarkup(markup, `${attrName}=${valStr}`);
     }
 
     function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
         return addAttrToMarkup(markup, marginName, marginVal);
+    }
+
+    /**
+     * Build an alignment attribute string for injecting into a child element.
+     * Handles both literal string values and expression arrays.
+     */
+    function buildAlignmentAttrStr(value: any, attrName: string, isVertical: boolean): string | null {
+        if (value === undefined || value === null) return null;
+        if (Array.isArray(value)) {
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            return `${attrName}={${expr}}`;
+        }
+        if (typeof value === 'string') {
+            const mapped = mapAlignment(value, isVertical);
+            if (!mapped) return null;
+            return `${attrName}="${mapped}"`;
+        }
+        return null;
+    }
+
+    /**
+     * Inject alignment attributes from a container (column/row) into a child markup string.
+     * In NativeScript, alignment of children is set on the children, not on the container.
+     * - column parent: crossAlignment → horizontalAlignment on child, alignment → verticalAlignment on child
+     * - row parent: crossAlignment → verticalAlignment on child, alignment → horizontalAlignment on child
+     */
+    function injectParentAlignmentAttrs(childMarkup: string): string {
+        if (childMarkup.trimStart().startsWith('{')) return childMarkup; // skip conditional blocks
+        if (elType !== 'column' && elType !== 'row') return childMarkup;
+        let m = childMarkup;
+        const isColumnParent = elType === 'column';
+        // crossAlignment is the cross-axis: horizontal for columns, vertical for rows
+        if (element.crossAlignment !== undefined) {
+            const attr = buildAlignmentAttrStr(
+                element.crossAlignment,
+                isColumnParent ? 'horizontalAlignment' : 'verticalAlignment',
+                !isColumnParent
+            );
+            if (attr) m = injectAttrIntoMarkup(m, attr);
+        }
+        // alignment is the main-axis: vertical for columns, horizontal for rows
+        if (element.alignment !== undefined) {
+            const attr = buildAlignmentAttrStr(
+                element.alignment,
+                isColumnParent ? 'verticalAlignment' : 'horizontalAlignment',
+                isColumnParent
+            );
+            if (attr) m = injectAttrIntoMarkup(m, attr);
+        }
+        return m;
     }
 
     if (hasFlex1Children) {
@@ -975,10 +1045,12 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
                 continue;
             }
 
-            // Regular child: generate markup and inject col/row slot index
-            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            // Regular child: generate markup, inject col/row slot index, then parent alignment
+            let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
             if (childMarkup) {
-                childMarkups.push(addAttrToMarkup(childMarkup, slotAttr, slotIdx));
+                childMarkup = addAttrToMarkup(childMarkup, slotAttr, slotIdx);
+                childMarkup = injectParentAlignmentAttrs(childMarkup);
+                childMarkups.push(childMarkup);
             }
             slotIdx++;
         }
@@ -995,9 +1067,31 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
                 continue;
             }
 
-            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
-            if (childMarkup) childMarkups.push(childMarkup);
+            let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) {
+                childMarkup = injectParentAlignmentAttrs(childMarkup);
+                childMarkups.push(childMarkup);
+            }
         }
+    }
+
+    // Single-child collapse: if a column/row/stack has exactly 1 real child and no flex layout,
+    // remove the container wrapper and merge its attributes directly into the child element.
+    const canCollapse =
+        (elType === 'column' || elType === 'row' || elType === 'stack') &&
+        !hasFlex1Children &&
+        childMarkups.length === 1 &&
+        !childMarkups[0].trimStart().startsWith('{');
+    if (canCollapse) {
+        const SKIP_ATTRS = new Set(['orientation', 'rows', 'columns', 'items', 'showIndicators', 'scrollBarIndicatorVisible']);
+        let collapsed = childMarkups[0];
+        for (const attr of attrsArr) {
+            const name = attr.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)?.[0];
+            if (name && !SKIP_ATTRS.has(name)) {
+                collapsed = injectAttrIntoMarkup(collapsed, attr);
+            }
+        }
+        return collapsed;
     }
 
     if (elType === 'forEach') {

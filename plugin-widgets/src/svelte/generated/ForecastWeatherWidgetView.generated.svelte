@@ -18,53 +18,45 @@
 </script>
 
 <gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
-        <stacklayout verticalAlignment="top" horizontalAlignment="center" orientation="vertical">
-            <gridlayout verticalAlignment="top" horizontalAlignment="left" padding={8} columns="auto,*,auto" marginBottom={8}>
-                <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical" col={0}>
-                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} textAlignment="left" maxLines={1}></label>
-                    <label text={data.temperature} fontSize={26} fontWeight={700} color={colorOnSurface}></label>
+        <stacklayout orientation="vertical">
+            <gridlayout padding={8} horizontalAlignment="stretch" columns="auto,*,auto" verticalAlignment="top" marginBottom={8}>
+                <stacklayout orientation="vertical" col={0} verticalAlignment="top" horizontalAlignment="left">
+                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} textAlignment="left" maxLines={1} horizontalAlignment="left" verticalAlignment="top"></label>
+                    <label text={data.temperature} fontSize={26} fontWeight={700} color={colorOnSurface} horizontalAlignment="left" verticalAlignment="top"></label>
                 </stacklayout>
-                <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical" col={2}>
-                    <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={54} height={54} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                    <label text={data.description} fontSize={11} color={colorOnSurfaceVariant} textAlignment="right" maxLines={1} visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
+                <stacklayout orientation="vertical" col={2} verticalAlignment="top" horizontalAlignment="left">
+                    <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={54} height={54} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="right" verticalAlignment="bottom"></image>
+                    <label text={data.description} fontSize={11} color={colorOnSurfaceVariant} textAlignment="right" maxLines={1} visibility={(data.description != null) ? 'visible' : 'collapsed'} horizontalAlignment="right" verticalAlignment="bottom"></label>
                 </stacklayout>
             </gridlayout>
-            <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical" marginBottom={4}>
-                <label text={lc('Hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8}></label>
-            </stacklayout>
-            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" marginBottom={16}>
+                <label text={lc('Hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top" marginBottom={4}></label>
+            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" horizontalAlignment="center" verticalAlignment="top" marginBottom={16}>
                 <Template let:item>
-                <stacklayout verticalAlignment="center" horizontalAlignment="center" width={53} padding={2} paddingLeft={4} paddingRight={4} orientation="vertical">
-                    <label text={item.time} fontSize={10} color={colorOnSurfaceVariant} maxLines={1}></label>
-                    <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={28} height={28}></image>
-                    <label text={item.temperature} fontSize={12} fontWeight={700} color={colorOnSurface} maxLines={1}></label>
-                    <label text={item.precipAccumulation} fontSize={9} color={colorOnSurfaceVariant} visibility={(item.precipAccumulation != null) ? 'visible' : 'collapsed'}></label>
+                <stacklayout width={53} padding={2} paddingLeft={4} paddingRight={4} orientation="vertical">
+                    <label text={item.time} fontSize={10} color={colorOnSurfaceVariant} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
+                    <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={28} height={28} horizontalAlignment="center" verticalAlignment="center"></image>
+                    <label text={item.temperature} fontSize={12} fontWeight={700} color={colorOnSurface} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
+                    <label text={item.precipAccumulation} fontSize={9} color={colorOnSurfaceVariant} visibility={(item.precipAccumulation != null) ? 'visible' : 'collapsed'} horizontalAlignment="center" verticalAlignment="center"></label>
                 </stacklayout>
                 </Template>
             </collectionview>
-            <stacklayout verticalAlignment="top" horizontalAlignment="left" orientation="vertical" marginBottom={4}>
-                <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8}></label>
-            </stacklayout>
-            <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical">
+                <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top" marginBottom={4}></label>
+            <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical" horizontalAlignment="center" verticalAlignment="top">
                 <Template let:item>
-                <stacklayout padding={2} verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
-                    <stacklayout paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
-                        <gridlayout verticalAlignment="center" horizontalAlignment="center" columns="auto,*,auto,*,auto">
-                            <label text={item.day} fontSize={12} fontWeight={500} color={colorOnSurface} maxLines={1} col={0}></label>
-                            <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={36} height={36} col={2}></image>
-                            <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical" col={4}>
-                                <stacklayout verticalAlignment="bottom" horizontalAlignment="center" padding={6} orientation="horizontal">
-                                    <label text={item.temperatureHigh} fontSize={13} fontWeight={700} color={colorOnSurface} maxLines={1}></label>
-                                    <label text={item.temperatureLow} fontSize={13} color={colorOnSurfaceVariant} maxLines={1}></label>
+                        <gridlayout horizontalAlignment="stretch" columns="auto,*,auto,*,auto" verticalAlignment="center" paddingLeft={6} paddingRight={6} paddingTop={2} paddingBottom={2} backgroundColor={colorSurfaceVariant} cornerRadius={8} padding={2}>
+                            <label text={item.day} fontSize={12} fontWeight={500} color={colorOnSurface} maxLines={1} col={0} verticalAlignment="center" horizontalAlignment="center"></label>
+                            <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={36} height={36} col={2} verticalAlignment="center" horizontalAlignment="center"></image>
+                            <stacklayout orientation="vertical" col={4} verticalAlignment="center" horizontalAlignment="center">
+                                <stacklayout padding={6} orientation="horizontal" horizontalAlignment="right" verticalAlignment="bottom">
+                                    <label text={item.temperatureHigh} fontSize={13} fontWeight={700} color={colorOnSurface} maxLines={1} verticalAlignment="center" horizontalAlignment="right"></label>
+                                    <label text={item.temperatureLow} fontSize={13} color={colorOnSurfaceVariant} maxLines={1} verticalAlignment="center" horizontalAlignment="right"></label>
                                 </stacklayout>
-                                <stacklayout verticalAlignment="bottom" horizontalAlignment="center" padding={6} orientation="horizontal">
-                                    <label text={item.precipAccumulation} fontSize={10} color={colorOnSurfaceVariant} visibility={(item.precipAccumulation != null) ? 'visible' : 'collapsed'}></label>
-                                    <label text={"💧" + item.precipitation} fontSize={10} color={colorOnSurfaceVariant} visibility={(item.precipitation != null) ? 'visible' : 'collapsed'}></label>
+                                <stacklayout padding={6} orientation="horizontal" horizontalAlignment="right" verticalAlignment="bottom">
+                                    <label text={item.precipAccumulation} fontSize={10} color={colorOnSurfaceVariant} visibility={(item.precipAccumulation != null) ? 'visible' : 'collapsed'} verticalAlignment="center" horizontalAlignment="right"></label>
+                                    <label text={"💧" + item.precipitation} fontSize={10} color={colorOnSurfaceVariant} visibility={(item.precipitation != null) ? 'visible' : 'collapsed'} verticalAlignment="center" horizontalAlignment="right"></label>
                                 </stacklayout>
                             </stacklayout>
                         </gridlayout>
-                    </stacklayout>
-                </stacklayout>
                 </Template>
             </collectionview>
         </stacklayout>

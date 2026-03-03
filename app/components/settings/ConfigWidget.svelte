@@ -22,17 +22,19 @@
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { onThemeChanged } from '~/helpers/theme';
+    import { queryTimezone } from '~/helpers/favorites';
+    import { confirm } from '@nativescript-community/ui-material-dialogs';
 
     // Load sample data helper
-    async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
-        try {
-            const sampleData = (await import(`plugin-widgets/widgets/samples/${widgetClass}.sample.json`)).default;
-            return sampleData[setName] || sampleData.default || null;
-        } catch (error) {
-            console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
-            return null;
-        }
-    }
+    // async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
+    //     try {
+    //         const sampleData = (await import(`plugin-widgets/widgets/samples/${widgetClass}.sample.json`)).default;
+    //         return sampleData[setName] || sampleData.default || null;
+    //     } catch (error) {
+    //         console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
+    //         return null;
+    //     }
+    // }
     // Load sample data helper
     async function loadWidgetData(widgetClass: string): Promise<any> {
         const data = (await import(`plugin-widgets/widgets/${widgetClass}.json`)).default;
@@ -61,9 +63,9 @@
         displayName: string;
         description: string;
         supportedSizes: { width: number; height: number; family: string }[];
-        preview: { sizes: { width: number; height: number }[] };
+        preview: { sizes: { width: number; height: number }[]; fakeData: WeatherWidgetData };
     } = null;
-    let previewSet: string = 'default';
+    const previewSet: string = 'default';
     let previewSize: { width: number; height: number } = null;
     loadConfig();
 
@@ -88,8 +90,8 @@
         // Load initial preview data
         DEV_LOG && console.log('onMount', widgetClass);
         if (widgetClass) {
-            previewData = await loadWidgetSample(widgetClass, previewSet);
             previewConfig = await loadWidgetData(widgetClass);
+            previewData = previewConfig.preview.fakeData;
             previewSize = previewConfig.preview.sizes[0];
         }
     });
@@ -128,12 +130,24 @@
             props: {}
         });
         if (result) {
+            const timezoneData = await queryTimezone(result);
+
             config.locationName = result.name || result.sys?.name || 'Selected';
             config.latitude = result.coord.lat;
             config.longitude = result.coord.lon;
+            Object.assign(config, timezoneData);
             updateItem(item);
             saveConfig();
         }
+    }
+
+    async function clearLocation(item) {
+        DEV_LOG && console.log('clearLocation', item);
+        config.locationName = 'current';
+        config.latitude = 0;
+        config.longitude = 0;
+        updateItem(item);
+        saveConfig();
     }
 
     async function selectLocationOnMap(item) {
@@ -149,6 +163,8 @@
             config.locationName = result.name;
             config.latitude = result.coord.lat;
             config.longitude = result.coord.lon;
+            const timezoneData = await queryTimezone(result);
+            Object.assign(config, timezoneData);
             updateItem(item);
             saveConfig();
         }
@@ -225,41 +241,41 @@
     //     }
     // }
 
-    async function selectPreviewSet(event) {
-        try {
-            const options = ['default', 'hot', 'storm'].map((set) => ({
-                title: lc(`widget.preview_set.${set}`) || set,
-                type: 'checkbox',
-                boxType: 'circle',
-                value: set === previewSet,
-                data: set
-            }));
-            await showPopoverMenu({
-                options,
-                anchor: event.object,
-                vertPos: VerticalPosition.BELOW,
-                props: {
-                    width: 220 * $fontScale,
-                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
-                    // autoSizeListItem: true
-                },
+    // async function selectPreviewSet(event) {
+    //     try {
+    //         const options = ['default', 'hot', 'storm'].map((set) => ({
+    //             title: lc(`widget.preview_set.${set}`) || set,
+    //             type: 'checkbox',
+    //             boxType: 'circle',
+    //             value: set === previewSet,
+    //             data: set
+    //         }));
+    //         await showPopoverMenu({
+    //             options,
+    //             anchor: event.object,
+    //             vertPos: VerticalPosition.BELOW,
+    //             props: {
+    //                 width: 220 * $fontScale,
+    //                 maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+    //                 // autoSizeListItem: true
+    //             },
 
-                onCheckBox: async (item) => {
-                    closePopover();
-                    if (item?.data) {
-                        previewSet = item?.data;
-                        previewData = await loadWidgetSample(widgetClass, previewSet);
-                    }
-                }
-            });
-        } catch (error) {
-            showError(error);
-        }
-    }
+    //             onCheckBox: async (item) => {
+    //                 closePopover();
+    //                 if (item?.data) {
+    //                     previewSet = item?.data;
+    //                     previewData = await loadWidgetSample(widgetClass, previewSet);
+    //                 }
+    //             }
+    //         });
+    //     } catch (error) {
+    //         showError(error);
+    //     }
+    // }
     async function selectPreviewSize(event) {
         try {
             const options = previewConfig.preview.sizes.map((set) => ({
-                title: set['family'] ? lc(`widget.preview_set.${set['family']}`) : `${set.width}x${set.height}`,
+                title: `${set.width}x${set.height}`,
                 type: 'checkbox',
                 boxType: 'circle',
                 value: set.width === previewSize.width && set.height === previewSize.height,
@@ -348,11 +364,11 @@
     const items = new ObservableArray(
         (
             [
-                {
-                    id: 'preview_set',
-                    title: lc('widget.preview_set'),
-                    description: () => lc(`widget.preview_set.${previewSet}`) || previewSet
-                },
+                // {
+                //     id: 'preview_set',
+                //     title: lc('widget.preview_set'),
+                //     description: () => lc(`widget.preview_set.${previewSet}`) || previewSet
+                // },
                 {
                     id: 'preview_size',
                     title: lc('widget.preview_size'),
@@ -384,7 +400,7 @@
             ])
     );
 
-    function updateItem(item, key = 'key') {
+    function updateItem(item, key = 'id') {
         const index = items.findIndex((it) => it[key] === item[key]);
         if (index !== -1) {
             items.setItem(index, item);
@@ -445,9 +461,9 @@
                 case 'location':
                     await selectLocation(item);
                     break;
-                case 'preview_set':
-                    await selectPreviewSet(event);
-                    break;
+                // case 'preview_set':
+                //     await selectPreviewSet(event);
+                //     break;
                 case 'preview_size':
                     await selectPreviewSize(event);
                     break;
@@ -456,6 +472,27 @@
                     break;
                 case 'model':
                     await selectModel(event);
+                    break;
+            }
+        } catch (err) {
+            showError(err);
+        } finally {
+            hideLoading();
+        }
+    }
+    async function onLongPress(item, event) {
+        try {
+            DEV_LOG && console.log('onLongPress', item.id);
+            switch (item.id) {
+                case 'location':
+                    const result = await confirm({
+                        title: lc('reset_location'),
+                        okButtonText: lc('ok'),
+                        cancelButtonText: lc('cancel')
+                    });
+                    if (result) {
+                        await clearLocation(item);
+                    }
                     break;
             }
         } catch (err) {
@@ -500,7 +537,12 @@
                 </ListItemAutoSize>
             </Template>
             <Template key="rightIcon" let:item>
-                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize
+                    fontSize={20}
+                    item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }}
+                    onLongPress={(event) => onLongPress(item, event)}
+                    showBottomLine={false}
+                    on:tap={(event) => onTap(item, event)}>
                     <IconButton col={1} text={item.rightBtnIcon} on:tap={(event) => onRightIconTap(item, event)} />
                 </ListItemAutoSize>
             </Template>

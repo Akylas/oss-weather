@@ -269,16 +269,16 @@
     "preview": {
         "sizes": [
             {
+                "width": 360,
+                "height": 150
+            },
+            {
                 "width": 120,
                 "height": 120
             },
             {
                 "width": 260,
                 "height": 120
-            },
-            {
-                "width": 360,
-                "height": 150
             }
         ],
         "fakeData": {

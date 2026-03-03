@@ -10,6 +10,7 @@ import { WeatherData } from '~/services/providers/weather';
 import { getWeather } from '~/services/providers/weatherproviderfactory';
 import { WeatherProps, formatWeatherValue } from '~/services/weatherData';
 import { ForecastData, WeatherWidgetData, WidgetConfig } from './WidgetTypes';
+import { queryTimezone } from '~/helpers/favorites';
 
 export function isDefaultLocation(locationName: string) {
     return !locationName || locationName === 'current' || locationName === 'default';
@@ -32,6 +33,8 @@ export class WidgetDataManager {
         // Create location object
         let location: WeatherLocation = {
             name: locationName,
+            timezone: config.timezone,
+            timezoneOffset: config.timezoneOffset,
             coord: {
                 lat: latitude,
                 lon: longitude
@@ -40,6 +43,8 @@ export class WidgetDataManager {
         // Handle "current" location - use app's current selected location
         if (isDefaultLocation(locationName)) {
             location = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
+            // const timezoneData = await queryTimezone(location);
+            // Object.assign(location, timezoneData)
         }
 
         // Fetch weather data using WeatherProvider.getWeather

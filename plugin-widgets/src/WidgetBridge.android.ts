@@ -106,7 +106,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     async updateWidget(widgetId: string, config = WidgetConfigManager.getConfig(widgetId)) {
         try {
-            DEV_LOG && console.info('updateWidget', widgetId, config);
+            // DEV_LOG && console.info('updateWidget', widgetId, config);
 
             // If no config exists, this might be a newly added widget
             // Try to create instance config from kind defaults

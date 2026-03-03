@@ -20,7 +20,7 @@
 <gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
         <stacklayout padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
             {#if size.height >= 80}
-                <stacklayout orientation="vertical">
+                <stacklayout orientation="vertical" horizontalAlignment="stretch" verticalAlignment="top">
                     <label text={data.locationName} fontSize={14} fontWeight={500} color={colorOnSurface} textAlignment="left" maxLines={1} horizontalAlignment="left"></label>
                     <absolutelayout height={2} horizontalAlignment="left"></absolutelayout>
                 </stacklayout>
@@ -34,7 +34,7 @@
                     <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} height={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} horizontalAlignment="center" verticalAlignment="center"></image>
                     <label text={item.temperature} fontSize={size.height < 60 ? 12 : 14} fontWeight={700} color={colorOnSurface} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
                     {#if size.height >= 60 && item.precipAccumulation != null}
-                        <stacklayout orientation="vertical">
+                        <stacklayout orientation="vertical" horizontalAlignment="center" verticalAlignment="center">
                             <absolutelayout height={2}></absolutelayout>
                             <label text={item.precipAccumulation} fontSize={size.height < 80 ? 9 : 10} color={colorOnSurfaceVariant}></label>
                         </stacklayout>

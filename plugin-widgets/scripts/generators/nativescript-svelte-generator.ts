@@ -1009,8 +1009,39 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
      * - row parent: crossAlignment → verticalAlignment on child, alignment → horizontalAlignment on child
      */
     function injectParentAlignmentAttrs(childMarkup: string): string {
-        if (childMarkup.trimStart().startsWith('{')) return childMarkup; // skip conditional blocks
         if (elType !== 'column' && elType !== 'row') return childMarkup;
+        const trimmed = childMarkup.trimStart();
+        if (trimmed.startsWith('{#if ')) {
+            // Recurse into then/else branches of the conditional so alignment is applied
+            // to each branch's root element (mirrors Glance's Column/Row alignment behaviour).
+            // Handles both forms:
+            //   with else:    {ws}{#if cond}\n{then}\n{ws}{:else}\n{else}\n{ws}{/if}
+            //   without else: {ws}{#if cond}\n{then}\n{ws}{/if}
+            const wsLen = childMarkup.length - trimmed.length;
+            const leadingWS = childMarkup.substring(0, wsLen);
+            const elseToken = `\n${leadingWS}{:else}\n`;
+            const endToken = `\n${leadingWS}{/if}`;
+            const elsePos = childMarkup.indexOf(elseToken);
+            const endPos = elsePos !== -1
+                ? childMarkup.indexOf(endToken, elsePos + elseToken.length)
+                : childMarkup.indexOf(endToken);
+            if (endPos === -1) return childMarkup;
+            const firstNl = childMarkup.indexOf('\n');
+            const ifLine = childMarkup.substring(0, firstNl + 1); // "{ws}{#if cond}\n"
+            const footer = childMarkup.substring(endPos); // "\n{ws}{/if}"
+            if (elsePos === -1) {
+                // No {:else} branch — process only then content
+                const thenContent = childMarkup.substring(firstNl + 1, endPos);
+                const newThen = thenContent.trim() ? injectParentAlignmentAttrs(thenContent) : thenContent;
+                return `${ifLine}${newThen}${footer}`;
+            }
+            const thenContent = childMarkup.substring(firstNl + 1, elsePos); // then branch
+            const elseContent = childMarkup.substring(elsePos + elseToken.length, endPos); // else branch
+            const newThen = thenContent.trim() ? injectParentAlignmentAttrs(thenContent) : thenContent;
+            const newElse = elseContent.trim() ? injectParentAlignmentAttrs(elseContent) : elseContent;
+            return `${ifLine}${newThen}${elseToken}${newElse}${footer}`;
+        }
+        if (trimmed.startsWith('{')) return childMarkup; // other Svelte directives – skip
         let m = childMarkup;
         const isColumnParent = elType === 'column';
         // crossAlignment is the cross-axis: horizontal for columns, vertical for rows

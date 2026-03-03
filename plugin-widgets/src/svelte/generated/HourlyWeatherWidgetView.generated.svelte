@@ -18,24 +18,20 @@
 </script>
 
 <gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} class="widget-container">
-        <stacklayout verticalAlignment="top" horizontalAlignment="stretch" padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
+        <stacklayout padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
             {#if size.height >= 80}
-                <stacklayout horizontalAlignment="left" orientation="vertical">
-                    <label text={data.locationName} fontSize={14} fontWeight={500} color={colorOnSurface} textAlignment="left" maxLines={1} marginBottom={2}></label>
-                </stacklayout>
+                    <label text={data.locationName} fontSize={14} fontWeight={500} color={colorOnSurface} textAlignment="left" maxLines={1} horizontalAlignment="left" marginBottom={2}></label>
             {:else}
 
             {/if}
-            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal">
+            <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" horizontalAlignment="stretch" verticalAlignment="top">
                 <Template let:item>
-                <stacklayout verticalAlignment="center" horizontalAlignment="center" width={53} paddingLeft={4} paddingRight={4} padding={size.height < 60 ? 0 : 2} orientation="vertical">
-                    <label text={item.time} fontSize={size.height < 60 ? 9 : 11} color={colorOnSurfaceVariant} maxLines={1}></label>
-                    <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} height={size.height < 60 ? 24 : size.height < 80 ? 28 : 32}></image>
-                    <label text={item.temperature} fontSize={size.height < 60 ? 12 : 14} fontWeight={700} color={colorOnSurface} maxLines={1}></label>
+                <stacklayout width={53} verticalAlignment="stretch" paddingLeft={4} paddingRight={4} padding={size.height < 60 ? 0 : 2} orientation="vertical">
+                    <label text={item.time} fontSize={size.height < 60 ? 9 : 11} color={colorOnSurfaceVariant} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
+                    <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} height={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} horizontalAlignment="center" verticalAlignment="center"></image>
+                    <label text={item.temperature} fontSize={size.height < 60 ? 12 : 14} fontWeight={700} color={colorOnSurface} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
                     {#if size.height >= 60 && item.precipAccumulation != null}
-                        <stacklayout orientation="vertical">
                             <label text={item.precipAccumulation} fontSize={size.height < 80 ? 9 : 10} color={colorOnSurfaceVariant}></label>
-                        </stacklayout>
                     {:else}
 
                     {/if}

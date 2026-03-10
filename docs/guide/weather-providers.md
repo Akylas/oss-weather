@@ -238,9 +238,11 @@ The app will immediately fetch data from the new provider.
 ### Rate Limits
 Monitor your usage:
 - Open-Meteo: No limits
-- OpenWeather: 1,000/day (~42 calls/hour if evenly distributed)
-- AccuWeather: 50/day (~2 calls/hour if evenly distributed)
+- OpenWeather: 1,000 calls/day (~42 calls/hour evenly distributed)
+- AccuWeather: 50 calls/day (~2 calls/hour evenly distributed)
 - Meteo France: No limits
+
+**Note**: Actual usage patterns may vary. These rates assume continuous even distribution throughout the day.
 
 ### Best Practices
 1. Use Open-Meteo when possible (no limits)

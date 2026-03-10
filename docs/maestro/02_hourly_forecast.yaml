@@ -1,0 +1,11 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Hourly Forecast Screenshot
+# This flow scrolls to and captures the hourly forecast chart
+
+- launchApp
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element: "Hourly"
+    direction: DOWN
+- takeScreenshot: docs/public/screenshots/2_hourly_forecast

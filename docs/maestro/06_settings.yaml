@@ -1,0 +1,12 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Settings Screenshot
+# This flow navigates to and captures the settings screen
+
+- launchApp
+- waitForAnimationToEnd
+- tapOn: "Menu"
+- waitForAnimationToEnd
+- tapOn: "Settings"
+- waitForAnimationToEnd
+- takeScreenshot: docs/public/screenshots/6_settings

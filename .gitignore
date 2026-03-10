@@ -110,3 +110,8 @@ tesseract/**/*
 docs/node_modules
 docs/.vitepress/dist
 docs/.vitepress/cache
+# Documentation assets (copied from repository during build)
+docs/public/logo.png
+docs/public/badge_github.png
+docs/public/Icon.png
+docs/public/screenshots/

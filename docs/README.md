@@ -84,11 +84,34 @@ docs/
 
 ### Adding Images
 
-Place images in `docs/public/` and reference them as:
+**Important**: The documentation reuses assets from the main repository to avoid duplication.
 
+**Existing Assets** (automatically copied during build):
+- Logo: `logo.png` (from repository root)
+- Badge: `badge_github.png` (from repository root)
+- Screenshots: From `fastlane/metadata/android/en-US/images/phoneScreenshots/`
+
+**Adding New Images**:
+1. Place original images in appropriate repository location:
+   - App icons/badges: Repository root
+   - Screenshots: `fastlane/metadata/android/en-US/images/phoneScreenshots/`
+   - Other assets: Consider adding to repository root or a relevant location
+
+2. Update `docs/scripts/copy-assets.js` to include new assets in the build
+
+3. Reference them in markdown as usual:
 ```markdown
 ![Alt text](/image.png)
 ```
+
+**Note**: Assets in `docs/public/` are generated during build and should not be committed to git.
+
+## Build Process
+
+The documentation build process automatically:
+1. Runs `docs/scripts/copy-assets.js` to copy assets from the repository
+2. Builds the VitePress site
+3. Outputs to `docs/.vitepress/dist`
 
 ## Deployment
 

@@ -57,9 +57,16 @@ done
 
 ## Generated Screenshots
 
-Screenshots are saved to: `docs/public/screenshots/`
+Screenshots should be saved to: `fastlane/metadata/android/en-US/images/phoneScreenshots/`
 
-These screenshots are automatically used in the documentation website.
+**Important**: The documentation build automatically copies screenshots from the fastlane directory to avoid duplication. Screenshots are used by both:
+1. Fastlane for app store submissions
+2. Documentation website (automatically copied during build)
+
+When generating screenshots:
+1. Run the Maestro flows
+2. Save screenshots to the fastlane directory
+3. The documentation build will automatically include them
 
 ## Tips
 

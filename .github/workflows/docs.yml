@@ -42,6 +42,11 @@ jobs:
           cd docs
           npm install
 
+      - name: Copy assets from repository
+        run: |
+          cd docs
+          node scripts/copy-assets.js
+
       - name: Build documentation
         run: |
           cd docs

@@ -113,18 +113,6 @@ Customizable widgets for your home screen:
 
 [Learn more about Widgets →](/features/home-widgets)
 
-### 🔔 Weather Notifications
-
-Stay informed with weather alerts:
-- Severe weather warnings
-- Precipitation alerts
-- Temperature extremes
-- Air quality alerts
-- Morning/evening briefings
-- Custom notification conditions
-
-[Learn more about Notifications →](/features/notifications)
-
 ### ⌚ Smartwatch Support
 
 Integration with smartwatches via Gadget Bridge:

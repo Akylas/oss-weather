@@ -68,7 +68,7 @@ Control how often weather data is refreshed:
 - **3 hours**: Minimal updates
 
 #### Background Updates
-Enable or disable background weather data updates. When enabled, weather data will be updated even when the app is not active, keeping widgets and notifications up-to-date.
+Enable or disable background weather data updates. When enabled, weather data will be updated even when the app is not active, keeping widgets up-to-date.
 
 ### Location Settings
 
@@ -86,22 +86,6 @@ Enable or disable background weather data updates. When enabled, weather data wi
 - **Always**: Allows background location updates for widgets
 - **While Using**: Only when the app is open
 - **Never**: Manually select locations only
-
-### Notifications
-
-#### Weather Alerts
-Enable notifications for:
-- Severe weather warnings
-- Precipitation alerts
-- Temperature extremes
-- Air quality alerts
-- Custom conditions
-
-#### Notification Times
-Set when you want to receive weather notifications:
-- Morning briefing
-- Evening forecast
-- Custom times
 
 ### Widget Settings
 

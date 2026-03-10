@@ -216,11 +216,6 @@ The app will refresh with data from the new provider.
 - Some providers are better for specific regions
 - Use multiple providers as backups
 
-### Notifications
-- Set up morning briefings for daily weather
-- Enable severe weather alerts
-- Customize notification times
-
 ## Common Actions
 
 ### Quick Weather Check

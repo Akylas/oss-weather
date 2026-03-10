@@ -52,7 +52,6 @@ export default defineConfig({
             { text: 'Air Quality', link: '/features/air-quality' },
             { text: 'Weather Map', link: '/features/weather-map' },
             { text: 'Home Widgets', link: '/features/home-widgets' },
-            { text: 'Notifications', link: '/features/notifications' },
             { text: 'Smartwatch Support', link: '/features/smartwatch' }
           ]
         }

@@ -245,15 +245,7 @@ When outdoor AQI is poor:
 - Official government sites
 - Local monitoring stations
 
-### Set Notifications
-
-Enable alerts for:
-- Poor air quality
-- Threshold crossings
-- Morning briefings
-
 ## Next Steps
 
 - [View weather data](/features/weather-data)
 - [Check daily forecasts](/features/daily-forecasts)
-- [Learn about notifications](/features/notifications)

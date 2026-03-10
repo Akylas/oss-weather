@@ -169,14 +169,6 @@ Sun/moon calculations are very accurate:
 - 12h or 24h time format
 - Detailed or compact view
 
-### Notifications
-
-Set alerts for:
-- Sunrise/sunset
-- Golden hour
-- Moon events
-- Special astronomy events
-
 ## Tips & Tricks
 
 ### Best Photography Times

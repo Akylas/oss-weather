@@ -24,7 +24,7 @@ A comprehensive documentation website built with VitePress and ready to be hoste
 - Configuration guide
 - API keys setup
 - Weather providers comparison
-- Complete feature documentation (12 feature pages)
+- Complete feature documentation (11 feature pages)
 - FAQ section
 - Download page
 - Basic usage guide
@@ -33,7 +33,7 @@ A comprehensive documentation website built with VitePress and ready to be hoste
 
 Automated UI testing scripts using Maestro to generate screenshots for documentation.
 
-**Location**: `/.maestro/`
+**Location**: `/docs/maestro/`
 
 **Scripts** (8 flows):
 - Main weather view
@@ -45,7 +45,7 @@ Automated UI testing scripts using Maestro to generate screenshots for documenta
 - Astronomy view
 - Air quality
 
-**Helper Script**: `/scripts/generate-screenshots.sh` - Run all Maestro flows at once
+**Helper Script**: `/docs/scripts/generate-screenshots.sh` - Run all Maestro flows at once
 
 ### 3. GitHub Pages Deployment
 
@@ -89,8 +89,19 @@ docs/
 │   ├── astronomy.md
 │   ├── air-quality.md
 │   ├── home-widgets.md
-│   ├── notifications.md
 │   └── smartwatch.md
+├── maestro/                   # Maestro screenshot scripts
+│   ├── 01_main_view.yaml
+│   ├── 02_hourly_forecast.yaml
+│   ├── 03_daily_forecast.yaml
+│   ├── 04_weather_radar.yaml
+│   ├── 05_weather_map.yaml
+│   ├── 06_settings.yaml
+│   ├── 07_astronomy.yaml
+│   ├── 08_air_quality.yaml
+│   └── README.md
+├── scripts/
+│   └── generate-screenshots.sh
 ├── index.md                   # Homepage
 ├── download.md               # Download page
 ├── package.json              # VitePress dependencies
@@ -127,12 +138,12 @@ Built site will be in `docs/.vitepress/dist`
 
 **Generate all screenshots**:
 ```bash
-./scripts/generate-screenshots.sh
+./docs/scripts/generate-screenshots.sh
 ```
 
 **Generate single screenshot**:
 ```bash
-maestro test .maestro/01_main_view.yaml
+maestro test docs/maestro/01_main_view.yaml
 ```
 
 Screenshots will be saved to `docs/public/screenshots/`

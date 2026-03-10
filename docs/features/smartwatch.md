@@ -134,13 +134,6 @@ Some watches have dedicated weather apps showing:
 - Daily forecast
 - Multiple metrics
 
-### Notifications
-
-Some watches can show:
-- Weather alerts
-- Severe weather warnings
-- Daily briefings (via OSS Weather notifications)
-
 ## Battery Considerations
 
 Smartwatch weather sync impacts battery on:
@@ -259,7 +252,6 @@ Check Gadget Bridge documentation for your specific device.
 ## Next Steps
 
 - [Install Gadget Bridge](https://gadgetbridge.org/)
-- [Configure notifications](/features/notifications)
 - [Set up widgets](/features/home-widgets)
 - [Learn about settings](/guide/configuration)
 

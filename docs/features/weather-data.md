@@ -193,7 +193,7 @@ When available from providers:
 - **Wind Warnings** - High winds, gales
 - **Other Hazards** - Fog, ice, etc.
 
-Alerts are shown prominently on the main screen and can trigger notifications.
+Weather alerts from providers are shown prominently on the main screen.
 
 ## Historical Data
 

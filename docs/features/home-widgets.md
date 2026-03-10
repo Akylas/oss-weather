@@ -237,5 +237,4 @@ iOS widgets have some limitations:
 ## Next Steps
 
 - [Configure widget settings](/guide/configuration)
-- [Learn about notifications](/features/notifications)
 - [Explore weather data](/features/weather-data)

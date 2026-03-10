@@ -32,10 +32,10 @@ This directory contains Maestro test flows for automatically generating screensh
 
 ## Running Individual Flows
 
-To run a single screenshot flow:
+To run a single screenshot flow (from repository root):
 
 ```bash
-maestro test .maestro/01_main_view.yaml
+maestro test docs/maestro/01_main_view.yaml
 ```
 
 ## Running All Flows
@@ -43,14 +43,14 @@ maestro test .maestro/01_main_view.yaml
 To generate all screenshots at once:
 
 ```bash
-# Using the provided script
-./scripts/generate-screenshots.sh
+# Using the provided script (from repository root)
+./docs/scripts/generate-screenshots.sh
 ```
 
-Or run manually:
+Or run manually (from repository root):
 
 ```bash
-for file in .maestro/*.yaml; do
+for file in docs/maestro/*.yaml; do
   maestro test "$file"
 done
 ```

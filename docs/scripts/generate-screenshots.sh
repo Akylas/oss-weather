@@ -36,7 +36,7 @@ echo ""
 mkdir -p docs/public/screenshots
 
 # Run each Maestro flow
-flows=(.maestro/*.yaml)
+flows=(docs/maestro/*.yaml)
 total=${#flows[@]}
 current=0
 
@@ -58,5 +58,5 @@ echo "Screenshots saved to: docs/public/screenshots/"
 echo ""
 echo "Next steps:"
 echo "1. Review the generated screenshots"
-echo "2. Re-run individual flows if needed: maestro test .maestro/01_main_view.yaml"
+echo "2. Re-run individual flows if needed: maestro test docs/maestro/01_main_view.yaml"
 echo "3. Build the documentation site: cd docs && npm install && npm run docs:build"

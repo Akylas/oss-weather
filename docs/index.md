@@ -56,10 +56,6 @@ features:
     title: Smartwatch Support
     details: Integration with Gadget Bridge for smartwatch weather data sync.
   
-  - icon: 🔔
-    title: Weather Alerts
-    details: Get notified about severe weather conditions and important weather changes.
-  
   - icon: 🌍
     title: Multi-language Support
     details: Available in 30+ languages with community translations via Weblate.

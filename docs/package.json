@@ -1,0 +1,13 @@
+{
+  "name": "oss-weather-docs",
+  "version": "1.0.0",
+  "description": "OSS Weather Documentation",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.0.0"
+  }
+}

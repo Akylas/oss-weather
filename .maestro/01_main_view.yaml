@@ -1,0 +1,9 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Main Weather View Screenshot
+# This flow captures the main weather view showing current conditions
+
+- launchApp
+- waitForAnimationToEnd
+- assertVisible: "Current Weather"
+- takeScreenshot: docs/public/screenshots/1_main_view

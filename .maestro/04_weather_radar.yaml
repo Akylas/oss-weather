@@ -1,0 +1,10 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Weather Radar Screenshot
+# This flow navigates to and captures the weather radar view
+
+- launchApp
+- waitForAnimationToEnd
+- tapOn: "Radar"
+- waitForAnimationToEnd
+- takeScreenshot: docs/public/screenshots/4_weather_radar

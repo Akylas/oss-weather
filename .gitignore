@@ -105,3 +105,8 @@ tesseract/**/*
 !tesseract/**/README.md
 /webpdfviewer/**/*.css
 /app/assets/**/*.html
+
+# Documentation
+docs/node_modules
+docs/.vitepress/dist
+docs/.vitepress/cache

@@ -38,7 +38,7 @@ Get OSS Weather for your device.
 <div style="padding: 20px; border-radius: 8px; margin: 20px 0;">
 
   <a href="https://github.com/Akylas/oss-weather/releases" target="_blank">
-    <img src="https://raw.githubusercontent.com/Akylas/OSS-DocumentScanner/main/badge_github.png" alt="Get it on GitHub" style="height:50px">
+    <img src="https://raw.githubusercontent.com/Akylas/OSS-DocumentScanner/main/graphics/badge_github.png" alt="Get it on GitHub" style="height:50px">
   </a>
 
 ### Version Information

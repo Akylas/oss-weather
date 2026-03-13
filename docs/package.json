@@ -9,6 +9,7 @@
     "docs:preview": "vitepress preview"
   },
   "devDependencies": {
+    "ufo": "^1.6.3",
     "vitepress": "^1.0.0"
   }
 }

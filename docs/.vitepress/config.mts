@@ -5,7 +5,10 @@ export default defineConfig({
   description: "Open Source Weather App - Detailed weather data from multiple providers",
   base: '/oss-weather/',
   head: [
-    ['link', { rel: 'icon', href: '/oss-weather/favicon.ico' }]
+    ['link', { rel: 'icon', href: '/oss-weather/favicon.ico' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:locale', content: 'en' }],
+    ['meta', { property: 'og:site_name', content: 'OSS Weather' }],
   ],
   themeConfig: {
     logo: '/logo.png',
@@ -71,5 +74,45 @@ export default defineConfig({
     search: {
       provider: 'local'
     }
-  }
+  },
+  transformPageData: (pageData, { siteConfig }) => {
+    // Initialize the `head` frontmatter if it doesn't exist.
+    pageData.frontmatter.head ??= []
+
+    // Add basic meta tags to the frontmatter.
+    pageData.frontmatter.head.push(
+      [
+        'meta',
+        {
+          property: 'og:title',
+          content:
+            pageData.frontmatter.title || pageData.title || siteConfig.site.title,
+        },
+      ],
+      [
+        'meta',
+        {
+          name: 'twitter:title',
+          content:
+            pageData.frontmatter.title || pageData.title || siteConfig.site.title,
+        },
+      ],
+      [
+        'meta',
+        {
+          property: 'og:description',
+          content:
+            pageData.frontmatter.description || pageData.description || siteConfig.site.description,
+        },
+      ],
+      [
+        'meta',
+        {
+          name: 'twitter:description',
+          content:
+            pageData.frontmatter.description || pageData.description || siteConfig.site.description,
+        },
+      ],
+    )
+  },
 })

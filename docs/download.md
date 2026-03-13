@@ -8,7 +8,7 @@ Get OSS Weather for your device.
 
 <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 30px 0;">
   <a href="https://play.google.com/store/apps/details?id=com.akylas.weather" target="_blank">
-    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" style="height:80px">
+    <img src="https://raw.githubusercontent.com/pioug/google-play-badges/refs/heads/main/svg/en.svg" alt="Get it on Google Play" style="height:80px">
   </a>
   <a href="https://apt.izzysoft.de/packages/com.akylas.weather" target="_blank">
     <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" style="height:80px">

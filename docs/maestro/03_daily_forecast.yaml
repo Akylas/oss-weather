@@ -1,0 +1,11 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Daily Forecast Screenshot
+# This flow scrolls to and captures the daily forecast
+
+- launchApp
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element: "Daily"
+    direction: DOWN
+- takeScreenshot: docs/public/screenshots/3_daily_forecast

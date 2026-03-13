@@ -1,0 +1,11 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Air Quality Screenshot
+# This flow navigates to and captures the air quality data
+
+- launchApp
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element: "Air Quality"
+    direction: DOWN
+- takeScreenshot: docs/public/screenshots/8_air_quality

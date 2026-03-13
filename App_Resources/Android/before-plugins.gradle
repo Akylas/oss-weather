@@ -1,4 +1,5 @@
 ext {
+    minSdk = 24
     compileSdk = 36
     targetSdk = 36
     kotlinVersion = "2.2.0"
@@ -6,8 +7,9 @@ ext {
     buildToolsVersion = "36.1.0"
     androidxVersion = "1.17.0"
     androidXAppCompat = "1.7.0"
-    androidXAppCompatVersion = "1.7.0"
-    androidXFragment = "1.8.5"
+    androidXAppCompatVersion = "1.7.1"
+     androidXActivityVersion = "1.11.0"
+   androidXFragment = "1.8.5"
     androidXTransition = "1.5.1"
     androidXRecyclerViewVersion = "1.4.0"
     androidxViewPager2Version = "1.1.0"
@@ -22,4 +24,5 @@ ext {
     licenseReporterVersion = "2.4"
     sentryVersion = "7.22.6"
     sentryGradleVersion = "4.14.1"
+    frescoVersion = "3.6.0"
 }

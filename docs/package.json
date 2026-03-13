@@ -1,0 +1,15 @@
+{
+  "name": "oss-weather-docs",
+  "version": "1.0.0",
+  "description": "OSS Weather Documentation",
+  "scripts": {
+    "prebuild": "node scripts/copy-assets.js",
+    "docs:dev": "npm run prebuild && vitepress dev",
+    "docs:build": "npm run prebuild && vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "ufo": "^1.6.3",
+    "vitepress": "^1.0.0"
+  }
+}

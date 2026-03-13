@@ -1,0 +1,10 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Map View Screenshot
+# This flow navigates to and captures the weather map
+
+- launchApp
+- waitForAnimationToEnd
+- tapOn: "Map"
+- waitForAnimationToEnd
+- takeScreenshot: docs/public/screenshots/5_weather_map

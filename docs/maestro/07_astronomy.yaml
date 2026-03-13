@@ -1,0 +1,11 @@
+appId: com.akylas.weather
+---
+# OSS Weather - Astronomy View Screenshot
+# This flow navigates to and captures the astronomy information
+
+- launchApp
+- waitForAnimationToEnd
+- scrollUntilVisible:
+    element: "Astronomy"
+    direction: DOWN
+- takeScreenshot: docs/public/screenshots/7_astronomy

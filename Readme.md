@@ -23,8 +23,8 @@
 
 |  ||
 |:-:|:-:|
-|[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">](https://apt.izzysoft.de/packages/com.akylas.weather)|[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on PlayStore" height="80">](https://play.google.com/store/apps/details?id=com.akylas.weather)|
-|[<img src="badge_github.png" alt="Get it on GitHub" height="80">](https://github.com/Akylas/oss-weather/releases)|<div><a href="https://apps.apple.com/fr/app/oss-weather/id1499117252"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1496188800" alt="Download on the App Store" height="58"></a></div>|
+|[<img src="https://izzyondroid.org/assets/static/IzzyOnDroidButtonGreyBorder_nofont.png" alt="Get it on IzzyOnDroid" height="50">](https://apt.izzysoft.de/packages/com.akylas.weather)|[<img src="https://storage.googleapis.com/pe-portal-consumer-prod-wagtail-static/downloads_folder/Google%20Play%20Badge%20guidelines/11nVShEBmHWOUyCHfC_aTrzDZSs06-zEB?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=wagtail%40pe-portal-consumer-prod.iam.gserviceaccount.com%2F20260312%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260312T143439Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DGetItOnGooglePlay_Badge_Web_color_English.png&X-Goog-Signature=43a57572831b58546b220f6f535f057b25cfad8564927dec2d08e02b2d27d37e1478027bafb8e80fb6d6a5c40f5b843812fadfe4e4be0ce7424a2ffbb1b203ca00ca2ff2efa889718252b77b7e63d323f8a5fa2848af83f812cb088136da05bf8a258b9f5c9f343be3645682d7f3d78fe61b82d5b5a2b21240c8fa8c9e1ac1cf54d387ec9842a3b8b2c8680bdf435abc0dd69762793c7c47d9b50be4f8887803612e1749e2fa5489b25016b157e3f8793559f41d76017436684803ee37afddb87c780aad4cfdf3c0d18902b430410f4c1ca62dae9a5947b0f560790d36eb8452f3a5ac5b6928534abc5307353943092f78b58140a2edd5df54940e9106eaa92f" alt="Get it on PlayStore" height="50">](https://play.google.com/store/apps/details?id=com.akylas.weather)|
+|[<img src="https://raw.githubusercontent.com/Akylas/OSS-DocumentScanner/main/badge_github.png" alt="Get it on GitHub" height="50">](https://github.com/Akylas/oss-weather/releases)|<div><a href="https://apps.apple.com/fr/app/oss-weather/id1499117252"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1496188800" alt="Download on the App Store" height="50"></a></div>|
 </div>
  
 #### AppVerifier hashes 
@@ -33,16 +33,7 @@
 com.akylas.weather
 68:70:80:D4:CF:6F:CF:FE:8D:82:FD:1D:78:3C:90:C2:95:94:80:AA:13:C3:8A:D8:D0:4E:C3:40:66:FC:13:F1
 ```
-<!-- <p align="center">
-<br>You can get the <a href="https://github.com/oss-weather/releases/latest">latest release on GitHub</a>
-</p>
-<div align="center">
-<a href="https://apt.izzysoft.de/packages/oss-weather/"><img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" height="80"></a>
-<a href='https://play.google.com/store/apps/details?id=oss-weather&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'  height="82"/></a>
-<br>
-<a href="https://testflight.apple.com/join/sxiV4ZKL"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1496188800" alt="Download on the App Store" height="58"></a>
-</div>
-</div> -->
+
 <h2 align="center">Enjoying OSS Weather?</h2>
 <p align="center">Please consider making a small donation to help fund the project. Developing an application, especially one that is open source and completely free, takes a lot of time and effort.
 <br>

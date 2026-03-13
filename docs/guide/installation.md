@@ -9,7 +9,7 @@ OSS Weather is available on multiple platforms and app stores.
 The easiest way to install OSS Weather on Android is through the Google Play Store:
 
 <a href="https://play.google.com/store/apps/details?id=com.akylas.weather" target="_blank">
-  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">
+  <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" style="height:50px">
 </a>
 
 ### IzzyOnDroid (F-Droid Repository)
@@ -17,7 +17,7 @@ The easiest way to install OSS Weather on Android is through the Google Play Sto
 For users who prefer open-source app stores, OSS Weather is available on IzzyOnDroid:
 
 <a href="https://apt.izzysoft.de/packages/com.akylas.weather" target="_blank">
-  <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">
+  <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" style="height:50px">
 </a>
 
 ### Direct APK Download
@@ -25,7 +25,7 @@ For users who prefer open-source app stores, OSS Weather is available on IzzyOnD
 You can also download the APK directly from GitHub releases:
 
 <a href="https://github.com/Akylas/oss-weather/releases" target="_blank">
-  <img src="/badge_github.png" alt="Get it on GitHub" height="80">
+  <img src="https://raw.githubusercontent.com/Akylas/OSS-DocumentScanner/main/badge_github.png" alt="Get it on GitHub" style="height:50px">
 </a>
 
 #### Installation Steps:
@@ -41,7 +41,7 @@ You can also download the APK directly from GitHub releases:
 OSS Weather is available on the iOS App Store:
 
 <a href="https://apps.apple.com/fr/app/oss-weather/id1499117252" target="_blank">
-  <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" height="58">
+  <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1496188800" alt="Download on the App Store" style="height:50px">
 </a>
 
 ## Verification

@@ -8,13 +8,10 @@ Get OSS Weather for your device.
 
 <div style="display: flex; gap: 20px; flex-wrap: wrap; margin: 30px 0;">
   <a href="https://play.google.com/store/apps/details?id=com.akylas.weather" target="_blank">
-    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">
+    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" style="height:80px">
   </a>
   <a href="https://apt.izzysoft.de/packages/com.akylas.weather" target="_blank">
-    <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">
-  </a>
-  <a href="https://github.com/Akylas/oss-weather/releases" target="_blank">
-    <img src="/badge_github.png" alt="Get it on GitHub" height="80">
+    <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" style="height:80px">
   </a>
 </div>
 
@@ -27,7 +24,7 @@ Get OSS Weather for your device.
 
 <div style="margin: 30px 0;">
   <a href="https://apps.apple.com/fr/app/oss-weather/id1499117252" target="_blank">
-    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" height="58">
+    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" style="height:58px">
   </a>
 </div>
 
@@ -38,7 +35,11 @@ Get OSS Weather for your device.
 
 ## Latest Release
 
-<div style="background: #f6f6f7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+<div style="padding: 20px; border-radius: 8px; margin: 20px 0;">
+
+  <a href="https://github.com/Akylas/oss-weather/releases" target="_blank">
+    <img src="https://raw.githubusercontent.com/Akylas/OSS-DocumentScanner/main/badge_github.png" alt="Get it on GitHub" style="height:50px">
+  </a>
 
 ### Version Information
 Visit the [GitHub Releases page](https://github.com/Akylas/oss-weather/releases/latest) for:

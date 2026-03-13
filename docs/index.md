@@ -111,23 +111,31 @@ Thank you to all our amazing sponsors who support OSS Weather!
 
 </div>
 
-<div style="text-align: center; padding: 20px 24px; background: #f6f6f7; margin-top: 40px;">
+<div style="text-align: center; padding: 20px 24px; margin-top: 40px;">
 
 ## Download Now
 
 <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-  <a href="https://play.google.com/store/apps/details?id=com.akylas.weather" target="_blank">
-    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" height="80">
-  </a>
-  <a href="https://apps.apple.com/fr/app/oss-weather/id1499117252" target="_blank">
-    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" height="58" style="margin-top: 11px;">
-  </a>
-  <a href="https://apt.izzysoft.de/packages/com.akylas.weather" target="_blank">
-    <img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="80">
-  </a>
-  <a href="https://github.com/Akylas/oss-weather/releases" target="_blank">
-    <img src="/badge_github.png" alt="Get it on GitHub" height="80">
-  </a>
+  
+<a href="https://play.google.com/store/apps/details?id=com.akylas.weather" target="_blank">
+  <img
+      src="https://storage.googleapis.com/pe-portal-consumer-prod-wagtail-static/downloads_folder/Google%20Play%20Badge%20guidelines/11nVShEBmHWOUyCHfC_aTrzDZSs06-zEB?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=wagtail%40pe-portal-consumer-prod.iam.gserviceaccount.com%2F20260312%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260312T143439Z&X-Goog-Expires=86400&X-Goog-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3DGetItOnGooglePlay_Badge_Web_color_English.png&X-Goog-Signature=43a57572831b58546b220f6f535f057b25cfad8564927dec2d08e02b2d27d37e1478027bafb8e80fb6d6a5c40f5b843812fadfe4e4be0ce7424a2ffbb1b203ca00ca2ff2efa889718252b77b7e63d323f8a5fa2848af83f812cb088136da05bf8a258b9f5c9f343be3645682d7f3d78fe61b82d5b5a2b21240c8fa8c9e1ac1cf54d387ec9842a3b8b2c8680bdf435abc0dd69762793c7c47d9b50be4f8887803612e1749e2fa5489b25016b157e3f8793559f41d76017436684803ee37afddb87c780aad4cfdf3c0d18902b430410f4c1ca62dae9a5947b0f560790d36eb8452f3a5ac5b6928534abc5307353943092f78b58140a2edd5df54940e9106eaa92f"
+      alt="Get it on Google Play"
+      style="height:50px"
+  />
+</a>
+<a href="https://apps.apple.com/fr/app/oss-weather/id1499117252" target="_blank">
+    <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83&amp;releaseDate=1496188800" alt="Download on the App Store" style="height:50px" />
+</a>
+<a href="https://apt.izzysoft.de/packages/com.akylas.weather" target="_blank">
+    <img src="https://izzyondroid.org/assets/static/IzzyOnDroidButtonGreyBorder_nofont.png" alt="Get it on IzzyOnDroid" style="height:50px" />
+</a>
+<a href="https://github.com/Akylas/oss-weather/releases" target="_blank">
+    <img src="https://raw.githubusercontent.com/Akylas/OSS-DocumentScanner/main/badge_github.png" alt="Get it on Github" style="height:50px" />
+</a>
+<a href="https://github.com/Akylas/oss-weather" target="_blank">
+    <img src="https://raw.githubusercontent.com/ImranR98/Obtainium/main/assets/graphics/badge_obtainium.png" alt="Get it on Obtainium" style="height:50px"/>
+</a>
 </div>
 
 </div>

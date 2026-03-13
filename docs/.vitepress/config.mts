@@ -59,7 +59,8 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/Akylas/oss-weather' }
+      { icon: 'github', link: 'https://github.com/farfromrefug' },
+      { icon: 'linkedin', link: 'https://www.linkedin.com/in/martinguillon/' }
     ],
 
     footer: {

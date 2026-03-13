@@ -207,7 +207,7 @@ async function handleRequestResponse<T>(
         content = response.reason as any;
     }
     const isJSON = typeof content === 'object' || Array.isArray(content);
-    DEV_LOG && console.info('handleRequestResponse', statusCode);
+    DEV_LOG && console.info('handleRequestResponse', requestParams.url, statusCode);
     if (Math.round(statusCode / 100) !== 2) {
         let jsonReturn;
         if (isJSON) {

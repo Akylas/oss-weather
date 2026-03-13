@@ -15,7 +15,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { BaseLayoutElement, hasTemplateBinding, getSingleBinding } from './shared-utils';
+import { BaseLayoutElement, getSingleBinding, hasTemplateBinding } from './shared-utils';
 
 type AnyObj = Record<string, any>;
 
@@ -197,6 +197,9 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
                     return path;
                 }
                 if (path.startsWith('item.')) {
+                    if (path === 'item.iconPath') {
+                        return `\`\${iconService.iconSetFolderPath}/images/\${${path}}.png\``;
+                    }
                     return path;
                 }
                 // Default context
@@ -296,6 +299,16 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
             const right = evaluateMapboxExpression(args[1], context);
             return `${left} ${op} ${right}`;
         }
+        case 'min': {
+            const a = evaluateMapboxExpression(args[0], context);
+            const b = evaluateMapboxExpression(args[1], context);
+            return `Math.min(${a}, ${b})`;
+        }
+        case 'max': {
+            const a = evaluateMapboxExpression(args[0], context);
+            const b = evaluateMapboxExpression(args[1], context);
+            return `Math.max(${a}, ${b})`;
+        }
         case 'concat': {
             // String concatenation
             const parts = args.map((arg) => evaluateMapboxExpression(arg, context));
@@ -392,14 +405,27 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 
     // Handle alignment properties with start/end mapping
     if (prop === 'alignment' || prop === 'verticalAlignment') {
-        const mappedValue = typeof value === 'string' ? mapAlignment(value, true) : value;
-        if (typeof mappedValue === 'string') {
-            return `${attrName}="${mappedValue}"`;
+        if (Array.isArray(value)) {
+            // Expression-based alignment - compile it with mapped values
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            // wrap in a ternary if it uses string values that need mapping
+            return `${attrName}={${expr}}`;
         }
-        return `${attrName}={${JSON.stringify(mappedValue)}}`;
+        const mappedValue = typeof value === 'string' ? mapAlignment(value, true) : value;
+        if (mappedValue !== undefined) {
+            if (typeof mappedValue === 'string') {
+                return `${attrName}="${mappedValue}"`;
+            }
+            return `${attrName}={${JSON.stringify(mappedValue)}}`;
+        }
     }
 
     if (prop === 'crossAlignment' || prop === 'horizontalAlignment') {
+        if (Array.isArray(value)) {
+            // Expression-based alignment
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            return `${attrName}={${expr}}`;
+        }
         const mappedValue = typeof value === 'string' ? mapAlignment(value, false) : value;
         if (typeof mappedValue === 'string') {
             return `${attrName}="${mappedValue}"`;
@@ -407,22 +433,36 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         return `${attrName}={${JSON.stringify(mappedValue)}}`;
     }
 
+    // fillWidth/fillHeight/fillMaxSize -> NativeScript stretch alignment
+    if (prop === 'fillWidth') {
+        // if (value === true) return `horizontalAlignment="stretch"`;
+        return null;
+    }
+    if (prop === 'fillHeight') {
+        // if (value === true) return `verticalAlignment="stretch"`;
+        return null;
+    }
+    if (prop === 'fillMaxSize') {
+        // if (value === true) return `horizontalAlignment="stretch" verticalAlignment="stretch"`;
+        return null;
+    }
+
     // Handle font weight mapping with config.settings support
     if (prop === 'fontWeight') {
         if (typeof value === 'string' && value.startsWith('config.settings.')) {
             const settingKey = value.substring(16); // Remove 'config.settings.' prefix
             // Generate ternary for setting from config
-            return `${attrName}={config.settings?.${settingKey} ?? true ? 700 : 400}`;
+            return `${attrName}={config?.settings?.${settingKey} ?? true ? "bold" : undefined}`;
         }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;
     }
-    
+
     // Handle bold property with config.settings support
     if (prop === 'bold') {
         if (typeof value === 'string' && value.startsWith('config.settings.')) {
             const settingKey = value.substring(16); // Remove 'config.settings.' prefix
-            return `${attrName}={config.settings?.${settingKey} ?? true}`;
+            return `${attrName}={config?.settings?.${settingKey} ?? true}`;
         }
         return `${attrName}={${JSON.stringify(value)}}`;
     }
@@ -595,11 +635,11 @@ function mapFontWeight(weight: string | number): number {
  * Map alignment values to NativeScript equivalents
  */
 function mapAlignment(value: string, isVertical: boolean): string {
-    const map: Record<string, string> = {
+    const map: Record<string, string | undefined> = {
         start: isVertical ? 'top' : 'left',
         end: isVertical ? 'bottom' : 'right',
         center: 'center',
-        stretch: 'stretch'
+        stretch: undefined
     };
     return map[value] || value;
 }
@@ -607,12 +647,16 @@ function mapAlignment(value: string, isVertical: boolean): string {
 function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
     const indent = '    '.repeat(elementPath.length + 1);
     const elType = element.type;
+
+    // Detect if this row/column has any flex children -> needs GridLayout
+    const hasFlex1Children = (elType === 'row' || elType === 'column') && (element.children ?? []).some((c) => c.flex !== undefined);
+
     const tag = (() => {
         switch (elType) {
             case 'column':
-                return 'stacklayout';
+                return hasFlex1Children ? 'gridlayout' : 'stacklayout';
             case 'row':
-                return 'stacklayout';
+                return hasFlex1Children ? 'gridlayout' : 'stacklayout';
             case 'stack':
                 return 'gridlayout';
             case 'label':
@@ -709,8 +753,6 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         'height',
         'cornerRadius',
         'spacing',
-        'alignment',
-        'crossAlignment',
         'backgroundColor',
         'color',
         'fontSize',
@@ -728,7 +770,10 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         'rowSpan',
         'textWrap',
         'showIndicators',
-        'scrollBarIndicatorVisible'
+        'scrollBarIndicatorVisible',
+        'fillWidth',
+        'fillHeight',
+        'fillMaxSize'
     ];
 
     // Handle limit for forEach by modifying items before processing
@@ -751,26 +796,78 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         // Skip limit and direction (direction is converted to orientation below)
         if (k === 'limit' || k === 'direction') continue;
 
-        if (!attributesToMap.includes(k) && k !== 'text' && k !== 'src' && k !== 'items') continue;
+        if (!attributesToMap.includes(k) && k !== 'text' && k !== 'src' && k !== 'items') {
+            // alignment/crossAlignment on non-container elements (labels, images inside a stack) still apply directly
+            if ((k === 'alignment' || k === 'crossAlignment') && elType !== 'column' && elType !== 'row') {
+                // These position the element itself within a parent stack overlay
+                const v = (element as any)[k];
+                const attr = buildAttribute(widgetName, k, v, elementPath, defaultPrefix, usedColors);
+                if (attr) {
+                    const attrNames = attr.match(/[a-zA-Z_][a-zA-Z0-9_]*(?==)/g) ?? [attr.split('=')[0].split('{')[0].trim()];
+                    const firstAttrName = attrNames[0];
+                    if (!seenAttrs.has(firstAttrName)) {
+                        attrsArr.push(attr);
+                        for (const an of attrNames) seenAttrs.add(an);
+                    }
+                }
+            }
+            continue;
+        }
         const v = (element as any)[k];
 
         const attr = buildAttribute(widgetName, k, v, elementPath, defaultPrefix, usedColors);
         if (attr) {
-            // Extract attribute name to check for duplicates
-            const attrName = attr.split('=')[0].split('{')[0].trim();
-            if (!seenAttrs.has(attrName)) {
+            // Extract all attribute names from attr (handles multi-attr returns like "width={X} height={X}")
+            const attrNames = attr.match(/[a-zA-Z_][a-zA-Z0-9_]*(?==)/g) ?? [attr.split('=')[0].split('{')[0].trim()];
+            const firstAttrName = attrNames[0];
+            if (!seenAttrs.has(firstAttrName)) {
                 attrsArr.push(attr);
-                seenAttrs.add(attrName);
+                for (const an of attrNames) seenAttrs.add(an);
             }
         }
     }
 
-    // For 'row' and 'column' we need orientation prop
+    // For 'row' and 'column' we need orientation prop (or rows/columns for GridLayout)
     if (elType === 'column' && !seenAttrs.has('orientation')) {
-        attrsArr.push(`orientation="vertical"`);
+        if (hasFlex1Children) {
+            // Build GridLayout rows definition: '*' for flex spacers, fixed dp for numeric spacers, 'auto' for others
+            const rowDefs: string[] = [];
+            for (const child of element.children ?? []) {
+                if (child.type === 'spacer') {
+                    if (child.flex !== undefined) {
+                        rowDefs.push('*');
+                    } else {
+                        // Use explicit size if numeric; expression-based sizes use 'auto' (absolutelayout measures itself)
+                        rowDefs.push(typeof (child as any).size === 'number' ? `${(child as any).size}` : 'auto');
+                    }
+                } else {
+                    rowDefs.push(child.flex !== undefined ? '*' : 'auto');
+                }
+            }
+            attrsArr.push(`rows="${rowDefs.join(',')}"`);
+        } else {
+            attrsArr.push(`orientation="vertical"`);
+        }
         seenAttrs.add('orientation');
     } else if (elType === 'row' && !seenAttrs.has('orientation')) {
-        attrsArr.push(`orientation="horizontal"`);
+        if (hasFlex1Children) {
+            // Build GridLayout columns definition
+            const colDefs: string[] = [];
+            for (const child of element.children ?? []) {
+                if (child.type === 'spacer') {
+                    if (child.flex !== undefined) {
+                        colDefs.push('*');
+                    } else {
+                        colDefs.push(typeof (child as any).size === 'number' ? `${(child as any).size}` : 'auto');
+                    }
+                } else {
+                    colDefs.push(child.flex !== undefined ? '*' : 'auto');
+                }
+            }
+            attrsArr.push(`columns="${colDefs.join(',')}"`);
+        } else {
+            attrsArr.push(`orientation="horizontal"`);
+        }
         seenAttrs.add('orientation');
     } else if (elType === 'divider' && !seenAttrs.has('height')) {
         const thickness = element.thickness ?? 1;
@@ -786,8 +883,10 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         // Handle orientation from direction property for forEach/collectionview
         if (element.direction && !seenAttrs.has('orientation')) {
             const orientation = element.direction === 'horizontal' ? 'horizontal' : 'vertical';
-            attrsArr.push(`orientation="${orientation}"`);
             seenAttrs.add('orientation');
+            attrsArr.push(`orientation="${orientation}"`);
+            seenAttrs.add('colWidth');
+            attrsArr.push(`colWidth="auto"`);
         }
 
         // Replace items attribute with sliced version if limit was set
@@ -814,7 +913,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         let dateExpr: string;
         switch (style) {
             case 'dayMonth':
-                dateExpr = `formatDate(new Date(), 'MMM D')`;
+                dateExpr = `formatDateWithoutYear(new Date(), 'll')`;
                 break;
             case 'fullDate':
                 dateExpr = `formatDate(new Date(), 'LL')`;
@@ -836,36 +935,36 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
     const attrStr = attrsArr.length ? ' ' + attrsArr.join(' ') : '';
 
-    // Now generate children markup with spacer handling
+    // Now generate children markup
     let childrenMarkup = '';
     const children = element.children ?? [];
     const childMarkups: string[] = [];
 
-    // Determine parent orientation for spacer margin handling
-    const parentOrientation = elType === 'row' || (elType === 'forEach' && element.direction === 'horizontal') ? 'horizontal' : 'vertical';
-    const marginProp = parentOrientation === 'horizontal' ? 'marginRight' : 'marginBottom';
+    // Indentation for direct children elements (one level deeper than current element)
+    const childIndent = indent + '    ';
 
-    function addMarginToLastChild(markup: string, marginName: string, marginVal: number): string {
+    // Orientation for spacer sizing (horizontal spacer needs width, vertical needs height)
+    const parentOrientation = elType === 'row' || (elType === 'forEach' && element.direction === 'horizontal') ? 'horizontal' : 'vertical';
+
+    /**
+     * Inject a complete attribute string (e.g. `horizontalAlignment="center"` or `col={2}`)
+     * into the opening tag of the first element in a markup string.
+     * Does nothing if the attribute is already present or if the markup starts with a block expression.
+     */
+    function injectAttrIntoMarkup(markup: string, fullAttr: string): string {
         const firstLT = markup.indexOf('<');
         if (firstLT === -1) return markup;
 
-        // Find the actual closing > of the opening tag, accounting for expressions with > or >=
         let closingGT = -1;
-        let inExpression = false;
         let braceDepth = 0;
 
         for (let i = firstLT + 1; i < markup.length; i++) {
             const char = markup[i];
-
             if (char === '{') {
-                inExpression = true;
                 braceDepth++;
             } else if (char === '}') {
                 braceDepth--;
-                if (braceDepth === 0) {
-                    inExpression = false;
-                }
-            } else if (char === '>' && !inExpression && braceDepth === 0) {
+            } else if (char === '>' && braceDepth === 0) {
                 closingGT = i;
                 break;
             }
@@ -873,29 +972,199 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
         if (closingGT === -1) return markup;
 
+        const attrName = fullAttr.split('=')[0].trim();
         const openingTag = markup.substring(firstLT, closingGT + 1);
+        if (openingTag.includes(`${attrName}=`)) return markup; // already present
 
-        // Check if margin attribute already exists
-        if (openingTag.includes(`${marginName}=`)) return markup;
-
-        // Insert margin attribute before the closing >
-        return markup.slice(0, closingGT) + ` ${marginName}={${marginVal}}` + markup.slice(closingGT);
+        return markup.slice(0, closingGT) + ` ${fullAttr}` + markup.slice(closingGT);
     }
 
-    for (let i = 0; i < children.length; i++) {
-        const childDef = children[i];
+    function addAttrToMarkup(markup: string, attrName: string, attrVal: string | number): string {
+        const valStr = typeof attrVal === 'number' ? `{${attrVal}}` : `="${attrVal}"`;
+        return injectAttrIntoMarkup(markup, `${attrName}=${valStr}`);
+    }
 
-        if (childDef.type === 'spacer') {
-            const sizeVal = typeof (childDef as any).size === 'number' ? (childDef as any).size : undefined;
-            if (sizeVal !== undefined && childMarkups.length > 0) {
-                const idx = childMarkups.length - 1;
-                childMarkups[idx] = addMarginToLastChild(childMarkups[idx], marginProp, sizeVal);
+    /**
+     * Build an alignment attribute string for injecting into a child element.
+     * Handles both literal string values and expression arrays.
+     */
+    function buildAlignmentAttrStr(value: any, attrName: string, isVertical: boolean): string | null {
+        if (value === undefined || value === null) return null;
+        if (Array.isArray(value)) {
+            const expr = evaluateMapboxExpression(value, defaultPrefix);
+            return `${attrName}={${expr}}`;
+        }
+        if (typeof value === 'string') {
+            const mapped = mapAlignment(value, isVertical);
+            if (!mapped) return null;
+            return `${attrName}="${mapped}"`;
+        }
+        return null;
+    }
+
+    /**
+     * Inject a list of attribute strings into each branch of a {#if}/{:else} block.
+     * Depth-tracks nested {#if} blocks so only top-level {:else}/{/if} are used as boundaries.
+     * Branches are processed from last to first to avoid index-shift issues when content lengths change.
+     */
+    function injectAttrsIntoBranches(block: string, attrsToInject: string[]): string {
+        // Walk through lines to find top-level branch boundaries
+        const branchStarts: number[] = [];
+        const branchEnds: number[] = [];
+        let depth = 0;
+        let pos = block.indexOf('\n') + 1; // skip the opening {#if ...} line
+        branchStarts.push(pos);
+
+        while (pos < block.length) {
+            const lineEnd = block.indexOf('\n', pos);
+            const line = lineEnd === -1 ? block.slice(pos) : block.slice(pos, lineEnd);
+            const trimLine = line.trimStart();
+
+            if (/^\{#(if|each|await)\b/.test(trimLine)) {
+                depth++;
+            } else if (/^\{\/(if|each|await)\b/.test(trimLine)) {
+                if (depth === 0) {
+                    branchEnds.push(pos);
+                    break;
+                }
+                depth--;
+            } else if (/^\{:else\b/.test(trimLine) && depth === 0) {
+                // {:else} and {:else if} are the branch delimiters for {#if}
+                branchEnds.push(pos);
+                const newStart = lineEnd !== -1 ? lineEnd + 1 : block.length;
+                branchStarts.push(newStart);
             }
-            continue;
+            pos = lineEnd !== -1 ? lineEnd + 1 : block.length;
         }
 
-        const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
-        if (childMarkup) childMarkups.push(childMarkup);
+        // Process branches from last to first to avoid offset shifts
+        let result = block;
+        for (let b = branchStarts.length - 1; b >= 0; b--) {
+            const start = branchStarts[b];
+            const end = branchEnds[b]; // may be undefined if no matching {/if} found
+            if (end === undefined || end <= start) continue; // skip malformed or empty branches
+            const branchContent = result.slice(start, end);
+            if (!branchContent.includes('<')) continue;
+            let injected = branchContent;
+            for (const attr of attrsToInject) {
+                injected = injectAttrIntoMarkup(injected, attr);
+            }
+            if (injected !== branchContent) {
+                result = result.slice(0, start) + injected + result.slice(end);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Inject alignment attributes from a container (column/row) into a child markup string.
+     * In NativeScript, alignment of children is set on the children, not on the container.
+     * - column parent: crossAlignment → horizontalAlignment on child, alignment → verticalAlignment on child
+     * - row parent: crossAlignment → verticalAlignment on child, alignment → horizontalAlignment on child
+     * For {#if} conditional blocks, injects into each branch's root element.
+     * For {#each} blocks, skips (each-item templates handle their own alignment).
+     */
+    function injectParentAlignmentAttrs(childMarkup: string): string {
+        if (elType !== 'column' && elType !== 'row') return childMarkup;
+        const isColumnParent = elType === 'column';
+        const attrsToInject: string[] = [];
+        // crossAlignment is the cross-axis: horizontal for columns, vertical for rows
+        if (element.crossAlignment !== undefined) {
+            const attr = buildAlignmentAttrStr(element.crossAlignment, isColumnParent ? 'horizontalAlignment' : 'verticalAlignment', !isColumnParent);
+            if (attr) attrsToInject.push(attr);
+        }
+        // alignment is the main-axis: vertical for columns, horizontal for rows
+        if (element.alignment !== undefined) {
+            const attr = buildAlignmentAttrStr(element.alignment, isColumnParent ? 'verticalAlignment' : 'horizontalAlignment', isColumnParent);
+            if (attr) attrsToInject.push(attr);
+        }
+        if (attrsToInject.length === 0) return childMarkup;
+
+        const trimmed = childMarkup.trimStart();
+        // For {#if} blocks: inject into each branch's root element
+        if (trimmed.startsWith('{#if')) {
+            return injectAttrsIntoBranches(childMarkup, attrsToInject);
+        }
+        // For {#each} or other Svelte control blocks: skip (not applicable here)
+        if (trimmed.startsWith('{')) return childMarkup;
+
+        let m = childMarkup;
+        for (const attr of attrsToInject) {
+            m = injectAttrIntoMarkup(m, attr);
+        }
+        return m;
+    }
+
+    if (hasFlex1Children) {
+        // GridLayout mode: assign col/row slots to each child; spacers occupy their slot
+        const isRow = elType === 'row';
+        const slotAttr = isRow ? 'col' : 'row';
+        let slotIdx = 0;
+
+        for (let i = 0; i < children.length; i++) {
+            const childDef = children[i];
+
+            if (childDef.type === 'spacer') {
+                if (childDef.flex !== undefined) {
+                    // Flex spacer: occupies a * slot in the grid, no markup needed
+                    slotIdx++;
+                } else {
+                    // Fixed spacer: render as absolutelayout in its own grid slot
+                    const rawSize = (childDef as any).size;
+                    const sizeExpr = Array.isArray(rawSize) ? evaluateMapboxExpression(rawSize, defaultPrefix) : typeof rawSize === 'number' ? String(rawSize) : '0';
+                    const dimAttr = isRow ? `width={${sizeExpr}}` : `height={${sizeExpr}}`;
+                    childMarkups.push(`${childIndent}<absolutelayout ${dimAttr} ${slotAttr}={${slotIdx}}></absolutelayout>`);
+                    slotIdx++;
+                }
+                continue;
+            }
+
+            // Regular child: generate markup and inject col/row slot index
+            let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) {
+                childMarkup = addAttrToMarkup(childMarkup, slotAttr, slotIdx);
+                childMarkups.push(childMarkup);
+            }
+            slotIdx++;
+        }
+    } else {
+        for (let i = 0; i < children.length; i++) {
+            const childDef = children[i];
+
+            if (childDef.type === 'spacer') {
+                // Render spacer as absolutelayout with explicit dimension
+                const rawSize = (childDef as any).size;
+                const sizeExpr = Array.isArray(rawSize) ? evaluateMapboxExpression(rawSize, defaultPrefix) : typeof rawSize === 'number' ? String(rawSize) : '0';
+                const dimAttr = parentOrientation === 'horizontal' ? `width={${sizeExpr}}` : `height={${sizeExpr}}`;
+                childMarkups.push(`${childIndent}<absolutelayout ${dimAttr}></absolutelayout>`);
+                continue;
+            }
+
+            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            if (childMarkup) childMarkups.push(childMarkup);
+        }
+    }
+
+    // Single-child collapse: check BEFORE injecting parent alignment.
+    // When collapsing, skip alignment injection here so the outer parent can inject its own
+    // alignment after the collapse (avoiding stale inner-container alignment on the merged element).
+    const canCollapse = (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
+    if (canCollapse) {
+        const SKIP_ATTRS = new Set(['orientation', 'rows', 'columns', 'items', 'showIndicators', 'scrollBarIndicatorVisible']);
+        let collapsed = childMarkups[0];
+        for (const attr of attrsArr) {
+            const name = attr.match(/^[a-zA-Z_][a-zA-Z0-9_]*/)?.[0];
+            if (name && !SKIP_ATTRS.has(name)) {
+                collapsed = injectAttrIntoMarkup(collapsed, attr);
+            }
+        }
+        return collapsed;
+    }
+
+    // Apply parent container alignment to all children (after collapse check so collapsed
+    // elements don't carry stale inner-container alignment that blocks outer parent injection)
+    for (let i = 0; i < childMarkups.length; i++) {
+        childMarkups[i] = injectParentAlignmentAttrs(childMarkups[i]);
     }
 
     if (elType === 'forEach') {
@@ -965,12 +1234,16 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     // Check if widget uses clock element
     const usesClock = JSON.stringify(layout).includes('"type":"clock"');
+    // Check if widget uses dayMonth date style (needs formatDateWithoutYear helper)
+    const usesDayMonth = JSON.stringify(layout).includes('"style":"dayMonth"');
 
     let script = `<script context="module" lang="ts">\n`;
     script += `    // Auto-generated Svelte Native component for widget "${layout.name}"\n`;
     script += `    import type { Writable } from 'svelte/store';\n`;
     script += `    import { Template } from '@nativescript-community/svelte-native/components';\n`;
-    script += `    import { formatDate, l } from '~/helpers/locale';\n`;
+    const localeImports = ['formatDate', 'l'];
+    if (usesDayMonth) localeImports.push('formatDateWithoutYear');
+    script += `    import { ${localeImports.join(', ')} } from '~/helpers/locale';\n`;
     script += `    import { titlecase } from '@nativescript-community/l';\n`;
     script += `    import { iconService } from '~/services/icon';\n`;
     script += `    import { colors } from '~/variables';\n`;
@@ -1007,13 +1280,13 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         const attrBg = buildAttribute(widgetName, 'backgroundColor', v, ['root'], 'data', usedColors);
         if (attrBg) wrapperAttrs.push(attrBg);
     }
-    if (layout.defaultPadding !== undefined) {
-        let value = layout.defaultPadding;
-        if (Array.isArray(value)) {
-            value = evaluateMapboxExpression(value, '') as any;
-        }
-        wrapperAttrs.push(`padding={${value}}`);
-    }
+    // if (layout.defaultPadding !== undefined) {
+    //     let value = layout.defaultPadding;
+    //     if (Array.isArray(value)) {
+    //         value = evaluateMapboxExpression(value, '') as any;
+    //     }
+    //     wrapperAttrs.push(`padding={${value}}`);
+    // }
     wrapperAttrs.push(`class="widget-container"`);
 
     const wrapperTag = 'gridlayout';

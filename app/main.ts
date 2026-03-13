@@ -20,7 +20,6 @@ import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 
 import { networkService } from './services/api';
-import { lc } from '@nativescript-community/l';
 
 try {
     startSentry();
@@ -109,18 +108,18 @@ try {
     networkService.start();
     svelteNative(WeatherPage, {});
 
-    setTimeout(async () => {
-        // const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
-        // navigate({
-        //     page: ConfigWidget,
-        //     props: {
-        //         widgetClass: 'ForecastWeatherWidget',
-        //         widgetId: null,
-        //         modalMode: true,
-        //         isKindConfig: true
-        //     }
-        // });
-    }, 400);
+    // setTimeout(async () => {
+    // const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
+    // navigate({
+    //     page: ConfigWidget,
+    //     props: {
+    //         widgetClass: 'ForecastWeatherWidget',
+    //         widgetId: null,
+    //         modalMode: true,
+    //         isKindConfig: true
+    //     }
+    // });
+    // }, 400);
 } catch (error) {
     console.error(error, error.stack);
 }

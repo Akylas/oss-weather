@@ -62,7 +62,7 @@ export class WidgetConfigManager {
      * Get all per-instance widget configurations
      */
     static getAllConfigs(): { [widgetId: string]: WidgetConfig } {
-        DEV_LOG && console.log('getAllConfigs', JSON.stringify(this.configs));
+        // DEV_LOG && console.log('getAllConfigs', JSON.stringify(this.configs));
         if (!this.configs) {
             this.loadConfigs();
         }
@@ -121,7 +121,7 @@ export class WidgetConfigManager {
      */
     static getConfig(widgetId: string): WidgetConfig {
         const configs = this.getAllConfigs();
-        DEV_LOG && console.log(TAG, 'getConfig', widgetId, JSON.stringify(configs));
+        // DEV_LOG && console.log(TAG, 'getConfig', widgetId, JSON.stringify(configs));
 
         // If instance config exists, use it
         if (configs[widgetId]) {

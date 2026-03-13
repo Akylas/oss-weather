@@ -238,7 +238,7 @@
           "properties": {
             "type": { "const": "date" },
             "format": { "type": "string", "default": "EEEE, MMM d" },
-            "style": { "type": "string", "enum": ["date", "time", "relative"], "default": "date" },
+            "style": { "type": "string", "enum": ["date", "dayMonth", "fullDate", "year", "month"], "default": "date" },
             "fontSize": { "type": "number" },
             "fontWeight": { "$ref": "#/definitions/fontWeight" },
             "color": { "$ref": "#/definitions/color" }

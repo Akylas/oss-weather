@@ -17,18 +17,18 @@ module.exports = (env, params = {}) => {
 
     const globOptions = { dot: false, ignore: [`**/${relative(appPath, appResourcesFullPath)}/**`] };
     params.copyPatterns = [
-        {
-            context: join(__dirname, 'src', 'widgets'),
-            from: 'samples/*.sample.json',
-            to: 'widget-layouts/widgets/samples/[name][ext]',
-            noErrorOnMissing: true,
-            globOptions,
-            transform: !!production
-                ? {
-                      transformer: (content, path) => Promise.resolve(Buffer.from(JSON.stringify(JSON.parse(content.toString())), 'utf8'))
-                  }
-                : undefined
-        },
+        // {
+        //     context: join(__dirname, 'src', 'widgets'),
+        //     from: 'samples/*.sample.json',
+        //     to: 'widget-layouts/widgets/samples/[name][ext]',
+        //     noErrorOnMissing: true,
+        //     globOptions,
+        //     transform: !!production
+        //         ? {
+        //               transformer: (content, path) => Promise.resolve(Buffer.from(JSON.stringify(JSON.parse(content.toString())), 'utf8'))
+        //           }
+        //         : undefined
+        // },
         {
             context: join(__dirname, 'src', 'widgets'),
             from: '*.json',
@@ -50,9 +50,9 @@ module.exports = (env, params = {}) => {
     nsWebpack.chainWebpack((config, env) => {
         config.externals([
             function ({ context, request }, cb) {
-                if (/plugin-widgets\/data\/widgets\/samples/i.test(context)) {
-                    return cb(null, join('plugin-widgets/widgets/data/samples', basename(request)));
-                }
+                // if (/plugin-widgets\/data\/widgets\/samples/i.test(context)) {
+                //     return cb(null, join('plugin-widgets/widgets/data/samples', basename(request)));
+                // }
                 if (/plugin-widgets\/data\/widgets/i.test(context)) {
                     return cb(null, join('plugin-widgets/widgets/data/widgets', basename(request)));
                 }

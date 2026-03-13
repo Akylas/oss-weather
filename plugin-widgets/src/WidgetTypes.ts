@@ -7,6 +7,8 @@ export interface WidgetConfig {
     locationName: string;
     latitude?: number;
     longitude?: number;
+    timezone?: string;
+    timezoneOffset?: number;
     model?: string;
     provider?: ProviderType;
     widgetKind?: string;

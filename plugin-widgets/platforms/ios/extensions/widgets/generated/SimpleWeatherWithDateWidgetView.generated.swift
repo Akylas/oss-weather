@@ -16,57 +16,71 @@ struct SimpleWeatherWithDateWidgetView: View {
             let config = entry.config ?? WidgetConfig()
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: 6) {
-                    VStack(alignment: .center, spacing: height < 60 ? 2 : 4) {
-                        if width >= 200 {
-                            VStack(alignment: .center, spacing: 0) {
-                                HStack(alignment: .top, spacing: 0) {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        Text(Date(), style: .date)
-                                            .font(.system(size: 20, weight: .bold))
-                                            .foregroundColor(WidgetColorProvider.onSurface)
-                                        Spacer().frame(height: 2)
-                                        Text(Date(), style: .date)
-                                            .font(.system(size: 14, weight: .regular))
-                                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                    }
-                                    VStack(alignment: .trailing, spacing: 0) {
-                                        if !data.iconPath.isEmpty {
-                                            WeatherIconView(data.iconPath, description: data.description, size: 56)
-                                        }
-                                        Spacer().frame(height: 4)
-                                        Text(data.temperature)
-                                            .font(.system(size: 24, weight: .bold))
-                                            .foregroundColor(WidgetColorProvider.onSurface)
-                                            .multilineTextAlignment(.leading)
-                                    }
+                WidgetContainer(padding: 4) {
+                    if width >= 180 {
+                        ZStack {
+                            HStack(alignment: .center, spacing: 0) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    Text(Date(), style: .date)
+                                        .font(.system(size: min((width * 0.17), 48), weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                    Spacer().frame(height: 4)
+                                    Text(Date(), style: .date)
+                                        .font(.system(size: 14, weight: .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 }
-                                Spacer().frame(height: 4)
-                            }
-                        }
-                        else {
-                            VStack(alignment: .center, spacing: height < 60 ? 2 : 4) {
-                                Text(Date(), style: .date)
-                                    .font(.system(size: 14, weight: .bold))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
                                 Spacer()
-                                HStack(alignment: .center, spacing: height < 60 ? 4 : 8) {
+                                VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
-                                        WeatherIconView(data.iconPath, description: data.description, size: 48)
+                                        WeatherIconView(data.iconPath, description: data.description, size: 62)
                                     }
                                     Text(data.temperature)
-                                        .font(.system(size: 12, weight: .bold))
+                                        .font(.system(size: min((width * 0.2), 15), weight: .bold))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .multilineTextAlignment(.trailing)
+                                    Text(data.description)
+                                        .font(.system(size: min((width * 0.04), 15), weight: .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .multilineTextAlignment(.trailing)
+                                }
+                            }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(8)
+                            VStack(alignment: .leading, spacing: 0) {
+                                Text(data.locationName)
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .lineLimit(1)
+                            }.frame(maxWidth: .infinity)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(4)
+                    }
+                    else {
+                        ZStack {
+                            VStack(alignment: .center, spacing: 0) {
+                                VStack(alignment: height <= 50 ? .trailing : .center, spacing: 0) {
+                                    Text(Date(), style: .time)
+                                        .font(.system(size: min((height * 0.24), 40), weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                }.frame(maxWidth: .infinity)
+                                HStack(alignment: .center, spacing: 0) {
+                                    if !data.iconPath.isEmpty {
+                                        WeatherIconView(data.iconPath, description: data.description, size: width < 100 ? 32 : width < 150 ? 40 : 56)
+                                    }
+                                    Spacer().frame(width: width < 100 ? 4 : width < 150 ? 6 : 8)
+                                    Text(data.temperature)
+                                        .font(.system(size: min((width * 0.2), 20), weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                 }
-                                Spacer().frame(height: height < 60 ? 4 : height < 80 ? 6 : 8)
+                                Spacer().frame(height: width < 100 ? 2 : width < 150 ? 4 : 8)
+                                Spacer().frame(height: width < 100 ? 4 : width < 150 ? 6 : 8)
+                            }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(.top, height <= 50 ? 0 : 10)
+                            VStack(alignment: .trailing, spacing: 0) {
+                                Spacer()
+                                Text(data.locationName)
+                                    .font(.system(size: width < 100 ? 8 : width < 150 ? 10 : 12, weight: .regular))
+                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .lineLimit(1)
                             }
-                        }
-                        Text(data.locationName)
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(1)
-                    }.padding(height < 60 ? 2 : height < 80 ? 4 : 6)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3)
+                    }
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)

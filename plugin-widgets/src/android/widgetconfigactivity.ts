@@ -16,6 +16,7 @@ import { ComponentInstanceInfo } from 'svelte-native/dom';
 import type ConfigWidget__SvelteComponent_ from '~/components/settings/ConfigWidget.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 import { onInitRootView } from '~/variables';
+import { SDK_VERSION } from '@nativescript/core/utils';
 
 const TAG = '[WidgetConfActivity]';
 const CALLBACKS = '_callbacks';
@@ -24,9 +25,72 @@ const activityRootViewsMap = new Map<number, WeakRef<View>>();
 
 export function setActivityCallbacks(activity: androidx.appcompat.app.AppCompatActivity): void {
     activity[CALLBACKS] = new WidgetConfigActivityCallbacksImplementation();
+    if (OnBackPressedCallback && !activity['_onBackPressed']) {
+        const callback = new OnBackPressedCallback(true);
+        callback['_activity'] = new WeakRef(activity);
+        activity['_onBackPressed'] = true;
+        activity.getOnBackPressedDispatcher().addCallback(activity, callback);
+    }
 }
 
 export let moduleLoaded: boolean;
+
+let OnBackPressedCallback;
+if (SDK_VERSION >= 33) {
+    OnBackPressedCallback = (androidx.activity.OnBackPressedCallback as any).extend('com.tns.OnBackPressedCallback', {
+        handleOnBackPressed() {
+            console.log('handleOnBackPressed0');
+            if (Trace.isEnabled()) {
+                Trace.write('NativeScriptActivity.onBackPressed;', Trace.categories.NativeLifecycle);
+            }
+            const activity = this['_activity']?.get();
+            if (!activity) {
+                if (Trace.isEnabled()) {
+                    Trace.write('NativeScriptActivity.onBackPressed; Activity is null, calling super', Trace.categories.NativeLifecycle);
+                }
+                this.setEnabled(false);
+                return;
+            }
+            const args = {
+                eventName: 'activityBackPressed',
+                object: Application,
+                android: Application.android,
+                activity,
+                cancel: false
+            };
+            Application.android.notify(args);
+            if (args.cancel) {
+                return;
+            }
+            const callbacks = activity[CALLBACKS];
+            let callSuper = false;
+            console.log('handleOnBackPressed1');
+            if (callbacks) {
+                const view = callbacks.getRootView();
+                console.log('handleOnBackPressed1', view);
+
+                if (view) {
+                    const viewArgs = {
+                        eventName: 'activityBackPressed',
+                        object: view,
+                        activity,
+                        cancel: false
+                    };
+                    view.notify(viewArgs);
+                    // In the case of Frame, use this callback only if it was overridden, since the original will cause navigation issues
+                    if (!viewArgs.cancel && (view.onBackPressed === Frame.prototype.onBackPressed || !view.onBackPressed())) {
+                        callSuper = view instanceof Frame ? !Frame.goBack() : true;
+                    }
+                }
+            }
+            if (callSuper) {
+                this.setEnabled(false);
+                activity.getOnBackPressedDispatcher().onBackPressed();
+                this.setEnabled(true);
+            }
+        }
+    });
+}
 
 class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCallbacks {
     private _rootView: View;
@@ -248,7 +312,6 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
 
     private async setActivityContent(activity: androidx.appcompat.app.AppCompatActivity, savedInstanceState: android.os.Bundle, fireLaunchEvent: boolean, intent: android.content.Intent) {
         let rootView = this._rootView;
-        DEV_LOG && console.log(TAG, 'setActivityContent');
         if (!rootView) {
             rootView = new GridLayout();
             this._rootView = rootView;
@@ -275,25 +338,33 @@ class WidgetConfigActivityCallbacksImplementation implements AndroidActivityCall
             const { resolveComponentElement } = await import('@shared/utils/ui');
             const ConfigWidget = (await import('~/components/settings/ConfigWidget.svelte')).default;
 
+            const finishSuccess = () => {
+                const WeatherWidgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+                WeatherWidgetManager.requestWidgetUpdate(activity, this.widgetId);
+                // Set result OK when closing
+                const resultIntent = new android.content.Intent();
+                resultIntent.putExtra('appWidgetId' /* EXTRA_APPWIDGET_ID */, this.widgetId);
+                DEV_LOG && console.log('finishSuccess', 'appWidgetId', this.widgetId);
+                activity.setResult(android.app.Activity.RESULT_OK, resultIntent);
+                activity.finish();
+            };
+
             this.componentInstanceInfo = resolveComponentElement(ConfigWidget, {
                 widgetClass: config.widgetKind,
                 widgetId: String(this.widgetId),
-                modalMode: true
+                modalMode: true,
+                onMenuIcon: finishSuccess
             }) as ComponentInstanceInfo<GridLayout, ConfigWidget__SvelteComponent_>;
 
             const configView = this.componentInstanceInfo.element.nativeView;
             (rootView as GridLayout).addChild(configView);
+            DEV_LOG && console.log('rootView', rootView);
 
             // Listen for back button to finish activity with result
             rootView.on('activityBackPressed', (args: AndroidActivityBackPressedEventData) => {
-                const WeatherWidgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
-                WeatherWidgetManager.requestWidgetUpdate(activity, this.widgetId);
+                DEV_LOG && console.log('rootView, activityBackPressed');
                 args.cancel = true;
-                // Set result OK when closing
-                const resultIntent = new android.content.Intent();
-                resultIntent.putExtra('appWidgetId', this.widgetId);
-                activity.setResult(android.app.Activity.RESULT_OK, resultIntent);
-                activity.finish();
+                finishSuccess();
             });
         } catch (err) {
             console.error(TAG, 'Error mounting ConfigWidget:', err, err.stack);

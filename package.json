@@ -38,9 +38,9 @@
     "repository": "https://github.com/Akylas/oss-weather",
     "dependencies": {
         "@akylas/address-formatter": "5.3.1",
-        "@akylas/nativescript": "8.9.13",
+        "@akylas/nativescript": "8.9.14",
         "@akylas/nativescript-app-tools": "portal:tools",
-        "@akylas/nativescript-app-utils": "2.2.9",
+        "@akylas/nativescript-app-utils": "2.2.11",
         "@akylas/nativescript-inapp-purchase": "0.0.4",
         "@akylas/nativescript-inappbrowser": "3.1.8",
         "@mapbox/to-color": "2.3.0",
@@ -64,8 +64,8 @@
         "@nativescript-community/ui-canvaslabel": "1.2.49",
         "@nativescript-community/ui-chart": "2.0.26",
         "@nativescript-community/ui-checkbox": "2.0.18",
-        "@nativescript-community/ui-collectionview": "6.0.16",
-        "@nativescript-community/ui-collectionview-swipemenu": "6.0.16",
+        "@nativescript-community/ui-collectionview": "6.0.17",
+        "@nativescript-community/ui-collectionview-swipemenu": "6.0.17",
         "@nativescript-community/ui-document-picker": "1.1.29",
         "@nativescript-community/ui-drawer": "0.1.31",
         "@nativescript-community/ui-image": "5.0.14",
@@ -88,7 +88,7 @@
         "@nativescript-community/ui-zoomimage": "5.0.14",
         "@nativescript-community/universal-links": "3.0.1",
         "@nativescript/iqkeyboardmanager": "2.1.2",
-        "dayjs": "1.11.19",
+        "dayjs": "1.11.20",
         "make-error": "1.3.6",
         "plugin-widgets": "portal:plugin-widgets",
         "polygon-lookup": "2.6.0",
@@ -119,8 +119,5 @@
         "./map",
         "./plugin-widgets/"
     ],
-    "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b",
-    "resolutions": {
-        "@akylas/nativescript-android-runtime": "/home/mguillon/dev/nativescript/Napi-Android-Runtime/dist_quickjs_ng/nativescript-android-8.8.5.tgz"
-    }
+    "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b"
 }

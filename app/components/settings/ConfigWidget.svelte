@@ -51,6 +51,7 @@
     export let widgetId: string = '';
     export let modalMode: boolean = false;
     export let isKindConfig: boolean = false; // true for per-kind config, false for per-instance
+    export let onMenuIcon = null;
 
     let collectionView: NativeViewElementNode<CollectionView>;
 
@@ -369,18 +370,18 @@
                 //     title: lc('widget.preview_set'),
                 //     description: () => lc(`widget.preview_set.${previewSet}`) || previewSet
                 // },
-                {
-                    id: 'preview_size',
-                    title: lc('widget.preview_size'),
-                    description: () => lc(previewSize['family'] || `${previewSize.width}x${previewSize.height}`)
-                }
+                // {
+                //     id: 'preview_size',
+                //     title: lc('widget.preview_size'),
+                //     description: () => lc(previewSize['family'] || `${previewSize.width}x${previewSize.height}`)
+                // }
             ] as any[]
         )
-            .concat(isKindConfig ? [{ type: 'header', title: lc('default_widget_settings_note') }] : [])
+            .concat(isKindConfig ? [{ type: 'sectionheader', title: lc('default_widget_settings_note') }] : [])
             .concat([
                 { type: 'rightIcon', id: 'location', rightBtnIcon: 'mdi-map', title: lc('location_name'), description: getLocationDescription, onRightIconTap: selectLocationOnMap },
                 {
-                    type: 'header',
+                    type: 'sectionheader',
                     title: lc('providers')
                 },
                 {
@@ -394,7 +395,7 @@
                     description: getModelDescription
                 },
                 {
-                    id: 'header',
+                    id: 'sectionheader',
                     description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
                 }
             ])
@@ -518,9 +519,7 @@
     <gridlayout class="pageContent" rows="auto,auto,*">
         <!-- Preview Section -->
         {#if widgetComponent && previewData && previewSize}
-            <gridlayout backgroundColor={colorSurfaceContainer} borderRadius={10} horizontalAlignment="center" row={1}>
-                <svelte:component this={widgetComponent} data={previewData} size={widgetSize} />
-            </gridlayout>
+            <svelte:component this={widgetComponent} backgroundColor={colorSurfaceContainer} borderRadius={10} data={previewData} horizontalAlignment="center" row={1} size={widgetSize} />
         {/if}
         <collectionview bind:this={collectionView} itemTemplateSelector={selectTemplate} {items} row={2} android:paddingBottom={$windowInset.bottom}>
             <Template key="sectionheader" let:item>
@@ -570,6 +569,6 @@
                 </ListItemAutoSize>
             </Template>
         </collectionview>
-        <CActionBar modalWindow={modalMode} title={getWidgetTitle()} />
+        <CActionBar modalWindow={modalMode} {onMenuIcon} title={getWidgetTitle()} />
     </gridlayout>
 </page>

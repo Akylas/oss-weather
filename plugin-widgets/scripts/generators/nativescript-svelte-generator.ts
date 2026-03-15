@@ -356,6 +356,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     // map layout prop names -> Svelte/NativeScript attribute names
     const attrMap: Record<string, string | string[]> = {
         alignment: 'verticalAlignment',
+        cornerRadius: 'borderRadius',
         crossAlignment: 'horizontalAlignment',
         textAlign: 'textAlignment',
         paddingVertical: ['paddingTop', 'paddingBottom'],
@@ -645,11 +646,12 @@ function mapAlignment(value: string, isVertical: boolean): string {
 }
 
 function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
-    const indent = '    '.repeat(elementPath.length + 1);
+    const indent = '    '.repeat(elementPath.length);
     const elType = element.type;
 
     // Detect if this row/column has any flex children -> needs GridLayout
     const hasFlex1Children = (elType === 'row' || elType === 'column') && (element.children ?? []).some((c) => c.flex !== undefined);
+    const hasPadding = element.padding || element.paddingHorizontal || element.paddingHorizontal;
 
     const tag = (() => {
         switch (elType) {
@@ -1148,7 +1150,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
     // Single-child collapse: check BEFORE injecting parent alignment.
     // When collapsing, skip alignment injection here so the outer parent can inject its own
     // alignment after the collapse (avoiding stale inner-container alignment on the merged element).
-    const canCollapse = (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
+    const canCollapse = (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && !hasPadding && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
     if (canCollapse) {
         const SKIP_ATTRS = new Set(['orientation', 'rows', 'columns', 'items', 'showIndicators', 'scrollBarIndicatorVisible']);
         let collapsed = childMarkups[0];
@@ -1239,27 +1241,28 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     let script = `<script context="module" lang="ts">\n`;
     script += `    // Auto-generated Svelte Native component for widget "${layout.name}"\n`;
-    script += `    import type { Writable } from 'svelte/store';\n`;
+    // script += `    import type { Writable } from 'svelte/store';\n`;
     script += `    import { Template } from '@nativescript-community/svelte-native/components';\n`;
-    const localeImports = ['formatDate', 'l'];
+    const localeImports = ['formatDate', 'l', 'lc'];
     if (usesDayMonth) localeImports.push('formatDateWithoutYear');
     script += `    import { ${localeImports.join(', ')} } from '~/helpers/locale';\n`;
     script += `    import { titlecase } from '@nativescript-community/l';\n`;
     script += `    import { iconService } from '~/services/icon';\n`;
     script += `    import { colors } from '~/variables';\n`;
-    script += `    import { lc } from '~/helpers/locale';\n`;
     script += `    import type { WeatherWidgetData, WidgetConfig } from '~/services/widgets/WidgetTypes';\n`;
-    script += `    </script>\n`;
-    script += `    <script lang="ts">\n`;
+    script += `</script>\n`;
+    script += `<script lang="ts">\n`;
 
     // Export props with proper typing
     script += `    export let config: WidgetConfig;\n`;
     script += `    export let data: WeatherWidgetData;\n`;
+    // script += `    export let width: number = ${layout.supportedSizes?.[0]?.width ?? 160};\n`;
+    // script += `    export let height: number = ${layout.supportedSizes?.[0]?.height ?? 160};\n`;
     script += `    export let size: { width: number; height: number } = { width: ${layout.supportedSizes?.[0]?.width ?? 160}, height: ${layout.supportedSizes?.[0]?.height ?? 160}};\n\n`;
 
     // If we have used color tokens, generate reactive destructuring from $colors
     if (usedColors.size > 0) {
-        const vars = Array.from(usedColors).join(', ');
+        const vars = Array.from(usedColors).sort().join(', ');
         script += `    $: ({ ${vars} } = $colors);\n`;
     }
 
@@ -1274,7 +1277,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     // Build top-level wrapper element (container)
     const wrapperAttrs: string[] = [];
-    wrapperAttrs.push(`width={size.width}`, `height={size.height}`);
+    wrapperAttrs.push(`width={size.width}`, `height={size.height}`, `{...$$restProps}`);
     if (layout.background?.color) {
         const v = layout.background.color;
         const attrBg = buildAttribute(widgetName, 'backgroundColor', v, ['root'], 'data', usedColors);

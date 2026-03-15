@@ -321,7 +321,7 @@
             ],
             "dailyData": [
                 { "day": "Mon", "iconPath": "800d", "temperatureHigh": "12 \u00b0C", "temperatureLow": "4 \u00b0C", "precipAccumulation": "0 mm" },
-                { "day": "Tue", "iconPath": "801d", "temperatureHigh": "14 \u00b0C", "temperatureLow": "6 \u00b0C", "precipAccumulation": "0 mm" },
+                { "day": "Tue", "iconPath": "802d", "temperatureHigh": "14 \u00b0C", "temperatureLow": "6 \u00b0C", "precipAccumulation": "0 mm" },
                 { "day": "Wed", "iconPath": "500d", "temperatureHigh": "10 \u00b0C", "temperatureLow": "5 \u00b0C", "precipAccumulation": "0 mm" },
                 { "day": "Thu", "iconPath": "802d", "temperatureHigh": "9 \u00b0C", "temperatureLow": "3 \u00b0C", "precipAccumulation": "0 mm" },
                 { "day": "Fri", "iconPath": "800d", "temperatureHigh": "11 \u00b0C", "temperatureLow": "4 \u00b0C", "precipAccumulation": "0 mm" },

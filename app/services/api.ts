@@ -3,7 +3,7 @@ import * as https from '@nativescript-community/https';
 import Observable, { EventData } from '@nativescript-community/observable';
 import { Application, ApplicationEventData, ApplicationSettings, Folder, knownFolders } from '@nativescript/core';
 import { connectionType, getConnectionType, startMonitoring, stopMonitoring } from '@nativescript/core/connectivity';
-import { HTTPError, NoNetworkError, wrapNativeHttpException } from '@shared/utils/error';
+import { HTTPError, NoNetworkError, wrapNativeHttpException } from '@akylas/nativescript-app-utils/error';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import dayjs from 'dayjs';
 import { getTimes } from 'suncalc';

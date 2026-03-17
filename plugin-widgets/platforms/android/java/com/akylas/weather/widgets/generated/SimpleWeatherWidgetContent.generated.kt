@@ -43,8 +43,8 @@ import kotlin.math.min
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "8 °C",
-        iconPath = "icon_themes/meteocons/images/icon_themes/weathericons/images/800d.png.png",
+        temperature = "8°",
+        iconPath = "icon_themes/meteocons/images/800d.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
         date = "Mon, Feb 24",
@@ -113,7 +113,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     }
     else {
         Box(
-            modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(6.dp)
+            modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(horizontal = 10.dp, vertical = 6.dp)
         ) {
             Text(
                 text = data.locationName,
@@ -126,17 +126,17 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
-                    modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
+                    modifier = GlanceModifier.fillMaxHeight(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.Start
                 ) {
                     Text(
                         text = data.temperature,
-                        style = TextStyle(fontSize = (min((size.width.value * 0.16f), 30.0f)).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        style = TextStyle(fontSize = (min((size.width.value * 0.26f), 30.0f)).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
                     )
                 }
                 Column(
-                    modifier = GlanceModifier.fillMaxHeight(),
+                    modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.End
                 ) {
@@ -145,7 +145,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                             Image(
                                provider = provider,
                                contentDescription = data.iconPath,
-                               modifier = GlanceModifier.size(64.dp)
+                               modifier = GlanceModifier
                             )
                         }
                     }

@@ -27,4 +27,5 @@ dependencies {
     implementation "androidx.compose.runtime:runtime:1.10.3"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0"
     implementation 'androidx.compose.ui:ui-unit:1.10.3'
+
 }

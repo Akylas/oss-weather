@@ -70,7 +70,7 @@ struct ForecastWeatherWidgetView: View {
                                                     .font(.system(size: 9, weight: .regular))
                                                     .foregroundColor(WidgetColorProvider.onSurface).opacity(0.6)
                                             }
-                                        }.frame(width: 53).padding(.horizontal, 4).frame(width: 53)
+                                        }.frame(width: 53).padding(.horizontal, 4)
                                     }
                                 }
                             }
@@ -122,8 +122,8 @@ struct ForecastWeatherWidgetView: View {
                                                         }
                                                     }
                                                 }.frame(maxWidth: .infinity)
-                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
-                                        }.frame(maxWidth: .infinity).padding(2).padding(2)
+                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                        }.frame(maxWidth: .infinity).padding(2)
                                     }
                                 }
                             }

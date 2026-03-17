@@ -52,7 +52,7 @@ struct HourlyWeatherWidgetView: View {
                                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                                 }
                                             }
-                                        }.frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2).frame(width: 56)
+                                        }.frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2)
                                     }
                                 }
                             }

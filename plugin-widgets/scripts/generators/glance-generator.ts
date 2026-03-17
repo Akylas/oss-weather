@@ -62,6 +62,7 @@ interface WidgetLayout {
     description?: string;
     supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
+    color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
         color?: string;
@@ -120,7 +121,7 @@ function compileSpValue(value: Expression | undefined, defaultValue?: string): s
 /**
  * Generate Kotlin code for an element
  */
-function generateElement(element: LayoutElement, indent: string = '            '): string {
+function generateElement(element: LayoutElement, indent: string = '            ', defaultColor?: string): string {
     const lines: string[] = [];
 
     // Handle visibility condition
@@ -134,16 +135,16 @@ function generateElement(element: LayoutElement, indent: string = '            '
 
     switch (element.type) {
         case 'column':
-            lines.push(...generateColumn(element, currentIndent));
+            lines.push(...generateColumn(element, currentIndent, defaultColor));
             break;
         case 'row':
-            lines.push(...generateRow(element, currentIndent));
+            lines.push(...generateRow(element, currentIndent, defaultColor));
             break;
         case 'stack':
-            lines.push(...generateStack(element, currentIndent));
+            lines.push(...generateStack(element, currentIndent, defaultColor));
             break;
         case 'label':
-            lines.push(...generateLabel(element, currentIndent));
+            lines.push(...generateLabel(element, currentIndent, defaultColor));
             break;
         case 'image':
             lines.push(...generateImage(element, currentIndent));
@@ -155,19 +156,19 @@ function generateElement(element: LayoutElement, indent: string = '            '
             lines.push(...generateDivider(element, currentIndent));
             break;
         case 'scrollView':
-            lines.push(...generateScrollView(element, currentIndent));
+            lines.push(...generateScrollView(element, currentIndent, defaultColor));
             break;
         case 'forEach':
-            lines.push(...generateForEach(element, currentIndent));
+            lines.push(...generateForEach(element, currentIndent, defaultColor));
             break;
         case 'conditional':
-            lines.push(...generateConditional(element, currentIndent));
+            lines.push(...generateConditional(element, currentIndent, defaultColor));
             break;
         case 'clock':
-            lines.push(...generateClock(element, currentIndent));
+            lines.push(...generateClock(element, currentIndent, defaultColor));
             break;
         case 'date':
-            lines.push(...generateDate(element, currentIndent));
+            lines.push(...generateDate(element, currentIndent, defaultColor));
             break;
         default:
             lines.push(`${currentIndent}// Unknown element type: ${element.type}`);
@@ -180,7 +181,7 @@ function generateElement(element: LayoutElement, indent: string = '            '
     return lines.join('\n');
 }
 
-function generateColumn(element: LayoutElement, indent: string): string[] {
+function generateColumn(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const vertAlign = toPlatformVerticalAlignment(element.alignment, 'glance');
     // crossAlignment can be an expression (for conditional alignment)
@@ -210,7 +211,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
                 }
             }
 
-            lines.push(generateElement(child, indent + '    '));
+            lines.push(generateElement(child, indent + '    ', defaultColor));
         }
     }
 
@@ -218,7 +219,7 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateRow(element: LayoutElement, indent: string): string[] {
+function generateRow(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const horizAlign = isExpression(element.alignment)
         ? compileExpr(element.alignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
@@ -247,7 +248,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
                     lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
                 }
 
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         } else {
             // Normal layout with optional spacing
@@ -263,7 +264,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
                     }
                 }
 
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
@@ -272,7 +273,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateStack(element: LayoutElement, indent: string): string[] {
+function generateStack(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     const modifier = buildGlanceModifier(element);
@@ -303,7 +304,7 @@ function generateStack(element: LayoutElement, indent: string): string[] {
 
     if (element.children) {
         for (const child of element.children) {
-            lines.push(generateElement(child, indent + '    '));
+            lines.push(generateElement(child, indent + '    ', defaultColor));
         }
     }
 
@@ -311,7 +312,7 @@ function generateStack(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateLabel(element: LayoutElement, indent: string): string[] {
+function generateLabel(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     // Build modifier for the text element (padding support)
@@ -358,7 +359,9 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     }
 
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
-    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'GlanceTheme.colors.onSurface');
+    const colorExpr = compilePropValue(colorToUse, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight with proper expression support and literal transformation
     const fontWeightExpr = compilePropValue(
@@ -489,7 +492,7 @@ function generateDivider(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateScrollView(element: LayoutElement, indent: string): string[] {
+function generateScrollView(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     const direction = element.direction || 'vertical';
@@ -512,7 +515,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                             const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                             lines.push(`${indent}    data.${child.items}.take(${limitCode}).forEach { item ->`);
-                            lines.push(generateElement(child.itemTemplate, indent + '        '));
+                            lines.push(generateElement(child.itemTemplate, indent + '        ', defaultColor));
                             lines.push(`${indent}    }`);
                         }
                     } else if (child.children) {
@@ -524,7 +527,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                                     const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                                     lines.push(`${indent}    data.${nestedChild.items}.take(${limitCode}).forEach { item ->`);
-                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
+                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        ', defaultColor));
                                     lines.push(`${indent}    }`);
                                 }
                             }
@@ -535,7 +538,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                 // No forEach, wrap each child in item{}
                 for (const child of element.children) {
                     lines.push(`${indent}    item {`);
-                    lines.push(generateElement(child, indent + '        '));
+                    lines.push(generateElement(child, indent + '        ', defaultColor));
                     lines.push(`${indent}    }`);
                 }
             }
@@ -558,7 +561,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                             const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                             lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
-                            lines.push(generateElement(child.itemTemplate, indent + '        '));
+                            lines.push(generateElement(child.itemTemplate, indent + '        ', defaultColor));
                             lines.push(`${indent}    }`);
                         }
                     } else if (child.children) {
@@ -570,7 +573,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                                     const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                                     lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
-                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
+                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        ', defaultColor));
                                     lines.push(`${indent}    }`);
                                 }
                             }
@@ -581,7 +584,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                 // No forEach, wrap each child in item{}
                 for (const child of element.children) {
                     lines.push(`${indent}    item {`);
-                    lines.push(generateElement(child, indent + '        '));
+                    lines.push(generateElement(child, indent + '        ', defaultColor));
                     lines.push(`${indent}    }`);
                 }
             }
@@ -592,7 +595,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateForEach(element: LayoutElement, indent: string): string[] {
+function generateForEach(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     if (!element.items || !element.itemTemplate) {
@@ -605,13 +608,13 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
     const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
     lines.push(`${indent}data.${element.items}.take(${limitCode}).forEach { item ->`);
-    lines.push(generateElement(element.itemTemplate, indent + '    '));
+    lines.push(generateElement(element.itemTemplate, indent + '    ', defaultColor));
     lines.push(`${indent}}`);
 
     return lines;
 }
 
-function generateConditional(element: LayoutElement, indent: string): string[] {
+function generateConditional(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     if (!element.condition) {
@@ -623,24 +626,26 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}if (${condition}) {`);
     if (element.then) {
-        lines.push(generateElement(element.then, indent + '    '));
+        lines.push(generateElement(element.then, indent + '    ', defaultColor));
     }
     lines.push(`${indent}}`);
 
     if (element.else) {
         lines.push(`${indent}else {`);
-        lines.push(generateElement(element.else, indent + '    '));
+        lines.push(generateElement(element.else, indent + '    ', defaultColor));
         lines.push(`${indent}}`);
     }
 
     return lines;
 }
 
-function generateClock(element: LayoutElement, indent: string): string[] {
+function generateClock(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
-    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'GlanceTheme.colors.onSurface');
+    const colorExpr = compilePropValue(colorToUse, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight with proper expression support and literal transformation
     const fontWeightExpr = compilePropValue(
@@ -687,11 +692,13 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateDate(element: LayoutElement, indent: string): string[] {
+function generateDate(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
-    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'GlanceTheme.colors.onSurface');
+    const colorExpr = compilePropValue(colorToUse, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight with proper expression support and literal transformation
     const fontWeightExpr = compilePropValue(
@@ -939,8 +946,14 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('    val size = LocalSize.current');
     lines.push('');
 
+    // Compile top-level color if present
+    let defaultColorExpr: string | undefined;
+    if (layout.color !== undefined) {
+        defaultColorExpr = compilePropValue(layout.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, undefined);
+    }
+
     // Generate the main content
-    lines.push(generateElement(layout.layout, '    '));
+    lines.push(generateElement(layout.layout, '    ', defaultColorExpr));
 
     lines.push('}');
     lines.push('');

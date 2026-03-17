@@ -47,7 +47,7 @@ struct SimpleWeatherWithDateWidgetView: View {
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                         .multilineTextAlignment(.trailing)
                                 }
-                            }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(8).padding(8)
+                            }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(8)
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
@@ -91,7 +91,7 @@ struct SimpleWeatherWithDateWidgetView: View {
                                     .foregroundColor(WidgetColorProvider.onSurface)
                                     .lineLimit(1).opacity(0.6)
                             }
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3).padding(3)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3)
                     }
                 }
             } else {

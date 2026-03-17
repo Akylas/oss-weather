@@ -82,7 +82,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                                     .foregroundColor(WidgetColorProvider.onSurface)
                                     .lineLimit(1).opacity(0.6)
                             }
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3).padding(3)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3)
                     }
                 }
             } else {

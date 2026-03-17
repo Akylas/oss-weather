@@ -22,7 +22,8 @@ import {
     isSettingReference,
     toPlatformFontWeight
 } from './shared-utils';
-import { DEFAULT_COLOR_MAPS, buildSwiftModifiers } from './modifier-builders';
+import { DEFAULT_COLOR_MAPS } from './modifier-builders';
+import { compilePropertyValue } from './expression-compiler';
 
 // ============================================================================
 // CONSTANTS
@@ -429,10 +430,16 @@ function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void 
         allMods.push('.layoutPriority(1)');
     }
     
-    // Add opacity modifier from buildSwiftModifiers (handles expressions)
-    const additionalMods = buildSwiftModifiers(element);
-    for (const mod of additionalMods) {
-        allMods.push(`.${mod}`);
+    // Add opacity modifier (only this new modifier to avoid duplicates)
+    if (element.opacity !== undefined) {
+        const opacityExpr = compilePropertyValue(element.opacity, {
+            platform: 'swift',
+            context: 'value',
+            formatter: (v: number) => `${v}`
+        });
+        if (opacityExpr) {
+            allMods.push(`.opacity(${opacityExpr})`);
+        }
     }
 
     if (allMods.length > 0) {

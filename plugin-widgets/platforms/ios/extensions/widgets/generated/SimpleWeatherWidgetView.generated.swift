@@ -31,7 +31,7 @@ struct SimpleWeatherWidgetView: View {
                                 .font(.system(size: 8, weight: .regular))
                                 .foregroundColor(WidgetColorProvider.onSurface)
                                 .lineLimit(1).opacity(0.6)
-                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3).padding(3)
+                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3)
                     }
                     else {
                         ZStack {

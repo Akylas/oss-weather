@@ -42,7 +42,7 @@ struct DailyWeatherWidgetView: View {
                                         .lineLimit(1).opacity(0.6)
                                 }
                             }
-                        }.frame(maxWidth: .infinity).padding(8).padding(8)
+                        }.frame(maxWidth: .infinity).padding(8)
                         VStack(alignment: .leading, spacing: 0) {
                             Text("daily")
                                 .font(.system(size: 12, weight: .medium))
@@ -89,8 +89,8 @@ struct DailyWeatherWidgetView: View {
                                                         }
                                                     }
                                                 }.frame(maxWidth: .infinity)
-                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
-                                        }.frame(maxWidth: .infinity).padding(2).padding(2)
+                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                        }.frame(maxWidth: .infinity).padding(2)
                                     }
                                 }
                             }

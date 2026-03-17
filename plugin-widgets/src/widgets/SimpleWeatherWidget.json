@@ -55,7 +55,8 @@
             "type": "stack",
             "fillWidth": true,
             "fillHeight": true,
-            "padding": 6,
+            "paddingHorizontal": 10,
+            "paddingVertical": 6,
             "children": [
                 {
                     "type": "label",
@@ -74,14 +75,13 @@
                         {
                             "type": "column",
                             "fillHeight": true,
-                            "flex": 1,
                             "alignment": "center",
                             "crossAlignment": "start",
                             "children": [
                                 {
                                     "type": "label",
                                     "text": ["get", "temperature"],
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.16], 30],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.26], 30],
                                     "fontWeight": "bold",
                                     "color": "onSurface"
                                 }
@@ -90,6 +90,7 @@
                         {
                             "type": "column",
                             "fillHeight": true,
+                            "flex": 1,
                             "alignment": "center",
                             "crossAlignment": "end",
                             "children": [
@@ -107,6 +108,8 @@
                     "type": "stack",
                     "fillWidth": true,
                     "fillHeight": true,
+                    "alignment": "end",
+                    "crossAlignment": "end",
                     "contentAlignment": "BottomEnd",
                     "visibleIf": ["has", "description"],
                     "children": [
@@ -131,7 +134,7 @@
             { "width": 120, "height": 120 }
         ],
         "fakeData": {
-            "temperature": "8 \u00b0C",
+            "temperature": "8\u00b0",
             "iconPath": "800d",
             "description": "Partly Cloudy",
             "locationName": "Grenoble",

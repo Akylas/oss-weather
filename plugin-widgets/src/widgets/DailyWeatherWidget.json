@@ -222,7 +222,7 @@
             { "width": 260, "height": 400 }
         ],
         "fakeData": {
-            "temperature": "12 \u00b0C",
+            "temperature": "12\u00b0",
             "description": "Partly Cloudy",
             "iconPath": "802d",
             "locationName": "Grenoble",
@@ -231,8 +231,8 @@
                 {
                     "day": "Mon",
                     "iconPath": "800d",
-                    "temperatureHigh": "12 \u00b0C",
-                    "temperatureLow": "4 \u00b0C",
+                    "temperatureHigh": "12\u00b0",
+                    "temperatureLow": "4\u00b0",
                     "precipAccumulation": "0 mm",
                     "precipitation": "5 %",
                     "windSpeed": "14 km/h"
@@ -240,8 +240,8 @@
                 {
                     "day": "Tue",
                     "iconPath": "802d",
-                    "temperatureHigh": "14 \u00b0C",
-                    "temperatureLow": "6 \u00b0C",
+                    "temperatureHigh": "14\u00b0",
+                    "temperatureLow": "6\u00b0",
                     "precipAccumulation": "0 mm",
                     "precipitation": "10 %",
                     "windSpeed": "12 km/h"
@@ -249,8 +249,8 @@
                 {
                     "day": "Wed",
                     "iconPath": "500d",
-                    "temperatureHigh": "10 \u00b0C",
-                    "temperatureLow": "5 \u00b0C",
+                    "temperatureHigh": "10\u00b0",
+                    "temperatureLow": "5\u00b0",
                     "precipAccumulation": "3 mm",
                     "precipitation": "60 %",
                     "windSpeed": "18 km/h"
@@ -258,8 +258,8 @@
                 {
                     "day": "Thu",
                     "iconPath": "503",
-                    "temperatureHigh": "9 \u00b0C",
-                    "temperatureLow": "3 \u00b0C",
+                    "temperatureHigh": "9\u00b0",
+                    "temperatureLow": "3\u00b0",
                     "precipAccumulation": "8 mm",
                     "precipitation": "80 %",
                     "windSpeed": "22 km/h"
@@ -267,8 +267,8 @@
                 {
                     "day": "Fri",
                     "iconPath": "802d",
-                    "temperatureHigh": "11 \u00b0C",
-                    "temperatureLow": "4 \u00b0C",
+                    "temperatureHigh": "11\u00b0",
+                    "temperatureLow": "4\u00b0",
                     "precipAccumulation": "0 mm",
                     "precipitation": "20 %",
                     "windSpeed": "16 km/h"
@@ -276,8 +276,8 @@
                 {
                     "day": "Sat",
                     "iconPath": "800d",
-                    "temperatureHigh": "15 \u00b0C",
-                    "temperatureLow": "7 \u00b0C",
+                    "temperatureHigh": "15\u00b0",
+                    "temperatureLow": "7\u00b0",
                     "precipAccumulation": "0 mm",
                     "precipitation": "5 %",
                     "windSpeed": "10 km/h"

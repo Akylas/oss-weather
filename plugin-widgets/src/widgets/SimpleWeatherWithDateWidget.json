@@ -20,7 +20,8 @@
         "then": {
             "type": "stack",
             "fillMaxSize": true,
-            "padding": 4,
+            "paddingHorizontal": 10,
+            "paddingVertical": 6,
             "children": [
                 {
                     "type": "row",
@@ -198,7 +199,7 @@
             { "width": 120, "height": 120 }
         ],
         "fakeData": {
-            "temperature": "8 \u00b0C",
+            "temperature": "8\u00b0",
             "iconPath": "800d",
             "description": "Partly Cloudy",
             "locationName": "Grenoble",

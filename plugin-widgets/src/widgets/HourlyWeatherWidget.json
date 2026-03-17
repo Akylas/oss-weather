@@ -34,7 +34,9 @@
         "type": "column",
         "alignment": "start",
         "crossAlignment": "stretch",
-        "padding": ["case", ["<", ["get", "size.height"], 60], 2, ["<", ["get", "size.height"], 80], 4, 6],
+
+        "paddingHorizontal": 10,
+        "paddingVertical": 6,
         "children": [
             {
                 "type": "conditional",
@@ -46,9 +48,8 @@
                         {
                             "type": "label",
                             "text": ["get", "data.locationName"],
-                            "fontSize": 14,
-                            "fontWeight": "medium",
-                            "color": "onSurface",
+                            "fontSize": 12,
+                            "color": "onSurfaceVariant",
                             "textAlign": "left",
                             "maxLines": 1
                         },

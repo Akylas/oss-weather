@@ -88,7 +88,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         Row(
-            modifier = GlanceModifier.fillMaxWidth().padding(8.dp),
+            modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 6.dp),
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.Top
         ) {

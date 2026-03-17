@@ -1147,10 +1147,18 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         }
     }
 
+    // Apply parent container alignment to all children (after collapse check so collapsed
+    // elements don't carry stale inner-container alignment that blocks outer parent injection)
+    for (let i = 0; i < childMarkups.length; i++) {
+        childMarkups[i] = injectParentAlignmentAttrs(childMarkups[i]);
+    }
+
+
     // Single-child collapse: check BEFORE injecting parent alignment.
     // When collapsing, skip alignment injection here so the outer parent can inject its own
     // alignment after the collapse (avoiding stale inner-container alignment on the merged element).
-    const canCollapse = (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && !hasPadding && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
+    const canCollapse =
+        (elType === 'column' || elType === 'row' || elType === 'stack') && !hasFlex1Children && !hasPadding && childMarkups.length === 1 && !childMarkups[0].trimStart().startsWith('{');
     if (canCollapse) {
         const SKIP_ATTRS = new Set(['orientation', 'rows', 'columns', 'items', 'showIndicators', 'scrollBarIndicatorVisible']);
         let collapsed = childMarkups[0];
@@ -1163,11 +1171,6 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         return collapsed;
     }
 
-    // Apply parent container alignment to all children (after collapse check so collapsed
-    // elements don't carry stale inner-container alignment that blocks outer parent injection)
-    for (let i = 0; i < childMarkups.length; i++) {
-        childMarkups[i] = injectParentAlignmentAttrs(childMarkups[i]);
-    }
 
     if (elType === 'forEach') {
         usedTemplateImport.val = true;

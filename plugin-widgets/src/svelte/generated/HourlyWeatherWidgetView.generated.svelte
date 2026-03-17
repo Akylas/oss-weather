@@ -16,10 +16,10 @@
 </script>
 
 <gridlayout width={size.width} height={size.height} {...$$restProps} backgroundColor={colorWidgetBackground} class="widget-container">
-    <stacklayout padding={size.height < 60 ? 2 : size.height < 80 ? 4 : 6} orientation="vertical">
+    <stacklayout paddingLeft={10} paddingRight={10} paddingTop={6} paddingBottom={6} orientation="vertical">
         {#if size.height >= 80}
             <stacklayout orientation="vertical" horizontalAlignment="stretch" verticalAlignment="top">
-                <label text={data.locationName} fontSize={14} fontWeight={500} color={colorOnSurface} textAlignment="left" maxLines={1} horizontalAlignment="left"></label>
+                <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} textAlignment="left" maxLines={1} horizontalAlignment="left"></label>
                 <absolutelayout height={2} horizontalAlignment="left"></absolutelayout>
             </stacklayout>
         {:else}

@@ -145,7 +145,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                             Image(
                                provider = provider,
                                contentDescription = data.iconPath,
-                               modifier = GlanceModifier
+                               modifier = GlanceModifier.size(64.dp)
                             )
                         }
                     }

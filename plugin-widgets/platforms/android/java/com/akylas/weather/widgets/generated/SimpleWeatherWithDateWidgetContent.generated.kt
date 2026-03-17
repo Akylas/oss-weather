@@ -81,7 +81,7 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
 
     if (size.width.value >= 180) {
         Box(
-            modifier = GlanceModifier.fillMaxSize().padding(4.dp)
+            modifier = GlanceModifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 6.dp)
         ) {
             Row(
                 modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(8.dp),

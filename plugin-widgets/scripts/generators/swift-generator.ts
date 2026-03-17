@@ -12,7 +12,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { compileExpression, Expression } from './expression-compiler';
+import { compileExpression, compilePropertyValue as compilePropValue, Expression } from './expression-compiler';
 import {
     BaseLayoutElement,
     getSingleBinding,
@@ -175,17 +175,19 @@ function escapeSwiftString(str: string): string {
 
 /**
  * Convert font weight to Swift weight token
- * Supports both literal values and config.settings.* references
+ * Supports both literal values and expressions (including config.settings.*)
  */
 function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): string {
     if (weight === undefined) {
         return toPlatformFontWeight(fallback, 'swift');
     }
 
-    // Handle config settings reference
-    if (isSettingReference(weight as string)) {
-        const settingKey = getSettingKey(weight as string);
-        return `(config.settings?["${settingKey}"] as? Bool ?? true) ? .bold : .regular`;
+    // Use compileExpression for all non-literal values (expressions, config.settings, etc.)
+    if (isExpression(weight)) {
+        return compilePropValue(weight, {
+            platform: 'swift',
+            formatter: (v: string) => toPlatformFontWeight(v, 'swift')
+        }, toPlatformFontWeight(fallback, 'swift'));
     }
 
     // Handle string literals (including numeric weight values like '700')

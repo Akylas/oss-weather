@@ -40,7 +40,7 @@
                                 {
                                     "type": "clock",
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
-                                    "fontWeight": "config.settings.clockBold",
+                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
                                     "color": "onSurface"
                                 },
                                 {
@@ -133,7 +133,7 @@
                                 {
                                     "type": "clock",
                                     "fontSize": ["min", ["*", ["get", "size.height"], 0.24], 40],
-                                    "fontWeight": "config.settings.clockBold",
+                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
                                     "color": "onSurface",
                                     "textAlign": ["case", ["<=", ["get", "size.height"], 50], "right", "left"]
                                 }

@@ -26,7 +26,7 @@ struct SimpleWeatherWidgetView: View {
                                 Text(data.temperature)
                                     .font(.system(size: (width * 0.2), weight: .bold))
                                     .foregroundColor(WidgetColorProvider.onSurface)
-                            }.frame(maxWidth: .infinity).layoutPriority(1)
+                            }.frame(maxWidth: .infinity)
                             Text(data.locationName)
                                 .font(.system(size: 8, weight: .regular))
                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
@@ -42,14 +42,14 @@ struct SimpleWeatherWidgetView: View {
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(data.temperature)
-                                        .font(.system(size: min((width * 0.16), 30), weight: .bold))
+                                        .font(.system(size: min((width * 0.26), 30), weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                 }.frame(maxHeight: .infinity)
                                 VStack(alignment: .trailing, spacing: 0) {
                                     if !data.iconPath.isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 64)
                                     }
-                                }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
+                                }.frame(maxHeight: .infinity).layoutPriority(1)
                             }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             if !data.description.isEmpty {
                                 ZStack(alignment: .bottomTrailing) {
@@ -59,7 +59,7 @@ struct SimpleWeatherWidgetView: View {
                                         .multilineTextAlignment(.trailing)
                                 }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             }
-                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(6)
+                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
                     }
                 }
             } else {

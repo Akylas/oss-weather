@@ -44,7 +44,7 @@ struct DailyWeatherWidgetView: View {
                             }
                         }.frame(maxWidth: .infinity).padding(8)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("Daily")
+                            Text("daily")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 .multilineTextAlignment(.leading).padding(.horizontal, 8)

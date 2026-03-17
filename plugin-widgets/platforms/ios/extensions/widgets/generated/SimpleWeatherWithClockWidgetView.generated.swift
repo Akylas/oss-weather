@@ -22,42 +22,45 @@ struct SimpleWeatherWithClockWidgetView: View {
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(Date(), style: .time)
-                                        .font(.system(size: min((width * 0.15), 50), weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
+                                        .font(.system(size: min((width * 0.15), 50), weight: entry.config.settings["clockBold"] as? Bool == true ? .bold : .regular))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                     Spacer().frame(height: 4)
                                     Text(Date(), style: .date)
                                         .font(.system(size: 14, weight: .regular))
                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                }
-                                Spacer()
+                                }.layoutPriority(1)
                                 VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 62)
                                     }
                                     Text(data.temperature)
-                                        .font(.system(size: min((width * 0.2), 15), weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                        .multilineTextAlignment(.trailing)
-                                    Text(data.description)
-                                        .font(.system(size: min((width * 0.04), 15), weight: .regular))
+                                        .font(.system(size: min((width * 0.2), 20), weight: .bold))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                         .multilineTextAlignment(.trailing)
                                 }
-                            }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(8)
+                            }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                     .lineLimit(1)
                             }.frame(maxWidth: .infinity)
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(4)
+                            if !data.description.isEmpty {
+                                ZStack(alignment: .bottomTrailing) {
+                                    Text(data.description)
+                                        .font(.system(size: 12, weight: .regular))
+                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                        .multilineTextAlignment(.trailing)
+                                }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
+                            }
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
                     }
                     else {
                         ZStack {
                             VStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: height <= 50 ? .trailing : .center, spacing: 0) {
                                     Text(Date(), style: .time)
-                                        .font(.system(size: min((height * 0.24), 40), weight: (config.settings?["clockBold"] as? Bool ?? true) ? .bold : .regular))
+                                        .font(.system(size: min((height * 0.24), 40), weight: entry.config.settings["clockBold"] as? Bool == true ? .bold : .regular))
                                         .foregroundColor(WidgetColorProvider.onSurface)
                                 }.frame(maxWidth: .infinity)
                                 HStack(alignment: .center, spacing: 0) {

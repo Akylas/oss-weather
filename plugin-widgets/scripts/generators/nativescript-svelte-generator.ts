@@ -15,7 +15,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { BaseLayoutElement, getSingleBinding, hasTemplateBinding } from './shared-utils';
+import { BaseLayoutElement, getSingleBinding, hasTemplateBinding, isExpression } from './shared-utils';
+import { compilePropertyValue as compilePropValue } from './expression-compiler';
 
 type AnyObj = Record<string, any>;
 
@@ -448,22 +449,26 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         return null;
     }
 
-    // Handle font weight mapping with config.settings support
+    // Handle font weight mapping with expression support (including config.settings)
     if (prop === 'fontWeight') {
-        if (typeof value === 'string' && value.startsWith('config.settings.')) {
-            const settingKey = value.substring(16); // Remove 'config.settings.' prefix
-            // Generate ternary for setting from config
-            return `${attrName}={config?.settings?.${settingKey} ?? true ? "bold" : "normal"}`;
+        if (isExpression(value)) {
+            const compiled = compilePropValue(value, {
+                platform: 'javascript',
+                formatter: (v: string) => `"${mapFontWeight(v)}"`
+            }, '"normal"');
+            return `${attrName}={${compiled}}`;
         }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;
     }
 
-    // Handle bold property with config.settings support
+    // Handle bold property with expression support (including config.settings)
     if (prop === 'bold') {
-        if (typeof value === 'string' && value.startsWith('config.settings.')) {
-            const settingKey = value.substring(16); // Remove 'config.settings.' prefix
-            return `${attrName}={config?.settings?.${settingKey} ?? true}`;
+        if (isExpression(value)) {
+            const compiled = compilePropValue(value, {
+                platform: 'javascript'
+            }, 'false');
+            return `${attrName}={${compiled}}`;
         }
         return `${attrName}={${JSON.stringify(value)}}`;
     }

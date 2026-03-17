@@ -31,8 +31,10 @@
       "enum": ["start", "center", "end", "stretch"]
     },
     "fontWeight": {
-      "type": "string",
-      "enum": ["normal", "medium", "bold"]
+      "oneOf": [
+        { "type": "string", "enum": ["normal", "medium", "bold"] },
+        { "type": "array", "description": "Mapbox expression evaluating to font weight" }
+      ]
     },
     "baseElement": {
       "type": "object",

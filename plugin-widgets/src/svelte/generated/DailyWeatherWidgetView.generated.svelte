@@ -27,7 +27,7 @@
                 <label text={data.description} fontSize={11} color={colorOnSurfaceVariant} textAlignment="right" maxLines={1} visibility={(data.description != null) ? 'visible' : 'collapsed'} horizontalAlignment="right" verticalAlignment="bottom"></label>
             </stacklayout>
         </gridlayout>
-            <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top"></label>
+            <label text={lc('daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top"></label>
         <absolutelayout height={4} horizontalAlignment="stretch" verticalAlignment="top"></absolutelayout>
         <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical" colWidth="auto" horizontalAlignment="stretch" verticalAlignment="top">
             <Template let:item>

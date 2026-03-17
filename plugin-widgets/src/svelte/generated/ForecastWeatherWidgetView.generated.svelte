@@ -28,7 +28,7 @@
             </stacklayout>
         </gridlayout>
         <absolutelayout height={8} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
-            <label text={lc('Hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top"></label>
+            <label text={lc('hourly')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top"></label>
         <absolutelayout height={4} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
         <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" colWidth="auto" horizontalAlignment="center" verticalAlignment="top">
             <Template let:item>
@@ -41,7 +41,7 @@
             </Template>
         </collectionview>
         <absolutelayout height={16} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
-            <label text={lc('Daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top"></label>
+            <label text={lc('daily')} textAlignment="left" fontSize={12} fontWeight={500} color={colorOnSurfaceVariant} paddingLeft={8} paddingRight={8} horizontalAlignment="left" verticalAlignment="top"></label>
         <absolutelayout height={4} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
         <collectionview items={data.dailyData?.slice(0, 10)} showIndicators={false} orientation="vertical" colWidth="auto" horizontalAlignment="center" verticalAlignment="top">
             <Template let:item>

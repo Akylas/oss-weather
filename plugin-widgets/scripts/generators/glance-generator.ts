@@ -362,17 +362,11 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
 
-    // Handle fontWeight - check for config.settings
-    let fontWeightExpr: string | undefined;
-    if (typeof element.fontWeight === 'string' && element.fontWeight.startsWith('config.settings.')) {
-        // It's a config setting reference
-        const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
-        if (settingName === 'clockBold') {
-            fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
-        }
-    } else {
-        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
-    }
+    // Handle fontWeight with proper expression support and literal transformation
+    const fontWeightExpr = compilePropValue(element.fontWeight, {
+        platform: 'kotlin',
+        formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+    }, undefined);
 
     const maxLinesExpr = compilePropValue(element.maxLines, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
@@ -646,21 +640,11 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
-    // Handle fontWeight - check for config.settings
-    let fontWeightExpr: string | undefined;
-    if (typeof element.fontWeight === 'string') {
-        if (element.fontWeight.startsWith('config.settings.')) {
-            // It's a config setting reference
-            const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
-            if (settingName === 'clockBold') {
-                fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
-            }
-        } else {
-            fontWeightExpr = toPlatformFontWeight(element.fontWeight as string, 'glance');
-        }
-    } else if (element.fontWeight) {
-        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
-    }
+    // Handle fontWeight with proper expression support and literal transformation
+    const fontWeightExpr = compilePropValue(element.fontWeight, {
+        platform: 'kotlin',
+        formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+    }, undefined);
 
     // Always use locale-aware time format (respects system 24h/12h and AM/PM preference)
     const timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
@@ -703,21 +687,11 @@ function generateDate(element: LayoutElement, indent: string): string[] {
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
-    // Handle fontWeight - check for config.settings
-    let fontWeightExpr: string | undefined;
-    if (typeof element.fontWeight === 'string') {
-        if (element.fontWeight.startsWith('config.settings.')) {
-            // It's a config setting reference
-            const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
-            if (settingName === 'clockBold') {
-                fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
-            }
-        } else {
-            fontWeightExpr = toPlatformFontWeight(element.fontWeight as string, 'glance');
-        }
-    } else if (element.fontWeight) {
-        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
-    }
+    // Handle fontWeight with proper expression support and literal transformation
+    const fontWeightExpr = compilePropValue(element.fontWeight, {
+        platform: 'kotlin',
+        formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+    }, undefined);
 
     // Determine date expression based on style (use locale-aware formats)
     let dateExpr: string;

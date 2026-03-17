@@ -42,10 +42,10 @@ struct ForecastWeatherWidgetView: View {
                                         .lineLimit(1)
                                 }
                             }
-                        }.frame(maxWidth: .infinity).padding(8)
+                        }.frame(maxWidth: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
                         Spacer().frame(height: 8)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("Hourly")
+                            Text("hourly")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 .multilineTextAlignment(.leading).padding(.horizontal, 8)
@@ -77,7 +77,7 @@ struct ForecastWeatherWidgetView: View {
                         }
                         Spacer().frame(height: 16)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("Daily")
+                            Text("daily")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                 .multilineTextAlignment(.leading).padding(.horizontal, 8)

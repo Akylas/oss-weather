@@ -21,8 +21,8 @@ struct HourlyWeatherWidgetView: View {
                         if height >= 80 {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                     .multilineTextAlignment(.leading)
                                     .lineLimit(1)
                                 Spacer().frame(height: 2)
@@ -52,12 +52,12 @@ struct HourlyWeatherWidgetView: View {
                                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                                 }
                                             }
-                                        }.frame(width: 53).frame(maxHeight: .infinity).padding(.horizontal, 4)
+                                        }.frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2)
                                     }
                                 }
                             }
                         }
-                    }.padding(height < 60 ? 2 : height < 80 ? 4 : 6)
+                    }.padding(.horizontal, 10).padding(.vertical, 6)
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)

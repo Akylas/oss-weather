@@ -40,7 +40,7 @@ class DailyWeatherWidget : WeatherWidget() {
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id)")
+//        WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id)")
         setupUpdateWorker(context)
         registerThemeChangeReceiver(context);
         

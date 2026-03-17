@@ -37,9 +37,8 @@ export let moduleLoaded: boolean;
 
 let OnBackPressedCallback;
 if (SDK_VERSION >= 33) {
-    OnBackPressedCallback = (androidx.activity.OnBackPressedCallback as any).extend('com.tns.OnBackPressedCallback', {
+    OnBackPressedCallback = (androidx.activity.OnBackPressedCallback as any).extend('com.akylas.weather.widgets.OnBackPressedCallback', {
         handleOnBackPressed() {
-            console.log('handleOnBackPressed0');
             if (Trace.isEnabled()) {
                 Trace.write('NativeScriptActivity.onBackPressed;', Trace.categories.NativeLifecycle);
             }
@@ -64,10 +63,8 @@ if (SDK_VERSION >= 33) {
             }
             const callbacks = activity[CALLBACKS];
             let callSuper = false;
-            console.log('handleOnBackPressed1');
             if (callbacks) {
                 const view = callbacks.getRootView();
-                console.log('handleOnBackPressed1', view);
 
                 if (view) {
                     const viewArgs = {

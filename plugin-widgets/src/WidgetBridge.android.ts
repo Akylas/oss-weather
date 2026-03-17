@@ -5,7 +5,7 @@ import { Utils } from '@nativescript/core';
 import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager, isDefaultLocation } from './WidgetDataManager';
-import { WeatherWidgetData } from './WidgetTypes';
+import { WeatherWidgetData, WidgetConfig } from './WidgetTypes';
 
 /**
  * Bridge between native Android widgets and JS weather data
@@ -181,6 +181,13 @@ export class WidgetBridge extends WidgetBridgeBase {
         } catch (error) {
             console.error('Error sending data to widget:', error, error.stack);
         }
+    }
+
+    public saveWidgetConfig(widgetId: string, config: WidgetConfig) {
+        const context = Utils.android.getApplicationContext();
+        const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+        DEV_LOG && console.log('saveWidgetConfig', widgetId, config);
+        widgetManager.saveWidgetConfigString(context, parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
     }
 
     /**

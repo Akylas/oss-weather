@@ -936,6 +936,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.widgets.WidgetComposables');
     lines.push('import com.akylas.weather.widgets.WidgetLoadingState');
     lines.push('import kotlin.math.min');
+    lines.push('import kotlinx.serialization.json.*');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);

@@ -6,6 +6,7 @@ import { DEFAULT_UPDATE_FREQUENCY, WidgetConfig } from './WidgetTypes';
 import { lc } from '@nativescript-community/l';
 import { getDefaultKindConfig } from './WidgetKindConfigs';
 import { WIDGET_KINDS } from './WidgetKindConfigs';
+import { widgetService } from 'plugin-widgets/WidgetBridge';
 
 const WIDGET_CONFIGS_KEY = 'widget_configs'; // per-instance configs
 const WIDGET_KIND_CONFIGS_KEY = 'widget_kind_configs'; // per-kind default configs
@@ -13,7 +14,6 @@ const UPDATE_FREQUENCY_KEY = 'widget_update_frequency';
 const CACHE_TIMEOUT_KEY = 'widget_cache_timeout';
 
 const TAG = '[WidgetConfigManager]';
-
 
 export type WidgetKind = (typeof WIDGET_KINDS)[number];
 
@@ -46,7 +46,7 @@ export class WidgetConfigManager {
 
     private static loadKindConfigs() {
         const data = ApplicationSettings.getString(WIDGET_KIND_CONFIGS_KEY);
-        DEV_LOG && console.log('loadKindConfigs');
+        DEV_LOG && console.log('loadKindConfigs', data);
         if (data) {
             try {
                 this.kindConfigs = JSON.parse(data);
@@ -157,11 +157,10 @@ export class WidgetConfigManager {
      */
     static saveConfig(widgetId: string, config: WidgetConfig, widgetKind?: string): void {
         const configs = this.getAllConfigs();
-        configs[widgetId] = {
-            ...config,
-            widgetKind: widgetKind || config.widgetKind
-        };
+        config.widgetKind = widgetKind || config.widgetKind
+        configs[widgetId] = config;
         this.saveAllConfigs();
+        widgetService.saveWidgetConfig(widgetId, config);
         DEV_LOG && console.log(TAG, 'saveConfig (instance)', widgetId, configs[widgetId]);
     }
 
@@ -239,9 +238,7 @@ export class WidgetConfigManager {
 
         if (__ANDROID__) {
             try {
-                import('./WidgetBridge.android').then(({ widgetService }) => {
-                    widgetService.setCacheTimeout(seconds * 1000);
-                });
+                widgetService.setCacheTimeout(seconds * 1000);
             } catch (error) {
                 console.error(TAG, 'Failed to update widget service cache timeout:', error, error.stack);
             }

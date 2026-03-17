@@ -27,8 +27,8 @@
     {:else}
         <gridlayout paddingLeft={10} paddingRight={10} paddingTop={6} paddingBottom={6}>
             <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} horizontalAlignment="left" maxLines={1}></label>
-            <gridlayout columns="*,auto">
-                    <label text={data.temperature} fontSize={Math.min(size.width * 0.16, 30)} fontWeight={700} color={colorOnSurface} horizontalAlignment="left" verticalAlignment="center" col={0}></label>
+            <gridlayout columns="auto,*">
+                    <label text={data.temperature} fontSize={Math.min(size.width * 0.26, 30)} fontWeight={700} color={colorOnSurface} horizontalAlignment="left" verticalAlignment="center" col={0}></label>
                     <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={64} height={64} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="right" verticalAlignment="center" col={1}></image>
             </gridlayout>
                 <label text={data.description} fontSize={12} color={colorOnSurfaceVariant} textAlignment="right" verticalAlignment="bottom" horizontalAlignment="right" visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>

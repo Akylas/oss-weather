@@ -79,9 +79,9 @@
                                     "type": "column",
                                     "alignment": "center",
                                     "crossAlignment": "center",
-                                    "width": 53,
+                                    "width": 56 ,
                                     "fillHeight": true,
-                                    "paddingHorizontal": 4,
+                                    "paddingHorizontal": 2,
                                     "spacing": ["case", ["<", ["get", "size.height"], 60], 0, 2],
                                     "children": [
                                         {

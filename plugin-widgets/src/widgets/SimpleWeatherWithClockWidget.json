@@ -13,7 +13,7 @@
     "defaultPadding": 4,
     "background": { "type": "solid", "color": "widgetBackground" },
     "settings": {
-        "clockBold": { "type": "boolean", "default": true, "title": "Bold clock" }
+        "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
     },
     "layout": {
         "type": "conditional",
@@ -28,18 +28,18 @@
                     "type": "row",
                     "fillWidth": true,
                     "fillHeight": true,
-                    "padding": 8,
                     "alignment": "center",
                     "crossAlignment": "center",
                     "children": [
                         {
                             "type": "column",
                             "alignment": "center",
+                            "flex": 1,
                             "crossAlignment": "start",
                             "children": [
                                 {
                                     "type": "clock",
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 50],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
                                     "fontWeight": "config.settings.clockBold",
                                     "color": "onSurface"
                                 },
@@ -56,10 +56,6 @@
                             ]
                         },
                         {
-                            "type": "spacer",
-                            "flex": 1
-                        },
-                        {
                             "type": "column",
                             "alignment": "center",
                             "crossAlignment": "center",
@@ -73,15 +69,8 @@
                                 {
                                     "type": "label",
                                     "text": ["get", "temperature"],
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 15],
+                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
                                     "fontWeight": "bold",
-                                    "color": "onSurface",
-                                    "textAlign": "right"
-                                },
-                                {
-                                    "type": "label",
-                                    "text": ["get", "description"],
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.04], 15],
                                     "color": "onSurface",
                                     "textAlign": "right"
                                 }
@@ -101,6 +90,24 @@
                             "fontSize": 12,
                             "color": "onSurfaceVariant",
                             "maxLines": 1
+                        }
+                    ]
+                },
+                {
+                    "type": "stack",
+                    "fillWidth": true,
+                    "fillHeight": true,
+                    "alignment": "end",
+                    "crossAlignment": "end",
+                    "contentAlignment": "BottomEnd",
+                    "visibleIf": ["has", "description"],
+                    "children": [
+                        {
+                            "type": "label",
+                            "text": ["get", "description"],
+                            "fontSize": 12,
+                            "color": "onSurfaceVariant",
+                            "textAlign": "right"
                         }
                     ]
                 }

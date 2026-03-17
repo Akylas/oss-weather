@@ -15,6 +15,7 @@ import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.*
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
+import kotlinx.serialization.json.*
 
 private const val LOG_TAG = "SimpleWeatherWithClockWidget"
 
@@ -46,9 +47,10 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
             // Observe only this widget's settings - prevents unnecessary recomposition from other widgets
             val widgetSettings by WidgetConfigStore.getWidgetSettingsFlow(widgetId).collectAsState()
             val widgetConfig = WidgetConfig(settings = widgetSettings)
+            WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id) widgetSettings=$widgetSettings TEST=${widgetSettings?.get("clockBold")?.jsonPrimitive?.booleanOrNull}")
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: false)) {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false)) {
                     if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData!!.loadingState == WidgetLoadingState.LOADING) {

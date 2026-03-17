@@ -30,11 +30,11 @@
                 </stacklayout>
                 <stacklayout orientation="vertical" col={2} verticalAlignment="center" horizontalAlignment="center">
                     <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} horizontalAlignment="right" width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
-                    <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 15)} fontWeight={700} color={colorOnSurface} textAlignment="right" horizontalAlignment="center" verticalAlignment="center"></label>
-                    <label text={data.description} fontSize={Math.min(size.width * 0.04, 15)} color={colorOnSurface} textAlignment="right" horizontalAlignment="center" verticalAlignment="center"></label>
+                    <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 20)} fontWeight={700} color={colorOnSurface} textAlignment="right" horizontalAlignment="center" verticalAlignment="center"></label>
                 </stacklayout>
             </gridlayout>
                 <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1} horizontalAlignment="left" verticalAlignment="top"></label>
+                <label text={data.description} fontSize={12} color={colorOnSurfaceVariant} textAlignment="right" verticalAlignment="bottom" horizontalAlignment="right" visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
         </gridlayout>
     {:else}
         <gridlayout padding={3}>

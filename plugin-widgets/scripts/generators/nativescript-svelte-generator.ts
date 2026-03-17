@@ -453,7 +453,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
         if (typeof value === 'string' && value.startsWith('config.settings.')) {
             const settingKey = value.substring(16); // Remove 'config.settings.' prefix
             // Generate ternary for setting from config
-            return `${attrName}={config?.settings?.${settingKey} ?? true ? "bold" : undefined}`;
+            return `${attrName}={config?.settings?.${settingKey} ?? true ? "bold" : "normal"}`;
         }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;

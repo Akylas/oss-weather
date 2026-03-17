@@ -7,28 +7,29 @@ import android.util.Log
  * Logging default follows BuildConfig.DEBUG; toggle WidgetsLogger.enabled if you need runtime change.
  */
 object WidgetsLogger {
-    private const val PREFIX = "Widgets"
+    // private const val PREFIX = "Widgets:"
+    private const val PREFIX = ""
 
     // Default to debug builds
     var enabled: Boolean  = true
 
     fun d(tag: String, message: String) {
         if (!enabled) return
-        Log.d("$PREFIX:$tag", message)
+        Log.d("$PREFIX$tag", message)
     }
 
     fun i(tag: String, message: String) {
         if (!enabled) return
-        Log.i("$PREFIX:$tag", message)
+        Log.i("$PREFIX$tag", message)
     }
 
     fun w(tag: String, message: String, t: Throwable? = null) {
         if (!enabled) return
-        if (t == null) Log.w("$PREFIX:$tag", message) else Log.w("$PREFIX:$tag", message, t)
+        if (t == null) Log.w("$PREFIX$tag", message) else Log.w("$PREFIX$tag", message, t)
     }
 
     fun e(tag: String, message: String, t: Throwable? = null) {
         if (!enabled) return
-        if (t == null) Log.e("$PREFIX:$tag", message) else Log.e("$PREFIX:$tag", message, t)
+        if (t == null) Log.e("$PREFIX$tag", message) else Log.e("$PREFIX$tag", message, t)
     }
 }

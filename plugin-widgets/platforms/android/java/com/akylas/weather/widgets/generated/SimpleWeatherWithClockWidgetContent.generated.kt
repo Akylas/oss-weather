@@ -29,6 +29,7 @@ import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
+import kotlinx.serialization.json.*
 
 /**
  * Generated content for Weather with Clock
@@ -85,18 +86,18 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
             modifier = GlanceModifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 6.dp)
         ) {
             Row(
-                modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(8.dp),
+                modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
-                    modifier = GlanceModifier,
+                    modifier = GlanceModifier.defaultWeight(),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.Start
                 ) {
                     Text(
                         text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                        style = TextStyle(fontSize = (min((size.width.value * 0.17f), 50.0f)).sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
+                        style = TextStyle(fontSize = (min((size.width.value * 0.17f), 50.0f)).sp, fontWeight = if (config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface)
                     )
                     Spacer(modifier = GlanceModifier.height(4.dp))
                     Text(
@@ -104,7 +105,6 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                         style = TextStyle(fontSize = 14.sp, color = GlanceTheme.colors.onSurfaceVariant)
                     )
                 }
-                Spacer(modifier = GlanceModifier.defaultWeight())
                 Column(
                     modifier = GlanceModifier,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
@@ -121,11 +121,7 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                     }
                     Text(
                         text = data.temperature,
-                        style = TextStyle(fontSize = (min((size.width.value * 0.2f), 15.0f)).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
-                    )
-                    Text(
-                        text = data.description,
-                        style = TextStyle(fontSize = (min((size.width.value * 0.04f), 15.0f)).sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
+                        style = TextStyle(fontSize = (min((size.width.value * 0.2f), 20.0f)).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
                     )
                 }
             }
@@ -139,6 +135,17 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                     style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
                     maxLines = 1
                 )
+            }
+            if (data.description.isNotEmpty()) {
+                Box(
+                    modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Text(
+                        text = data.description,
+                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End)
+                    )
+                }
             }
         }
     }
@@ -158,7 +165,7 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                 ) {
                     Text(
                         text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                        style = TextStyle(fontSize = (min((size.height.value * 0.24f), 40.0f)).sp, fontWeight = if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface, textAlign = when { size.height.value <= 50 -> TextAlign.End; else -> TextAlign.Start })
+                        style = TextStyle(fontSize = (min((size.height.value * 0.24f), 40.0f)).sp, fontWeight = if (config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull ?: true) FontWeight.Bold else FontWeight.Normal, color = GlanceTheme.colors.onSurface, textAlign = when { size.height.value <= 50 -> TextAlign.End; else -> TextAlign.Start })
                     )
                 }
                 Row(

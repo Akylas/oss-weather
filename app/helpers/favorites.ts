@@ -95,7 +95,7 @@ export function favoriteIcon(item: FavoriteLocation) {
 
 export function getFavoriteKey(item: WeatherLocation) {
     if (item) {
-        DEV_LOG && console.log('getFavoriteKey', `${item.coord.lat};${item.coord.lon}`);
+        // DEV_LOG && console.log('getFavoriteKey', `${item.coord.lat};${item.coord.lon}`);
         return `${item.coord.lat};${item.coord.lon}`;
     }
 }

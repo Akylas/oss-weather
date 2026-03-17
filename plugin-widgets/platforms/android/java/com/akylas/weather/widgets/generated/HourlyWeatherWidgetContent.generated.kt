@@ -101,7 +101,7 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
         Row {
             data.hourlyData.take(8).forEach { item ->
                 Column(
-                    modifier = GlanceModifier.width(53.dp).fillMaxHeight().padding(horizontal = 4.dp),
+                    modifier = GlanceModifier.width(56.dp).fillMaxHeight().padding(horizontal = 2.dp),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {

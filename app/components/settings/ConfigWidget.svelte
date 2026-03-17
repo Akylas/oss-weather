@@ -65,6 +65,7 @@
         description: string;
         supportedSizes: { width: number; height: number; family: string }[];
         preview: { sizes: { width: number; height: number }[]; fakeData: WeatherWidgetData };
+        settings?: Record<string, any>;
     } = null;
     const previewSet: string = 'default';
     let previewSize: { width: number; height: number } = null;
@@ -89,11 +90,12 @@
     onMount(async () => {
         // updateFrequency = WidgetConfigManager.getUpdateFrequency();
         // Load initial preview data
-        DEV_LOG && console.log('onMount', widgetClass);
         if (widgetClass) {
             previewConfig = await loadWidgetData(widgetClass);
             previewData = previewConfig.preview.fakeData;
             previewSize = previewConfig.preview.sizes[0];
+            DEV_LOG && console.log('onMount', widgetClass, typeof previewConfig.settings, JSON.stringify(previewConfig.settings));
+            refresh();
         }
     });
 
@@ -362,8 +364,8 @@
     $: DEV_LOG && console.log('previewData', JSON.stringify(previewData));
     $: DEV_LOG && console.log('widgetSize', widgetSize);
 
-    const items = new ObservableArray(
-        (
+    async function refresh() {
+        const newItems = (
             [
                 // {
                 //     id: 'preview_set',
@@ -398,8 +400,31 @@
                     id: 'sectionheader',
                     description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
                 }
-            ])
-    );
+            ]);
+        if (previewConfig.settings) {
+            Object.keys(previewConfig.settings).forEach((key) => {
+                const item = previewConfig.settings[key];
+                switch (item.type) {
+                    case 'boolean':
+                        newItems.push({
+                            type: 'switch',
+                            id: key,
+                            title: lc(item.title),
+                            value: config.settings?.[key] ?? item.default
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+        // items = new ObservableArray(newItems)
+        items.splice(0, items.length, ...newItems);
+    }
+
+    const items = new ObservableArray([]);
+
+    refresh();
 
     function updateItem(item, key = 'id') {
         const index = items.findIndex((it) => it[key] === item[key]);
@@ -428,6 +453,14 @@
                 default:
                     // TODO: implement
                     // ApplicationSettings.setBoolean(item.key || item.id, value);
+                    DEV_LOG && console.log('onCheckBox', config.settings, typeof config.settings);
+                    // config.settings = config.settings || {};
+                    // config.settings[item.id] = value;
+
+                    config.settings = { [item.id]: value };
+
+                    config = config;
+                    saveConfig();
                     break;
             }
         } catch (error) {
@@ -519,7 +552,7 @@
     <gridlayout class="pageContent" rows="auto,auto,*">
         <!-- Preview Section -->
         {#if widgetComponent && previewData && previewSize}
-            <svelte:component this={widgetComponent} backgroundColor={colorSurfaceContainer} borderRadius={10} data={previewData} horizontalAlignment="center" row={1} size={widgetSize} />
+            <svelte:component this={widgetComponent} backgroundColor={colorSurfaceContainer} borderRadius={10} {config} data={previewData} horizontalAlignment="center" row={1} size={widgetSize} />
         {/if}
         <collectionview bind:this={collectionView} itemTemplateSelector={selectTemplate} {items} row={2} android:paddingBottom={$windowInset.bottom}>
             <Template key="sectionheader" let:item>

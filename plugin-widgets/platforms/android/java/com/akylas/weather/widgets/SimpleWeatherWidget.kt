@@ -56,6 +56,7 @@ class SimpleWeatherWidget : WeatherWidget() {
             
             // Observe only this widget's settings - prevents unnecessary recomposition from other widgets
             val widgetSettings by WidgetConfigStore.getWidgetSettingsFlow(widgetId).collectAsState()
+            WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id) widgetSettings=$widgetSettings")
             val widgetConfig = WidgetConfig(settings = widgetSettings)
 
             GlanceTheme(colors = WidgetTheme.colors) {

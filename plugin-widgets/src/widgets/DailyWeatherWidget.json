@@ -79,7 +79,7 @@
                 "children": [
                     {
                         "type": "label",
-                        "text": "Daily",
+                        "text": "daily",
                         "textAlign": "left",
                         "fontSize": 12,
                         "fontWeight": "medium",

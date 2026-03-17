@@ -11,6 +11,7 @@
         { "width": 360, "height": 260, "family": "large" }
     ],
     "defaultPadding": 4,
+    "color": ["case", ["==", ["get", "config.settings.color"], null], "onSurface" , ["get", "config.settings.color"]],
     "settings": {
         "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
     },
@@ -50,7 +51,7 @@
                                     "type": "date",
                                     "style": "date",
                                     "fontSize": 14,
-                                    "color": "onSurfaceVariant"
+                                    "opacity": 0.6,
                                 }
                             ]
                         },
@@ -87,7 +88,7 @@
                             "type": "label",
                             "text": ["get", "locationName"],
                             "fontSize": 12,
-                            "color": "onSurfaceVariant",
+                            "opacity": 0.6,
                             "maxLines": 1
                         }
                     ]
@@ -105,7 +106,7 @@
                             "type": "label",
                             "text": ["get", "description"],
                             "fontSize": 12,
-                            "color": "onSurfaceVariant",
+                            "opacity": 0.6,
                             "textAlign": "right"
                         }
                     ]
@@ -186,7 +187,7 @@
                             "type": "label",
                             "text": ["get", "locationName"],
                             "fontSize": ["case", ["<", ["get", "size.width"], 100], 8, ["<", ["get", "size.width"], 150], 10, 12],
-                            "color": "onSurfaceVariant",
+                            "opacity": 0.6,
                             "maxLines": 1
                         }
                     ]

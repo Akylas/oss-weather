@@ -29,7 +29,7 @@
                                 "type": "label",
                                 "text": ["get", "locationName"],
                                 "fontSize": 12,
-                                "color": "onSurfaceVariant",
+                                "opacity": 0.6,
                                 "textAlign": "left",
                                 "maxLines": 1
                             },
@@ -61,7 +61,7 @@
                                 "type": "label",
                                 "text": ["get", "description"],
                                 "fontSize": 11,
-                                "color": "onSurfaceVariant",
+                                "opacity": 0.6,
                                 "textAlign": "right",
                                 "maxLines": 1,
                                 "visibleIf": ["has", "description"]
@@ -82,7 +82,7 @@
                         "textAlign": "left",
                         "fontSize": 12,
                         "fontWeight": "medium",
-                        "color": "onSurfaceVariant",
+                        "opacity": 0.6,
                         "paddingHorizontal": 8
                     }
                 ]
@@ -171,7 +171,7 @@
                                                                             "type": "label",
                                                                             "text": ["get", "item.temperatureLow"],
                                                                             "fontSize": 11,
-                                                                            "color": "onSurfaceVariant",
+                                                                            "opacity": 0.6,
                                                                             "maxLines": 1
                                                                         }
                                                                     ]
@@ -186,14 +186,14 @@
                                                                             "type": "label",
                                                                             "text": ["get", "item.precipAccumulation"],
                                                                             "fontSize": 10,
-                                                                            "color": "onSurfaceVariant",
+                                                                            "opacity": 0.6,
                                                                             "visibleIf": ["has", "item.precipAccumulation"]
                                                                         },
                                                                         {
                                                                             "type": "label",
                                                                             "text": ["concat", "\ud83d\udca7", ["get", "item.precipitation"]],
                                                                             "fontSize": 10,
-                                                                            "color": "onSurfaceVariant",
+                                                                            "opacity": 0.6,
                                                                             "visibleIf": ["has", "item.precipitation"]
                                                                         }
                                                                     ]

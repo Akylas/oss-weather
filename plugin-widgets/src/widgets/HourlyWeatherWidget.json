@@ -45,7 +45,7 @@
                             "type": "label",
                             "text": ["get", "data.locationName"],
                             "fontSize": 12,
-                            "color": "onSurfaceVariant",
+                            "opacity": 0.6,
                             "textAlign": "left",
                             "maxLines": 1
                         },
@@ -84,7 +84,7 @@
                                             "type": "label",
                                             "text": ["get", "item.time"],
                                             "fontSize": ["case", ["<", ["get", "size.height"], 60], 9, 11],
-                                            "color": "onSurfaceVariant",
+                                            "opacity": 0.6,
                                             "maxLines": 1
                                         },
                                         {

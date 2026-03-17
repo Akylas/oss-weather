@@ -26,15 +26,15 @@
                 <stacklayout orientation="vertical" col={0} verticalAlignment="center" horizontalAlignment="center">
                     <label fontSize={Math.min(size.width * 0.15, 50)} fontWeight={config.settings?.clockBold == true ? "bold" : "normal"} color={data.config.settings.color == null ? "onSurface" : data.config.settings.color} text={nowTime()} horizontalAlignment="left" verticalAlignment="center"></label>
                     <absolutelayout height={4} horizontalAlignment="left" verticalAlignment="center"></absolutelayout>
-                    <label fontSize={14} opacity={0.6} text={formatDate(new Date(), 'll')} horizontalAlignment="left" verticalAlignment="center"></label>
+                    <label fontSize={14} opacity={0.6} color={data.config.settings.color == null ? "onSurface" : data.config.settings.color} text={formatDate(new Date(), 'll')} horizontalAlignment="left" verticalAlignment="center"></label>
                 </stacklayout>
                 <stacklayout orientation="vertical" col={1} verticalAlignment="center" horizontalAlignment="center">
                     <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={62} height={62} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="center" verticalAlignment="center"></image>
                     <label text={data.temperature} fontSize={Math.min(size.width * 0.2, 20)} fontWeight={bold} color={colorOnSurface} textAlignment="right" horizontalAlignment="center" verticalAlignment="center"></label>
                 </stacklayout>
             </gridlayout>
-                <label text={data.locationName} fontSize={12} opacity={0.6} maxLines={1} horizontalAlignment="left" verticalAlignment="top"></label>
-                <label text={data.description} fontSize={12} opacity={0.6} textAlignment="right" verticalAlignment="bottom" horizontalAlignment="right" visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
+                <label text={data.locationName} fontSize={12} opacity={0.6} maxLines={1} color={data.config.settings.color == null ? "onSurface" : data.config.settings.color} horizontalAlignment="left" verticalAlignment="top"></label>
+                <label text={data.description} fontSize={12} opacity={0.6} textAlignment="right" color={data.config.settings.color == null ? "onSurface" : data.config.settings.color} verticalAlignment="bottom" horizontalAlignment="right" visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
         </gridlayout>
     {:else}
         <gridlayout padding={3}>
@@ -49,7 +49,7 @@
                 <absolutelayout height={size.width < 100 ? 4 : size.width < 150 ? 6 : 8} horizontalAlignment="center" verticalAlignment="top"></absolutelayout>
             </stacklayout>
             <gridlayout rows="*,auto">
-                <label text={data.locationName} fontSize={size.width < 100 ? 8 : size.width < 150 ? 10 : 12} opacity={0.6} maxLines={1} row={1} horizontalAlignment="right" verticalAlignment="bottom"></label>
+                <label text={data.locationName} fontSize={size.width < 100 ? 8 : size.width < 150 ? 10 : 12} opacity={0.6} maxLines={1} color={data.config.settings.color == null ? "onSurface" : data.config.settings.color} row={1} horizontalAlignment="right" verticalAlignment="bottom"></label>
             </gridlayout>
         </gridlayout>
     {/if}

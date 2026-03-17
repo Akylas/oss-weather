@@ -26,6 +26,7 @@ interface WidgetLayout {
     description?: string;
     supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
+    color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
         color?: string;
@@ -644,7 +645,7 @@ function mapAlignment(value: string, isVertical: boolean): string {
     return map[value] || value;
 }
 
-function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data'): string {
+function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data', defaultColor?: string): string {
     const indent = '    '.repeat(elementPath.length);
     const elType = element.type;
 
@@ -724,12 +725,12 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
             };
 
             // Generate the collectionview with merged properties
-            return generateMarkup(widgetName, mergedElement, elementPath, usedTemplateImport, usedColors, defaultPrefix);
+            return generateMarkup(widgetName, mergedElement, elementPath, usedTemplateImport, usedColors, defaultPrefix, defaultColor);
         } else {
             // No forEach found, render children directly (unwrap scrollView)
             const childMarkups: string[] = [];
             for (let i = 0; i < children.length; i++) {
-                const childMarkup = generateMarkup(widgetName, children[i], elementPath, usedTemplateImport, usedColors, defaultPrefix);
+                const childMarkup = generateMarkup(widgetName, children[i], elementPath, usedTemplateImport, usedColors, defaultPrefix, defaultColor);
                 if (childMarkup) childMarkups.push(childMarkup);
             }
             return childMarkups.join('\n');
@@ -826,6 +827,15 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
                 attrsArr.push(attr);
                 for (const an of attrNames) seenAttrs.add(an);
             }
+        }
+    }
+
+    // Inject default color for text elements (label, clock, date) if they don't have their own color
+    if ((elType === 'label' || elType === 'clock' || elType === 'date') && !seenAttrs.has('color') && defaultColor) {
+        const colorAttr = buildAttribute(widgetName, 'color', defaultColor, elementPath, defaultPrefix, usedColors);
+        if (colorAttr) {
+            attrsArr.push(colorAttr);
+            seenAttrs.add('color');
         }
     }
 
@@ -1122,7 +1132,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
             }
 
             // Regular child: generate markup and inject col/row slot index
-            let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
             if (childMarkup) {
                 childMarkup = addAttrToMarkup(childMarkup, slotAttr, slotIdx);
                 childMarkups.push(childMarkup);
@@ -1142,7 +1152,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
                 continue;
             }
 
-            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
             if (childMarkup) childMarkups.push(childMarkup);
         }
     }
@@ -1174,7 +1184,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         usedTemplateImport.val = true;
 
         // Generate the inner template with item context
-        const innerTemplate = element.itemTemplate ? generateMarkup(widgetName, element.itemTemplate, [...elementPath, 'itemTemplate'], usedTemplateImport, usedColors, 'item') : '';
+        const innerTemplate = element.itemTemplate ? generateMarkup(widgetName, element.itemTemplate, [...elementPath, 'itemTemplate'], usedTemplateImport, usedColors, 'item', defaultColor) : '';
 
         if (innerTemplate) {
             const templateIndent = indent + '    ';
@@ -1199,8 +1209,8 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         }
         let thenMarkup = '';
         let elseMarkup = '';
-        if (element.then) thenMarkup = generateMarkup(widgetName, element.then, [...elementPath, 'then'], usedTemplateImport, usedColors, defaultPrefix);
-        if (element.else) elseMarkup = generateMarkup(widgetName, element.else, [...elementPath, 'else'], usedTemplateImport, usedColors, defaultPrefix);
+        if (element.then) thenMarkup = generateMarkup(widgetName, element.then, [...elementPath, 'then'], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
+        if (element.else) elseMarkup = generateMarkup(widgetName, element.else, [...elementPath, 'else'], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
         return `${indent}{#if ${condExpr}}\n${thenMarkup}\n${indent}{:else}\n${elseMarkup}\n${indent}{/if}`;
     }
 
@@ -1209,7 +1219,7 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         const start = `${indent}<label${attrStr}>`;
         let inner = '';
         for (let i = 0; i < children.length; i++) {
-            inner += '\n' + generateMarkup(widgetName, children[i], [...elementPath, `labelChild${i}`], usedTemplateImport, usedColors, defaultPrefix);
+            inner += '\n' + generateMarkup(widgetName, children[i], [...elementPath, `labelChild${i}`], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
         }
         const end = `${indent}</label>`;
         return `${start}${inner}\n${end}`;
@@ -1295,7 +1305,22 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     const wrapperTag = 'gridlayout';
     const wrapperAttrStr = wrapperAttrs.join(' ');
-    const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data');
+    
+    // Compile top-level color if present
+    let defaultColorExpr: string | undefined;
+    if (layout.color !== undefined) {
+        // Build attribute to get the formatted expression
+        const colorAttr = buildAttribute(widgetName, 'color', layout.color, ['root'], 'data', usedColors);
+        if (colorAttr) {
+            // Extract the value part from color="{value}" or color="value"
+            const match = colorAttr.match(/color=(?:{([^}]+)}|"([^"]+)")/);
+            if (match) {
+                defaultColorExpr = match[1] || match[2];
+            }
+        }
+    }
+    
+    const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data', defaultColorExpr);
 
     const component = `${script}<${wrapperTag} ${wrapperAttrStr}>\n${bodyMarkup}\n</${wrapperTag}>\n`;
     return component;

@@ -44,6 +44,7 @@ interface WidgetLayout {
     description?: string;
     supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
+    color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
         color?: string;
@@ -455,7 +456,7 @@ function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void 
 /**
  * Generate Swift code for an element
  */
-function generateElement(element: BaseLayoutElement, indent: string = '                '): string {
+function generateElement(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string): string {
     const lines: string[] = [];
 
     // Handle visibility condition
@@ -469,16 +470,16 @@ function generateElement(element: BaseLayoutElement, indent: string = '         
 
     switch (element.type) {
         case 'column':
-            lines.push(...generateColumn(element, currentIndent));
+            lines.push(...generateColumn(element, currentIndent, defaultColor));
             break;
         case 'row':
-            lines.push(...generateRow(element, currentIndent));
+            lines.push(...generateRow(element, currentIndent, defaultColor));
             break;
         case 'stack':
-            lines.push(...generateStack(element, currentIndent));
+            lines.push(...generateStack(element, currentIndent, defaultColor));
             break;
         case 'label':
-            lines.push(...generateLabel(element, currentIndent));
+            lines.push(...generateLabel(element, currentIndent, defaultColor));
             break;
         case 'image':
             lines.push(...generateImage(element, currentIndent));
@@ -490,19 +491,19 @@ function generateElement(element: BaseLayoutElement, indent: string = '         
             lines.push(...generateDivider(element, currentIndent));
             break;
         case 'scrollView':
-            lines.push(...generateScrollView(element, currentIndent));
+            lines.push(...generateScrollView(element, currentIndent, defaultColor));
             break;
         case 'forEach':
-            lines.push(...generateForEach(element, currentIndent));
+            lines.push(...generateForEach(element, currentIndent, defaultColor));
             break;
         case 'conditional':
-            lines.push(...generateConditional(element, currentIndent));
+            lines.push(...generateConditional(element, currentIndent, defaultColor));
             break;
         case 'clock':
-            lines.push(...generateClock(element, currentIndent));
+            lines.push(...generateClock(element, currentIndent, defaultColor));
             break;
         case 'date':
-            lines.push(...generateDate(element, currentIndent));
+            lines.push(...generateDate(element, currentIndent, defaultColor));
             break;
         default:
             lines.push(`${currentIndent}// Unknown element type: ${element.type}`);
@@ -515,7 +516,7 @@ function generateElement(element: BaseLayoutElement, indent: string = '         
     return lines.join('\n');
 }
 
-function generateColumn(element: BaseLayoutElement, indent: string): string[] {
+function generateColumn(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, true);
@@ -528,7 +529,7 @@ function generateColumn(element: BaseLayoutElement, indent: string): string[] {
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
@@ -539,7 +540,7 @@ function generateColumn(element: BaseLayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateRow(element: BaseLayoutElement, indent: string): string[] {
+function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, false);
@@ -552,7 +553,7 @@ function generateRow(element: BaseLayoutElement, indent: string): string[] {
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
@@ -563,7 +564,7 @@ function generateRow(element: BaseLayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateStack(element: BaseLayoutElement, indent: string): string[] {
+function generateStack(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     // Convert contentAlignment to SwiftUI ZStack alignment
@@ -592,7 +593,7 @@ function generateStack(element: BaseLayoutElement, indent: string): string[] {
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
@@ -603,7 +604,7 @@ function generateStack(element: BaseLayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateLabel(element: BaseLayoutElement, indent: string): string[] {
+function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     // Compile text expression
@@ -616,8 +617,9 @@ function generateLabel(element: BaseLayoutElement, indent: string): string[] {
     const fontWeight = toSwiftFontWeight(element.fontWeight);
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
 
-    // Color
-    const color = toSwiftColor(element.color);
+    // Color - use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'WidgetColorProvider.onSurface');
+    const color = toSwiftColor(colorToUse);
     lines.push(`${indent}    .foregroundColor(${color})`);
 
     // Text alignment - supports expressions
@@ -680,7 +682,7 @@ function generateDivider(element: BaseLayoutElement, indent: string): string[] {
     return [`${indent}Divider().frame(height: ${thickness}).background(${color}.opacity(0.3))`];
 }
 
-function generateScrollView(element: BaseLayoutElement, indent: string): string[] {
+function generateScrollView(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const axis = element.direction === 'horizontal' ? '.horizontal' : '.vertical';
 
@@ -690,7 +692,7 @@ function generateScrollView(element: BaseLayoutElement, indent: string): string[
         const containerType = element.direction === 'horizontal' ? 'HStack' : 'VStack';
         lines.push(`${indent}    ${containerType}(spacing: 8) {`);
         for (const child of element.children) {
-            lines.push(generateElement(child, indent + '        '));
+            lines.push(generateElement(child, indent + '        ', defaultColor));
         }
         lines.push(`${indent}    }`);
     }
@@ -700,7 +702,7 @@ function generateScrollView(element: BaseLayoutElement, indent: string): string[
     return lines;
 }
 
-function generateForEach(element: BaseLayoutElement, indent: string): string[] {
+function generateForEach(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const items = element.items || 'items';
     const limit = element.limit;
@@ -719,7 +721,7 @@ function generateForEach(element: BaseLayoutElement, indent: string): string[] {
     lines.push(`${indent}ForEach(Array(${prefix}.enumerated()), id: \\.offset) { index, item in`);
 
     if (element.itemTemplate) {
-        lines.push(generateElement(element.itemTemplate, indent + '    '));
+        lines.push(generateElement(element.itemTemplate, indent + '    ', defaultColor));
     }
 
     lines.push(`${indent}}`);
@@ -727,29 +729,31 @@ function generateForEach(element: BaseLayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateConditional(element: BaseLayoutElement, indent: string): string[] {
+function generateConditional(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const condition = compileConditionToSwift(element.condition);
 
     lines.push(`${indent}if ${condition} {`);
     if (element.then) {
-        lines.push(generateElement(element.then, indent + '    '));
+        lines.push(generateElement(element.then, indent + '    ', defaultColor));
     }
     lines.push(`${indent}}`);
 
     if (element.else) {
         lines.push(`${indent}else {`);
-        lines.push(generateElement(element.else, indent + '    '));
+        lines.push(generateElement(element.else, indent + '    ', defaultColor));
         lines.push(`${indent}}`);
     }
 
     return lines;
 }
 
-function generateClock(element: BaseLayoutElement, indent: string): string[] {
+function generateClock(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const fontSize = compileSizeToSwift(element.fontSize, 24);
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'bold');
-    const color = toSwiftColor(element.color);
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'WidgetColorProvider.onSurface');
+    const color = toSwiftColor(colorToUse);
 
     const lines: string[] = [];
     // Always use locale-aware time (respects system 24h/12h and AM/PM preference)
@@ -760,10 +764,12 @@ function generateClock(element: BaseLayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateDate(element: BaseLayoutElement, indent: string): string[] {
+function generateDate(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const fontSize = compileSizeToSwift(element.fontSize, 14);
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'normal');
-    const color = toSwiftColor(element.color);
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'WidgetColorProvider.onSurface');
+    const color = toSwiftColor(colorToUse);
     const style = (element as any).style as string | undefined;
 
     const lines: string[] = [];
@@ -843,6 +849,12 @@ struct ${viewName}: View {
                 WidgetContainer(padding: ${defaultPadding}) {
 `;
 
+    // Compile top-level color if present
+    let defaultColorExpr: string | undefined;
+    if (layout.color !== undefined) {
+        defaultColorExpr = toSwiftColor(layout.color);
+    }
+
     // Generate variant conditions
     if (layout.variants && layout.variants.length > 0) {
         for (let i = 0; i < layout.variants.length; i++) {
@@ -851,15 +863,15 @@ struct ${viewName}: View {
             const keyword = i === 0 ? 'if' : '} else if';
 
             code += `                    ${keyword} ${condition} {\n`;
-            code += generateElement(variant.layout, '                        ') + '\n';
+            code += generateElement(variant.layout, '                        ', defaultColorExpr) + '\n';
         }
 
         // Default layout
         code += `                    } else {\n`;
-        code += generateElement(layout.layout, '                        ') + '\n';
+        code += generateElement(layout.layout, '                        ', defaultColorExpr) + '\n';
         code += `                    }\n`;
     } else {
-        code += generateElement(layout.layout, '                    ') + '\n';
+        code += generateElement(layout.layout, '                    ', defaultColorExpr) + '\n';
     }
 
     code += `                }

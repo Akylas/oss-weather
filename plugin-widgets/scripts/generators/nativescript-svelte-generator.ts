@@ -645,7 +645,15 @@ function mapAlignment(value: string, isVertical: boolean): string {
     return map[value] || value;
 }
 
-function generateMarkup(widgetName: string, element: BaseLayoutElement, elementPath: string[], usedTemplateImport: { val: boolean }, usedColors: Set<string>, defaultPrefix = 'data', defaultColor?: string): string {
+function generateMarkup(
+    widgetName: string,
+    element: BaseLayoutElement,
+    elementPath: string[],
+    usedTemplateImport: { val: boolean },
+    usedColors: Set<string>,
+    defaultPrefix = 'data',
+    defaultColor?: string
+): string {
     const indent = '    '.repeat(elementPath.length);
     const elType = element.type;
 
@@ -1285,6 +1293,24 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         script += `    $: ({ ${vars} } = $colors);\n`;
     }
 
+
+    // Compile top-level color if present
+    let defaultColorRef: string | undefined;
+    if (layout.color !== undefined) {
+        // Build attribute to get the formatted expression
+        const colorAttr = buildAttribute(widgetName, 'color', layout.color, ['root'], 'data', usedColors);
+        if (colorAttr) {
+            // Extract the value part from color="{value}" or color="value"
+            const match = colorAttr.match(/color=(?:{([^}]+)}|"([^"]+)")/);
+            if (match) {
+                const colorExpr = match[1] || match[2];
+                // Add widgetColor const declaration after script imports
+                script += `    const widgetColor = ${colorExpr};\n`;
+                defaultColorRef = 'widgetColor';
+            }
+        }
+    }
+
     // Helper functions - only add if used
     if (usesClock) {
         script += `\n    function nowTime() {\n`;
@@ -1313,24 +1339,8 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     const wrapperTag = 'gridlayout';
     const wrapperAttrStr = wrapperAttrs.join(' ');
-    
-    // Compile top-level color if present
-    let defaultColorRef: string | undefined;
-    if (layout.color !== undefined) {
-        // Build attribute to get the formatted expression
-        const colorAttr = buildAttribute(widgetName, 'color', layout.color, ['root'], 'data', usedColors);
-        if (colorAttr) {
-            // Extract the value part from color="{value}" or color="value"
-            const match = colorAttr.match(/color=(?:{([^}]+)}|"([^"]+)")/);
-            if (match) {
-                const colorExpr = match[1] || match[2];
-                // Add widgetColor const declaration after script imports
-                script += `{#const widgetColor = ${colorExpr}}\n`;
-                defaultColorRef = 'widgetColor';
-            }
-        }
-    }
-    
+
+
     const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data', defaultColorRef);
 
     const component = `${script}<${wrapperTag} ${wrapperAttrStr}>\n${bodyMarkup}\n</${wrapperTag}>\n`;

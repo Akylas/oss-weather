@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -75,10 +77,12 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     Column(
         modifier = GlanceModifier.padding(horizontal = 10.dp, vertical = 6.dp),
@@ -92,9 +96,8 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
-                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Spacer(modifier = GlanceModifier.height(2.dp))
@@ -108,9 +111,8 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
-                        modifier = GlanceModifier.alpha(0.6f),
                         text = item.time,
-                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurface),
+                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))

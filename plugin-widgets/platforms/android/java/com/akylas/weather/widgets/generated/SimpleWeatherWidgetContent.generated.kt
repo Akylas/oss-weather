@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -75,10 +77,12 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     if (size.width.value < 120) {
         Column(
@@ -106,9 +110,8 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 )
             }
             Text(
-                modifier = GlanceModifier.alpha(0.6f),
                 text = data.locationName,
-                style = TextStyle(fontSize = 8.sp, color = GlanceTheme.colors.onSurface),
+                style = TextStyle(fontSize = 8.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                 maxLines = 1
             )
         }
@@ -118,9 +121,8 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(horizontal = 10.dp, vertical = 6.dp)
         ) {
             Text(
-                modifier = GlanceModifier.alpha(0.6f),
                 text = data.locationName,
-                style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface),
+                style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                 maxLines = 1
             )
             Row(
@@ -160,9 +162,8 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Text(
-                        modifier = GlanceModifier.alpha(0.6f),
                         text = data.description,
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
+                        style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End)
                     )
                 }
             }

@@ -296,12 +296,21 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
 
     // Background color
     if (element.backgroundColor !== undefined) {
-        const colorExpr = compilePropertyValue(element.backgroundColor, {
+        let colorExpr = compilePropertyValue(element.backgroundColor, {
             platform: 'kotlin',
             context: 'value',
             formatter: (v: string) => formatColor(v, 'kotlin')
         });
         if (colorExpr) {
+            if (element.opacity !== undefined) {
+                const opacityExpr = compilePropertyValue(element.opacity, {
+                    platform: 'kotlin',
+                    context: 'value',
+                    formatter: (v: number) => `${v}f`
+                });
+                colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
+            }
+
             modifiers.push(`background(${colorExpr})`);
         }
     }
@@ -319,16 +328,16 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
     }
 
     // Opacity (alpha)
-    if (element.opacity !== undefined) {
-        const opacityExpr = compilePropertyValue(element.opacity, {
-            platform: 'kotlin',
-            context: 'value',
-            formatter: (v: number) => `${v}f`
-        });
-        if (opacityExpr) {
-            modifiers.push(`alpha(${opacityExpr})`);
-        }
-    }
+    // if (element.opacity !== undefined) {
+    //     const opacityExpr = compilePropertyValue(element.opacity, {
+    //         platform: 'kotlin',
+    //         context: 'value',
+    //         formatter: (v: number) => `${v}f`
+    //     });
+    //     if (opacityExpr) {
+    //         modifiers.push(`alpha(${opacityExpr})`);
+    //     }
+    // }
 
     if (modifiers.length === 0) {
         return 'GlanceModifier';

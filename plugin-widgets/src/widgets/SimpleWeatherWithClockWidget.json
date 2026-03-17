@@ -11,7 +11,7 @@
         { "width": 360, "height": 260, "family": "large" }
     ],
     "defaultPadding": 4,
-    "color": ["case", ["==", ["get", "config.settings.color"], null], "onSurface" , ["get", "config.settings.color"]],
+    "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "settings": {
         "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
     },
@@ -40,8 +40,7 @@
                                 {
                                     "type": "clock",
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
-                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
-                                    "color": ["case", ["==", ["get", "config.settings.color"], null], "onSurface" , ["get", "config.settings.color"]]
+                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
                                 },
                                 {
                                     "type": "spacer",
@@ -51,7 +50,7 @@
                                     "type": "date",
                                     "style": "date",
                                     "fontSize": 14,
-                                    "opacity": 0.6
+                                    "opacity": 0.5
                                 }
                             ]
                         },
@@ -71,7 +70,6 @@
                                     "text": ["get", "temperature"],
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
                                     "fontWeight": "bold",
-                                    "color": "onSurface",
                                     "textAlign": "right"
                                 }
                             ]
@@ -88,7 +86,7 @@
                             "type": "label",
                             "text": ["get", "locationName"],
                             "fontSize": 12,
-                            "opacity": 0.6,
+                            "opacity": 0.5,
                             "maxLines": 1
                         }
                     ]
@@ -106,7 +104,7 @@
                             "type": "label",
                             "text": ["get", "description"],
                             "fontSize": 12,
-                            "opacity": 0.6,
+                            "opacity": 0.5,
                             "textAlign": "right"
                         }
                     ]
@@ -134,7 +132,6 @@
                                     "type": "clock",
                                     "fontSize": ["min", ["*", ["get", "size.height"], 0.24], 40],
                                     "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
-                                    "color": "onSurface",
                                     "textAlign": ["case", ["<=", ["get", "size.height"], 50], "right", "left"]
                                 }
                             ]
@@ -159,8 +156,7 @@
                                     "type": "label",
                                     "text": ["get", "temperature"],
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
-                                    "fontWeight": "bold",
-                                    "color": "onSurface"
+                                    "fontWeight": "bold"
                                 }
                             ]
                         },
@@ -187,7 +183,7 @@
                             "type": "label",
                             "text": ["get", "locationName"],
                             "fontSize": ["case", ["<", ["get", "size.width"], 100], 8, ["<", ["get", "size.width"], 150], 10, 12],
-                            "opacity": 0.6,
+                            "opacity": 0.5,
                             "maxLines": 1
                         }
                     ]

@@ -19,7 +19,7 @@
     <stacklayout paddingLeft={10} paddingRight={10} paddingTop={6} paddingBottom={6} orientation="vertical">
         {#if size.height >= 80}
             <stacklayout orientation="vertical" horizontalAlignment="stretch" verticalAlignment="top">
-                <label text={data.locationName} fontSize={12} opacity={0.6} textAlignment="left" maxLines={1} horizontalAlignment="left"></label>
+                <label text={data.locationName} fontSize={12} opacity={0.5} textAlignment="left" maxLines={1} horizontalAlignment="left"></label>
                 <absolutelayout height={2} horizontalAlignment="left"></absolutelayout>
             </stacklayout>
         {:else}
@@ -28,9 +28,9 @@
         <collectionview items={data.hourlyData?.slice(0, 8)} showIndicators={false} orientation="horizontal" colWidth="auto" horizontalAlignment="stretch" verticalAlignment="top">
             <Template let:item>
             <stacklayout width={56} paddingLeft={2} paddingRight={2} padding={size.height < 60 ? 0 : 2} orientation="vertical">
-                <label text={item.time} fontSize={size.height < 60 ? 9 : 11} opacity={0.6} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
+                <label text={item.time} fontSize={size.height < 60 ? 9 : 11} opacity={0.5} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
                 <image src={`${iconService.iconSetFolderPath}/images/${item.iconPath}.png`} width={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} height={size.height < 60 ? 24 : size.height < 80 ? 28 : 32} horizontalAlignment="center" verticalAlignment="center"></image>
-                <label text={item.temperature} fontSize={size.height < 60 ? 12 : 14} fontWeight={bold} color={colorOnSurface} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
+                <label text={item.temperature} fontSize={size.height < 60 ? 12 : 14} fontWeight="bold" color={colorOnSurface} maxLines={1} horizontalAlignment="center" verticalAlignment="center"></label>
                 {#if size.height >= 60 && item.precipAccumulation != null}
                     <stacklayout orientation="vertical" horizontalAlignment="center" verticalAlignment="center">
                         <absolutelayout height={2}></absolutelayout>

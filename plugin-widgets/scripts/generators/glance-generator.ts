@@ -6,7 +6,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Expression, compileExpression as compileExpr, compilePropertyValue as compilePropValue } from './expression-compiler';
+import { Expression, compileExpression as compileExpr, compilePropertyValue as compilePropValue, compilePropertyValue } from './expression-compiler';
 import { isExpression, toPlatformFontWeight, toPlatformHorizontalAlignment, toPlatformVerticalAlignment } from './shared-utils';
 import { buildGlanceModifier, formatColor } from './modifier-builders';
 
@@ -128,7 +128,7 @@ function wrapColorParsingKotlin(colorExpr: string): string {
         const settingsPattern = /config\.settings\?\.get\([^)]+\)\?\.jsonPrimitive\?\.contentOrNull/g;
         if (settingsPattern.test(colorExpr)) {
             // Store the expression result in a variable, then check if it's a string (hex color) and parse it
-            return `run { val colorValue = ${colorExpr}; if (colorValue is String) Color(android.graphics.Color.parseColor(colorValue)) else colorValue as? Color ?: GlanceTheme.colors.onSurface }`;
+            return `run { val colorValue = ${colorExpr}; if (colorValue is String) ColorProvider(Color(colorValue.toColorInt())) else GlanceTheme.colors.onSurface }`;
         }
     }
     return colorExpr;
@@ -416,6 +416,14 @@ function generateLabel(element: LayoutElement, indent: string, defaultColor?: st
         styleProps.push(`fontWeight = ${fontWeightExpr}`);
     }
     if (colorExpr) {
+        if (element.opacity !== undefined) {
+            const opacityExpr = compilePropertyValue(element.opacity, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => `${v}f`
+            });
+            colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
+        }
         styleProps.push(`color = ${colorExpr}`);
     }
     if (element.textAlign !== undefined) {
@@ -798,6 +806,14 @@ function generateDate(element: LayoutElement, indent: string, defaultColor?: str
         styleProps.push(`fontSize = ${fontSizeExpr}`);
     }
     if (colorExpr) {
+        if (element.opacity !== undefined) {
+            const opacityExpr = compilePropertyValue(element.opacity, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => `${v}f`
+            });
+            colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
+        }
         styleProps.push(`color = ${colorExpr}`);
     }
     if (fontWeightExpr) {
@@ -938,8 +954,10 @@ function generateKotlinFile(layout: WidgetLayout): string {
 
     lines.push(`package ${packageName}`);
     lines.push('');
+    lines.push('import android.annotation.SuppressLint');
     lines.push('import androidx.compose.runtime.Composable');
     lines.push('import androidx.compose.ui.graphics.Color');
+    lines.push('import androidx.core.graphics.toColorInt');
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
     lines.push('import androidx.glance.GlanceModifier');
@@ -986,6 +1004,7 @@ function generateKotlinFile(layout: WidgetLayout): string {
         lines.push(...generatePreviewBlock(layout, className));
     }
 
+    lines.push('@SuppressLint("RestrictedApi")');
     lines.push('@Composable');
     lines.push(`fun ${className}(config: WidgetConfig, data: WeatherWidgetData) {`);
     lines.push('    val context = LocalContext.current');
@@ -999,6 +1018,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
         const wrappedColor = wrapColorParsingKotlin(colorExpr);
         lines.push(`    val widgetColor = ${wrappedColor}`);
         defaultColorRef = 'widgetColor';
+    } else {
+        lines.push(`    val widgetColor = GlanceTheme.colors.onSurface`);
     }
     lines.push('');
 

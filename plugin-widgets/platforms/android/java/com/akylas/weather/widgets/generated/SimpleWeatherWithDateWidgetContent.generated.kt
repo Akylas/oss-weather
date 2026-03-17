@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -75,10 +77,12 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     if (size.width.value >= 180) {
         Box(
@@ -140,9 +144,8 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
-                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface),
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                     maxLines = 1
                 )
             }
@@ -152,9 +155,8 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Text(
-                        modifier = GlanceModifier.alpha(0.6f),
                         text = data.description,
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
+                        style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End)
                     )
                 }
             }
@@ -209,9 +211,8 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
             ) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
-                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurface),
+                    style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                     maxLines = 1
                 )
             }

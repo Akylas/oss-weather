@@ -176,17 +176,22 @@ function collectUsedColorsFromLayout(layout: WidgetLayout, usedColors: Set<strin
 /**
  * Evaluate a Mapbox expression to TypeScript/Svelte expression
  */
-function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
+function evaluateMapboxExpression(expr: any, context: string = 'data', usedColors?: Set<string>): string {
     if (!Array.isArray(expr)) {
         if (typeof expr === 'string') {
             if (expr === 'get') return expr;
+
+            if (expr.startsWith('color.')) {
+                const varName = colorTokenToVar(expr.slice(6));
+                usedColors?.add(varName);
+                return varName;
+            }
             return JSON.stringify(expr);
         }
         return JSON.stringify(expr);
     }
 
     const [op, ...args] = expr;
-
     switch (op) {
         case 'get': {
             const path = args[0];
@@ -197,6 +202,14 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
                 }
                 if (path.startsWith('data.')) {
                     return path;
+                }
+                if (path.startsWith('config.')) {
+                    return path;
+                }
+                if (path.startsWith('color.')) {
+                    const varName = colorTokenToVar(path.slice(6));
+                    usedColors?.add(varName);
+                    return varName;
                 }
                 if (path.startsWith('item.')) {
                     if (path === 'item.iconPath') {
@@ -219,6 +232,9 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
                 if (path.startsWith('data.')) {
                     return `${path} != null`;
                 }
+                if (path.startsWith('config.')) {
+                    return `${path} != null`;
+                }
                 // Default context
                 return `${context}.${path} != null`;
             }
@@ -230,7 +246,7 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
             if (args.length === 1) return evaluateMapboxExpression(args[0], context);
 
             const conditions = args.map((arg) => {
-                const evaluated = evaluateMapboxExpression(arg, context);
+                const evaluated = evaluateMapboxExpression(arg, context, usedColors);
                 // Wrap complex expressions in parentheses
                 if (evaluated.includes('?') || evaluated.includes('||') || evaluated.includes('&&')) {
                     return `(${evaluated})`;
@@ -242,10 +258,10 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
         case 'any': {
             // Logical OR - any condition must be true
             if (args.length === 0) return 'false';
-            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context, usedColors);
 
             const conditions = args.map((arg) => {
-                const evaluated = evaluateMapboxExpression(arg, context);
+                const evaluated = evaluateMapboxExpression(arg, context, usedColors);
                 // Wrap complex expressions in parentheses
                 if (evaluated.includes('?') || evaluated.includes('||') || evaluated.includes('&&')) {
                     return `(${evaluated})`;
@@ -257,7 +273,7 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
         case 'not': {
             // Logical NOT
             if (args.length === 0) return 'true';
-            const condition = evaluateMapboxExpression(args[0], context);
+            const condition = evaluateMapboxExpression(args[0], context, usedColors);
             // Wrap complex expressions in parentheses
             if (condition.includes('?') || condition.includes('||') || condition.includes('&&')) {
                 return `!(${condition})`;
@@ -268,15 +284,15 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
             // ["case", condition1, value1, condition2, value2, ..., fallback]
             // Convert to nested ternary: condition1 ? value1 : (condition2 ? value2 : fallback)
             if (args.length === 0) return 'null';
-            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context, usedColors);
 
             // Build from the end backwards to properly nest ternaries
-            let result = evaluateMapboxExpression(args[args.length - 1], context); // fallback
+            let result = evaluateMapboxExpression(args[args.length - 1], context, usedColors); // fallback
 
             // Walk backwards through condition/value pairs
             for (let i = args.length - 3; i >= 0; i -= 2) {
-                const condition = evaluateMapboxExpression(args[i], context);
-                const value = evaluateMapboxExpression(args[i + 1], context);
+                const condition = evaluateMapboxExpression(args[i], context, usedColors);
+                const value = evaluateMapboxExpression(args[i + 1], context, usedColors);
                 result = `${condition} ? ${value} : ${result}`;
             }
 
@@ -288,40 +304,47 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
         case '>=':
         case '==':
         case '!=': {
-            const left = evaluateMapboxExpression(args[0], context);
-            const right = evaluateMapboxExpression(args[1], context);
-            return `${left} ${op} ${right}`;
+            const left = evaluateMapboxExpression(args[0], context, usedColors);
+            const right = evaluateMapboxExpression(args[1], context, usedColors);
+            let theOp = op;
+            if (theOp === '==') {
+                theOp = '===';
+            } else if (theOp === '!=') {
+                theOp = '!==';
+            }
+            console.log('test', `${left} ${theOp} ${right}`)
+            return `${left} ${theOp} ${right}`;
         }
         case '+':
         case '-':
         case '*':
         case '/':
         case '%': {
-            const left = evaluateMapboxExpression(args[0], context);
-            const right = evaluateMapboxExpression(args[1], context);
+            const left = evaluateMapboxExpression(args[0], context, usedColors);
+            const right = evaluateMapboxExpression(args[1], context, usedColors);
             return `${left} ${op} ${right}`;
         }
         case 'min': {
-            const a = evaluateMapboxExpression(args[0], context);
-            const b = evaluateMapboxExpression(args[1], context);
+            const a = evaluateMapboxExpression(args[0], context, usedColors);
+            const b = evaluateMapboxExpression(args[1], context, usedColors);
             return `Math.min(${a}, ${b})`;
         }
         case 'max': {
-            const a = evaluateMapboxExpression(args[0], context);
-            const b = evaluateMapboxExpression(args[1], context);
+            const a = evaluateMapboxExpression(args[0], context, usedColors);
+            const b = evaluateMapboxExpression(args[1], context, usedColors);
             return `Math.max(${a}, ${b})`;
         }
         case 'concat': {
             // String concatenation
-            const parts = args.map((arg) => evaluateMapboxExpression(arg, context));
+            const parts = args.map((arg) => evaluateMapboxExpression(arg, context, usedColors));
             return parts.join(' + ');
         }
         case 'coalesce': {
             // Return first non-null value
             if (args.length === 0) return 'null';
-            if (args.length === 1) return evaluateMapboxExpression(args[0], context);
+            if (args.length === 1) return evaluateMapboxExpression(args[0], context, usedColors);
 
-            const values = args.map((arg) => evaluateMapboxExpression(arg, context));
+            const values = args.map((arg) => evaluateMapboxExpression(arg, context, usedColors));
             // Build nested ternary: val1 != null ? val1 : (val2 != null ? val2 : val3)
             let result = values[values.length - 1];
             for (let i = values.length - 2; i >= 0; i--) {
@@ -331,17 +354,17 @@ function evaluateMapboxExpression(expr: any, context: string = 'data'): string {
         }
         case 'substring': {
             // ["substring", string, start, length]
-            const str = evaluateMapboxExpression(args[0], context);
-            const start = evaluateMapboxExpression(args[1], context);
+            const str = evaluateMapboxExpression(args[0], context, usedColors);
+            const start = evaluateMapboxExpression(args[1], context, usedColors);
             if (args.length > 2) {
-                const length = evaluateMapboxExpression(args[2], context);
+                const length = evaluateMapboxExpression(args[2], context, usedColors);
                 return `${str}.substring(${start}, ${start} + ${length})`;
             }
             return `${str}.substring(${start})`;
         }
         case 'format': {
             // ["format", dateValue, pattern]
-            const value = evaluateMapboxExpression(args[0], context);
+            const value = evaluateMapboxExpression(args[0], context, usedColors);
             const pattern = args[1];
             // For NativeScript, we'll use a custom formatDate function
             return `formatDate(${value}, ${JSON.stringify(pattern)})`;
@@ -464,7 +487,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
             return `${attrName}={${compiled}}`;
         }
         const weight = mapFontWeight(value);
-        return `${attrName}={${weight}}`;
+        return `${attrName}="${weight}"`;
     }
 
     // Handle text property with localization
@@ -511,7 +534,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
 
     // Handle Mapbox expressions (arrays)
     if (Array.isArray(value)) {
-        let expr = evaluateMapboxExpression(value, defaultPrefix);
+        let expr = evaluateMapboxExpression(value, defaultPrefix, usedColors);
         if (expr === 'data.iconPath') {
             expr = `\`\${iconService.iconSetFolderPath}/images/\${${expr}}.png\``;
         }
@@ -1287,27 +1310,28 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     // script += `    export let height: number = ${layout.supportedSizes?.[0]?.height ?? 160};\n`;
     script += `    export let size: { width: number; height: number } = { width: ${layout.supportedSizes?.[0]?.width ?? 160}, height: ${layout.supportedSizes?.[0]?.height ?? 160}};\n\n`;
 
+    // Compile top-level color if present
+    let defaultColorRef: string | undefined;
+    let colorAttr;
+    if (layout.color !== undefined) {
+        // Build attribute to get the formatted expression
+        colorAttr = buildAttribute(widgetName, 'color', layout.color, ['root'], 'data', usedColors);
+    }
+
     // If we have used color tokens, generate reactive destructuring from $colors
     if (usedColors.size > 0) {
         const vars = Array.from(usedColors).sort().join(', ');
         script += `    $: ({ ${vars} } = $colors);\n`;
     }
 
-
-    // Compile top-level color if present
-    let defaultColorRef: string | undefined;
-    if (layout.color !== undefined) {
-        // Build attribute to get the formatted expression
-        const colorAttr = buildAttribute(widgetName, 'color', layout.color, ['root'], 'data', usedColors);
-        if (colorAttr) {
-            // Extract the value part from color="{value}" or color="value"
-            const match = colorAttr.match(/color=(?:{([^}]+)}|"([^"]+)")/);
-            if (match) {
-                const colorExpr = match[1] || match[2];
-                // Add widgetColor const declaration after script imports
-                script += `    const widgetColor = ${colorExpr};\n`;
-                defaultColorRef = 'widgetColor';
-            }
+    if (colorAttr) {
+        // Extract the value part from color="{value}" or color="value"
+        const match = colorAttr.match(/color=(?:{([^}]+)}|"([^"]+)")/);
+        if (match) {
+            const colorExpr = match[1] || match[2];
+            // Add widgetColor const declaration after script imports
+            script += `    const widgetColor = ${colorExpr};\n`;
+            defaultColorRef = 'widgetColor';
         }
     }
 
@@ -1339,7 +1363,6 @@ function generateSvelteComponent(layout: WidgetLayout): string {
 
     const wrapperTag = 'gridlayout';
     const wrapperAttrStr = wrapperAttrs.join(' ');
-
 
     const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data', defaultColorRef);
 

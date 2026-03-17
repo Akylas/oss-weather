@@ -45,7 +45,7 @@
                     "type": "label",
                     "text": ["get", "locationName"],
                     "fontSize": 8,
-                    "opacity": 0.6,
+                    "opacity": 0.5,
                     "maxLines": 1
                 }
             ]
@@ -61,7 +61,7 @@
                     "type": "label",
                     "text": ["get", "locationName"],
                     "fontSize": 12,
-                    "opacity": 0.6,
+                    "opacity": 0.5,
                     "crossAlignment": "start",
                     "maxLines": 1
                 },
@@ -116,7 +116,7 @@
                             "type": "label",
                             "text": ["get", "description"],
                             "fontSize": 12,
-                            "opacity": 0.6,
+                            "opacity": 0.5,
                             "textAlign": "right"
                         }
                     ]

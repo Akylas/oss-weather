@@ -143,6 +143,10 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
 
     // Handle literal values
     if (typeof expr === 'string') {
+        if (expr.startsWith('color.')) {
+            const colorName = expr.substring(6); // Remove 'color.' prefix
+            return compileColorReference(colorName, platform);
+        }
         if (formatter && context === 'value') {
             return formatter(expr);
         }
@@ -300,7 +304,7 @@ function compileColorReference(colorName: string, platform: Platform): string {
     // Import DEFAULT_COLOR_MAPS from modifier-builders at runtime
     const { DEFAULT_COLOR_MAPS } = require('./modifier-builders');
     const colorMap = DEFAULT_COLOR_MAPS[platform];
-    
+
     // Return the platform-specific theme color reference
     return colorMap[colorName] || colorName;
 }
@@ -464,6 +468,10 @@ function compileComparison(op: '<' | '<=' | '>' | '>=' | '==' | '!=', args: Expr
     if (options.platform === 'swift') {
         if (op === '==') return `${left} == ${right}`;
         if (op === '!=') return `${left} != ${right}`;
+    }
+    if (options.platform === 'javascript') {
+        if (op === '==') return `${left} === ${right}`;
+        if (op === '!=') return `${left} !== ${right}`;
     }
 
     return `${left} ${op} ${right}`;

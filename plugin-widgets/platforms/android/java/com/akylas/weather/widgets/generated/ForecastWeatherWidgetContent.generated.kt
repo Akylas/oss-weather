@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -78,10 +80,12 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     Column(
         modifier = GlanceModifier,
@@ -99,9 +103,8 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
-                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Text(
@@ -126,9 +129,8 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 }
                 if (data.description.isNotEmpty()) {
                     Text(
-                        modifier = GlanceModifier.alpha(0.6f),
                         text = data.description,
-                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End),
+                        style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End),
                         maxLines = 1
                     )
                 }
@@ -141,7 +143,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
             horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
-                modifier = GlanceModifier.padding(horizontal = 8.dp).alpha(0.6f),
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
                 text = context.getString(
                     context.resources.getIdentifier(
                         "hourly",
@@ -149,7 +151,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         context.packageName
                     )
                 ),
-                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start)
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start)
             )
         }
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -161,9 +163,8 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
-                        modifier = GlanceModifier.alpha(0.6f),
                         text = item.time,
-                        style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurface),
+                        style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(2.dp))
@@ -183,9 +184,8 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                     Spacer(modifier = GlanceModifier.height(2.dp))
                     if (item.precipAccumulation.isNotEmpty()) {
                         Text(
-                            modifier = GlanceModifier.alpha(0.6f),
                             text = item.precipAccumulation,
-                            style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurface)
+                            style = TextStyle(fontSize = 9.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                         )
                     }
                 }
@@ -198,7 +198,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
             horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
-                modifier = GlanceModifier.padding(horizontal = 8.dp).alpha(0.6f),
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
                 text = context.getString(
                     context.resources.getIdentifier(
                         "daily",
@@ -206,7 +206,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         context.packageName
                     )
                 ),
-                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start)
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start)
             )
         }
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -258,9 +258,8 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                                     )
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     Text(
-                                        modifier = GlanceModifier.alpha(0.6f),
                                         text = item.temperatureLow,
-                                        style = TextStyle(fontSize = 13.sp, color = GlanceTheme.colors.onSurface),
+                                        style = TextStyle(fontSize = 13.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                                         maxLines = 1
                                     )
                                 }
@@ -271,17 +270,15 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                                 ) {
                                     if (item.precipAccumulation.isNotEmpty()) {
                                         Text(
-                                            modifier = GlanceModifier.alpha(0.6f),
                                             text = item.precipAccumulation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurface)
+                                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     if (item.precipitation.isNotEmpty()) {
                                         Text(
-                                            modifier = GlanceModifier.alpha(0.6f),
                                             text = "💧" + item.precipitation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurface)
+                                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                 }

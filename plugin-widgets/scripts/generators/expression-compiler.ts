@@ -29,6 +29,11 @@ export type CompilationContext = 'value' | 'condition';
 export type ValueFormatter = (value: any) => string;
 
 /**
+ * Type hint for config.settings property access
+ */
+export type SettingType = 'boolean' | 'string' | 'number' | 'unknown';
+
+/**
  * Compilation options
  */
 export interface CompilationOptions {
@@ -36,6 +41,63 @@ export interface CompilationOptions {
     context?: CompilationContext;
     formatter?: ValueFormatter;
     addDataPrefix?: boolean;
+    /** Type hints for config.settings.* properties (for generating correct accessors) */
+    settingTypes?: Map<string, SettingType>;
+}
+
+/**
+ * Infer the type of a value from a literal or expression
+ */
+function inferType(value: Expression): SettingType {
+    if (typeof value === 'boolean') return 'boolean';
+    if (typeof value === 'string') return 'string';
+    if (typeof value === 'number') return 'number';
+    return 'unknown';
+}
+
+/**
+ * Analyze an expression tree to infer types for config.settings.* properties
+ * This is called before compiling to build a type hint map
+ */
+function inferSettingTypes(expr: Expression, typeMap: Map<string, SettingType> = new Map()): Map<string, SettingType> {
+    if (!isExpression(expr)) {
+        return typeMap;
+    }
+
+    const [op, ...args] = expr;
+
+    // In comparisons, infer type from the non-get operand
+    if (op === '==' || op === '!=' || op === '<' || op === '<=' || op === '>' || op === '>=') {
+        const left = args[0];
+        const right = args[1];
+
+        // Check if left is ["get", "config.settings.X"]
+        if (isExpression(left) && left[0] === 'get' && typeof left[1] === 'string' && left[1].startsWith('config.settings.')) {
+            const settingKey = left[1].substring(16);
+            const inferredType = inferType(right);
+            if (inferredType !== 'unknown') {
+                typeMap.set(settingKey, inferredType);
+            }
+        }
+
+        // Check if right is ["get", "config.settings.X"]
+        if (isExpression(right) && right[0] === 'get' && typeof right[1] === 'string' && right[1].startsWith('config.settings.')) {
+            const settingKey = right[1].substring(16);
+            const inferredType = inferType(left);
+            if (inferredType !== 'unknown') {
+                typeMap.set(settingKey, inferredType);
+            }
+        }
+    }
+
+    // Recursively analyze child expressions
+    for (const arg of args) {
+        if (isExpression(arg)) {
+            inferSettingTypes(arg, typeMap);
+        }
+    }
+
+    return typeMap;
 }
 
 // ============================================================================
@@ -61,9 +123,18 @@ export interface CompilationOptions {
  * // Conditional
  * compileExpression(["<", ["get", "temp"], 32], { platform: 'kotlin', context: 'condition' })
  * // => "data.temp < 32"
+ *
+ * // Config setting with type inference
+ * compileExpression(["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"], { platform: 'kotlin' })
+ * // => "when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> ..."
  */
 export function compileExpression(expr: Expression, options: CompilationOptions): string {
     const { addDataPrefix = true, context = 'value', formatter, platform } = options;
+
+    // If no settingTypes provided, infer them from the expression tree
+    if (!options.settingTypes && isExpression(expr)) {
+        options = { ...options, settingTypes: inferSettingTypes(expr) };
+    }
 
     // Handle null/undefined
     if (expr === null || expr === undefined) {
@@ -72,6 +143,10 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
 
     // Handle literal values
     if (typeof expr === 'string') {
+        if (expr.startsWith('color.')) {
+            const colorName = expr.substring(6); // Remove 'color.' prefix
+            return compileColorReference(colorName, platform);
+        }
         if (formatter && context === 'value') {
             return formatter(expr);
         }
@@ -105,7 +180,13 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
 
     switch (op) {
         case 'get':
-            return compileGet(args[0], platform, addDataPrefix);
+            // Look up inferred type for config.settings properties
+            let settingType: SettingType = 'unknown';
+            if (typeof args[0] === 'string' && args[0].startsWith('config.settings.')) {
+                const settingKey = args[0].substring(16);
+                settingType = options.settingTypes?.get(settingKey) || 'unknown';
+            }
+            return compileGet(args[0], platform, addDataPrefix, settingType);
 
         case 'has':
             return compileHas(args[0], platform, addDataPrefix);
@@ -116,6 +197,12 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
         case '*':
         case '/':
             return compileArithmetic(op, args, options);
+
+        // Math functions
+        case 'min':
+            return compileMathMin(args, options);
+        case 'max':
+            return compileMathMax(args, options);
 
         // Comparison
         case '<':
@@ -169,7 +256,13 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
 /**
  * Compile "get" operator - property access
  */
-function compileGet(prop: string, platform: Platform, addDataPrefix: boolean): string {
+function compileGet(prop: string, platform: Platform, addDataPrefix: boolean, settingType?: SettingType): string {
+    // Handle color.X - reference to theme colors
+    if (prop.startsWith('color.')) {
+        const colorName = prop.substring(6); // Remove 'color.' prefix
+        return compileColorReference(colorName, platform);
+    }
+
     // Handle size.width/height specially - map to direct width/height variables in Swift
     if (prop.startsWith('size.')) {
         const parts = prop.split('.');
@@ -184,6 +277,12 @@ function compileGet(prop: string, platform: Platform, addDataPrefix: boolean): s
         return prop;
     }
 
+    // Handle config.settings.* with type-aware accessors
+    if (prop.startsWith('config.settings.')) {
+        const settingKey = prop.substring(16); // Remove 'config.settings.' prefix
+        return compileSettingAccess(settingKey, platform, settingType || 'unknown');
+    }
+
     // Handle item properties (in forEach loops)
     if (isItemPath(prop)) {
         return prop;
@@ -196,6 +295,79 @@ function compileGet(prop: string, platform: Platform, addDataPrefix: boolean): s
 
     // Add data prefix if needed
     return addDataPrefix ? `data.${prop}` : prop;
+}
+
+/**
+ * Compile color.X reference to platform-specific theme color
+ */
+function compileColorReference(colorName: string, platform: Platform): string {
+    // Import DEFAULT_COLOR_MAPS from modifier-builders at runtime
+    const { DEFAULT_COLOR_MAPS } = require('./modifier-builders');
+    const colorMap = DEFAULT_COLOR_MAPS[platform];
+
+    // Return the platform-specific theme color reference
+    return colorMap[colorName] || colorName;
+}
+
+/**
+ * Generate platform-specific typed accessor for config.settings property
+ */
+function compileSettingAccess(key: string, platform: Platform, type: SettingType): string {
+    switch (platform) {
+        case 'kotlin':
+            return compileKotlinSettingAccess(key, type);
+        case 'swift':
+            return compileSwiftSettingAccess(key, type);
+        case 'javascript':
+        case 'typescript':
+            // JavaScript/TypeScript can access settings directly without type casting
+            return `config.settings?.${key}`;
+    }
+}
+
+/**
+ * Generate Kotlin typed accessor for config.settings
+ * Examples:
+ *  - boolean: config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull
+ *  - string: config.settings?.get("theme")?.jsonPrimitive?.contentOrNull
+ *  - number: config.settings?.get("fontSize")?.jsonPrimitive?.intOrNull
+ */
+function compileKotlinSettingAccess(key: string, type: SettingType): string {
+    const baseAccess = `config.settings?.get("${key}")?.jsonPrimitive`;
+    switch (type) {
+        case 'boolean':
+            return `${baseAccess}?.booleanOrNull`;
+        case 'string':
+            return `${baseAccess}?.contentOrNull`;
+        case 'number':
+            // Default to intOrNull; could also be doubleOrNull depending on context
+            return `${baseAccess}?.intOrNull`;
+        case 'unknown':
+            // Fallback: return as string content
+            return `${baseAccess}?.contentOrNull`;
+    }
+}
+
+/**
+ * Generate Swift typed accessor for config.settings
+ * Examples:
+ *  - boolean: entry.config.settings["clockBold"] as? Bool
+ *  - string: entry.config.settings["theme"] as? String
+ *  - number: entry.config.settings["fontSize"] as? Int
+ */
+function compileSwiftSettingAccess(key: string, type: SettingType): string {
+    const baseAccess = `entry.config.settings["${key}"]`;
+    switch (type) {
+        case 'boolean':
+            return `${baseAccess} as? Bool`;
+        case 'string':
+            return `${baseAccess} as? String`;
+        case 'number':
+            return `${baseAccess} as? Int`;
+        case 'unknown':
+            // Fallback: try String
+            return `${baseAccess} as? String`;
+    }
 }
 
 /**
@@ -220,9 +392,68 @@ function compileHas(prop: string, platform: Platform, addDataPrefix: boolean): s
 // ============================================================================
 
 function compileArithmetic(op: '+' | '-' | '*' | '/', args: Expression[], options: CompilationOptions): string {
-    const left = compileExpression(args[0], { ...options, context: 'value' });
-    const right = compileExpression(args[1], { ...options, context: 'value' });
+    // Don't pass formatter to sub-expressions - units only apply to the final result
+    const left = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const right = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+
+    // For Kotlin, Float (size.*.value) mixed with Double literals needs explicit Float suffix
+    if (options.platform === 'kotlin') {
+        const leftIsFloat = left.includes('.value');
+        const rightIsFloat = right.includes('.value');
+        if (leftIsFloat || rightIsFloat) {
+            return `(${ensureKotlinFloat(left)} ${op} ${ensureKotlinFloat(right)})`;
+        }
+    }
+
     return `(${left} ${op} ${right})`;
+}
+
+/**
+ * Ensure numeric literals in an expression use Float suffix for Kotlin
+ * Converts e.g. "0.16" -> "0.16f", "30.0" -> "30.0f", "30" -> "30.0f"
+ */
+function ensureKotlinFloat(expr: string): string {
+    // Replace bare decimal float literals (not already suffixed with 'f')
+    let result = expr.replace(/\b(\d+\.\d+)(?![fF\d])\b/g, '$1f');
+    // Replace bare integer literals with float form (e.g., "30" -> "30.0f")
+    // Only match standalone integers not followed by '.', 'f', 'F', or another digit
+    result = result.replace(/\b(\d+)(?![fF.\d])\b/g, '$1.0f');
+    return result;
+}
+
+function compileMathMin(args: Expression[], options: CompilationOptions): string {
+    const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const b = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+
+    if (options.platform === 'kotlin') {
+        // Ensure Float compatibility when size values are involved
+        const needsFloat = a.includes('.value') || b.includes('.value');
+        if (needsFloat) {
+            return `min(${ensureKotlinFloat(a)}, ${ensureKotlinFloat(b)})`;
+        }
+        return `min(${a}, ${b})`;
+    }
+    if (options.platform === 'swift') {
+        return `min(${a}, ${b})`;
+    }
+    return `Math.min(${a}, ${b})`;
+}
+
+function compileMathMax(args: Expression[], options: CompilationOptions): string {
+    const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+    const b = compileExpression(args[1], { ...options, context: 'value', formatter: undefined });
+
+    if (options.platform === 'kotlin') {
+        const needsFloat = a.includes('.value') || b.includes('.value');
+        if (needsFloat) {
+            return `max(${ensureKotlinFloat(a)}, ${ensureKotlinFloat(b)})`;
+        }
+        return `max(${a}, ${b})`;
+    }
+    if (options.platform === 'swift') {
+        return `max(${a}, ${b})`;
+    }
+    return `Math.max(${a}, ${b})`;
 }
 
 // ============================================================================
@@ -237,6 +468,10 @@ function compileComparison(op: '<' | '<=' | '>' | '>=' | '==' | '!=', args: Expr
     if (options.platform === 'swift') {
         if (op === '==') return `${left} == ${right}`;
         if (op === '!=') return `${left} != ${right}`;
+    }
+    if (options.platform === 'javascript') {
+        if (op === '==') return `${left} === ${right}`;
+        if (op === '!=') return `${left} !== ${right}`;
     }
 
     return `${left} ${op} ${right}`;

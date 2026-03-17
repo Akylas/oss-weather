@@ -63,9 +63,8 @@ declare namespace com {
             }
             export namespace widgets {
                 export class WeatherWidgetManager {
-                    static onWidgetAdded(activity: androidx.appcompat.app.AppCompatActivity, widgetId: number) {
-                        throw new Error('Method not implemented.');
-                    }
+                    static saveWidgetConfigString(context: globalAndroid.content.Context, widgetId: number, arg2: string);
+                    static onWidgetAdded(activity: androidx.appcompat.app.AppCompatActivity, widgetId: number);
                     static requestWidgetUpdate<WidgetConfigActivityCallbacksImplementation extends WidgetConfigActivityCallbacksImplementation>(arg0: this, widgetId: number);
                     static sendWidgetAdded<WidgetConfigActivityCallbacksImplementation extends WidgetConfigActivityCallbacksImplementation>(arg0: this, appWidgetId: number);
                     static addActiveWidget<WidgetConfigActivityCallbacksImplementation extends WidgetConfigActivityCallbacksImplementation>(arg0: this, appWidgetId: number);

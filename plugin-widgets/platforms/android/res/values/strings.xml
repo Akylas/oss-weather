@@ -16,6 +16,8 @@
 -->
 <resources>
     <!-- appwidget-provider descriptions (referenced via android:description) -->
+    <string name="daily">daily</string>
+    <string name="hourly">hourly</string>
     <string name="widget.simple.description">Current weather at a glance</string>
     <string name="widget.withdate.description">Weather with date and location</string>
     <string name="widget.withclock.description">Real-time clock with weather</string>

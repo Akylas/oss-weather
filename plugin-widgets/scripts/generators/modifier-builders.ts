@@ -43,7 +43,8 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         primary: 'GlanceTheme.colors.primary',
         error: 'GlanceTheme.colors.error',
         widgetBackground: 'GlanceTheme.colors.background',
-        surface: 'GlanceTheme.colors.surface'
+        surface: 'GlanceTheme.colors.surface',
+        surfaceVariant: 'GlanceTheme.colors.surfaceVariant'
     },
     swift: {
         onSurface: 'WidgetColorProvider.onSurface',
@@ -51,7 +52,8 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         primary: 'WidgetColorProvider.primary',
         error: 'WidgetColorProvider.error',
         widgetBackground: 'WidgetColorProvider.background',
-        surface: 'WidgetColorProvider.surface'
+        surface: 'WidgetColorProvider.surface',
+        surfaceVariant: 'WidgetColorProvider.surfaceVariant'
     },
     javascript: {
         onSurface: '#E6E1E5',
@@ -197,24 +199,66 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
             modifiers.push(`padding(${paddingExpr})`);
         }
     }
-    if (element.paddingHorizontal !== undefined) {
-        const paddingExpr = compilePropertyValue(element.paddingHorizontal, {
+    // Combine paddingHorizontal + paddingVertical into a single call when both present
+    if (element.paddingHorizontal !== undefined && element.paddingVertical !== undefined) {
+        const hExpr = compilePropertyValue(element.paddingHorizontal, {
             platform: 'kotlin',
             context: 'value',
             formatter: (v: number) => formatDimension(v, 'kotlin')
         });
-        if (paddingExpr) {
-            modifiers.push(`padding(horizontal = ${paddingExpr})`);
+        const vExpr = compilePropertyValue(element.paddingVertical, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => formatDimension(v, 'kotlin')
+        });
+        if (hExpr && vExpr) {
+            modifiers.push(`padding(horizontal = ${hExpr}, vertical = ${vExpr})`);
+        }
+    } else {
+        if (element.paddingHorizontal !== undefined) {
+            const paddingExpr = compilePropertyValue(element.paddingHorizontal, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => formatDimension(v, 'kotlin')
+            });
+            if (paddingExpr) {
+                modifiers.push(`padding(horizontal = ${paddingExpr})`);
+            }
+        }
+        if (element.paddingVertical !== undefined) {
+            const paddingExpr = compilePropertyValue(element.paddingVertical, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => formatDimension(v, 'kotlin')
+            });
+            if (paddingExpr) {
+                modifiers.push(`padding(vertical = ${paddingExpr})`);
+            }
         }
     }
-    if (element.paddingVertical !== undefined) {
-        const paddingExpr = compilePropertyValue(element.paddingVertical, {
-            platform: 'kotlin',
-            context: 'value',
-            formatter: (v: number) => formatDimension(v, 'kotlin')
-        });
-        if (paddingExpr) {
-            modifiers.push(`padding(vertical = ${paddingExpr})`);
+    // Individual side padding modifiers
+    const paddingSides: { key: string; side: string }[] = [
+        { key: 'paddingTop', side: 'top' },
+        { key: 'paddingBottom', side: 'bottom' },
+        { key: 'paddingLeft', side: 'start' },
+        { key: 'paddingRight', side: 'end' }
+    ];
+    for (const { key, side } of paddingSides) {
+        if (element[key] !== undefined) {
+            const expr = compilePropertyValue(element[key], {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => formatDimension(v, 'kotlin')
+            });
+            if (expr) {
+                // If the expression already produces .dp values (e.g. when expressions, literals),
+                // use it directly. Otherwise wrap with .dp.
+                if (expr.includes('.dp') || expr.startsWith('when')) {
+                    modifiers.push(`padding(${side} = ${expr})`);
+                } else {
+                    modifiers.push(`padding(${side} = (${expr}).dp)`);
+                }
+            }
         }
     }
 
@@ -252,12 +296,21 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
 
     // Background color
     if (element.backgroundColor !== undefined) {
-        const colorExpr = compilePropertyValue(element.backgroundColor, {
+        let colorExpr = compilePropertyValue(element.backgroundColor, {
             platform: 'kotlin',
             context: 'value',
             formatter: (v: string) => formatColor(v, 'kotlin')
         });
         if (colorExpr) {
+            if (element.opacity !== undefined) {
+                const opacityExpr = compilePropertyValue(element.opacity, {
+                    platform: 'kotlin',
+                    context: 'value',
+                    formatter: (v: number) => `${v}f`
+                });
+                colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
+            }
+
             modifiers.push(`background(${colorExpr})`);
         }
     }
@@ -273,6 +326,18 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
             modifiers.push(`cornerRadius(${radiusExpr})`);
         }
     }
+
+    // Opacity (alpha)
+    // if (element.opacity !== undefined) {
+    //     const opacityExpr = compilePropertyValue(element.opacity, {
+    //         platform: 'kotlin',
+    //         context: 'value',
+    //         formatter: (v: number) => `${v}f`
+    //     });
+    //     if (opacityExpr) {
+    //         modifiers.push(`alpha(${opacityExpr})`);
+    //     }
+    // }
 
     if (modifiers.length === 0) {
         return 'GlanceModifier';
@@ -353,6 +418,18 @@ export function buildSwiftModifiers(element: BaseLayoutElement): string[] {
         });
         if (radiusExpr) {
             modifiers.push(`cornerRadius(${radiusExpr})`);
+        }
+    }
+
+    // Opacity
+    if (element.opacity !== undefined) {
+        const opacityExpr = compilePropertyValue(element.opacity, {
+            platform: 'swift',
+            context: 'value',
+            formatter: (v: number) => `${v}`
+        });
+        if (opacityExpr) {
+            modifiers.push(`opacity(${opacityExpr})`);
         }
     }
 

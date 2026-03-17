@@ -30,6 +30,7 @@ import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.register
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlinx.serialization.json.*
 
 private const val LOG_TAG = "SimpleWeatherWithDateWidget"
 
@@ -96,7 +97,7 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
             val widgetConfig = WidgetConfig(settings = widgetSettings)
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: false)) {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false)) {
                     if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData!!.loadingState == WidgetLoadingState.LOADING) {

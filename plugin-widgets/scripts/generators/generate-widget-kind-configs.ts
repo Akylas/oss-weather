@@ -124,34 +124,34 @@ export const WIDGET_KINDS = Object.keys(WIDGET_KIND_CONFIGS);
 }
 
 function generateKotlinFile(configs: Map<string, WidgetKindConfig>): string {
-    const settingsMappers = Array.from(configs.entries())
-        .filter(([, config]) => config.settings !== null)
-        .map(([kind, config]) => {
-            const settingsEntries = Object.entries(config.settings)
-                .map(([key, value]) => {
-                    const valueStr =
-                        typeof value === 'string'
-                            ? `JsonPrimitive("${value}")`
-                            : typeof value === 'boolean'
-                              ? `JsonPrimitive(${value})`
-                              : typeof value === 'number'
-                                ? `JsonPrimitive(${value})`
-                                : `JsonPrimitive("${value}")`;
-                    return `                "${key}" to ${valueStr}`;
-                })
-                .join(',\n');
+    //     const settingsMappers = Array.from(configs.entries())
+    //         .filter(([, config]) => config.settings !== null)
+    //         .map(([kind, config]) => {
+    //             const settingsEntries = Object.entries(config.settings)
+    //                 .map(([key, value]) => {
+    //                     const valueStr =
+    //                         typeof value === 'string'
+    //                             ? `JsonPrimitive("${value}")`
+    //                             : typeof value === 'boolean'
+    //                               ? `JsonPrimitive(${value})`
+    //                               : typeof value === 'number'
+    //                                 ? `JsonPrimitive(${value})`
+    //                                 : `JsonPrimitive("${value}")`;
+    //                     return `                "${key}" to ${valueStr}`;
+    //                 })
+    //                 .join(',\n');
 
-            return `        "${kind}" to JsonObject(mapOf(
-${settingsEntries}
-        ))`;
-        });
+    //             return `        "${kind}" to JsonObject(mapOf(
+    // ${settingsEntries}
+    //         ))`;
+    //         });
 
-    const settingsMap =
-        settingsMappers.length > 0
-            ? `    private val DEFAULT_SETTINGS = mapOf(
-${settingsMappers.join(',\n')}
-    )`
-            : `    private val DEFAULT_SETTINGS = emptyMap<String, JsonObject>()`;
+    //     const settingsMap =
+    //         settingsMappers.length > 0
+    //             ? `    private val DEFAULT_SETTINGS = mapOf(
+    // ${settingsMappers.join(',\n')}
+    //     )`
+    //             : `    private val DEFAULT_SETTINGS = emptyMap<String, JsonObject>()`;
 
     const kindsList = Array.from(configs.keys())
         .map((k) => `"${k}"`)
@@ -174,16 +174,6 @@ import kotlinx.serialization.json.JsonPrimitive
 object WidgetKindConfigs {
     val WIDGET_KINDS = listOf(${kindsList})
     
-${settingsMap}
-    
-    /**
-     * Get default settings for a widget kind
-     * Returns null if the widget kind has no settings
-     */
-    fun getDefaultSettings(widgetKind: String): JsonObject? {
-        return DEFAULT_SETTINGS[widgetKind]
-    }
-    
     /**
      * Create default config for a widget kind
      */
@@ -196,7 +186,7 @@ ${settingsMap}
             provider = null,
             widgetKind = widgetKind,
             iconSet = null,
-            settings = getDefaultSettings(widgetKind)
+            settings = null
         )
     }
 }

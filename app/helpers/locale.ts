@@ -14,6 +14,7 @@ import { createGlobalEventListener, globalObservable } from '@shared/utils/svelt
 import { ALERT_OPTION_MAX_HEIGHT, DEFAULT_LOCALE, SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
 import { imperialUnits } from '~/variables';
 import { getISO3Language } from '@akylas/nativescript-app-utils';
+import { clearCurrentLocale, getCurrentLocale } from '@shared/helpers/lang';
 const supportedLanguages = SUPPORTED_LOCALES;
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -67,7 +68,7 @@ function setLang(newLang) {
     DEV_LOG && console.log('setLang', newLang, actualNewLang);
     if (__IOS__) {
         overrideNativeLocale(actualNewLang);
-        currentLocale = null;
+        clearCurrentLocale();
     } else {
         // Application.android.foregroundActivity?.recreate();
         try {
@@ -89,7 +90,7 @@ function setLang(newLang) {
             DEV_LOG && console.log('appLocale', appLocale.toLanguageTags(), actualNewLang);
             // Call this on the main thread as it may require Activity.restart()
             androidx.appcompat.app.AppCompatDelegate['setApplicationLocales'](appLocale);
-            currentLocale = null;
+            clearCurrentLocale();
             // TODO: check why getEmptyLocaleList does not reset the locale to system
             actualNewLang = getActualLanguage(newLang);
         } catch (error) {
@@ -162,6 +163,36 @@ export function formatDate(date: number | string | dayjs.Dayjs | Date, formatStr
     }
     return '';
 }
+/**
+ * Format a date using a locale-aware medium/long format but with the year stripped.
+ * Useful for "day + month" displays that should follow the current locale ordering.
+ *
+ * @param date   The date to format.
+ * @param style  'LL' (full month, e.g. "September 4") or 'll' (abbreviated, e.g. "Sep 4").
+ *               Defaults to 'll'.
+ */
+export function formatDateWithoutYear(date: number | string | dayjs.Dayjs | Date, style: 'll' | 'LL' = 'll', timezoneOffset?: number): string {
+    if (!date) return '';
+    const d: dayjs.Dayjs = date['format'] ? (date as dayjs.Dayjs) : getLocalTime(date, timezoneOffset);
+    const localeName: string = d.locale() || (dayjs as any).locale?.() || 'en';
+    // Access dayjs locale formats (LL is the long date format stored by the LocalizedFormat plugin)
+    const localeFormats: Record<string, string> | undefined = (dayjs as any).Ls?.[localeName]?.formats;
+    if (localeFormats) {
+        // LL is stored in locale as-is; ll is the abbreviated form derived from LL
+        let rawFormat: string = localeFormats['LL'] ?? 'MMMM D, YYYY';
+        if (style === 'll') {
+            rawFormat = rawFormat.replace(/MMMM/g, 'MMM').replace(/DD/g, 'D');
+        }
+        // Strip year token(s) (YYYY / YY / yyyy / yy) and surrounding separator chars
+        const noYearFormat = rawFormat.replace(/[\s,./-]*(?:YYYY|YY|yyyy|yy)[\s,./-]*/g, '').trim();
+        return capitalize(d.format(noYearFormat));
+    }
+    // Fallback: format with the style token then strip the 4-digit year and separators
+    const formatted = capitalize(d.format(style));
+    const yearStr = d.format('YYYY');
+    return formatted.replace(new RegExp('[\\s,./-]*' + yearStr + '[\\s,./-]*'), '').trim();
+}
+
 export function formatTime(date: number | dayjs.Dayjs | string | Date, formatStr: string = 'LT', timezoneOffset?: number) {
     if (date) {
         if (!date['format']) {
@@ -181,7 +212,8 @@ prefs.on(`key:${SETTINGS_LANGUAGE}`, () => {
     const newLanguage = ApplicationSettings.getString(SETTINGS_LANGUAGE, DEFAULT_LOCALE);
     DEV_LOG && console.log('language changed', newLanguage);
     // on pref change we are updating
-    if (newLanguage === lang) {
+    // if "auto" then getActualLanguage will return lang value and we still need to update
+    if (newLanguage !== 'auto' && getActualLanguage(newLanguage) === lang) {
         return;
     }
     setLang(newLanguage);
@@ -196,19 +228,12 @@ prefs.on('key:clock_24', () => {
     globalObservable.notify({ eventName: SETTINGS_IMPERIAL, data: imperialUnits });
 });
 
-let currentLocale: any = null;
 export function getLocaleDisplayName(locale?, canReturnEmpty = false) {
     if (__IOS__) {
-        if (!currentLocale) {
-            currentLocale = NSLocale.alloc().initWithLocaleIdentifier(lang);
-        }
-        const localeStr = (currentLocale as NSLocale).displayNameForKeyValue(NSLocaleIdentifier, locale || lang);
+        const localeStr = (getCurrentLocale(lang) as NSLocale).displayNameForKeyValue(NSLocaleIdentifier, locale || lang);
         return localeStr ? capitalize(localeStr) : canReturnEmpty ? undefined : locale || lang;
     } else {
-        if (!currentLocale) {
-            currentLocale = java.util.Locale.forLanguageTag(lang);
-        }
-        return capitalize(java.util.Locale.forLanguageTag(locale || lang).getDisplayName(currentLocale as java.util.Locale));
+        return capitalize(java.util.Locale.forLanguageTag(locale || lang).getDisplayName(getCurrentLocale(lang) as java.util.Locale));
     }
 }
 export function getCurrentISO3Language() {

@@ -14,21 +14,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 object WidgetKindConfigs {
     val WIDGET_KINDS = listOf("DailyWeatherWidget", "ForecastWeatherWidget", "HourlyWeatherWidget", "SimpleWeatherWidget", "SimpleWeatherWithClockWidget", "SimpleWeatherWithDateWidget")
-    
-    private val DEFAULT_SETTINGS = mapOf(
-        "SimpleWeatherWithClockWidget" to JsonObject(mapOf(
-                "clockBold" to JsonPrimitive(true)
-        ))
-    )
-    
-    /**
-     * Get default settings for a widget kind
-     * Returns null if the widget kind has no settings
-     */
-    fun getDefaultSettings(widgetKind: String): JsonObject? {
-        return DEFAULT_SETTINGS[widgetKind]
-    }
-    
+
     /**
      * Create default config for a widget kind
      */
@@ -41,7 +27,7 @@ object WidgetKindConfigs {
             provider = null,
             widgetKind = widgetKind,
             iconSet = null,
-            settings = getDefaultSettings(widgetKind)
+            settings = null
         )
     }
 }

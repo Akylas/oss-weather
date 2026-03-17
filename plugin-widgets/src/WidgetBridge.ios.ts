@@ -1,3 +1,4 @@
+import { WidgetConfig } from 'plugin-widgets/WidgetTypes';
 import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager } from './WidgetDataManager';
@@ -491,6 +492,12 @@ export class WidgetBridge extends WidgetBridgeBase {
 
         // Store the interval for reference
         WidgetConfigManager.setUpdateFrequency(intervalMinutes);
+    }
+
+    public saveWidgetConfig(widgetId: string, config: WidgetConfig) {
+        // TODO: implement saveWidgetConfig
+        DEV_LOG && console.log('saveWidgetConfig', widgetId, config);
+        WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
     }
 
     /**

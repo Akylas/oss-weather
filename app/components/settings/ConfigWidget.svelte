@@ -22,17 +22,19 @@
     import { Template } from 'svelte-native/components';
     import { NativeViewElementNode } from 'svelte-native/dom';
     import { onThemeChanged } from '~/helpers/theme';
+    import { queryTimezone } from '~/helpers/favorites';
+    import { confirm } from '@nativescript-community/ui-material-dialogs';
 
     // Load sample data helper
-    async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
-        try {
-            const sampleData = (await import(`plugin-widgets/widgets/samples/${widgetClass}.sample.json`)).default;
-            return sampleData[setName] || sampleData.default || null;
-        } catch (error) {
-            console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
-            return null;
-        }
-    }
+    // async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
+    //     try {
+    //         const sampleData = (await import(`plugin-widgets/widgets/samples/${widgetClass}.sample.json`)).default;
+    //         return sampleData[setName] || sampleData.default || null;
+    //     } catch (error) {
+    //         console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
+    //         return null;
+    //     }
+    // }
     // Load sample data helper
     async function loadWidgetData(widgetClass: string): Promise<any> {
         const data = (await import(`plugin-widgets/widgets/${widgetClass}.json`)).default;
@@ -49,6 +51,7 @@
     export let widgetId: string = '';
     export let modalMode: boolean = false;
     export let isKindConfig: boolean = false; // true for per-kind config, false for per-instance
+    export let onMenuIcon = null;
 
     let collectionView: NativeViewElementNode<CollectionView>;
 
@@ -56,9 +59,16 @@
     let config: WidgetConfig = null;
     // let updateFrequency: number = DEFAULT_UPDATE_FREQUENCY;
     let previewData: WeatherWidgetData = null;
-    let previewConfig: { name: string; displayName: string; description: string; supportedSizes: { width: number; height: number; family: string }[] } = null;
-    let previewSet: string = 'default';
-    let previewSize: { width: number; height: number; family: string } = null;
+    let previewConfig: {
+        name: string;
+        displayName: string;
+        description: string;
+        supportedSizes: { width: number; height: number; family: string }[];
+        preview: { sizes: { width: number; height: number }[]; fakeData: WeatherWidgetData };
+        settings?: Record<string, any>;
+    } = null;
+    const previewSet: string = 'default';
+    let previewSize: { width: number; height: number } = null;
     loadConfig();
 
     function getWidgetTitle(): string {
@@ -81,9 +91,11 @@
         // updateFrequency = WidgetConfigManager.getUpdateFrequency();
         // Load initial preview data
         if (widgetClass) {
-            previewData = await loadWidgetSample(widgetClass, previewSet);
             previewConfig = await loadWidgetData(widgetClass);
-            previewSize = previewConfig.supportedSizes[0];
+            previewData = previewConfig.preview.fakeData;
+            previewSize = previewConfig.preview.sizes[0];
+            DEV_LOG && console.log('onMount', widgetClass, typeof previewConfig.settings, JSON.stringify(previewConfig.settings));
+            refresh();
         }
     });
 
@@ -121,12 +133,24 @@
             props: {}
         });
         if (result) {
+            const timezoneData = await queryTimezone(result);
+
             config.locationName = result.name || result.sys?.name || 'Selected';
             config.latitude = result.coord.lat;
             config.longitude = result.coord.lon;
+            Object.assign(config, timezoneData);
             updateItem(item);
             saveConfig();
         }
+    }
+
+    async function clearLocation(item) {
+        DEV_LOG && console.log('clearLocation', item);
+        config.locationName = 'current';
+        config.latitude = 0;
+        config.longitude = 0;
+        updateItem(item);
+        saveConfig();
     }
 
     async function selectLocationOnMap(item) {
@@ -142,6 +166,8 @@
             config.locationName = result.name;
             config.latitude = result.coord.lat;
             config.longitude = result.coord.lon;
+            const timezoneData = await queryTimezone(result);
+            Object.assign(config, timezoneData);
             updateItem(item);
             saveConfig();
         }
@@ -218,41 +244,41 @@
     //     }
     // }
 
-    async function selectPreviewSet(event) {
-        try {
-            const options = ['default', 'hot', 'storm'].map((set) => ({
-                title: lc(`widget.preview_set.${set}`) || set,
-                type: 'checkbox',
-                boxType: 'circle',
-                value: set === previewSet,
-                data: set
-            }));
-            await showPopoverMenu({
-                options,
-                anchor: event.object,
-                vertPos: VerticalPosition.BELOW,
-                props: {
-                    width: 220 * $fontScale,
-                    maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
-                    // autoSizeListItem: true
-                },
+    // async function selectPreviewSet(event) {
+    //     try {
+    //         const options = ['default', 'hot', 'storm'].map((set) => ({
+    //             title: lc(`widget.preview_set.${set}`) || set,
+    //             type: 'checkbox',
+    //             boxType: 'circle',
+    //             value: set === previewSet,
+    //             data: set
+    //         }));
+    //         await showPopoverMenu({
+    //             options,
+    //             anchor: event.object,
+    //             vertPos: VerticalPosition.BELOW,
+    //             props: {
+    //                 width: 220 * $fontScale,
+    //                 maxHeight: Screen.mainScreen.heightDIPs - $actionBarHeight
+    //                 // autoSizeListItem: true
+    //             },
 
-                onCheckBox: async (item) => {
-                    closePopover();
-                    if (item?.data) {
-                        previewSet = item?.data;
-                        previewData = await loadWidgetSample(widgetClass, previewSet);
-                    }
-                }
-            });
-        } catch (error) {
-            showError(error);
-        }
-    }
+    //             onCheckBox: async (item) => {
+    //                 closePopover();
+    //                 if (item?.data) {
+    //                     previewSet = item?.data;
+    //                     previewData = await loadWidgetSample(widgetClass, previewSet);
+    //                 }
+    //             }
+    //         });
+    //     } catch (error) {
+    //         showError(error);
+    //     }
+    // }
     async function selectPreviewSize(event) {
         try {
-            const options = previewConfig.supportedSizes.map((set) => ({
-                title: lc(`widget.preview_set.${set.family}`) || set.family,
+            const options = previewConfig.preview.sizes.map((set) => ({
+                title: `${set.width}x${set.height}`,
                 type: 'checkbox',
                 boxType: 'circle',
                 value: set.width === previewSize.width && set.height === previewSize.height,
@@ -327,8 +353,9 @@
 
     let widgetComponent = null;
     if (widgetClass) {
-        import(`plugin-widgets/svelte/generated/${widgetClass}.generated.svelte`).then((component) => {
-            widgetComponent = component;
+        import(`plugin-widgets/svelte/generated/${widgetClass}View.generated.svelte`).then((component) => {
+            DEV_LOG && console.log('widgetComponent', component);
+            widgetComponent = component.default;
         });
     }
     $: widgetSize = previewSize ?? { width: 160, height: 160 };
@@ -337,26 +364,26 @@
     $: DEV_LOG && console.log('previewData', JSON.stringify(previewData));
     $: DEV_LOG && console.log('widgetSize', widgetSize);
 
-    const items = new ObservableArray(
-        (
+    async function refresh() {
+        const newItems = (
             [
-                {
-                    id: 'preview_set',
-                    title: lc('widget.preview_set'),
-                    description: () => lc(`widget.preview_set.${previewSet}`) || previewSet
-                },
-                {
-                    id: 'preview_size',
-                    title: lc('widget.preview_size'),
-                    description: () => lc(previewSize.family)
-                }
+                // {
+                //     id: 'preview_set',
+                //     title: lc('widget.preview_set'),
+                //     description: () => lc(`widget.preview_set.${previewSet}`) || previewSet
+                // },
+                // {
+                //     id: 'preview_size',
+                //     title: lc('widget.preview_size'),
+                //     description: () => lc(previewSize['family'] || `${previewSize.width}x${previewSize.height}`)
+                // }
             ] as any[]
         )
-            .concat(isKindConfig ? [{ type: 'header', title: lc('default_widget_settings_note') }] : [])
+            .concat(isKindConfig ? [{ type: 'sectionheader', title: lc('default_widget_settings_note') }] : [])
             .concat([
                 { type: 'rightIcon', id: 'location', rightBtnIcon: 'mdi-map', title: lc('location_name'), description: getLocationDescription, onRightIconTap: selectLocationOnMap },
                 {
-                    type: 'header',
+                    type: 'sectionheader',
                     title: lc('providers')
                 },
                 {
@@ -368,15 +395,51 @@
                     id: 'model',
                     title: lc('model'),
                     description: getModelDescription
-                },
-                {
-                    id: 'header',
-                    description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
                 }
-            ])
-    );
+            ]);
 
-    function updateItem(item, key = 'key') {
+        newItems.push(
+            {
+                id: 'sectionheader',
+                title: lc('settings')
+            },
+            {
+                type: 'switch',
+                id: 'transparent',
+                title: lc('widget_transparent_background'),
+                value: config.settings?.['transparent'] ?? false
+            }
+        );
+        if (previewConfig.settings) {
+            Object.keys(previewConfig.settings).forEach((key) => {
+                const item = previewConfig.settings[key];
+                switch (item.type) {
+                    case 'boolean':
+                        newItems.push({
+                            type: 'switch',
+                            id: key,
+                            title: lc(item.title),
+                            value: config.settings?.[key] ?? item.default
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+        newItems.push({
+            id: 'sectionheader',
+            description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
+        });
+        // items = new ObservableArray(newItems)
+        items.splice(0, items.length, ...newItems);
+    }
+
+    const items = new ObservableArray([]);
+
+    refresh();
+
+    function updateItem(item, key = 'id') {
         const index = items.findIndex((it) => it[key] === item[key]);
         if (index !== -1) {
             items.setItem(index, item);
@@ -403,6 +466,14 @@
                 default:
                     // TODO: implement
                     // ApplicationSettings.setBoolean(item.key || item.id, value);
+                    DEV_LOG && console.log('onCheckBox', config.settings, typeof config.settings);
+                    // config.settings = config.settings || {};
+                    // config.settings[item.id] = value;
+
+                    config.settings = { [item.id]: value };
+
+                    config = config;
+                    saveConfig();
                     break;
             }
         } catch (error) {
@@ -437,9 +508,9 @@
                 case 'location':
                     await selectLocation(item);
                     break;
-                case 'preview_set':
-                    await selectPreviewSet(event);
-                    break;
+                // case 'preview_set':
+                //     await selectPreviewSet(event);
+                //     break;
                 case 'preview_size':
                     await selectPreviewSize(event);
                     break;
@@ -448,6 +519,27 @@
                     break;
                 case 'model':
                     await selectModel(event);
+                    break;
+            }
+        } catch (err) {
+            showError(err);
+        } finally {
+            hideLoading();
+        }
+    }
+    async function onLongPress(item, event) {
+        try {
+            DEV_LOG && console.log('onLongPress', item.id);
+            switch (item.id) {
+                case 'location':
+                    const result = await confirm({
+                        title: lc('reset_location'),
+                        okButtonText: lc('ok'),
+                        cancelButtonText: lc('cancel')
+                    });
+                    if (result) {
+                        await clearLocation(item);
+                    }
                     break;
             }
         } catch (err) {
@@ -473,9 +565,7 @@
     <gridlayout class="pageContent" rows="auto,auto,*">
         <!-- Preview Section -->
         {#if widgetComponent && previewData && previewSize}
-            <gridlayout backgroundColor={colorSurfaceContainer} borderRadius={10} horizontalAlignment="center" row={1}>
-                <svelte:component this={widgetComponent} data={previewData} size={widgetSize} />
-            </gridlayout>
+            <svelte:component this={widgetComponent} backgroundColor={colorSurfaceContainer} borderRadius={10} {config} data={previewData} horizontalAlignment="center" row={1} size={widgetSize} />
         {/if}
         <collectionview bind:this={collectionView} itemTemplateSelector={selectTemplate} {items} row={2} android:paddingBottom={$windowInset.bottom}>
             <Template key="sectionheader" let:item>
@@ -492,7 +582,12 @@
                 </ListItemAutoSize>
             </Template>
             <Template key="rightIcon" let:item>
-                <ListItemAutoSize fontSize={20} item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }} showBottomLine={false} on:tap={(event) => onTap(item, event)}>
+                <ListItemAutoSize
+                    fontSize={20}
+                    item={{ ...item, title: getTitle(item), subtitle: getDescription(item) }}
+                    onLongPress={(event) => onLongPress(item, event)}
+                    showBottomLine={false}
+                    on:tap={(event) => onTap(item, event)}>
                     <IconButton col={1} text={item.rightBtnIcon} on:tap={(event) => onRightIconTap(item, event)} />
                 </ListItemAutoSize>
             </Template>
@@ -520,6 +615,6 @@
                 </ListItemAutoSize>
             </Template>
         </collectionview>
-        <CActionBar modalWindow={modalMode} title={getWidgetTitle()} />
+        <CActionBar modalWindow={modalMode} {onMenuIcon} title={getWidgetTitle()} />
     </gridlayout>
 </page>

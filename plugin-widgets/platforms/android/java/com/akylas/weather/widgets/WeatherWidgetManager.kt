@@ -18,11 +18,7 @@ import org.json.JSONObject
 import org.json.JSONArray
 import java.io.File
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.JsonElement
-
+import kotlinx.serialization.json.*
 import androidx.core.content.edit
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.launch
@@ -86,7 +82,7 @@ object WidgetConfigStore {
         _widgetConfigs.update { current ->
             current + (widgetId to config)
         }
-        WidgetsLogger.d("WidgetConfigStore", "Updated config for widgetId=$widgetId, total widgets=${_widgetConfigs.value.size}")
+        WidgetsLogger.d("WidgetConfigStore", "Updated config for widgetId=$widgetId, total widgets=${_widgetConfigs.value.size}, config=$config")
     }
     
     fun removeWidgetConfig(widgetId: Int) {
@@ -98,7 +94,7 @@ object WidgetConfigStore {
     
     fun initializeFromStorage(configs: Map<Int, WidgetConfig>) {
         _widgetConfigs.value = configs
-        WidgetsLogger.d("WidgetConfigStore", "Initialized with ${configs.size} widget configs")
+        WidgetsLogger.d("WidgetConfigStore", "Initialized with ${configs.size} widget configs configs=$configs")
     }
     
     fun getConfig(widgetId: Int): WidgetConfig? {
@@ -110,6 +106,7 @@ object WidgetConfigStore {
      * This prevents unnecessary recomposition of other widgets when a different widget's config changes.
      */
     fun getWidgetSettingsFlow(widgetId: Int): StateFlow<JsonObject?> {
+        WidgetsLogger.d("WidgetConfigStore", "getWidgetSettingsFlow widgetId=$widgetId config=${_widgetConfigs.value[widgetId]} settings=${_widgetConfigs.value[widgetId]?.settings}")
         return widgetConfigs
             .map { configs -> configs[widgetId]?.settings }
             .distinctUntilChanged()
@@ -137,10 +134,6 @@ object WeatherWidgetManager {
     private const val LOG_TAG = "WeatherWidgetManager"
 
     private val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
-
-    init {
-        WidgetsLogger.d(LOG_TAG, "WeatherWidgetManager loaded")
-    }
 
     // Widget data cache - for persistence only
     private val widgetDataCache = mutableMapOf<Int, WeatherWidgetData>()
@@ -595,12 +588,12 @@ object WeatherWidgetManager {
         val appWidgetManager = AppWidgetManager.getInstance(context)
         
         val receiverToWidgetMap = mapOf(
-            SimpleWeatherWidgetReceiver::class.java to SimpleWeatherWidgetOld::class.java,
-            SimpleWeatherWithDateWidgetReceiver::class.java to SimpleWeatherWithDateWidgetOld::class.java,
-            SimpleWeatherWithClockWidgetReceiver::class.java to SimpleWeatherWithClockWidgetOld::class.java,
-            HourlyWeatherWidgetReceiver::class.java to HourlyWeatherWidgetOld::class.java,
-            DailyWeatherWidgetReceiver::class.java to DailyWeatherWidgetOld::class.java,
-            ForecastWeatherWidgetReceiver::class.java to ForecastWeatherWidgetOld::class.java
+            SimpleWeatherWidgetReceiver::class.java to SimpleWeatherWidget::class.java,
+            SimpleWeatherWithDateWidgetReceiver::class.java to SimpleWeatherWithDateWidget::class.java,
+            SimpleWeatherWithClockWidgetReceiver::class.java to SimpleWeatherWithClockWidget::class.java,
+            HourlyWeatherWidgetReceiver::class.java to HourlyWeatherWidget::class.java,
+            DailyWeatherWidgetReceiver::class.java to DailyWeatherWidget::class.java,
+            ForecastWeatherWidgetReceiver::class.java to ForecastWeatherWidget::class.java
         )
         
         for ((receiverClass, widgetClass) in receiverToWidgetMap) {
@@ -864,6 +857,7 @@ object WeatherWidgetManager {
             WidgetsLogger.d(LOG_TAG, "getAllKindConfigs() -> no stored configs")
             return emptyMap()
         }
+            WidgetsLogger.i(LOG_TAG, "getAllKindConfigs ${json} ")
 
         return try {
             val configs = mutableMapOf<String, WidgetConfig>()
@@ -994,10 +988,10 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun createInstanceConfig(context: Context, widgetId: Int, widgetKind: String): WidgetConfig {
-        WidgetsLogger.d(LOG_TAG, "createInstanceConfig(widgetId=$widgetId, widgetKind=$widgetKind)")
         
         // Get kind defaults (with settings initialized from JSON)
         val kindConfig = getKindConfig(context, widgetKind)
+        WidgetsLogger.d(LOG_TAG, "createInstanceConfig(widgetId=$widgetId, widgetKind=$widgetKind, kindConfig=$kindConfig)")
         
         // Create instance config with widgetKind set and copy settings
         val instanceConfig = WidgetConfig(
@@ -1013,7 +1007,7 @@ object WeatherWidgetManager {
         // Save instance config
         saveWidgetConfig(context, widgetId, instanceConfig)
         
-        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (settings=${instanceConfig.settings})")
+        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (settings=${instanceConfig.settings}, instanceConfig=$instanceConfig)")
         return instanceConfig
     }
 
@@ -1056,6 +1050,32 @@ object WeatherWidgetManager {
         // Only update settings to avoid triggering data refetch
         WidgetConfigStore.updateWidgetConfig(widgetId, config)
         WidgetsLogger.i(LOG_TAG, "Updated WidgetConfigStore for widgetId=$widgetId - widgets will recompose automatically")
+    }
+
+    /**
+     * New: Updates widget by parsing JSON string into a WeatherWidgetData instance.
+     * Accepts nullable JSON; null means clear data for this widget.
+     */
+    @JvmStatic
+    fun saveWidgetConfigString(context: Context, widgetId: Int, configJson: String) {
+        WidgetsLogger.d(LOG_TAG, "saveWidgetConfigString(widgetId=$widgetId, configJson=$configJson)")
+        if (configJson.isBlank()) {
+            WidgetsLogger.w(LOG_TAG, "Received null config for widget $widgetId")
+            return
+        }
+        try {
+            val jsonObject = JSONObject(configJson)
+            var config = parseWidgetConfig(jsonObject)
+            if (config == null) {
+                WidgetsLogger.e(LOG_TAG, "Failed to parse widget config for widget $widgetId")
+                return
+            }
+            
+
+            saveWidgetConfig(context, widgetId, config)
+        } catch (e: Exception) {
+            WidgetsLogger.e(LOG_TAG, "Error updating widget $widgetId config" , e)
+        }
     }
 
     /**
@@ -1115,6 +1135,80 @@ object WeatherWidgetManager {
         return null
     }
 
+    fun JSONObject.toJsonObject(): JsonObject {
+        val map = mutableMapOf<String, JsonElement>()
+
+        keys().forEach { key ->
+            map[key] = get(key).toJsonElement()
+        }
+
+        return JsonObject(map)
+    }
+
+    private fun Any?.toJsonElement(): JsonElement {
+        return when (this) {
+            null, JSONObject.NULL -> JsonNull
+
+            is JSONObject -> this.toJsonObject()
+
+            is JSONArray -> JsonArray((0 until length()).map { i ->
+                get(i).toJsonElement()
+            })
+
+            is Boolean -> JsonPrimitive(this)
+            is Int -> JsonPrimitive(this)
+            is Long -> JsonPrimitive(this)
+            is Double -> JsonPrimitive(this)
+
+            is Number -> JsonPrimitive(this.toDouble()) // fallback
+
+            else -> JsonPrimitive(this.toString())
+        }
+    }
+
+    fun JsonObject.toJSONObject(): JSONObject {
+        val jsonObject = JSONObject()
+
+        for ((key, value) in this) {
+            jsonObject.put(key, value.toJavaObject())
+        }
+
+        return jsonObject
+    }
+
+    private fun JsonElement.toJavaObject(): Any? {
+        return when (this) {
+            is JsonObject -> this.toJSONObject()
+            is JsonArray -> {
+                val jsonArray = JSONArray()
+                this.forEach { element ->
+                    jsonArray.put(element.toJavaObject())
+                }
+                jsonArray
+            }
+            is JsonPrimitive -> {
+                when {
+                    isString -> content
+                    booleanOrNull != null -> boolean
+                    longOrNull != null -> long
+                    doubleOrNull != null -> double
+                    else -> content
+                }
+            }
+            JsonNull -> JSONObject.NULL
+        }
+    }
+
+    // Helper: safely get a nullable string from JSONObject (handles explicit null and the literal "null")
+    private fun JSONObject.optStringNullable(key: String): String? {
+        if (!this.has(key)) return null
+        val v = this.opt(key)
+        return when (v) {
+            null, JSONObject.NULL -> null
+            is String -> if (v.equals("null", ignoreCase = true)) null else v
+            else -> v.toString()
+        }
+    }
     /**
      * Parse WidgetConfig from JSONObject
      */
@@ -1125,10 +1219,10 @@ object WeatherWidgetManager {
             locationName = json.optString("locationName", "current"),
             latitude = json.optDouble("latitude", 0.0),
             longitude = json.optDouble("longitude", 0.0),
-            model = json.optString("model", null),
-            provider = json.optString("provider", null),
-            widgetKind = json.optString("widgetKind", null),
-            settings = json.optJSONObject("settings") as JsonObject?
+            model = json.optStringNullable("model"),
+            provider = json.optStringNullable("provider"),
+            widgetKind = json.optStringNullable("widgetKind"),
+            settings = json.optJSONObject("settings")?.toJsonObject()
         )
     }
 
@@ -1136,16 +1230,17 @@ object WeatherWidgetManager {
      * Convert WidgetConfig to JSONObject
      */
     private fun widgetConfigToJson(config: WidgetConfig): JSONObject {
-        WidgetsLogger.d(LOG_TAG, "widgetConfigToJson $config")
-        return JSONObject().apply {
+        val result = JSONObject().apply {
             put("locationName", config.locationName)
             put("latitude", config.latitude)
             put("longitude", config.longitude)
             config.model?.let { put("model", it) }
             config.provider?.let { put("provider", it) }
             config.widgetKind?.let { put("widgetKind", it) }
-            put("settings", config.settings)
+            put("settings", config.settings?.toJSONObject())
         }
+        WidgetsLogger.d(LOG_TAG, "widgetConfigToJson $config result=$result")
+        return result
     }
 
     /**

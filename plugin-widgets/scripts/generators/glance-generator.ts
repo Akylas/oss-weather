@@ -6,8 +6,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { compileExpression as compileExpr, compilePropertyValue as compilePropValue, Expression } from './expression-compiler';
-import { isExpression, toPlatformVerticalAlignment, toPlatformHorizontalAlignment, toPlatformFontWeight } from './shared-utils';
+import { Expression, compileExpression as compileExpr, compilePropertyValue as compilePropValue, compilePropertyValue } from './expression-compiler';
+import { isExpression, toPlatformFontWeight, toPlatformHorizontalAlignment, toPlatformVerticalAlignment } from './shared-utils';
 import { buildGlanceModifier, formatColor } from './modifier-builders';
 
 interface LayoutElement {
@@ -24,6 +24,7 @@ interface LayoutElement {
     spacing?: Expression;
     alignment?: string;
     crossAlignment?: string;
+    contentAlignment?: string;
     width?: Expression;
     height?: Expression;
     fillWidth?: boolean;
@@ -52,6 +53,7 @@ interface LayoutElement {
     else?: LayoutElement;
     format?: string;
     style?: string;
+    [key: string]: any;
 }
 
 interface WidgetLayout {
@@ -60,6 +62,7 @@ interface WidgetLayout {
     description?: string;
     supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
+    color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
         color?: string;
@@ -71,8 +74,6 @@ interface WidgetLayout {
         fakeData?: Record<string, any>;
     };
 }
-
-
 
 /**
  * Format a color value for use as a Glance text color (requires ColorProvider wrapper for hex colors)
@@ -86,9 +87,57 @@ function formatTextColor(v: string): string {
 }
 
 /**
+ * Compile a dimension value (dp) - handles both literals and expressions
+ * Ensures the result has '.dp' appended appropriately
+ */
+function compileDpValue(value: Expression | undefined, defaultValue?: string): string {
+    if (value === undefined) return defaultValue || '';
+    if (typeof value === 'number') return `${value}.dp`;
+    const compiled = compilePropValue(value, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` });
+    if (!compiled || compiled === 'null' || compiled === '') return defaultValue || '';
+    // If the result already has .dp in it (e.g. from 'when' expressions), return as-is
+    if (compiled.includes('.dp')) return compiled;
+    // Strip outer parens from compileArithmetic output before re-wrapping to avoid double parens
+    const unwrapped = compiled.replace(/^\((.+)\)$/, '$1');
+    return `(${unwrapped}).dp`;
+}
+
+/**
+ * Compile a font-size value (sp) - handles both literals and expressions
+ * Ensures the result has '.sp' appended appropriately
+ */
+function compileSpValue(value: Expression | undefined, defaultValue?: string): string {
+    if (value === undefined) return defaultValue || '';
+    if (typeof value === 'number') return `${value}.sp`;
+    const compiled = compilePropValue(value, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` });
+    if (!compiled || compiled === 'null' || compiled === '') return defaultValue || '';
+    // If the result already has .sp in it (e.g. from 'when' expressions), return as-is
+    if (compiled.includes('.sp')) return compiled;
+    // Strip outer parens from compileArithmetic output before re-wrapping to avoid double parens
+    const unwrapped = compiled.replace(/^\((.+)\)$/, '$1');
+    return `(${unwrapped}).sp`;
+}
+
+/**
+ * Wrap color expression with hex parsing for config.settings.color references
+ */
+function wrapColorParsingKotlin(colorExpr: string): string {
+    // If the expression contains config.settings, wrap with Color parsing
+    if (colorExpr.includes('config.settings')) {
+        // Find all config.settings?.get("...")?.jsonPrimitive?.contentOrNull patterns
+        const settingsPattern = /config\.settings\?\.get\([^)]+\)\?\.jsonPrimitive\?\.contentOrNull/g;
+        if (settingsPattern.test(colorExpr)) {
+            // Store the expression result in a variable, then check if it's a string (hex color) and parse it
+            return `run { val colorValue = ${colorExpr}; if (colorValue is String) ColorProvider(Color(colorValue.toColorInt())) else GlanceTheme.colors.onSurface }`;
+        }
+    }
+    return colorExpr;
+}
+
+/**
  * Generate Kotlin code for an element
  */
-function generateElement(element: LayoutElement, indent: string = '            '): string {
+function generateElement(element: LayoutElement, indent: string = '            ', defaultColor?: string): string {
     const lines: string[] = [];
 
     // Handle visibility condition
@@ -102,16 +151,16 @@ function generateElement(element: LayoutElement, indent: string = '            '
 
     switch (element.type) {
         case 'column':
-            lines.push(...generateColumn(element, currentIndent));
+            lines.push(...generateColumn(element, currentIndent, defaultColor));
             break;
         case 'row':
-            lines.push(...generateRow(element, currentIndent));
+            lines.push(...generateRow(element, currentIndent, defaultColor));
             break;
         case 'stack':
-            lines.push(...generateStack(element, currentIndent));
+            lines.push(...generateStack(element, currentIndent, defaultColor));
             break;
         case 'label':
-            lines.push(...generateLabel(element, currentIndent));
+            lines.push(...generateLabel(element, currentIndent, defaultColor));
             break;
         case 'image':
             lines.push(...generateImage(element, currentIndent));
@@ -123,19 +172,19 @@ function generateElement(element: LayoutElement, indent: string = '            '
             lines.push(...generateDivider(element, currentIndent));
             break;
         case 'scrollView':
-            lines.push(...generateScrollView(element, currentIndent));
+            lines.push(...generateScrollView(element, currentIndent, defaultColor));
             break;
         case 'forEach':
-            lines.push(...generateForEach(element, currentIndent));
+            lines.push(...generateForEach(element, currentIndent, defaultColor));
             break;
         case 'conditional':
-            lines.push(...generateConditional(element, currentIndent));
+            lines.push(...generateConditional(element, currentIndent, defaultColor));
             break;
         case 'clock':
-            lines.push(...generateClock(element, currentIndent));
+            lines.push(...generateClock(element, currentIndent, defaultColor));
             break;
         case 'date':
-            lines.push(...generateDate(element, currentIndent));
+            lines.push(...generateDate(element, currentIndent, defaultColor));
             break;
         default:
             lines.push(`${currentIndent}// Unknown element type: ${element.type}`);
@@ -148,10 +197,13 @@ function generateElement(element: LayoutElement, indent: string = '            '
     return lines.join('\n');
 }
 
-function generateColumn(element: LayoutElement, indent: string): string[] {
+function generateColumn(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const vertAlign = toPlatformVerticalAlignment(element.alignment, 'glance');
-    const horizAlign = toPlatformHorizontalAlignment(element.crossAlignment, 'glance');
+    // crossAlignment can be an expression (for conditional alignment)
+    const horizAlign = isExpression(element.crossAlignment)
+        ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
+        : toPlatformHorizontalAlignment(element.crossAlignment, 'glance');
 
     const modifier = buildGlanceModifier(element);
 
@@ -169,13 +221,13 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
 
             // Add spacer before child (except first)
             if (i > 0 && spacingValue !== undefined) {
-                const spacingExpr = compilePropValue(spacingValue, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, undefined);
+                const spacingExpr = compileDpValue(spacingValue, undefined);
                 if (spacingExpr) {
                     lines.push(`${indent}    Spacer(modifier = GlanceModifier.height(${spacingExpr}))`);
                 }
             }
 
-            lines.push(generateElement(child, indent + '    '));
+            lines.push(generateElement(child, indent + '    ', defaultColor));
         }
     }
 
@@ -183,10 +235,14 @@ function generateColumn(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateRow(element: LayoutElement, indent: string): string[] {
+function generateRow(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
-    const horizAlign = toPlatformHorizontalAlignment(element.alignment, 'glance');
-    const vertAlign = toPlatformVerticalAlignment(element.crossAlignment, 'glance');
+    const horizAlign = isExpression(element.alignment)
+        ? compileExpr(element.alignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
+        : toPlatformHorizontalAlignment(element.alignment, 'glance');
+    const vertAlign = isExpression(element.crossAlignment)
+        ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformVerticalAlignment(v, 'glance') })
+        : toPlatformVerticalAlignment(element.crossAlignment, 'glance');
     const isSpaceBetween = element.alignment === 'space-between' || element.alignment === 'spaceBetween';
 
     const modifier = buildGlanceModifier(element);
@@ -208,7 +264,7 @@ function generateRow(element: LayoutElement, indent: string): string[] {
                     lines.push(`${indent}    Spacer(modifier = GlanceModifier.defaultWeight())`);
                 }
 
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         } else {
             // Normal layout with optional spacing
@@ -218,13 +274,13 @@ function generateRow(element: LayoutElement, indent: string): string[] {
 
                 // Add spacer before child (except first)
                 if (i > 0 && spacingValue !== undefined) {
-                    const spacingExpr = compilePropValue(spacingValue, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, undefined);
+                    const spacingExpr = compileDpValue(spacingValue, undefined);
                     if (spacingExpr) {
                         lines.push(`${indent}    Spacer(modifier = GlanceModifier.width(${spacingExpr}))`);
                     }
                 }
 
-                lines.push(generateElement(child, indent + '    '));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
@@ -233,16 +289,38 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateStack(element: LayoutElement, indent: string): string[] {
+function generateStack(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
+    const modifier = buildGlanceModifier(element);
+
+    // Map contentAlignment string to Glance Alignment constant
+    let contentAlignmentStr = '';
+    if (element.contentAlignment) {
+        const alignmentMap: Record<string, string> = {
+            TopStart: 'Alignment.TopStart',
+            TopCenter: 'Alignment.TopCenter',
+            TopEnd: 'Alignment.TopEnd',
+            CenterStart: 'Alignment.CenterStart',
+            Center: 'Alignment.Center',
+            CenterEnd: 'Alignment.CenterEnd',
+            BottomStart: 'Alignment.BottomStart',
+            BottomCenter: 'Alignment.BottomCenter',
+            BottomEnd: 'Alignment.BottomEnd'
+        };
+        contentAlignmentStr = alignmentMap[element.contentAlignment] || element.contentAlignment;
+    }
+
     lines.push(`${indent}Box(`);
-    lines.push(`${indent}    modifier = GlanceModifier.fillMaxSize()`);
+    lines.push(`${indent}    modifier = ${modifier}${contentAlignmentStr ? ',' : ''}`);
+    if (contentAlignmentStr) {
+        lines.push(`${indent}    contentAlignment = ${contentAlignmentStr}`);
+    }
     lines.push(`${indent}) {`);
 
     if (element.children) {
         for (const child of element.children) {
-            lines.push(generateElement(child, indent + '    '));
+            lines.push(generateElement(child, indent + '    ', defaultColor));
         }
     }
 
@@ -250,8 +328,12 @@ function generateStack(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateLabel(element: LayoutElement, indent: string): string[] {
+function generateLabel(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
+
+    // Build modifier for the text element (padding support)
+    const textModifier = buildGlanceModifier(element);
+    const hasModifier = textModifier !== 'GlanceModifier';
 
     // Compile text (might be template string or expression)
     let textExpr: string;
@@ -280,41 +362,49 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         }
     } else if (Array.isArray(element.text)) {
         // Mapbox expression
-        const compiled = compileExpr(element.text, { platform: 'kotlin', context: 'value' });
-        // If the compiled result is a direct property access (no quotes), don't wrap in string interpolation
-        // This handles ["get", "item.precipAccumulation"] -> item.precipAccumulation (not "${item.precipAccumulation}")
-        if (compiled.match(/^(data\.|item\.|size\.)/)) {
-            textExpr = compiled;
-        } else {
-            textExpr = compiled;
-        }
+        textExpr = compileExpr(element.text, { platform: 'kotlin', context: 'value' });
     } else if (typeof element.text === 'string' && !element.text.includes('data.') && !element.text.includes('item.')) {
         // Static text string - should be localized
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
-        textExpr = `context.getString(ctx.resources.getIdentifier("${resourceKey}", "string", ctx.packageName))`;
+        const i1 = indent + '    '; // text = line indent
+        const i2 = i1 + '    '; // getIdentifier args indent
+        textExpr = `context.getString(\n${i2}context.resources.getIdentifier(\n${i2}    "${resourceKey}",\n${i2}    "string",\n${i2}    context.packageName\n${i2})\n${i1})`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
     }
 
-    const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
-    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'ColorProvider(WidgetTheme.onSurface)');
-
-    // Handle fontWeight - check for config.settings
-    let fontWeightExpr: string | undefined;
-    if (typeof element.fontWeight === 'string' && element.fontWeight.startsWith('config.settings.')) {
-        // It's a config setting reference
-        const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
-        if (settingName === 'clockBold') {
-            fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
-        }
+    const fontSizeExpr = compileSpValue(element.fontSize, undefined);
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    let colorExpr: string;
+    if (element.color !== undefined && element.color !== null) {
+        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        colorExpr = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
     } else {
-        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
+        colorExpr = 'GlanceTheme.colors.onSurface';
     }
+
+    // Handle fontWeight with proper expression support and literal transformation
+    const fontWeightExpr = compilePropValue(
+        element.fontWeight,
+        {
+            platform: 'kotlin',
+            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+        },
+        undefined
+    );
 
     const maxLinesExpr = compilePropValue(element.maxLines, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
     lines.push(`${indent}Text(`);
+    if (hasModifier) {
+        lines.push(`${indent}    modifier = ${textModifier},`);
+    }
     lines.push(`${indent}    text = ${textExpr},`);
 
     // Build style
@@ -326,15 +416,28 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         styleProps.push(`fontWeight = ${fontWeightExpr}`);
     }
     if (colorExpr) {
+        if (element.opacity !== undefined) {
+            const opacityExpr = compilePropertyValue(element.opacity, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => `${v}f`
+            });
+            colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
+        }
         styleProps.push(`color = ${colorExpr}`);
     }
-    if (element.textAlign) {
+    if (element.textAlign !== undefined) {
         const alignMap: Record<string, string> = {
             left: 'TextAlign.Start',
             center: 'TextAlign.Center',
             right: 'TextAlign.End'
         };
-        styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        if (isExpression(element.textAlign)) {
+            const textAlignExpr = compileExpr(element.textAlign, { platform: 'kotlin', context: 'value', formatter: (v: string) => alignMap[v] || 'TextAlign.Start' });
+            styleProps.push(`textAlign = ${textAlignExpr}`);
+        } else {
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        }
     }
 
     if (styleProps.length > 0) {
@@ -374,7 +477,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
         srcExpr = compilePropValue(element.src, { platform: 'kotlin', formatter: (v: string) => `data.${v}` }, 'data.iconPath');
     }
 
-    const sizeExpr = compilePropValue(element.size, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, '24.dp');
+    const sizeExpr = compileDpValue(element.size, '24.dp');
 
     lines.push(`${indent}WeatherWidgetManager.getIconImageProviderFromPath(${srcExpr}, LocalContext.current)?.let { provider ->`);
     lines.push(`${indent}    Image(`);
@@ -390,7 +493,7 @@ function generateImage(element: LayoutElement, indent: string): string[] {
 function generateSpacer(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
 
-    const sizeExpr = compilePropValue(element.size, { platform: 'kotlin', formatter: (v: number) => `${v}.dp` }, undefined);
+    const sizeExpr = compileDpValue(element.size, undefined);
     const flexExpr = compilePropValue(element.flex, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
     // If flex is defined, use defaultWeight() modifier
@@ -399,19 +502,11 @@ function generateSpacer(element: LayoutElement, indent: string): string[] {
         return lines;
     }
 
-    // Check if sizeExpr contains 'when' with 'null' as a possibility
-    if (sizeExpr && sizeExpr.includes('when') && sizeExpr.includes('null')) {
-        // For conditional spacers that can be null, only generate if condition is true
-        lines.push(`${indent}if (${sizeExpr.match(/when \{ (.+?) ->/)?.[1] || 'true'}) {`);
-        const nonNullSize = sizeExpr.replace(/when \{[^}]+\}/, (match) => {
-            // Extract the first non-null value
-            const firstValue = match.match(/-> ([^;]+\.dp)/)?.[1] || '8.dp';
-            return firstValue;
-        });
-        lines.push(`${indent}    Spacer(modifier = GlanceModifier.height(${nonNullSize}))`);
-        lines.push(`${indent}}`);
-    } else if (sizeExpr && sizeExpr !== 'null' && sizeExpr !== 'undefined') {
-        lines.push(`${indent}Spacer(modifier = GlanceModifier.height(${sizeExpr}))`);
+    // direction: "horizontal" uses width, default uses height
+    const dimension = element.direction === 'horizontal' ? 'width' : 'height';
+
+    if (sizeExpr && sizeExpr !== 'null' && sizeExpr !== '') {
+        lines.push(`${indent}Spacer(modifier = GlanceModifier.${dimension}(${sizeExpr}))`);
     }
     // If both are null/undefined, don't generate anything
 
@@ -431,7 +526,7 @@ function generateDivider(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateScrollView(element: LayoutElement, indent: string): string[] {
+function generateScrollView(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     const direction = element.direction || 'vertical';
@@ -454,7 +549,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                             const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                             lines.push(`${indent}    data.${child.items}.take(${limitCode}).forEach { item ->`);
-                            lines.push(generateElement(child.itemTemplate, indent + '        '));
+                            lines.push(generateElement(child.itemTemplate, indent + '        ', defaultColor));
                             lines.push(`${indent}    }`);
                         }
                     } else if (child.children) {
@@ -466,7 +561,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                                     const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                                     lines.push(`${indent}    data.${nestedChild.items}.take(${limitCode}).forEach { item ->`);
-                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
+                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        ', defaultColor));
                                     lines.push(`${indent}    }`);
                                 }
                             }
@@ -477,7 +572,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                 // No forEach, wrap each child in item{}
                 for (const child of element.children) {
                     lines.push(`${indent}    item {`);
-                    lines.push(generateElement(child, indent + '        '));
+                    lines.push(generateElement(child, indent + '        ', defaultColor));
                     lines.push(`${indent}    }`);
                 }
             }
@@ -500,7 +595,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                             const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                             lines.push(`${indent}    items(data.${child.items}.take(${limitCode})) { item ->`);
-                            lines.push(generateElement(child.itemTemplate, indent + '        '));
+                            lines.push(generateElement(child.itemTemplate, indent + '        ', defaultColor));
                             lines.push(`${indent}    }`);
                         }
                     } else if (child.children) {
@@ -512,7 +607,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                                     const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
                                     lines.push(`${indent}    items(data.${nestedChild.items}.take(${limitCode})) { item ->`);
-                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        '));
+                                    lines.push(generateElement(nestedChild.itemTemplate, indent + '        ', defaultColor));
                                     lines.push(`${indent}    }`);
                                 }
                             }
@@ -523,7 +618,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
                 // No forEach, wrap each child in item{}
                 for (const child of element.children) {
                     lines.push(`${indent}    item {`);
-                    lines.push(generateElement(child, indent + '        '));
+                    lines.push(generateElement(child, indent + '        ', defaultColor));
                     lines.push(`${indent}    }`);
                 }
             }
@@ -534,7 +629,7 @@ function generateScrollView(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateForEach(element: LayoutElement, indent: string): string[] {
+function generateForEach(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     if (!element.items || !element.itemTemplate) {
@@ -547,13 +642,13 @@ function generateForEach(element: LayoutElement, indent: string): string[] {
     const limitCode = isExpression(limitValue) ? compileExpr(limitValue, { platform: 'kotlin', context: 'value' }) : limitValue;
 
     lines.push(`${indent}data.${element.items}.take(${limitCode}).forEach { item ->`);
-    lines.push(generateElement(element.itemTemplate, indent + '    '));
+    lines.push(generateElement(element.itemTemplate, indent + '    ', defaultColor));
     lines.push(`${indent}}`);
 
     return lines;
 }
 
-function generateConditional(element: LayoutElement, indent: string): string[] {
+function generateConditional(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     if (!element.condition) {
@@ -565,40 +660,46 @@ function generateConditional(element: LayoutElement, indent: string): string[] {
 
     lines.push(`${indent}if (${condition}) {`);
     if (element.then) {
-        lines.push(generateElement(element.then, indent + '    '));
+        lines.push(generateElement(element.then, indent + '    ', defaultColor));
     }
     lines.push(`${indent}}`);
 
     if (element.else) {
         lines.push(`${indent}else {`);
-        lines.push(generateElement(element.else, indent + '    '));
+        lines.push(generateElement(element.else, indent + '    ', defaultColor));
         lines.push(`${indent}}`);
     }
 
     return lines;
 }
 
-function generateClock(element: LayoutElement, indent: string): string[] {
+function generateClock(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
-    const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
-    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
-
-    // Handle fontWeight - check for config.settings
-    let fontWeightExpr: string | undefined;
-    if (typeof element.fontWeight === 'string') {
-        if (element.fontWeight.startsWith('config.settings.')) {
-            // It's a config setting reference
-            const settingName = element.fontWeight.substring(16); // Remove 'config.settings.' prefix
-            if (settingName === 'clockBold') {
-                fontWeightExpr = 'if (config.settings?.get("clockBold") as? Boolean ?: true) FontWeight.Bold else FontWeight.Normal';
-            }
-        } else {
-            fontWeightExpr = toPlatformFontWeight(element.fontWeight as string, 'glance');
-        }
-    } else if (element.fontWeight) {
-        fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => toPlatformFontWeight(v, 'glance') }, undefined);
+    const fontSizeExpr = compileSpValue(element.fontSize, undefined);
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    let colorExpr: string;
+    if (element.color !== undefined && element.color !== null) {
+        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        colorExpr = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else {
+        colorExpr = 'GlanceTheme.colors.onSurface';
     }
+
+    // Handle fontWeight with proper expression support and literal transformation
+    const fontWeightExpr = compilePropValue(
+        element.fontWeight,
+        {
+            platform: 'kotlin',
+            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+        },
+        undefined
+    );
 
     // Always use locale-aware time format (respects system 24h/12h and AM/PM preference)
     const timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
@@ -616,6 +717,15 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     if (colorExpr) {
         styleProps.push(`color = ${colorExpr}`);
     }
+    if (element.textAlign !== undefined) {
+        const alignMap: Record<string, string> = { left: 'TextAlign.Start', center: 'TextAlign.Center', right: 'TextAlign.End' };
+        if (isExpression(element.textAlign)) {
+            const textAlignExpr = compileExpr(element.textAlign, { platform: 'kotlin', context: 'value', formatter: (v: string) => alignMap[v] || 'TextAlign.Start' });
+            styleProps.push(`textAlign = ${textAlignExpr}`);
+        } else {
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
+        }
+    }
 
     if (styleProps.length > 0) {
         lines.push(`${indent}    style = TextStyle(${styleProps.join(', ')})`);
@@ -626,20 +736,51 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     return lines;
 }
 
-function generateDate(element: LayoutElement, indent: string): string[] {
+function generateDate(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
-    const fontSizeExpr = compilePropValue(element.fontSize, { platform: 'kotlin', formatter: (v: number) => `${v}.sp` }, undefined);
-    const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    const fontSizeExpr = compileSpValue(element.fontSize, undefined);
+    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
+    let colorExpr: string;
+    if (element.color !== undefined && element.color !== null) {
+        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        colorExpr = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else {
+        colorExpr = 'GlanceTheme.colors.onSurface';
+    }
 
-    // Determine date expression based on style
+    // Handle fontWeight with proper expression support and literal transformation
+    const fontWeightExpr = compilePropValue(
+        element.fontWeight,
+        {
+            platform: 'kotlin',
+            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+        },
+        undefined
+    );
+
+    // Determine date expression based on style (use locale-aware formats)
     let dateExpr: string;
     if (element.format) {
         dateExpr = `android.text.format.DateFormat.format("${element.format}", java.util.Date()).toString()`;
     } else {
         switch (element.style) {
             case 'dayMonth':
-                dateExpr = `android.text.format.DateFormat.format("MMM d", java.util.Date()).toString()`;
+                dateExpr = `run {
+                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
+                    if (mediumFormat is java.text.SimpleDateFormat) {
+                        var pattern = mediumFormat.toPattern()
+                        pattern = pattern.replace(Regex("[\\\\s,./-]*y+[\\\\s,./-]*"), "").trim()
+                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
+                    } else {
+                        mediumFormat.format(java.util.Date())
+                    }
+                }`;
                 break;
             case 'fullDate':
                 dateExpr = `android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date())`;
@@ -665,7 +806,18 @@ function generateDate(element: LayoutElement, indent: string): string[] {
         styleProps.push(`fontSize = ${fontSizeExpr}`);
     }
     if (colorExpr) {
+        if (element.opacity !== undefined) {
+            const opacityExpr = compilePropertyValue(element.opacity, {
+                platform: 'kotlin',
+                context: 'value',
+                formatter: (v: number) => `${v}f`
+            });
+            colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
+        }
         styleProps.push(`color = ${colorExpr}`);
+    }
+    if (fontWeightExpr) {
+        styleProps.push(`fontWeight = ${fontWeightExpr}`);
     }
 
     if (styleProps.length > 0) {
@@ -704,11 +856,11 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
             const props = [
                 item.time !== undefined ? `time = "${item.time}"` : null,
                 item.temperature !== undefined ? `temperature = "${item.temperature}"` : null,
-                item.iconPath !== undefined ? `iconPath = "${item.iconPath}"` : null,
+                item.iconPath !== undefined ? `iconPath = "icon_themes/meteocons/images/${item.iconPath}.png"` : null,
                 item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
                 item.description !== undefined ? `description = "${item.description}"` : null,
-                item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null,
+                item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null
             ].filter(Boolean);
             return `HourlyData(${props.join(', ')})`;
         };
@@ -716,13 +868,13 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
         const dailyItem = (item: any) => {
             const props = [
                 item.day !== undefined ? `day = "${item.day}"` : null,
-                item.iconPath !== undefined ? `iconPath = "${item.iconPath}"` : null,
+                item.iconPath !== undefined ? `iconPath = "icon_themes/meteocons/images/${item.iconPath}.png"` : null,
                 item.temperatureHigh !== undefined ? `temperatureHigh = "${item.temperatureHigh}"` : null,
                 item.temperatureLow !== undefined ? `temperatureLow = "${item.temperatureLow}"` : null,
                 item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
                 item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
-                item.description !== undefined ? `description = "${item.description}"` : null,
+                item.description !== undefined ? `description = "${item.description}"` : null
             ].filter(Boolean);
             return `DailyData(${props.join(', ')})`;
         };
@@ -730,11 +882,13 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
         for (const [key, value] of Object.entries(fakeData)) {
             switch (key) {
                 case 'temperature':
-                case 'iconPath':
                 case 'description':
                 case 'locationName':
                 case 'date':
                     fakeDataLines.push(`${scalar(key, value)},`);
+                    break;
+                case 'iconPath':
+                    fakeDataLines.push(`${scalar(key, `icon_themes/meteocons/images/${value}.png`)},`);
                     break;
                 case 'hourlyData':
                     fakeDataLines.push(`        hourlyData = listOf(${(value as any[]).map(hourlyItem).join(', ')}),`);
@@ -745,6 +899,7 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
             }
         }
     }
+    fakeDataLines.push(`        lastUpdate = System.currentTimeMillis(),`);
     fakeDataLines.push(`        loadingState = WidgetLoadingState.LOADED`);
 
     // @Preview annotations (one per size)
@@ -791,12 +946,18 @@ function generateKotlinFile(layout: WidgetLayout): string {
     const className = `${layout.name}Content`;
     const packageName = 'com.akylas.weather.widgets.generated';
 
+    const fakeData = layout.preview?.fakeData;
+    const needsHourlyData = fakeData && Array.isArray(fakeData.hourlyData) && fakeData.hourlyData.length > 0;
+    const needsDailyData = fakeData && Array.isArray(fakeData.dailyData) && fakeData.dailyData.length > 0;
+
     const lines: string[] = [];
 
     lines.push(`package ${packageName}`);
     lines.push('');
+    lines.push('import android.annotation.SuppressLint');
     lines.push('import androidx.compose.runtime.Composable');
     lines.push('import androidx.compose.ui.graphics.Color');
+    lines.push('import androidx.core.graphics.toColorInt');
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
     lines.push('import androidx.glance.GlanceModifier');
@@ -821,9 +982,16 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import com.akylas.weather.widgets.WidgetConfig');
     lines.push('import androidx.glance.preview.ExperimentalGlancePreviewApi');
     lines.push('import androidx.glance.preview.Preview');
+    if (needsHourlyData) {
+        lines.push('import com.akylas.weather.widgets.HourlyData');
+    }
+    if (needsDailyData) {
+        lines.push('import com.akylas.weather.widgets.DailyData');
+    }
     lines.push('import com.akylas.weather.widgets.WidgetComposables');
     lines.push('import com.akylas.weather.widgets.WidgetLoadingState');
     lines.push('import kotlin.math.min');
+    lines.push('import kotlinx.serialization.json.*');
     lines.push('');
     lines.push('/**');
     lines.push(` * Generated content for ${layout.displayName || layout.name}`);
@@ -836,14 +1004,27 @@ function generateKotlinFile(layout: WidgetLayout): string {
         lines.push(...generatePreviewBlock(layout, className));
     }
 
+    lines.push('@SuppressLint("RestrictedApi")');
     lines.push('@Composable');
     lines.push(`fun ${className}(config: WidgetConfig, data: WeatherWidgetData) {`);
     lines.push('    val context = LocalContext.current');
     lines.push('    val size = LocalSize.current');
+
+    // Compile top-level color if present
+    let defaultColorRef: string | undefined;
+    if (layout.color !== undefined) {
+        const colorExpr = compilePropValue(layout.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, undefined);
+        // Wrap config.settings.color with hex parsing
+        const wrappedColor = wrapColorParsingKotlin(colorExpr);
+        lines.push(`    val widgetColor = ${wrappedColor}`);
+        defaultColorRef = 'widgetColor';
+    } else {
+        lines.push(`    val widgetColor = GlanceTheme.colors.onSurface`);
+    }
     lines.push('');
 
     // Generate the main content
-    lines.push(generateElement(layout.layout, '    '));
+    lines.push(generateElement(layout.layout, '    ', defaultColorRef));
 
     lines.push('}');
     lines.push('');

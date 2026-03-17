@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -26,63 +28,33 @@ import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
-import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.HourlyData
+import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
+import kotlinx.serialization.json.*
 
 /**
  * Generated content for Detailed Forecast
  * DO NOT EDIT - This file is auto-generated from JSON layout definitions
  */
 
-
-val fakeWeatherWidgetData = WeatherWidgetData(
-    temperature = "8 °C",
-    iconPath = "icon_themes/meteocons/images/800d.png",
-    description = "Partly Cloudy",
-    locationName = "Grenoble",
-    date = "Mon, Feb 24",
-    lastUpdate = System.currentTimeMillis(),
-    loadingState = WidgetLoadingState.LOADED,
-    hourlyData = listOf(
-        HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-        HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-        HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-        HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-        HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-        HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-        HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
-        HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
-    ),
-    dailyData = listOf(
-        DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "14 km/h"),
-        DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "14 °C", temperatureLow = "6 °C", precipAccumulation = "0 mm", precipitation = "10 %", windSpeed = "12 km/h"),
-        DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10 °C", temperatureLow = "5 °C", precipAccumulation = "3 mm", precipitation = "60 %", windSpeed = "18 km/h"),
-        DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/503.png", temperatureHigh = "9 °C", temperatureLow = "3 °C", precipAccumulation = "8 mm", precipitation = "80 %", windSpeed = "22 km/h"),
-        DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "11 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "20 %", windSpeed = "16 km/h"),
-        DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")
-    )
-)
-
-val fakeErrorWeatherWidgetData = WeatherWidgetData(
-    loadingState = WidgetLoadingState.ERROR,
-    errorMessage = "Unable to fetch weather data"
-)
-
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 300, heightDp = 300)
 @Preview(widthDp = 160, heightDp = 300)
 @Preview(widthDp = 260, heightDp = 400)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "12 °C",
+        temperature = "12°",
         locationName = "Paris",
         description = "Partly Cloudy",
         iconPath = "icon_themes/meteocons/images/800d.png",
-        hourlyData = listOf(HourlyData(time = "06:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "07:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "08:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "09:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "11:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm")),
-        dailyData = listOf(DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "22 °C", temperatureLow = "10 °C", precipAccumulation = "0 mm"), DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/801d.png", temperatureHigh = "20 °C", temperatureLow = "9 °C", precipAccumulation = "0 mm"), DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm"), DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "18 °C", temperatureLow = "8 °C", precipAccumulation = "0 mm"), DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "21 °C", temperatureLow = "10 °C", precipAccumulation = "0 mm"), DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/803d.png", temperatureHigh = "19 °C", temperatureLow = "9 °C", precipAccumulation = "0 mm")),
+        date = "Mon, Feb 24",
+        hourlyData = listOf(HourlyData(time = "06:00", temperature = "6°", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "07:00", temperature = "7°", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "08:00", temperature = "8°", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm"), HourlyData(time = "09:00", temperature = "10°", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0 mm"), HourlyData(time = "10:00", temperature = "12°", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm"), HourlyData(time = "11:00", temperature = "13°", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm")),
+        dailyData = listOf(DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12°", temperatureLow = "4°", precipAccumulation = "0 mm"), DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "14°", temperatureLow = "6°", precipAccumulation = "0 mm"), DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10°", temperatureLow = "5°", precipAccumulation = "0 mm"), DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "9°", temperatureLow = "3°", precipAccumulation = "0 mm"), DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "11°", temperatureLow = "4°", precipAccumulation = "0 mm"), DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/803d.png", temperatureHigh = "15°", temperatureLow = "7°", precipAccumulation = "0 mm")),
+        lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED
     )
     ForecastWeatherWidgetContent(
@@ -108,10 +80,12 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     Column(
         modifier = GlanceModifier,
@@ -119,17 +93,18 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         Row(
-            modifier = GlanceModifier.padding(8.dp).fillMaxWidth(),
+            modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 6.dp),
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.Top
         ) {
             Column(
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Top,
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Text(
@@ -144,30 +119,31 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 horizontalAlignment = Alignment.Horizontal.End
             ) {
                 if (data.iconPath.isNotEmpty()) {
-                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, context)?.let { provider ->
+                    WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
-                            provider = provider,
-                            contentDescription = data.iconPath,
-                            modifier = GlanceModifier.size(54.dp)
+                           provider = provider,
+                           contentDescription = data.iconPath,
+                           modifier = GlanceModifier.size(54.dp)
                         )
                     }
                 }
                 if (data.description.isNotEmpty()) {
                     Text(
                         text = data.description,
-                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End),
+                        style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End),
                         maxLines = 1
                     )
                 }
             }
         }
         Spacer(modifier = GlanceModifier.height(8.dp))
-        Row(
-            modifier = GlanceModifier.padding(horizontal = 8.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.Horizontal.Start,
-            verticalAlignment = Alignment.Vertical.Top
+        Column(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Vertical.Top,
+            horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
                 text = context.getString(
                     context.resources.getIdentifier(
                         "hourly",
@@ -175,12 +151,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         context.packageName
                     )
                 ),
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = GlanceTheme.colors.onSurfaceVariant,
-                    textAlign = TextAlign.Start
-                )
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start)
             )
         }
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -193,7 +164,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 ) {
                     Text(
                         text = item.time,
-                        style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                        style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(2.dp))
@@ -214,19 +185,20 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                     if (item.precipAccumulation.isNotEmpty()) {
                         Text(
                             text = item.precipAccumulation,
-                            style = TextStyle(fontSize = 9.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                            style = TextStyle(fontSize = 9.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                         )
                     }
                 }
             }
         }
-        Spacer(modifier = GlanceModifier.height(8.dp))
-        Row(
-            modifier = GlanceModifier.padding(horizontal = 8.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.Horizontal.Start,
-            verticalAlignment = Alignment.Vertical.Top
+        Spacer(modifier = GlanceModifier.height(16.dp))
+        Column(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Vertical.Top,
+            horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
                 text = context.getString(
                     context.resources.getIdentifier(
                         "daily",
@@ -234,12 +206,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         context.packageName
                     )
                 ),
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = GlanceTheme.colors.onSurfaceVariant,
-                    textAlign = TextAlign.Start
-                )
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start)
             )
         }
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -292,7 +259,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     Text(
                                         text = item.temperatureLow,
-                                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                                        style = TextStyle(fontSize = 13.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                                         maxLines = 1
                                     )
                                 }
@@ -304,14 +271,14 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                                     if (item.precipAccumulation.isNotEmpty()) {
                                         Text(
                                             text = item.precipAccumulation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     if (item.precipitation.isNotEmpty()) {
                                         Text(
                                             text = "💧" + item.precipitation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                 }

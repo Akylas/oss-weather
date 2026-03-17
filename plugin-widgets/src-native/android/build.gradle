@@ -1,19 +1,15 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-     ext.kotlin_version = '2.2.21'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.13.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10"
-        classpath "org.codehaus.groovy:groovy-all:3.0.25"
-
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21"  // or your version
-        classpath "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.3.10"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:2.3.10"
+        classpath libs.android.tools.build.gradle
+        classpath libs.android.gradlePlugin
+        classpath libs.kotlin.gradlePlugin
+        classpath libs.kotlin.serialization
     }
 }
 

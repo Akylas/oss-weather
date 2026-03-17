@@ -25,6 +25,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
+import kotlinx.serialization.json.*
 
 private const val LOG_TAG = "DailyWeatherWidget"
 
@@ -40,7 +41,7 @@ class DailyWeatherWidget : WeatherWidget() {
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id)")
+//        WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id)")
         setupUpdateWorker(context)
         registerThemeChangeReceiver(context);
         
@@ -59,7 +60,7 @@ class DailyWeatherWidget : WeatherWidget() {
             val widgetConfig = WidgetConfig(settings = widgetSettings)
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: false)) {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false)) {
                     if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData!!.loadingState == WidgetLoadingState.LOADING) {

@@ -1,39 +1,37 @@
 <script context="module" lang="ts">
     // Auto-generated Svelte Native component for widget "SimpleWeatherWidget"
-    import type { Writable } from 'svelte/store';
     import { Template } from '@nativescript-community/svelte-native/components';
-    import { formatDate, l } from '~/helpers/locale';
+    import { formatDate, l, lc } from '~/helpers/locale';
     import { titlecase } from '@nativescript-community/l';
     import { iconService } from '~/services/icon';
     import { colors } from '~/variables';
-    import { lc } from '~/helpers/locale';
     import type { WeatherWidgetData, WidgetConfig } from '~/services/widgets/WidgetTypes';
-    </script>
-    <script lang="ts">
+</script>
+<script lang="ts">
     export let config: WidgetConfig;
     export let data: WeatherWidgetData;
     export let size: { width: number; height: number } = { width: 50, height: 50};
 
-    $: ({ colorWidgetBackground, colorOnSurface, colorOnSurfaceVariant } = $colors);
+    $: ({ colorOnSurface } = $colors);
 </script>
 
-<gridlayout width={size.width} height={size.height} backgroundColor={colorWidgetBackground} padding={size.width < 100 ? 4 : size.width < 150 ? 6 : 8} class="widget-container">
-        {#if size.width < 120}
-            <stacklayout padding={10} verticalAlignment="center" horizontalAlignment="center" orientation="vertical">
-                <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={32} height={32} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} marginBottom={4}></image>
-                <label text={data.temperature} fontSize={14} fontWeight={700} color={colorOnSurface} marginBottom={4}></label>
-                <label text={data.locationName} fontSize={8} color={colorOnSurfaceVariant} maxLines={1}></label>
+<gridlayout width={size.width} height={size.height} {...$$restProps} class="widget-container">
+    {#if size.width < 120}
+        <stacklayout padding={3} orientation="vertical">
+            <stacklayout orientation="vertical" horizontalAlignment="center">
+                <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={size.width * 0.44} height={size.width * 0.44} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="center" verticalAlignment="center"></image>
+                <label text={data.temperature} fontSize={size.width * 0.2} fontWeight="bold" color={colorOnSurface} horizontalAlignment="center" verticalAlignment="center"></label>
             </stacklayout>
-        {:else}
-            <stacklayout verticalAlignment="center" padding={10} horizontalAlignment="left" orientation="horizontal">
-                <stacklayout verticalAlignment="center" horizontalAlignment="left" orientation="vertical">
-                    <label text={data.temperature} fontSize={40} fontWeight={700} color={colorOnSurface} marginBottom={8}></label>
-                    <label text={data.locationName} fontSize={12} color={colorOnSurfaceVariant} maxLines={1}></label>
-                </stacklayout>
-                <stacklayout verticalAlignment="bottom" horizontalAlignment="right" orientation="vertical">
-                    <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={64} height={64} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'}></image>
-                    <label text={data.description} fontSize={12} color={colorOnSurfaceVariant} textAlignment="right" visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
-                </stacklayout>
-            </stacklayout>
-        {/if}
+            <label text={data.locationName} fontSize={8} opacity={0.5} maxLines={1} horizontalAlignment="center"></label>
+        </stacklayout>
+    {:else}
+        <gridlayout paddingLeft={10} paddingRight={10} paddingTop={6} paddingBottom={6}>
+            <label text={data.locationName} fontSize={12} opacity={0.5} horizontalAlignment="left" maxLines={1}></label>
+            <gridlayout columns="auto,*">
+                    <label text={data.temperature} fontSize={Math.min(size.width * 0.26, 30)} fontWeight="bold" color={colorOnSurface} horizontalAlignment="left" verticalAlignment="center" col={0}></label>
+                    <image src={`${iconService.iconSetFolderPath}/images/${data.iconPath}.png`} width={64} height={64} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="right" verticalAlignment="center" col={1}></image>
+            </gridlayout>
+                <label text={data.description} fontSize={12} opacity={0.5} textAlignment="right" verticalAlignment="bottom" horizontalAlignment="right" visibility={(data.description != null) ? 'visible' : 'collapsed'}></label>
+        </gridlayout>
+    {/if}
 </gridlayout>

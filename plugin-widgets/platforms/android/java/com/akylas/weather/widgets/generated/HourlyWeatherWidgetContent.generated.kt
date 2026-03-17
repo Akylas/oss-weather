@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -30,6 +32,7 @@ import com.akylas.weather.widgets.HourlyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
+import kotlinx.serialization.json.*
 
 /**
  * Generated content for Hourly Forecast
@@ -37,10 +40,9 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-
+@Preview(widthDp = 360, heightDp = 150)
 @Preview(widthDp = 120, heightDp = 120)
 @Preview(widthDp = 260, heightDp = 120)
-@Preview(widthDp = 360, heightDp = 150)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
@@ -48,18 +50,9 @@ private fun Preview() {
         locationName = "Paris",
         description = "Partly Cloudy",
         date = "Mon, Feb 24",
+        hourlyData = listOf(HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"), HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"), HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"), HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"), HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"), HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"), HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"), HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")),
         lastUpdate = System.currentTimeMillis(),
-        loadingState = WidgetLoadingState.LOADED,
-        hourlyData = listOf(
-            HourlyData(time = "06:00", temperature = "6 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "07:00", temperature = "7 °C", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm", windSpeed = "10 km/h"),
-            HourlyData(time = "08:00", temperature = "8 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "09:00", temperature = "10 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0 mm", windSpeed = "12 km/h"),
-            HourlyData(time = "10:00", temperature = "12 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "11:00", temperature = "13 °C", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm", windSpeed = "14 km/h"),
-            HourlyData(time = "12:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.2 mm", windSpeed = "16 km/h"),
-            HourlyData(time = "13:00", temperature = "14 °C", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0.5 mm", windSpeed = "16 km/h")
-        )
+        loadingState = WidgetLoadingState.LOADED
     )
     HourlyWeatherWidgetContent(
         config = WidgetConfig(), data = fakeWeatherWidgetData,
@@ -84,13 +77,15 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     Column(
-        modifier = GlanceModifier.padding(when { size.height.value < 60 -> 2.dp; size.height.value < 80 -> 4.dp; else -> 6.dp }),
+        modifier = GlanceModifier.padding(horizontal = 10.dp, vertical = 6.dp),
         verticalAlignment = Alignment.Vertical.Top,
         horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
@@ -102,7 +97,7 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             ) {
                 Text(
                     text = data.locationName,
-                    style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Spacer(modifier = GlanceModifier.height(2.dp))
@@ -111,13 +106,13 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
         Row {
             data.hourlyData.take(8).forEach { item ->
                 Column(
-                    modifier = GlanceModifier.width(53.dp).fillMaxHeight().padding(horizontal = 4.dp),
+                    modifier = GlanceModifier.width(56.dp).fillMaxHeight().padding(horizontal = 2.dp),
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
                         text = item.time,
-                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant),
+                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))

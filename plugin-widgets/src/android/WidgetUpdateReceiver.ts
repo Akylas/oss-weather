@@ -18,7 +18,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
         try {
             const action = intent.getAction();
 
-            DEV_LOG && console.log(`WidgetUpdateReceiver: onReceive action=${action}`);
+            // DEV_LOG && console.log(`WidgetUpdateReceiver: onReceive action=${action}`);
             if (action === 'com.akylas.weather.WIDGET_UPDATE_REQUEST') {
                 const widgetId = intent.getIntExtra('widgetId', -1);
 
@@ -27,7 +27,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                     return;
                 }
 
-                DEV_LOG && console.log(`WidgetUpdateReceiver: Received update request for widgetId=${widgetId}`);
+                // DEV_LOG && console.log(`WidgetUpdateReceiver: Received update request for widgetId=${widgetId}`);
                 // Set widget to loading state
                 const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
                 widgetManager.setWidgetLoading(context, widgetId);

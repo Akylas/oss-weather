@@ -1,7 +1,9 @@
 package com.akylas.weather.widgets.generated
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -30,6 +32,7 @@ import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
 import kotlin.math.min
+import kotlinx.serialization.json.*
 
 /**
  * Generated content for Daily Forecast
@@ -37,25 +40,20 @@ import kotlin.math.min
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 300, heightDp = 200)
 @Preview(widthDp = 160, heightDp = 300)
 @Preview(widthDp = 260, heightDp = 400)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
-        temperature = "12 °C",
+        temperature = "12°",
         description = "Partly Cloudy",
+        iconPath = "icon_themes/meteocons/images/802d.png",
         locationName = "Grenoble",
         date = "Mon, Feb 24",
+        dailyData = listOf(DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12°", temperatureLow = "4°", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "14 km/h"), DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "14°", temperatureLow = "6°", precipAccumulation = "0 mm", precipitation = "10 %", windSpeed = "12 km/h"), DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10°", temperatureLow = "5°", precipAccumulation = "3 mm", precipitation = "60 %", windSpeed = "18 km/h"), DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/503.png", temperatureHigh = "9°", temperatureLow = "3°", precipAccumulation = "8 mm", precipitation = "80 %", windSpeed = "22 km/h"), DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "11°", temperatureLow = "4°", precipAccumulation = "0 mm", precipitation = "20 %", windSpeed = "16 km/h"), DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "15°", temperatureLow = "7°", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")),
         lastUpdate = System.currentTimeMillis(),
-        loadingState = WidgetLoadingState.LOADED,
-        dailyData = listOf(
-            DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "14 km/h"),
-            DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "14 °C", temperatureLow = "6 °C", precipAccumulation = "0 mm", precipitation = "10 %", windSpeed = "12 km/h"),
-            DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10 °C", temperatureLow = "5 °C", precipAccumulation = "3 mm", precipitation = "60 %", windSpeed = "18 km/h"),
-            DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/503.png", temperatureHigh = "9 °C", temperatureLow = "3 °C", precipAccumulation = "8 mm", precipitation = "80 %", windSpeed = "22 km/h"),
-            DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "11 °C", temperatureLow = "4 °C", precipAccumulation = "0 mm", precipitation = "20 %", windSpeed = "16 km/h"),
-            DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "15 °C", temperatureLow = "7 °C", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")
-        )
+        loadingState = WidgetLoadingState.LOADED
     )
     DailyWeatherWidgetContent(
         config = WidgetConfig(), data = fakeWeatherWidgetData,
@@ -80,27 +78,31 @@ private fun ErrorPreview() {
     }
 }
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
+    val widgetColor = GlanceTheme.colors.onSurface
 
     Column(
         modifier = GlanceModifier,
         verticalAlignment = Alignment.Vertical.Top,
+        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         Row(
-            modifier = GlanceModifier.padding(8.dp).fillMaxWidth(),
+            modifier = GlanceModifier.fillMaxWidth().padding(8.dp),
             horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.Top
         ) {
             Column(
+                modifier = GlanceModifier,
                 verticalAlignment = Alignment.Vertical.Top,
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Text(
@@ -126,18 +128,19 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 if (data.description.isNotEmpty()) {
                     Text(
                         text = data.description,
-                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End),
+                        style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End),
                         maxLines = 1
                     )
                 }
             }
         }
-        Row(
-            modifier = GlanceModifier.padding(horizontal = 8.dp),
-            horizontalAlignment = Alignment.Horizontal.Start,
-            verticalAlignment = Alignment.Vertical.Top
+        Column(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Vertical.Top,
+            horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
+                modifier = GlanceModifier.padding(horizontal = 8.dp),
                 text = context.getString(
                     context.resources.getIdentifier(
                         "daily",
@@ -145,12 +148,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                         context.packageName
                     )
                 ),
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = GlanceTheme.colors.onSurfaceVariant,
-                    textAlign = TextAlign.Start
-                )
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.Start)
             )
         }
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -203,7 +201,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     Text(
                                         text = item.temperatureLow,
-                                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                                        style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
                                         maxLines = 1
                                     )
                                 }
@@ -215,14 +213,14 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                     if (item.precipAccumulation.isNotEmpty()) {
                                         Text(
                                             text = item.precipAccumulation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     if (item.precipitation.isNotEmpty()) {
                                         Text(
                                             text = "💧" + item.precipitation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                            style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                 }

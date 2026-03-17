@@ -14,6 +14,7 @@ struct SimpleWeatherWithClockWidgetView: View {
             let width = geometry.size.width
             let height = geometry.size.height
             let config = entry.config ?? WidgetConfig()
+            let widgetColor = (entry.config.settings["color"] as? String == nil ? WidgetColorProvider.onSurface : entry.config.settings["color"] as? String as? String).flatMap { Color(UIColor(hexString: $0)) } ?? WidgetColorProvider.onSurface
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 4) {
@@ -27,7 +28,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                                     Spacer().frame(height: 4)
                                     Text(Date(), style: .date)
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .foregroundColor(widgetColor)
                                 }.layoutPriority(1)
                                 VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
@@ -42,14 +43,14 @@ struct SimpleWeatherWithClockWidgetView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .foregroundColor(widgetColor)
                                     .lineLimit(1).opacity(0.6)
                             }.frame(maxWidth: .infinity)
                             if !data.description.isEmpty {
                                 ZStack(alignment: .bottomTrailing) {
                                     Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .foregroundColor(widgetColor)
                                         .multilineTextAlignment(.trailing).opacity(0.6)
                                 }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             }
@@ -79,7 +80,7 @@ struct SimpleWeatherWithClockWidgetView: View {
                                 Spacer()
                                 Text(data.locationName)
                                     .font(.system(size: width < 100 ? 8 : width < 150 ? 10 : 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .foregroundColor(widgetColor)
                                     .lineLimit(1).opacity(0.6)
                             }
                         }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3)

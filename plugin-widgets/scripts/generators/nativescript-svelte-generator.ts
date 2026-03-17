@@ -832,10 +832,18 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
 
     // Inject default color for text elements (label, clock, date) if they don't have their own color
     if ((elType === 'label' || elType === 'clock' || elType === 'date') && !seenAttrs.has('color') && defaultColor) {
-        const colorAttr = buildAttribute(widgetName, 'color', defaultColor, elementPath, defaultPrefix, usedColors);
-        if (colorAttr) {
-            attrsArr.push(colorAttr);
+        // Check if defaultColor is a simple identifier (variable name)
+        if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+            // Use variable directly
+            attrsArr.push(`color={${defaultColor}}`);
             seenAttrs.add('color');
+        } else {
+            // It's an expression - compile it
+            const colorAttr = buildAttribute(widgetName, 'color', defaultColor, elementPath, defaultPrefix, usedColors);
+            if (colorAttr) {
+                attrsArr.push(colorAttr);
+                seenAttrs.add('color');
+            }
         }
     }
 
@@ -1307,7 +1315,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     const wrapperAttrStr = wrapperAttrs.join(' ');
     
     // Compile top-level color if present
-    let defaultColorExpr: string | undefined;
+    let defaultColorRef: string | undefined;
     if (layout.color !== undefined) {
         // Build attribute to get the formatted expression
         const colorAttr = buildAttribute(widgetName, 'color', layout.color, ['root'], 'data', usedColors);
@@ -1315,12 +1323,15 @@ function generateSvelteComponent(layout: WidgetLayout): string {
             // Extract the value part from color="{value}" or color="value"
             const match = colorAttr.match(/color=(?:{([^}]+)}|"([^"]+)")/);
             if (match) {
-                defaultColorExpr = match[1] || match[2];
+                const colorExpr = match[1] || match[2];
+                // Add widgetColor const declaration after script imports
+                script += `{#const widgetColor = ${colorExpr}}\n`;
+                defaultColorRef = 'widgetColor';
             }
         }
     }
     
-    const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data', defaultColorExpr);
+    const bodyMarkup = generateMarkup(widgetName, layout.layout, ['root'], usedTemplateImport, usedColors, 'data', defaultColorRef);
 
     const component = `${script}<${wrapperTag} ${wrapperAttrStr}>\n${bodyMarkup}\n</${wrapperTag}>\n`;
     return component;

@@ -302,6 +302,18 @@ function toSwiftColor(color?: Expression): string {
     return 'WidgetColorProvider.onSurface';
 }
 
+/**
+ * Wrap color expression with hex parsing for config.settings.color references
+ */
+function wrapColorParsingSwift(colorExpr: string): string {
+    // If the expression contains config.settings, wrap with Color parsing
+    if (colorExpr.includes('entry.config.settings')) {
+        // Wrap with UIColor hex parsing
+        return `(${colorExpr} as? String).flatMap { Color(UIColor(hexString: $0)) } ?? WidgetColorProvider.onSurface`;
+    }
+    return colorExpr;
+}
+
 // ============================================================================
 // HELPER FUNCTIONS
 // ============================================================================
@@ -618,8 +630,18 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
 
     // Color - use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'WidgetColorProvider.onSurface');
-    const color = toSwiftColor(colorToUse);
+    let color: string;
+    if (element.color !== undefined && element.color !== null) {
+        color = toSwiftColor(element.color);
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        color = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        color = toSwiftColor(defaultColor);
+    } else {
+        color = 'WidgetColorProvider.onSurface';
+    }
     lines.push(`${indent}    .foregroundColor(${color})`);
 
     // Text alignment - supports expressions
@@ -752,8 +774,16 @@ function generateClock(element: BaseLayoutElement, indent: string, defaultColor?
     const fontSize = compileSizeToSwift(element.fontSize, 24);
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'bold');
     // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'WidgetColorProvider.onSurface');
-    const color = toSwiftColor(colorToUse);
+    let color: string;
+    if (element.color !== undefined && element.color !== null) {
+        color = toSwiftColor(element.color);
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        color = defaultColor;
+    } else if (defaultColor) {
+        color = toSwiftColor(defaultColor);
+    } else {
+        color = 'WidgetColorProvider.onSurface';
+    }
 
     const lines: string[] = [];
     // Always use locale-aware time (respects system 24h/12h and AM/PM preference)
@@ -768,8 +798,16 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
     const fontSize = compileSizeToSwift(element.fontSize, 14);
     const fontWeight = toSwiftFontWeight(element.fontWeight, 'normal');
     // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'WidgetColorProvider.onSurface');
-    const color = toSwiftColor(colorToUse);
+    let color: string;
+    if (element.color !== undefined && element.color !== null) {
+        color = toSwiftColor(element.color);
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        color = defaultColor;
+    } else if (defaultColor) {
+        color = toSwiftColor(defaultColor);
+    } else {
+        color = 'WidgetColorProvider.onSurface';
+    }
     const style = (element as any).style as string | undefined;
 
     const lines: string[] = [];
@@ -844,16 +882,21 @@ struct ${viewName}: View {
             let width = geometry.size.width
             let height = geometry.size.height
             let config = entry.config ?? WidgetConfig()
-            
+            `;
+
+    // Compile top-level color if present
+    let defaultColorRef: string | undefined;
+    if (layout.color !== undefined) {
+        const colorExpr = toSwiftColor(layout.color);
+        const wrappedColor = wrapColorParsingSwift(colorExpr);
+        code += `let widgetColor = ${wrappedColor}\n            `;
+        defaultColorRef = 'widgetColor';
+    }
+
+    code += `
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: ${defaultPadding}) {
 `;
-
-    // Compile top-level color if present
-    let defaultColorExpr: string | undefined;
-    if (layout.color !== undefined) {
-        defaultColorExpr = toSwiftColor(layout.color);
-    }
 
     // Generate variant conditions
     if (layout.variants && layout.variants.length > 0) {
@@ -863,15 +906,15 @@ struct ${viewName}: View {
             const keyword = i === 0 ? 'if' : '} else if';
 
             code += `                    ${keyword} ${condition} {\n`;
-            code += generateElement(variant.layout, '                        ', defaultColorExpr) + '\n';
+            code += generateElement(variant.layout, '                        ', defaultColorRef) + '\n';
         }
 
         // Default layout
         code += `                    } else {\n`;
-        code += generateElement(layout.layout, '                        ', defaultColorExpr) + '\n';
+        code += generateElement(layout.layout, '                        ', defaultColorRef) + '\n';
         code += `                    }\n`;
     } else {
-        code += generateElement(layout.layout, '                    ', defaultColorExpr) + '\n';
+        code += generateElement(layout.layout, '                    ', defaultColorRef) + '\n';
     }
 
     code += `                }

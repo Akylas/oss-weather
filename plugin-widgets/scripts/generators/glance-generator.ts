@@ -119,6 +119,22 @@ function compileSpValue(value: Expression | undefined, defaultValue?: string): s
 }
 
 /**
+ * Wrap color expression with hex parsing for config.settings.color references
+ */
+function wrapColorParsingKotlin(colorExpr: string): string {
+    // If the expression contains config.settings, wrap with Color parsing
+    if (colorExpr.includes('config.settings')) {
+        // Find all config.settings?.get("...")?.jsonPrimitive?.contentOrNull patterns
+        const settingsPattern = /config\.settings\?\.get\([^)]+\)\?\.jsonPrimitive\?\.contentOrNull/g;
+        if (settingsPattern.test(colorExpr)) {
+            // Wrap the entire expression with Color parsing
+            return `when { ${colorExpr} == null -> GlanceTheme.colors.onSurface; else -> Color(android.graphics.Color.parseColor(${colorExpr} ?: "#000000")) }`;
+        }
+    }
+    return colorExpr;
+}
+
+/**
  * Generate Kotlin code for an element
  */
 function generateElement(element: LayoutElement, indent: string = '            ', defaultColor?: string): string {
@@ -360,8 +376,18 @@ function generateLabel(element: LayoutElement, indent: string, defaultColor?: st
 
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
     // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'GlanceTheme.colors.onSurface');
-    const colorExpr = compilePropValue(colorToUse, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
+    let colorExpr: string;
+    if (element.color !== undefined && element.color !== null) {
+        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        colorExpr = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
+    } else {
+        colorExpr = 'GlanceTheme.colors.onSurface';
+    }
 
     // Handle fontWeight with proper expression support and literal transformation
     const fontWeightExpr = compilePropValue(
@@ -644,8 +670,18 @@ function generateClock(element: LayoutElement, indent: string, defaultColor?: st
 
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
     // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'GlanceTheme.colors.onSurface');
-    const colorExpr = compilePropValue(colorToUse, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    let colorExpr: string;
+    if (element.color !== undefined && element.color !== null) {
+        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        colorExpr = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else {
+        colorExpr = 'GlanceTheme.colors.onSurface';
+    }
 
     // Handle fontWeight with proper expression support and literal transformation
     const fontWeightExpr = compilePropValue(
@@ -697,8 +733,18 @@ function generateDate(element: LayoutElement, indent: string, defaultColor?: str
 
     const fontSizeExpr = compileSpValue(element.fontSize, undefined);
     // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    const colorToUse = element.color !== undefined && element.color !== null ? element.color : (defaultColor || 'GlanceTheme.colors.onSurface');
-    const colorExpr = compilePropValue(colorToUse, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    let colorExpr: string;
+    if (element.color !== undefined && element.color !== null) {
+        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
+        // defaultColor is a simple identifier (variable name) - use directly
+        colorExpr = defaultColor;
+    } else if (defaultColor) {
+        // defaultColor is an expression - compile it
+        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
+    } else {
+        colorExpr = 'GlanceTheme.colors.onSurface';
+    }
 
     // Handle fontWeight with proper expression support and literal transformation
     const fontWeightExpr = compilePropValue(
@@ -944,16 +990,20 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push(`fun ${className}(config: WidgetConfig, data: WeatherWidgetData) {`);
     lines.push('    val context = LocalContext.current');
     lines.push('    val size = LocalSize.current');
-    lines.push('');
 
     // Compile top-level color if present
-    let defaultColorExpr: string | undefined;
+    let defaultColorRef: string | undefined;
     if (layout.color !== undefined) {
-        defaultColorExpr = compilePropValue(layout.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, undefined);
+        const colorExpr = compilePropValue(layout.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, undefined);
+        // Wrap config.settings.color with hex parsing
+        const wrappedColor = wrapColorParsingKotlin(colorExpr);
+        lines.push(`    val widgetColor = ${wrappedColor}`);
+        defaultColorRef = 'widgetColor';
     }
+    lines.push('');
 
     // Generate the main content
-    lines.push(generateElement(layout.layout, '    ', defaultColorExpr));
+    lines.push(generateElement(layout.layout, '    ', defaultColorRef));
 
     lines.push('}');
     lines.push('');

@@ -10,7 +10,6 @@
         { "width": 260, "height": 120, "family": "medium" }
     ],
     "defaultPadding": 4,
-    "background": { "type": "solid", "color": "widgetBackground" },
     "settings": {
         "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
     },

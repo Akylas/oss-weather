@@ -10,7 +10,6 @@
         { "width": 260, "height": 120, "family": "medium" }
     ],
     "defaultPadding": 6,
-    "background": { "type": "solid", "color": "widgetBackground" },
     "layout": {
         "type": "conditional",
         "condition": ["<", ["get", "size.width"], 120],

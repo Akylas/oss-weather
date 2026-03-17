@@ -52,6 +52,7 @@
   "behavioral_tips": "Behavioral tips",
   "betula": "birch",
   "blocks": "blocks",
+  "bold_clock": "bold clock",
   "bra": "BRA",
   "bug_report_sent": "Bug report sent",
   "cancel": "Cancel",
@@ -416,5 +417,6 @@
   "wind_beaufort": "beaufort wind scale",
   "wind_gust": "wind gust",
   "wind_speed": "wind speed",
-  "reset_location": "reset location"
+  "reset_location": "reset location",
+  "widget_transparent_background": "transparent background"
 }

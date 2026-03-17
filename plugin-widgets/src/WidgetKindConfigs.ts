@@ -14,63 +14,37 @@ export const WIDGET_KIND_CONFIGS: Record<string, WidgetConfig> = {
         locationName: 'current',
         latitude: 0,
         longitude: 0,
-        model: null,
-        provider: null,
-        widgetKind: 'DailyWeatherWidget',
-        iconSet: null,
-        settings: null
+        widgetKind: 'DailyWeatherWidget'
     },
     ForecastWeatherWidget: {
         locationName: 'current',
         latitude: 0,
         longitude: 0,
-        model: null,
-        provider: null,
-        widgetKind: 'ForecastWeatherWidget',
-        iconSet: null,
-        settings: null
+        widgetKind: 'ForecastWeatherWidget'
     },
     HourlyWeatherWidget: {
         locationName: 'current',
         latitude: 0,
         longitude: 0,
-        model: null,
-        provider: null,
-        widgetKind: 'HourlyWeatherWidget',
-        iconSet: null,
-        settings: null
+        widgetKind: 'HourlyWeatherWidget'
     },
     SimpleWeatherWidget: {
         locationName: 'current',
         latitude: 0,
         longitude: 0,
-        model: null,
-        provider: null,
-        widgetKind: 'SimpleWeatherWidget',
-        iconSet: null,
-        settings: null
+        widgetKind: 'SimpleWeatherWidget'
     },
     SimpleWeatherWithClockWidget: {
         locationName: 'current',
         latitude: 0,
         longitude: 0,
-        model: null,
-        provider: null,
-        widgetKind: 'SimpleWeatherWithClockWidget',
-        iconSet: null,
-        settings: {
-            clockBold: true
-        }
+        widgetKind: 'SimpleWeatherWithClockWidget'
     },
     SimpleWeatherWithDateWidget: {
         locationName: 'current',
         latitude: 0,
         longitude: 0,
-        model: null,
-        provider: null,
-        widgetKind: 'SimpleWeatherWithDateWidget',
-        iconSet: null,
-        settings: null
+        widgetKind: 'SimpleWeatherWithDateWidget'
     }
 };
 

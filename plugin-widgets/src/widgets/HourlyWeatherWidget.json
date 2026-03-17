@@ -26,10 +26,6 @@
         }
     ],
     "defaultPadding": 6,
-    "background": {
-        "type": "solid",
-        "color": "widgetBackground"
-    },
     "layout": {
         "type": "column",
         "alignment": "start",

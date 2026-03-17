@@ -11,7 +11,6 @@
         { "width": 360, "height": 260, "family": "large" }
     ],
     "defaultPadding": 4,
-    "background": { "type": "solid", "color": "widgetBackground" },
     "settings": {
         "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
     },
@@ -41,7 +40,7 @@
                                     "type": "clock",
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
                                     "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
-                                    "color": "onSurface"
+                                    "color": ["case", ["==", ["get", "config.settings.color"], null], "onSurface" , ["get", "config.settings.color"]]
                                 },
                                 {
                                     "type": "spacer",

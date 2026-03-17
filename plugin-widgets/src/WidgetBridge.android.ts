@@ -24,7 +24,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         try {
             const cacheTimeoutSeconds = WidgetConfigManager.getCacheTimeout();
             this.cacheTimeoutMs = cacheTimeoutSeconds * 1000;
-            DEV_LOG && console.log('[WidgetBridge] Initialized with cache timeout:', this.cacheTimeoutMs, 'ms');
+            // DEV_LOG && console.log('[WidgetBridge] Initialized with cache timeout:', this.cacheTimeoutMs, 'ms');
         } catch (error) {
             console.error('[WidgetBridge] Failed to load cache timeout:', error, error.stack);
         }
@@ -41,7 +41,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      * Update all widgets with latest data
      */
     async updateAllWidgets(onlyDefaults = false) {
-        DEV_LOG && console.info('updateAllWidgets', { onlyDefaults });
+        // DEV_LOG && console.info('updateAllWidgets', { onlyDefaults });
         const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
         const context = Utils.android.getApplicationContext();
 
@@ -52,7 +52,7 @@ export class WidgetBridge extends WidgetBridgeBase {
             idsArray.push(activeWidgetIds.get(i));
         }
 
-        DEV_LOG && console.log('Active widgets:', idsArray);
+        // DEV_LOG && console.log('Active widgets:', idsArray);
 
         // Filter widgets based on onlyDefaults flag
         const widgetsToUpdate = onlyDefaults
@@ -62,7 +62,7 @@ export class WidgetBridge extends WidgetBridgeBase {
               })
             : idsArray;
 
-        DEV_LOG && console.log('Widgets to update:', widgetsToUpdate);
+        // DEV_LOG && console.log('Widgets to update:', widgetsToUpdate);
 
         // Update each widget (with deduplication)
         await Promise.all(widgetsToUpdate.map((widgetId) => this.updateWidget(String(widgetId))));
@@ -72,7 +72,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      * Update widgets for a specific location
      */
     async updateWidgetsForLocation(locationName: string) {
-        DEV_LOG && console.info('updateWidgetsForLocation', locationName);
+        // DEV_LOG && console.info('updateWidgetsForLocation', locationName);
         const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
         const context = Utils.android.getApplicationContext();
 
@@ -95,7 +95,7 @@ export class WidgetBridge extends WidgetBridgeBase {
             return config.locationName === locationName;
         });
 
-        DEV_LOG && console.log('Widgets using location:', widgetsToUpdate);
+        // DEV_LOG && console.log('Widgets using location:', widgetsToUpdate);
 
         // Update each widget (with deduplication)
         await Promise.all(widgetsToUpdate.map((widgetId) => this.updateWidget(String(widgetId))));
@@ -123,7 +123,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             // Check if there's a pending update for this location
             if (this.pendingUpdates.has(cacheKey)) {
-                DEV_LOG && console.log(`Reusing pending update for ${cacheKey}`);
+                // DEV_LOG && console.log(`Reusing pending update for ${cacheKey}`);
                 const widgetData = await this.pendingUpdates.get(cacheKey);
                 this.sendWeatherDataToWidget(parseInt(widgetId, 10), widgetData);
                 return;
@@ -158,7 +158,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      * Perform the actual widget update
      */
     private async performWidgetUpdate(widgetId: string, config: any, cacheKey: string) {
-        DEV_LOG && console.log(`Fetching weather data for ${cacheKey}`);
+        // DEV_LOG && console.log(`Fetching weather data for ${cacheKey}`);
 
         // Fetch and format weather data using shared data manager
         const widgetData = await this.dataManager.getWidgetWeatherData(config);
@@ -186,7 +186,7 @@ export class WidgetBridge extends WidgetBridgeBase {
     public saveWidgetConfig(widgetId: string, config: WidgetConfig) {
         const context = Utils.android.getApplicationContext();
         const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
-        DEV_LOG && console.log('saveWidgetConfig', widgetId, config);
+        // DEV_LOG && console.log('saveWidgetConfig', widgetId, config);
         widgetManager.saveWidgetConfigString(context, parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
     }
 

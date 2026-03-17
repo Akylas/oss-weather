@@ -395,12 +395,21 @@
                     id: 'model',
                     title: lc('model'),
                     description: getModelDescription
-                },
-                {
-                    id: 'sectionheader',
-                    description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
                 }
             ]);
+
+        newItems.push(
+            {
+                id: 'sectionheader',
+                title: lc('settings')
+            },
+            {
+                type: 'switch',
+                id: 'transparent',
+                title: lc('widget_transparent_background'),
+                value: config.settings?.['transparent'] ?? false
+            }
+        );
         if (previewConfig.settings) {
             Object.keys(previewConfig.settings).forEach((key) => {
                 const item = previewConfig.settings[key];
@@ -418,6 +427,10 @@
                 }
             });
         }
+        newItems.push({
+            id: 'sectionheader',
+            description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
+        });
         // items = new ObservableArray(newItems)
         items.splice(0, items.length, ...newItems);
     }

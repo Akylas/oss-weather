@@ -452,25 +452,18 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     // Handle font weight mapping with expression support (including config.settings)
     if (prop === 'fontWeight') {
         if (isExpression(value)) {
-            const compiled = compilePropValue(value, {
-                platform: 'javascript',
-                formatter: (v: string) => `"${mapFontWeight(v)}"`
-            }, '"normal"');
+            const compiled = compilePropValue(
+                value,
+                {
+                    platform: 'javascript',
+                    formatter: (v: string) => `"${mapFontWeight(v)}"`
+                },
+                '"normal"'
+            );
             return `${attrName}={${compiled}}`;
         }
         const weight = mapFontWeight(value);
         return `${attrName}={${weight}}`;
-    }
-
-    // Handle bold property with expression support (including config.settings)
-    if (prop === 'bold') {
-        if (isExpression(value)) {
-            const compiled = compilePropValue(value, {
-                platform: 'javascript'
-            }, 'false');
-            return `${attrName}={${compiled}}`;
-        }
-        return `${attrName}={${JSON.stringify(value)}}`;
     }
 
     // Handle text property with localization
@@ -614,27 +607,28 @@ function shouldLocalize(text: string): boolean {
 /**
  * Map font weight names to numeric values
  */
-function mapFontWeight(weight: string | number): number {
-    if (typeof weight === 'number') {
-        return weight;
-    }
+function mapFontWeight(weight: string | number): number | string {
+    return weight;
+    // if (typeof weight === 'number') {
+    //     return weight;
+    // }
 
-    const weightMap: Record<string, number> = {
-        thin: 100,
-        ultralight: 200,
-        light: 300,
-        normal: 400,
-        regular: 400,
-        medium: 500,
-        semibold: 600,
-        bold: 700,
-        ultrabold: 800,
-        heavy: 800,
-        black: 900
-    };
+    // const weightMap: Record<string, number> = {
+    //     thin: 100,
+    //     ultralight: 200,
+    //     light: 300,
+    //     normal: 400,
+    //     regular: 400,
+    //     medium: 500,
+    //     semibold: 600,
+    //     bold: 700,
+    //     ultrabold: 800,
+    //     heavy: 800,
+    //     black: 900
+    // };
 
-    const normalized = weight.toLowerCase();
-    return weightMap[normalized] || 400;
+    // const normalized = weight.toLowerCase();
+    // return weightMap[normalized] || 400;
 }
 
 /**
@@ -1158,7 +1152,6 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         childMarkups[i] = injectParentAlignmentAttrs(childMarkups[i]);
     }
 
-
     // Single-child collapse: check BEFORE injecting parent alignment.
     // When collapsing, skip alignment injection here so the outer parent can inject its own
     // alignment after the collapse (avoiding stale inner-container alignment on the merged element).
@@ -1175,7 +1168,6 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         }
         return collapsed;
     }
-
 
     if (elType === 'forEach') {
         usedTemplateImport.val = true;

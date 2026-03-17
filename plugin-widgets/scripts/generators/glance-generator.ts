@@ -6,8 +6,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { compileExpression as compileExpr, compilePropertyValue as compilePropValue, Expression } from './expression-compiler';
-import { isExpression, toPlatformVerticalAlignment, toPlatformHorizontalAlignment, toPlatformFontWeight } from './shared-utils';
+import { Expression, compileExpression as compileExpr, compilePropertyValue as compilePropValue } from './expression-compiler';
+import { isExpression, toPlatformFontWeight, toPlatformHorizontalAlignment, toPlatformVerticalAlignment } from './shared-utils';
 import { buildGlanceModifier, formatColor } from './modifier-builders';
 
 interface LayoutElement {
@@ -73,8 +73,6 @@ interface WidgetLayout {
         fakeData?: Record<string, any>;
     };
 }
-
-
 
 /**
  * Format a color value for use as a Glance text color (requires ColorProvider wrapper for hex colors)
@@ -184,11 +182,11 @@ function generateElement(element: LayoutElement, indent: string = '            '
 
 function generateColumn(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
-    const vertAlign = toPlatformVerticalAlignment(element.alignment as string, 'glance');
+    const vertAlign = toPlatformVerticalAlignment(element.alignment, 'glance');
     // crossAlignment can be an expression (for conditional alignment)
     const horizAlign = isExpression(element.crossAlignment)
         ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
-        : toPlatformHorizontalAlignment(element.crossAlignment as string, 'glance');
+        : toPlatformHorizontalAlignment(element.crossAlignment, 'glance');
 
     const modifier = buildGlanceModifier(element);
 
@@ -224,10 +222,10 @@ function generateRow(element: LayoutElement, indent: string): string[] {
     const lines: string[] = [];
     const horizAlign = isExpression(element.alignment)
         ? compileExpr(element.alignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
-        : toPlatformHorizontalAlignment(element.alignment as string, 'glance');
+        : toPlatformHorizontalAlignment(element.alignment, 'glance');
     const vertAlign = isExpression(element.crossAlignment)
         ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformVerticalAlignment(v, 'glance') })
-        : toPlatformVerticalAlignment(element.crossAlignment as string, 'glance');
+        : toPlatformVerticalAlignment(element.crossAlignment, 'glance');
     const isSpaceBetween = element.alignment === 'space-between' || element.alignment === 'spaceBetween';
 
     const modifier = buildGlanceModifier(element);
@@ -291,7 +289,7 @@ function generateStack(element: LayoutElement, indent: string): string[] {
             CenterEnd: 'Alignment.CenterEnd',
             BottomStart: 'Alignment.BottomStart',
             BottomCenter: 'Alignment.BottomCenter',
-            BottomEnd: 'Alignment.BottomEnd',
+            BottomEnd: 'Alignment.BottomEnd'
         };
         contentAlignmentStr = alignmentMap[element.contentAlignment] || element.contentAlignment;
     }
@@ -353,7 +351,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
         // Convert to snake_case for resource name (e.g., "Hourly" -> "hourly")
         const resourceKey = element.text.toLowerCase().replace(/\s+/g, '_');
         const i1 = indent + '    '; // text = line indent
-        const i2 = i1 + '    ';    // getIdentifier args indent
+        const i2 = i1 + '    '; // getIdentifier args indent
         textExpr = `context.getString(\n${i2}context.resources.getIdentifier(\n${i2}    "${resourceKey}",\n${i2}    "string",\n${i2}    context.packageName\n${i2})\n${i1})`;
     } else {
         textExpr = compilePropValue(element.text, { platform: 'kotlin', formatter: (v: string) => `"${v}"` }, '""');
@@ -363,10 +361,14 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatTextColor(v) }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight with proper expression support and literal transformation
-    const fontWeightExpr = compilePropValue(element.fontWeight, {
-        platform: 'kotlin',
-        formatter: (v: string) => toPlatformFontWeight(v, 'glance')
-    }, undefined);
+    const fontWeightExpr = compilePropValue(
+        element.fontWeight,
+        {
+            platform: 'kotlin',
+            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+        },
+        undefined
+    );
 
     const maxLinesExpr = compilePropValue(element.maxLines, { platform: 'kotlin', formatter: (v: number) => String(v) }, undefined);
 
@@ -397,7 +399,7 @@ function generateLabel(element: LayoutElement, indent: string): string[] {
             const textAlignExpr = compileExpr(element.textAlign, { platform: 'kotlin', context: 'value', formatter: (v: string) => alignMap[v] || 'TextAlign.Start' });
             styleProps.push(`textAlign = ${textAlignExpr}`);
         } else {
-            styleProps.push(`textAlign = ${alignMap[element.textAlign as string] || 'TextAlign.Start'}`);
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
         }
     }
 
@@ -641,10 +643,14 @@ function generateClock(element: LayoutElement, indent: string): string[] {
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight with proper expression support and literal transformation
-    const fontWeightExpr = compilePropValue(element.fontWeight, {
-        platform: 'kotlin',
-        formatter: (v: string) => toPlatformFontWeight(v, 'glance')
-    }, undefined);
+    const fontWeightExpr = compilePropValue(
+        element.fontWeight,
+        {
+            platform: 'kotlin',
+            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+        },
+        undefined
+    );
 
     // Always use locale-aware time format (respects system 24h/12h and AM/PM preference)
     const timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
@@ -668,7 +674,7 @@ function generateClock(element: LayoutElement, indent: string): string[] {
             const textAlignExpr = compileExpr(element.textAlign, { platform: 'kotlin', context: 'value', formatter: (v: string) => alignMap[v] || 'TextAlign.Start' });
             styleProps.push(`textAlign = ${textAlignExpr}`);
         } else {
-            styleProps.push(`textAlign = ${alignMap[element.textAlign as string] || 'TextAlign.Start'}`);
+            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
         }
     }
 
@@ -688,10 +694,14 @@ function generateDate(element: LayoutElement, indent: string): string[] {
     const colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
 
     // Handle fontWeight with proper expression support and literal transformation
-    const fontWeightExpr = compilePropValue(element.fontWeight, {
-        platform: 'kotlin',
-        formatter: (v: string) => toPlatformFontWeight(v, 'glance')
-    }, undefined);
+    const fontWeightExpr = compilePropValue(
+        element.fontWeight,
+        {
+            platform: 'kotlin',
+            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
+        },
+        undefined
+    );
 
     // Determine date expression based on style (use locale-aware formats)
     let dateExpr: string;
@@ -781,7 +791,7 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
                 item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
                 item.description !== undefined ? `description = "${item.description}"` : null,
-                item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null,
+                item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null
             ].filter(Boolean);
             return `HourlyData(${props.join(', ')})`;
         };
@@ -795,7 +805,7 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
                 item.precipAccumulation !== undefined ? `precipAccumulation = "${item.precipAccumulation}"` : null,
                 item.precipitation !== undefined ? `precipitation = "${item.precipitation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed = "${item.windSpeed}"` : null,
-                item.description !== undefined ? `description = "${item.description}"` : null,
+                item.description !== undefined ? `description = "${item.description}"` : null
             ].filter(Boolean);
             return `DailyData(${props.join(', ')})`;
         };

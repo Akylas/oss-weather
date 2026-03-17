@@ -131,13 +131,9 @@ object WeatherWidgetManager {
     private const val WIDGET_DATA_CACHE_KEY = "widget_data_cache"
     private const val DEFAULT_UPDATE_FREQUENCY = 30L
 
-    private const val LOG_TAG = "JS"
+    private const val LOG_TAG = "WeatherWidgetManager"
 
     private val JSON = Json { ignoreUnknownKeys = true; isLenient = true }
-
-    init {
-        WidgetsLogger.d(LOG_TAG, "WeatherWidgetManager loaded")
-    }
 
     // Widget data cache - for persistence only
     private val widgetDataCache = mutableMapOf<Int, WeatherWidgetData>()
@@ -861,6 +857,7 @@ object WeatherWidgetManager {
             WidgetsLogger.d(LOG_TAG, "getAllKindConfigs() -> no stored configs")
             return emptyMap()
         }
+            WidgetsLogger.i(LOG_TAG, "getAllKindConfigs ${json} ")
 
         return try {
             val configs = mutableMapOf<String, WidgetConfig>()
@@ -991,10 +988,10 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun createInstanceConfig(context: Context, widgetId: Int, widgetKind: String): WidgetConfig {
-        WidgetsLogger.d(LOG_TAG, "createInstanceConfig(widgetId=$widgetId, widgetKind=$widgetKind)")
         
         // Get kind defaults (with settings initialized from JSON)
         val kindConfig = getKindConfig(context, widgetKind)
+        WidgetsLogger.d(LOG_TAG, "createInstanceConfig(widgetId=$widgetId, widgetKind=$widgetKind, kindConfig=$kindConfig)")
         
         // Create instance config with widgetKind set and copy settings
         val instanceConfig = WidgetConfig(
@@ -1010,7 +1007,7 @@ object WeatherWidgetManager {
         // Save instance config
         saveWidgetConfig(context, widgetId, instanceConfig)
         
-        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (settings=${instanceConfig.settings})")
+        WidgetsLogger.i(LOG_TAG, "Created instance config for widget $widgetId from kind $widgetKind (settings=${instanceConfig.settings}, instanceConfig=$instanceConfig)")
         return instanceConfig
     }
 
@@ -1202,6 +1199,16 @@ object WeatherWidgetManager {
         }
     }
 
+    // Helper: safely get a nullable string from JSONObject (handles explicit null and the literal "null")
+    private fun JSONObject.optStringNullable(key: String): String? {
+        if (!this.has(key)) return null
+        val v = this.opt(key)
+        return when (v) {
+            null, JSONObject.NULL -> null
+            is String -> if (v.equals("null", ignoreCase = true)) null else v
+            else -> v.toString()
+        }
+    }
     /**
      * Parse WidgetConfig from JSONObject
      */
@@ -1212,9 +1219,9 @@ object WeatherWidgetManager {
             locationName = json.optString("locationName", "current"),
             latitude = json.optDouble("latitude", 0.0),
             longitude = json.optDouble("longitude", 0.0),
-            model = json.optString("model", null),
-            provider = json.optString("provider", null),
-            widgetKind = json.optString("widgetKind", null),
+            model = json.optStringNullable("model"),
+            provider = json.optStringNullable("provider"),
+            widgetKind = json.optStringNullable("widgetKind"),
             settings = json.optJSONObject("settings")?.toJsonObject()
         )
     }
@@ -1223,8 +1230,7 @@ object WeatherWidgetManager {
      * Convert WidgetConfig to JSONObject
      */
     private fun widgetConfigToJson(config: WidgetConfig): JSONObject {
-        WidgetsLogger.d(LOG_TAG, "widgetConfigToJson $config")
-        return JSONObject().apply {
+        val result = JSONObject().apply {
             put("locationName", config.locationName)
             put("latitude", config.latitude)
             put("longitude", config.longitude)
@@ -1233,6 +1239,8 @@ object WeatherWidgetManager {
             config.widgetKind?.let { put("widgetKind", it) }
             put("settings", config.settings?.toJSONObject())
         }
+        WidgetsLogger.d(LOG_TAG, "widgetConfigToJson $config result=$result")
+        return result
     }
 
     /**

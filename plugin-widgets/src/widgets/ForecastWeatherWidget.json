@@ -8,7 +8,6 @@
         { "width": 260, "height": 400, "family": "large" }
     ],
     "defaultPadding": 8,
-    "background": { "type": "solid", "color": "widgetBackground" },
     "layout": {
         "type": "column",
         "alignment": "start",

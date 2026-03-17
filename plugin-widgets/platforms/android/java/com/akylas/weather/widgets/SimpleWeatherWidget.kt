@@ -22,6 +22,7 @@ import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
 import com.akylas.weather.widgets.WidgetConfig
 import com.akylas.weather.widgets.generated.SimpleWeatherWidgetContent
+import kotlinx.serialization.json.*
 
 private const val LOG_TAG = "SimpleWeatherWidget"
 
@@ -60,7 +61,7 @@ class SimpleWeatherWidget : WeatherWidget() {
             val widgetConfig = WidgetConfig(settings = widgetSettings)
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent") as? Boolean ?: false)) {
+                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false)) {
                     if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData!!.loadingState == WidgetLoadingState.LOADING) {

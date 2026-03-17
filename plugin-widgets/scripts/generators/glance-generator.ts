@@ -127,8 +127,8 @@ function wrapColorParsingKotlin(colorExpr: string): string {
         // Find all config.settings?.get("...")?.jsonPrimitive?.contentOrNull patterns
         const settingsPattern = /config\.settings\?\.get\([^)]+\)\?\.jsonPrimitive\?\.contentOrNull/g;
         if (settingsPattern.test(colorExpr)) {
-            // Wrap the entire expression with Color parsing
-            return `when { ${colorExpr} == null -> GlanceTheme.colors.onSurface; else -> Color(android.graphics.Color.parseColor(${colorExpr} ?: "#000000")) }`;
+            // Store the expression result in a variable, then check if it's a string (hex color) and parse it
+            return `run { val colorValue = ${colorExpr}; if (colorValue is String) Color(android.graphics.Color.parseColor(colorValue)) else colorValue as? Color ?: GlanceTheme.colors.onSurface }`;
         }
     }
     return colorExpr;

@@ -13,13 +13,13 @@
     export let size: { width: number; height: number } = { width: 120, height: 50};
 
     $: ({ colorOnSurface } = $colors);
+    const widgetColor = data.config.settings.color == null ? "onSurface" : data.config.settings.color;
 
     function nowTime() {
         return formatDate(new Date(), 'LT');
     }
 </script>
 
-{#const widgetColor = data.config.settings.color == null ? "onSurface" : data.config.settings.color}
 <gridlayout width={size.width} height={size.height} {...$$restProps} class="widget-container">
     {#if size.width >= 180}
         <gridlayout paddingLeft={10} paddingRight={10} paddingTop={6} paddingBottom={6}>

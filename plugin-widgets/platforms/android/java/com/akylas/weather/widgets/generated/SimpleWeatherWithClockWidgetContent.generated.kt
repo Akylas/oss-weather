@@ -80,7 +80,7 @@ private fun ErrorPreview() {
 fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
-    val widgetColor = when { when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull } == null -> GlanceTheme.colors.onSurface; else -> Color(android.graphics.Color.parseColor(when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull } ?: "#000000")) }
+    val widgetColor = run { val colorValue = when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull }; if (colorValue is String) Color(android.graphics.Color.parseColor(colorValue)) else colorValue as? Color ?: GlanceTheme.colors.onSurface }
 
     if (size.width.value >= 180) {
         Box(

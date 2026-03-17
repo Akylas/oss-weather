@@ -92,8 +92,9 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
+                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Spacer(modifier = GlanceModifier.height(2.dp))
@@ -107,8 +108,9 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
+                        modifier = GlanceModifier.alpha(0.6f),
                         text = item.time,
-                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurfaceVariant),
+                        style = TextStyle(fontSize = when { size.height.value < 60 -> 9.sp; else -> 11.sp }, color = GlanceTheme.colors.onSurface),
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))

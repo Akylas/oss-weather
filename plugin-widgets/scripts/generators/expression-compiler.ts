@@ -253,6 +253,12 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
  * Compile "get" operator - property access
  */
 function compileGet(prop: string, platform: Platform, addDataPrefix: boolean, settingType?: SettingType): string {
+    // Handle color.X - reference to theme colors
+    if (prop.startsWith('color.')) {
+        const colorName = prop.substring(6); // Remove 'color.' prefix
+        return compileColorReference(colorName, platform);
+    }
+
     // Handle size.width/height specially - map to direct width/height variables in Swift
     if (prop.startsWith('size.')) {
         const parts = prop.split('.');
@@ -285,6 +291,18 @@ function compileGet(prop: string, platform: Platform, addDataPrefix: boolean, se
 
     // Add data prefix if needed
     return addDataPrefix ? `data.${prop}` : prop;
+}
+
+/**
+ * Compile color.X reference to platform-specific theme color
+ */
+function compileColorReference(colorName: string, platform: Platform): string {
+    // Import DEFAULT_COLOR_MAPS from modifier-builders at runtime
+    const { DEFAULT_COLOR_MAPS } = require('./modifier-builders');
+    const colorMap = DEFAULT_COLOR_MAPS[platform];
+    
+    // Return the platform-specific theme color reference
+    return colorMap[colorName] || colorName;
 }
 
 /**

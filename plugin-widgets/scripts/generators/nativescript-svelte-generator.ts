@@ -774,7 +774,8 @@ function generateMarkup(widgetName: string, element: BaseLayoutElement, elementP
         'scrollBarIndicatorVisible',
         'fillWidth',
         'fillHeight',
-        'fillMaxSize'
+        'fillMaxSize',
+        'opacity'
     ];
 
     // Handle limit for forEach by modifying items before processing

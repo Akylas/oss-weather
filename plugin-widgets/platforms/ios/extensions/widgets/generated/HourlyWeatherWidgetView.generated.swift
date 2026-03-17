@@ -22,9 +22,9 @@ struct HourlyWeatherWidgetView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .foregroundColor(WidgetColorProvider.onSurface)
                                     .multilineTextAlignment(.leading)
-                                    .lineLimit(1)
+                                    .lineLimit(1).opacity(0.6)
                                 Spacer().frame(height: 2)
                             }.frame(maxWidth: .infinity)
                         }
@@ -35,8 +35,8 @@ struct HourlyWeatherWidgetView: View {
                                         VStack(alignment: .center, spacing: height < 60 ? 0 : 2) {
                                             Text(item.time)
                                                 .font(.system(size: height < 60 ? 9 : 11, weight: .regular))
-                                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                                .lineLimit(1)
+                                                .foregroundColor(WidgetColorProvider.onSurface)
+                                                .lineLimit(1).opacity(0.6)
                                             WeatherIconView(item.iconPath, description: data.description, size: height < 60 ? 24 : height < 80 ? 28 : 32)
                                             Text(item.temperature)
                                                 .font(.system(size: height < 60 ? 12 : 14, weight: .bold))
@@ -52,7 +52,7 @@ struct HourlyWeatherWidgetView: View {
                                                         .foregroundColor(WidgetColorProvider.onSurfaceVariant)
                                                 }
                                             }
-                                        }.frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2)
+                                        }.frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2).frame(width: 56)
                                     }
                                 }
                             }

@@ -140,8 +140,9 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
+                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface),
                     maxLines = 1
                 )
             }
@@ -151,8 +152,9 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Text(
+                        modifier = GlanceModifier.alpha(0.6f),
                         text = data.description,
-                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End)
+                        style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End)
                     )
                 }
             }
@@ -207,8 +209,9 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
             ) {
                 Spacer(modifier = GlanceModifier.defaultWeight())
                 Text(
+                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurfaceVariant),
+                    style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = GlanceTheme.colors.onSurface),
                     maxLines = 1
                 )
             }

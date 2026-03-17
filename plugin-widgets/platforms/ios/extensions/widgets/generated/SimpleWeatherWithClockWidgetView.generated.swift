@@ -23,11 +23,11 @@ struct SimpleWeatherWithClockWidgetView: View {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(Date(), style: .time)
                                         .font(.system(size: min((width * 0.15), 50), weight: entry.config.settings["clockBold"] as? Bool == true ? .bold : .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .foregroundColor(entry.config.settings["color"] as? String == nil ? WidgetColorProvider.onSurface : entry.config.settings["color"] as? String)
                                     Spacer().frame(height: 4)
                                     Text(Date(), style: .date)
                                         .font(.system(size: 14, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                        .foregroundColor(WidgetColorProvider.onSurface)
                                 }.layoutPriority(1)
                                 VStack(alignment: .center, spacing: 0) {
                                     if !data.iconPath.isEmpty {
@@ -42,15 +42,15 @@ struct SimpleWeatherWithClockWidgetView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                    .lineLimit(1)
+                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .lineLimit(1).opacity(0.6)
                             }.frame(maxWidth: .infinity)
                             if !data.description.isEmpty {
                                 ZStack(alignment: .bottomTrailing) {
                                     Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .multilineTextAlignment(.trailing).opacity(0.6)
                                 }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             }
                         }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
@@ -79,10 +79,10 @@ struct SimpleWeatherWithClockWidgetView: View {
                                 Spacer()
                                 Text(data.locationName)
                                     .font(.system(size: width < 100 ? 8 : width < 150 ? 10 : 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                    .lineLimit(1)
+                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .lineLimit(1).opacity(0.6)
                             }
-                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3)
+                        }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(3).padding(3)
                     }
                 }
             } else {

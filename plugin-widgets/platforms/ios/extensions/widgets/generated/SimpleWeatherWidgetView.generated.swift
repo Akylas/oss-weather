@@ -29,16 +29,16 @@ struct SimpleWeatherWidgetView: View {
                             }.frame(maxWidth: .infinity)
                             Text(data.locationName)
                                 .font(.system(size: 8, weight: .regular))
-                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                .lineLimit(1)
-                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3)
+                                .foregroundColor(WidgetColorProvider.onSurface)
+                                .lineLimit(1).opacity(0.6)
+                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3).padding(3)
                     }
                     else {
                         ZStack {
                             Text(data.locationName)
                                 .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                .lineLimit(1)
+                                .foregroundColor(WidgetColorProvider.onSurface)
+                                .lineLimit(1).opacity(0.6)
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(data.temperature)
@@ -55,8 +55,8 @@ struct SimpleWeatherWidgetView: View {
                                 ZStack(alignment: .bottomTrailing) {
                                     Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .multilineTextAlignment(.trailing).opacity(0.6)
                                 }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             }
                         }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)

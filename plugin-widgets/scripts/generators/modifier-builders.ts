@@ -318,6 +318,18 @@ export function buildGlanceModifier(element: BaseLayoutElement): string {
         }
     }
 
+    // Opacity (alpha)
+    if (element.opacity !== undefined) {
+        const opacityExpr = compilePropertyValue(element.opacity, {
+            platform: 'kotlin',
+            context: 'value',
+            formatter: (v: number) => `${v}f`
+        });
+        if (opacityExpr) {
+            modifiers.push(`alpha(${opacityExpr})`);
+        }
+    }
+
     if (modifiers.length === 0) {
         return 'GlanceModifier';
     }
@@ -397,6 +409,18 @@ export function buildSwiftModifiers(element: BaseLayoutElement): string[] {
         });
         if (radiusExpr) {
             modifiers.push(`cornerRadius(${radiusExpr})`);
+        }
+    }
+
+    // Opacity
+    if (element.opacity !== undefined) {
+        const opacityExpr = compilePropertyValue(element.opacity, {
+            platform: 'swift',
+            context: 'value',
+            formatter: (v: number) => `${v}`
+        });
+        if (opacityExpr) {
+            modifiers.push(`opacity(${opacityExpr})`);
         }
     }
 

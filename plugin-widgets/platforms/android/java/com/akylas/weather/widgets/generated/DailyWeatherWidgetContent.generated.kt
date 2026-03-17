@@ -97,8 +97,9 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
+                    modifier = GlanceModifier.alpha(0.6f),
                     text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start),
+                    style = TextStyle(fontSize = 12.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start),
                     maxLines = 1
                 )
                 Text(
@@ -123,8 +124,9 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 }
                 if (data.description.isNotEmpty()) {
                     Text(
+                        modifier = GlanceModifier.alpha(0.6f),
                         text = data.description,
-                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.End),
+                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.End),
                         maxLines = 1
                     )
                 }
@@ -136,7 +138,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
-                modifier = GlanceModifier.padding(horizontal = 8.dp),
+                modifier = GlanceModifier.padding(horizontal = 8.dp).alpha(0.6f),
                 text = context.getString(
                     context.resources.getIdentifier(
                         "daily",
@@ -144,7 +146,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                         context.packageName
                     )
                 ),
-                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurfaceVariant, textAlign = TextAlign.Start)
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface, textAlign = TextAlign.Start)
             )
         }
         Spacer(modifier = GlanceModifier.height(4.dp))
@@ -196,8 +198,9 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                     )
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     Text(
+                                        modifier = GlanceModifier.alpha(0.6f),
                                         text = item.temperatureLow,
-                                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurfaceVariant),
+                                        style = TextStyle(fontSize = 11.sp, color = GlanceTheme.colors.onSurface),
                                         maxLines = 1
                                     )
                                 }
@@ -208,15 +211,17 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                 ) {
                                     if (item.precipAccumulation.isNotEmpty()) {
                                         Text(
+                                            modifier = GlanceModifier.alpha(0.6f),
                                             text = item.precipAccumulation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurface)
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
                                     if (item.precipitation.isNotEmpty()) {
                                         Text(
+                                            modifier = GlanceModifier.alpha(0.6f),
                                             text = "💧" + item.precipitation,
-                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurfaceVariant)
+                                            style = TextStyle(fontSize = 10.sp, color = GlanceTheme.colors.onSurface)
                                         )
                                     }
                                 }

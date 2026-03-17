@@ -22,9 +22,9 @@ struct ForecastWeatherWidgetView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                    .foregroundColor(WidgetColorProvider.onSurface)
                                     .multilineTextAlignment(.leading)
-                                    .lineLimit(1)
+                                    .lineLimit(1).opacity(0.6)
                                 Text(data.temperature)
                                     .font(.system(size: 26, weight: .bold))
                                     .foregroundColor(WidgetColorProvider.onSurface)
@@ -37,9 +37,9 @@ struct ForecastWeatherWidgetView: View {
                                 if !data.description.isEmpty {
                                     Text(data.description)
                                         .font(.system(size: 11, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                        .foregroundColor(WidgetColorProvider.onSurface)
                                         .multilineTextAlignment(.trailing)
-                                        .lineLimit(1)
+                                        .lineLimit(1).opacity(0.6)
                                 }
                             }
                         }.frame(maxWidth: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
@@ -47,8 +47,8 @@ struct ForecastWeatherWidgetView: View {
                         VStack(alignment: .leading, spacing: 0) {
                             Text("hourly")
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                                .foregroundColor(WidgetColorProvider.onSurface)
+                                .multilineTextAlignment(.leading).padding(.horizontal, 8).opacity(0.6)
                         }.frame(maxWidth: .infinity)
                         Spacer().frame(height: 4)
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -58,8 +58,8 @@ struct ForecastWeatherWidgetView: View {
                                         VStack(alignment: .center, spacing: 2) {
                                             Text(item.time)
                                                 .font(.system(size: 10, weight: .regular))
-                                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                                .lineLimit(1)
+                                                .foregroundColor(WidgetColorProvider.onSurface)
+                                                .lineLimit(1).opacity(0.6)
                                             WeatherIconView(item.iconPath, description: data.description, size: 28)
                                             Text(item.temperature)
                                                 .font(.system(size: 12, weight: .bold))
@@ -68,9 +68,9 @@ struct ForecastWeatherWidgetView: View {
                                             if !item.precipAccumulation.isEmpty {
                                                 Text(item.precipAccumulation)
                                                     .font(.system(size: 9, weight: .regular))
-                                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                                    .foregroundColor(WidgetColorProvider.onSurface).opacity(0.6)
                                             }
-                                        }.frame(width: 53).padding(.horizontal, 4)
+                                        }.frame(width: 53).padding(.horizontal, 4).frame(width: 53)
                                     }
                                 }
                             }
@@ -79,8 +79,8 @@ struct ForecastWeatherWidgetView: View {
                         VStack(alignment: .leading, spacing: 0) {
                             Text("daily")
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                .multilineTextAlignment(.leading).padding(.horizontal, 8)
+                                .foregroundColor(WidgetColorProvider.onSurface)
+                                .multilineTextAlignment(.leading).padding(.horizontal, 8).opacity(0.6)
                         }.frame(maxWidth: .infinity)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
@@ -105,25 +105,25 @@ struct ForecastWeatherWidgetView: View {
                                                                 .lineLimit(1)
                                                             Text(item.temperatureLow)
                                                                 .font(.system(size: 13, weight: .regular))
-                                                                .foregroundColor(WidgetColorProvider.onSurfaceVariant)
-                                                                .lineLimit(1)
+                                                                .foregroundColor(WidgetColorProvider.onSurface)
+                                                                .lineLimit(1).opacity(0.6)
                                                         }
                                                         HStack(alignment: .center, spacing: 6) {
                                                             if !item.precipAccumulation.isEmpty {
                                                                 Text(item.precipAccumulation)
                                                                     .font(.system(size: 10, weight: .regular))
-                                                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                                                    .foregroundColor(WidgetColorProvider.onSurface).opacity(0.6)
                                                             }
                                                             if !item.precipitation.isEmpty {
                                                                 Text("💧" + item.precipitation)
                                                                     .font(.system(size: 10, weight: .regular))
-                                                                    .foregroundColor(WidgetColorProvider.onSurfaceVariant)
+                                                                    .foregroundColor(WidgetColorProvider.onSurface).opacity(0.6)
                                                             }
                                                         }
                                                     }
                                                 }.frame(maxWidth: .infinity)
-                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
-                                        }.frame(maxWidth: .infinity).padding(2)
+                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                        }.frame(maxWidth: .infinity).padding(2).padding(2)
                                     }
                                 }
                             }

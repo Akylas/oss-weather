@@ -22,7 +22,7 @@ import {
     isSettingReference,
     toPlatformFontWeight
 } from './shared-utils';
-import { DEFAULT_COLOR_MAPS } from './modifier-builders';
+import { DEFAULT_COLOR_MAPS, buildSwiftModifiers } from './modifier-builders';
 
 // ============================================================================
 // CONSTANTS
@@ -408,7 +408,7 @@ function buildSwiftPaddingModifier(element: BaseLayoutElement): string[] {
 }
 
 /**
- * Apply all visual modifiers (size, padding, background, cornerRadius) to a view's last line
+ * Apply all visual modifiers (size, padding, background, cornerRadius, opacity) to a view's last line
  */
 function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void {
     const sizeModifiers = buildSwiftSizeModifiers(element);
@@ -427,6 +427,12 @@ function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void 
         // In SwiftUI, flex is handled by Spacer() inside containers, but when set on a
         // container element itself it means it should expand. Use layoutPriority for this.
         allMods.push('.layoutPriority(1)');
+    }
+    
+    // Add opacity modifier from buildSwiftModifiers (handles expressions)
+    const additionalMods = buildSwiftModifiers(element);
+    for (const mod of additionalMods) {
+        allMods.push(`.${mod}`);
     }
 
     if (allMods.length > 0) {

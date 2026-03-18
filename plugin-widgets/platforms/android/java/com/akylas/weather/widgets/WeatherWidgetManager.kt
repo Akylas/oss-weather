@@ -26,47 +26,78 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 
 /**
  * Reactive data store for widget data using StateFlow
  */
 object WidgetDataStore {
+     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
     private val _widgetData = MutableStateFlow<Map<Int, WeatherWidgetData>>(emptyMap())
     val widgetData: StateFlow<Map<Int, WeatherWidgetData>> = _widgetData.asStateFlow()
-    
+
+    // Version map used to force emission for a specific widgetId without changing the data
+    private val _widgetVersions = MutableStateFlow<Map<Int, Long>>(emptyMap())
+    val widgetVersions: StateFlow<Map<Int, Long>> = _widgetVersions.asStateFlow()
+
     fun updateWidgetData(widgetId: Int, data: WeatherWidgetData) {
         _widgetData.update { current ->
             current + (widgetId to data)
         }
+        // bump version so flows observing this widget always emit after an update
+        _widgetVersions.update { current ->
+            current + (widgetId to (current[widgetId]?.plus(1) ?: System.currentTimeMillis()))
+        }
         WidgetsLogger.d("WidgetDataStore", "Updated data for widgetId=$widgetId, total widgets=${_widgetData.value.size}")
     }
-    
+
     fun removeWidgetData(widgetId: Int) {
         _widgetData.update { current ->
             current - widgetId
         }
+        _widgetVersions.update { current ->
+            val m = current.toMutableMap()
+            m.remove(widgetId)
+            m
+        }
         WidgetsLogger.d("WidgetDataStore", "Removed data for widgetId=$widgetId")
     }
-    
+
     fun initializeFromCache(cache: Map<Int, WeatherWidgetData>) {
         _widgetData.value = cache
+        // initialize versions so existing widgets have stable versions
+        val versions = cache.keys.associateWith { System.currentTimeMillis() }
+        _widgetVersions.value = versions
         WidgetsLogger.d("WidgetDataStore", "Initialized with ${cache.size} cached widgets")
     }
+
     /**
-     * Returns a StateFlow that only emits when the specific widget's data.
-     * This prevents unnecessary recomposition of other widgets when a different widget's data changes.
+     * Returns a StateFlow that emits a Pair(dataForId, version) so callers can react to
+     * version bumps even if the data payload is structurally identical.
      */
-    fun getWidgetDataFlow(widgetId: Int): StateFlow<WeatherWidgetData?> {
+    fun getWidgetDataFlow(widgetId: Int): StateFlow<Pair<WeatherWidgetData?, Long>> {
         return _widgetData
-            .map { data -> data[widgetId] }
-            .distinctUntilChanged()
+            .combine(_widgetVersions) { dataMap, versions ->
+                Pair(dataMap[widgetId], versions[widgetId] ?: 0L)
+            }
+            // Use shared long-lived scope so the flow stays active and consistent across callers
             .stateIn(
-                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                scope = scope,
                 started = SharingStarted.Eagerly,
-                initialValue = _widgetData.value[widgetId]
+                initialValue = Pair(_widgetData.value[widgetId], _widgetVersions.value[widgetId] ?: 0L)
             )
+    }
+
+    /**
+     * Force a flow emission for the given widgetId without changing the stored WeatherWidgetData.
+     * Useful to trigger Glance recomposition or UI refresh when external state changed (theme, locale, etc).
+     */
+    fun touchWidget(widgetId: Int) {
+        _widgetVersions.update { current ->
+            current + (widgetId to (current[widgetId]?.plus(1) ?: System.currentTimeMillis()))
+        }
+        WidgetsLogger.d("WidgetDataStore", "touchWidget bumped version for widgetId=$widgetId")
     }
 }
 
@@ -299,7 +330,7 @@ object WeatherWidgetManager {
      * Request update for all active widgets
      */
     @JvmStatic
-    fun requestAllWidgetsUpdate(context: Context) {
+    fun requestAllWidgetsUpdate(context: Context, updateData: Boolean = true) {
         WidgetsLogger.d(LOG_TAG, "requestAllWidgetsUpdate() called")
         val activeIds = getActiveWidgetIdsFromPrefs(context)
         
@@ -314,7 +345,12 @@ object WeatherWidgetManager {
         activeIds.forEach { widgetId ->
             try {
                 WidgetsLogger.d(LOG_TAG, "Requesting update for widgetId=$widgetId")
-                requestWidgetUpdate(context, widgetId)
+                if (updateData) {
+
+                    requestWidgetUpdate(context, widgetId, updateData)
+                } else {
+                    WidgetDataStore.touchWidget(widgetId)
+                }
                 successCount++
             } catch (e: Exception) {
                 WidgetsLogger.e(LOG_TAG, "Failed to request update for widgetId=$widgetId", e)
@@ -329,15 +365,18 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun reRenderAllWidgets(context: Context) {
-        WidgetsLogger.d(LOG_TAG, "reRenderAllWidgets() called")
-        coroutineScope.launch {
-            SimpleWeatherWithClockWidget().apply { updateAll(context) }
-            SimpleWeatherWithDateWidget().apply { updateAll(context) }
-            SimpleWeatherWidget().apply { updateAll(context) }
-            DailyWeatherWidget().apply { updateAll(context) }
-            HourlyWeatherWidget().apply { updateAll(context) }
-            ForecastWeatherWidget().apply { updateAll(context) }
-        }
+
+        // 
+        requestAllWidgetsUpdate(context, false)
+        // WidgetsLogger.d(LOG_TAG, "reRenderAllWidgets() called")
+        // coroutineScope.launch {
+        //     SimpleWeatherWithClockWidget().apply { updateAll(context) }
+        //     SimpleWeatherWithDateWidget().apply { updateAll(context) }
+        //     SimpleWeatherWidget().apply { updateAll(context) }
+        //     DailyWeatherWidget().apply { updateAll(context) }
+        //     HourlyWeatherWidget().apply { updateAll(context) }
+        //     ForecastWeatherWidget().apply { updateAll(context) }
+        // }
     }
 
 
@@ -497,14 +536,20 @@ object WeatherWidgetManager {
     /**
      * Request immediate update for a specific widget
      */
-    @JvmStatic
+
+     @JvmStatic
     fun requestWidgetUpdate(context: Context, widgetId: Int) {
+        requestWidgetUpdate(context, widgetId, true)
+    }
+    @JvmStatic
+    fun requestWidgetUpdate(context: Context, widgetId: Int, updateData: Boolean = true) {
         // ensure config exists
         loadWidgetConfig(context, widgetId, false) ?: return
         WidgetsLogger.d(LOG_TAG, "requestWidgetUpdate(widgetId=$widgetId)")
         // Send broadcast to JS side to request weather data
         val intent = Intent("com.akylas.weather.WIDGET_UPDATE_REQUEST")
         intent.putExtra("widgetId", widgetId)
+        intent.putExtra("updateData", updateData)
         intent.setPackage(context.packageName)
         context.sendBroadcast(intent)
         WidgetsLogger.i(LOG_TAG, "Sent WIDGET_UPDATE_REQUEST for widgetId=$widgetId")

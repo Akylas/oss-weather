@@ -13,7 +13,7 @@
     "defaultPadding": 4,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "settings": {
-        "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
+        "clockBold": { "type": "boolean", "default": false, "title": "bold_clock" }
     },
     "layout": {
         "type": "conditional",

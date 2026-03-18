@@ -22,6 +22,7 @@ abstract class WeatherWidget : GlanceAppWidget() {
     ) : CoroutineWorker(appContext, params) {
         override suspend fun doWork(): Result {
             WeatherWidgetManager.requestAllWidgetsUpdate(applicationContext)
+        WidgetsLogger.d(LOG_TAG, "WeatherWidgetWorker update")
 
             return Result.success()
         }
@@ -29,16 +30,16 @@ abstract class WeatherWidget : GlanceAppWidget() {
 
     fun setupUpdateWorker(context: Context) {
         WidgetsLogger.d(LOG_TAG, "setupUpdateWorker for class; ${this.javaClass.simpleName}")
-
+        var frequency = getUpdateFrequency(context)
         // Create unique periodic work to keep this widget updated at a regular interval.
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "weatherWidgetUpdateWorker",
             ExistingPeriodicWorkPolicy.KEEP,
             PeriodicWorkRequest.Builder(
                 WeatherWidgetWorker::class.java,
-                getUpdateFrequency(context),
+                frequency,
                 TimeUnit.MINUTES
-            ).setInitialDelay(getUpdateFrequency(context).minutes.toJavaDuration()).build()
+            ).setInitialDelay(frequency.minutes.toJavaDuration()).build()
         )
     }
 }

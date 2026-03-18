@@ -26,6 +26,7 @@
         }
     ],
     "defaultPadding": 6,
+    "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {
         "type": "column",
         "alignment": "start",
@@ -75,7 +76,7 @@
                                     "type": "column",
                                     "alignment": "center",
                                     "crossAlignment": "center",
-                                    "width": 56 ,
+                                    "width": 56,
                                     "fillHeight": true,
                                     "paddingHorizontal": 2,
                                     "spacing": ["case", ["<", ["get", "size.height"], 60], 0, 2],
@@ -97,7 +98,6 @@
                                             "text": ["get", "item.temperature"],
                                             "fontSize": ["case", ["<", ["get", "size.height"], 60], 12, 14],
                                             "fontWeight": "bold",
-                                            "color": "onSurface",
                                             "maxLines": 1
                                         },
                                         {
@@ -115,7 +115,7 @@
                                                         "type": "label",
                                                         "text": ["get", "item.precipAccumulation"],
                                                         "fontSize": ["case", ["<", ["get", "size.height"], 80], 9, 10],
-                                                        "color": "onSurfaceVariant"
+                                                        "opacity": 0.5
                                                     }
                                                 ]
                                             }

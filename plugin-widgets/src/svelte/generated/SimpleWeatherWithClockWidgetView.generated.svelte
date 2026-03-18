@@ -13,8 +13,9 @@
     export let size: { width: number; height: number } = { width: 120, height: 50};
 
     $: ({ colorOnSurface } = $colors);
-    const widgetColor = config.settings.color === null ? colorOnSurface : config.settings.color;
+    $: widgetColor = config.settings.color === null ? colorOnSurface : config.settings.color;
 
+$: console.log('widget config', JSON.stringify(config));
     function nowTime() {
         return formatDate(new Date(), 'LT');
     }

@@ -61,9 +61,9 @@ export class WidgetConfigManager {
     /**
      * Get all per-instance widget configurations
      */
-    static getAllConfigs(): { [widgetId: string]: WidgetConfig } {
+    static getAllConfigs(force = false): { [widgetId: string]: WidgetConfig } {
         // DEV_LOG && console.log('getAllConfigs', JSON.stringify(this.configs));
-        if (!this.configs) {
+        if (!this.configs || force) {
             this.loadConfigs();
         }
         return this.configs;
@@ -186,7 +186,7 @@ export class WidgetConfigManager {
      * Get all widget IDs for a specific kind
      */
     static getInstancesOfKind(widgetKind: string): string[] {
-        const configs = this.getAllConfigs();
+        const configs = this.getAllConfigs(true);
         return Object.keys(configs).filter((id) => configs[id].widgetKind === widgetKind);
     }
 

@@ -11,7 +11,7 @@ object WidgetsLogger {
     private const val PREFIX = ""
 
     // Default to debug builds
-    var enabled: Boolean  = false
+    var enabled: Boolean  = true
 
     fun d(tag: String, message: String) {
         if (!enabled) return

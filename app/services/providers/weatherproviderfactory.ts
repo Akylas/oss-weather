@@ -143,7 +143,7 @@ export function getCachedWeather(providerId: string, weatherLocation: WeatherLoc
 
         // Check if cache is still valid (less than 1 minute old)
         const cacheAge = Date.now() - cachedData.time;
-        DEV_LOG && console.log('getCachedWeather', cacheKey, cacheAge, maxAge);
+        // DEV_LOG && console.log('getCachedWeather', cacheKey, cacheAge, maxAge);
         if (maxAge > 0 && cacheAge > maxAge) {
             // Cache expired, remove it
             ApplicationSettings.remove(cacheKey);
@@ -204,7 +204,7 @@ export async function getWeather(weatherLocation: WeatherLocation, options?: Get
 
     // Try to get from cache first
     const cachedData = getCachedWeather(providerId, weatherLocation, options);
-    DEV_LOG && console.log('getWeather', providerId, weatherLocation.coord, weatherLocation.timezone, weatherLocation.timezoneOffset, !!cachedData);
+    DEV_LOG && console.log('getWeather', providerId, weatherLocation.coord, weatherLocation.timezone, weatherLocation.timezoneOffset, !!cachedData, new Error().stack);
     if (cachedData) {
         return cachedData;
     }

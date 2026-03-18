@@ -20,6 +20,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
 
 object WidgetComposables {
 
@@ -121,13 +122,29 @@ object WidgetComposables {
     fun WidgetBackground(
         enabled: Boolean = true,
         modifier: GlanceModifier = GlanceModifier,
-        content: @Composable () -> Unit
+        color: ColorProvider? = GlanceTheme.colors.widgetBackground,
+        content: @Composable () -> Unit,
     ) {
+        val context = LocalContext.current
+        val providedColor = color ?: GlanceTheme.colors.widgetBackground
+        val composeColor = providedColor.getColor(context)
+        val alpha = if (composeColor != null) composeColor.alpha else 1f
+
+        // If we could extract the color, split alpha and tint color (tint must not carry alpha)
+        val tintColorProvider = if (composeColor != null) {
+            val tintColor = Color(red = composeColor.red, green = composeColor.green, blue = composeColor.blue, alpha = 1f)
+            ColorProvider(tintColor)
+        } else {
+            // fallback: use provided color as tint (may ignore any alpha)
+            providedColor
+        }
+        
         Box(
             modifier = modifier.fillMaxSize().then(
                 if (enabled) GlanceModifier.background(
                     imageProvider = ImageProvider(R.drawable.app_widget_background),
-                    colorFilter = ColorFilter.tint(GlanceTheme.colors.widgetBackground)
+                    alpha = alpha,
+                    colorFilter = ColorFilter.tint(tintColorProvider)
                 ) else GlanceModifier
             )
         ) {

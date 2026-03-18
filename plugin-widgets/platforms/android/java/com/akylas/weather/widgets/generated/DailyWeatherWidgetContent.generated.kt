@@ -3,7 +3,6 @@ package com.akylas.weather.widgets.generated
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -31,6 +30,7 @@ import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
+import com.akylas.weather.widgets.toColorIntRgba
 import kotlin.math.min
 import kotlinx.serialization.json.*
 
@@ -83,7 +83,7 @@ private fun ErrorPreview() {
 fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
-    val widgetColor = GlanceTheme.colors.onSurface
+    val widgetColor = run { val colorValue = when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull }; if (colorValue is String) ColorProvider(Color(colorValue.toColorIntRgba())) else GlanceTheme.colors.onSurface }
 
     Column(
         modifier = GlanceModifier,
@@ -107,7 +107,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 )
                 Text(
                     text = data.temperature,
-                    style = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold, color = widgetColor)
                 )
             }
             Spacer(modifier = GlanceModifier.defaultWeight())
@@ -171,7 +171,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                         ) {
                             Text(
                                 text = item.day,
-                                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = GlanceTheme.colors.onSurface),
+                                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Medium, color = widgetColor),
                                 maxLines = 1
                             )
                             Spacer(modifier = GlanceModifier.defaultWeight())
@@ -195,7 +195,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                 ) {
                                     Text(
                                         text = item.temperatureHigh,
-                                        style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface),
+                                        style = TextStyle(fontSize = 13.sp, fontWeight = FontWeight.Bold, color = widgetColor),
                                         maxLines = 1
                                     )
                                     Spacer(modifier = GlanceModifier.width(6.dp))

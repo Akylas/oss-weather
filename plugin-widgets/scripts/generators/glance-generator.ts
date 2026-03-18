@@ -128,7 +128,7 @@ function wrapColorParsingKotlin(colorExpr: string): string {
         const settingsPattern = /config\.settings\?\.get\([^)]+\)\?\.jsonPrimitive\?\.contentOrNull/g;
         if (settingsPattern.test(colorExpr)) {
             // Store the expression result in a variable, then check if it's a string (hex color) and parse it
-            return `run { val colorValue = ${colorExpr}; if (colorValue is String) ColorProvider(Color(colorValue.toColorInt())) else GlanceTheme.colors.onSurface }`;
+            return `run { val colorValue = ${colorExpr}; if (colorValue is String) ColorProvider(Color(colorValue.toColorIntRgba())) else GlanceTheme.colors.onSurface }`;
         }
     }
     return colorExpr;
@@ -957,7 +957,6 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import android.annotation.SuppressLint');
     lines.push('import androidx.compose.runtime.Composable');
     lines.push('import androidx.compose.ui.graphics.Color');
-    lines.push('import androidx.core.graphics.toColorInt');
     lines.push('import androidx.compose.ui.unit.dp');
     lines.push('import androidx.compose.ui.unit.sp');
     lines.push('import androidx.glance.GlanceModifier');
@@ -976,12 +975,13 @@ function generateKotlinFile(layout: WidgetLayout): string {
     lines.push('import androidx.glance.text.TextAlign');
     lines.push('import androidx.glance.text.TextStyle');
     lines.push('import androidx.glance.unit.ColorProvider');
+    lines.push('import androidx.glance.preview.ExperimentalGlancePreviewApi');
+    lines.push('import androidx.glance.preview.Preview');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetData');
     lines.push('import com.akylas.weather.widgets.WeatherWidgetManager');
     lines.push('import com.akylas.weather.widgets.WidgetTheme');
     lines.push('import com.akylas.weather.widgets.WidgetConfig');
-    lines.push('import androidx.glance.preview.ExperimentalGlancePreviewApi');
-    lines.push('import androidx.glance.preview.Preview');
+    lines.push('import com.akylas.weather.widgets.toColorIntRgba');
     if (needsHourlyData) {
         lines.push('import com.akylas.weather.widgets.HourlyData');
     }

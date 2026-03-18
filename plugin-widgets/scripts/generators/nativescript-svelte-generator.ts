@@ -312,7 +312,6 @@ function evaluateMapboxExpression(expr: any, context: string = 'data', usedColor
             } else if (theOp === '!=') {
                 theOp = '!==';
             }
-            console.log('test', `${left} ${theOp} ${right}`)
             return `${left} ${theOp} ${right}`;
         }
         case '+':
@@ -1330,7 +1329,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         if (match) {
             const colorExpr = match[1] || match[2];
             // Add widgetColor const declaration after script imports
-            script += `    const widgetColor = ${colorExpr};\n`;
+            script += `    $: widgetColor = ${colorExpr};\n`;
             defaultColorRef = 'widgetColor';
         }
     }

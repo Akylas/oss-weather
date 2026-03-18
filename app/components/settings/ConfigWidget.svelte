@@ -8,7 +8,7 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import ListItemAutoSize from '~/components/common/ListItemAutoSize.svelte';
     import { lc } from '~/helpers/locale';
-    import { WeatherLocation } from '~/services/api';
+    import { WeatherLocation, geocodeAddress } from '~/services/api';
     import { OpenMeteoModels } from '~/services/providers/om';
     import { getProviderType, providers } from '~/services/providers/weatherproviderfactory';
     import { hideLoading, selectValue, showPopoverMenu } from '~/utils/ui';
@@ -24,17 +24,8 @@
     import { onThemeChanged } from '~/helpers/theme';
     import { queryTimezone } from '~/helpers/favorites';
     import { confirm } from '@nativescript-community/ui-material-dialogs';
+    import { pickColor } from '@nativescript-community/ui-color';
 
-    // Load sample data helper
-    // async function loadWidgetSample(widgetClass: string, setName: string = 'default'): Promise<WeatherWidgetData> {
-    //     try {
-    //         const sampleData = (await import(`plugin-widgets/widgets/samples/${widgetClass}.sample.json`)).default;
-    //         return sampleData[setName] || sampleData.default || null;
-    //     } catch (error) {
-    //         console.error(`Failed to load sample for ${widgetClass}:`, error, error.stack);
-    //         return null;
-    //     }
-    // }
     // Load sample data helper
     async function loadWidgetData(widgetClass: string): Promise<any> {
         const data = (await import(`plugin-widgets/widgets/${widgetClass}.json`)).default;
@@ -43,8 +34,8 @@
 </script>
 
 <script lang="ts">
-    let { colorOnBackground, colorOnSurface, colorOnSurfaceVariant, colorPrimary, colorSurfaceContainer } = $colors;
-    $: ({ colorOnBackground, colorOnSurface, colorOnSurfaceVariant, colorPrimary, colorSurfaceContainer } = $colors);
+    let { colorOnBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary, colorSurfaceContainer, colorWidgetBackground } = $colors;
+    $: ({ colorOnBackground, colorOnSurface, colorOnSurfaceVariant, colorOutline, colorPrimary, colorSurfaceContainer, colorWidgetBackground } = $colors);
 
     // Props
     export let widgetClass: string = '';
@@ -57,8 +48,8 @@
 
     // State
     let config: WidgetConfig = null;
-    // let updateFrequency: number = DEFAULT_UPDATE_FREQUENCY;
     let previewData: WeatherWidgetData = null;
+    let actualPreviewData: WeatherWidgetData = null;
     let previewConfig: {
         name: string;
         displayName: string;
@@ -67,10 +58,17 @@
         preview: { sizes: { width: number; height: number }[]; fakeData: WeatherWidgetData };
         settings?: Record<string, any>;
     } = null;
-    const previewSet: string = 'default';
+    // const previewSet: string = 'default';
     let previewSize: { width: number; height: number } = null;
     loadConfig();
 
+    $: {
+        if (previewData) {
+            actualPreviewData = Object.assign({}, previewData, { locationName: config?.locationName });
+        } else {
+            actualPreviewData = null;
+        }
+    }
     function getWidgetTitle(): string {
         if (widgetClass && WIDGET_NAMES[widgetClass]) {
             const baseName = WIDGET_NAMES[widgetClass];
@@ -108,9 +106,11 @@
             // Load per-instance config
             config = WidgetConfigManager.getConfig(widgetId);
         }
+        config.settings = config.settings || {};
     }
 
     function saveConfig() {
+        DEV_LOG && console.log('saveConfig', isKindConfig, config);
         if (isKindConfig) {
             // Save per-kind default config
             WidgetConfigManager.saveKindConfig(widgetClass, config);
@@ -121,7 +121,7 @@
             showSnack({ message: lc('widget_config_saved') });
 
             // Trigger widget update
-            widgetService.updateWidget(widgetId);
+            // widgetService.updateWidget(widgetId);
         }
     }
 
@@ -155,14 +155,20 @@
 
     async function selectLocationOnMap(item) {
         const SelectPositionOnMap = (await import('~/components/SelectPositionOnMap.svelte')).default;
-        const result: WeatherLocation = await showModal({
+        const location: {
+            lat: number;
+            lon: number;
+        } = await showModal({
             page: SelectPositionOnMap,
+            animated: true,
             fullscreen: true,
             props: {
                 focusPos: config.latitude && config.longitude ? { lat: config.latitude, lon: config.longitude } : undefined
             }
         });
-        if (result) {
+        if (location) {
+            const result = await geocodeAddress(location);
+            DEV_LOG && console.log('selectLocationOnMap', result);
             config.locationName = result.name;
             config.latitude = result.coord.lat;
             config.longitude = result.coord.lon;
@@ -175,8 +181,8 @@
 
     function useCurrentLocation() {
         config.locationName = 'current';
-        config.latitude = null;
-        config.longitude = null;
+        config.latitude = 0;
+        config.longitude = 0;
         saveConfig();
     }
 
@@ -364,6 +370,28 @@
     $: DEV_LOG && console.log('previewData', JSON.stringify(previewData));
     $: DEV_LOG && console.log('widgetSize', widgetSize);
 
+    async function changeColor(item, event) {
+        try {
+            const newColor = await pickColor(item.color, { anchor: event.object });
+            if (newColor) {
+                item.color = newColor.hex;
+                config.settings[item.id] = item.color;
+                config = config;
+                saveConfig();
+                updateItem(item);
+            }
+        } catch (error) {
+            showError(error);
+        }
+    }
+    async function clearColor(item, event) {
+        item.color = item.id === 'color' ? colorOnSurface : colorWidgetBackground;
+        delete config.settings[item.id];
+        config = config;
+        saveConfig();
+        updateItem(item);
+    }
+
     async function refresh() {
         const newItems = (
             [
@@ -381,7 +409,14 @@
         )
             .concat(isKindConfig ? [{ type: 'sectionheader', title: lc('default_widget_settings_note') }] : [])
             .concat([
-                { type: 'rightIcon', id: 'location', rightBtnIcon: 'mdi-map', title: lc('location_name'), description: getLocationDescription, onRightIconTap: selectLocationOnMap },
+                {
+                    type: 'rightIcon',
+                    id: 'location',
+                    rightBtnIcon: 'mdi-map',
+                    title: lc('location_name'),
+                    description: getLocationDescription,
+                    onRightIconTap: selectLocationOnMap
+                },
                 {
                     type: 'sectionheader',
                     title: lc('providers')
@@ -408,6 +443,18 @@
                 id: 'transparent',
                 title: lc('widget_transparent_background'),
                 value: config.settings?.['transparent'] ?? false
+            },
+            {
+                type: 'color',
+                id: 'backgroundColor',
+                title: lc('background_color'),
+                color: config.settings?.['backgroundColor'] ?? colorWidgetBackground
+            },
+            {
+                type: 'color',
+                id: 'color',
+                title: lc('text_color'),
+                color: config.settings?.['color'] ?? colorOnSurface
             }
         );
         if (previewConfig.settings) {
@@ -467,10 +514,10 @@
                     // TODO: implement
                     // ApplicationSettings.setBoolean(item.key || item.id, value);
                     DEV_LOG && console.log('onCheckBox', config.settings, typeof config.settings);
-                    // config.settings = config.settings || {};
-                    // config.settings[item.id] = value;
+                    config.settings = config.settings || {};
+                    config.settings[item.id] = value;
 
-                    config.settings = { [item.id]: value };
+                    // config.settings = { [item.id]: value };
 
                     config = config;
                     saveConfig();
@@ -559,13 +606,22 @@
     function getDescription(item) {
         return typeof item.description === 'function' ? item.description(item) : item.description;
     }
+    $: DEV_LOG && console.log('config', JSON.stringify(config));
+    $: DEV_LOG && console.log('backgroundColor', config?.settings?.transparent ? 'transparent' : (config?.settings?.backgroundColor ?? colorWidgetBackground));
 </script>
 
 <page actionBarHidden={true}>
     <gridlayout class="pageContent" rows="auto,auto,*">
         <!-- Preview Section -->
         {#if widgetComponent && previewData && previewSize}
-            <svelte:component this={widgetComponent} backgroundColor={colorSurfaceContainer} borderRadius={10} {config} data={previewData} horizontalAlignment="center" row={1} size={widgetSize} />
+            <svelte:component
+                this={widgetComponent}
+                backgroundColor={config?.settings?.transparent ? '#ffffff00' : (config?.settings?.backgroundColor ?? colorWidgetBackground)}
+                {config}
+                data={actualPreviewData}
+                horizontalAlignment="center"
+                row={1}
+                size={widgetSize} />
         {/if}
         <collectionview bind:this={collectionView} itemTemplateSelector={selectTemplate} {items} row={2} android:paddingBottom={$windowInset.bottom}>
             <Template key="sectionheader" let:item>
@@ -600,6 +656,15 @@
                     showBottomLine={false}
                     on:tap={(event) => onTap(item, event)}>
                     <label col={0} color={colorOnBackground} fontFamily={$fonts.mdi} fontSize={24} padding="0 10 0 0" text={item.icon} verticalAlignment="center" />
+                </ListItemAutoSize>
+            </Template>
+            <Template key="color" let:item>
+                <ListItemAutoSize
+                    fontSize={20}
+                    item={{ ...item, title: getTitle(item), subtitle: getDescription(item), color: null }}
+                    onLongPress={(event) => clearColor(item, event)}
+                    on:tap={(e) => changeColor(item, e)}>
+                    <absolutelayout backgroundColor={item.color} borderColor={colorOutline} borderRadius="50%" borderWidth={2} col={1} height={40} marginLeft={10} width={40} />
                 </ListItemAutoSize>
             </Template>
             <Template key="image" let:item>

@@ -16,6 +16,9 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.*
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
 import kotlinx.serialization.json.*
+import androidx.compose.ui.graphics.Color
+import com.akylas.weather.widgets.toColorIntRgba
+import androidx.glance.unit.ColorProvider
 
 private const val LOG_TAG = "SimpleWeatherWithClockWidget"
 
@@ -42,15 +45,20 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
             val widgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
 
             // Observe widget data from StateFlow - triggers automatic recomposition
-            val widgetData by WidgetDataStore.getWidgetDataFlow(widgetId).collectAsState()
+            val widgetDataWithVersion by WidgetDataStore.getWidgetDataFlow(widgetId).collectAsState()
+            val widgetData = widgetDataWithVersion.first
             
             // Observe only this widget's settings - prevents unnecessary recomposition from other widgets
             val widgetSettings by WidgetConfigStore.getWidgetSettingsFlow(widgetId).collectAsState()
             val widgetConfig = WidgetConfig(settings = widgetSettings)
-            WidgetsLogger.d(LOG_TAG, "provideGlance(glanceId=$id) widgetSettings=$widgetSettings TEST=${widgetSettings?.get("clockBold")?.jsonPrimitive?.booleanOrNull}")
+      
+            val backgroundColor = widgetConfig.settings?.get("backgroundColor")?.jsonPrimitive?.contentOrNull
 
             GlanceTheme(colors = WidgetTheme.colors) {
-                WidgetComposables.WidgetBackground(enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false)) {
+                WidgetComposables.WidgetBackground(
+                    enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false),
+                    color = if (backgroundColor != null) ColorProvider(Color(backgroundColor.toColorIntRgba())) else null
+                ) {
                     if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
                     } else if (widgetData!!.loadingState == WidgetLoadingState.LOADING) {

@@ -3,7 +3,6 @@ package com.akylas.weather.widgets.generated
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.core.graphics.toColorInt
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceModifier
@@ -30,6 +29,7 @@ import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
+import com.akylas.weather.widgets.toColorIntRgba
 import kotlin.math.min
 import kotlinx.serialization.json.*
 
@@ -82,7 +82,7 @@ private fun ErrorPreview() {
 fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
-    val widgetColor = GlanceTheme.colors.onSurface
+    val widgetColor = run { val colorValue = when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull }; if (colorValue is String) ColorProvider(Color(colorValue.toColorIntRgba())) else GlanceTheme.colors.onSurface }
 
     if (size.width.value < 120) {
         Column(
@@ -106,7 +106,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 }
                 Text(
                     text = data.temperature,
-                    style = TextStyle(fontSize = (size.width.value * 0.2f).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                    style = TextStyle(fontSize = (size.width.value * 0.2f).sp, fontWeight = FontWeight.Bold, color = widgetColor)
                 )
             }
             Text(
@@ -137,7 +137,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 ) {
                     Text(
                         text = data.temperature,
-                        style = TextStyle(fontSize = (min((size.width.value * 0.26f), 30.0f)).sp, fontWeight = FontWeight.Bold, color = GlanceTheme.colors.onSurface)
+                        style = TextStyle(fontSize = (min((size.width.value * 0.26f), 30.0f)).sp, fontWeight = FontWeight.Bold, color = widgetColor)
                     )
                 }
                 Column(

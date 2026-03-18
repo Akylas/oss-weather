@@ -15,6 +15,8 @@ import android.os.Build
 import android.os.Bundle
 import android.net.Uri
 import java.util.Calendar
+// import java.util.concurrent.Executors
+// import java.util.concurrent.TimeUnit
 
 private const val LOG_TAG = "WeatherWidgetGlanceReceiver"
 
@@ -22,13 +24,24 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
 
     companion object {
         private var themeChangeReceiver: BroadcastReceiver? = null
+        // Reusable scheduler to delay theme-change updates off the immediate receiver thread
+        // private val themeScheduler = Executors.newSingleThreadScheduledExecutor()
+
          fun registerThemeChangeReceiver(context: Context) {
             if (themeChangeReceiver == null) {
                 themeChangeReceiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context, intent: Intent) {
+                        WidgetsLogger.d(LOG_TAG, "themeChangeReceiver.onReceive action=${intent.action} ")
                         if (intent.action == Intent.ACTION_CONFIGURATION_CHANGED) {
-                            // Update all widgets
+                            // Delay the update slightly to allow the system/theme to stabilize
+                            // themeScheduler.schedule({
+                            //     try {
+                            //         WidgetsLogger.d(LOG_TAG, "Running delayed updateAllWidgets")
                             updateAllWidgets(context)
+                            //     } catch (e: Exception) {
+                            //         WidgetsLogger.e(LOG_TAG, "Error during delayed updateAllWidgets", e)
+                            //     }
+                            // }, 300, TimeUnit.MILLISECONDS)
                         }
                     }
                 }

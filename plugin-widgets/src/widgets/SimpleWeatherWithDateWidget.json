@@ -10,8 +10,9 @@
         { "width": 260, "height": 120, "family": "medium" }
     ],
     "defaultPadding": 4,
+    "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "settings": {
-        "clockBold": { "type": "boolean", "default": true, "title": "bold_clock" }
+        "clockBold": { "type": "boolean", "default": false, "title": "bold_clock" }
     },
     "layout": {
         "type": "conditional",
@@ -40,8 +41,7 @@
                                     "style": "dayMonth",
                                     "fontSize": 48,
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 48],
-                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
-                                    "color": "onSurface"
+                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
                                 },
                                 {
                                     "type": "spacer",
@@ -51,7 +51,7 @@
                                     "type": "date",
                                     "style": "year",
                                     "fontSize": 14,
-                                    "color": "onSurfaceVariant"
+                                    "opacity": 0.5
                                 }
                             ]
                         },
@@ -76,7 +76,6 @@
                                     "text": ["get", "temperature"],
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
                                     "fontWeight": "bold",
-                                    "color": "onSurface",
                                     "textAlign": "right"
                                 }
                             ]
@@ -139,7 +138,6 @@
                                     "type": "clock",
                                     "fontSize": ["min", ["*", ["get", "size.height"], 0.24], 40],
                                     "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
-                                    "color": "onSurface",
                                     "textAlign": ["case", ["<=", ["get", "size.height"], 50], "right", "left"]
                                 }
                             ]
@@ -164,8 +162,7 @@
                                     "type": "label",
                                     "text": ["get", "temperature"],
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
-                                    "fontWeight": "bold",
-                                    "color": "onSurface"
+                                    "fontWeight": "bold"
                                 }
                             ]
                         },

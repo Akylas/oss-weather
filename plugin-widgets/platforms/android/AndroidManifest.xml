@@ -126,12 +126,5 @@
                 <action android:name="com.akylas.weather.WIDGET_REMOVED" />
             </intent-filter>
         </receiver>
-        <!-- <receiver
-            android:name=".widgets.ThemeChangeReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
-            </intent-filter>
-        </receiver> -->
     </application>
 </manifest>

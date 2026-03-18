@@ -31,6 +31,7 @@
     --colorOnSurface: #1E1B16;
     --colorOnSurfaceInverse: #FFFBFF;
     --colorSurfaceContainer: #FFFBFF;
+    --colorWidgetBackground: #FFFBFFDD;
 
     --mdiFontFamily: #{$mdiFontFamily};
     --appFontFamily: #{$appFontFamily};
@@ -192,4 +193,10 @@ page,
     font-weight: 500;
     color: var(--colorPrimary);
     padding: 4 0 10 0;
+}
+
+.widget-container {
+    background-color: var(--colorWidgetBackground);
+    border-radius: 10;
+
 }

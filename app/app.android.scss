@@ -1,1 +1,11 @@
 @import './app.common';
+
+
+page {
+    navigation-bar-style: light;
+
+    .ns-dark &,
+    .ns-black & {
+        navigation-bar-style: dark;
+    }
+}

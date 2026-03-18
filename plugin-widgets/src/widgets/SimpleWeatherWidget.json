@@ -10,6 +10,7 @@
         { "width": 260, "height": 120, "family": "medium" }
     ],
     "defaultPadding": 6,
+    "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {
         "type": "conditional",
         "condition": ["<", ["get", "size.width"], 120],
@@ -36,8 +37,7 @@
                             "type": "label",
                             "text": ["get", "temperature"],
                             "fontSize": ["*", ["get", "size.width"], 0.2],
-                            "fontWeight": "bold",
-                            "color": "onSurface"
+                            "fontWeight": "bold"
                         }
                     ]
                 },
@@ -81,8 +81,7 @@
                                     "type": "label",
                                     "text": ["get", "temperature"],
                                     "fontSize": ["min", ["*", ["get", "size.width"], 0.26], 30],
-                                    "fontWeight": "bold",
-                                    "color": "onSurface"
+                                    "fontWeight": "bold"
                                 }
                             ]
                         },

@@ -46,6 +46,7 @@
   "auto": "auto",
   "auto_black": "Use black for auto-dark theme",
   "avalanche": "Avalanche",
+  "background_color": "background color",
   "backup_restore": "backup / restore",
   "be_extra_vigilant": "Be extra vigilant",
   "be_vigilant": "Be vigilant",
@@ -341,6 +342,7 @@
   "swipe_actionbar_provider": "actionbar swipe gesture",
   "swipe_actionbar_provider_desc": "swipe left or right on the actionbar to quickly change provider",
   "temperature": "temperature",
+  "text_color": "text color",
   "thank_you": "thank you !",
   "thank_you_subtitle": "your donation will help the project grow and give me time to implement more features",
   "theme": {

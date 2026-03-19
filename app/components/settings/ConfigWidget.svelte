@@ -109,7 +109,7 @@
         config.settings = config.settings || {};
     }
 
-    function saveConfig() {
+    function saveConfig(updateData = false) {
         DEV_LOG && console.log('saveConfig', isKindConfig, config);
         if (isKindConfig) {
             // Save per-kind default config
@@ -121,7 +121,9 @@
             showSnack({ message: lc('widget_config_saved') });
 
             // Trigger widget update
-            // widgetService.updateWidget(widgetId);
+            if (updateData) {
+                widgetService.updateWidget(widgetId);
+            }
         }
     }
 
@@ -140,7 +142,7 @@
             config.longitude = result.coord.lon;
             Object.assign(config, timezoneData);
             updateItem(item);
-            saveConfig();
+            saveConfig(true);
         }
     }
 
@@ -150,7 +152,7 @@
         config.latitude = 0;
         config.longitude = 0;
         updateItem(item);
-        saveConfig();
+        saveConfig(true);
     }
 
     async function selectLocationOnMap(item) {
@@ -175,7 +177,7 @@
             const timezoneData = await queryTimezone(result);
             Object.assign(config, timezoneData);
             updateItem(item);
-            saveConfig();
+            saveConfig(true);
         }
     }
 
@@ -183,7 +185,7 @@
         config.locationName = 'current';
         config.latitude = 0;
         config.longitude = 0;
-        saveConfig();
+        saveConfig(true);
     }
 
     async function selectProvider(item) {
@@ -200,7 +202,7 @@
             );
             if (result !== undefined) {
                 config.provider = result;
-                saveConfig();
+                saveConfig(true);
                 updateItem(item);
             }
         } catch (error) {
@@ -222,7 +224,7 @@
             });
             if (result !== undefined) {
                 config.model = result;
-                saveConfig();
+                saveConfig(true);
                 updateItem(item);
             }
         } catch (error) {
@@ -606,8 +608,6 @@
     function getDescription(item) {
         return typeof item.description === 'function' ? item.description(item) : item.description;
     }
-    $: DEV_LOG && console.log('config', JSON.stringify(config));
-    $: DEV_LOG && console.log('backgroundColor', config?.settings?.transparent ? 'transparent' : (config?.settings?.backgroundColor ?? colorWidgetBackground));
 </script>
 
 <page actionBarHidden={true}>

@@ -37,9 +37,9 @@ module.exports = (env, params = {}) => {
             globOptions,
             transform: {
                 transformer: (content, path) => {
-                    const { name, displayName, description, preview, ...rest } = JSON.parse(content.toString());
+                    const { name, displayName, description, preview, settings, ...rest } = JSON.parse(content.toString());
 
-                    return Promise.resolve(Buffer.from(JSON.stringify({ name, displayName, description, preview }), 'utf8'));
+                    return Promise.resolve(Buffer.from(JSON.stringify({ name, displayName, description, preview, settings }), 'utf8'));
                 }
             }
         }

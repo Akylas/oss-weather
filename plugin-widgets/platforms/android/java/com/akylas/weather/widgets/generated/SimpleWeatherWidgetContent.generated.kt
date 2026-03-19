@@ -94,7 +94,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
             ) {
-                if (data.iconPath.isNotEmpty()) {
+                if ("iconPath" != null) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
@@ -143,7 +143,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     horizontalAlignment = Alignment.Horizontal.End,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                 ) {
-                    if (data.iconPath.isNotEmpty()) {
+                    if ("iconPath" != null) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                             Image(
                                provider = provider,
@@ -154,7 +154,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     }
                 }
             }
-            if (data.description.isNotEmpty()) {
+            if ("description" != null) {
                 Box(
                     modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                     contentAlignment = Alignment.BottomEnd

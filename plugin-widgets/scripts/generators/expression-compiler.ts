@@ -189,7 +189,8 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
             return compileGet(args[0], platform, addDataPrefix, settingType);
 
         case 'has':
-            return compileHas(args[0], platform, addDataPrefix);
+            const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+            return `${a} != null`;
 
         // Arithmetic
         case '+':

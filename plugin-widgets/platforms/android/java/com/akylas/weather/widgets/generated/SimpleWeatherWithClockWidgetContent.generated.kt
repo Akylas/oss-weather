@@ -39,7 +39,7 @@ import kotlinx.serialization.json.*
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 120)
+@Preview(widthDp = 260, heightDp = 140)
 @Preview(widthDp = 120, heightDp = 50)
 @Preview(widthDp = 80, heightDp = 80)
 @Preview(widthDp = 120, heightDp = 120)
@@ -83,7 +83,7 @@ private fun ErrorPreview() {
 fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     val context = LocalContext.current
     val size = LocalSize.current
-    val widgetColor = run { val colorValue = when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull }; if (colorValue is String) ColorProvider(Color(colorValue.toColorIntRgba())) else GlanceTheme.colors.onSurface }
+    val widgetColor = run { val colorValue = when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull != null -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull; else -> GlanceTheme.colors.onSurface }; if (colorValue is String) ColorProvider(Color(colorValue.toColorIntRgba())) else GlanceTheme.colors.onSurface }
 
     Column(
         modifier = GlanceModifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 6.dp),
@@ -112,7 +112,7 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                 style = TextStyle(fontSize = (min((size.width.value * 0.17f), 62.0f)).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, color = widgetColor)
             )
             Spacer(modifier = GlanceModifier.defaultWeight())
-            if (data.iconPath.isNotEmpty()) {
+            if ("iconPath" != null) {
                 WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                     Image(
                        provider = provider,
@@ -129,7 +129,7 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                 text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
                 style = TextStyle(fontSize = 14.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
             )
-            if (data.description.isNotEmpty()) {
+            if ("description" != null) {
                 Text(
                     modifier = GlanceModifier.defaultWeight(),
                     text = data.description,

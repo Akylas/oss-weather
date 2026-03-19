@@ -39,7 +39,7 @@ import kotlinx.serialization.json.*
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 120)
+@Preview(widthDp = 260, heightDp = 140)
 @Preview(widthDp = 120, heightDp = 50)
 @Preview(widthDp = 80, heightDp = 80)
 @Preview(widthDp = 120, heightDp = 120)
@@ -120,7 +120,7 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 style = TextStyle(fontSize = (min((size.width.value * 0.17f), 62.0f)).sp, color = widgetColor, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal })
             )
             Spacer(modifier = GlanceModifier.defaultWeight())
-            if (data.iconPath.isNotEmpty()) {
+            if ("iconPath" != null) {
                 WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                     Image(
                        provider = provider,
@@ -137,7 +137,7 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 text = android.text.format.DateFormat.format("yyyy", java.util.Date()).toString(),
                 style = TextStyle(fontSize = 14.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
             )
-            if (data.description.isNotEmpty()) {
+            if ("description" != null) {
                 Text(
                     modifier = GlanceModifier.defaultWeight(),
                     text = data.description,

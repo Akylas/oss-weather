@@ -118,7 +118,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 horizontalAlignment = Alignment.Horizontal.End,
                 verticalAlignment = Alignment.Vertical.Bottom,
             ) {
-                if (data.iconPath.isNotEmpty()) {
+                if ("data.iconPath" != null) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
@@ -127,7 +127,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         )
                     }
                 }
-                if (data.description.isNotEmpty()) {
+                if ("data.description" != null) {
                     Text(
                         text = data.description,
                         style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End),
@@ -182,7 +182,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(2.dp))
-                    if (item.precipAccumulation.isNotEmpty()) {
+                    if ("item.precipAccumulation" != null) {
                         Text(
                             text = item.precipAccumulation,
                             style = TextStyle(fontSize = 9.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
@@ -268,14 +268,14 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                                     horizontalAlignment = Alignment.Horizontal.End,
                                     verticalAlignment = Alignment.Vertical.CenterVertically,
                                 ) {
-                                    if (item.precipAccumulation.isNotEmpty()) {
+                                    if ("item.precipAccumulation" != null) {
                                         Text(
                                             text = item.precipAccumulation,
                                             style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
-                                    if (item.precipitation.isNotEmpty()) {
+                                    if ("item.precipitation" != null) {
                                         Text(
                                             text = "💧" + item.precipitation,
                                             style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))

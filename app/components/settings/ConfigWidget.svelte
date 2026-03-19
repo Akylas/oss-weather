@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
-    import { ObservableArray, Screen, View } from '@nativescript/core';
+    import { ObservableArray, Page, Screen, View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';
     import { showModal } from '@shared/utils/svelte/ui';
     import { WIDGET_NAMES, WeatherWidgetData, WidgetConfig, WidgetConfigManager, isDefaultLocation, widgetService } from 'plugin-widgets';
@@ -45,6 +45,7 @@
     export let onMenuIcon = null;
 
     let collectionView: NativeViewElementNode<CollectionView>;
+    let page: NativeViewElementNode<Page>;
 
     // State
     let config: WidgetConfig = null;
@@ -130,6 +131,7 @@
     async function selectLocation(item) {
         const SelectCity = (await import('~/components/SelectCity.svelte')).default;
         const result: WeatherLocation = await showModal({
+            target: page,
             page: SelectCity,
             fullscreen: true,
             props: {}
@@ -161,6 +163,7 @@
             lat: number;
             lon: number;
         } = await showModal({
+            target: page,
             page: SelectPositionOnMap,
             animated: true,
             fullscreen: true,
@@ -478,7 +481,7 @@
             });
         }
         newItems.push({
-            description:  (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
+            description: isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note')
         });
         // items = new ObservableArray(newItems)
         items.splice(0, items.length, ...newItems);
@@ -610,7 +613,7 @@
     }
 </script>
 
-<page actionBarHidden={true}>
+<page bind:this={page} actionBarHidden={true}>
     <gridlayout class="pageContent" rows="auto,auto,*">
         <!-- Preview Section -->
         {#if widgetComponent && previewData && previewSize}

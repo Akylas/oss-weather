@@ -39,11 +39,10 @@ import kotlinx.serialization.json.*
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 140)
-@Preview(widthDp = 120, heightDp = 50)
-@Preview(widthDp = 80, heightDp = 80)
-@Preview(widthDp = 120, heightDp = 120)
-@Preview(widthDp = 260, heightDp = 260)
+@Preview(widthDp = 260, heightDp = 130)
+@Preview(widthDp = 150, heightDp = 100)
+@Preview(widthDp = 100, heightDp = 100)
+@Preview(widthDp = 350, heightDp = 260)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(

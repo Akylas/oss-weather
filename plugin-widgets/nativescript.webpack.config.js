@@ -52,7 +52,6 @@ module.exports = (env, params = {}) => {
                 //     return cb(null, join('plugin-widgets/widgets/data/samples', basename(request)));
                 // }
                 if (/plugin-widgets\/src\/widgets/i.test(context)) {
-                    console.log('external', context)
                     return cb(null, join('~/plugin-widgets/widgets', basename(request)));
                 }
                 cb();

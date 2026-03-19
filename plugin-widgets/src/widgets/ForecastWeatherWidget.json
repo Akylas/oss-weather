@@ -3,10 +3,6 @@
     "name": "ForecastWeatherWidget",
     "displayName": "Detailed Forecast",
     "description": "Shows current weather, hourly and daily forecasts",
-    "supportedSizes": [
-        { "width": 160, "height": 300, "family": "large" },
-        { "width": 260, "height": 400, "family": "large" }
-    ],
     "defaultPadding": 8,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {

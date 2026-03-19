@@ -3,28 +3,6 @@
     "name": "HourlyWeatherWidget",
     "displayName": "Hourly Forecast",
     "description": "Shows hourly weather forecast with icons and temperatures",
-    "supportedSizes": [
-        {
-            "width": 260,
-            "height": 60,
-            "family": "medium"
-        },
-        {
-            "width": 260,
-            "height": 80,
-            "family": "medium"
-        },
-        {
-            "width": 260,
-            "height": 120,
-            "family": "medium"
-        },
-        {
-            "width": 360,
-            "height": 180,
-            "family": "large"
-        }
-    ],
     "defaultPadding": 6,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {

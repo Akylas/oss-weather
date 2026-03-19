@@ -3,12 +3,6 @@
     "name": "SimpleWeatherWidget",
     "displayName": "Simple Weather",
     "description": "Shows current temperature, weather icon, and location",
-    "supportedSizes": [
-        { "width": 50, "height": 50, "family": "small" },
-        { "width": 80, "height": 80, "family": "small" },
-        { "width": 120, "height": 120, "family": "small" },
-        { "width": 260, "height": 120, "family": "medium" }
-    ],
     "defaultPadding": 6,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {

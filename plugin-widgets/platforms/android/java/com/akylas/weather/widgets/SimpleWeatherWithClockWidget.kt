@@ -17,7 +17,7 @@ import androidx.glance.layout.*
 import com.akylas.weather.widgets.WeatherWidgetGlanceReceiver.Companion.registerThemeChangeReceiver
 import kotlinx.serialization.json.*
 import androidx.compose.ui.graphics.Color
-import com.akylas.weather.widgets.toColorIntRgba
+import androidx.core.graphics.toColorInt
 import androidx.glance.unit.ColorProvider
 
 private const val LOG_TAG = "SimpleWeatherWithClockWidget"
@@ -26,9 +26,14 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
 
     override val sizeMode = SizeMode.Responsive(
         setOf(
-            DpSize(80.dp, 80.dp),
-            DpSize(120.dp, 120.dp),
-            DpSize(180.dp, 120.dp)
+            DpSize(100.dp, 100.dp),
+            DpSize(150.dp, 100.dp),
+            DpSize(200.dp, 100.dp),
+            DpSize(200.dp, 200.dp),
+            DpSize(250.dp, 100.dp),
+            DpSize(250.dp, 200.dp),
+            DpSize(300.dp, 100.dp),
+            DpSize(300.dp, 200.dp),
         )
     )
 
@@ -47,6 +52,16 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
             // Observe widget data from StateFlow - triggers automatic recomposition
             val widgetDataWithVersion by WidgetDataStore.getWidgetDataFlow(widgetId).collectAsState()
             val widgetData = widgetDataWithVersion.first
+
+//            val widgetData = WeatherWidgetData(
+//                temperature = "8°",
+//                iconPath = "icon_themes/meteocons/images/800d.png",
+//                description = "Partly Cloudy",
+//                locationName = "Grenoble",
+//                date = "Mon, Feb 24",
+//                lastUpdate = System.currentTimeMillis(),
+//                loadingState = WidgetLoadingState.LOADED
+//            )
             
             // Observe only this widget's settings - prevents unnecessary recomposition from other widgets
             val widgetSettings by WidgetConfigStore.getWidgetSettingsFlow(widgetId).collectAsState()

@@ -20,6 +20,7 @@ import WeatherPage from '~/components/WeatherPage.svelte';
 import { start as startThemeHelper } from '~/helpers/theme';
 
 import { networkService } from './services/api';
+import { navigate } from '@shared/utils/svelte/ui';
 
 try {
     startSentry();
@@ -113,7 +114,7 @@ try {
     // navigate({
     //     page: ConfigWidget,
     //     props: {
-    //         widgetClass: 'ForecastWeatherWidget',
+    //         widgetClass: 'SimpleWeatherWithClockWidget',
     //         widgetId: null,
     //         modalMode: true,
     //         isKindConfig: true

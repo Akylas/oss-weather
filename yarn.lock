@@ -2467,10 +2467,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-color@npm:1.0.5":
-  version: 1.0.5
-  resolution: "@nativescript-community/ui-color@npm:1.0.5"
-  checksum: 10/047528ad15aebb888b6da5f10f80b20d92d79b837c03f374f9b2cf467e6b4980177168149e68198449036484982d50e7cd30601060893bdbe2bcf8e3672b5e84
+"@nativescript-community/ui-color@npm:1.0.6":
+  version: 1.0.6
+  resolution: "@nativescript-community/ui-color@npm:1.0.6"
+  checksum: 10/8ae452019d463f8e30d30a4b0257bda042cac69d1c2ce26e404f4423597ad3947417a9ba992f3c5ddcace26cb714039672cebb089a9d73b0f173d3e545e96e2b
   languageName: node
   linkType: hard
 
@@ -13181,7 +13181,7 @@ __metadata:
     "@nativescript-community/ui-checkbox": "npm:2.0.18"
     "@nativescript-community/ui-collectionview": "npm:6.0.17"
     "@nativescript-community/ui-collectionview-swipemenu": "npm:6.0.17"
-    "@nativescript-community/ui-color": "npm:1.0.5"
+    "@nativescript-community/ui-color": "npm:1.0.6"
     "@nativescript-community/ui-document-picker": "npm:1.1.29"
     "@nativescript-community/ui-drawer": "npm:0.1.31"
     "@nativescript-community/ui-image": "npm:5.0.14"

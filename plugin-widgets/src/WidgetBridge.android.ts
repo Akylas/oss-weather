@@ -18,16 +18,15 @@ export class WidgetBridge extends WidgetBridgeBase {
 
     constructor() {
         super();
+
+        const widgetManager = com.akylas.weather.widgets.WeatherWidgetManager;
+        const context = Utils.android.getApplicationContext();
         this.dataManager = new WidgetDataManager();
 
-        // Load cache timeout from settings
-        try {
-            const cacheTimeoutSeconds = WidgetConfigManager.getCacheTimeout();
-            this.cacheTimeoutMs = cacheTimeoutSeconds * 1000;
-            // DEV_LOG && console.log('[WidgetBridge] Initialized with cache timeout:', this.cacheTimeoutMs, 'ms');
-        } catch (error) {
-            console.error('[WidgetBridge] Failed to load cache timeout:', error, error.stack);
-        }
+        widgetManager.checkActiveWidgets(context);
+
+        const cacheTimeoutSeconds = WidgetConfigManager.getCacheTimeout();
+        this.cacheTimeoutMs = cacheTimeoutSeconds * 1000;
     }
 
     /**

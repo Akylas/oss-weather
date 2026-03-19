@@ -12,16 +12,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { compileExpression, compilePropertyValue as compilePropValue, Expression } from './expression-compiler';
-import {
-    BaseLayoutElement,
-    getSingleBinding,
-    getSettingKey,
-    hasTemplateBinding,
-    isExpression,
-    isSettingReference,
-    toPlatformFontWeight
-} from './shared-utils';
+import { Expression, compileExpression, compilePropertyValue as compilePropValue } from './expression-compiler';
+import { BaseLayoutElement, getSettingKey, getSingleBinding, hasTemplateBinding, isExpression, isSettingReference, toPlatformFontWeight } from './shared-utils';
 import { DEFAULT_COLOR_MAPS } from './modifier-builders';
 import { compilePropertyValue } from './expression-compiler';
 
@@ -42,7 +34,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
@@ -186,10 +177,14 @@ function toSwiftFontWeight(weight?: Expression, fallback: string = 'normal'): st
 
     // Use compileExpression for all non-literal values (expressions, config.settings, etc.)
     if (isExpression(weight)) {
-        return compilePropValue(weight, {
-            platform: 'swift',
-            formatter: (v: string) => toPlatformFontWeight(v, 'swift')
-        }, toPlatformFontWeight(fallback, 'swift'));
+        return compilePropValue(
+            weight,
+            {
+                platform: 'swift',
+                formatter: (v: string) => toPlatformFontWeight(v, 'swift')
+            },
+            toPlatformFontWeight(fallback, 'swift')
+        );
     }
 
     // Handle string literals (including numeric weight values like '700')
@@ -226,10 +221,14 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
                 context: 'value',
                 formatter: (v: string) => {
                     switch (v) {
-                        case 'start': return '.leading';
-                        case 'end': return '.trailing';
-                        case 'center': return '.center';
-                        default: return '.center';
+                        case 'start':
+                            return '.leading';
+                        case 'end':
+                            return '.trailing';
+                        case 'center':
+                            return '.center';
+                        default:
+                            return '.center';
                     }
                 }
             });
@@ -237,11 +236,16 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
         }
         const h = (hAlign as string) || 'center';
         switch (h) {
-            case 'start': return '.leading';
-            case 'center': return '.center';
-            case 'end': return '.trailing';
-            case 'stretch': return '.leading';
-            default: return '.center';
+            case 'start':
+                return '.leading';
+            case 'center':
+                return '.center';
+            case 'end':
+                return '.trailing';
+            case 'stretch':
+                return '.leading';
+            default:
+                return '.center';
         }
     } else {
         // For HStack: crossAlignment is vertical
@@ -252,10 +256,14 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
                 context: 'value',
                 formatter: (v: string) => {
                     switch (v) {
-                        case 'start': return '.top';
-                        case 'end': return '.bottom';
-                        case 'center': return '.center';
-                        default: return '.center';
+                        case 'start':
+                            return '.top';
+                        case 'end':
+                            return '.bottom';
+                        case 'center':
+                            return '.center';
+                        default:
+                            return '.center';
                     }
                 }
             });
@@ -263,10 +271,14 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
         }
         const v = (vAlign as string) || 'center';
         switch (v) {
-            case 'start': return '.top';
-            case 'center': return '.center';
-            case 'end': return '.bottom';
-            default: return '.center';
+            case 'start':
+                return '.top';
+            case 'center':
+                return '.center';
+            case 'end':
+                return '.bottom';
+            default:
+                return '.center';
         }
     }
 }
@@ -442,7 +454,7 @@ function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void 
         // container element itself it means it should expand. Use layoutPriority for this.
         allMods.push('.layoutPriority(1)');
     }
-    
+
     // Add opacity modifier (only this new modifier to avoid duplicates)
     if (element.opacity !== undefined) {
         const opacityExpr = compilePropertyValue(element.opacity, {
@@ -658,7 +670,7 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
             });
             lines.push(`${indent}    .multilineTextAlignment(${compiled})`);
         } else {
-            const align = element.textAlign === 'center' ? 'center' : (element.textAlign === 'right' || element.textAlign === 'end') ? 'trailing' : 'leading';
+            const align = element.textAlign === 'center' ? 'center' : element.textAlign === 'right' || element.textAlign === 'end' ? 'trailing' : 'leading';
             lines.push(`${indent}    .multilineTextAlignment(.${align})`);
         }
     }

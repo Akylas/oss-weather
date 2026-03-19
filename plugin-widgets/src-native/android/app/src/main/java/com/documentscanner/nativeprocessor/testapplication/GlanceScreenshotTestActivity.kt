@@ -39,7 +39,7 @@ public class GlanceScreenshotTestActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.test_activity_layout)
+        setContentView(com.akylas.weather.widgetstestapplication.R.layout.test_activity_layout)
     }
 
     /**
@@ -86,7 +86,7 @@ public class GlanceScreenshotTestActivity : Activity() {
                 content = composable
             ).remoteViews
 
-            val activityFrame = findViewById<FrameLayout>(R.id.content)
+            val activityFrame = findViewById<FrameLayout>(com.akylas.weather.widgetstestapplication.R.id.content)
             hostView = TestHostView(applicationContext)
             hostView.setBackgroundColor(Color.WHITE)
             activityFrame.addView(hostView)

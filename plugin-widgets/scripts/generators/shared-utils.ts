@@ -301,8 +301,8 @@ export type AlignmentValue = 'start' | 'center' | 'end' | 'space-between' | 'spa
  * @param platform - Target platform ('glance' | 'swift' | 'nativescript' | 'html')
  * @returns Platform-specific horizontal alignment string
  */
-export function toPlatformHorizontalAlignment(alignment: string | undefined, platform: 'glance' | 'swift' | 'nativescript' | 'html'): string {
-    const normalized = alignment?.toLowerCase().replace('-', '');
+export function toPlatformHorizontalAlignment(alignment: string, platform: 'glance' | 'swift' | 'nativescript' | 'html'): string {
+    const normalized = alignment.toLowerCase().replace('-', '');
 
     switch (platform) {
         case 'glance':

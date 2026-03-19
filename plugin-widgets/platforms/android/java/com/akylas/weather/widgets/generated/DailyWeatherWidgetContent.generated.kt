@@ -21,16 +21,16 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
-import com.akylas.weather.widgets.toColorIntRgba
 import kotlin.math.min
 import kotlinx.serialization.json.*
 
@@ -87,18 +87,18 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
 
     Column(
         modifier = GlanceModifier,
+        horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
         verticalAlignment = Alignment.Vertical.Top,
-        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         Row(
             modifier = GlanceModifier.fillMaxWidth().padding(8.dp),
             horizontalAlignment = Alignment.Horizontal.Start,
-            verticalAlignment = Alignment.Vertical.Top
+            verticalAlignment = Alignment.Vertical.Top,
         ) {
             Column(
                 modifier = GlanceModifier,
+                horizontalAlignment = Alignment.Horizontal.Start,
                 verticalAlignment = Alignment.Vertical.Top,
-                horizontalAlignment = Alignment.Horizontal.Start
             ) {
                 Text(
                     text = data.locationName,
@@ -113,8 +113,8 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             Spacer(modifier = GlanceModifier.defaultWeight())
             Column(
                 modifier = GlanceModifier,
+                horizontalAlignment = Alignment.Horizontal.End,
                 verticalAlignment = Alignment.Vertical.Bottom,
-                horizontalAlignment = Alignment.Horizontal.End
             ) {
                 if (data.iconPath.isNotEmpty()) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
@@ -136,8 +136,8 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
         }
         Column(
             modifier = GlanceModifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Horizontal.Start,
             verticalAlignment = Alignment.Vertical.Top,
-            horizontalAlignment = Alignment.Horizontal.Start
         ) {
             Text(
                 modifier = GlanceModifier.padding(horizontal = 8.dp),
@@ -156,18 +156,18 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             items(data.dailyData.take(10)) { item ->
                 Column(
                     modifier = GlanceModifier.fillMaxWidth().padding(2.dp),
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Column(
                         modifier = GlanceModifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 2.dp).background(GlanceTheme.colors.surfaceVariant).cornerRadius(8.dp),
+                        horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                         verticalAlignment = Alignment.Vertical.CenterVertically,
-                        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                     ) {
                         Row(
                             modifier = GlanceModifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                            verticalAlignment = Alignment.Vertical.CenterVertically
+                            verticalAlignment = Alignment.Vertical.CenterVertically,
                         ) {
                             Text(
                                 text = item.day,
@@ -185,13 +185,13 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                             Spacer(modifier = GlanceModifier.defaultWeight())
                             Column(
                                 modifier = GlanceModifier,
+                                horizontalAlignment = Alignment.Horizontal.End,
                                 verticalAlignment = Alignment.Vertical.Bottom,
-                                horizontalAlignment = Alignment.Horizontal.End
                             ) {
                                 Row(
                                     modifier = GlanceModifier,
                                     horizontalAlignment = Alignment.Horizontal.End,
-                                    verticalAlignment = Alignment.Vertical.CenterVertically
+                                    verticalAlignment = Alignment.Vertical.CenterVertically,
                                 ) {
                                     Text(
                                         text = item.temperatureHigh,
@@ -208,7 +208,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                 Row(
                                     modifier = GlanceModifier,
                                     horizontalAlignment = Alignment.Horizontal.End,
-                                    verticalAlignment = Alignment.Vertical.CenterVertically
+                                    verticalAlignment = Alignment.Vertical.CenterVertically,
                                 ) {
                                     if (item.precipAccumulation.isNotEmpty()) {
                                         Text(

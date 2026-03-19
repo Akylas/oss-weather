@@ -298,17 +298,6 @@
         "name": { "type": "string", "description": "Widget name identifier" },
         "displayName": { "type": "string", "description": "Human-readable name" },
         "description": { "type": "string" },
-        "supportedSizes": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "width": { "type": "number" },
-                    "height": { "type": "number" },
-                    "family": { "type": "string", "enum": ["small", "medium", "large", "extraLarge"] }
-                }
-            }
-        },
         "defaultPadding": { "$ref": "#/definitions/spacing" },
         "background": {
             "type": "object",

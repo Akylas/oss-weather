@@ -60,7 +60,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
@@ -199,18 +198,28 @@ function generateElement(element: LayoutElement, indent: string = '            '
 
 function generateColumn(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
-    const vertAlign = toPlatformVerticalAlignment(element.alignment, 'glance');
+    const vertAlign = element.alignment
+        ? isExpression(element.alignment)
+            ? compileExpr(element.alignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformVerticalAlignment(v, 'glance') })
+            : toPlatformVerticalAlignment(element.alignment, 'glance')
+        : undefined;
     // crossAlignment can be an expression (for conditional alignment)
-    const horizAlign = isExpression(element.crossAlignment)
-        ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
-        : toPlatformHorizontalAlignment(element.crossAlignment, 'glance');
+    const horizAlign = element.crossAlignment
+        ? isExpression(element.crossAlignment)
+            ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
+            : toPlatformHorizontalAlignment(element.crossAlignment, 'glance')
+        : undefined;
 
     const modifier = buildGlanceModifier(element);
 
     lines.push(`${indent}Column(`);
     lines.push(`${indent}    modifier = ${modifier},`);
-    lines.push(`${indent}    verticalAlignment = ${vertAlign},`);
-    lines.push(`${indent}    horizontalAlignment = ${horizAlign}`);
+    if (horizAlign) {
+        lines.push(`${indent}    horizontalAlignment = ${horizAlign},`);
+    }
+    if (vertAlign) {
+        lines.push(`${indent}    verticalAlignment = ${vertAlign},`);
+    }
     lines.push(`${indent}) {`);
 
     if (element.children) {
@@ -237,20 +246,31 @@ function generateColumn(element: LayoutElement, indent: string, defaultColor?: s
 
 function generateRow(element: LayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
-    const horizAlign = isExpression(element.alignment)
-        ? compileExpr(element.alignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
-        : toPlatformHorizontalAlignment(element.alignment, 'glance');
-    const vertAlign = isExpression(element.crossAlignment)
-        ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformVerticalAlignment(v, 'glance') })
-        : toPlatformVerticalAlignment(element.crossAlignment, 'glance');
+
+    const horizAlign = element.alignment
+        ? isExpression(element.alignment)
+            ? compileExpr(element.alignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformHorizontalAlignment(v, 'glance') })
+            : toPlatformHorizontalAlignment(element.alignment, 'glance')
+        : undefined;
+    // crossAlignment can be an expression (for conditional alignment)
+    const vertAlign = element.crossAlignment
+        ? isExpression(element.crossAlignment)
+            ? compileExpr(element.crossAlignment, { platform: 'kotlin', context: 'value', formatter: (v: string) => toPlatformVerticalAlignment(v, 'glance') })
+            : toPlatformVerticalAlignment(element.crossAlignment, 'glance')
+        : undefined;
+
     const isSpaceBetween = element.alignment === 'space-between' || element.alignment === 'spaceBetween';
 
     const modifier = buildGlanceModifier(element);
 
     lines.push(`${indent}Row(`);
     lines.push(`${indent}    modifier = ${modifier},`);
-    lines.push(`${indent}    horizontalAlignment = ${horizAlign},`);
-    lines.push(`${indent}    verticalAlignment = ${vertAlign}`);
+    if (horizAlign) {
+        lines.push(`${indent}    horizontalAlignment = ${horizAlign},`);
+    }
+    if (vertAlign) {
+        lines.push(`${indent}    verticalAlignment = ${vertAlign},`);
+    }
     lines.push(`${indent}) {`);
 
     if (element.children) {
@@ -839,8 +859,6 @@ function generatePreviewBlock(layout: WidgetLayout, className: string): string[]
     let sizes: { width: number; height: number }[];
     if (layout.preview?.sizes && layout.preview.sizes.length > 0) {
         sizes = layout.preview.sizes;
-    } else if (layout.supportedSizes && layout.supportedSizes.length > 0) {
-        sizes = layout.supportedSizes.map((s) => ({ width: s.width, height: s.height }));
     } else {
         sizes = [{ width: 260, height: 120 }];
     }

@@ -24,8 +24,12 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
 
     companion object {
         private var themeChangeReceiver: BroadcastReceiver? = null
-        // Reusable scheduler to delay theme-change updates off the immediate receiver thread
-        // private val themeScheduler = Executors.newSingleThreadScheduledExecutor()
+        
+        // When an intent carries updateData=false we mark the widget IDs (or all) so the next
+        // onUpdate() call will requestWidgetUpdate(..., fetchData=false) for those IDs only.
+        private val pendingNoDataUpdates: MutableSet<Int> = mutableSetOf()
+        private var applyNoDataToNextUpdateAll: Boolean = false
+
 
          fun registerThemeChangeReceiver(context: Context) {
             if (themeChangeReceiver == null) {
@@ -65,6 +69,29 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
     }
     override fun onReceive(context: Context, intent: Intent) {
         WidgetsLogger.d(LOG_TAG, "onReceive action=${intent.action} extras=${intent.extras?.keySet()?.joinToString(",")}")
+
+        // if ("android.appwidget.action.APPWIDGET_UPDATE_OPTIONS" == intent.action) {
+        //     val widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1)
+        //     if (widgetId != -1) {
+        //         WidgetDataStore.touchWidget(widgetId)
+        //     }
+
+        // } else 
+        if ("android.appwidget.action.APPWIDGET_UPDATE" == intent.action){
+            if (intent.hasExtra("updateData") && intent.getBooleanExtra("updateData", true) == false) {
+                val ids = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS)
+                synchronized(WeatherWidgetGlanceReceiver::class.java) {
+                    if (ids != null && ids.isNotEmpty()) {
+                        pendingNoDataUpdates.addAll(ids.toList())
+                        WidgetsLogger.d(LOG_TAG, "Marked ${ids.size} widget(s) to skip data fetch on next update: ${ids.joinToString(",")}")
+                    } else {
+                        applyNoDataToNextUpdateAll = true
+                        pendingNoDataUpdates.clear()
+                        WidgetsLogger.d(LOG_TAG, "Marked next onUpdate() to skip data fetch for all widgets")
+                    }
+                }
+            }
+        }
         super.onReceive(context, intent)
     }
 
@@ -73,8 +100,27 @@ abstract class WeatherWidgetGlanceReceiver : GlanceAppWidgetReceiver() {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         
         // Request fresh data for each widget that's being updated
+        // honor pendingNoDataUpdates / applyNoDataToNextUpdateAll for a single subsequent onUpdate
+        var applyNoDataAllNow = false
+        synchronized(WeatherWidgetGlanceReceiver::class.java) {
+            if (applyNoDataToNextUpdateAll) {
+                applyNoDataAllNow = true
+                // clear flag so it only applies to this onUpdate call
+                applyNoDataToNextUpdateAll = false
+            }
+        }
         appWidgetIds.forEach { widgetId ->
-            WeatherWidgetManager.requestWidgetUpdate(context, widgetId)
+            var fetchData = true
+            synchronized(WeatherWidgetGlanceReceiver::class.java) {
+                if (applyNoDataAllNow || pendingNoDataUpdates.remove(widgetId)) {
+                    fetchData = false
+                }
+            }
+            if (fetchData) {
+                WeatherWidgetManager.requestWidgetUpdate(context, widgetId)
+            } else {
+                WidgetDataStore.touchWidget(widgetId)
+            }
         }
     }
 
@@ -174,15 +220,14 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
         @SuppressLint("ScheduleExactAlarm")
         fun scheduleNextClockUpdate(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            WidgetsLogger.d(LOG_TAG, "scheduleNextClockUpdate")
             
             // Check if we have permission for exact alarms on Android 12+
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                if (!alarmManager.canScheduleExactAlarms()) {
-                    WidgetsLogger.w(LOG_TAG, "Cannot schedule exact alarms - permission not granted. Clock updates will be less accurate.")
-                    // Fall back to inexact alarm or skip scheduling
-                    // You could use setWindow() or setAndAllowWhileIdle() as alternatives
-                    return
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                WidgetsLogger.w(LOG_TAG, "Cannot schedule exact alarms - permission not granted. Clock updates will be less accurate.")
+                // Fall back to inexact alarm or skip scheduling
+                // You could use setWindow() or setAndAllowWhileIdle() as alternatives
+                return
             }
             
             // Create intent to update ALL clock widgets at once
@@ -194,6 +239,8 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
                     ComponentName(context, SimpleWeatherWithClockWidgetReceiver::class.java)
                 )
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+                putExtra("updateData", false)
+
             }
             
             val pendingIntent = PendingIntent.getBroadcast(

@@ -21,15 +21,15 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
-import com.akylas.weather.widgets.toColorIntRgba
 import kotlin.math.min
 import kotlinx.serialization.json.*
 
@@ -87,13 +87,12 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
     if (size.width.value < 120) {
         Column(
             modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(3.dp),
-            verticalAlignment = Alignment.Vertical.CenterVertically,
-            horizontalAlignment = Alignment.Horizontal.CenterHorizontally
+            horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
         ) {
             Column(
                 modifier = GlanceModifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
             ) {
                 if (data.iconPath.isNotEmpty()) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
@@ -128,12 +127,11 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             Row(
                 modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                verticalAlignment = Alignment.Vertical.CenterVertically
             ) {
                 Column(
                     modifier = GlanceModifier.fillMaxHeight(),
+                    horizontalAlignment = Alignment.Horizontal.Start,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.Start
                 ) {
                     Text(
                         text = data.temperature,
@@ -142,8 +140,8 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 }
                 Column(
                     modifier = GlanceModifier.fillMaxHeight().defaultWeight(),
+                    horizontalAlignment = Alignment.Horizontal.End,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.End
                 ) {
                     if (data.iconPath.isNotEmpty()) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->

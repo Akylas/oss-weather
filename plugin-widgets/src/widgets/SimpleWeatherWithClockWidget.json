@@ -3,198 +3,91 @@
     "name": "SimpleWeatherWithClockWidget",
     "displayName": "Weather with Clock",
     "description": "Shows a clock with current weather information",
-    "supportedSizes": [
-        { "width": 120, "height": 50, "family": "small" },
-        { "width": 80, "height": 80, "family": "small" },
-        { "width": 120, "height": 120, "family": "small" },
-        { "width": 260, "height": 120, "family": "medium" },
-        { "width": 360, "height": 260, "family": "large" }
-    ],
     "defaultPadding": 4,
-    "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
+    "color": ["case", ["has", ["get", "config.settings.color"]], ["get", "config.settings.color"], "color.onSurface"],
     "settings": {
         "clockBold": { "type": "boolean", "default": false, "title": "bold_clock" }
     },
     "layout": {
-        "type": "conditional",
-        "condition": [">=", ["get", "size.width"], 180],
-        "then": {
-            "type": "stack",
-            "fillMaxSize": true,
-            "paddingHorizontal": 10,
-            "paddingVertical": 6,
-            "children": [
-                {
-                    "type": "row",
-                    "fillWidth": true,
-                    "fillHeight": true,
-                    "alignment": "center",
-                    "crossAlignment": "center",
-                    "children": [
-                        {
-                            "type": "column",
-                            "alignment": "center",
-                            "flex": 1,
-                            "crossAlignment": "start",
-                            "children": [
-                                {
-                                    "type": "clock",
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.15], 50],
-                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
-                                },
-                                {
-                                    "type": "spacer",
-                                    "size": 4
-                                },
-                                {
-                                    "type": "date",
-                                    "style": "date",
-                                    "fontSize": 14,
-                                    "opacity": 0.5
-                                }
-                            ]
-                        },
-                        {
-                            "type": "column",
-                            "alignment": "center",
-                            "crossAlignment": "center",
-                            "children": [
-                                {
-                                    "type": "image",
-                                    "src": ["get", "iconPath"],
-                                    "size": 62,
-                                    "visibleIf": ["has", "iconPath"]
-                                },
-                                {
-                                    "type": "label",
-                                    "text": ["get", "temperature"],
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
-                                    "fontWeight": "bold",
-                                    "textAlign": "right"
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "type": "column",
-                    "fillWidth": true,
-                    "alignment": "start",
-                    "crossAlignment": "start",
-                    "children": [
-                        {
-                            "type": "label",
-                            "text": ["get", "locationName"],
-                            "fontSize": 12,
-                            "opacity": 0.5,
-                            "maxLines": 1
-                        }
-                    ]
-                },
-                {
-                    "type": "stack",
-                    "fillWidth": true,
-                    "fillHeight": true,
-                    "alignment": "end",
-                    "crossAlignment": "end",
-                    "contentAlignment": "BottomEnd",
-                    "visibleIf": ["has", "description"],
-                    "children": [
-                        {
-                            "type": "label",
-                            "text": ["get", "description"],
-                            "fontSize": 12,
-                            "opacity": 0.5,
-                            "textAlign": "right"
-                        }
-                    ]
-                }
-            ]
-        },
-        "else": {
-            "type": "stack",
-            "fillMaxSize": true,
-            "padding": 3,
-            "children": [
-                {
-                    "type": "column",
-                    "fillMaxSize": true,
-                    "paddingTop": ["case", ["<=", ["get", "size.height"], 50], 0, 10],
-                    "alignment": "start",
-                    "crossAlignment": "center",
-                    "children": [
-                        {
-                            "type": "column",
-                            "fillWidth": true,
-                            "crossAlignment": ["case", ["<=", ["get", "size.height"], 50], "end", "center"],
-                            "children": [
-                                {
-                                    "type": "clock",
-                                    "fontSize": ["min", ["*", ["get", "size.height"], 0.24], 40],
-                                    "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"],
-                                    "textAlign": ["case", ["<=", ["get", "size.height"], 50], "right", "left"]
-                                }
-                            ]
-                        },
-                        {
-                            "type": "row",
-                            "alignment": "center",
-                            "crossAlignment": "center",
-                            "children": [
-                                {
-                                    "type": "image",
-                                    "src": ["get", "iconPath"],
-                                    "size": ["case", ["<", ["get", "size.width"], 100], 32, ["<", ["get", "size.width"], 150], 40, 56],
-                                    "visibleIf": ["has", "iconPath"]
-                                },
-                                {
-                                    "type": "spacer",
-                                    "direction": "horizontal",
-                                    "size": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8]
-                                },
-                                {
-                                    "type": "label",
-                                    "text": ["get", "temperature"],
-                                    "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
-                                    "fontWeight": "bold"
-                                }
-                            ]
-                        },
-                        {
-                            "type": "spacer",
-                            "size": ["case", ["<", ["get", "size.width"], 100], 2, ["<", ["get", "size.width"], 150], 4, 8]
-                        },
-                        {
-                            "type": "spacer",
-                            "size": ["case", ["<", ["get", "size.width"], 100], 4, ["<", ["get", "size.width"], 150], 6, 8]
-                        }
-                    ]
-                },
-                {
-                    "type": "column",
-                    "alignment": "end",
-                    "crossAlignment": "end",
-                    "children": [
-                        {
-                            "type": "spacer",
-                            "flex": 1
-                        },
-                        {
-                            "type": "label",
-                            "text": ["get", "locationName"],
-                            "fontSize": ["case", ["<", ["get", "size.width"], 100], 8, ["<", ["get", "size.width"], 150], 10, 12],
-                            "opacity": 0.5,
-                            "maxLines": 1
-                        }
-                    ]
-                }
-            ]
-        }
+        "type": "column",
+        "fillMaxSize": true,
+        "paddingHorizontal": 10,
+        "paddingVertical": 6,
+        "alignment": "center",
+        "children": [
+            {
+                "type": "row",
+                "fillWidth": true,
+                "children": [
+                    {
+                        "type": "label",
+                        "alignment": "bottom",
+                        "text": ["get", "locationName"],
+                        "fontSize": 12,
+                        "opacity": 0.5,
+                        "maxLines": 1
+                    },
+                    {
+                        "type": "label",
+                        "alignment": "bottom",
+                        "flex": 1,
+                        "text": ["get", "temperature"],
+                        "fontSize": ["min", ["*", ["get", "size.width"], 0.2], 20],
+                        "fontWeight": "bold",
+                        "textAlign": "right"
+                    }
+                ]
+            },
+            {
+                "type": "row",
+                "fillWidth": true,
+                "crossAlignment": "center",
+                "children": [
+                    {
+                        "type": "clock",
+                        "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 62],
+                        "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
+                    },
+                    {
+                        "type": "spacer",
+                        "flex": 1
+                    },
+                    {
+                        "type": "image",
+                        "src": ["get", "iconPath"],
+                        "crossAlignment": "end",
+                        "size": ["min", ["case", [">=", ["get", "size.height"], 200], ["*", ["get", "size.height"], 0.52], ["*", ["get", "size.width"], 0.27]], 100],
+                        "visibleIf": ["has", "iconPath"]
+                    }
+                ]
+            },
+            {
+                "type": "row",
+                "fillWidth": true,
+                "children": [
+                    {
+                        "type": "date",
+                        "style": "date",
+                        "fontSize": 14,
+                        "opacity": 0.5
+                    },
+                    {
+                        "type": "label",
+                        "flex": 1,
+                        "text": ["get", "description"],
+                        "fontSize": 12,
+                        "opacity": 0.5,
+                        "visibleIf": ["has", "description"],
+                        "textAlign": "right"
+                    }
+                ]
+            }
+        ]
     },
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 260, "height": 120 },
+            { "width": 260, "height": 140 },
             { "width": 120, "height": 50 },
             { "width": 80, "height": 80 },
             { "width": 120, "height": 120 },

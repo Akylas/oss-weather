@@ -21,15 +21,15 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
-import com.akylas.weather.widgets.toColorIntRgba
 import kotlin.math.min
 import kotlinx.serialization.json.*
 
@@ -84,22 +84,30 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
     val size = LocalSize.current
     val widgetColor = run { val colorValue = when { config.settings?.get("color")?.jsonPrimitive?.contentOrNull == null -> GlanceTheme.colors.onSurface; else -> config.settings?.get("color")?.jsonPrimitive?.contentOrNull }; if (colorValue is String) ColorProvider(Color(colorValue.toColorIntRgba())) else GlanceTheme.colors.onSurface }
 
-    if (size.width.value >= 180) {
-        Box(
-            modifier = GlanceModifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 6.dp)
+    Column(
+        modifier = GlanceModifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.Vertical.CenterVertically,
+    ) {
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
         ) {
-            Row(
-                modifier = GlanceModifier.fillMaxWidth().fillMaxHeight().padding(8.dp),
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                verticalAlignment = Alignment.Vertical.CenterVertically
-            ) {
-                Column(
-                    modifier = GlanceModifier,
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.Start
-                ) {
-                    Text(
-                        text = run {
+            Text(
+                text = data.locationName,
+                style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
+                maxLines = 1
+            )
+            Text(
+                modifier = GlanceModifier.defaultWeight(),
+                text = data.temperature,
+                style = TextStyle(fontSize = (min((size.width.value * 0.2f), 20.0f)).sp, fontWeight = FontWeight.Bold, color = widgetColor, textAlign = TextAlign.End)
+            )
+        }
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Vertical.CenterVertically,
+        ) {
+            Text(
+                text = run {
                     val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
                     if (mediumFormat is java.text.SimpleDateFormat) {
                         var pattern = mediumFormat.toPattern()
@@ -109,111 +117,31 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                         mediumFormat.format(java.util.Date())
                     }
                 },
-                        style = TextStyle(fontSize = (min((size.width.value * 0.17f), 48.0f)).sp, color = widgetColor, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal })
-                    )
-                    Spacer(modifier = GlanceModifier.height(4.dp))
-                    Text(
-                        text = android.text.format.DateFormat.format("yyyy", java.util.Date()).toString(),
-                        style = TextStyle(fontSize = 14.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
-                    )
-                }
-                Spacer(modifier = GlanceModifier.defaultWeight())
-                Column(
-                    modifier = GlanceModifier,
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
-                ) {
-                    if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
-                            Image(
-                               provider = provider,
-                               contentDescription = data.iconPath,
-                               modifier = GlanceModifier.size(62.dp)
-                            )
-                        }
-                    }
-                    Text(
-                        text = data.temperature,
-                        style = TextStyle(fontSize = (min((size.width.value * 0.2f), 20.0f)).sp, fontWeight = FontWeight.Bold, color = widgetColor, textAlign = TextAlign.End)
-                    )
-                }
-            }
-            Column(
-                modifier = GlanceModifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Vertical.Top,
-                horizontalAlignment = Alignment.Horizontal.Start
-            ) {
-                Text(
-                    text = data.locationName,
-                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
-                    maxLines = 1
-                )
-            }
-            if (data.description.isNotEmpty()) {
-                Box(
-                    modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    Text(
-                        text = data.description,
-                        style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End)
+                style = TextStyle(fontSize = (min((size.width.value * 0.17f), 62.0f)).sp, color = widgetColor, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal })
+            )
+            Spacer(modifier = GlanceModifier.defaultWeight())
+            if (data.iconPath.isNotEmpty()) {
+                WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
+                    Image(
+                       provider = provider,
+                       contentDescription = data.iconPath,
+                       modifier = GlanceModifier.size((min(when { size.height.value >= 200.0f -> (size.height.value * 0.52f); else -> (size.width.value * 0.27f) }, 100.0f)).dp)
                     )
                 }
             }
         }
-    }
-    else {
-        Box(
-            modifier = GlanceModifier.fillMaxSize().padding(3.dp)
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
         ) {
-            Column(
-                modifier = GlanceModifier.fillMaxSize().padding(top = when { size.height.value <= 50 -> 0.dp; else -> 10.dp }),
-                verticalAlignment = Alignment.Vertical.Top,
-                horizontalAlignment = Alignment.Horizontal.CenterHorizontally
-            ) {
-                Column(
-                    modifier = GlanceModifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = when { size.height.value <= 50 -> Alignment.Horizontal.End; else -> Alignment.Horizontal.CenterHorizontally }
-                ) {
-                    Text(
-                        text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                        style = TextStyle(fontSize = (min((size.height.value * 0.24f), 40.0f)).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, color = widgetColor, textAlign = when { size.height.value <= 50 -> TextAlign.End; else -> TextAlign.Start })
-                    )
-                }
-                Row(
-                    modifier = GlanceModifier,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-                    verticalAlignment = Alignment.Vertical.CenterVertically
-                ) {
-                    if (data.iconPath.isNotEmpty()) {
-                        WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
-                            Image(
-                               provider = provider,
-                               contentDescription = data.iconPath,
-                               modifier = GlanceModifier.size(when { size.width.value < 100 -> 32.dp; size.width.value < 150 -> 40.dp; else -> 56.dp })
-                            )
-                        }
-                    }
-                    Spacer(modifier = GlanceModifier.width(when { size.width.value < 100 -> 4.dp; size.width.value < 150 -> 6.dp; else -> 8.dp }))
-                    Text(
-                        text = data.temperature,
-                        style = TextStyle(fontSize = (min((size.width.value * 0.2f), 20.0f)).sp, fontWeight = FontWeight.Bold, color = widgetColor)
-                    )
-                }
-                Spacer(modifier = GlanceModifier.height(when { size.width.value < 100 -> 2.dp; size.width.value < 150 -> 4.dp; else -> 8.dp }))
-                Spacer(modifier = GlanceModifier.height(when { size.width.value < 100 -> 4.dp; size.width.value < 150 -> 6.dp; else -> 8.dp }))
-            }
-            Column(
-                modifier = GlanceModifier,
-                verticalAlignment = Alignment.Vertical.Bottom,
-                horizontalAlignment = Alignment.Horizontal.End
-            ) {
-                Spacer(modifier = GlanceModifier.defaultWeight())
+            Text(
+                text = android.text.format.DateFormat.format("yyyy", java.util.Date()).toString(),
+                style = TextStyle(fontSize = 14.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
+            )
+            if (data.description.isNotEmpty()) {
                 Text(
-                    text = data.locationName,
-                    style = TextStyle(fontSize = when { size.width.value < 100 -> 8.sp; size.width.value < 150 -> 10.sp; else -> 12.sp }, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f))),
-                    maxLines = 1
+                    modifier = GlanceModifier.defaultWeight(),
+                    text = data.description,
+                    style = TextStyle(fontSize = 12.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End)
                 )
             }
         }

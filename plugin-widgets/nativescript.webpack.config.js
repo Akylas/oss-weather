@@ -32,18 +32,16 @@ module.exports = (env, params = {}) => {
         {
             context: join(__dirname, 'src', 'widgets'),
             from: '*.json',
-            to: 'widget-layouts/widgets/[name][ext]',
+            to: 'plugin-widgets/widgets/[name][ext]',
             noErrorOnMissing: true,
             globOptions,
-            transform: !!production
-                ? {
-                      transformer: (content, path) => {
-                          const { name, displayName, description, supportedSizes, ...rest } = JSON.parse(content.toString());
+            transform: {
+                transformer: (content, path) => {
+                    const { name, displayName, description, preview, ...rest } = JSON.parse(content.toString());
 
-                          return Promise.resolve(Buffer.from(JSON.stringify({ name, displayName, description, supportedSizes }), 'utf8'));
-                      }
-                  }
-                : undefined
+                    return Promise.resolve(Buffer.from(JSON.stringify({ name, displayName, description, preview }), 'utf8'));
+                }
+            }
         }
     ];
 
@@ -53,8 +51,9 @@ module.exports = (env, params = {}) => {
                 // if (/plugin-widgets\/data\/widgets\/samples/i.test(context)) {
                 //     return cb(null, join('plugin-widgets/widgets/data/samples', basename(request)));
                 // }
-                if (/plugin-widgets\/data\/widgets/i.test(context)) {
-                    return cb(null, join('plugin-widgets/widgets/data/widgets', basename(request)));
+                if (/plugin-widgets\/src\/widgets/i.test(context)) {
+                    console.log('external', context)
+                    return cb(null, join('~/plugin-widgets/widgets', basename(request)));
                 }
                 cb();
             }

@@ -21,16 +21,16 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.preview.ExperimentalGlancePreviewApi
+import androidx.glance.preview.Preview
 import com.akylas.weather.widgets.WeatherWidgetData
 import com.akylas.weather.widgets.WeatherWidgetManager
 import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
-import androidx.glance.preview.ExperimentalGlancePreviewApi
-import androidx.glance.preview.Preview
+import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.HourlyData
 import com.akylas.weather.widgets.WidgetComposables
 import com.akylas.weather.widgets.WidgetLoadingState
-import com.akylas.weather.widgets.toColorIntRgba
 import kotlin.math.min
 import kotlinx.serialization.json.*
 
@@ -86,14 +86,13 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
 
     Column(
         modifier = GlanceModifier.padding(horizontal = 10.dp, vertical = 6.dp),
+        horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
         verticalAlignment = Alignment.Vertical.Top,
-        horizontalAlignment = Alignment.Horizontal.CenterHorizontally
     ) {
         if (size.height.value >= 80) {
             Column(
                 modifier = GlanceModifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Vertical.CenterVertically,
-                horizontalAlignment = Alignment.Horizontal.Start
+                horizontalAlignment = Alignment.Horizontal.Start,
             ) {
                 Text(
                     text = data.locationName,
@@ -107,8 +106,8 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
             data.hourlyData.take(8).forEach { item ->
                 Column(
                     modifier = GlanceModifier.width(56.dp).fillMaxHeight().padding(horizontal = 2.dp),
+                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
-                    horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                 ) {
                     Text(
                         text = item.time,
@@ -133,8 +132,6 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     if ((size.height.value >= 60 && item.precipAccumulation.isNotEmpty())) {
                         Column(
                             modifier = GlanceModifier,
-                            verticalAlignment = Alignment.Vertical.CenterVertically,
-                            horizontalAlignment = Alignment.Horizontal.CenterHorizontally
                         ) {
                             if (size.height.value >= 60) {
                                 Spacer(modifier = GlanceModifier.height(2.dp))

@@ -77,6 +77,8 @@ object WidgetDataStore {
      * version bumps even if the data payload is structurally identical.
      */
     fun getWidgetDataFlow(widgetId: Int): StateFlow<Pair<WeatherWidgetData?, Long>> {
+        WidgetsLogger.d("WidgetDataStore", "getWidgetDataFlow widgetId=$widgetId")
+
         return _widgetData
             .combine(_widgetVersions) { dataMap, versions ->
                 Pair(dataMap[widgetId], versions[widgetId] ?: 0L)
@@ -346,7 +348,6 @@ object WeatherWidgetManager {
             try {
                 WidgetsLogger.d(LOG_TAG, "Requesting update for widgetId=$widgetId")
                 if (updateData) {
-
                     requestWidgetUpdate(context, widgetId, updateData)
                 } else {
                     WidgetDataStore.touchWidget(widgetId)
@@ -503,6 +504,53 @@ object WeatherWidgetManager {
         requestAllWidgetsUpdate(context)
     }
 
+
+    @JvmStatic
+    fun checkActiveWidgets(context: Context) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val activeIdsToCheck = getActiveWidgetIdsFromPrefs(context)
+        if (activeIdsToCheck.isEmpty()) return
+
+        val receiverToWidgetMap = mapOf(
+            SimpleWeatherWidgetReceiver::class.java to SimpleWeatherWidget::class.java,
+            SimpleWeatherWithDateWidgetReceiver::class.java to SimpleWeatherWithDateWidget::class.java,
+            SimpleWeatherWithClockWidgetReceiver::class.java to SimpleWeatherWithClockWidget::class.java,
+            HourlyWeatherWidgetReceiver::class.java to HourlyWeatherWidget::class.java,
+            DailyWeatherWidgetReceiver::class.java to DailyWeatherWidget::class.java,
+            ForecastWeatherWidgetReceiver::class.java to ForecastWeatherWidget::class.java
+        )
+
+        for ((receiverClass, widgetClass) in receiverToWidgetMap) {
+            val allIds = appWidgetManager.getAppWidgetIds(ComponentName(context, receiverClass))
+            allIds.forEach { widgetId ->
+                if (widgetId in activeIdsToCheck) {
+                    // widget still exists
+                    activeIdsToCheck.remove(widgetId)
+                }
+            }
+
+        }
+
+        // ids still in activeIds are removed widgets
+        if (activeIdsToCheck.isNotEmpty()) {
+            WidgetsLogger.i(LOG_TAG, "checkActiveWidgets removing old widgets: $activeIdsToCheck")
+            val activeIds = getActiveWidgetIdsFromPrefs(context)
+            activeIds.removeAll(activeIdsToCheck)
+            saveActiveWidgetIdsToPrefs(context, activeIds)
+            val configs = getAllWidgetConfigs(context).toMutableMap()
+            loadWidgetDataCache(context)
+            activeIdsToCheck.forEach { widgetId ->
+                widgetDataCache.remove(widgetId)
+                configs.remove(widgetId)
+                WidgetDataStore.removeWidgetData(widgetId)
+                WidgetConfigStore.removeWidgetConfig(widgetId)
+            }
+            saveWidgetDataCache(context)
+            saveAllWidgetConfigs(context, configs)
+
+        }
+    }
+
     /**
      * Called when a widget is added - ensure updates are scheduled
      */
@@ -516,6 +564,7 @@ object WeatherWidgetManager {
         addActiveWidget(context, widgetId)
         sendWidgetAdded(context, widgetId)
     }
+
 
     /**
      * Called when a widget is removed - cancel updates if no more widgets
@@ -545,7 +594,7 @@ object WeatherWidgetManager {
     fun requestWidgetUpdate(context: Context, widgetId: Int, updateData: Boolean = true) {
         // ensure config exists
         loadWidgetConfig(context, widgetId, false) ?: return
-        WidgetsLogger.d(LOG_TAG, "requestWidgetUpdate(widgetId=$widgetId)")
+        WidgetsLogger.d(LOG_TAG, "requestWidgetUpdate(widgetId=$widgetId, updateData=$updateData)")
         // Send broadcast to JS side to request weather data
         val intent = Intent("com.akylas.weather.WIDGET_UPDATE_REQUEST")
         intent.putExtra("widgetId", widgetId)
@@ -1110,12 +1159,7 @@ object WeatherWidgetManager {
         }
         try {
             val jsonObject = JSONObject(configJson)
-            var config = parseWidgetConfig(jsonObject)
-            if (config == null) {
-                WidgetsLogger.e(LOG_TAG, "Failed to parse widget config for widget $widgetId")
-                return
-            }
-            
+            val config = parseWidgetConfig(jsonObject)
 
             saveWidgetConfig(context, widgetId, config)
         } catch (e: Exception) {

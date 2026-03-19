@@ -377,6 +377,7 @@
                 item.color = newColor.hex;
                 config.settings[item.id] = item.color;
                 config = config;
+                DEV_LOG && console.log('changeColor', newColor.hex, config);
                 saveConfig();
                 updateItem(item);
             }
@@ -407,7 +408,7 @@
                 // }
             ] as any[]
         )
-            .concat(isKindConfig ? [{ type: 'sectionheader', title: lc('default_widget_settings_note') }] : [])
+            .concat(isKindConfig ? [{ description: lc('default_widget_settings_note') }] : [])
             .concat([
                 {
                     type: 'rightIcon',
@@ -475,8 +476,7 @@
             });
         }
         newItems.push({
-            id: 'sectionheader',
-            description: () => (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
+            description:  (isKindConfig ? lc('widget_kind_configuration_note') : lc('widget_configuration_note'))
         });
         // items = new ObservableArray(newItems)
         items.splice(0, items.length, ...newItems);

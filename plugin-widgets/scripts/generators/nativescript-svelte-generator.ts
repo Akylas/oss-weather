@@ -24,7 +24,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    supportedSizes?: { width: number; height: number; family: string }[];
     defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
@@ -238,7 +237,7 @@ function evaluateMapboxExpression(expr: any, context: string = 'data', usedColor
                 // Default context
                 return `${context}.${path} != null`;
             }
-            return 'false';
+            return `${evaluateMapboxExpression(path, context)} != null`;
         }
         case 'all': {
             // Logical AND - all conditions must be true
@@ -631,27 +630,27 @@ function shouldLocalize(text: string): boolean {
  * Map font weight names to numeric values
  */
 function mapFontWeight(weight: string | number): number | string {
-    return weight;
-    // if (typeof weight === 'number') {
-    //     return weight;
-    // }
+    // return weight;
+    if (typeof weight === 'number') {
+        return weight;
+    }
 
-    // const weightMap: Record<string, number> = {
-    //     thin: 100,
-    //     ultralight: 200,
-    //     light: 300,
-    //     normal: 400,
-    //     regular: 400,
-    //     medium: 500,
-    //     semibold: 600,
-    //     bold: 700,
-    //     ultrabold: 800,
-    //     heavy: 800,
-    //     black: 900
-    // };
+    const weightMap: Record<string, number> = {
+        thin: 100,
+        ultralight: 200,
+        light: 300,
+        normal: 400,
+        regular: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
+        ultrabold: 800,
+        heavy: 800,
+        black: 900
+    };
 
-    // const normalized = weight.toLowerCase();
-    // return weightMap[normalized] || 400;
+    const normalized = weight.toLowerCase();
+    return weightMap[normalized] || 400;
 }
 
 /**
@@ -771,6 +770,11 @@ function generateMarkup(
 
     const attrsArr: string[] = [];
     const seenAttrs = new Set<string>(); // Track attributes to avoid duplicates
+
+    if (tag === 'gridlayout') {
+        attrsArr.push('row="auto"');
+        seenAttrs.add('row');
+    }
 
     const attributesToMap = [
         'padding',
@@ -1307,7 +1311,7 @@ function generateSvelteComponent(layout: WidgetLayout): string {
     script += `    export let data: WeatherWidgetData;\n`;
     // script += `    export let width: number = ${layout.supportedSizes?.[0]?.width ?? 160};\n`;
     // script += `    export let height: number = ${layout.supportedSizes?.[0]?.height ?? 160};\n`;
-    script += `    export let size: { width: number; height: number } = { width: ${layout.supportedSizes?.[0]?.width ?? 160}, height: ${layout.supportedSizes?.[0]?.height ?? 160}};\n\n`;
+    script += `    export let size: { width: number; height: number };\n\n`;
 
     // Compile top-level color if present
     let defaultColorRef: string | undefined;

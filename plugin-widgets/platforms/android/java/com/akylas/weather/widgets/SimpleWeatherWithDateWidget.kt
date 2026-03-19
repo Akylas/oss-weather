@@ -41,11 +41,14 @@ class SimpleWeatherWithDateWidget : WeatherWidget() {
 
     override val sizeMode = SizeMode.Responsive(
         setOf(
-            // Support down to 50dp height
-            DpSize(120.dp, 50.dp),
-            DpSize(120.dp, 80.dp),
-            DpSize(180.dp, 80.dp),
-            DpSize(260.dp, 120.dp)
+            DpSize(100.dp, 100.dp),
+            DpSize(150.dp, 100.dp),
+            DpSize(200.dp, 100.dp),
+            DpSize(200.dp, 200.dp),
+            DpSize(250.dp, 100.dp),
+            DpSize(250.dp, 200.dp),
+            DpSize(300.dp, 100.dp),
+            DpSize(300.dp, 200.dp),
         )
     )
 

@@ -32,7 +32,7 @@ export class WidgetConfigManager {
 
     private static loadConfigs() {
         const data = ApplicationSettings.getString(WIDGET_CONFIGS_KEY);
-        // DEV_LOG && console.log('loadConfigs', data);
+        DEV_LOG && console.log('loadConfigs', data);
         if (data) {
             try {
                 this.configs = JSON.parse(data);

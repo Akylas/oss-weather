@@ -265,7 +265,9 @@ class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
         
         fun cancelClockUpdates(context: Context) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java)
+            val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
+                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            }
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 CLOCK_UPDATE_REQUEST_CODE,

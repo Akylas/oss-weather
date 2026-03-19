@@ -26,11 +26,11 @@ class SimpleWeatherWithClockWidget : WeatherWidget() {
 
     override val sizeMode = SizeMode.Responsive(
         setOf(
-            DpSize(100.dp, 100.dp),
+            // DpSize(100.dp, 100.dp),
             DpSize(150.dp, 100.dp),
             DpSize(200.dp, 100.dp),
             DpSize(200.dp, 200.dp),
-            DpSize(250.dp, 100.dp),
+            DpSize(250.dp, 200.dp),
             DpSize(250.dp, 200.dp),
             DpSize(300.dp, 100.dp),
             DpSize(300.dp, 200.dp),

@@ -41,6 +41,11 @@ object WidgetDataStore {
     private val _widgetVersions = MutableStateFlow<Map<Int, Long>>(emptyMap())
     val widgetVersions: StateFlow<Map<Int, Long>> = _widgetVersions.asStateFlow()
 
+
+    fun getIds(): Array<Int> {
+        return _widgetData.value.keys.toTypedArray()
+    }
+
     fun updateWidgetData(widgetId: Int, data: WeatherWidgetData) {
         _widgetData.update { current ->
             current + (widgetId to data)
@@ -132,6 +137,10 @@ object WidgetConfigStore {
     
     fun getConfig(widgetId: Int): WidgetConfig? {
         return _widgetConfigs.value[widgetId]
+    }
+
+    fun getIds(): Array<Int> {
+        return _widgetConfigs.value.keys.toTypedArray()
     }
     
     /**
@@ -232,13 +241,14 @@ object WeatherWidgetManager {
 
     fun deleteWidgetCache(context: Context, widgetId: Int) {
         WidgetsLogger.d(LOG_TAG, "deleteWidgetCache(widgetId=$widgetId) called")
+        // Remove from StateFlow
+        WidgetDataStore.removeWidgetData(widgetId)
+
         // Delete cached data
         loadWidgetDataCache(context)
         widgetDataCache.remove(widgetId)
         saveWidgetDataCache(context)
         
-        // Remove from StateFlow
-        WidgetDataStore.removeWidgetData(widgetId)
     }
 
 
@@ -507,9 +517,15 @@ object WeatherWidgetManager {
 
     @JvmStatic
     fun checkActiveWidgets(context: Context) {
+        // for some reason sometimes when a widget is removed it seems onWidgetRemoved is not called
+        // so we end up with orphan data. So for now we clean it on start
         val appWidgetManager = AppWidgetManager.getInstance(context)
         val activeIdsToCheck = getActiveWidgetIdsFromPrefs(context)
+        loadWidgetDataCache(context)
+        activeIdsToCheck.addAll(getAllWidgetConfigs(context).keys.toTypedArray())
+        activeIdsToCheck.addAll(WidgetDataStore.getIds())
         if (activeIdsToCheck.isEmpty()) return
+            WidgetsLogger.i(LOG_TAG, "checkActiveWidgets activeIdsToCheck: ${activeIdsToCheck}")
 
         val receiverToWidgetMap = mapOf(
             SimpleWeatherWidgetReceiver::class.java to SimpleWeatherWidget::class.java,
@@ -522,6 +538,7 @@ object WeatherWidgetManager {
 
         for ((receiverClass, widgetClass) in receiverToWidgetMap) {
             val allIds = appWidgetManager.getAppWidgetIds(ComponentName(context, receiverClass))
+            WidgetsLogger.i(LOG_TAG, "checkActiveWidgets existing widgets for class $receiverClass: ${allIds.contentToString()}")
             allIds.forEach { widgetId ->
                 if (widgetId in activeIdsToCheck) {
                     // widget still exists
@@ -579,6 +596,9 @@ object WeatherWidgetManager {
         deleteWidgetConfig(context, widgetId)
         deleteWidgetCache(context, widgetId)
 
+        // test
+        val configs = getAllWidgetConfigs(context).toMutableMap()
+
         sendWidgetRemoved(context, widgetId)
     }
 
@@ -625,9 +645,9 @@ object WeatherWidgetManager {
     @JvmStatic
     fun sendWidgetRemoved(context: Context, widgetId: Int) {
         // ensure config exists
-        loadWidgetConfig(context, widgetId, false) ?: return
-        WidgetsLogger.d(LOG_TAG, "sendWidgetAdded(widgetId=$widgetId)")
-        // Send broadcast to JS side to request weather data
+        // loadWidgetConfig(context, widgetId, false) ?: return
+        WidgetsLogger.d(LOG_TAG, "sendWidgetRemoved(widgetId=$widgetId)")
+        // Send broadcast to JS side to update UI if needed
         val intent = Intent("com.akylas.weather.WIDGET_REMOVED")
         intent.putExtra("widgetId", widgetId)
         intent.setPackage(context.packageName)
@@ -1172,15 +1192,16 @@ object WeatherWidgetManager {
      */
     @JvmStatic
     fun deleteWidgetConfig(context: Context, widgetId: Int) {
-        WidgetsLogger.d(LOG_TAG, "deleteWidgetConfig(widgetId=$widgetId) called")
+        WidgetsLogger.d(LOG_TAG, "deleteWidgetConfig(widgetId=$widgetId)")
         
+        WidgetConfigStore.removeWidgetConfig(widgetId)
+    
         // Delete instance config
-        val configs = getAllWidgetConfigs(context).toMutableMap()
+        val configs = WidgetConfigStore.widgetConfigs.value.toMutableMap()
         configs.remove(widgetId)
         saveAllWidgetConfigs(context, configs)
         
         // Remove from StateFlow
-        WidgetConfigStore.removeWidgetConfig(widgetId)
         // reloadConfigs()
  
         WidgetsLogger.i(LOG_TAG, "Deleted config and cache for widgetId=$widgetId")

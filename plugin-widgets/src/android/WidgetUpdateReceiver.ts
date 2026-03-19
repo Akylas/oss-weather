@@ -39,7 +39,7 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                 });
             } else if (action === 'com.akylas.weather.WIDGET_ADDED') {
                 const widgetId = intent.getIntExtra('widgetId', -1);
-                DEV_LOG && console.log(`WidgetUpdateReceiver: Widget added, widgetId=${widgetId}`);
+                // DEV_LOG && console.log(`WidgetUpdateReceiver: Widget added, widgetId=${widgetId}`);
 
                 widgetService.reloadConfigs();
 
@@ -67,11 +67,12 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                         console.error('WidgetUpdateReceiver: Error checking clock permission:', error);
                     }
                 }
+                Application.notify({ eventName: 'widgetAdded', widgetId });
             } else if (action === 'com.akylas.weather.WIDGET_REMOVED') {
                 const widgetId = intent.getIntExtra('widgetId', -1);
-                DEV_LOG && console.log(`WidgetUpdateReceiver: Widget added, widgetId=${widgetId}`);
-
+                // DEV_LOG && console.log(`WidgetUpdateReceiver: Widget removed, widgetId=${widgetId}`);
                 widgetService.reloadConfigs();
+                Application.notify({ eventName: 'widgetRemoved', widgetId });
             }
         } catch (error) {
             console.error('WidgetUpdateReceiver: Error in onReceive:', error, error?.stack);

@@ -11,7 +11,7 @@
     import { showSnack } from '@nativescript-community/ui-material-snackbar';
     import { TextField, TextFieldProperties } from '@nativescript-community/ui-material-textfield';
     import { TextView } from '@nativescript-community/ui-material-textview';
-    import { ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
+    import { Application, ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
     import { Sentry } from '@shared/utils/sentry';
     import { showError } from '@shared/utils/showError';
@@ -83,6 +83,7 @@
     import { confirmRestartApp, createView, getDateFormatHTMLArgs, hideLoading, openLink, selectValue, showLoading, showSliderPopover } from '~/utils/ui';
     import { colors, fonts, iconColor, imperial, metricDecimalTemp, onFontScaleChanged, onUnitsChanged, unitCMToMM, unitsSettings, windowInset } from '~/variables';
     import IconButton from '../common/IconButton.svelte';
+    import { onDestroy, onMount } from 'svelte';
     const version = __APP_VERSION__ + ' Build ' + __APP_BUILD_NUMBER__;
     const storeSettings = {};
 </script>
@@ -107,9 +108,19 @@
         { icon: 'mdi-github', id: 'github' }
     ];
     export let subSettingsOptions: string = null;
-    export let options: (page, updateImte) => any[] = null;
+    export let options: (page, updateItem) => any[] = null;
     if (!options && subSettingsOptions) {
         options = getSubSettings(subSettingsOptions);
+    }
+    if (subSettingsOptions === 'widgets') {
+        onMount(() => {
+            Application.on('widgetAdded', refresh);
+            Application.on('widgetRemoved', refresh);
+        });
+        onDestroy(() => {
+            Application.off('widgetAdded', refresh);
+            Application.off('widgetRemoved', refresh);
+        });
     }
 
     function getTitle(item) {
@@ -793,6 +804,7 @@
                                   title: lc('widget_settings'),
                                   description: lc('widget_settings_desc'),
                                   icon: 'mdi-widgets',
+                                  subSettingsOptions: 'widgets',
                                   options: getSubSettings('widgets')
                               }
                           ]

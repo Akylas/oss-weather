@@ -18,40 +18,40 @@ struct ForecastWeatherWidgetView: View {
             let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: 8) {
+                WidgetContainer {
                     VStack(alignment: .center, spacing: 0) {
                         HStack(alignment: .top, spacing: 0) {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(widgetColor)
-                                    .multilineTextAlignment(.leading)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                     .lineLimit(1).opacity(0.5)
                                 Text(data.temperature)
                                     .font(.system(size: 26, weight: .bold))
                                     .foregroundColor(widgetColor)
-                            }
+                            }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .top)
                             Spacer()
                             VStack(alignment: .trailing, spacing: 0) {
-                                if !data.iconPath.isEmpty {
+                                if !(data.iconPath ?? "").isEmpty {
                                     WeatherIconView(data.iconPath, description: data.description, size: 54)
                                 }
-                                if !data.description.isEmpty {
+                                if !(data.description ?? "").isEmpty {
                                     Text(data.description)
                                         .font(.system(size: 11, weight: .regular))
                                         .foregroundColor(widgetColor)
-                                        .multilineTextAlignment(.trailing)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
                                         .lineLimit(1).opacity(0.5)
                                 }
-                            }
-                        }.frame(maxWidth: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
+                            }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .bottom)
+                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).padding(.horizontal, 10).padding(.vertical, 6).frame(maxWidth: .infinity, alignment: .leading)
                         Spacer().frame(height: 8)
                         VStack(alignment: .leading, spacing: 0) {
                             Text("hourly")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(widgetColor)
-                                .multilineTextAlignment(.leading).padding(.horizontal, 8).opacity(0.5)
-                        }.frame(maxWidth: .infinity)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 8).opacity(0.5)
+                        }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .leading)
                         Spacer().frame(height: 4)
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
@@ -67,14 +67,14 @@ struct ForecastWeatherWidgetView: View {
                                                 .font(.system(size: 12, weight: .bold))
                                                 .foregroundColor(widgetColor)
                                                 .lineLimit(1)
-                                            if !item.precipAccumulation.isEmpty {
+                                            if !(item.precipAccumulation ?? "").isEmpty {
                                                 Text(item.precipAccumulation)
                                                     .font(.system(size: 9, weight: .regular))
                                                     .foregroundColor(widgetColor).opacity(0.5)
                                             }
-                                        }.frame(width: 53).padding(.horizontal, 4)
+                                        }.fixedSize(horizontal: true, vertical: false).frame(width: 53).padding(.horizontal, 4)
                                     }
-                                }
+                                }.fixedSize(horizontal: false, vertical: true)
                             }
                         }
                         Spacer().frame(height: 16)
@@ -82,8 +82,8 @@ struct ForecastWeatherWidgetView: View {
                             Text("daily")
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(widgetColor)
-                                .multilineTextAlignment(.leading).padding(.horizontal, 8).opacity(0.5)
-                        }.frame(maxWidth: .infinity)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 8).opacity(0.5)
+                        }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .leading)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(spacing: 8) {
@@ -109,32 +109,95 @@ struct ForecastWeatherWidgetView: View {
                                                                 .font(.system(size: 13, weight: .regular))
                                                                 .foregroundColor(widgetColor)
                                                                 .lineLimit(1).opacity(0.5)
-                                                        }
+                                                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, alignment: .trailing)
                                                         HStack(alignment: .center, spacing: 6) {
-                                                            if !item.precipAccumulation.isEmpty {
+                                                            if !(item.precipAccumulation ?? "").isEmpty {
                                                                 Text(item.precipAccumulation)
                                                                     .font(.system(size: 10, weight: .regular))
                                                                     .foregroundColor(widgetColor).opacity(0.5)
                                                             }
-                                                            if !item.precipitation.isEmpty {
+                                                            if !(item.precipitation ?? "").isEmpty {
                                                                 Text("💧" + item.precipitation)
                                                                     .font(.system(size: 10, weight: .regular))
                                                                     .foregroundColor(widgetColor).opacity(0.5)
                                                             }
-                                                        }
-                                                    }
-                                                }.frame(maxWidth: .infinity)
-                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant(for: colorScheme)).cornerRadius(8)
-                                        }.frame(maxWidth: .infinity).padding(2)
+                                                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, alignment: .trailing)
+                                                    }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .bottom)
+                                                }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .center)
+                                            }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant(for: colorScheme)).cornerRadius(8).frame(maxWidth: .infinity, alignment: .center)
+                                        }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).padding(2)
                                     }
-                                }
+                                }.fixedSize(horizontal: true, vertical: false)
                             }
                         }
-                    }
+                    }.fixedSize(horizontal: true, vertical: false)
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)
             }
         }
     }
+}
+
+// MARK: - Previews
+@available(iOS 14.0, *)
+#Preview("300x300", as: .systemMedium) {
+    ForecastWeatherWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "12°",
+            locationName: "Paris",
+            description: "Partly Cloudy",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            date: "Mon, Feb 24",
+            hourlyData: [HourlyData(time: "06:00", temperature: "6°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm"), HourlyData(time: "07:00", temperature: "7°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm"), HourlyData(time: "08:00", temperature: "8°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm"), HourlyData(time: "09:00", temperature: "10°", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0 mm"), HourlyData(time: "10:00", temperature: "12°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm"), HourlyData(time: "11:00", temperature: "13°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm")],
+            dailyData: [DailyData(day: "Mon", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "12°", temperatureLow: "4°", precipAccumulation: "0 mm"), DailyData(day: "Tue", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "14°", temperatureLow: "6°", precipAccumulation: "0 mm"), DailyData(day: "Wed", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", temperatureHigh: "10°", temperatureLow: "5°", precipAccumulation: "0 mm"), DailyData(day: "Thu", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "9°", temperatureLow: "3°", precipAccumulation: "0 mm"), DailyData(day: "Fri", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "11°", temperatureLow: "4°", precipAccumulation: "0 mm"), DailyData(day: "Sat", iconPath: "app/assets/icon_themes/meteocons/images/803d.png", temperatureHigh: "15°", temperatureLow: "7°", precipAccumulation: "0 mm")],
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "ForecastWeatherWidget", config: WidgetConfig())
+}
+
+#Preview("160x300", as: .systemMedium) {
+    ForecastWeatherWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "12°",
+            locationName: "Paris",
+            description: "Partly Cloudy",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            date: "Mon, Feb 24",
+            hourlyData: [HourlyData(time: "06:00", temperature: "6°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm"), HourlyData(time: "07:00", temperature: "7°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm"), HourlyData(time: "08:00", temperature: "8°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm"), HourlyData(time: "09:00", temperature: "10°", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0 mm"), HourlyData(time: "10:00", temperature: "12°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm"), HourlyData(time: "11:00", temperature: "13°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm")],
+            dailyData: [DailyData(day: "Mon", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "12°", temperatureLow: "4°", precipAccumulation: "0 mm"), DailyData(day: "Tue", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "14°", temperatureLow: "6°", precipAccumulation: "0 mm"), DailyData(day: "Wed", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", temperatureHigh: "10°", temperatureLow: "5°", precipAccumulation: "0 mm"), DailyData(day: "Thu", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "9°", temperatureLow: "3°", precipAccumulation: "0 mm"), DailyData(day: "Fri", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "11°", temperatureLow: "4°", precipAccumulation: "0 mm"), DailyData(day: "Sat", iconPath: "app/assets/icon_themes/meteocons/images/803d.png", temperatureHigh: "15°", temperatureLow: "7°", precipAccumulation: "0 mm")],
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "ForecastWeatherWidget", config: WidgetConfig())
+}
+
+#Preview("260x400", as: .systemMedium) {
+    ForecastWeatherWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "12°",
+            locationName: "Paris",
+            description: "Partly Cloudy",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            date: "Mon, Feb 24",
+            hourlyData: [HourlyData(time: "06:00", temperature: "6°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm"), HourlyData(time: "07:00", temperature: "7°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm"), HourlyData(time: "08:00", temperature: "8°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm"), HourlyData(time: "09:00", temperature: "10°", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0 mm"), HourlyData(time: "10:00", temperature: "12°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm"), HourlyData(time: "11:00", temperature: "13°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm")],
+            dailyData: [DailyData(day: "Mon", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "12°", temperatureLow: "4°", precipAccumulation: "0 mm"), DailyData(day: "Tue", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "14°", temperatureLow: "6°", precipAccumulation: "0 mm"), DailyData(day: "Wed", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", temperatureHigh: "10°", temperatureLow: "5°", precipAccumulation: "0 mm"), DailyData(day: "Thu", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "9°", temperatureLow: "3°", precipAccumulation: "0 mm"), DailyData(day: "Fri", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "11°", temperatureLow: "4°", precipAccumulation: "0 mm"), DailyData(day: "Sat", iconPath: "app/assets/icon_themes/meteocons/images/803d.png", temperatureHigh: "15°", temperatureLow: "7°", precipAccumulation: "0 mm")],
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "ForecastWeatherWidget", config: WidgetConfig())
+}
+
+#Preview("Error", as: .systemMedium) {
+    ForecastWeatherWidget()
+} timeline: {
+    let errorData = WeatherWidgetData(
+            loadingState: .error,
+            errorMessage: "Unable to fetch weather data"
+    )
+    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "ForecastWeatherWidget", config: WidgetConfig())
 }

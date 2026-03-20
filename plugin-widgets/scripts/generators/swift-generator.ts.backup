@@ -284,40 +284,6 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
 }
 
 /**
- * Convert vertical alignment to SwiftUI frame alignment
- */
-function toSwiftVerticalFrameAlignment(alignment: string): string {
-    switch (alignment) {
-        case 'start':
-        case 'top':
-            return '.top';
-        case 'center':
-            return '.center';
-        case 'end':
-        case 'bottom':
-            return '.bottom';
-        default:
-            return '.center';
-    }
-}
-
-/**
- * Convert horizontal alignment to SwiftUI frame alignment
- */
-function toSwiftHorizontalFrameAlignment(alignment: string): string {
-    switch (alignment) {
-        case 'start':
-            return '.leading';
-        case 'center':
-            return '.center';
-        case 'end':
-            return '.trailing';
-        default:
-            return '.center';
-    }
-}
-
-/**
  * Convert color reference to Swift
  */
 function toSwiftColor(color?: Expression): string {
@@ -543,9 +509,9 @@ function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void 
 // ============================================================================
 
 /**
- * Generate Swift code for an element with parent context
+ * Generate Swift code for an element
  */
-function generateElementWithParent(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string, parentType?: string): string {
+function generateElement(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string): string {
     const lines: string[] = [];
 
     // Handle visibility condition
@@ -559,16 +525,16 @@ function generateElementWithParent(element: BaseLayoutElement, indent: string = 
 
     switch (element.type) {
         case 'column':
-            lines.push(...generateColumn(element, currentIndent, defaultColor, parentType));
+            lines.push(...generateColumn(element, currentIndent, defaultColor));
             break;
         case 'row':
-            lines.push(...generateRow(element, currentIndent, defaultColor, parentType));
+            lines.push(...generateRow(element, currentIndent, defaultColor));
             break;
         case 'stack':
             lines.push(...generateStack(element, currentIndent, defaultColor));
             break;
         case 'label':
-            lines.push(...generateLabel(element, currentIndent, defaultColor, parentType));
+            lines.push(...generateLabel(element, currentIndent, defaultColor));
             break;
         case 'image':
             lines.push(...generateImage(element, currentIndent));
@@ -598,34 +564,6 @@ function generateElementWithParent(element: BaseLayoutElement, indent: string = 
             lines.push(`${currentIndent}// Unknown element type: ${element.type}`);
     }
 
-    // Apply alignment frame modifier based on parent type
-    if (parentType && element.alignment) {
-        const lastLineIndex = lines.length - 1;
-        if (parentType === 'row') {
-            // In a row, child alignment affects vertical position
-            const vAlign = toSwiftVerticalFrameAlignment(element.alignment);
-            if (vAlign) {
-                lines[lastLineIndex] += `.frame(maxHeight: .infinity, alignment: ${vAlign})`;
-            }
-        } else if (parentType === 'column') {
-            // In a column, child alignment affects horizontal position
-            const hAlign = toSwiftHorizontalFrameAlignment(element.alignment);
-            if (hAlign) {
-                lines[lastLineIndex] += `.frame(maxWidth: .infinity, alignment: ${hAlign})`;
-            }
-        }
-    }
-
-    // Apply flex modifier based on parent type
-    if (parentType && element.flex !== undefined) {
-        const lastLineIndex = lines.length - 1;
-        if (parentType === 'row') {
-            lines[lastLineIndex] += `.frame(maxWidth: .infinity)`;
-        } else if (parentType === 'column') {
-            lines[lastLineIndex] += `.frame(maxHeight: .infinity)`;
-        }
-    }
-
     if (wrapWithIf) {
         lines.push(`${indent}}`);
     }
@@ -633,14 +571,7 @@ function generateElementWithParent(element: BaseLayoutElement, indent: string = 
     return lines.join('\n');
 }
 
-/**
- * Generate Swift code for an element (without parent context)
- */
-function generateElement(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string): string {
-    return generateElementWithParent(element, indent, defaultColor, undefined);
-}
-
-function generateColumn(element: BaseLayoutElement, indent: string, defaultColor?: string, parentType?: string): string[] {
+function generateColumn(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, true);
@@ -653,23 +584,18 @@ function generateColumn(element: BaseLayoutElement, indent: string, defaultColor
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                // Pass parent type to child so it knows it's in a column
-                lines.push(generateElementWithParent(child, indent + '    ', defaultColor, 'column'));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
 
     lines.push(`${indent}}`);
-    
-    // Add .fixedSize for VStack
-    lines[lines.length - 1] += '.fixedSize(horizontal: true, vertical: false)';
-    
     applySwiftModifiers(lines, element);
 
     return lines;
 }
 
-function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: string, parentType?: string): string[] {
+function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, false);
@@ -682,17 +608,12 @@ function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: 
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                // Pass parent type to child so it knows it's in a row
-                lines.push(generateElementWithParent(child, indent + '    ', defaultColor, 'row'));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
 
     lines.push(`${indent}}`);
-    
-    // Add .fixedSize for HStack
-    lines[lines.length - 1] += '.fixedSize(horizontal: false, vertical: true)';
-    
     applySwiftModifiers(lines, element);
 
     return lines;
@@ -738,7 +659,7 @@ function generateStack(element: BaseLayoutElement, indent: string, defaultColor?
     return lines;
 }
 
-function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?: string, parentType?: string): string[] {
+function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     // Compile text expression
@@ -762,11 +683,11 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
         // defaultColor is an expression - compile it
         color = toSwiftColor(defaultColor);
     } else {
-        color = 'WidgetColorProvider.onSurface(for: colorScheme)';
+        color = 'WidgetColorProvider.onSurface';
     }
     lines.push(`${indent}    .foregroundColor(${color})`);
 
-    // Text alignment - use frame alignment instead of multilineTextAlignment
+    // Text alignment - supports expressions
     if (element.textAlign !== undefined) {
         if (isExpression(element.textAlign)) {
             const compiled = compileExpression(element.textAlign, {
@@ -778,12 +699,10 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
                     return '.leading';
                 }
             });
-            lines.push(`${indent}    .frame(maxWidth: .infinity, alignment: ${compiled})`);
+            lines.push(`${indent}    .multilineTextAlignment(${compiled})`);
         } else {
-            let alignment = '.leading';
-            if (element.textAlign === 'center') alignment = '.center';
-            else if (element.textAlign === 'right' || element.textAlign === 'end') alignment = '.trailing';
-            lines.push(`${indent}    .frame(maxWidth: .infinity, alignment: ${alignment})`);
+            const align = element.textAlign === 'center' ? 'center' : element.textAlign === 'right' || element.textAlign === 'end' ? 'trailing' : 'leading';
+            lines.push(`${indent}    .multilineTextAlignment(.${align})`);
         }
     }
 
@@ -971,117 +890,24 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
 }
 
 /**
- * Generate preview block for a widget (similar to Android glance generator)
- */
-function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): string[] {
-    const lines: string[] = [];
-    
-    // Check if previews should be generated
-    if (layout.generatePreviews !== true || !layout.preview) {
-        return lines;
-    }
-    
-    // Determine preview sizes
-    let sizes: { width: number; height: number }[];
-    if (layout.preview.sizes && layout.preview.sizes.length > 0) {
-        sizes = layout.preview.sizes;
-    } else {
-        sizes = [{ width: 260, height: 120 }];
-    }
-    
-    // Build fakeData Swift constructor arguments
-    const fakeData = layout.preview.fakeData;
-    const fakeDataLines: string[] = [];
-    
-    if (fakeData) {
-        const scalar = (key: string, v: any) => `            ${key}: "${v}"`;
-        
-        const hourlyItem = (item: any) => {
-            const props = [
-                item.time !== undefined ? `time: "${item.time}"` : null,
-                item.temperature !== undefined ? `temperature: "${item.temperature}"` : null,
-                item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
-                item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null,
-                item.windSpeed !== undefined ? `windSpeed: "${item.windSpeed}"` : null,
-                item.description !== undefined ? `description: "${item.description}"` : null,
-                item.precipitation !== undefined ? `precipitation: "${item.precipitation}"` : null
-            ].filter(Boolean);
-            return `HourlyData(${props.join(', ')})`;
-        };
-        
-        const dailyItem = (item: any) => {
-            const props = [
-                item.day !== undefined ? `day: "${item.day}"` : null,
-                item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
-                item.temperatureHigh !== undefined ? `temperatureHigh: "${item.temperatureHigh}"` : null,
-                item.temperatureLow !== undefined ? `temperatureLow: "${item.temperatureLow}"` : null,
-                item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null,
-                item.precipitation !== undefined ? `precipitation: "${item.precipitation}"` : null,
-                item.windSpeed !== undefined ? `windSpeed: "${item.windSpeed}"` : null,
-                item.description !== undefined ? `description: "${item.description}"` : null
-            ].filter(Boolean);
-            return `DailyData(${props.join(', ')})`;
-        };
-        
-        for (const [key, value] of Object.entries(fakeData)) {
-            switch (key) {
-                case 'temperature':
-                case 'description':
-                case 'locationName':
-                case 'date':
-                    fakeDataLines.push(`${scalar(key, value)},`);
-                    break;
-                case 'iconPath':
-                    fakeDataLines.push(`${scalar(key, `app/assets/icon_themes/meteocons/images/${value}.png`)},`);
-                    break;
-                case 'hourlyData':
-                    fakeDataLines.push(`            hourlyData: [${(value as any[]).map(hourlyItem).join(', ')}],`);
-                    break;
-                case 'dailyData':
-                    fakeDataLines.push(`            dailyData: [${(value as any[]).map(dailyItem).join(', ')}],`);
-                    break;
-            }
-        }
-    }
-    
-    fakeDataLines.push(`            loadingState: .loaded,`);
-    fakeDataLines.push(`            errorMessage: nil`);
-    
-    lines.push(`\n// MARK: - Previews`);
-    lines.push(`@available(iOS 14.0, *)`);
-    
-    // Generate preview for each size
-    for (const size of sizes) {
-        lines.push(`#Preview("${size.width}x${size.height}", as: .systemMedium) {`);
-        lines.push(`    ${layout.name}()`);
-        lines.push(`} timeline: {`);
-        lines.push(`    let fakeData = WeatherWidgetData(`);
-        lines.push(...fakeDataLines);
-        lines.push(`    )`);
-        lines.push(`    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
-        lines.push(`}\n`);
-    }
-    
-    // Error preview
-    lines.push(`#Preview("Error", as: .systemMedium) {`);
-    lines.push(`    ${layout.name}()`);
-    lines.push(`} timeline: {`);
-    lines.push(`    let errorData = WeatherWidgetData(`);
-    lines.push(`            loadingState: .error,`);
-    lines.push(`            errorMessage: "Unable to fetch weather data"`);
-    lines.push(`    )`);
-    lines.push(`    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
-    lines.push(`}`);
-    
-    return lines;
-}
-
-/**
  * Generate the complete Swift widget view file
  */
 function generateWidgetView(layout: WidgetLayout): string {
     const name = layout.name;
     const viewName = `${name}View`;
+
+    // Handle default padding - it could be an expression
+    let defaultPadding = String(DEFAULT_PADDING);
+    if (layout.defaultPadding !== undefined) {
+        if (typeof layout.defaultPadding === 'number') {
+            defaultPadding = String(layout.defaultPadding);
+        } else if (isExpression(layout.defaultPadding)) {
+            defaultPadding = compileExpression(layout.defaultPadding, {
+                platform: 'swift',
+                context: 'value'
+            });
+        }
+    }
 
     let code = `// Auto-generated from ${name}.json - DO NOT EDIT MANUALLY
 // Generated by widget-layouts/generators/swift-generator.ts
@@ -1113,7 +939,7 @@ struct ${viewName}: View {
 
     code += `
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer {
+                WidgetContainer(padding: ${defaultPadding}) {
 `;
 
     // Generate variant conditions
@@ -1143,12 +969,6 @@ struct ${viewName}: View {
     }
 }
 `;
-
-    // Add preview block
-    const previewLines = generateSwiftPreviewBlock(layout, viewName);
-    if (previewLines.length > 0) {
-        code += previewLines.join('\n') + '\n';
-    }
 
     return code;
 }

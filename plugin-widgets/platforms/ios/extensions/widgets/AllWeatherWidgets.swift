@@ -11,7 +11,7 @@ struct FakeWeatherData {
         WeatherWidgetData(
             temperature: "8°",
             locationName: "Grenoble",
-            iconPath: "800d",
+            iconPath: "app/assets/icon_themes/meteocons/images/200d.png",
             description: "Partly Cloudy",
             loadingState: .loaded,
             errorMessage: nil,
@@ -29,13 +29,13 @@ struct FakeWeatherData {
             loadingState: .loaded,
             errorMessage: nil,
             hourlyData: [
-                HourlyData(hour: "07:00", temperature: "7 °C", iconPath: "800d", precipAccumulation: "0 mm"),
-                HourlyData(hour: "08:00", temperature: "8 °C", iconPath: "802d", precipAccumulation: "0 mm"),
-                HourlyData(hour: "09:00", temperature: "10 °C", iconPath: "500n", precipAccumulation: "0 mm"),
-                HourlyData(hour: "10:00", temperature: "12 °C", iconPath: "802d", precipAccumulation: "0 mm"),
-                HourlyData(hour: "11:00", temperature: "13 °C", iconPath: "802d", precipAccumulation: "0 mm"),
-                HourlyData(hour: "12:00", temperature: "14 °C", iconPath: "500n", precipAccumulation: "0.2 mm"),
-                HourlyData(hour: "13:00", temperature: "14 °C", iconPath: "500n", precipAccumulation: "0.5 mm")
+                HourlyData(time: "07:00", temperature: "7 °C", iconPath: "800d", precipAccumulation: "0 mm"),
+                HourlyData(time: "08:00", temperature: "8 °C", iconPath: "802d", precipAccumulation: "0 mm"),
+                HourlyData(time: "09:00", temperature: "10 °C", iconPath: "500n", precipAccumulation: "0 mm"),
+                HourlyData(time: "10:00", temperature: "12 °C", iconPath: "802d", precipAccumulation: "0 mm"),
+                HourlyData(time: "11:00", temperature: "13 °C", iconPath: "802d", precipAccumulation: "0 mm"),
+                HourlyData(time: "12:00", temperature: "14 °C", iconPath: "500n", precipAccumulation: "0.2 mm"),
+                HourlyData(time: "13:00", temperature: "14 °C", iconPath: "500n", precipAccumulation: "0.5 mm")
             ],
             dailyData: []
         )
@@ -72,34 +72,6 @@ struct FakeWeatherData {
     }
 }
 
-// MARK: - Widget Background Helper
-@available(iOS 17.0, *)
-extension View {
-    @ViewBuilder
-    func widgetBackground(for entry: WeatherEntry, colorScheme: ColorScheme) -> some View {
-        let config = entry.config ?? WidgetConfig()
-        let isTransparent = (config.settings?["transparent"] as? Bool) ?? false
-        
-        if isTransparent {
-            // Transparent background with rounded corners
-            self.containerBackground(for: .widget) {
-                Color.clear
-            }
-        } else if let backgroundColorStr = config.settings?["background_color"] as? String {
-            // Custom background color from config with rounded corners
-            self.containerBackground(for: .widget) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(hex: backgroundColorStr))
-            }
-        } else {
-            // Default background color with rounded corners
-            self.containerBackground(for: .widget) {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(WidgetColorProvider.background(for: colorScheme))
-            }
-        }
-    }
-}
 
 // MARK: - Simple Weather Widget
 @available(iOS 17.0, *)
@@ -112,6 +84,7 @@ struct SimpleWeatherWidget: Widget {
             SimpleWeatherWidgetView(entry: entry)
                 .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.simpleWeatherName)
         .description(WidgetLocalizedStrings.simpleWeatherDesc)
         .supportedFamilies([.systemSmall, .systemMedium])
@@ -129,9 +102,10 @@ struct SimpleWeatherWithClockWidget: Widget {
             SimpleWeatherWithClockWidgetView(entry: entry)
                 .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithClockName)
         .description(WidgetLocalizedStrings.weatherWithClockDesc)
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
@@ -146,6 +120,7 @@ struct SimpleWeatherWithDateWidget: Widget {
             SimpleWeatherWithDateWidgetView(entry: entry)
                 .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithDateName)
         .description(WidgetLocalizedStrings.weatherWithDateDesc)
         .supportedFamilies([.systemSmall, .systemMedium])
@@ -180,6 +155,7 @@ struct DailyWeatherWidget: Widget {
             DailyWeatherWidgetView(entry: entry)
                 .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.dailyForecastName)
         .description(WidgetLocalizedStrings.dailyForecastDesc)
         .supportedFamilies([.systemMedium, .systemLarge])
@@ -197,9 +173,41 @@ struct ForecastWeatherWidget: Widget {
             ForecastWeatherWidgetView(entry: entry)
                 .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.detailedForecastName)
         .description(WidgetLocalizedStrings.detailedForecastDesc)
         .supportedFamilies([.systemLarge, .systemExtraLarge])
+    }
+}
+
+
+
+// MARK: - Widget Background Helper
+@available(iOS 17.0, *)
+extension View {
+    @ViewBuilder
+    func widgetBackground(for entry: WeatherEntry, colorScheme: ColorScheme) -> some View {
+        let config = entry.config ?? WidgetConfig()
+        let isTransparent = (config.settings?["transparent"] as? Bool) ?? false
+        
+        if isTransparent {
+            // Transparent background with rounded corners
+            self.containerBackground(for: .widget) {
+                Color.clear
+            }
+        } else if let backgroundColorStr = config.settings?["background_color"] as? String {
+            // Custom background color from config with rounded corners
+            self.containerBackground(for: .widget) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(hex: backgroundColorStr))
+            }
+        } else {
+            // Default background color with rounded corners
+            self.containerBackground(for: .widget) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(WidgetColorProvider.background(for: colorScheme))
+            }
+        }
     }
 }
 
@@ -215,137 +223,4 @@ struct AllWeatherWidgets: WidgetBundle {
         DailyWeatherWidget()
         ForecastWeatherWidget()
     }
-}
-
-// MARK: - Xcode Previews
-@available(iOS 17.0, *)
-#Preview("Simple Weather - Small", as: .systemSmall) {
-    SimpleWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createSimpleWeatherData(),
-        kind: "SimpleWeatherWidget",
-        family: .systemSmall
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Simple Weather - Medium", as: .systemMedium) {
-    SimpleWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createSimpleWeatherData(),
-        kind: "SimpleWeatherWidget",
-        family: .systemMedium
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Weather with Clock - Small", as: .systemSmall) {
-    SimpleWeatherWithClockWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createSimpleWeatherData(),
-        kind: "SimpleWeatherWithClockWidget",
-        family: .systemSmall
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Weather with Clock - Medium", as: .systemMedium) {
-    SimpleWeatherWithClockWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createSimpleWeatherData(),
-        kind: "SimpleWeatherWithClockWidget",
-        family: .systemMedium
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Weather with Date - Small", as: .systemSmall) {
-    SimpleWeatherWithDateWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createSimpleWeatherData(),
-        kind: "SimpleWeatherWithDateWidget",
-        family: .systemSmall
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Weather with Date - Medium", as: .systemMedium) {
-    SimpleWeatherWithDateWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createSimpleWeatherData(),
-        kind: "SimpleWeatherWithDateWidget",
-        family: .systemMedium
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Hourly Weather - Medium", as: .systemMedium) {
-    HourlyWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createHourlyWeatherData(),
-        kind: "HourlyWeatherWidget",
-        family: .systemMedium
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Hourly Weather - Large", as: .systemLarge) {
-    HourlyWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createHourlyWeatherData(),
-        kind: "HourlyWeatherWidget",
-        family: .systemLarge
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Daily Weather - Medium", as: .systemMedium) {
-    DailyWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createDailyWeatherData(),
-        kind: "DailyWeatherWidget",
-        family: .systemMedium
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Daily Weather - Large", as: .systemLarge) {
-    DailyWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createDailyWeatherData(),
-        kind: "DailyWeatherWidget",
-        family: .systemLarge
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Forecast Weather - Large", as: .systemLarge) {
-    ForecastWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createDailyWeatherData(),
-        kind: "ForecastWeatherWidget",
-        family: .systemLarge
-    )
-}
-
-@available(iOS 17.0, *)
-#Preview("Forecast Weather - Extra Large", as: .systemExtraLarge) {
-    ForecastWeatherWidget()
-} timeline: {
-    FakeWeatherData.createPreviewEntry(
-        data: FakeWeatherData.createDailyWeatherData(),
-        kind: "ForecastWeatherWidget",
-        family: .systemExtraLarge
-    )
 }

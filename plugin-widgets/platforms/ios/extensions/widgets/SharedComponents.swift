@@ -7,7 +7,7 @@ struct WidgetContainer<Content: View>: View {
     let content: Content
     @Environment(\.colorScheme) var colorScheme
     
-    init(padding: CGFloat = 8, @ViewBuilder content: () -> Content) {
+    init(padding: CGFloat = 0, @ViewBuilder content: () -> Content) {
         self.padding = padding
         self.content = content()
     }
@@ -37,7 +37,6 @@ struct WeatherIconView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: size, height: size)
-                .background(.red)
         }
     }
 }

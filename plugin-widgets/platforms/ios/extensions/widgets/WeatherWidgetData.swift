@@ -47,8 +47,8 @@ struct WeatherWidgetData: Codable {
 
 // MARK: - Hourly Data
 struct HourlyData: Codable, Identifiable {
-    var id: String { hour + temperature } // Computed ID
-    let hour: String
+    var id: String { time + temperature } // Computed ID
+    let time: String
     let temperature: String
     let iconPath: String?
     let description: String
@@ -56,7 +56,7 @@ struct HourlyData: Codable, Identifiable {
     
     // Coding keys for JSON serialization
     enum CodingKeys: String, CodingKey {
-        case hour
+        case time
         case temperature
         case iconPath
         case description
@@ -66,7 +66,7 @@ struct HourlyData: Codable, Identifiable {
     // Automatic decoding with defaults
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        hour = try container.decode(String.self, forKey: .hour)
+        time = try container.decode(String.self, forKey: .time)
         temperature = try container.decode(String.self, forKey: .temperature)
         iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
@@ -75,13 +75,13 @@ struct HourlyData: Codable, Identifiable {
     
     // Manual initializer for convenience
     init(
-        hour: String,
+        time: String,
         temperature: String,
         iconPath: String? = nil,
         description: String = "",
         precipAccumulation: String = ""
     ) {
-        self.hour = hour
+        self.time = time
         self.temperature = temperature
         self.iconPath = iconPath
         self.description = description
@@ -219,6 +219,16 @@ class WidgetDataProvider {
         return try? decoder.decode(WeatherWidgetData.self, from: jsonData)
     }
     
+    static var isPreview: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+    }
+    static func loadImageFromPreview(path: String) -> UIImage? {
+        let filePath = "\(Bundle.main.bundlePath)/../../\(path)"
+            print("filePath: \(filePath)")
+       // Load UIImage
+        return UIImage(contentsOfFile: filePath)
+    }
+
     static func getIconImage(path: String) -> UIImage? {
         if path.isEmpty {
             return nil
@@ -228,7 +238,9 @@ class WidgetDataProvider {
         if FileManager.default.fileExists(atPath: path) {
             return UIImage(contentsOfFile: path)
         }
-        
+        if (isPreview) {
+            return loadImageFromPreview(path: path)
+        }
         return nil
     }
 

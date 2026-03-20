@@ -18,6 +18,29 @@ struct WidgetContainer<Content: View>: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
+@available(iOS 14.0, *)
+struct WeatherIconView: View {
+    let iconPath: String?
+    let description: String
+    let size: CGFloat
+    @Environment(\.colorScheme) var colorScheme
+    
+    init(_ iconPath: String?, description: String = "", size: CGFloat = 48) {
+        self.iconPath = iconPath
+        self.description = description
+        self.size = size
+    }
+    
+    var body: some View {
+        if let iconPath = iconPath, let image = WidgetDataProvider.getIconImage(path: iconPath) {
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
+                .background(.red)
+        }
+    }
+}
 
 @available(iOS 14.0, *)
 struct NoDataView: View {
@@ -36,50 +59,21 @@ struct NoDataView: View {
                 ProgressView()
                 Text(WidgetLocalizedStrings.loading)
                     .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
             } else if state == .error {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.red)
                 Text(errorMessage ?? WidgetLocalizedStrings.error_loading)
                     .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
                     .multilineTextAlignment(.center)
             } else {
                 Image(systemName: "cloud")
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
                 Text(WidgetLocalizedStrings.noLocationSet)
                     .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
             }
         }
-    }
-}
-
-// MARK: - Widget Background with Gradient
-@available(iOS 14.0, *)
-struct WidgetBackgroundView: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    var body: some View {
-    }
-}
-
-// MARK: - Card View with Adaptive Background
-@available(iOS 14.0, *)
-struct CardView<Content: View>: View {
-    let content: Content
-    @Environment(\.colorScheme) var colorScheme
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
-    var body: some View {
-        content
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(WidgetColorProvider.cardBackground(for: colorScheme))
-            )
     }
 }

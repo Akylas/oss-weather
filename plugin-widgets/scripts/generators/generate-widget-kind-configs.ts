@@ -263,7 +263,7 @@ ${settingsCases.join('\n')}
             provider: nil,
             widgetKind: widgetKind,
             iconSet: nil,
-            settings: getDefaultSettings(widgetKind)
+            settings: getDefaultSettings(widgetKind: widgetKind)
         )
     }
 }

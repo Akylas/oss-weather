@@ -389,7 +389,7 @@ function compileHas(prop: string, platform: Platform, addDataPrefix: boolean): s
         case 'kotlin':
             return `${path}.isNotEmpty()`;
         case 'swift':
-            return `!${path}.isEmpty`;
+            return `!(${path} ?? "").isEmpty`;
         case 'javascript':
         case 'typescript':
             return `${path} !== undefined && ${path} !== null && ${path} !== ''`;

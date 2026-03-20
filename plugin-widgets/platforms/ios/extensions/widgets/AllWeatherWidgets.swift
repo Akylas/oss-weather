@@ -81,14 +81,22 @@ extension View {
         let isTransparent = (config.settings?["transparent"] as? Bool) ?? false
         
         if isTransparent {
-            // Transparent background
-            self.containerBackground(Color.clear, for: .widget)
+            // Transparent background with rounded corners
+            self.containerBackground(for: .widget) {
+                Color.clear
+            }
         } else if let backgroundColorStr = config.settings?["background_color"] as? String {
-            // Custom background color from config
-            self.containerBackground(Color(hex: backgroundColorStr), for: .widget)
+            // Custom background color from config with rounded corners
+            self.containerBackground(for: .widget) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(hex: backgroundColorStr))
+            }
         } else {
-            // Default background color
-            self.containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+            // Default background color with rounded corners
+            self.containerBackground(for: .widget) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(WidgetColorProvider.background(for: colorScheme))
+            }
         }
     }
 }

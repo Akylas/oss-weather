@@ -47,13 +47,14 @@ export const DEFAULT_COLOR_MAPS: Record<Platform, Record<string, string>> = {
         surfaceVariant: 'GlanceTheme.colors.surfaceVariant'
     },
     swift: {
-        onSurface: 'WidgetColorProvider.onSurface',
-        onSurfaceVariant: 'WidgetColorProvider.onSurfaceVariant',
-        primary: 'WidgetColorProvider.primary',
-        error: 'WidgetColorProvider.error',
-        widgetBackground: 'WidgetColorProvider.background',
-        surface: 'WidgetColorProvider.surface',
-        surfaceVariant: 'WidgetColorProvider.surfaceVariant'
+        onSurface: 'WidgetColorProvider.onSurface(for: colorScheme)',
+        onSurfaceVariant: 'WidgetColorProvider.onSurfaceVariant(for: colorScheme)',
+        primary: 'WidgetColorProvider.primary(for: colorScheme)',
+        error: 'WidgetColorProvider.error(for: colorScheme)',
+        widgetBackground: 'WidgetColorProvider.background(for: colorScheme)',
+        surface: 'WidgetColorProvider.surface(for: colorScheme)',
+        surfaceVariant: 'WidgetColorProvider.surfaceVariant(for: colorScheme)',
+        background: 'WidgetColorProvider.background(for: colorScheme)'
     },
     javascript: {
         onSurface: '#E6E1E5',

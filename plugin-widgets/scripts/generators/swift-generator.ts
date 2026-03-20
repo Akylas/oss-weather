@@ -287,14 +287,14 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
  * Convert color reference to Swift
  */
 function toSwiftColor(color?: Expression): string {
-    if (color === undefined) return 'WidgetColorProvider.onSurface';
+    if (color === undefined) return 'WidgetColorProvider.onSurface(for: colorScheme)';
 
     // Handle string colors
     if (typeof color === 'string') {
         if (color.startsWith('#')) {
             return `Color(hex: "${color}")`;
         }
-        return DEFAULT_COLOR_MAPS.swift[color] || 'WidgetColorProvider.onSurface';
+        return DEFAULT_COLOR_MAPS.swift[color] || 'WidgetColorProvider.onSurface(for: colorScheme)';
     }
 
     // Handle expressions
@@ -310,7 +310,7 @@ function toSwiftColor(color?: Expression): string {
         return compiled;
     }
 
-    return 'WidgetColorProvider.onSurface';
+    return 'WidgetColorProvider.onSurface(for: colorScheme)';
 }
 
 /**
@@ -333,7 +333,7 @@ function wrapColorParsingSwift(colorExpr: string): string {
             if (match) {
                 const key = match[1];
                 // Replace the matched pattern with a color-parsed version
-                return `(config.settings?["${key}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
+                return `(config.settings?["${key}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
             }
         }
         
@@ -341,11 +341,11 @@ function wrapColorParsingSwift(colorExpr: string): string {
         const keyMatch = colorExpr.match(/config\.settings\?\["([^"]+)"\]/);
         if (keyMatch) {
             const settingKey = keyMatch[1];
-            return `(config.settings?["${settingKey}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
+            return `(config.settings?["${settingKey}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
         }
         
         // Fallback: if we can't extract the key, wrap the entire expression
-        return `(${colorExpr} as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
+        return `(${colorExpr} as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
     }
     
     // Check if expression contains theme color references that need mapping
@@ -919,6 +919,7 @@ import WidgetKit
 struct ${viewName}: View {
     let entry: WeatherEntry
     @Environment(\\.widgetFamily) var family
+    @Environment(\\.colorScheme) var colorScheme
     
     var body: some View {
         GeometryReader { geometry in

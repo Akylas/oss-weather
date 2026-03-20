@@ -13,7 +13,7 @@ class WidgetLifecycleManager {
     // MARK: - Widget Added
     
     func notifyWidgetAdded(widgetId: String, widgetKind: String) {
-        print("WidgetLifecycleManager: Widget added - \(widgetKind) (id: \(widgetId))")
+        WidgetsLogger.i("Lifecycle", "Widget added - \(widgetKind) (id: \(widgetId))")
         
         // Store widget info
         saveActiveWidget(widgetId: widgetId, widgetKind: widgetKind)
@@ -25,7 +25,7 @@ class WidgetLifecycleManager {
     // MARK: - Widget Removed
     
     func notifyWidgetRemoved(widgetId: String, widgetKind: String) {
-        print("WidgetLifecycleManager: Widget removed - \(widgetKind) (id: \(widgetId))")
+        WidgetsLogger.i("Lifecycle", "Widget removed - \(widgetKind) (id: \(widgetId))")
         
         // Remove widget info
         removeActiveWidget(widgetId: widgetId)

@@ -8,13 +8,14 @@ import WidgetKit
 struct ForecastWeatherWidgetView: View {
     let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
             let config = entry.config ?? WidgetConfig()
-            let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface
+            let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 8) {
@@ -123,7 +124,7 @@ struct ForecastWeatherWidgetView: View {
                                                         }
                                                     }
                                                 }.frame(maxWidth: .infinity)
-                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant(for: colorScheme)).cornerRadius(8)
                                         }.frame(maxWidth: .infinity).padding(2)
                                     }
                                 }

@@ -202,7 +202,7 @@ class WidgetDataProvider {
         guard let containerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupId
         ) else {
-            print("Failed to get App Group container")
+            WidgetsLogger.e("WidgetData", "Failed to get App Group container")
             return nil
         }
         
@@ -211,7 +211,7 @@ class WidgetDataProvider {
             .appendingPathComponent("widget_\(widgetId).json")
         
         guard let jsonData = try? Data(contentsOf: dataFile) else {
-            print("Failed to load widget data from: \(dataFile.path)")
+            WidgetsLogger.d("WidgetData", "Failed to load widget data from: \(dataFile.path)")
             return nil
         }
         
@@ -238,7 +238,7 @@ class WidgetDataProvider {
         guard let containerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupId
         ) else {
-            print("Failed to get App Group container")
+            WidgetsLogger.e("WidgetData", "Failed to get App Group container")
             return
         }
         
@@ -256,7 +256,7 @@ class WidgetDataProvider {
         
         if let jsonData = try? encoder.encode(data) {
             try? jsonData.write(to: dataFile)
-            print("Saved widget data to: \(dataFile.path)")
+            WidgetsLogger.d("WidgetData", "Saved widget data to: \(dataFile.path)")
             
             // Reload all widgets after data change
             if #available(iOS 14.0, *) {
@@ -287,6 +287,6 @@ class WidgetDataProvider {
             .appendingPathComponent("widget_\(widgetId).json")
         
         try? FileManager.default.removeItem(at: dataFile)
-        print("Removed widget data for: \(widgetId)")
+        WidgetsLogger.d("WidgetData", "Removed widget data for: \(widgetId)")
     }
 }

@@ -319,13 +319,33 @@ function toSwiftColor(color?: Expression): string {
 function wrapColorParsingSwift(colorExpr: string): string {
     // Check if expression contains config.settings - needs runtime color parsing
     if (colorExpr.includes('config.settings')) {
-        // The expression returns Optional<String> with hex colors
-        // We need to map it to Color, falling back to theme colors
-        // For case expressions: config.settings?["color"] as? String == nil ? WidgetColorProvider.onSurface : config.settings?["color"] as? String
-        // This should become: config.settings?["color"] as? String map to Color(hex:) ?? default
+        // For simple config.settings?["key"] as? String expressions, wrap with Color parsing
+        // For complex expressions (ternaries), they already handle the mapping via case expressions
         
-        // Simplify: if config color exists and is string, parse as hex, else use default
-        return `(config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
+        // Check if this is already a complex ternary with WidgetColorProvider fallback
+        if (colorExpr.includes('?') && colorExpr.includes(':')) {
+            // Complex expression - already handles conditional logic
+            // Just ensure colors are properly parsed at runtime
+            // The expression structure is: condition ? fallback : config.settings?["key"] as? String
+            // We need to wrap just the config.settings part
+            // Since the expression is complex, return it as-is and let the .map handle hex parsing
+            const match = colorExpr.match(/config\.settings\?\["([^"]+)"\]\s+as\?\s+String/);
+            if (match) {
+                const key = match[1];
+                // Replace the matched pattern with a color-parsed version
+                return `(config.settings?["${key}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
+            }
+        }
+        
+        // Simple config.settings reference - extract key and wrap with hex parsing
+        const keyMatch = colorExpr.match(/config\.settings\?\["([^"]+)"\]/);
+        if (keyMatch) {
+            const settingKey = keyMatch[1];
+            return `(config.settings?["${settingKey}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
+        }
+        
+        // Fallback: if we can't extract the key, wrap the entire expression
+        return `(${colorExpr} as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
     }
     
     // Check if expression contains theme color references that need mapping

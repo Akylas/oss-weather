@@ -129,7 +129,7 @@ fun HourlyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(when { size.height.value < 60 -> 0.dp; else -> 2.dp }))
-                    if ((size.height.value >= 60 && "item.precipAccumulation" != null)) {
+                    if ((size.height.value >= 60 && item.precipAccumulation.isNotEmpty())) {
                         Column(
                             modifier = GlanceModifier,
                         ) {

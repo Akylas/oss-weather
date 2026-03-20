@@ -69,7 +69,6 @@ public class WidgetUtils: NSObject {
     /// Save widget configuration for a specific widget instance
     public static func saveWidgetConfig(widgetId: String, configJson: String) {
         guard let jsonData = configJson.data(using: .utf8),
-              let configDict = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
               let config = try? JSONDecoder().decode(WidgetConfig.self, from: jsonData) else {
             print("[WidgetUtils] Failed to decode widget config JSON")
             return

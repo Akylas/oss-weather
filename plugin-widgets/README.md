@@ -8,7 +8,6 @@ This system allows defining widget layouts once in JSON and rendering them on mu
 - **iOS** - WidgetKit SwiftUI views
 - **Android** - Glance Composables
 - **NativeScript** - Native views for in-app preview
-- **HTML** - Static HTML for documentation and image generation
 
 ## Directory Structure
 
@@ -22,10 +21,8 @@ widget-layouts/
 │   ├── HourlyWeatherWidget.json
 │   ├── DailyWeatherWidget.json
 │   └── ForecastWeatherWidget.json
-├── renderers/               # Platform-specific renderers
-│   ├── nativescript-renderer.ts
-│   └── html-renderer.ts
-├── generators/              # Code generators
+├── scripts/generators/              # Code generators
+│   ├── nativescript-svelte-generator.ts # Nativescript code generator
 │   ├── swift-generator.ts   # iOS SwiftUI code generator
 │   └── glance-generator.ts  # Android Glance code generator
 └── image-generator/         # Preview image generation
@@ -120,19 +117,6 @@ npx ts-node generators/glance-generator.ts [layoutsDir] [outputDir]
 
 This generates `*Content.generated.kt` files that can be used in Android widgets.
 
-### Image Generator
-
-Generate preview images using Puppeteer:
-
-```bash
-cd image-generator
-npm install
-npm run generate        # Generate all widget images
-npm run generate:combined  # Generate gallery preview
-```
-
-See `image-generator/README.md` for more details.
-
 ## Usage
 
 ### NativeScript (In-App Preview)
@@ -143,16 +127,6 @@ import layout from '~/widget-layouts/widgets/SimpleWeatherWidget.json';
 
 const view = renderWidget(layout, weatherData, { width: 120, height: 120 });
 container.addChild(view);
-```
-
-### HTML (Preview Generation)
-
-```typescript
-import { generateWidgetPreviewPage } from '~/widget-layouts/renderers/html-renderer';
-import layout from '~/widget-layouts/widgets/SimpleWeatherWidget.json';
-
-const html = generateWidgetPreviewPage(layout, weatherData, { width: 120, height: 120 });
-fs.writeFileSync('preview.html', html);
 ```
 
 ## Colors

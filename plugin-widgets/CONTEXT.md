@@ -276,11 +276,9 @@ npm run generate:all
 
 # Individual generators
 npm run generate:kind-configs   # JSON schemas → TS + Kotlin + Swift kind configs
-npm run generate:samples        # sample weather data files
 npm run generate:ns             # JSON → Svelte Native components
 npm run generate:glance         # JSON → Kotlin Glance composables
 npm run generate:swift          # JSON → SwiftUI views
-npm run generate:images         # widget preview PNGs (requires Puppeteer)
 ```
 
 ### `glance-generator.ts` — Android Glance
@@ -326,22 +324,6 @@ npm run generate:images         # widget preview PNGs (requires Puppeteer)
 
 ---
 
-## Renderers
-
-### `scripts/renderers/html-renderer.ts`
-- **Runtime** (not a generator): parses layout JSON and emits HTML string
-- Uses `src/mapbox-expressions.ts` for expression evaluation
-- Used by the Vite dev server (`vite.config.ts` + `scripts/index.html`) to preview widgets in browser
-- Also used by `generate-images.ts` to produce PNGs via Puppeteer
-- **Still uses local color/font maps** — candidate for future refactoring to use shared modules
-
-### `src/mapbox-expressions.ts`
-- Browser/NativeScript runtime expression evaluator
-- Powers the HTML renderer and in-app Svelte widget previews
-- Separate from `expression-compiler.ts` (which generates *code strings*); this one *evaluates* expressions against real data
-
----
-
 ## Theme colors
 
 | Name              | Dark hex  | Usage                        |
@@ -377,8 +359,7 @@ src/widgets/*.json
         ├──► generate-widget-kind-configs.ts ──► src/WidgetKindConfigs.ts
         │                                    ──► platforms/android/…/WidgetKindConfigs.generated.kt
         │                                    ──► platforms/ios/…/WidgetKindConfigs.generated.swift
-        │
-        └──► html-renderer.ts (runtime) ──► Puppeteer ──► PNG preview images
+
 ```
 
 Widget update at runtime:
@@ -418,16 +399,6 @@ When adding a new expression operator:
 
 ---
 
-## Running the dev preview
-
-```bash
-cd plugin-widgets
-npm run dev   # starts Vite dev server on http://localhost:5173
-              # renders widget previews in the browser using html-renderer.ts
-```
-
----
-
 ## Key files to know
 
 | File | When to touch |
@@ -439,7 +410,6 @@ npm run dev   # starts Vite dev server on http://localhost:5173
 | `scripts/generators/glance-generator.ts` | Change Android Glance output (reference impl) |
 | `scripts/generators/swift-generator.ts` | Change iOS SwiftUI output |
 | `scripts/generators/nativescript-svelte-generator.ts` | Change Svelte Native output |
-| `scripts/renderers/html-renderer.ts` | Change HTML preview rendering |
 | `src/WidgetTypes.ts` | Add/change shared TypeScript types |
 | `platforms/android/java/…/WeatherWidgetManager.kt` | Change Android data model |
 | `platforms/ios/extensions/widgets/WeatherWidgetData.swift` | Change iOS data model |

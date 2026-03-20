@@ -14,6 +14,7 @@ struct SimpleWeatherWidgetView: View {
             let width = geometry.size.width
             let height = geometry.size.height
             let config = entry.config ?? WidgetConfig()
+            let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
                 WidgetContainer(padding: 6) {
@@ -25,25 +26,25 @@ struct SimpleWeatherWidgetView: View {
                                 }
                                 Text(data.temperature)
                                     .font(.system(size: (width * 0.2), weight: .bold))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
+                                    .foregroundColor(widgetColor)
                             }.frame(maxWidth: .infinity)
                             Text(data.locationName)
                                 .font(.system(size: 8, weight: .regular))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                                .lineLimit(1).opacity(0.6)
+                                .foregroundColor(widgetColor)
+                                .lineLimit(1).opacity(0.5)
                         }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3)
                     }
                     else {
                         ZStack {
                             Text(data.locationName)
                                 .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                                .lineLimit(1).opacity(0.6)
+                                .foregroundColor(widgetColor)
+                                .lineLimit(1).opacity(0.5)
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(data.temperature)
                                         .font(.system(size: min((width * 0.26), 30), weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                        .foregroundColor(widgetColor)
                                 }.frame(maxHeight: .infinity)
                                 VStack(alignment: .trailing, spacing: 0) {
                                     if !data.iconPath.isEmpty {
@@ -55,8 +56,8 @@ struct SimpleWeatherWidgetView: View {
                                 ZStack(alignment: .bottomTrailing) {
                                     Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                        .multilineTextAlignment(.trailing).opacity(0.6)
+                                        .foregroundColor(widgetColor)
+                                        .multilineTextAlignment(.trailing).opacity(0.5)
                                 }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             }
                         }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)

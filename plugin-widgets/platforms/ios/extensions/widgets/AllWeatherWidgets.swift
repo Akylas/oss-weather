@@ -4,6 +4,27 @@
 import WidgetKit
 import SwiftUI
 
+// MARK: - Widget Background Helper
+@available(iOS 17.0, *)
+extension View {
+    @ViewBuilder
+    func widgetBackground(for entry: WeatherEntry, colorScheme: ColorScheme) -> some View {
+        let config = entry.config ?? WidgetConfig()
+        let isTransparent = (config.settings?["transparent"] as? Bool) ?? false
+        
+        if isTransparent {
+            // Transparent background
+            self.containerBackground(Color.clear, for: .widget)
+        } else if let backgroundColorStr = config.settings?["background_color"] as? String {
+            // Custom background color from config
+            self.containerBackground(Color(hex: backgroundColorStr), for: .widget)
+        } else {
+            // Default background color
+            self.containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+        }
+    }
+}
+
 // MARK: - Simple Weather Widget
 @available(iOS 17.0, *)
 struct SimpleWeatherWidget: Widget {
@@ -13,7 +34,7 @@ struct SimpleWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.simpleWeatherName)
         .description(WidgetLocalizedStrings.simpleWeatherDesc)
@@ -30,7 +51,7 @@ struct SimpleWeatherWithClockWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWithClockWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithClockName)
         .description(WidgetLocalizedStrings.weatherWithClockDesc)
@@ -47,7 +68,7 @@ struct SimpleWeatherWithDateWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWithDateWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithDateName)
         .description(WidgetLocalizedStrings.weatherWithDateDesc)
@@ -64,7 +85,7 @@ struct HourlyWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             HourlyWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.hourlyForecastName)
         .description(WidgetLocalizedStrings.hourlyForecastDesc)
@@ -81,7 +102,7 @@ struct DailyWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             DailyWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.dailyForecastName)
         .description(WidgetLocalizedStrings.dailyForecastDesc)
@@ -98,7 +119,7 @@ struct ForecastWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             ForecastWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.detailedForecastName)
         .description(WidgetLocalizedStrings.detailedForecastDesc)

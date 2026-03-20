@@ -10,6 +10,7 @@ struct WeatherEntry: TimelineEntry {
     let data: WeatherWidgetData?
     let widgetFamily: WidgetFamily
     let widgetKind: String
+    let config: WidgetConfig?
 }
 
 @available(iOS 14.0, *)
@@ -20,19 +21,22 @@ struct WeatherTimelineProvider: TimelineProvider {
             date: Date(),
             data: nil,
             widgetFamily: context.family,
-            widgetKind: widgetKind
+            widgetKind: widgetKind,
+            config: nil
         )
     }
     
     func getSnapshot(in context: Context, completion: @escaping (WeatherEntry) -> Void) {
         let widgetId = getWidgetId(from: context)
         let data = WidgetDataProvider.loadWidgetData(widgetId: widgetId)
+        let config = WidgetSettings.shared.loadWidgetConfig(widgetId: widgetId)
         
         let entry = WeatherEntry(
             date: Date(),
             data: data,
             widgetFamily: context.family,
-            widgetKind: widgetKind
+            widgetKind: widgetKind,
+            config: config
         )
         completion(entry)
     }
@@ -49,6 +53,7 @@ struct WeatherTimelineProvider: TimelineProvider {
         
         let currentDate = Date()
         let weatherData = WidgetDataProvider.loadWidgetData(widgetId: widgetId)
+        let config = WidgetSettings.shared.loadWidgetConfig(widgetId: widgetId)
         
         // Determine refresh policy based on widget type
         let isClockWidget = widgetKind.contains("Clock")
@@ -65,7 +70,8 @@ struct WeatherTimelineProvider: TimelineProvider {
                     date: entryDate,
                     data: weatherData,
                     widgetFamily: context.family,
-                    widgetKind: widgetKind
+                    widgetKind: widgetKind,
+                    config: config
                 ))
             }
             nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: currentDate)!
@@ -77,7 +83,8 @@ struct WeatherTimelineProvider: TimelineProvider {
                 date: currentDate,
                 data: weatherData,
                 widgetFamily: context.family,
-                widgetKind: widgetKind
+                widgetKind: widgetKind,
+                config: config
             ))
             
             var components = calendar.dateComponents([.year, .month, .day], from: currentDate)
@@ -97,7 +104,8 @@ struct WeatherTimelineProvider: TimelineProvider {
                     date: entryDate,
                     data: weatherData,
                     widgetFamily: context.family,
-                    widgetKind: widgetKind
+                    widgetKind: widgetKind,
+                    config: config
                 ))
             }
             

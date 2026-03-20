@@ -495,9 +495,65 @@ export class WidgetBridge extends WidgetBridgeBase {
     }
 
     public saveWidgetConfig(widgetId: string, config: WidgetConfig) {
-        // TODO: implement saveWidgetConfig
-        DEV_LOG && console.log('saveWidgetConfig', widgetId, config);
-        WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
+        try {
+            DEV_LOG && console.log(TAG, 'saveWidgetConfig', widgetId, config);
+            
+            // Save to WidgetConfigManager (TypeScript side)
+            WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
+            
+            // Sync to native iOS WidgetSettings
+            if (config) {
+                const configJson = JSON.stringify(config);
+                WidgetUtils.saveWidgetConfig(widgetId, configJson);
+                
+                // Reload the widget to apply new config
+                this.reloadWidget(widgetId);
+            }
+        } catch (error) {
+            console.error(TAG, 'Error saving widget config:', error, error.stack);
+        }
+    }
+    
+    public saveKindConfig(widgetKind: string, config: WidgetConfig) {
+        try {
+            DEV_LOG && console.log(TAG, 'saveKindConfig', widgetKind, config);
+            
+            if (config) {
+                const configJson = JSON.stringify(config);
+                WidgetUtils.saveKindConfig(widgetKind, configJson);
+                
+                // Reload all widgets of this kind
+                this.reloadWidgetTimeline(widgetKind);
+            }
+        } catch (error) {
+            console.error(TAG, 'Error saving kind config:', error, error.stack);
+        }
+    }
+    
+    public loadWidgetConfig(widgetId: string): WidgetConfig | null {
+        try {
+            const configJson = WidgetUtils.loadWidgetConfig(widgetId);
+            if (configJson) {
+                return JSON.parse(configJson);
+            }
+            return null;
+        } catch (error) {
+            console.error(TAG, 'Error loading widget config:', error, error.stack);
+            return null;
+        }
+    }
+    
+    public loadKindConfig(widgetKind: string): WidgetConfig | null {
+        try {
+            const configJson = WidgetUtils.loadKindConfig(widgetKind);
+            if (configJson) {
+                return JSON.parse(configJson);
+            }
+            return null;
+        } catch (error) {
+            console.error(TAG, 'Error loading kind config:', error, error.stack);
+            return null;
+        }
     }
 
     /**

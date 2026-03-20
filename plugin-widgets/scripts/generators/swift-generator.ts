@@ -299,30 +299,41 @@ function toSwiftColor(color?: Expression): string {
 
     // Handle expressions
     if (isExpression(color)) {
-        return compileExpression(color, {
+        // For expressions, compile and handle color mapping inline
+        const compiled = compileExpression(color, {
             platform: 'swift',
-            context: 'value',
-            formatter: (v: string) => {
-                if (v.startsWith('#')) {
-                    return `Color(hex: "${v}")`;
-                }
-                return DEFAULT_COLOR_MAPS.swift[v] || 'WidgetColorProvider.onSurface';
-            }
+            context: 'value'
         });
+        
+        // If the compiled expression references config.settings, it needs hex color parsing
+        // Otherwise, handle color theme lookups
+        return compiled;
     }
 
     return 'WidgetColorProvider.onSurface';
 }
 
 /**
- * Wrap color expression with hex parsing for config.settings.color references
+ * Wrap color expression with proper Swift color handling
  */
 function wrapColorParsingSwift(colorExpr: string): string {
-    // If the expression contains config.settings, wrap with Color parsing
-    if (colorExpr.includes('entry.config.settings')) {
-        // Wrap with UIColor hex parsing
-        return `(${colorExpr} as? String).flatMap { Color(UIColor(hexString: $0)) } ?? WidgetColorProvider.onSurface`;
+    // Check if expression contains config.settings - needs runtime color parsing
+    if (colorExpr.includes('config.settings')) {
+        // The expression returns Optional<String> with hex colors
+        // We need to map it to Color, falling back to theme colors
+        // For case expressions: config.settings?["color"] as? String == nil ? WidgetColorProvider.onSurface : config.settings?["color"] as? String
+        // This should become: config.settings?["color"] as? String map to Color(hex:) ?? default
+        
+        // Simplify: if config color exists and is string, parse as hex, else use default
+        return `(config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface`;
     }
+    
+    // Check if expression contains theme color references that need mapping
+    if (colorExpr.includes('color.')) {
+        // Theme color references should already be mapped by DEFAULT_COLOR_MAPS
+        return colorExpr;
+    }
+    
     return colorExpr;
 }
 

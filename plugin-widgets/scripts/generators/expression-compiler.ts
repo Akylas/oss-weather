@@ -189,8 +189,16 @@ export function compileExpression(expr: Expression, options: CompilationOptions)
             return compileGet(args[0], platform, addDataPrefix, settingType);
 
         case 'has':
-            const a = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
-            return `${a} != null`;
+            // args[0] should be a property name string
+            if (typeof args[0] === 'string') {
+                return compileHas(args[0], platform, addDataPrefix);
+            }
+            // If it's an expression, compile it and check for null/empty
+            const hasExpr = compileExpression(args[0], { ...options, context: 'value', formatter: undefined });
+            if (platform === 'swift') {
+                return `!(${hasExpr}?.isEmpty ?? true)`;
+            }
+            return `${hasExpr} != null`;
 
         // Arithmetic
         case '+':
@@ -352,12 +360,12 @@ function compileKotlinSettingAccess(key: string, type: SettingType): string {
 /**
  * Generate Swift typed accessor for config.settings
  * Examples:
- *  - boolean: entry.config.settings["clockBold"] as? Bool
- *  - string: entry.config.settings["theme"] as? String
- *  - number: entry.config.settings["fontSize"] as? Int
+ *  - boolean: config?.settings?["clockBold"] as? Bool
+ *  - string: config?.settings?["theme"] as? String
+ *  - number: config?.settings?["fontSize"] as? Int
  */
 function compileSwiftSettingAccess(key: string, type: SettingType): string {
-    const baseAccess = `entry.config.settings["${key}"]`;
+    const baseAccess = `config.settings?["${key}"]`;
     switch (type) {
         case 'boolean':
             return `${baseAccess} as? Bool`;

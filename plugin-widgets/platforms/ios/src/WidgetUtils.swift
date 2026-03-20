@@ -63,4 +63,55 @@ public class WidgetUtils: NSObject {
             }
         }
     }
+    
+    // MARK: - Widget Config Management
+    
+    /// Save widget configuration for a specific widget instance
+    public static func saveWidgetConfig(widgetId: String, configJson: String) {
+        guard let jsonData = configJson.data(using: .utf8),
+              let configDict = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+              let config = try? JSONDecoder().decode(WidgetConfig.self, from: jsonData) else {
+            print("[WidgetUtils] Failed to decode widget config JSON")
+            return
+        }
+        WidgetSettings.shared.saveWidgetConfig(widgetId: widgetId, config: config)
+        print("[WidgetUtils] Saved widget config for \(widgetId)")
+    }
+    
+    /// Load widget configuration for a specific widget instance
+    public static func loadWidgetConfig(widgetId: String) -> String? {
+        guard let config = WidgetSettings.shared.loadWidgetConfig(widgetId: widgetId) else {
+            return nil
+        }
+        
+        if let jsonData = try? JSONEncoder().encode(config),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
+        }
+        
+        return nil
+    }
+    
+    /// Save widget kind default configuration
+    public static func saveKindConfig(widgetKind: String, configJson: String) {
+        guard let jsonData = configJson.data(using: .utf8),
+              let config = try? JSONDecoder().decode(WidgetConfig.self, from: jsonData) else {
+            print("[WidgetUtils] Failed to decode kind config JSON")
+            return
+        }
+        WidgetSettings.shared.saveKindConfig(widgetKind: widgetKind, config: config)
+        print("[WidgetUtils] Saved kind config for \(widgetKind)")
+    }
+    
+    /// Load widget kind default configuration
+    public static func loadKindConfig(widgetKind: String) -> String? {
+        let config = WidgetSettings.shared.getKindConfig(widgetKind: widgetKind)
+        
+        if let jsonData = try? JSONEncoder().encode(config),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
+        }
+        
+        return nil
+    }
 }

@@ -27,11 +27,8 @@ class WidgetSettings {
     ]
     
     private init() {
-        guard let suiteName = WidgetUtils.suiteName else {
-            fatalError("Widget suite name not configured")
-        }
-        guard let defaults = UserDefaults(suiteName: suiteName) else {
-            fatalError("Failed to create UserDefaults for suite: \(suiteName)")
+        guard let defaults = UserDefaults(suiteName: WidgetUtils.suiteName) else {
+            fatalError("Failed to create UserDefaults for suite: \(WidgetUtils.suiteName)")
         }
         self.userDefaults = defaults
     }
@@ -337,7 +334,7 @@ struct WidgetConfig: Codable {
         
         // Decode settings as [String: Any]
         if let settingsData = try? container.decodeIfPresent(Data.self, forKey: .settings) {
-            settings = try? JSONSerialization.jsonObject(with: settingsData) as? [String: Any]
+            settings = try? JSONSerialization.jsonObject(with: settingsData!) as! [String : Any]
         } else if let settingsDict = try? container.decodeIfPresent([String: AnyCodable].self, forKey: .settings) {
             settings = settingsDict?.mapValues { $0.value }
         }

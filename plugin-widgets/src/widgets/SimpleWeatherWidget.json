@@ -3,7 +3,6 @@
     "name": "SimpleWeatherWidget",
     "displayName": "Simple Weather",
     "description": "Shows current temperature, weather icon, and location",
-    "defaultPadding": 6,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {
         "type": "conditional",
@@ -120,17 +119,16 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 260, "height": 120 },
-            { "width": 50, "height": 50 },
-            { "width": 80, "height": 80 },
-            { "width": 120, "height": 120 }
+            { "width": 260, "height": 120, "category":"medium" },
+            { "width": 50, "height": 50, "category":"small" },
+            { "width": 80, "height": 80, "category":"small" },
+            { "width": 120, "height": 120, "category":"medium" }
         ],
         "fakeData": {
             "temperature": "8\u00b0",
             "iconPath": "800d",
             "description": "Partly Cloudy",
-            "locationName": "Grenoble",
-            "date": "Mon, Feb 24"
+            "locationName": "Grenoble"
         }
     }
 }

@@ -34,7 +34,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
@@ -45,6 +44,11 @@ interface WidgetLayout {
         layout: BaseLayoutElement;
     }[];
     layout: BaseLayoutElement;
+    generatePreviews?: boolean;
+    preview?: {
+        sizes?: { width: number; height: number; category: string }[];
+        fakeData?: Record<string, any>;
+    };
 }
 
 // ============================================================================
@@ -54,7 +58,7 @@ interface WidgetLayout {
 /**
  * Compile an expression or value to Swift code
  */
-function compileToSwift(value: Expression | undefined, defaultValue: string = '""'): string {
+function compileToSwift(value: Expression | undefined, defaultValue: string = '""', literalHandler?: Function): string {
     if (value === undefined) return defaultValue;
 
     // Handle template strings with {{}} bindings
@@ -72,6 +76,9 @@ function compileToSwift(value: Expression | undefined, defaultValue: string = '"
 
     // Handle literal values
     if (typeof value === 'string') {
+        if (literalHandler) {
+            return literalHandler(value);
+        }
         return `"${escapeSwiftString(value)}"`;
     }
     if (typeof value === 'number') {
@@ -338,7 +345,7 @@ function toSwiftColor(color?: Expression): string {
             platform: 'swift',
             context: 'value'
         });
-        
+
         // If the compiled expression references config.settings, it needs hex color parsing
         // Otherwise, handle color theme lookups
         return compiled;
@@ -355,7 +362,7 @@ function wrapColorParsingSwift(colorExpr: string): string {
     if (colorExpr.includes('config.settings')) {
         // For simple config.settings?["key"] as? String expressions, wrap with Color parsing
         // For complex expressions (ternaries), they already handle the mapping via case expressions
-        
+
         // Check if this is already a complex ternary with WidgetColorProvider fallback
         if (colorExpr.includes('?') && colorExpr.includes(':')) {
             // Complex expression - already handles conditional logic
@@ -370,24 +377,24 @@ function wrapColorParsingSwift(colorExpr: string): string {
                 return `(config.settings?["${key}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
             }
         }
-        
+
         // Simple config.settings reference - extract key and wrap with hex parsing
         const keyMatch = colorExpr.match(/config\.settings\?\["([^"]+)"\]/);
         if (keyMatch) {
             const settingKey = keyMatch[1];
             return `(config.settings?["${settingKey}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
         }
-        
+
         // Fallback: if we can't extract the key, wrap the entire expression
         return `(${colorExpr} as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
     }
-    
+
     // Check if expression contains theme color references that need mapping
     if (colorExpr.includes('color.')) {
         // Theme color references should already be mapped by DEFAULT_COLOR_MAPS
         return colorExpr;
     }
-    
+
     return colorExpr;
 }
 
@@ -660,10 +667,12 @@ function generateColumn(element: BaseLayoutElement, indent: string, defaultColor
     }
 
     lines.push(`${indent}}`);
-    
+
     // Add .fixedSize for VStack
-    lines[lines.length - 1] += '.fixedSize(horizontal: true, vertical: false)';
-    
+    if (parentType) {
+        lines[lines.length - 1] += '.fixedSize(horizontal: true, vertical: false)';
+    }
+
     applySwiftModifiers(lines, element);
 
     return lines;
@@ -689,10 +698,12 @@ function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: 
     }
 
     lines.push(`${indent}}`);
-    
+
     // Add .fixedSize for HStack
-    lines[lines.length - 1] += '.fixedSize(horizontal: false, vertical: true)';
-    
+    if (parentType) {
+        lines[lines.length - 1] += '.fixedSize(horizontal: false, vertical: true)';
+    }
+
     applySwiftModifiers(lines, element);
 
     return lines;
@@ -742,7 +753,7 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
     const lines: string[] = [];
 
     // Compile text expression
-    const textExpr = compileToSwift(element.text, '""');
+    const textExpr = compileToSwift(element.text, '""', (value: string) => `WidgetLocalizedStrings.${value}`);
 
     lines.push(`${indent}Text(${textExpr})`);
 
@@ -975,93 +986,103 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
  */
 function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): string[] {
     const lines: string[] = [];
-    
+
     // Check if previews should be generated
     if (layout.generatePreviews !== true || !layout.preview) {
         return lines;
     }
-    
+
     // Determine preview sizes
-    let sizes: { width: number; height: number }[];
+    let sizes: { width: number; height: number; category: string }[];
     if (layout.preview.sizes && layout.preview.sizes.length > 0) {
         sizes = layout.preview.sizes;
     } else {
-        sizes = [{ width: 260, height: 120 }];
+        sizes = [{ width: 260, height: 120, category: 'medium' }];
     }
-    
+
     // Build fakeData Swift constructor arguments
     const fakeData = layout.preview.fakeData;
     const fakeDataLines: string[] = [];
-    
+
     if (fakeData) {
         const scalar = (key: string, v: any) => `            ${key}: "${v}"`;
-        
+
         const hourlyItem = (item: any) => {
             const props = [
                 item.time !== undefined ? `time: "${item.time}"` : null,
                 item.temperature !== undefined ? `temperature: "${item.temperature}"` : null,
                 item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
+                item.description !== undefined ? `description: "${item.description}"` : null,
                 item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed: "${item.windSpeed}"` : null,
-                item.description !== undefined ? `description: "${item.description}"` : null,
                 item.precipitation !== undefined ? `precipitation: "${item.precipitation}"` : null
             ].filter(Boolean);
             return `HourlyData(${props.join(', ')})`;
         };
-        
+
         const dailyItem = (item: any) => {
             const props = [
                 item.day !== undefined ? `day: "${item.day}"` : null,
-                item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
                 item.temperatureHigh !== undefined ? `temperatureHigh: "${item.temperatureHigh}"` : null,
                 item.temperatureLow !== undefined ? `temperatureLow: "${item.temperatureLow}"` : null,
-                item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null,
+                item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
+                item.description !== undefined ? `description: "${item.description}"` : null,
                 item.precipitation !== undefined ? `precipitation: "${item.precipitation}"` : null,
                 item.windSpeed !== undefined ? `windSpeed: "${item.windSpeed}"` : null,
-                item.description !== undefined ? `description: "${item.description}"` : null
+                item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null
             ].filter(Boolean);
             return `DailyData(${props.join(', ')})`;
         };
-        
-        for (const [key, value] of Object.entries(fakeData)) {
-            switch (key) {
-                case 'temperature':
-                case 'description':
-                case 'locationName':
-                case 'date':
-                    fakeDataLines.push(`${scalar(key, value)},`);
-                    break;
-                case 'iconPath':
-                    fakeDataLines.push(`${scalar(key, `app/assets/icon_themes/meteocons/images/${value}.png`)},`);
-                    break;
-                case 'hourlyData':
-                    fakeDataLines.push(`            hourlyData: [${(value as any[]).map(hourlyItem).join(', ')}],`);
-                    break;
-                case 'dailyData':
-                    fakeDataLines.push(`            dailyData: [${(value as any[]).map(dailyItem).join(', ')}],`);
-                    break;
+
+        const WeatherWidgetDataKeys = ['temperature', 'locationName', 'iconPath', 'description', 'hourlyData', 'dailyData'];
+        WeatherWidgetDataKeys.forEach((key) => {
+            const value = fakeData[key];
+            if (value) {
+                switch (key) {
+                    case 'temperature':
+                    case 'description':
+                    case 'locationName':
+                    case 'date':
+                        fakeDataLines.push(`${scalar(key, value)},`);
+                        break;
+                    case 'iconPath':
+                        fakeDataLines.push(`${scalar(key, `app/assets/icon_themes/meteocons/images/${value}.png`)},`);
+                        break;
+                    case 'hourlyData':
+                        fakeDataLines.push(`            hourlyData: [${(value as any[]).map(hourlyItem).join(', ')}],`);
+                        break;
+                    case 'dailyData':
+                        fakeDataLines.push(`            dailyData: [${(value as any[]).map(dailyItem).join(', ')}],`);
+                        break;
+                }
             }
-        }
+        });
     }
-    
+
     fakeDataLines.push(`            loadingState: .loaded,`);
     fakeDataLines.push(`            errorMessage: nil`);
-    
+
     lines.push(`\n// MARK: - Previews`);
     lines.push(`@available(iOS 14.0, *)`);
-    
+
     // Generate preview for each size
+    const handledCategories = new Set<string>();
     for (const size of sizes) {
-        lines.push(`#Preview("${size.width}x${size.height}", as: .systemMedium) {`);
-        lines.push(`    ${layout.name}()`);
-        lines.push(`} timeline: {`);
-        lines.push(`    let fakeData = WeatherWidgetData(`);
-        lines.push(...fakeDataLines);
-        lines.push(`    )`);
-        lines.push(`    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
-        lines.push(`}\n`);
+        const category = size.category;
+        if (!handledCategories.has(category)) {
+            handledCategories.add(category);
+            const system = `system${category[0].toUpperCase()}${category.slice(1)}`;
+            lines.push(`#Preview ("Preview ${category}", as: .${system}) {`);
+            lines.push(`    ${layout.name}()`);
+            lines.push(`} timeline: {`);
+            lines.push(`    let fakeData = WeatherWidgetData(`);
+            lines.push(...fakeDataLines);
+            lines.push(`    )`);
+            lines.push(`    WeatherEntry(date: .now, data: fakeData, widgetFamily: .${system}, widgetKind: "${layout.name}", config: WidgetConfig())`);
+            lines.push(`}\n`);
+        }
     }
-    
+
     // Error preview
     lines.push(`#Preview("Error", as: .systemMedium) {`);
     lines.push(`    ${layout.name}()`);
@@ -1072,7 +1093,7 @@ function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): stri
     lines.push(`    )`);
     lines.push(`    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
     lines.push(`}`);
-    
+
     return lines;
 }
 

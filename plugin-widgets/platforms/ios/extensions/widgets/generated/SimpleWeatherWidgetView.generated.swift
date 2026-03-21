@@ -33,7 +33,7 @@ struct SimpleWeatherWidgetView: View {
                                 .font(.system(size: 8, weight: .regular))
                                 .foregroundColor(widgetColor)
                                 .lineLimit(1).opacity(0.5)
-                        }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3)
+                        }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3)
                     }
                     else {
                         ZStack {
@@ -52,7 +52,7 @@ struct SimpleWeatherWidgetView: View {
                                         WeatherIconView(data.iconPath, description: data.description, size: 64)
                                     }
                                 }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity).layoutPriority(1).frame(maxHeight: .infinity, alignment: .center).frame(maxWidth: .infinity)
-                            }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).frame(maxHeight: .infinity)
+                            }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             if !(data.description ?? "").isEmpty {
                                 ZStack(alignment: .bottomTrailing) {
                                     Text(data.description)
@@ -73,64 +73,32 @@ struct SimpleWeatherWidgetView: View {
 
 // MARK: - Previews
 @available(iOS 14.0, *)
-#Preview("260x120", as: .systemMedium) {
+#Preview ("Preview medium", as: .systemMedium) {
     SimpleWeatherWidget()
 } timeline: {
     let fakeData = WeatherWidgetData(
             temperature: "8°",
+            locationName: "Grenoble",
             iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
             description: "Partly Cloudy",
-            locationName: "Grenoble",
-            date: "Mon, Feb 24",
             loadingState: .loaded,
             errorMessage: nil
     )
     WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
 }
 
-#Preview("50x50", as: .systemMedium) {
+#Preview ("Preview small", as: .systemSmall) {
     SimpleWeatherWidget()
 } timeline: {
     let fakeData = WeatherWidgetData(
             temperature: "8°",
+            locationName: "Grenoble",
             iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
             description: "Partly Cloudy",
-            locationName: "Grenoble",
-            date: "Mon, Feb 24",
             loadingState: .loaded,
             errorMessage: nil
     )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
-}
-
-#Preview("80x80", as: .systemMedium) {
-    SimpleWeatherWidget()
-} timeline: {
-    let fakeData = WeatherWidgetData(
-            temperature: "8°",
-            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
-            description: "Partly Cloudy",
-            locationName: "Grenoble",
-            date: "Mon, Feb 24",
-            loadingState: .loaded,
-            errorMessage: nil
-    )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
-}
-
-#Preview("120x120", as: .systemMedium) {
-    SimpleWeatherWidget()
-} timeline: {
-    let fakeData = WeatherWidgetData(
-            temperature: "8°",
-            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
-            description: "Partly Cloudy",
-            locationName: "Grenoble",
-            date: "Mon, Feb 24",
-            loadingState: .loaded,
-            errorMessage: nil
-    )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemSmall, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
 }
 
 #Preview("Error", as: .systemMedium) {

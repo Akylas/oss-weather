@@ -51,7 +51,6 @@ private fun Preview() {
         iconPath = "icon_themes/meteocons/images/800d.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
-        date = "Mon, Feb 24",
         lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED
     )

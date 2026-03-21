@@ -60,7 +60,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;

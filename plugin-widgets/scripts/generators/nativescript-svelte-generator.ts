@@ -24,7 +24,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
@@ -1355,13 +1354,6 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         const attrBg = buildAttribute(widgetName, 'backgroundColor', v, ['root'], 'data', usedColors);
         if (attrBg) wrapperAttrs.push(attrBg);
     }
-    // if (layout.defaultPadding !== undefined) {
-    //     let value = layout.defaultPadding;
-    //     if (Array.isArray(value)) {
-    //         value = evaluateMapboxExpression(value, '') as any;
-    //     }
-    //     wrapperAttrs.push(`padding={${value}}`);
-    // }
     wrapperAttrs.push(`class="widget-container"`);
 
     const wrapperTag = 'gridlayout';

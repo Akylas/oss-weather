@@ -23,6 +23,8 @@ struct WidgetLocalizedStrings {
     static let detailedForecastDesc = NSLocalizedString("widget.forecast.description", comment: "Detailed weather forecast")
     
     // MARK: - Common Text
+    static let daily = NSLocalizedString("daily", comment: "Daily")
+    static let hourly = NSLocalizedString("hourly", comment: "Hourly")
     static let noLocationSet = NSLocalizedString("widget.no_location", comment: "No location set")
     static let tapToConfigure = NSLocalizedString("widget.tap_configure", comment: "Tap to configure")
     static let loading = NSLocalizedString("widget.loading", comment: "Loading...")

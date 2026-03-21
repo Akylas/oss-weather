@@ -748,13 +748,34 @@
     function onSwipe(e) {
         const enabled = ApplicationSettings.getBoolean(SETTINGS_SWIPE_ACTION_BAR_PROVIDER, SWIPE_ACTION_BAR_PROVIDER);
         if (enabled && weatherLocation) {
-            const currentProviderIndex = providers.indexOf(provider);
-            let newIndex = currentProviderIndex + (e.direction === 1 ? -1 : 1);
-            if (newIndex < 0) {
-                newIndex += providers.length;
+            function selectNextProvider(delta: number) {
+                const currentProviderIndex = providers.indexOf(provider);
+                let newIndex = currentProviderIndex + (e.direction === 1 ? -delta : delta);
+                if (newIndex < 0) {
+                    newIndex += providers.length;
+                }
+                return providers[newIndex % providers.length];
             }
-            const newProvider = providers[newIndex % providers.length];
-            setWeatherLocationProvider(newProvider);
+
+            function canUseProvider(provider) {
+                if (!providerRequiresApiKey(provider)) {
+                    const providerClass = getProviderClass(provider);
+                    return providerClass.hasApiKey();
+                }
+                return true;
+            }
+            let delta = 1;
+
+            let nextProvider = selectNextProvider(delta);
+
+            while (nextProvider !== weatherLocation.provider && !canUseProvider(nextProvider)) {
+                delta = 1;
+                nextProvider = selectNextProvider(delta);
+            }
+            if (nextProvider !== weatherLocation.provider) {
+                provider = nextProvider;
+                refreshWeather();
+            }
         }
     }
 

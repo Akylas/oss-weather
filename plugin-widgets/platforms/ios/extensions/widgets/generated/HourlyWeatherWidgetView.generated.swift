@@ -28,7 +28,7 @@ struct HourlyWeatherWidgetView: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .lineLimit(1).opacity(0.5)
                                 Spacer().frame(height: 2)
-                            }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity)
+                            }.frame(maxWidth: .infinity)
                         }
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
@@ -52,14 +52,14 @@ struct HourlyWeatherWidgetView: View {
                                                     Text(item.precipAccumulation)
                                                         .font(.system(size: height < 80 ? 9 : 10, weight: .regular))
                                                         .foregroundColor(widgetColor).opacity(0.5)
-                                                }.fixedSize(horizontal: true, vertical: false)
+                                                }
                                             }
-                                        }.fixedSize(horizontal: true, vertical: false).frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2)
+                                        }.frame(width: 56).frame(maxHeight: .infinity).padding(.horizontal, 2)
                                     }
-                                }.fixedSize(horizontal: false, vertical: true)
+                                }
                             }
                         }
-                    }.fixedSize(horizontal: true, vertical: false).padding(.horizontal, 10).padding(.vertical, 6)
+                    }.padding(.horizontal, 10).padding(.vertical, 6)
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)
@@ -70,44 +70,27 @@ struct HourlyWeatherWidgetView: View {
 
 // MARK: - Previews
 @available(iOS 14.0, *)
-#Preview("360x150", as: .systemMedium) {
+#Preview ("Preview large", as: .systemLarge) {
     HourlyWeatherWidget()
 } timeline: {
     let fakeData = WeatherWidgetData(
             temperature: "12 °C",
             locationName: "Paris",
             description: "Partly Cloudy",
-            date: "Mon, Feb 24",
             hourlyData: [HourlyData(time: "06:00", temperature: "6 °C", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm", windSpeed: "10 km/h"), HourlyData(time: "07:00", temperature: "7 °C", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm", windSpeed: "10 km/h"), HourlyData(time: "08:00", temperature: "8 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "12 km/h"), HourlyData(time: "09:00", temperature: "10 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0 mm", windSpeed: "12 km/h"), HourlyData(time: "10:00", temperature: "12 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "14 km/h"), HourlyData(time: "11:00", temperature: "13 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "14 km/h"), HourlyData(time: "12:00", temperature: "14 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0.2 mm", windSpeed: "16 km/h"), HourlyData(time: "13:00", temperature: "14 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0.5 mm", windSpeed: "16 km/h")],
             loadingState: .loaded,
             errorMessage: nil
     )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "HourlyWeatherWidget", config: WidgetConfig())
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemLarge, widgetKind: "HourlyWeatherWidget", config: WidgetConfig())
 }
 
-#Preview("120x120", as: .systemMedium) {
+#Preview ("Preview medium", as: .systemMedium) {
     HourlyWeatherWidget()
 } timeline: {
     let fakeData = WeatherWidgetData(
             temperature: "12 °C",
             locationName: "Paris",
             description: "Partly Cloudy",
-            date: "Mon, Feb 24",
-            hourlyData: [HourlyData(time: "06:00", temperature: "6 °C", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm", windSpeed: "10 km/h"), HourlyData(time: "07:00", temperature: "7 °C", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm", windSpeed: "10 km/h"), HourlyData(time: "08:00", temperature: "8 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "12 km/h"), HourlyData(time: "09:00", temperature: "10 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0 mm", windSpeed: "12 km/h"), HourlyData(time: "10:00", temperature: "12 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "14 km/h"), HourlyData(time: "11:00", temperature: "13 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "14 km/h"), HourlyData(time: "12:00", temperature: "14 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0.2 mm", windSpeed: "16 km/h"), HourlyData(time: "13:00", temperature: "14 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0.5 mm", windSpeed: "16 km/h")],
-            loadingState: .loaded,
-            errorMessage: nil
-    )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "HourlyWeatherWidget", config: WidgetConfig())
-}
-
-#Preview("260x120", as: .systemMedium) {
-    HourlyWeatherWidget()
-} timeline: {
-    let fakeData = WeatherWidgetData(
-            temperature: "12 °C",
-            locationName: "Paris",
-            description: "Partly Cloudy",
-            date: "Mon, Feb 24",
             hourlyData: [HourlyData(time: "06:00", temperature: "6 °C", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm", windSpeed: "10 km/h"), HourlyData(time: "07:00", temperature: "7 °C", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipAccumulation: "0 mm", windSpeed: "10 km/h"), HourlyData(time: "08:00", temperature: "8 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "12 km/h"), HourlyData(time: "09:00", temperature: "10 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0 mm", windSpeed: "12 km/h"), HourlyData(time: "10:00", temperature: "12 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "14 km/h"), HourlyData(time: "11:00", temperature: "13 °C", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipAccumulation: "0 mm", windSpeed: "14 km/h"), HourlyData(time: "12:00", temperature: "14 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0.2 mm", windSpeed: "16 km/h"), HourlyData(time: "13:00", temperature: "14 °C", iconPath: "app/assets/icon_themes/meteocons/images/500n.png", precipAccumulation: "0.5 mm", windSpeed: "16 km/h")],
             loadingState: .loaded,
             errorMessage: nil

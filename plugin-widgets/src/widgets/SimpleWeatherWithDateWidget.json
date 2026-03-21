@@ -87,10 +87,10 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 260, "height": 140 },
-            { "width": 120, "height": 50 },
-            { "width": 80, "height": 80 },
-            { "width": 120, "height": 120 }
+            { "width": 260, "height": 140, "category":"medium" },
+            { "width": 120, "height": 50, "category":"medium" },
+            { "width": 80, "height": 80, "category":"small" },
+            { "width": 120, "height": 120, "category":"medium" }
         ],
         "fakeData": {
             "temperature": "8\u00b0",

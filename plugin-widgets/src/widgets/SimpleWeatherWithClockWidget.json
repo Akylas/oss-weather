@@ -3,7 +3,6 @@
     "name": "SimpleWeatherWithClockWidget",
     "displayName": "Weather with Clock",
     "description": "Shows a clock with current weather information",
-    "defaultPadding": 4,
     "color": ["case", ["has", ["get", "config.settings.color"]], ["get", "config.settings.color"], "color.onSurface"],
     "settings": {
         "clockBold": { "type": "boolean", "default": false, "title": "bold_clock" }
@@ -87,18 +86,17 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 260, "height": 140 },
-            { "width": 120, "height": 50 },
-            { "width": 80, "height": 80 },
-            { "width": 120, "height": 120 },
-            { "width": 260, "height": 260 }
+            { "width": 260, "height": 140, "category":"medium" },
+            { "width": 120, "height": 50, "category":"medium" },
+            { "width": 80, "height": 80, "category":"small" },
+            { "width": 120, "height": 120, "category":"medium" },
+            { "width": 260, "height": 260, "category":"large" }
         ],
         "fakeData": {
             "temperature": "8\u00b0",
             "iconPath": "800d",
             "description": "Partly Cloudy",
-            "locationName": "Grenoble",
-            "date": "Mon, Feb 24"
+            "locationName": "Grenoble"
         }
     }
 }

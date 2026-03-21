@@ -298,7 +298,6 @@
         "name": { "type": "string", "description": "Widget name identifier" },
         "displayName": { "type": "string", "description": "Human-readable name" },
         "description": { "type": "string" },
-        "defaultPadding": { "$ref": "#/definitions/spacing" },
         "background": {
             "type": "object",
             "properties": {

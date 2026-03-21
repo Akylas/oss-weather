@@ -11,10 +11,10 @@ struct WeatherWidgetData: Codable {
     let locationName: String
     let iconPath: String?
     let description: String
-    let loadingState: LoadingState
-    let errorMessage: String?
     let hourlyData: [HourlyData]
     let dailyData: [DailyData]
+    let loadingState: LoadingState
+    let errorMessage: String?
     
     enum LoadingState: String, Codable {
         case none
@@ -29,10 +29,10 @@ struct WeatherWidgetData: Codable {
         locationName: String = "",
         iconPath: String? = nil,
         description: String = "",
+        hourlyData: [HourlyData] = [],
+        dailyData: [DailyData] = [],
         loadingState: LoadingState = .none,
         errorMessage: String? = nil,
-        hourlyData: [HourlyData] = [],
-        dailyData: [DailyData] = []
     ) {
         self.temperature = temperature
         self.locationName = locationName
@@ -53,6 +53,8 @@ struct HourlyData: Codable, Identifiable {
     let iconPath: String?
     let description: String
     let precipAccumulation: String
+    let precipitation: String
+    let windSpeed: String
     
     // Coding keys for JSON serialization
     enum CodingKeys: String, CodingKey {
@@ -61,6 +63,8 @@ struct HourlyData: Codable, Identifiable {
         case iconPath
         case description
         case precipAccumulation
+        case precipitation
+        case windSpeed
     }
     
     // Automatic decoding with defaults
@@ -71,6 +75,8 @@ struct HourlyData: Codable, Identifiable {
         iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
         precipAccumulation = try container.decodeIfPresent(String.self, forKey: .precipAccumulation) ?? ""
+        precipitation = try container.decodeIfPresent(String.self, forKey: .precipitation) ?? ""
+        windSpeed = try container.decodeIfPresent(String.self, forKey: .windSpeed) ?? ""
     }
     
     // Manual initializer for convenience
@@ -79,13 +85,17 @@ struct HourlyData: Codable, Identifiable {
         temperature: String,
         iconPath: String? = nil,
         description: String = "",
-        precipAccumulation: String = ""
+        precipAccumulation: String = "",
+        precipitation: String = "",
+        windSpeed: String = ""
     ) {
         self.time = time
         self.temperature = temperature
         self.iconPath = iconPath
         self.description = description
         self.precipAccumulation = precipAccumulation
+        self.precipitation = precipitation
+        self.windSpeed = windSpeed
     }
 }
 
@@ -143,53 +153,6 @@ struct DailyData: Codable, Identifiable {
         self.description = description
         self.precipitation = precipitation
         self.windSpeed = windSpeed
-        self.precipAccumulation = precipAccumulation
-    }
-}
-
-// MARK: - Forecast Data
-struct ForecastData: Codable {
-    let dateTime: String
-    let temperature: String
-    let iconPath: String
-    let description: String
-    let precipitation: String
-    let precipAccumulation: String
-    
-    enum CodingKeys: String, CodingKey {
-        case dateTime
-        case temperature
-        case iconPath
-        case description
-        case precipitation
-        case precipAccumulation
-    }
-    
-    // Automatic decoding with defaults
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        dateTime = try container.decode(String.self, forKey: .dateTime)
-        temperature = try container.decode(String.self, forKey: .temperature)
-        iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath) ?? ""
-        description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
-        precipitation = try container.decodeIfPresent(String.self, forKey: .precipitation) ?? ""
-        precipAccumulation = try container.decodeIfPresent(String.self, forKey: .precipAccumulation) ?? ""
-    }
-    
-    // Manual initializer for convenience
-    init(
-        dateTime: String,
-        temperature: String,
-        iconPath: String = "",
-        description: String = "",
-        precipitation: String = "",
-        precipAccumulation: String = ""
-    ) {
-        self.dateTime = dateTime
-        self.temperature = temperature
-        self.iconPath = iconPath
-        self.description = description
-        self.precipitation = precipitation
         self.precipAccumulation = precipAccumulation
     }
 }

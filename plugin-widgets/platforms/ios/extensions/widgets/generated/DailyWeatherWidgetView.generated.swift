@@ -46,7 +46,7 @@ struct DailyWeatherWidgetView: View {
                             }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .bottom)
                         }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).padding(8).frame(maxWidth: .infinity, alignment: .leading)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("daily")
+                            Text(WidgetLocalizedStrings.daily)
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(widgetColor)
                                 .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 8).opacity(0.5)
@@ -92,12 +92,12 @@ struct DailyWeatherWidgetView: View {
                                                     }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .bottom)
                                                 }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .center)
                                             }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant(for: colorScheme)).cornerRadius(8).frame(maxWidth: .infinity, alignment: .center)
-                                        }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).padding(2)
+                                        }.frame(maxWidth: .infinity).padding(2)
                                     }
-                                }.fixedSize(horizontal: true, vertical: false)
+                                }
                             }
                         }
-                    }.fixedSize(horizontal: true, vertical: false)
+                    }
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)
@@ -108,52 +108,19 @@ struct DailyWeatherWidgetView: View {
 
 // MARK: - Previews
 @available(iOS 14.0, *)
-#Preview("300x200", as: .systemMedium) {
+#Preview ("Preview large", as: .systemLarge) {
     DailyWeatherWidget()
 } timeline: {
     let fakeData = WeatherWidgetData(
             temperature: "12°",
-            description: "Partly Cloudy",
-            iconPath: "app/assets/icon_themes/meteocons/images/802d.png",
             locationName: "Grenoble",
-            date: "Mon, Feb 24",
-            dailyData: [DailyData(day: "Mon", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "12°", temperatureLow: "4°", precipAccumulation: "0 mm", precipitation: "5 %", windSpeed: "14 km/h"), DailyData(day: "Tue", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "14°", temperatureLow: "6°", precipAccumulation: "0 mm", precipitation: "10 %", windSpeed: "12 km/h"), DailyData(day: "Wed", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", temperatureHigh: "10°", temperatureLow: "5°", precipAccumulation: "3 mm", precipitation: "60 %", windSpeed: "18 km/h"), DailyData(day: "Thu", iconPath: "app/assets/icon_themes/meteocons/images/503.png", temperatureHigh: "9°", temperatureLow: "3°", precipAccumulation: "8 mm", precipitation: "80 %", windSpeed: "22 km/h"), DailyData(day: "Fri", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "11°", temperatureLow: "4°", precipAccumulation: "0 mm", precipitation: "20 %", windSpeed: "16 km/h"), DailyData(day: "Sat", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "15°", temperatureLow: "7°", precipAccumulation: "0 mm", precipitation: "5 %", windSpeed: "10 km/h")],
+            iconPath: "app/assets/icon_themes/meteocons/images/802d.png",
+            description: "Partly Cloudy",
+            dailyData: [DailyData(day: "Mon", temperatureHigh: "12°", temperatureLow: "4°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipitation: "5 %", windSpeed: "14 km/h", precipAccumulation: "0 mm"), DailyData(day: "Tue", temperatureHigh: "14°", temperatureLow: "6°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipitation: "10 %", windSpeed: "12 km/h", precipAccumulation: "0 mm"), DailyData(day: "Wed", temperatureHigh: "10°", temperatureLow: "5°", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", precipitation: "60 %", windSpeed: "18 km/h", precipAccumulation: "3 mm"), DailyData(day: "Thu", temperatureHigh: "9°", temperatureLow: "3°", iconPath: "app/assets/icon_themes/meteocons/images/503.png", precipitation: "80 %", windSpeed: "22 km/h", precipAccumulation: "8 mm"), DailyData(day: "Fri", temperatureHigh: "11°", temperatureLow: "4°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipitation: "20 %", windSpeed: "16 km/h", precipAccumulation: "0 mm"), DailyData(day: "Sat", temperatureHigh: "15°", temperatureLow: "7°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipitation: "5 %", windSpeed: "10 km/h", precipAccumulation: "0 mm")],
             loadingState: .loaded,
             errorMessage: nil
     )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
-}
-
-#Preview("160x300", as: .systemMedium) {
-    DailyWeatherWidget()
-} timeline: {
-    let fakeData = WeatherWidgetData(
-            temperature: "12°",
-            description: "Partly Cloudy",
-            iconPath: "app/assets/icon_themes/meteocons/images/802d.png",
-            locationName: "Grenoble",
-            date: "Mon, Feb 24",
-            dailyData: [DailyData(day: "Mon", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "12°", temperatureLow: "4°", precipAccumulation: "0 mm", precipitation: "5 %", windSpeed: "14 km/h"), DailyData(day: "Tue", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "14°", temperatureLow: "6°", precipAccumulation: "0 mm", precipitation: "10 %", windSpeed: "12 km/h"), DailyData(day: "Wed", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", temperatureHigh: "10°", temperatureLow: "5°", precipAccumulation: "3 mm", precipitation: "60 %", windSpeed: "18 km/h"), DailyData(day: "Thu", iconPath: "app/assets/icon_themes/meteocons/images/503.png", temperatureHigh: "9°", temperatureLow: "3°", precipAccumulation: "8 mm", precipitation: "80 %", windSpeed: "22 km/h"), DailyData(day: "Fri", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "11°", temperatureLow: "4°", precipAccumulation: "0 mm", precipitation: "20 %", windSpeed: "16 km/h"), DailyData(day: "Sat", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "15°", temperatureLow: "7°", precipAccumulation: "0 mm", precipitation: "5 %", windSpeed: "10 km/h")],
-            loadingState: .loaded,
-            errorMessage: nil
-    )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
-}
-
-#Preview("260x400", as: .systemMedium) {
-    DailyWeatherWidget()
-} timeline: {
-    let fakeData = WeatherWidgetData(
-            temperature: "12°",
-            description: "Partly Cloudy",
-            iconPath: "app/assets/icon_themes/meteocons/images/802d.png",
-            locationName: "Grenoble",
-            date: "Mon, Feb 24",
-            dailyData: [DailyData(day: "Mon", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "12°", temperatureLow: "4°", precipAccumulation: "0 mm", precipitation: "5 %", windSpeed: "14 km/h"), DailyData(day: "Tue", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "14°", temperatureLow: "6°", precipAccumulation: "0 mm", precipitation: "10 %", windSpeed: "12 km/h"), DailyData(day: "Wed", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", temperatureHigh: "10°", temperatureLow: "5°", precipAccumulation: "3 mm", precipitation: "60 %", windSpeed: "18 km/h"), DailyData(day: "Thu", iconPath: "app/assets/icon_themes/meteocons/images/503.png", temperatureHigh: "9°", temperatureLow: "3°", precipAccumulation: "8 mm", precipitation: "80 %", windSpeed: "22 km/h"), DailyData(day: "Fri", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", temperatureHigh: "11°", temperatureLow: "4°", precipAccumulation: "0 mm", precipitation: "20 %", windSpeed: "16 km/h"), DailyData(day: "Sat", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", temperatureHigh: "15°", temperatureLow: "7°", precipAccumulation: "0 mm", precipitation: "5 %", windSpeed: "10 km/h")],
-            loadingState: .loaded,
-            errorMessage: nil
-    )
-    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemLarge, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
 }
 
 #Preview("Error", as: .systemMedium) {

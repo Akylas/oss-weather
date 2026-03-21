@@ -18,43 +18,130 @@ struct SimpleWeatherWithClockWidgetView: View {
             let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: 4) {
+                WidgetContainer {
                     VStack(alignment: .center, spacing: 0) {
                         HStack(alignment: .center, spacing: 0) {
                             Text(data.locationName)
                                 .font(.system(size: 12, weight: .regular))
                                 .foregroundColor(widgetColor)
-                                .lineLimit(1).opacity(0.5)
+                                .lineLimit(1).opacity(0.5).frame(maxHeight: .infinity, alignment: .bottom)
                             Text(data.temperature)
                                 .font(.system(size: min((width * 0.2), 20), weight: .bold))
                                 .foregroundColor(widgetColor)
-                                .multilineTextAlignment(.trailing).layoutPriority(1)
-                        }.frame(maxWidth: .infinity)
+                                .frame(maxWidth: .infinity, alignment: .trailing).layoutPriority(1).frame(maxHeight: .infinity, alignment: .bottom).frame(maxWidth: .infinity)
+                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity)
                         HStack(alignment: .center, spacing: 0) {
                             Text(Date(), style: .time)
                                 .font(.system(size: min((width * 0.17), 62), weight: config.settings?["clockBold"] as? Bool == true ? .bold : .regular))
                                 .foregroundColor(widgetColor)
                             Spacer()
-                            if !data.iconPath.isEmpty {
+                            if !(data.iconPath ?? "").isEmpty {
                                 WeatherIconView(data.iconPath, description: data.description, size: min(height >= 200 ? (height * 0.52) : (width * 0.27), 100))
                             }
-                        }.frame(maxWidth: .infinity)
+                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity)
                         HStack(alignment: .center, spacing: 0) {
                             Text(Date(), style: .date)
                                 .font(.system(size: 14, weight: .regular))
                                 .foregroundColor(widgetColor)
-                            if !data.description.isEmpty {
+                            if !(data.description ?? "").isEmpty {
                                 Text(data.description)
                                     .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(widgetColor)
-                                    .multilineTextAlignment(.trailing).layoutPriority(1).opacity(0.5)
+                                    .frame(maxWidth: .infinity, alignment: .trailing).layoutPriority(1).opacity(0.5).frame(maxWidth: .infinity)
                             }
-                        }.frame(maxWidth: .infinity)
-                    }.frame(maxWidth: .infinity, maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
+                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity)
+                    }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity, maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
                 }
             } else {
                 NoDataView(state: entry.data?.loadingState ?? WeatherWidgetData.LoadingState.none, errorMessage: entry.data?.errorMessage)
             }
         }
     }
+}
+
+// MARK: - Previews
+@available(iOS 14.0, *)
+#Preview("260x140", as: .systemMedium) {
+    SimpleWeatherWithClockWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            locationName: "Grenoble",
+            date: "Mon, Feb 24",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWithClockWidget", config: WidgetConfig())
+}
+
+#Preview("120x50", as: .systemMedium) {
+    SimpleWeatherWithClockWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            locationName: "Grenoble",
+            date: "Mon, Feb 24",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWithClockWidget", config: WidgetConfig())
+}
+
+#Preview("80x80", as: .systemMedium) {
+    SimpleWeatherWithClockWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            locationName: "Grenoble",
+            date: "Mon, Feb 24",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWithClockWidget", config: WidgetConfig())
+}
+
+#Preview("120x120", as: .systemMedium) {
+    SimpleWeatherWithClockWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            locationName: "Grenoble",
+            date: "Mon, Feb 24",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWithClockWidget", config: WidgetConfig())
+}
+
+#Preview("260x260", as: .systemMedium) {
+    SimpleWeatherWithClockWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            locationName: "Grenoble",
+            date: "Mon, Feb 24",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWithClockWidget", config: WidgetConfig())
+}
+
+#Preview("Error", as: .systemMedium) {
+    SimpleWeatherWithClockWidget()
+} timeline: {
+    let errorData = WeatherWidgetData(
+            loadingState: .error,
+            errorMessage: "Unable to fetch weather data"
+    )
+    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWithClockWidget", config: WidgetConfig())
 }

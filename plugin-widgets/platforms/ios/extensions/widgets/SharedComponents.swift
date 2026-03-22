@@ -41,7 +41,7 @@ struct WeatherIconView: View {
     }
 }
 
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct NoDataView: View {
     let state: WeatherWidgetData.LoadingState
     let errorMessage: String?
@@ -55,16 +55,16 @@ struct NoDataView: View {
     var body: some View {
         VStack {
             if state == .loading {
-                ProgressView().padding(6)
+                ProgressView().controlSize(.small).padding(6)
                 Text(WidgetLocalizedStrings.loading)
-                    .font(.system(size: 17, weight: .regular))
+                    .font(.system(size: 14, weight: .regular))
                     .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
             } else if state == .error {
                 Image(systemName: "exclamationmark.triangle").resizable()
                     .aspectRatio(contentMode: .fit).frame(width:30, height:30)
                     .foregroundColor(.red).padding(6)
                 Text(errorMessage ?? WidgetLocalizedStrings.error_loading)
-                    .font(.system(size: 17, weight: .regular))
+                    .font(.system(size: 14, weight: .regular))
                     .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
                     .multilineTextAlignment(.center)
             } else {
@@ -72,7 +72,7 @@ struct NoDataView: View {
                     .aspectRatio(contentMode: .fit).frame(width:30, height:30)
                     .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme)).padding(6)
                 Text(WidgetLocalizedStrings.noLocationSet)
-                    .font(.system(size: 17, weight: .regular))
+                    .font(.system(size: 14, weight: .regular))
                     .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
             }
         }.frame(maxWidth: .infinity, maxHeight: .infinity)

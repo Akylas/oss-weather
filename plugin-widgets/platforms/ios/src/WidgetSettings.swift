@@ -132,15 +132,7 @@ class WidgetSettings: NSObject {
             WidgetsLogger.d("WidgetSettings", "loadWidgetConfig(widgetId=\(widgetId)) -> found instance config")
             return config
         }
-        
-        // No instance config - try to determine widget kind and create from defaults
-        if let widgetKind = getWidgetKindForId(widgetId: widgetId) {
-            WidgetsLogger.d("WidgetSettings", "loadWidgetConfig(widgetId=\(widgetId)) -> creating from kind \(widgetKind)")
-            return createInstanceConfig(widgetId: widgetId, widgetKind: widgetKind)
-        }
-        
-        WidgetsLogger.d("WidgetSettings", "loadWidgetConfig(widgetId=\(widgetId)) -> no config found, returning default")
-        return createDefaultConfig()
+        return nil
     }
     
     /// Save widget configuration for specific widget instance
@@ -279,15 +271,6 @@ class WidgetSettings: NSObject {
             latitude: 0.0,
             longitude: 0.0
         )
-    }
-    
-    /// Determine widget kind from widget ID
-    /// In iOS, widget IDs from WidgetCenter don't directly tell us the kind,
-    /// so we rely on the stored config. If none exists, we return nil.
-    private func getWidgetKindForId(widgetId: String) -> String? {
-        // Check if we have any config that might have the kind
-        let configs = getAllWidgetConfigs()
-        return configs[widgetId]?.widgetKind
     }
     
     /// Reload all widgets (useful after configuration changes)

@@ -2,6 +2,9 @@ import { WidgetConfig } from 'plugin-widgets/WidgetTypes';
 import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager } from './WidgetDataManager';
+import { lang, onLanguageChanged } from '~/helpers/locale';
+import { File } from '@nativescript/core';
+import { getCurrentLocales } from '@nativescript-community/l';
 
 const TAG = '[WidgetBridge.iOS]';
 
@@ -9,30 +12,30 @@ const groupId = WidgetUtils.suiteName;
 
 /**
  * Bridge between native iOS widgets and JS weather data
- * 
+ *
  * ARCHITECTURE OVERVIEW:
  * ======================
  * iOS widgets run in a separate process and CANNOT wake the main app. This is
  * an iOS platform limitation for security and battery life.
- * 
+ *
  * DATA FLOW:
  * ----------
  * 1. Widget Added (App Closed):
  *    - Widget extension calls notifyWidgetAdded()
  *    - Event persisted to App Group UserDefaults
  *    - Widget shows "Tap to configure" (no weather data yet)
- * 
+ *
  * 2. User Opens Main App:
  *    - checkPendingWidgetEvents() processes pending events
  *    - onWidgetAdded() fetches weather data
  *    - Weather data saved to App Group container
  *    - Widget auto-refreshes with data
- * 
+ *
  * 3. Ongoing Updates:
  *    - Main app updates weather data in App Group
  *    - Widgets reload based on their configured frequency
  *    - Background refresh keeps data current
- * 
+ *
  * WHY WIDGETS DON'T FETCH WEATHER DIRECTLY:
  * ------------------------------------------
  * - Widget extensions have limited capabilities (no background networking)
@@ -49,13 +52,12 @@ export class WidgetBridge extends WidgetBridgeBase {
         this.setupAppGroupContainer();
         this.observeWidgetEvents();
         this.syncTranslations();
-        
+
         // Check for pending widget events that occurred while app was not running
         this.checkPendingWidgetEvents();
-        
+
         // Listen for language changes
         try {
-            const { onLanguageChanged } = require('~/helpers/locale');
             onLanguageChanged((data) => {
                 DEV_LOG && console.log(TAG, 'Language changed, syncing translations');
                 this.syncTranslations();
@@ -72,7 +74,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         try {
             // Check for last widget event
             this.handleWidgetEvent();
-            
+
             DEV_LOG && console.log(TAG, 'Checked for pending widget events');
         } catch (error) {
             console.error(TAG, 'Error checking pending widget events:', error, error.stack);
@@ -85,37 +87,25 @@ export class WidgetBridge extends WidgetBridgeBase {
     private syncTranslations() {
         try {
             // Get current translations from @nativescript-community/l
-            const File = require('@nativescript/core').File;
-            const lang = require('~/helpers/locale').lang || 'en';
-            
             // Load the JSON translation file
-            const translationPath = `~/i18n/${lang}.json`;
-            if (File.exists(translationPath)) {
-                const translationFile = File.fromPath(translationPath);
-                const translationsJson = translationFile.readTextSync();
-                const allTranslations = JSON.parse(translationsJson);
-                
-                // Filter to widget-related translations only
-                const widgetTranslations: { [key: string]: string } = {};
-                for (const key in allTranslations) {
-                    if (key.startsWith('widget.') || 
-                        key === 'daily' || 
-                        key === 'hourly') {
-                        widgetTranslations[key] = allTranslations[key];
-                    }
+
+            // Filter to widget-related translations only
+            const widgetTranslations: { [key: string]: string } = {};
+            const allTranslations: { [key: string]: string } = getCurrentLocales();
+            for (const key in allTranslations) {
+                if (key.startsWith('widget.') || key === 'daily' || key === 'hourly') {
+                    widgetTranslations[key] = allTranslations[key];
                 }
-                
-                // Save to App Group UserDefaults
-                const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
-                if (userDefaults) {
-                    const data = NSString.stringWithString(JSON.stringify(widgetTranslations)).dataUsingEncoding(NSUTF8StringEncoding);
-                    userDefaults.setObjectForKey(data, 'widget_translations');
-                    userDefaults.synchronize();
-                    
-                    DEV_LOG && console.log(TAG, `Synced ${Object.keys(widgetTranslations).length} widget translations (${lang})`);
-                }
-            } else {
-                console.warn(TAG, `Translation file not found: ${translationPath}`);
+            }
+
+            // Save to App Group UserDefaults
+            const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
+            if (userDefaults) {
+                const data = NSString.stringWithString(JSON.stringify(widgetTranslations)).dataUsingEncoding(NSUTF8StringEncoding);
+                userDefaults.setObjectForKey(data, 'widget_translations');
+                userDefaults.synchronize();
+
+                DEV_LOG && console.log(TAG, `Synced ${Object.keys(widgetTranslations).length} widget translations (${lang})`);
             }
         } catch (error) {
             console.error(TAG, 'Failed to sync translations:', error, error.stack);

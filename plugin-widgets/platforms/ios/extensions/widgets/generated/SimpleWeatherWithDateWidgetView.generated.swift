@@ -4,7 +4,7 @@
 import SwiftUI
 import WidgetKit
 
-@available(iOS 14.0, *)
+@available(iOS 17.0, *)
 struct SimpleWeatherWithDateWidgetView: View {
     let entry: WeatherEntry
     @Environment(\.widgetFamily) var family

@@ -1,35 +1,109 @@
 import Foundation
 
 /// Localized strings for widgets
+/// Loads translations from the app's shared i18n data
 struct WidgetLocalizedStrings {
     
+    // Cached translations dictionary
+    private static var translations: [String: String] = {
+        loadTranslations()
+    }()
+    
+    /// Load translations from App Group shared container
+    private static func loadTranslations() -> [String: String] {
+        guard let userDefaults = UserDefaults(suiteName: WidgetUtils.suiteName) else {
+            WidgetsLogger.w("WidgetLocalizedStrings", "Failed to access App Group UserDefaults")
+            return [:]
+        }
+        
+        // Try to load translations data from shared container
+        if let data = userDefaults.data(forKey: "widget_translations"),
+           let translationsDict = try? JSONDecoder().decode([String: String].self, from: data) {
+            WidgetsLogger.d("WidgetLocalizedStrings", "Loaded \(translationsDict.count) translations from App Group")
+            return translationsDict
+        }
+        
+        WidgetsLogger.w("WidgetLocalizedStrings", "No translations found in App Group, using fallback values")
+        return [:]
+    }
+    
+    /// Get localized string for key, with fallback to default value
+    private static func localized(_ key: String, fallback: String) -> String {
+        return translations[key] ?? fallback
+    }
+    
+    /// Force reload translations from shared container
+    static func reloadTranslations() {
+        translations = loadTranslations()
+    }
+    
     // MARK: - Widget Names
-    static let simpleWeatherName = NSLocalizedString("widget.simple.name", comment: "Simple Weather")
-    static let simpleWeatherDesc = NSLocalizedString("widget.simple.description", comment: "Current weather at a glance")
+    static var simpleWeatherName: String {
+        localized("widget.simple.name", fallback: "Simple Weather")
+    }
+    static var simpleWeatherDesc: String {
+        localized("widget.simple.description", fallback: "Current weather at a glance")
+    }
     
-    static let weatherWithDateName = NSLocalizedString("widget.withdate.name", comment: "Weather with Date")
-    static let weatherWithDateDesc = NSLocalizedString("widget.withdate.description", comment: "Weather with date and location")
+    static var weatherWithDateName: String {
+        localized("widget.withdate.name", fallback: "Weather with Date")
+    }
+    static var weatherWithDateDesc: String {
+        localized("widget.withdate.description", fallback: "Weather with date and location")
+    }
     
-    static let weatherWithClockName = NSLocalizedString("widget.withclock.name", comment: "Weather with Clock")
-    static let weatherWithClockDesc = NSLocalizedString("widget.withclock.description", comment: "Real-time clock with weather")
+    static var weatherWithClockName: String {
+        localized("widget.withclock.name", fallback: "Weather with Clock")
+    }
+    static var weatherWithClockDesc: String {
+        localized("widget.withclock.description", fallback: "Real-time clock with weather")
+    }
     
-    static let hourlyForecastName = NSLocalizedString("widget.hourly.name", comment: "Hourly Forecast")
-    static let hourlyForecastDesc = NSLocalizedString("widget.hourly.description", comment: "Next 24 hours forecast")
+    static var hourlyForecastName: String {
+        localized("widget.hourly.name", fallback: "Hourly Forecast")
+    }
+    static var hourlyForecastDesc: String {
+        localized("widget.hourly.description", fallback: "Next 24 hours forecast")
+    }
     
-    static let dailyForecastName = NSLocalizedString("widget.daily.name", comment: "7-Day Forecast")
-    static let dailyForecastDesc = NSLocalizedString("widget.daily.description", comment: "Weekly weather forecast")
+    static var dailyForecastName: String {
+        localized("widget.daily.name", fallback: "7-Day Forecast")
+    }
+    static var dailyForecastDesc: String {
+        localized("widget.daily.description", fallback: "Weekly weather forecast")
+    }
     
-    static let detailedForecastName = NSLocalizedString("widget.forecast.name", comment: "Detailed Forecast")
-    static let detailedForecastDesc = NSLocalizedString("widget.forecast.description", comment: "Detailed weather forecast")
+    static var detailedForecastName: String {
+        localized("widget.forecast.name", fallback: "Detailed Forecast")
+    }
+    static var detailedForecastDesc: String {
+        localized("widget.forecast.description", fallback: "Detailed weather forecast")
+    }
     
     // MARK: - Common Text
-    static let daily = NSLocalizedString("daily", comment: "Daily")
-    static let hourly = NSLocalizedString("hourly", comment: "Hourly")
-    static let noLocationSet = NSLocalizedString("widget.no_location", comment: "No location set")
-    static let tapToConfigure = NSLocalizedString("widget.tap_configure", comment: "Tap to configure")
-    static let loading = NSLocalizedString("widget.loading", comment: "Loading...")
-    static let error_loading = NSLocalizedString("widget.error_loading", comment: "Error loading data")
-    static let hourlyForecast = NSLocalizedString("widget.hourly.title", comment: "Hourly Forecast")
-    static let sevenDayForecast = NSLocalizedString("widget.daily.title", comment: "7-Day Forecast")
+    static var daily: String {
+        localized("daily", fallback: "Daily")
+    }
+    static var hourly: String {
+        localized("hourly", fallback: "Hourly")
+    }
+    static var noLocationSet: String {
+        localized("widget.no_location", fallback: "No location set")
+    }
+    static var tapToConfigure: String {
+        localized("widget.tap_configure", fallback: "Tap to configure")
+    }
+    static var loading: String {
+        localized("widget.loading", fallback: "Loading...")
+    }
+    static var error_loading: String {
+        localized("widget.error_loading", fallback: "Error loading data")
+    }
+    static var hourlyForecast: String {
+        localized("widget.hourly.title", fallback: "Hourly Forecast")
+    }
+    static var sevenDayForecast: String {
+        localized("widget.daily.title", fallback: "7-Day Forecast")
+    }
     
 }

@@ -18,6 +18,78 @@ export class WidgetBridge extends WidgetBridgeBase {
         this.dataManager = new WidgetDataManager();
         this.setupAppGroupContainer();
         this.observeWidgetEvents();
+        this.syncTranslations();
+        
+        // Check for pending widget events that occurred while app was not running
+        this.checkPendingWidgetEvents();
+        
+        // Listen for language changes
+        try {
+            const { onLanguageChanged } = require('~/helpers/locale');
+            onLanguageChanged((data) => {
+                DEV_LOG && console.log(TAG, 'Language changed, syncing translations');
+                this.syncTranslations();
+            });
+        } catch (error) {
+            console.error(TAG, 'Failed to setup language change listener:', error);
+        }
+    }
+
+    /**
+     * Check for pending widget events that occurred while app was suspended
+     */
+    private checkPendingWidgetEvents() {
+        try {
+            // Check for last widget event
+            this.handleWidgetEvent();
+            
+            DEV_LOG && console.log(TAG, 'Checked for pending widget events');
+        } catch (error) {
+            console.error(TAG, 'Error checking pending widget events:', error, error.stack);
+        }
+    }
+
+    /**
+     * Sync widget translations to App Group
+     */
+    private syncTranslations() {
+        try {
+            // Get current translations from @nativescript-community/l
+            const File = require('@nativescript/core').File;
+            const lang = require('~/helpers/locale').lang || 'en';
+            
+            // Load the JSON translation file
+            const translationPath = `~/i18n/${lang}.json`;
+            if (File.exists(translationPath)) {
+                const translationFile = File.fromPath(translationPath);
+                const translationsJson = translationFile.readTextSync();
+                const allTranslations = JSON.parse(translationsJson);
+                
+                // Filter to widget-related translations only
+                const widgetTranslations: { [key: string]: string } = {};
+                for (const key in allTranslations) {
+                    if (key.startsWith('widget.') || 
+                        key === 'daily' || 
+                        key === 'hourly') {
+                        widgetTranslations[key] = allTranslations[key];
+                    }
+                }
+                
+                // Save to App Group UserDefaults
+                const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
+                if (userDefaults) {
+                    const data = NSString.stringWithString(JSON.stringify(widgetTranslations)).dataUsingEncoding(NSUTF8StringEncoding);
+                    userDefaults.setObjectForKey(data, 'widget_translations');
+                    userDefaults.synchronize();
+                    
+                    DEV_LOG && console.log(TAG, `Synced ${Object.keys(widgetTranslations).length} widget translations (${lang})`);
+                }
+            } else {
+                console.warn(TAG, `Translation file not found: ${translationPath}`);
+            }
+        } catch (error) {
+            console.error(TAG, 'Failed to sync translations:', error, error.stack);
+        }
     }
 
     /**

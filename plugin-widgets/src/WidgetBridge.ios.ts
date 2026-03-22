@@ -2,13 +2,47 @@ import { WidgetConfig } from 'plugin-widgets/WidgetTypes';
 import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager } from './WidgetDataManager';
+import { lang, onLanguageChanged } from '~/helpers/locale';
+import { Application, File } from '@nativescript/core';
+import { getCurrentLocales } from '@nativescript-community/l';
+import { SETTINGS_LANGUAGE } from '@shared/constants';
 
 const TAG = '[WidgetBridge.iOS]';
 
 const groupId = WidgetUtils.suiteName;
-
+export const widgetsUserDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
 /**
  * Bridge between native iOS widgets and JS weather data
+ *
+ * ARCHITECTURE OVERVIEW:
+ * ======================
+ * iOS widgets run in a separate process and CANNOT wake the main app. This is
+ * an iOS platform limitation for security and battery life.
+ *
+ * DATA FLOW:
+ * ----------
+ * 1. Widget Added (App Closed):
+ *    - Widget extension calls notifyWidgetAdded()
+ *    - Event persisted to App Group UserDefaults
+ *    - Widget shows "Tap to configure" (no weather data yet)
+ *
+ * 2. User Opens Main App:
+ *    - checkPendingWidgetEvents() processes pending events
+ *    - onWidgetAdded() fetches weather data
+ *    - Weather data saved to App Group container
+ *    - Widget auto-refreshes with data
+ *
+ * 3. Ongoing Updates:
+ *    - Main app updates weather data in App Group
+ *    - Widgets reload based on their configured frequency
+ *    - Background refresh keeps data current
+ *
+ * WHY WIDGETS DON'T FETCH WEATHER DIRECTLY:
+ * ------------------------------------------
+ * - Widget extensions have limited capabilities (no background networking)
+ * - Would require duplicating all weather logic in Swift
+ * - Main app is single source of truth for data
+ * - This is standard architecture for iOS widgets
  */
 export class WidgetBridge extends WidgetBridgeBase {
     private dataManager: WidgetDataManager;
@@ -17,7 +51,92 @@ export class WidgetBridge extends WidgetBridgeBase {
         super();
         this.dataManager = new WidgetDataManager();
         this.setupAppGroupContainer();
-        // this.observeWidgetEvents();
+        this.observeWidgetEvents();
+        this.syncTranslations();
+
+        // Check for pending widget events that occurred while app was not running
+        this.checkPendingWidgetEvents();
+
+        // Trigger widget detection on startup
+        this.triggerWidgetDetection();
+
+        // Listen for language changes
+        try {
+            Application.on(SETTINGS_LANGUAGE, () => {
+                DEV_LOG && console.log(TAG, 'Language changed, syncing translations');
+                this.syncTranslations();
+            });
+        } catch (error) {
+            console.error(TAG, 'Failed to setup language change listener:', error);
+        }
+
+        // Listen for app resume to detect widget changes
+        try {
+            Application.on(Application.resumeEvent, () => {
+                DEV_LOG && console.log(TAG, 'App resumed, triggering widget detection');
+                this.triggerWidgetDetection();
+            });
+        } catch (error) {
+            console.error(TAG, 'Failed to setup app resume listener:', error);
+        }
+    }
+
+    /**
+     * Trigger widget detection using WidgetCenter (iOS 16+)
+     * This detects added/removed widgets on the home screen
+     */
+    private triggerWidgetDetection() {
+        // Call Swift WidgetDetector.shared.detect()
+        const WidgetDetector = WidgetDetector.shared();
+        if (WidgetDetector) {
+            WidgetDetector.detect();
+            DEV_LOG && console.log(TAG, 'Triggered widget detection');
+        }
+    }
+
+    /**
+     * Check for pending widget events that occurred while app was suspended
+     */
+    private checkPendingWidgetEvents() {
+        try {
+            // Check for last widget event
+            this.handleWidgetEvent();
+
+            DEV_LOG && console.log(TAG, 'Checked for pending widget events');
+        } catch (error) {
+            console.error(TAG, 'Error checking pending widget events:', error, error.stack);
+        }
+    }
+
+    /**
+     * Sync widget translations to App Group
+     */
+    private syncTranslations() {
+        try {
+            // Get current translations from @nativescript-community/l
+            // Load the JSON translation file
+
+            // Filter to widget-related translations only
+            const widgetTranslations: { [key: string]: string } = {};
+            const allTranslations: { [key: string]: string } = getCurrentLocales();
+            for (const key in allTranslations) {
+                if (key.startsWith('widget.') || key === 'daily' || key === 'hourly') {
+                    widgetTranslations[key] = allTranslations[key];
+                }
+            }
+
+            // Save to App Group UserDefaults
+
+            if (widgetsUserDefaults) {
+                const data = NSString.stringWithString(JSON.stringify(widgetTranslations)).dataUsingEncoding(NSUTF8StringEncoding);
+                widgetsUserDefaults.setObjectForKey(data, 'widget_translations');
+                widgetsUserDefaults.synchronize();
+
+                DEV_LOG && console.log(TAG, `Synced ${Object.keys(widgetTranslations).length} widget translations (${lang})`);
+            }
+        } catch (error) {
+            console.error(TAG, 'Failed to sync translations:', error, error.stack);
+        }
     }
 
     /**
@@ -30,11 +149,13 @@ export class WidgetBridge extends WidgetBridgeBase {
             // Listen for Darwin notifications from widget extension
             this.widgetEventObserver = new interop.Reference<any>(interop.types.void);
             this.widgetEventObserverCallbackFunctionRef = new interop.FunctionReference(observerCallback);
+            // Notification name (CFString)
+            const notificationName = CFStringCreateWithCString(null, 'com.akylas.weather.widgetEvent', CFStringBuiltInEncodings.kCFStringEncodingUTF8);
             CFNotificationCenterAddObserver(
                 CFNotificationCenterGetDarwinNotifyCenter(),
                 this.widgetEventObserver,
                 this.widgetEventObserverCallbackFunctionRef,
-                'com.akylas.weather.widgetEvent',
+                notificationName,
                 null,
                 CFNotificationSuspensionBehavior.DeliverImmediately
             );
@@ -96,9 +217,9 @@ export class WidgetBridge extends WidgetBridgeBase {
      * Update all widgets with latest data
      */
     async updateAllWidgets(onlyDefaults = false) {
-        DEV_LOG && console.log(TAG, `updateAllWidgets called (onlyDefaults=${onlyDefaults})`);
+        DEV_LOG && console.log(TAG, `updateAllWidgets called (onlyDefaults=${onlyDefaults}), activeWidgets:${this.getActiveWidgets()}`);
 
-        const configs = WidgetConfigManager.getAllConfigs();
+        const configs = WidgetConfigManager.getAllConfigs(true);
         const widgetIds = Object.keys(configs);
 
         if (widgetIds.length === 0) {
@@ -144,6 +265,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 ...widgetData,
                 loadingState: 'loaded'
             });
+            this.reloadWidget(widgetId);
 
             DEV_LOG && console.log(TAG, `Widget ${widgetId} updated successfully`);
         } catch (error) {
@@ -159,11 +281,10 @@ export class WidgetBridge extends WidgetBridgeBase {
     private syncUpdateFrequency() {
         try {
             const frequency = WidgetConfigManager.getUpdateFrequency();
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
 
-            if (userDefaults) {
-                userDefaults.setIntegerForKey(frequency, 'widget_update_frequency');
-                userDefaults.synchronize();
+            if (widgetsUserDefaults) {
+                widgetsUserDefaults.setIntegerForKey(frequency, 'widget_update_frequency');
+                widgetsUserDefaults.synchronize();
                 console.log(`WidgetBridge: Synced update frequency to iOS: ${frequency} minutes`);
             }
         } catch (error) {
@@ -176,7 +297,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     onUpdateFrequencyChanged(frequency: number) {
         try {
-            WidgetUtils.setValueForKey(frequency, 'widget_update_frequency');
+            WidgetUtils.setWithValueForKey(frequency, 'widget_update_frequency');
             // Reload all widget timelines to pick up new frequency
             WidgetUtils.reloadAllTimelines();
 
@@ -235,21 +356,26 @@ export class WidgetBridge extends WidgetBridgeBase {
         this.reloadWidget(widgetId);
     }
 
+    private getActiveWidgets() {
+        const data = WidgetUtils.dataForKey('active_widgets');
+        if (data) {
+            const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
+            DEV_LOG && console.log('getActiveWidgets', json);
+            return JSON.parse(json.toString());
+        }
+
+        return [];
+    }
+
     /**
      * Get widget kind from widget ID
      * Widget IDs are generated as "widget_{family}_{kind}.hashValue"
      */
     private getWidgetKind(widgetId: string): string | null {
         try {
-            // Try to get from active widgets stored by WidgetLifecycleManager
-            const data = WidgetUtils.dataForKey('active_widgets');
-            if (data) {
-                const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
-                const activeWidgets = JSON.parse(json.toString());
-
-                if (activeWidgets[widgetId]) {
-                    return activeWidgets[widgetId];
-                }
+            const activeWidgets = this.getActiveWidgets();
+            if (activeWidgets[widgetId]) {
+                return activeWidgets[widgetId];
             }
 
             // Fallback: try to parse from widget ID pattern
@@ -371,9 +497,10 @@ export class WidgetBridge extends WidgetBridgeBase {
             const frequency = WidgetConfigManager.getUpdateFrequency();
             this.scheduleWidgetRefresh(frequency);
         }
-
+        // we ensure config exists
+        const config = this.loadWidgetConfig(widgetId);
         // Update the widget immediately
-        this.updateWidget(widgetId);
+        this.updateWidget(widgetId, config);
     }
 
     /**
@@ -387,7 +514,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
         // If no more widgets, we can't really "cancel" iOS background refresh
         // but we can note it for when handleBackgroundRefresh is called
-        const configs = WidgetConfigManager.getAllConfigs();
+        const configs = WidgetConfigManager.getAllConfigs(true);
         if (Object.keys(configs).length === 0) {
             DEV_LOG && console.log(TAG, 'No more widgets, background refresh will skip updates');
         }
@@ -495,9 +622,65 @@ export class WidgetBridge extends WidgetBridgeBase {
     }
 
     public saveWidgetConfig(widgetId: string, config: WidgetConfig) {
-        // TODO: implement saveWidgetConfig
-        DEV_LOG && console.log('saveWidgetConfig', widgetId, config);
-        WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
+        try {
+            DEV_LOG && console.log(TAG, 'saveWidgetConfig', widgetId, config);
+
+            // Save to WidgetConfigManager (TypeScript side)
+            // WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
+
+            // Sync to native iOS WidgetSettings
+            if (config) {
+                const configJson = JSON.stringify(config);
+                WidgetUtils.saveWidgetConfigWithWidgetIdConfigJson(widgetId, configJson);
+
+                // Reload the widget to apply new config
+                this.reloadWidget(widgetId);
+            }
+        } catch (error) {
+            console.error(TAG, 'Error saving widget config:', error, error.stack);
+        }
+    }
+
+    public saveKindConfig(widgetKind: string, config: WidgetConfig) {
+        try {
+            DEV_LOG && console.log(TAG, 'saveKindConfig', widgetKind, config);
+
+            if (config) {
+                const configJson = JSON.stringify(config);
+                WidgetUtils.saveKindConfigWithWidgetKindConfigJson(widgetKind, configJson);
+
+                // Reload all widgets of this kind
+                this.reloadWidgetTimeline(widgetKind);
+            }
+        } catch (error) {
+            console.error(TAG, 'Error saving kind config:', error, error.stack);
+        }
+    }
+
+    public loadWidgetConfig(widgetId: string): WidgetConfig {
+        try {
+            const configJson = WidgetUtils.loadWidgetConfigWithWidgetId(widgetId);
+            if (configJson) {
+                return JSON.parse(configJson);
+            }
+            return null;
+        } catch (error) {
+            console.error(TAG, 'Error loading widget config:', error, error.stack);
+            return null;
+        }
+    }
+
+    public loadKindConfig(widgetKind: string): WidgetConfig {
+        try {
+            const configJson = WidgetUtils.loadKindConfigWithWidgetKind(widgetKind);
+            if (configJson) {
+                return JSON.parse(configJson);
+            }
+            return null;
+        } catch (error) {
+            console.error(TAG, 'Error loading kind config:', error, error.stack);
+            return null;
+        }
     }
 
     /**

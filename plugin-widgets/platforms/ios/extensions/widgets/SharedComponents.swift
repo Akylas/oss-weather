@@ -7,7 +7,7 @@ struct WidgetContainer<Content: View>: View {
     let content: Content
     @Environment(\.colorScheme) var colorScheme
     
-    init(padding: CGFloat = 8, @ViewBuilder content: () -> Content) {
+    init(padding: CGFloat = 0, @ViewBuilder content: () -> Content) {
         self.padding = padding
         self.content = content()
     }
@@ -18,28 +18,6 @@ struct WidgetContainer<Content: View>: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
-
-@available(iOS 14.0, *)
-struct LocationHeader: View {
-    let locationName: String
-    let fontSize: CGFloat
-    let maxLines: Int
-    @Environment(\.colorScheme) var colorScheme
-    
-    init(_ locationName: String, fontSize: CGFloat = 14, maxLines: Int = 1) {
-        self.locationName = locationName
-        self.fontSize = fontSize
-        self.maxLines = maxLines
-    }
-    
-    var body: some View {
-        Text(locationName)
-            .font(.system(size: fontSize))
-            .foregroundColor(WidgetColorProvider.locationText(for: colorScheme))
-            .lineLimit(maxLines)
-    }
-}
-
 @available(iOS 14.0, *)
 struct WeatherIconView: View {
     let iconPath: String?
@@ -59,73 +37,11 @@ struct WeatherIconView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: size, height: size)
-        } else {
-            Image(systemName: "cloud.fill")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: size, height: size)
-                .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
         }
     }
 }
 
-@available(iOS 14.0, *)
-struct TemperatureText: View {
-    let temperature: String
-    let fontSize: CGFloat
-    @Environment(\.colorScheme) var colorScheme
-    
-    init(_ temperature: String, fontSize: CGFloat = 32) {
-        self.temperature = temperature
-        self.fontSize = fontSize
-    }
-    
-    var body: some View {
-        Text(temperature)
-            .font(.system(size: fontSize, weight: .bold))
-            .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
-    }
-}
-
-@available(iOS 14.0, *)
-struct DescriptionText: View {
-    let description: String
-    let fontSize: CGFloat
-    @Environment(\.colorScheme) var colorScheme
-    
-    init(_ description: String, fontSize: CGFloat = 14) {
-        self.description = description
-        self.fontSize = fontSize
-    }
-    
-    var body: some View {
-        Text(description)
-            .font(.system(size: fontSize))
-            .foregroundColor(WidgetColorProvider.secondaryText(for: colorScheme))
-    }
-}
-
-@available(iOS 14.0, *)
-struct PrecipitationText: View {
-    let precipAccumulation: String
-    let fontSize: CGFloat
-    
-    init(_ precipAccumulation: String, fontSize: CGFloat = 10) {
-        self.precipAccumulation = precipAccumulation
-        self.fontSize = fontSize
-    }
-    
-    var body: some View {
-        if !precipAccumulation.isEmpty && precipAccumulation != "0mm" && precipAccumulation != "0\"" {
-            Text(precipAccumulation)
-                .font(.system(size: fontSize))
-                .foregroundColor(WidgetColorProvider.precipitationColor)
-                .lineLimit(1)
-        }
-    }
-}
-
-@available(iOS 14.0, *)
+@available(iOS 15.0, *)
 struct NoDataView: View {
     let state: WeatherWidgetData.LoadingState
     let errorMessage: String?
@@ -139,53 +55,26 @@ struct NoDataView: View {
     var body: some View {
         VStack {
             if state == .loading {
-                ProgressView()
+                ProgressView().controlSize(.small).padding(6)
                 Text(WidgetLocalizedStrings.loading)
-                    .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
             } else if state == .error {
-                Image(systemName: "exclamationmark.triangle")
-                    .foregroundColor(.red)
+                Image(systemName: "exclamationmark.triangle").resizable()
+                    .aspectRatio(contentMode: .fit).frame(width:30, height:30)
+                    .foregroundColor(.red).padding(6)
                 Text(errorMessage ?? WidgetLocalizedStrings.error_loading)
-                    .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
                     .multilineTextAlignment(.center)
             } else {
-                Image(systemName: "cloud")
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                Image(systemName: "cloud").resizable()
+                    .aspectRatio(contentMode: .fit).frame(width:30, height:30)
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme)).padding(6)
                 Text(WidgetLocalizedStrings.noLocationSet)
-                    .font(.caption)
-                    .foregroundColor(WidgetColorProvider.primaryText(for: colorScheme))
+                    .font(.system(size: 14, weight: .regular))
+                    .foregroundColor(WidgetColorProvider.onBackground(for: colorScheme))
             }
-        }
-    }
-}
-
-// MARK: - Widget Background with Gradient
-@available(iOS 14.0, *)
-struct WidgetBackgroundView: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    var body: some View {
-    }
-}
-
-// MARK: - Card View with Adaptive Background
-@available(iOS 14.0, *)
-struct CardView<Content: View>: View {
-    let content: Content
-    @Environment(\.colorScheme) var colorScheme
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
-    var body: some View {
-        content
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(WidgetColorProvider.cardBackground(for: colorScheme))
-            )
+        }.frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

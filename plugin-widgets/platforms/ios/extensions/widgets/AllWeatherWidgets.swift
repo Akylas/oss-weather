@@ -13,8 +13,9 @@ struct SimpleWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.simpleWeatherName)
         .description(WidgetLocalizedStrings.simpleWeatherDesc)
         .supportedFamilies([.systemSmall, .systemMedium])
@@ -30,11 +31,12 @@ struct SimpleWeatherWithClockWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWithClockWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithClockName)
         .description(WidgetLocalizedStrings.weatherWithClockDesc)
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
@@ -47,8 +49,9 @@ struct SimpleWeatherWithDateWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             SimpleWeatherWithDateWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.weatherWithDateName)
         .description(WidgetLocalizedStrings.weatherWithDateDesc)
         .supportedFamilies([.systemSmall, .systemMedium])
@@ -64,7 +67,7 @@ struct HourlyWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             HourlyWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
         .configurationDisplayName(WidgetLocalizedStrings.hourlyForecastName)
         .description(WidgetLocalizedStrings.hourlyForecastDesc)
@@ -81,8 +84,9 @@ struct DailyWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             DailyWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.dailyForecastName)
         .description(WidgetLocalizedStrings.dailyForecastDesc)
         .supportedFamilies([.systemMedium, .systemLarge])
@@ -98,11 +102,43 @@ struct ForecastWeatherWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherTimelineProvider(widgetKind: kind)) { entry in
             ForecastWeatherWidgetView(entry: entry)
-                .containerBackground(WidgetColorProvider.backgroundColor(for: colorScheme), for: .widget)
+                .widgetBackground(for: entry, colorScheme: colorScheme)
         }
+        .contentMarginsDisabled()
         .configurationDisplayName(WidgetLocalizedStrings.detailedForecastName)
         .description(WidgetLocalizedStrings.detailedForecastDesc)
         .supportedFamilies([.systemLarge, .systemExtraLarge])
+    }
+}
+
+
+
+// MARK: - Widget Background Helper
+@available(iOS 17.0, *)
+extension View {
+    @ViewBuilder
+    func widgetBackground(for entry: WeatherEntry, colorScheme: ColorScheme) -> some View {
+        let config = entry.config ?? WidgetConfig()
+        let isTransparent = (config.settings?["transparent"] as? Bool) ?? false
+        
+        if isTransparent {
+            // Transparent background with rounded corners
+            self.containerBackground(for: .widget) {
+                Color.clear
+            }
+        } else if let backgroundColorStr = config.settings?["background_color"] as? String {
+            // Custom background color from config with rounded corners
+            self.containerBackground(for: .widget) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color(hex: backgroundColorStr))
+            }
+        } else {
+            // Default background color with rounded corners
+            self.containerBackground(for: .widget) {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(WidgetColorProvider.background(for: colorScheme))
+            }
+        }
     }
 }
 

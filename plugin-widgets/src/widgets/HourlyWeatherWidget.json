@@ -3,7 +3,6 @@
     "name": "HourlyWeatherWidget",
     "displayName": "Hourly Forecast",
     "description": "Shows hourly weather forecast with icons and temperatures",
-    "defaultPadding": 6,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {
         "type": "column",
@@ -112,22 +111,21 @@
         "sizes": [
             {
                 "width": 360,
-                "height": 150
+                "height": 150, "category":"large"
             },
             {
                 "width": 120,
-                "height": 120
+                "height": 120, "category":"medium"
             },
             {
                 "width": 260,
-                "height": 120
+                "height": 120, "category":"large"
             }
         ],
         "fakeData": {
             "temperature": "12 °C",
             "locationName": "Paris",
             "description": "Partly Cloudy",
-            "date": "Mon, Feb 24",
             "hourlyData": [
                 {
                     "time": "06:00",

@@ -13,7 +13,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Expression, compileExpression, compilePropertyValue as compilePropValue } from './expression-compiler';
-import { BaseLayoutElement, getSettingKey, getSingleBinding, hasTemplateBinding, isExpression, isSettingReference, toPlatformFontWeight, filterChildrenByPlatform } from './shared-utils';
+import { BaseLayoutElement, getSettingKey, getSingleBinding, hasTemplateBinding, isExpression, isSettingReference, toPlatformFontWeight } from './shared-utils';
 import { DEFAULT_COLOR_MAPS } from './modifier-builders';
 import { compilePropertyValue } from './expression-compiler';
 
@@ -34,6 +34,7 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
+    defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
@@ -44,11 +45,6 @@ interface WidgetLayout {
         layout: BaseLayoutElement;
     }[];
     layout: BaseLayoutElement;
-    generatePreviews?: boolean;
-    preview?: {
-        sizes?: { width: number; height: number; category: string }[];
-        fakeData?: Record<string, any>;
-    };
 }
 
 // ============================================================================
@@ -58,7 +54,7 @@ interface WidgetLayout {
 /**
  * Compile an expression or value to Swift code
  */
-function compileToSwift(value: Expression | undefined, defaultValue: string = '""', literalHandler?: Function): string {
+function compileToSwift(value: Expression | undefined, defaultValue: string = '""'): string {
     if (value === undefined) return defaultValue;
 
     // Handle template strings with {{}} bindings
@@ -76,9 +72,6 @@ function compileToSwift(value: Expression | undefined, defaultValue: string = '"
 
     // Handle literal values
     if (typeof value === 'string') {
-        if (literalHandler) {
-            return literalHandler(value);
-        }
         return `"${escapeSwiftString(value)}"`;
     }
     if (typeof value === 'number') {
@@ -291,40 +284,6 @@ function toSwiftAlignment(alignment?: any, crossAlignment?: any, isVertical: boo
 }
 
 /**
- * Convert vertical alignment to SwiftUI frame alignment
- */
-function toSwiftVerticalFrameAlignment(alignment: string): string {
-    switch (alignment) {
-        case 'start':
-        case 'top':
-            return '.top';
-        case 'center':
-            return '.center';
-        case 'end':
-        case 'bottom':
-            return '.bottom';
-        default:
-            return '.center';
-    }
-}
-
-/**
- * Convert horizontal alignment to SwiftUI frame alignment
- */
-function toSwiftHorizontalFrameAlignment(alignment: string): string {
-    switch (alignment) {
-        case 'start':
-            return '.leading';
-        case 'center':
-            return '.center';
-        case 'end':
-            return '.trailing';
-        default:
-            return '.center';
-    }
-}
-
-/**
  * Convert color reference to Swift
  */
 function toSwiftColor(color?: Expression): string {
@@ -345,7 +304,7 @@ function toSwiftColor(color?: Expression): string {
             platform: 'swift',
             context: 'value'
         });
-
+        
         // If the compiled expression references config.settings, it needs hex color parsing
         // Otherwise, handle color theme lookups
         return compiled;
@@ -362,7 +321,7 @@ function wrapColorParsingSwift(colorExpr: string): string {
     if (colorExpr.includes('config.settings')) {
         // For simple config.settings?["key"] as? String expressions, wrap with Color parsing
         // For complex expressions (ternaries), they already handle the mapping via case expressions
-
+        
         // Check if this is already a complex ternary with WidgetColorProvider fallback
         if (colorExpr.includes('?') && colorExpr.includes(':')) {
             // Complex expression - already handles conditional logic
@@ -377,24 +336,24 @@ function wrapColorParsingSwift(colorExpr: string): string {
                 return `(config.settings?["${key}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
             }
         }
-
+        
         // Simple config.settings reference - extract key and wrap with hex parsing
         const keyMatch = colorExpr.match(/config\.settings\?\["([^"]+)"\]/);
         if (keyMatch) {
             const settingKey = keyMatch[1];
             return `(config.settings?["${settingKey}"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
         }
-
+        
         // Fallback: if we can't extract the key, wrap the entire expression
         return `(${colorExpr} as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)`;
     }
-
+    
     // Check if expression contains theme color references that need mapping
     if (colorExpr.includes('color.')) {
         // Theme color references should already be mapped by DEFAULT_COLOR_MAPS
         return colorExpr;
     }
-
+    
     return colorExpr;
 }
 
@@ -550,9 +509,9 @@ function applySwiftModifiers(lines: string[], element: BaseLayoutElement): void 
 // ============================================================================
 
 /**
- * Generate Swift code for an element with parent context
+ * Generate Swift code for an element
  */
-function generateElementWithParent(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string, parentType?: string): string {
+function generateElement(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string): string {
     const lines: string[] = [];
 
     // Handle visibility condition
@@ -566,16 +525,16 @@ function generateElementWithParent(element: BaseLayoutElement, indent: string = 
 
     switch (element.type) {
         case 'column':
-            lines.push(...generateColumn(element, currentIndent, defaultColor, parentType));
+            lines.push(...generateColumn(element, currentIndent, defaultColor));
             break;
         case 'row':
-            lines.push(...generateRow(element, currentIndent, defaultColor, parentType));
+            lines.push(...generateRow(element, currentIndent, defaultColor));
             break;
         case 'stack':
             lines.push(...generateStack(element, currentIndent, defaultColor));
             break;
         case 'label':
-            lines.push(...generateLabel(element, currentIndent, defaultColor, parentType));
+            lines.push(...generateLabel(element, currentIndent, defaultColor));
             break;
         case 'image':
             lines.push(...generateImage(element, currentIndent));
@@ -605,34 +564,6 @@ function generateElementWithParent(element: BaseLayoutElement, indent: string = 
             lines.push(`${currentIndent}// Unknown element type: ${element.type}`);
     }
 
-    // Apply alignment frame modifier based on parent type
-    if (parentType && element.alignment) {
-        const lastLineIndex = lines.length - 1;
-        if (parentType === 'row') {
-            // In a row, child alignment affects vertical position
-            const vAlign = toSwiftVerticalFrameAlignment(element.alignment);
-            if (vAlign) {
-                lines[lastLineIndex] += `.frame(maxHeight: .infinity, alignment: ${vAlign})`;
-            }
-        } else if (parentType === 'column') {
-            // In a column, child alignment affects horizontal position
-            const hAlign = toSwiftHorizontalFrameAlignment(element.alignment);
-            if (hAlign) {
-                lines[lastLineIndex] += `.frame(maxWidth: .infinity, alignment: ${hAlign})`;
-            }
-        }
-    }
-
-    // Apply flex modifier based on parent type
-    if (parentType && element.flex !== undefined) {
-        const lastLineIndex = lines.length - 1;
-        if (parentType === 'row') {
-            lines[lastLineIndex] += `.frame(maxWidth: .infinity)`;
-        } else if (parentType === 'column') {
-            lines[lastLineIndex] += `.frame(maxHeight: .infinity)`;
-        }
-    }
-
     if (wrapWithIf) {
         lines.push(`${indent}}`);
     }
@@ -640,74 +571,49 @@ function generateElementWithParent(element: BaseLayoutElement, indent: string = 
     return lines.join('\n');
 }
 
-/**
- * Generate Swift code for an element (without parent context)
- */
-function generateElement(element: BaseLayoutElement, indent: string = '                ', defaultColor?: string): string {
-    return generateElementWithParent(element, indent, defaultColor, undefined);
-}
-
-function generateColumn(element: BaseLayoutElement, indent: string, defaultColor?: string, parentType?: string): string[] {
+function generateColumn(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, true);
 
     lines.push(`${indent}VStack(alignment: ${alignment}, spacing: ${spacing}) {`);
 
-    // Filter children by platform - only render iOS-compatible elements
-    const children = filterChildrenByPlatform(element.children, 'ios');
-    if (children && children.length > 0) {
-        for (const child of children) {
+    if (element.children) {
+        for (const child of element.children) {
             // flex: 1 child in a column = flexible vertical spacer → Spacer()
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                // Pass parent type to child so it knows it's in a column
-                lines.push(generateElementWithParent(child, indent + '    ', defaultColor, 'column'));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
 
     lines.push(`${indent}}`);
-
-    // Add .fixedSize for VStack
-    if (parentType) {
-        lines[lines.length - 1] += '.fixedSize(horizontal: true, vertical: false)';
-    }
-
     applySwiftModifiers(lines, element);
 
     return lines;
 }
 
-function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: string, parentType?: string): string[] {
+function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
     const spacing = calculateSpacing(element);
     const alignment = toSwiftAlignment(element.alignment, element.crossAlignment, false);
 
     lines.push(`${indent}HStack(alignment: ${alignment}, spacing: ${spacing}) {`);
 
-    // Filter children by platform - only render iOS-compatible elements
-    const children = filterChildrenByPlatform(element.children, 'ios');
-    if (children && children.length > 0) {
-        for (const child of children) {
+    if (element.children) {
+        for (const child of element.children) {
             // flex: 1 child in a row = flexible horizontal spacer → Spacer()
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
-                // Pass parent type to child so it knows it's in a row
-                lines.push(generateElementWithParent(child, indent + '    ', defaultColor, 'row'));
+                lines.push(generateElement(child, indent + '    ', defaultColor));
             }
         }
     }
 
     lines.push(`${indent}}`);
-
-    // Add .fixedSize for HStack
-    if (parentType) {
-        lines[lines.length - 1] += '.fixedSize(horizontal: false, vertical: true)';
-    }
-
     applySwiftModifiers(lines, element);
 
     return lines;
@@ -737,10 +643,8 @@ function generateStack(element: BaseLayoutElement, indent: string, defaultColor?
 
     lines.push(`${indent}ZStack${stackAlignment ? `(${stackAlignment})` : ''} {`);
 
-    // Filter children by platform - only render iOS-compatible elements
-    const children = filterChildrenByPlatform(element.children, 'ios');
-    if (children && children.length > 0) {
-        for (const child of children) {
+    if (element.children) {
+        for (const child of element.children) {
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
@@ -755,11 +659,11 @@ function generateStack(element: BaseLayoutElement, indent: string, defaultColor?
     return lines;
 }
 
-function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?: string, parentType?: string): string[] {
+function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?: string): string[] {
     const lines: string[] = [];
 
     // Compile text expression
-    const textExpr = compileToSwift(element.text, '""', (value: string) => `WidgetLocalizedStrings.${value}`);
+    const textExpr = compileToSwift(element.text, '""');
 
     lines.push(`${indent}Text(${textExpr})`);
 
@@ -779,11 +683,11 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
         // defaultColor is an expression - compile it
         color = toSwiftColor(defaultColor);
     } else {
-        color = 'WidgetColorProvider.onSurface(for: colorScheme)';
+        color = 'WidgetColorProvider.onSurface';
     }
     lines.push(`${indent}    .foregroundColor(${color})`);
 
-    // Text alignment - use frame alignment instead of multilineTextAlignment
+    // Text alignment - supports expressions
     if (element.textAlign !== undefined) {
         if (isExpression(element.textAlign)) {
             const compiled = compileExpression(element.textAlign, {
@@ -795,12 +699,10 @@ function generateLabel(element: BaseLayoutElement, indent: string, defaultColor?
                     return '.leading';
                 }
             });
-            lines.push(`${indent}    .frame(maxWidth: .infinity, alignment: ${compiled})`);
+            lines.push(`${indent}    .multilineTextAlignment(${compiled})`);
         } else {
-            let alignment = '.leading';
-            if (element.textAlign === 'center') alignment = '.center';
-            else if (element.textAlign === 'right' || element.textAlign === 'end') alignment = '.trailing';
-            lines.push(`${indent}    .frame(maxWidth: .infinity, alignment: ${alignment})`);
+            const align = element.textAlign === 'center' ? 'center' : element.textAlign === 'right' || element.textAlign === 'end' ? 'trailing' : 'leading';
+            lines.push(`${indent}    .multilineTextAlignment(.${align})`);
         }
     }
 
@@ -851,12 +753,10 @@ function generateScrollView(element: BaseLayoutElement, indent: string, defaultC
 
     lines.push(`${indent}ScrollView(${axis}, showsIndicators: false) {`);
 
-    // Filter children by platform - only render iOS-compatible elements
-    const children = filterChildrenByPlatform(element.children, 'ios');
-    if (children && children.length > 0) {
+    if (element.children) {
         const containerType = element.direction === 'horizontal' ? 'HStack' : 'VStack';
         lines.push(`${indent}    ${containerType}(spacing: 8) {`);
-        for (const child of children) {
+        for (const child of element.children) {
             lines.push(generateElement(child, indent + '        ', defaultColor));
         }
         lines.push(`${indent}    }`);
@@ -955,13 +855,20 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
 
     const lines: string[] = [];
 
-    // Use iOS-native Text(Date(), style:) for common date formats
-    // This respects system locale and date formatting preferences
-    if (style === 'dayMonth' || style === 'date') {
-        // For dayMonth and date, use iOS native .date style which shows localized date
-        lines.push(`${indent}Text(Date(), style: .date)`);
+    if (style === 'dayMonth') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.setLocalizedDateFormatFromTemplate("MMMd")`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
+    } else if (style === 'fullDate') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateStyle = .long`);
+        lines.push(`${indent}    f.timeStyle = .none`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
     } else if (style === 'year') {
-        // Year needs custom formatter
         lines.push(`${indent}Text({`);
         lines.push(`${indent}    let f = DateFormatter()`);
         lines.push(`${indent}    f.dateFormat = "yyyy"`);
@@ -973,135 +880,11 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
         lines.push(`${indent}    f.dateFormat = "MMMM"`);
         lines.push(`${indent}    return f.string(from: Date())`);
         lines.push(`${indent}}())`);
-    } else if (style === 'fullDate') {
-        lines.push(`${indent}Text({`);
-        lines.push(`${indent}    let f = DateFormatter()`);
-        lines.push(`${indent}    f.dateStyle = .long`);
-        lines.push(`${indent}    f.timeStyle = .none`);
-        lines.push(`${indent}    return f.string(from: Date())`);
-        lines.push(`${indent}}())`);
     } else {
-        // Default: use iOS native .date style
         lines.push(`${indent}Text(Date(), style: .date)`);
     }
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);
     lines.push(`${indent}    .foregroundColor(${color})`);
-
-    return lines;
-}
-
-/**
- * Generate preview block for a widget (similar to Android glance generator)
- */
-function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): string[] {
-    const lines: string[] = [];
-
-    // Check if previews should be generated
-    if (layout.generatePreviews !== true || !layout.preview) {
-        return lines;
-    }
-
-    // Determine preview sizes
-    let sizes: { width: number; height: number; category: string }[];
-    if (layout.preview.sizes && layout.preview.sizes.length > 0) {
-        sizes = layout.preview.sizes;
-    } else {
-        sizes = [{ width: 260, height: 120, category: 'medium' }];
-    }
-
-    // Build fakeData Swift constructor arguments
-    const fakeData = layout.preview.fakeData;
-    const fakeDataLines: string[] = [];
-
-    if (fakeData) {
-        const scalar = (key: string, v: any) => `            ${key}: "${v}"`;
-
-        const hourlyItem = (item: any) => {
-            const props = [
-                item.time !== undefined ? `time: "${item.time}"` : null,
-                item.temperature !== undefined ? `temperature: "${item.temperature}"` : null,
-                item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
-                item.description !== undefined ? `description: "${item.description}"` : null,
-                item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null,
-                item.windSpeed !== undefined ? `windSpeed: "${item.windSpeed}"` : null,
-                item.precipitation !== undefined ? `precipitation: "${item.precipitation}"` : null
-            ].filter(Boolean);
-            return `HourlyData(${props.join(', ')})`;
-        };
-
-        const dailyItem = (item: any) => {
-            const props = [
-                item.day !== undefined ? `day: "${item.day}"` : null,
-                item.temperatureHigh !== undefined ? `temperatureHigh: "${item.temperatureHigh}"` : null,
-                item.temperatureLow !== undefined ? `temperatureLow: "${item.temperatureLow}"` : null,
-                item.iconPath !== undefined ? `iconPath: "app/assets/icon_themes/meteocons/images/${item.iconPath}.png"` : null,
-                item.description !== undefined ? `description: "${item.description}"` : null,
-                item.precipitation !== undefined ? `precipitation: "${item.precipitation}"` : null,
-                item.windSpeed !== undefined ? `windSpeed: "${item.windSpeed}"` : null,
-                item.precipAccumulation !== undefined ? `precipAccumulation: "${item.precipAccumulation}"` : null
-            ].filter(Boolean);
-            return `DailyData(${props.join(', ')})`;
-        };
-
-        const WeatherWidgetDataKeys = ['temperature', 'locationName', 'iconPath', 'description', 'hourlyData', 'dailyData'];
-        WeatherWidgetDataKeys.forEach((key) => {
-            const value = fakeData[key];
-            if (value) {
-                switch (key) {
-                    case 'temperature':
-                    case 'description':
-                    case 'locationName':
-                    case 'date':
-                        fakeDataLines.push(`${scalar(key, value)},`);
-                        break;
-                    case 'iconPath':
-                        fakeDataLines.push(`${scalar(key, `app/assets/icon_themes/meteocons/images/${value}.png`)},`);
-                        break;
-                    case 'hourlyData':
-                        fakeDataLines.push(`            hourlyData: [${(value as any[]).map(hourlyItem).join(', ')}],`);
-                        break;
-                    case 'dailyData':
-                        fakeDataLines.push(`            dailyData: [${(value as any[]).map(dailyItem).join(', ')}],`);
-                        break;
-                }
-            }
-        });
-    }
-
-    fakeDataLines.push(`            loadingState: .loaded,`);
-    fakeDataLines.push(`            errorMessage: nil`);
-
-    lines.push(`\n// MARK: - Previews`);
-
-    // Generate preview for each size
-    const handledCategories = new Set<string>();
-    for (const size of sizes) {
-        const category = size.category;
-        if (!handledCategories.has(category)) {
-            handledCategories.add(category);
-            const system = `system${category[0].toUpperCase()}${category.slice(1)}`;
-            lines.push(`@available(iOS 17.0, *)`);
-            lines.push(`#Preview ("Preview ${category}", as: .${system}) {`);
-            lines.push(`    ${layout.name}()`);
-            lines.push(`} timeline: {`);
-            lines.push(`    let fakeData = WeatherWidgetData(`);
-            lines.push(...fakeDataLines);
-            lines.push(`    )`);
-            lines.push(`    WeatherEntry(date: .now, data: fakeData, widgetFamily: .${system}, widgetKind: "${layout.name}", config: WidgetConfig())`);
-            lines.push(`}\n`);
-        }
-    }
-
-    // Error preview
-    // lines.push(`#Preview("Error", as: .systemMedium) {`);
-    // lines.push(`    ${layout.name}()`);
-    // lines.push(`} timeline: {`);
-    // lines.push(`    let errorData = WeatherWidgetData(`);
-    // lines.push(`            loadingState: .error,`);
-    // lines.push(`            errorMessage: "Unable to fetch weather data"`);
-    // lines.push(`    )`);
-    // lines.push(`    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
-    // lines.push(`}`);
 
     return lines;
 }
@@ -1112,6 +895,19 @@ function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): stri
 function generateWidgetView(layout: WidgetLayout): string {
     const name = layout.name;
     const viewName = `${name}View`;
+
+    // Handle default padding - it could be an expression
+    let defaultPadding = String(DEFAULT_PADDING);
+    if (layout.defaultPadding !== undefined) {
+        if (typeof layout.defaultPadding === 'number') {
+            defaultPadding = String(layout.defaultPadding);
+        } else if (isExpression(layout.defaultPadding)) {
+            defaultPadding = compileExpression(layout.defaultPadding, {
+                platform: 'swift',
+                context: 'value'
+            });
+        }
+    }
 
     let code = `// Auto-generated from ${name}.json - DO NOT EDIT MANUALLY
 // Generated by widget-layouts/generators/swift-generator.ts
@@ -1143,7 +939,7 @@ struct ${viewName}: View {
 
     code += `
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer {
+                WidgetContainer(padding: ${defaultPadding}) {
 `;
 
     // Generate variant conditions
@@ -1173,12 +969,6 @@ struct ${viewName}: View {
     }
 }
 `;
-
-    // Add preview block
-    const previewLines = generateSwiftPreviewBlock(layout, viewName);
-    if (previewLines.length > 0) {
-        code += previewLines.join('\n') + '\n';
-    }
 
     return code;
 }

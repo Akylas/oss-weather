@@ -4,51 +4,53 @@
 import SwiftUI
 import WidgetKit
 
-@available(iOS 14.0, *)
+@available(iOS 17.0, *)
 struct DailyWeatherWidgetView: View {
     let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
             let config = entry.config ?? WidgetConfig()
+            let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: 8) {
+                WidgetContainer {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(alignment: .top, spacing: 0) {
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(data.locationName)
                                     .font(.system(size: 12, weight: .regular))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
-                                    .multilineTextAlignment(.leading)
-                                    .lineLimit(1).opacity(0.6)
+                                    .foregroundColor(widgetColor)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .lineLimit(1).opacity(0.5)
                                 Text(data.temperature)
                                     .font(.system(size: 26, weight: .bold))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
-                            }
+                                    .foregroundColor(widgetColor)
+                            }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .top)
                             Spacer()
                             VStack(alignment: .trailing, spacing: 0) {
-                                if !data.iconPath.isEmpty {
+                                if !(data.iconPath ?? "").isEmpty {
                                     WeatherIconView(data.iconPath, description: data.description, size: 54)
                                 }
-                                if !data.description.isEmpty {
+                                if !(data.description ?? "").isEmpty {
                                     Text(data.description)
                                         .font(.system(size: 11, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                        .multilineTextAlignment(.trailing)
-                                        .lineLimit(1).opacity(0.6)
+                                        .foregroundColor(widgetColor)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .lineLimit(1).opacity(0.5)
                                 }
-                            }
-                        }.frame(maxWidth: .infinity).padding(8)
+                            }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .bottom)
+                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).padding(8).frame(maxWidth: .infinity, alignment: .leading)
                         VStack(alignment: .leading, spacing: 0) {
-                            Text("daily")
+                            Text(WidgetLocalizedStrings.daily)
                                 .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                                .multilineTextAlignment(.leading).padding(.horizontal, 8).opacity(0.6)
-                        }.frame(maxWidth: .infinity)
+                                .foregroundColor(widgetColor)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 8).opacity(0.5)
+                        }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .leading)
                         Spacer().frame(height: 4)
                         ScrollView(.vertical, showsIndicators: false) {
                             VStack(spacing: 8) {
@@ -59,7 +61,7 @@ struct DailyWeatherWidgetView: View {
                                                 HStack(alignment: .center, spacing: 0) {
                                                     Text(item.day)
                                                         .font(.system(size: 12, weight: .medium))
-                                                        .foregroundColor(WidgetColorProvider.onSurface)
+                                                        .foregroundColor(widgetColor)
                                                         .lineLimit(1)
                                                     Spacer()
                                                     WeatherIconView(item.iconPath, description: data.description, size: 36)
@@ -68,28 +70,28 @@ struct DailyWeatherWidgetView: View {
                                                         HStack(alignment: .center, spacing: 6) {
                                                             Text(item.temperatureHigh)
                                                                 .font(.system(size: 13, weight: .bold))
-                                                                .foregroundColor(WidgetColorProvider.onSurface)
+                                                                .foregroundColor(widgetColor)
                                                                 .lineLimit(1)
                                                             Text(item.temperatureLow)
                                                                 .font(.system(size: 11, weight: .regular))
-                                                                .foregroundColor(WidgetColorProvider.onSurface)
-                                                                .lineLimit(1).opacity(0.6)
-                                                        }
+                                                                .foregroundColor(widgetColor)
+                                                                .lineLimit(1).opacity(0.5)
+                                                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, alignment: .trailing)
                                                         HStack(alignment: .center, spacing: 6) {
-                                                            if !item.precipAccumulation.isEmpty {
+                                                            if !(item.precipAccumulation ?? "").isEmpty {
                                                                 Text(item.precipAccumulation)
                                                                     .font(.system(size: 10, weight: .regular))
-                                                                    .foregroundColor(WidgetColorProvider.onSurface).opacity(0.6)
+                                                                    .foregroundColor(widgetColor).opacity(0.5)
                                                             }
-                                                            if !item.precipitation.isEmpty {
+                                                            if !(item.precipitation ?? "").isEmpty {
                                                                 Text("💧" + item.precipitation)
                                                                     .font(.system(size: 10, weight: .regular))
-                                                                    .foregroundColor(WidgetColorProvider.onSurface).opacity(0.6)
+                                                                    .foregroundColor(widgetColor).opacity(0.5)
                                                             }
-                                                        }
-                                                    }
-                                                }.frame(maxWidth: .infinity)
-                                            }.frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant).cornerRadius(8)
+                                                        }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity, alignment: .trailing)
+                                                    }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity, alignment: .bottom)
+                                                }.fixedSize(horizontal: false, vertical: true).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .center)
+                                            }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).padding(.horizontal, 6).padding(.vertical, 2).background(WidgetColorProvider.surfaceVariant(for: colorScheme)).cornerRadius(8).frame(maxWidth: .infinity, alignment: .center)
                                         }.frame(maxWidth: .infinity).padding(2)
                                     }
                                 }
@@ -103,3 +105,21 @@ struct DailyWeatherWidgetView: View {
         }
     }
 }
+
+// MARK: - Previews
+@available(iOS 17.0, *)
+#Preview ("Preview large", as: .systemLarge) {
+    DailyWeatherWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "12°",
+            locationName: "Grenoble",
+            iconPath: "app/assets/icon_themes/meteocons/images/802d.png",
+            description: "Partly Cloudy",
+            dailyData: [DailyData(day: "Mon", temperatureHigh: "12°", temperatureLow: "4°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipitation: "5 %", windSpeed: "14 km/h", precipAccumulation: "0 mm"), DailyData(day: "Tue", temperatureHigh: "14°", temperatureLow: "6°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipitation: "10 %", windSpeed: "12 km/h", precipAccumulation: "0 mm"), DailyData(day: "Wed", temperatureHigh: "10°", temperatureLow: "5°", iconPath: "app/assets/icon_themes/meteocons/images/500d.png", precipitation: "60 %", windSpeed: "18 km/h", precipAccumulation: "3 mm"), DailyData(day: "Thu", temperatureHigh: "9°", temperatureLow: "3°", iconPath: "app/assets/icon_themes/meteocons/images/503.png", precipitation: "80 %", windSpeed: "22 km/h", precipAccumulation: "8 mm"), DailyData(day: "Fri", temperatureHigh: "11°", temperatureLow: "4°", iconPath: "app/assets/icon_themes/meteocons/images/802d.png", precipitation: "20 %", windSpeed: "16 km/h", precipAccumulation: "0 mm"), DailyData(day: "Sat", temperatureHigh: "15°", temperatureLow: "7°", iconPath: "app/assets/icon_themes/meteocons/images/800d.png", precipitation: "5 %", windSpeed: "10 km/h", precipAccumulation: "0 mm")],
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemLarge, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
+}
+

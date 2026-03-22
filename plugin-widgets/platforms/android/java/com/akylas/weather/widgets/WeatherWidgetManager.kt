@@ -818,13 +818,13 @@ object WeatherWidgetManager {
     /**
      * Get cached widget data - now reads from StateFlow
      */
-    fun getWidgetData(context: Context, widgetId: Int): WeatherWidgetData? {
-        loadWidgetDataCache(context)
-        // Read from StateFlow for most up-to-date data
-        val data = WidgetDataStore.widgetData.value[widgetId]
-        WidgetsLogger.d(LOG_TAG, "getWidgetData(widgetId=$widgetId) -> found=${data != null}")
-        return data
-    }
+    // fun getWidgetData(context: Context, widgetId: Int): WeatherWidgetData? {
+    //     loadWidgetDataCache(context)
+    //     // Read from StateFlow for most up-to-date data
+    //     val data = WidgetDataStore.widgetData.value[widgetId]
+    //     WidgetsLogger.d(LOG_TAG, "getWidgetData(widgetId=$widgetId) -> found=${data != null}")
+    //     return data
+    // }
 
     /**
      * Common handler used by both JSON and object update paths
@@ -846,15 +846,15 @@ object WeatherWidgetManager {
     /**
      * Explicit method to clear widget data
      */
-    @JvmStatic
-    fun clearWidgetData(context: Context, widgetId: Int) {
-        WidgetsLogger.d(LOG_TAG, "clearWidgetData(widgetId=$widgetId) called")
+    // @JvmStatic
+    // fun clearWidgetData(context: Context, widgetId: Int) {
+    //     WidgetsLogger.d(LOG_TAG, "clearWidgetData(widgetId=$widgetId) called")
         
-        deleteWidgetCache(context, widgetId) // Persist after removal
+    //     deleteWidgetCache(context, widgetId) // Persist after removal
         
-        updateWidget(context, widgetId)
-        WidgetsLogger.i(LOG_TAG, "Cleared widget data for widgetId=$widgetId")
-    }
+    //     updateWidget(context, widgetId)
+    //     WidgetsLogger.i(LOG_TAG, "Cleared widget data for widgetId=$widgetId")
+    // }
 
     /**
      * Parse JSON produced by JS bridge into a WeatherWidgetData instance.

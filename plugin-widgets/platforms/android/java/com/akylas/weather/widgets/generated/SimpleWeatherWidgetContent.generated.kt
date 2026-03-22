@@ -50,7 +50,6 @@ private fun Preview() {
         iconPath = "icon_themes/meteocons/images/800d.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
-        date = "Mon, Feb 24",
         lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED
     )
@@ -94,7 +93,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
             ) {
-                if ("iconPath" != null) {
+                if (data.iconPath.isNotEmpty()) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
@@ -143,7 +142,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     horizontalAlignment = Alignment.Horizontal.End,
                     verticalAlignment = Alignment.Vertical.CenterVertically,
                 ) {
-                    if ("iconPath" != null) {
+                    if (data.iconPath.isNotEmpty()) {
                         WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                             Image(
                                provider = provider,
@@ -154,7 +153,7 @@ fun SimpleWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                     }
                 }
             }
-            if ("description" != null) {
+            if (data.description.isNotEmpty()) {
                 Box(
                     modifier = GlanceModifier.fillMaxWidth().fillMaxHeight(),
                     contentAlignment = Alignment.BottomEnd

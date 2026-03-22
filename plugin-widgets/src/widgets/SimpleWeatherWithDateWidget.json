@@ -3,7 +3,6 @@
     "name": "SimpleWeatherWithDateWidget",
     "displayName": "Weather with Date",
     "description": "Shows current date with weather information",
-    "defaultPadding": 4,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "settings": {
         "clockBold": { "type": "boolean", "default": false, "title": "bold_clock" }
@@ -45,7 +44,15 @@
                 "children": [
                     {
                         "type": "date",
+                        "style": "date",
+                        "platform":"ios",
+                        "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 62],
+                        "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
+                    },
+                    {
+                        "type": "date",
                         "style": "dayMonth",
+                        "platform":"android",
                         "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 62],
                         "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
                     },
@@ -70,7 +77,8 @@
                         "type": "date",
                         "style": "year",
                         "fontSize": 14,
-                        "opacity": 0.5
+                        "opacity": 0.5,
+                        "platform": ["android"]
                     },
                     {
                         "type": "label",
@@ -88,10 +96,10 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 260, "height": 140 },
-            { "width": 120, "height": 50 },
-            { "width": 80, "height": 80 },
-            { "width": 120, "height": 120 }
+            { "width": 260, "height": 140, "category":"medium" },
+            { "width": 120, "height": 50, "category":"medium" },
+            { "width": 80, "height": 80, "category":"small" },
+            { "width": 120, "height": 120, "category":"medium" }
         ],
         "fakeData": {
             "temperature": "8\u00b0",

@@ -11,10 +11,10 @@ struct WeatherWidgetData: Codable {
     let locationName: String
     let iconPath: String?
     let description: String
-    let loadingState: LoadingState
-    let errorMessage: String?
     let hourlyData: [HourlyData]
     let dailyData: [DailyData]
+    let loadingState: LoadingState
+    let errorMessage: String?
     
     enum LoadingState: String, Codable {
         case none
@@ -29,10 +29,10 @@ struct WeatherWidgetData: Codable {
         locationName: String = "",
         iconPath: String? = nil,
         description: String = "",
+        hourlyData: [HourlyData] = [],
+        dailyData: [DailyData] = [],
         loadingState: LoadingState = .none,
         errorMessage: String? = nil,
-        hourlyData: [HourlyData] = [],
-        dailyData: [DailyData] = []
     ) {
         self.temperature = temperature
         self.locationName = locationName
@@ -47,45 +47,55 @@ struct WeatherWidgetData: Codable {
 
 // MARK: - Hourly Data
 struct HourlyData: Codable, Identifiable {
-    var id: String { hour + temperature } // Computed ID
-    let hour: String
+    var id: String { time + temperature } // Computed ID
+    let time: String
     let temperature: String
     let iconPath: String?
     let description: String
     let precipAccumulation: String
+    let precipitation: String
+    let windSpeed: String
     
     // Coding keys for JSON serialization
     enum CodingKeys: String, CodingKey {
-        case hour
+        case time
         case temperature
         case iconPath
         case description
         case precipAccumulation
+        case precipitation
+        case windSpeed
     }
     
     // Automatic decoding with defaults
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        hour = try container.decode(String.self, forKey: .hour)
+        time = try container.decode(String.self, forKey: .time)
         temperature = try container.decode(String.self, forKey: .temperature)
         iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath)
         description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
         precipAccumulation = try container.decodeIfPresent(String.self, forKey: .precipAccumulation) ?? ""
+        precipitation = try container.decodeIfPresent(String.self, forKey: .precipitation) ?? ""
+        windSpeed = try container.decodeIfPresent(String.self, forKey: .windSpeed) ?? ""
     }
     
     // Manual initializer for convenience
     init(
-        hour: String,
+        time: String,
         temperature: String,
         iconPath: String? = nil,
         description: String = "",
-        precipAccumulation: String = ""
+        precipAccumulation: String = "",
+        precipitation: String = "",
+        windSpeed: String = ""
     ) {
-        self.hour = hour
+        self.time = time
         self.temperature = temperature
         self.iconPath = iconPath
         self.description = description
         self.precipAccumulation = precipAccumulation
+        self.precipitation = precipitation
+        self.windSpeed = windSpeed
     }
 }
 
@@ -147,53 +157,6 @@ struct DailyData: Codable, Identifiable {
     }
 }
 
-// MARK: - Forecast Data
-struct ForecastData: Codable {
-    let dateTime: String
-    let temperature: String
-    let iconPath: String
-    let description: String
-    let precipitation: String
-    let precipAccumulation: String
-    
-    enum CodingKeys: String, CodingKey {
-        case dateTime
-        case temperature
-        case iconPath
-        case description
-        case precipitation
-        case precipAccumulation
-    }
-    
-    // Automatic decoding with defaults
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        dateTime = try container.decode(String.self, forKey: .dateTime)
-        temperature = try container.decode(String.self, forKey: .temperature)
-        iconPath = try container.decodeIfPresent(String.self, forKey: .iconPath) ?? ""
-        description = try container.decodeIfPresent(String.self, forKey: .description) ?? ""
-        precipitation = try container.decodeIfPresent(String.self, forKey: .precipitation) ?? ""
-        precipAccumulation = try container.decodeIfPresent(String.self, forKey: .precipAccumulation) ?? ""
-    }
-    
-    // Manual initializer for convenience
-    init(
-        dateTime: String,
-        temperature: String,
-        iconPath: String = "",
-        description: String = "",
-        precipitation: String = "",
-        precipAccumulation: String = ""
-    ) {
-        self.dateTime = dateTime
-        self.temperature = temperature
-        self.iconPath = iconPath
-        self.description = description
-        self.precipitation = precipitation
-        self.precipAccumulation = precipAccumulation
-    }
-}
-
 // MARK: - Widget Data Provider
 class WidgetDataProvider {
     static let appGroupId = "group.com.akylas.weather"
@@ -202,7 +165,7 @@ class WidgetDataProvider {
         guard let containerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupId
         ) else {
-            print("Failed to get App Group container")
+            WidgetsLogger.e("WidgetData", "Failed to get App Group container")
             return nil
         }
         
@@ -211,7 +174,7 @@ class WidgetDataProvider {
             .appendingPathComponent("widget_\(widgetId).json")
         
         guard let jsonData = try? Data(contentsOf: dataFile) else {
-            print("Failed to load widget data from: \(dataFile.path)")
+            WidgetsLogger.d("WidgetData", "Failed to load widget data from: \(dataFile.path)")
             return nil
         }
         
@@ -219,6 +182,16 @@ class WidgetDataProvider {
         return try? decoder.decode(WeatherWidgetData.self, from: jsonData)
     }
     
+    static var isPreview: Bool {
+        ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+    }
+    static func loadImageFromPreview(path: String) -> UIImage? {
+        let filePath = "\(Bundle.main.bundlePath)/../../\(path)"
+            print("filePath: \(filePath)")
+       // Load UIImage
+        return UIImage(contentsOfFile: filePath)
+    }
+
     static func getIconImage(path: String) -> UIImage? {
         if path.isEmpty {
             return nil
@@ -228,7 +201,9 @@ class WidgetDataProvider {
         if FileManager.default.fileExists(atPath: path) {
             return UIImage(contentsOfFile: path)
         }
-        
+        if (isPreview) {
+            return loadImageFromPreview(path: path)
+        }
         return nil
     }
 
@@ -238,7 +213,7 @@ class WidgetDataProvider {
         guard let containerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupId
         ) else {
-            print("Failed to get App Group container")
+            WidgetsLogger.e("WidgetData", "Failed to get App Group container")
             return
         }
         
@@ -256,7 +231,7 @@ class WidgetDataProvider {
         
         if let jsonData = try? encoder.encode(data) {
             try? jsonData.write(to: dataFile)
-            print("Saved widget data to: \(dataFile.path)")
+            WidgetsLogger.d("WidgetData", "Saved widget data to: \(dataFile.path)")
             
             // Reload all widgets after data change
             if #available(iOS 14.0, *) {
@@ -287,6 +262,53 @@ class WidgetDataProvider {
             .appendingPathComponent("widget_\(widgetId).json")
         
         try? FileManager.default.removeItem(at: dataFile)
-        print("Removed widget data for: \(widgetId)")
+        WidgetsLogger.d("WidgetData", "Removed widget data for: \(widgetId)")
     }
+
+
+    
+    // MARK: - Widget Data Cache
+    
+    /// Get widget data cache
+    // func getWidgetDataCache() -> [String: WeatherWidgetData] {
+    //     guard let data = userDefaults.data(forKey: widgetDataCacheKey),
+    //           let cache = try? JSONDecoder().decode([String: WeatherWidgetData].self, from: data) else {
+    //         WidgetsLogger.d("WidgetSettings", "No widget data cache found")
+    //         return [:]
+    //     }
+    //     return cache
+    // }
+    
+    /// Save widget data cache
+    // func saveWidgetDataCache(_ cache: [String: WeatherWidgetData]) {
+    //     guard let data = try? JSONEncoder().encode(cache) else {
+    //         WidgetsLogger.d("WidgetSettings", "Failed to encode widget data cache")
+    //         return
+    //     }
+    //     userDefaults.set(data, forKey: widgetDataCacheKey)
+    //     WidgetsLogger.d("WidgetSettings", "Saved widget data cache with \(cache.count) entries")
+    // }
+    
+    /// Get cached data for specific widget
+    // func getWidgetData(widgetId: String) -> WeatherWidgetData? {
+    //     let cache = getWidgetDataCache()
+    //     return cache[widgetId]
+    // }
+    
+    /// Update cached data for specific widget
+    // func updateWidgetData(widgetId: String, data: WeatherWidgetData) {
+    //     var cache = getWidgetDataCache()
+    //     cache[widgetId] = data
+    //     saveWidgetDataCache(cache)
+    //     WidgetsLogger.d("WidgetSettings", "Updated widget data for \(widgetId)")
+    // }
+    
+    /// Clear cached data for specific widget
+    // func clearWidgetData(widgetId: String) {
+    //     var cache = getWidgetDataCache()
+    //     cache.removeValue(forKey: widgetId)
+    //     saveWidgetDataCache(cache)
+    //     WidgetsLogger.d("WidgetSettings", "Cleared widget data for \(widgetId)")
+    // }
+    
 }

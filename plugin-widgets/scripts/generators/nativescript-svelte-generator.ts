@@ -15,7 +15,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { BaseLayoutElement, getSingleBinding, hasTemplateBinding, isExpression } from './shared-utils';
+import { BaseLayoutElement, getSingleBinding, hasTemplateBinding, isExpression, shouldRenderOnPlatform } from './shared-utils';
 import { compilePropertyValue as compilePropValue } from './expression-compiler';
 
 type AnyObj = Record<string, any>;
@@ -24,7 +24,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
@@ -666,6 +665,43 @@ function mapAlignment(value: string, isVertical: boolean): string {
     return map[value] || value;
 }
 
+/**
+ * Wrap child markup with platform conditionals if needed
+ * @param childMarkup - The generated child markup
+ * @param child - The child element definition
+ * @param indent - Current indentation
+ * @returns Markup potentially wrapped in {#if __IOS__} or {#if __ANDROID__}
+ */
+function wrapWithPlatformConditional(childMarkup: string, child: BaseLayoutElement, indent: string): string {
+    if (!child.platform) {
+        return childMarkup; // No platform restriction
+    }
+
+    const platforms = Array.isArray(child.platform) ? child.platform : [child.platform];
+
+    // Both platforms = no conditional needed
+    if (platforms.includes('ios') && platforms.includes('android')) {
+        return childMarkup;
+    }
+
+    // Only one platform - add conditional
+    if (platforms.includes('ios') && !platforms.includes('android')) {
+        return `${indent}{#if __IOS__}\n${childMarkup}\n${indent}{/if}`;
+    }
+
+    if (platforms.includes('android') && !platforms.includes('ios')) {
+        return `${indent}{#if __ANDROID__}\n${childMarkup}\n${indent}{/if}`;
+    }
+
+    // NativeScript-only - shouldn't happen in practice but handle it
+    if (platforms.includes('nativescript')) {
+        return childMarkup;
+    }
+
+    // No matching platform
+    return '';
+}
+
 function generateMarkup(
     widgetName: string,
     element: BaseLayoutElement,
@@ -1177,7 +1213,9 @@ function generateMarkup(
             let childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
             if (childMarkup) {
                 childMarkup = addAttrToMarkup(childMarkup, slotAttr, slotIdx);
-                childMarkups.push(childMarkup);
+                // Wrap with platform conditional if needed
+                const wrappedMarkup = wrapWithPlatformConditional(childMarkup, children[i], childIndent);
+                if (wrappedMarkup) childMarkups.push(wrappedMarkup);
             }
             slotIdx++;
         }
@@ -1195,7 +1233,11 @@ function generateMarkup(
             }
 
             const childMarkup = generateMarkup(widgetName, children[i], [...elementPath, `${element.type}${i}`], usedTemplateImport, usedColors, defaultPrefix, defaultColor);
-            if (childMarkup) childMarkups.push(childMarkup);
+            if (childMarkup) {
+                // Wrap with platform conditional if needed
+                const wrappedMarkup = wrapWithPlatformConditional(childMarkup, children[i], childIndent);
+                if (wrappedMarkup) childMarkups.push(wrappedMarkup);
+            }
         }
     }
 
@@ -1355,13 +1397,6 @@ function generateSvelteComponent(layout: WidgetLayout): string {
         const attrBg = buildAttribute(widgetName, 'backgroundColor', v, ['root'], 'data', usedColors);
         if (attrBg) wrapperAttrs.push(attrBg);
     }
-    // if (layout.defaultPadding !== undefined) {
-    //     let value = layout.defaultPadding;
-    //     if (Array.isArray(value)) {
-    //         value = evaluateMapboxExpression(value, '') as any;
-    //     }
-    //     wrapperAttrs.push(`padding={${value}}`);
-    // }
     wrapperAttrs.push(`class="widget-container"`);
 
     const wrapperTag = 'gridlayout';

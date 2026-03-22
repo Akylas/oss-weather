@@ -120,7 +120,7 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 style = TextStyle(fontSize = (min((size.width.value * 0.17f), 62.0f)).sp, color = widgetColor, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal })
             )
             Spacer(modifier = GlanceModifier.defaultWeight())
-            if ("iconPath" != null) {
+            if (data.iconPath.isNotEmpty()) {
                 WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                     Image(
                        provider = provider,
@@ -137,7 +137,7 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 text = android.text.format.DateFormat.format("yyyy", java.util.Date()).toString(),
                 style = TextStyle(fontSize = 14.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
             )
-            if ("description" != null) {
+            if (data.description.isNotEmpty()) {
                 Text(
                     modifier = GlanceModifier.defaultWeight(),
                     text = data.description,

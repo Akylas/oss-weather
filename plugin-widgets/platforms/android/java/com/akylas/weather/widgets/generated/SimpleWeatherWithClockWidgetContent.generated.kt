@@ -39,10 +39,11 @@ import kotlinx.serialization.json.*
  */
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 260, heightDp = 130)
-@Preview(widthDp = 150, heightDp = 100)
-@Preview(widthDp = 100, heightDp = 100)
-@Preview(widthDp = 350, heightDp = 260)
+@Preview(widthDp = 260, heightDp = 140)
+@Preview(widthDp = 120, heightDp = 50)
+@Preview(widthDp = 80, heightDp = 80)
+@Preview(widthDp = 120, heightDp = 120)
+@Preview(widthDp = 260, heightDp = 260)
 @Composable
 private fun Preview() {
     val fakeWeatherWidgetData = WeatherWidgetData(
@@ -50,7 +51,6 @@ private fun Preview() {
         iconPath = "icon_themes/meteocons/images/800d.png",
         description = "Partly Cloudy",
         locationName = "Grenoble",
-        date = "Mon, Feb 24",
         lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED
     )
@@ -111,7 +111,7 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                 style = TextStyle(fontSize = (min((size.width.value * 0.17f), 62.0f)).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, color = widgetColor)
             )
             Spacer(modifier = GlanceModifier.defaultWeight())
-            if ("iconPath" != null) {
+            if (data.iconPath.isNotEmpty()) {
                 WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                     Image(
                        provider = provider,
@@ -128,7 +128,7 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                 text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
                 style = TextStyle(fontSize = 14.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
             )
-            if ("description" != null) {
+            if (data.description.isNotEmpty()) {
                 Text(
                     modifier = GlanceModifier.defaultWeight(),
                     text = data.description,

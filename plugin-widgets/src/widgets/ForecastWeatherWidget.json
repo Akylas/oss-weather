@@ -3,7 +3,6 @@
     "name": "ForecastWeatherWidget",
     "displayName": "Detailed Forecast",
     "description": "Shows current weather, hourly and daily forecasts",
-    "defaultPadding": 8,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {
         "type": "column",
@@ -294,16 +293,15 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 300, "height": 300 },
-            { "width": 160, "height": 300 },
-            { "width": 260, "height": 400 }
+            { "width": 300, "height": 300, "category": "large" },
+            { "width": 160, "height": 300, "category": "large" },
+            { "width": 260, "height": 400, "category": "large" }
         ],
         "fakeData": {
             "temperature": "12\u00b0",
             "locationName": "Paris",
             "description": "Partly Cloudy",
             "iconPath": "800d",
-            "date": "Mon, Feb 24",
             "hourlyData": [
                 { "time": "06:00", "temperature": "6\u00b0", "iconPath": "800d", "precipAccumulation": "0 mm" },
                 { "time": "07:00", "temperature": "7\u00b0", "iconPath": "800d", "precipAccumulation": "0 mm" },

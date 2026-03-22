@@ -7,7 +7,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Expression, compileExpression as compileExpr, compilePropertyValue as compilePropValue, compilePropertyValue } from './expression-compiler';
-import { isExpression, toPlatformFontWeight, toPlatformHorizontalAlignment, toPlatformVerticalAlignment } from './shared-utils';
+import { isExpression, toPlatformFontWeight, toPlatformHorizontalAlignment, toPlatformVerticalAlignment, filterChildrenByPlatform } from './shared-utils';
 import { buildGlanceModifier, formatColor } from './modifier-builders';
 
 interface LayoutElement {
@@ -60,7 +60,6 @@ interface WidgetLayout {
     name: string;
     displayName?: string;
     description?: string;
-    defaultPadding?: number;
     color?: Expression; // Top-level default color for all text elements
     background?: {
         type: string;
@@ -222,11 +221,13 @@ function generateColumn(element: LayoutElement, indent: string, defaultColor?: s
     }
     lines.push(`${indent}) {`);
 
-    if (element.children) {
+    // Filter children by platform - only render Android-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'android');
+    if (children && children.length > 0) {
         // Insert Spacer composables between children if spacing is defined
         const spacingValue = element.spacing;
-        for (let i = 0; i < element.children.length; i++) {
-            const child = element.children[i];
+        for (let i = 0; i < children.length; i++) {
+            const child = children[i];
 
             // Add spacer before child (except first)
             if (i > 0 && spacingValue !== undefined) {
@@ -273,11 +274,13 @@ function generateRow(element: LayoutElement, indent: string, defaultColor?: stri
     }
     lines.push(`${indent}) {`);
 
-    if (element.children) {
+    // Filter children by platform - only render Android-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'android');
+    if (children && children.length > 0) {
         // Handle space-between by inserting Spacer between children
-        if (isSpaceBetween && element.children.length > 1) {
-            for (let i = 0; i < element.children.length; i++) {
-                const child = element.children[i];
+        if (isSpaceBetween && children.length > 1) {
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
 
                 // Add spacer before child (except first)
                 if (i > 0) {
@@ -289,8 +292,8 @@ function generateRow(element: LayoutElement, indent: string, defaultColor?: stri
         } else {
             // Normal layout with optional spacing
             const spacingValue = element.spacing;
-            for (let i = 0; i < element.children.length; i++) {
-                const child = element.children[i];
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
 
                 // Add spacer before child (except first)
                 if (i > 0 && spacingValue !== undefined) {
@@ -338,8 +341,10 @@ function generateStack(element: LayoutElement, indent: string, defaultColor?: st
     }
     lines.push(`${indent}) {`);
 
-    if (element.children) {
-        for (const child of element.children) {
+    // Filter children by platform - only render Android-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'android');
+    if (children && children.length > 0) {
+        for (const child of children) {
             lines.push(generateElement(child, indent + '    ', defaultColor));
         }
     }

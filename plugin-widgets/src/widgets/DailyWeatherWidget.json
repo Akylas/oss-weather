@@ -3,7 +3,6 @@
     "name": "DailyWeatherWidget",
     "displayName": "Daily Forecast",
     "description": "Shows daily weather forecast with high/low temperatures",
-    "defaultPadding": 8,
     "color": ["case", ["==", ["get", "config.settings.color"], null], "color.onSurface", ["get", "config.settings.color"]],
     "layout": {
         "type": "column",
@@ -210,16 +209,15 @@
     "generatePreviews": true,
     "preview": {
         "sizes": [
-            { "width": 300, "height": 200 },
-            { "width": 160, "height": 300 },
-            { "width": 260, "height": 400 }
+            { "width": 300, "height": 200, "category": "large" },
+            { "width": 160, "height": 300, "category": "large" },
+            { "width": 260, "height": 400, "category": "large" }
         ],
         "fakeData": {
             "temperature": "12\u00b0",
             "description": "Partly Cloudy",
             "iconPath": "802d",
             "locationName": "Grenoble",
-            "date": "Mon, Feb 24",
             "dailyData": [
                 {
                     "day": "Mon",

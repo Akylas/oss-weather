@@ -10,8 +10,8 @@
         <string>$(PRODUCT_MODULE_NAME).AllWeatherWidgets</string>
 	</dict>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+    <string>2.11.6</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+    <string>147</string>
 </dict>
 </plist>

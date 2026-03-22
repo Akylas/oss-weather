@@ -69,6 +69,13 @@
                 "id": { "type": "string", "description": "Optional element identifier" },
                 "visible": { "type": "boolean", "default": true },
                 "visibleIf": { "$ref": "#/definitions/string", "description": "Condition for visibility, e.g., 'size.width > 100'" },
+                "platform": { 
+                    "oneOf": [
+                        { "type": "string", "enum": ["ios", "android", "nativescript"], "description": "Single platform this element is visible on" },
+                        { "type": "array", "items": { "type": "string", "enum": ["ios", "android", "nativescript"] }, "description": "List of platforms this element is visible on" }
+                    ],
+                    "description": "Platform(s) where this element should be rendered. If not specified, element renders on all platforms"
+                },
                 "padding": { "$ref": "#/definitions/spacing" },
                 "paddingHorizontal": { "$ref": "#/definitions/spacing" },
                 "paddingVertical": { "$ref": "#/definitions/spacing" },
@@ -298,7 +305,6 @@
         "name": { "type": "string", "description": "Widget name identifier" },
         "displayName": { "type": "string", "description": "Human-readable name" },
         "description": { "type": "string" },
-        "defaultPadding": { "$ref": "#/definitions/spacing" },
         "background": {
             "type": "object",
             "properties": {

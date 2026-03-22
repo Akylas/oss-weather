@@ -4,59 +4,61 @@
 import SwiftUI
 import WidgetKit
 
-@available(iOS 14.0, *)
+@available(iOS 17.0, *)
 struct SimpleWeatherWidgetView: View {
     let entry: WeatherEntry
     @Environment(\.widgetFamily) var family
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         GeometryReader { geometry in
             let width = geometry.size.width
             let height = geometry.size.height
             let config = entry.config ?? WidgetConfig()
+            let widgetColor = (config.settings?["color"] as? String).map { Color(hex: $0) } ?? WidgetColorProvider.onSurface(for: colorScheme)
             
             if let data = entry.data, entry.data?.loadingState == WeatherWidgetData.LoadingState.loaded {
-                WidgetContainer(padding: 6) {
+                WidgetContainer {
                     if width < 120 {
                         VStack(alignment: .center, spacing: 0) {
                             VStack(alignment: .center, spacing: 0) {
-                                if !data.iconPath.isEmpty {
+                                if !(data.iconPath ?? "").isEmpty {
                                     WeatherIconView(data.iconPath, description: data.description, size: (width * 0.44))
                                 }
                                 Text(data.temperature)
                                     .font(.system(size: (width * 0.2), weight: .bold))
-                                    .foregroundColor(WidgetColorProvider.onSurface)
-                            }.frame(maxWidth: .infinity)
+                                    .foregroundColor(widgetColor)
+                            }.fixedSize(horizontal: true, vertical: false).frame(maxWidth: .infinity).frame(maxWidth: .infinity, alignment: .center)
                             Text(data.locationName)
                                 .font(.system(size: 8, weight: .regular))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                                .lineLimit(1).opacity(0.6)
+                                .foregroundColor(widgetColor)
+                                .lineLimit(1).opacity(0.5)
                         }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(3)
                     }
                     else {
                         ZStack {
                             Text(data.locationName)
                                 .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(WidgetColorProvider.onSurface)
-                                .lineLimit(1).opacity(0.6)
+                                .foregroundColor(widgetColor)
+                                .lineLimit(1).opacity(0.5)
                             HStack(alignment: .center, spacing: 0) {
                                 VStack(alignment: .leading, spacing: 0) {
                                     Text(data.temperature)
                                         .font(.system(size: min((width * 0.26), 30), weight: .bold))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                }.frame(maxHeight: .infinity)
+                                        .foregroundColor(widgetColor)
+                                }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity).frame(maxHeight: .infinity, alignment: .center)
                                 VStack(alignment: .trailing, spacing: 0) {
-                                    if !data.iconPath.isEmpty {
+                                    if !(data.iconPath ?? "").isEmpty {
                                         WeatherIconView(data.iconPath, description: data.description, size: 64)
                                     }
-                                }.frame(maxHeight: .infinity).layoutPriority(1)
+                                }.fixedSize(horizontal: true, vertical: false).frame(maxHeight: .infinity).layoutPriority(1).frame(maxHeight: .infinity, alignment: .center).frame(maxWidth: .infinity)
                             }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
-                            if !data.description.isEmpty {
+                            if !(data.description ?? "").isEmpty {
                                 ZStack(alignment: .bottomTrailing) {
                                     Text(data.description)
                                         .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(WidgetColorProvider.onSurface)
-                                        .multilineTextAlignment(.trailing).opacity(0.6)
+                                        .foregroundColor(widgetColor)
+                                        .frame(maxWidth: .infinity, alignment: .trailing).opacity(0.5)
                                 }.frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                             }
                         }.frame(maxWidth: .infinity).frame(maxHeight: .infinity).padding(.horizontal, 10).padding(.vertical, 6)
@@ -68,3 +70,35 @@ struct SimpleWeatherWidgetView: View {
         }
     }
 }
+
+// MARK: - Previews
+@available(iOS 17.0, *)
+#Preview ("Preview medium", as: .systemMedium) {
+    SimpleWeatherWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            locationName: "Grenoble",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
+}
+
+@available(iOS 17.0, *)
+#Preview ("Preview small", as: .systemSmall) {
+    SimpleWeatherWidget()
+} timeline: {
+    let fakeData = WeatherWidgetData(
+            temperature: "8°",
+            locationName: "Grenoble",
+            iconPath: "app/assets/icon_themes/meteocons/images/800d.png",
+            description: "Partly Cloudy",
+            loadingState: .loaded,
+            errorMessage: nil
+    )
+    WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemSmall, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
+}
+

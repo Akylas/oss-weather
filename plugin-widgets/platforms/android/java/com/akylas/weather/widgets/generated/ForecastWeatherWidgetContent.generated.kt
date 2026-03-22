@@ -51,7 +51,6 @@ private fun Preview() {
         locationName = "Paris",
         description = "Partly Cloudy",
         iconPath = "icon_themes/meteocons/images/800d.png",
-        date = "Mon, Feb 24",
         hourlyData = listOf(HourlyData(time = "06:00", temperature = "6°", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "07:00", temperature = "7°", iconPath = "icon_themes/meteocons/images/800d.png", precipAccumulation = "0 mm"), HourlyData(time = "08:00", temperature = "8°", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm"), HourlyData(time = "09:00", temperature = "10°", iconPath = "icon_themes/meteocons/images/500n.png", precipAccumulation = "0 mm"), HourlyData(time = "10:00", temperature = "12°", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm"), HourlyData(time = "11:00", temperature = "13°", iconPath = "icon_themes/meteocons/images/802d.png", precipAccumulation = "0 mm")),
         dailyData = listOf(DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12°", temperatureLow = "4°", precipAccumulation = "0 mm"), DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "14°", temperatureLow = "6°", precipAccumulation = "0 mm"), DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10°", temperatureLow = "5°", precipAccumulation = "0 mm"), DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "9°", temperatureLow = "3°", precipAccumulation = "0 mm"), DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "11°", temperatureLow = "4°", precipAccumulation = "0 mm"), DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/803d.png", temperatureHigh = "15°", temperatureLow = "7°", precipAccumulation = "0 mm")),
         lastUpdate = System.currentTimeMillis(),
@@ -118,7 +117,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                 horizontalAlignment = Alignment.Horizontal.End,
                 verticalAlignment = Alignment.Vertical.Bottom,
             ) {
-                if ("data.iconPath" != null) {
+                if (data.iconPath.isNotEmpty()) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
@@ -127,7 +126,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         )
                     }
                 }
-                if ("data.description" != null) {
+                if (data.description.isNotEmpty()) {
                     Text(
                         text = data.description,
                         style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End),
@@ -182,7 +181,7 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                         maxLines = 1
                     )
                     Spacer(modifier = GlanceModifier.height(2.dp))
-                    if ("item.precipAccumulation" != null) {
+                    if (item.precipAccumulation.isNotEmpty()) {
                         Text(
                             text = item.precipAccumulation,
                             style = TextStyle(fontSize = 9.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
@@ -268,14 +267,14 @@ fun ForecastWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) 
                                     horizontalAlignment = Alignment.Horizontal.End,
                                     verticalAlignment = Alignment.Vertical.CenterVertically,
                                 ) {
-                                    if ("item.precipAccumulation" != null) {
+                                    if (item.precipAccumulation.isNotEmpty()) {
                                         Text(
                                             text = item.precipAccumulation,
                                             style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
-                                    if ("item.precipitation" != null) {
+                                    if (item.precipitation.isNotEmpty()) {
                                         Text(
                                             text = "💧" + item.precipitation,
                                             style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))

@@ -1,8 +1,5 @@
 {
-    "frameworks": [
-        "SwiftUI.framework",
-        "WidgetKit.framework"
-    ],
+    "frameworks": ["SwiftUI.framework", "WidgetKit.framework"],
     "targetBuildConfigurationProperties": {
         "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
         "ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME": "WidgetBackground",
@@ -16,21 +13,18 @@
         "GCC_C_LANGUAGE_STANDARD": "gnu11",
         "GCC_WARN_UNINITIALIZED_AUTOS": "YES_AGGRESSIVE",
         "GENERATE_INFOPLIST_FILE": "YES",
-        "INFOPLIST_KEY_CFBundleDisplayName": "widget",
-        "INFOPLIST_KEY_NSHumanReadableCopyright": "\"Copyright © All rights reserved.\"",
+        "INFOPLIST_KEY_CFBundleDisplayName": "widgets",
+        "INFOPLIST_KEY_NSHumanReadableCopyright": "\"Copyright Akylas© All rights reserved.\"",
         "IPHONEOS_DEPLOYMENT_TARGET": 18.0,
         "MARKETING_VERSION": "1.0",
         "MTL_FAST_MATH": "YES",
-        "PRODUCT_NAME": "widget",
+        "PRODUCT_NAME": "widgets",
         "SWIFT_EMIT_LOC_STRINGS": "YES",
         "SWIFT_VERSION": "5.0",
         "TARGETED_DEVICE_FAMILY": "\"1,2\"",
-        "MTL_ENABLE_DEBUG_INFO": "NO",
-        "SWIFT_OPTIMIZATION_LEVEL": "\"-O\"",
-        "COPY_PHASE_STRIP": "NO",
-        "SWIFT_COMPILATION_MODE": "wholemodule",
-        "CODE_SIGN_ENTITLEMENTS": "../../App_Resources/iOS/extensions/widgets/widgets.entitlements"
+        "COPY_PHASE_STRIP": "NO"
     },
+    "entitlements": "./widgets.entitlements",
     "targetNamedBuildConfigurationProperties": {
         "debug": {
             "DEBUG_INFORMATION_FORMAT": "dwarf",

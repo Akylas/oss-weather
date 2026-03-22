@@ -50,7 +50,6 @@ private fun Preview() {
         description = "Partly Cloudy",
         iconPath = "icon_themes/meteocons/images/802d.png",
         locationName = "Grenoble",
-        date = "Mon, Feb 24",
         dailyData = listOf(DailyData(day = "Mon", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "12°", temperatureLow = "4°", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "14 km/h"), DailyData(day = "Tue", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "14°", temperatureLow = "6°", precipAccumulation = "0 mm", precipitation = "10 %", windSpeed = "12 km/h"), DailyData(day = "Wed", iconPath = "icon_themes/meteocons/images/500d.png", temperatureHigh = "10°", temperatureLow = "5°", precipAccumulation = "3 mm", precipitation = "60 %", windSpeed = "18 km/h"), DailyData(day = "Thu", iconPath = "icon_themes/meteocons/images/503.png", temperatureHigh = "9°", temperatureLow = "3°", precipAccumulation = "8 mm", precipitation = "80 %", windSpeed = "22 km/h"), DailyData(day = "Fri", iconPath = "icon_themes/meteocons/images/802d.png", temperatureHigh = "11°", temperatureLow = "4°", precipAccumulation = "0 mm", precipitation = "20 %", windSpeed = "16 km/h"), DailyData(day = "Sat", iconPath = "icon_themes/meteocons/images/800d.png", temperatureHigh = "15°", temperatureLow = "7°", precipAccumulation = "0 mm", precipitation = "5 %", windSpeed = "10 km/h")),
         lastUpdate = System.currentTimeMillis(),
         loadingState = WidgetLoadingState.LOADED
@@ -116,7 +115,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                 horizontalAlignment = Alignment.Horizontal.End,
                 verticalAlignment = Alignment.Vertical.Bottom,
             ) {
-                if ("iconPath" != null) {
+                if (data.iconPath.isNotEmpty()) {
                     WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
                         Image(
                            provider = provider,
@@ -125,7 +124,7 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                         )
                     }
                 }
-                if ("description" != null) {
+                if (data.description.isNotEmpty()) {
                     Text(
                         text = data.description,
                         style = TextStyle(fontSize = 11.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)), textAlign = TextAlign.End),
@@ -210,14 +209,14 @@ fun DailyWeatherWidgetContent(config: WidgetConfig, data: WeatherWidgetData) {
                                     horizontalAlignment = Alignment.Horizontal.End,
                                     verticalAlignment = Alignment.Vertical.CenterVertically,
                                 ) {
-                                    if ("item.precipAccumulation" != null) {
+                                    if (item.precipAccumulation.isNotEmpty()) {
                                         Text(
                                             text = item.precipAccumulation,
                                             style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))
                                         )
                                     }
                                     Spacer(modifier = GlanceModifier.width(6.dp))
-                                    if ("item.precipitation" != null) {
+                                    if (item.precipitation.isNotEmpty()) {
                                         Text(
                                             text = "💧" + item.precipitation,
                                             style = TextStyle(fontSize = 10.sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.5f)))

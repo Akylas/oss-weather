@@ -40,123 +40,144 @@ extension Color {
 }
 
 /// Provides colors for widgets that automatically adapt to dark mode
+/// Matches Android's GlanceTheme.colors naming convention
 @available(iOS 14.0, *)
 struct WidgetColorProvider {
-    // Background Colors
-    static var backgroundLight: Color {
-        Color(hex: "#4DA8DA") // RGB(77, 168, 218)
+    // MARK: - Primary Colors
+    
+    /// Primary color - matches GlanceTheme.colors.primary
+    static func primary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#64B5F6") : Color(hex: "#1976D2")
     }
     
-    static var backgroundDark: Color {
-        Color(hex: "#1E2A3A") // RGB(30, 42, 58)
+    static func onPrimary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#003258") : Color(hex: "#FFFFFF")
     }
     
-    static var backgroundGradientStartLight: Color {
-        Color(hex: "#6DD5ED") // RGB(109, 213, 237)
+    static func primaryContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#00497D") : Color(hex: "#BBDEFB")
     }
     
-    static var backgroundGradientStartDark: Color {
-        Color(hex: "#1A1F3A") // RGB(26, 31, 58)
+    static func onPrimaryContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#CCE5FF") : Color(hex: "#388E3C")
     }
     
-    static var backgroundGradientEndLight: Color {
-        Color(hex: "#2193B0") // RGB(33, 147, 176)
+    // MARK: - Secondary Colors
+    
+    static func secondary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#81C784") : Color(hex: "#388E3C")
     }
     
-    static var backgroundGradientEndDark: Color {
-        Color(hex: "#2C3E50") // RGB(44, 62, 80)
+    static func onSecondary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#00390D") : Color(hex: "#FFFFFF")
     }
     
-    // Text Colors
-    static var primaryTextLight: Color {
-        Color(hex: "#FFFFFF") // White
+    static func secondaryContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#005316") : Color(hex: "#C8E6C9")
     }
     
-    static var primaryTextDark: Color {
-        Color(hex: "#E8E8E8") // RGB(232, 232, 232)
+    static func onSecondaryContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#B7F397") : Color(hex: "#00260E")
     }
     
-    static var secondaryTextLight: Color {
-        Color(hex: "#FFFFFF").opacity(0.9)
+    // MARK: - Tertiary Colors
+    
+    static func tertiary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#B388FF") : Color(hex: "#6200EA")
     }
     
-    static var secondaryTextDark: Color {
-        Color(hex: "#B0B0B0") // RGB(176, 176, 176)
+    static func onTertiary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#3700B3") : Color(hex: "#FFFFFF")
     }
     
-    static var locationTextLight: Color {
-        Color(hex: "#FFFFFF") // White
+    static func tertiaryContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#4A148C") : Color(hex: "#E1BEE7")
     }
     
-    static var locationTextDark: Color {
-        Color(hex: "#90CAF9") // RGB(144, 202, 249)
+    static func onTertiaryContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#E1BEE7") : Color(hex: "#23004D")
     }
     
-    // Card Background
-    static var cardBackgroundLight: Color {
-        Color(hex: "#FFFFFF").opacity(0.25)
+    // MARK: - Error Colors
+    
+    static func error(for colorScheme: ColorScheme) -> Color {
+        Color(hex: "#CF6679") // Same for both modes
     }
     
-    static var cardBackgroundDark: Color {
-        Color(hex: "#000000").opacity(0.25)
+    static func onError(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#690005") : Color(hex: "#FFFFFF")
     }
     
-    // Accent Colors
-    static var accentLight: Color {
-        Color(hex: "#1976D2") // RGB(25, 118, 210)
+    static func errorContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#93000A") : Color(hex: "#FDE7E9")
     }
     
-    static var accentDark: Color {
-        Color(hex: "#64B5F6") // RGB(100, 181, 246)
+    static func onErrorContainer(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#FFDAD6") : Color(hex: "#410002")
     }
     
-    static var precipitationColor: Color {
-        Color(hex: "#4A90E2") // RGB(74, 144, 226) - same in both modes
+    // MARK: - Background & Surface Colors
+    
+    /// Widget background color - matches GlanceTheme.colors.widgetBackground
+    static func widgetBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#E6000000") : Color(hex: "#F5FFFFFF")
     }
-}
-
-// MARK: - Convenience Methods
-@available(iOS 14.0, *)
-extension WidgetColorProvider {
+    
+    /// Background color - matches GlanceTheme.colors.background
+    static func background(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#E6000000") : Color(hex: "#F5FFFFFF")
+    }
+    
+    /// OnBackground color - matches GlanceTheme.colors.onBackground
+    static func onBackground(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#FFFFFF") : Color(hex: "#000000")
+    }
+    
+    /// Surface color - matches GlanceTheme.colors.surface
+    static func surface(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#1AFFFFFF") : Color(hex: "#12000000")
+    }
+    
+    /// OnSurface color - matches GlanceTheme.colors.onSurface
+    static func onSurface(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#FFFFFF") : Color(hex: "#000000")
+    }
+    
+    /// Surface variant color - matches GlanceTheme.colors.surfaceVariant
+    static func surfaceVariant(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#26FFFFFF") : Color(hex: "#1F000000")
+    }
+    
+    /// OnSurfaceVariant color - matches GlanceTheme.colors.onSurfaceVariant
+    static func onSurfaceVariant(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#B3FFFFFF") : Color(hex: "#99000000")
+    }
+    
+    // MARK: - Outline Colors
+    
+    static func outline(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#4DFFFFFF") : Color(hex: "#4D000000")
+    }
+    
+    // MARK: - Inverse Colors
+    
+    static func inverseSurface(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#E0E0E0") : Color(hex: "#2E2E2E")
+    }
+    
+    static func inverseOnSurface(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#1C1C1C") : Color(hex: "#FFFFFF")
+    }
+    
+    static func inversePrimary(for colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#1976D2") : Color(hex: "#90CAF9")
+    }
+    
+    // MARK: - Deprecated - Kept for backward compatibility
+    
     /// Get background color based on color scheme
+    /// @deprecated Use background(for:) instead
     static func backgroundColor(for colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? backgroundDark : backgroundLight
-    }
-    
-    /// Get background gradient
-    static func backgroundGradient(for colorScheme: ColorScheme) -> LinearGradient {
-        LinearGradient(
-            colors: [
-                colorScheme == .dark ? backgroundGradientStartDark : backgroundGradientStartLight,
-                colorScheme == .dark ? backgroundGradientEndDark : backgroundGradientEndLight
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-    
-    /// Get primary text color
-    static func primaryText(for colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? primaryTextDark : primaryTextLight
-    }
-    
-    /// Get secondary text color
-    static func secondaryText(for colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? secondaryTextDark : secondaryTextLight
-    }
-    
-    /// Get location text color
-    static func locationText(for colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? locationTextDark : locationTextLight
-    }
-    
-    /// Get card background color
-    static func cardBackground(for colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? cardBackgroundDark : cardBackgroundLight
-    }
-    
-    /// Get accent color
-    static func accent(for colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? accentDark : accentLight
+        background(for: colorScheme)
     }
 }

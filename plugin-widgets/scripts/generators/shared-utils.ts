@@ -28,6 +28,9 @@ export interface BaseLayoutElement {
     id?: string;
     visible?: boolean;
     visibleIf?: Expression;
+    
+    // Platform filtering - element only renders on specified platform(s)
+    platform?: string | string[];
 
     // Spacing
     padding?: Expression;
@@ -96,6 +99,49 @@ export interface BaseLayoutElement {
  */
 export function isExpression(value: any): value is any[] {
     return Array.isArray(value) && value.length > 0 && typeof value[0] === 'string';
+}
+
+/**
+ * Check if an element should be rendered on the specified platform
+ * 
+ * @param element - Layout element to check
+ * @param targetPlatform - Target platform: 'ios', 'android', or 'nativescript'
+ * @returns True if element should be rendered on target platform
+ * 
+ * @example
+ * shouldRenderOnPlatform({ type: 'label', platform: 'ios' }, 'ios') // true
+ * shouldRenderOnPlatform({ type: 'label', platform: 'ios' }, 'android') // false
+ * shouldRenderOnPlatform({ type: 'label', platform: ['ios', 'android'] }, 'ios') // true
+ * shouldRenderOnPlatform({ type: 'label' }, 'ios') // true (no platform = all platforms)
+ */
+export function shouldRenderOnPlatform(element: BaseLayoutElement, targetPlatform: 'ios' | 'android' | 'nativescript'): boolean {
+    if (!element.platform) {
+        return true; // No platform specified = render on all platforms
+    }
+    
+    if (typeof element.platform === 'string') {
+        return element.platform === targetPlatform;
+    }
+    
+    if (Array.isArray(element.platform)) {
+        return element.platform.includes(targetPlatform);
+    }
+    
+    return true;
+}
+
+/**
+ * Filter children elements by platform
+ * 
+ * @param children - Array of child elements
+ * @param targetPlatform - Target platform to filter for
+ * @returns Filtered array of children that should render on target platform
+ */
+export function filterChildrenByPlatform(children: BaseLayoutElement[] | undefined, targetPlatform: 'ios' | 'android' | 'nativescript'): BaseLayoutElement[] {
+    if (!children) {
+        return [];
+    }
+    return children.filter(child => shouldRenderOnPlatform(child, targetPlatform));
 }
 
 /**

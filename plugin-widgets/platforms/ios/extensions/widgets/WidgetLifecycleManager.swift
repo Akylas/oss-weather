@@ -13,7 +13,7 @@ class WidgetLifecycleManager {
     // MARK: - Widget Added
     
     func notifyWidgetAdded(widgetId: String, widgetKind: String) {
-        print("WidgetLifecycleManager: Widget added - \(widgetKind) (id: \(widgetId))")
+        WidgetsLogger.i("Lifecycle", "Widget added - \(widgetKind) (id: \(widgetId))")
         
         // Store widget info
         saveActiveWidget(widgetId: widgetId, widgetKind: widgetKind)
@@ -25,7 +25,7 @@ class WidgetLifecycleManager {
     // MARK: - Widget Removed
     
     func notifyWidgetRemoved(widgetId: String, widgetKind: String) {
-        print("WidgetLifecycleManager: Widget removed - \(widgetKind) (id: \(widgetId))")
+        WidgetsLogger.i("Lifecycle", "Widget removed - \(widgetKind) (id: \(widgetId))")
         
         // Remove widget info
         removeActiveWidget(widgetId: widgetId)
@@ -39,45 +39,45 @@ class WidgetLifecycleManager {
     
     // MARK: - Recently Seen Widgets (for iOS < 17)
     
-    func markWidgetAsSeen(widgetId: String) {
-        guard let userDefaults = UserDefaults(suiteName: appGroupId) else { return }
+    // func markWidgetAsSeen(widgetId: String) {
+    //     guard let userDefaults = UserDefaults(suiteName: appGroupId) else { return }
         
-        var recentlySeen = getRecentlySeenWidgets()
-        recentlySeen.insert(widgetId)
+    //     var recentlySeen = getRecentlySeenWidgets()
+    //     recentlySeen.insert(widgetId)
         
-        // Store as array for UserDefaults
-        let array = Array(recentlySeen)
-        userDefaults.set(array, forKey: "recently_seen_widgets")
-        userDefaults.set(Date().timeIntervalSince1970, forKey: "last_widget_check_time")
-        userDefaults.synchronize()
-    }
+    //     // Store as array for UserDefaults
+    //     let array = Array(recentlySeen)
+    //     userDefaults.set(array, forKey: "recently_seen_widgets")
+    //     userDefaults.set(Date().timeIntervalSince1970, forKey: "last_widget_check_time")
+    //     userDefaults.synchronize()
+    // }
     
-    private func getRecentlySeenWidgets() -> Set<String> {
-        guard let userDefaults = UserDefaults(suiteName: appGroupId) else { return [] }
+    // private func getRecentlySeenWidgets() -> Set<String> {
+    //     guard let userDefaults = UserDefaults(suiteName: appGroupId) else { return [] }
         
-        // Clear recently seen list if it's been more than 5 minutes since last check
-        let lastCheckTime = userDefaults.double(forKey: "last_widget_check_time")
-        let currentTime = Date().timeIntervalSince1970
+    //     // Clear recently seen list if it's been more than 5 minutes since last check
+    //     let lastCheckTime = userDefaults.double(forKey: "last_widget_check_time")
+    //     let currentTime = Date().timeIntervalSince1970
         
-        if currentTime - lastCheckTime > 300 { // 5 minutes
-            // Reset the list on next widget update
-            userDefaults.removeObject(forKey: "recently_seen_widgets")
-            userDefaults.synchronize()
-            return []
-        }
+    //     if currentTime - lastCheckTime > 300 { // 5 minutes
+    //         // Reset the list on next widget update
+    //         userDefaults.removeObject(forKey: "recently_seen_widgets")
+    //         userDefaults.synchronize()
+    //         return []
+    //     }
         
-        if let array = userDefaults.array(forKey: "recently_seen_widgets") as? [String] {
-            return Set(array)
-        }
+    //     if let array = userDefaults.array(forKey: "recently_seen_widgets") as? [String] {
+    //         return Set(array)
+    //     }
         
-        return []
-    }
+    //     return []
+    // }
     
-    func clearRecentlySeenWidgets() {
-        guard let userDefaults = UserDefaults(suiteName: appGroupId) else { return }
-        userDefaults.removeObject(forKey: "recently_seen_widgets")
-        userDefaults.synchronize()
-    }
+    // func clearRecentlySeenWidgets() {
+    //     guard let userDefaults = UserDefaults(suiteName: appGroupId) else { return }
+    //     userDefaults.removeObject(forKey: "recently_seen_widgets")
+    //     userDefaults.synchronize()
+    // }
     
     // MARK: - Widget ID Generation
     

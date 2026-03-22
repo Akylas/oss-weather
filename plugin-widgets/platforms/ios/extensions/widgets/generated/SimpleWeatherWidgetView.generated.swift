@@ -72,7 +72,7 @@ struct SimpleWeatherWidgetView: View {
 }
 
 // MARK: - Previews
-@available(iOS 14.0, *)
+@available(iOS 17.0, *)
 #Preview ("Preview medium", as: .systemMedium) {
     SimpleWeatherWidget()
 } timeline: {
@@ -87,6 +87,7 @@ struct SimpleWeatherWidgetView: View {
     WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
 }
 
+@available(iOS 17.0, *)
 #Preview ("Preview small", as: .systemSmall) {
     SimpleWeatherWidget()
 } timeline: {
@@ -101,12 +102,3 @@ struct SimpleWeatherWidgetView: View {
     WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemSmall, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
 }
 
-#Preview("Error", as: .systemMedium) {
-    SimpleWeatherWidget()
-} timeline: {
-    let errorData = WeatherWidgetData(
-            loadingState: .error,
-            errorMessage: "Unable to fetch weather data"
-    )
-    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "SimpleWeatherWidget", config: WidgetConfig())
-}

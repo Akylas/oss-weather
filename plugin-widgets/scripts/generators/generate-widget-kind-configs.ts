@@ -298,7 +298,7 @@ function main() {
 
     // Generate Swift file
     const swiftContent = generateSwiftFile(configs);
-    const swiftPath = join(__dirname, '../../platforms/ios/extensions/widgets/WidgetKindConfigs.generated.swift');
+    const swiftPath = join(__dirname, '../../platforms/ios/src/WidgetKindConfigs.generated.swift');
     writeFileSync(swiftPath, swiftContent, 'utf-8');
     console.log(`✓ Generated Swift: ${swiftPath}`);
 

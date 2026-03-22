@@ -5,7 +5,9 @@ import Foundation
 import WidgetKit
 
 /// Widget configuration settings manager
-class WidgetSettings {
+@objcMembers
+@objc(WidgetSettings)
+class WidgetSettings: NSObject {
     static let shared = WidgetSettings()
     private let userDefaults: UserDefaults
     
@@ -26,7 +28,7 @@ class WidgetSettings {
         "ForecastWeatherWidget"
     ]
     
-    private init() {
+    override private init() {
         guard let defaults = UserDefaults(suiteName: WidgetUtils.suiteName) else {
             fatalError("Failed to create UserDefaults for suite: \(WidgetUtils.suiteName)")
         }
@@ -39,21 +41,21 @@ class WidgetSettings {
     func getAllKindConfigs() -> [String: WidgetConfig] {
         guard let data = userDefaults.data(forKey: widgetKindConfigsKey),
               let configs = try? JSONDecoder().decode([String: WidgetConfig].self, from: data) else {
-            print("[WidgetSettings] No stored kind configs found")
+            WidgetsLogger.d("WidgetSettings", "No stored kind configs found")
             return [:]
         }
-        print("[WidgetSettings] Loaded \(configs.count) widget kind configurations")
+        WidgetsLogger.d("WidgetSettings", "Loaded \(configs.count) widget kind configurations")
         return configs
     }
     
     /// Save all per-kind default configurations
     func saveAllKindConfigs(_ configs: [String: WidgetConfig]) {
         guard let data = try? JSONEncoder().encode(configs) else {
-            print("[WidgetSettings] Failed to encode kind configs")
+            WidgetsLogger.d("WidgetSettings", "Failed to encode kind configs")
             return
         }
         userDefaults.set(data, forKey: widgetKindConfigsKey)
-        print("[WidgetSettings] Saved \(configs.count) widget kind configurations")
+        WidgetsLogger.d("WidgetSettings", "Saved \(configs.count) widget kind configurations")
     }
     
     /// Get configuration for a specific widget kind (default settings)
@@ -66,7 +68,7 @@ class WidgetSettings {
         }
         
         // No config exists, create default from generated configs
-        print("[WidgetSettings] No kind config for \(widgetKind), creating from generated defaults")
+        WidgetsLogger.d("WidgetSettings", "No kind config for \(widgetKind), creating from generated defaults")
         let defaultConfig = WidgetKindConfigs.createDefaultKindConfig(widgetKind: widgetKind)
         configs[widgetKind] = defaultConfig
         saveAllKindConfigs(configs)
@@ -75,7 +77,7 @@ class WidgetSettings {
     
     /// Save configuration for a specific widget kind
     func saveKindConfig(widgetKind: String, config: WidgetConfig) {
-        print("[WidgetSettings] saveKindConfig(widgetKind=\(widgetKind))")
+        WidgetsLogger.d("WidgetSettings", "saveKindConfig(widgetKind=\(widgetKind))")
         var configs = getAllKindConfigs()
         configs[widgetKind] = config
         saveAllKindConfigs(configs)
@@ -87,26 +89,26 @@ class WidgetSettings {
     func getAllWidgetConfigs() -> [String: WidgetConfig] {
         guard let data = userDefaults.data(forKey: widgetConfigsKey),
               let configs = try? JSONDecoder().decode([String: WidgetConfig].self, from: data) else {
-            print("[WidgetSettings] No stored widget configs found")
+            WidgetsLogger.d("WidgetSettings", "No stored widget configs found")
             return [:]
         }
-        print("[WidgetSettings] Loaded \(configs.count) widget configurations")
+        WidgetsLogger.d("WidgetSettings", "Loaded \(configs.count) widget configurations")
         return configs
     }
     
     /// Save all per-instance widget configurations
     func saveAllWidgetConfigs(_ configs: [String: WidgetConfig]) {
         guard let data = try? JSONEncoder().encode(configs) else {
-            print("[WidgetSettings] Failed to encode widget configs")
+            WidgetsLogger.d("WidgetSettings", "Failed to encode widget configs")
             return
         }
         userDefaults.set(data, forKey: widgetConfigsKey)
-        print("[WidgetSettings] Saved \(configs.count) widget configurations")
+        WidgetsLogger.d("WidgetSettings", "Saved \(configs.count) widget configurations")
     }
     
     /// Create widget instance configuration from kind defaults
     func createInstanceConfig(widgetId: String, widgetKind: String) -> WidgetConfig {
-        print("[WidgetSettings] createInstanceConfig(widgetId=\(widgetId), widgetKind=\(widgetKind))")
+        WidgetsLogger.d("WidgetSettings", "createInstanceConfig(widgetId=\(widgetId), widgetKind=\(widgetKind))")
         
         // Get kind defaults
         let kindConfig = getKindConfig(widgetKind: widgetKind)
@@ -118,7 +120,7 @@ class WidgetSettings {
         // Save instance config
         saveWidgetConfig(widgetId: widgetId, config: instanceConfig)
         
-        print("[WidgetSettings] Created instance config for widget \(widgetId) from kind \(widgetKind)")
+        WidgetsLogger.d("WidgetSettings", "Created instance config for widget \(widgetId) from kind \(widgetKind)")
         return instanceConfig
     }
     
@@ -127,96 +129,96 @@ class WidgetSettings {
         let configs = getAllWidgetConfigs()
         
         if let config = configs[widgetId] {
-            print("[WidgetSettings] loadWidgetConfig(widgetId=\(widgetId)) -> found instance config")
+            WidgetsLogger.d("WidgetSettings", "loadWidgetConfig(widgetId=\(widgetId)) -> found instance config")
             return config
         }
         
         // No instance config - try to determine widget kind and create from defaults
         if let widgetKind = getWidgetKindForId(widgetId: widgetId) {
-            print("[WidgetSettings] loadWidgetConfig(widgetId=\(widgetId)) -> creating from kind \(widgetKind)")
+            WidgetsLogger.d("WidgetSettings", "loadWidgetConfig(widgetId=\(widgetId)) -> creating from kind \(widgetKind)")
             return createInstanceConfig(widgetId: widgetId, widgetKind: widgetKind)
         }
         
-        print("[WidgetSettings] loadWidgetConfig(widgetId=\(widgetId)) -> no config found, returning default")
+        WidgetsLogger.d("WidgetSettings", "loadWidgetConfig(widgetId=\(widgetId)) -> no config found, returning default")
         return createDefaultConfig()
     }
     
     /// Save widget configuration for specific widget instance
     func saveWidgetConfig(widgetId: String, config: WidgetConfig) {
-        print("[WidgetSettings] saveWidgetConfig(widgetId=\(widgetId))")
+        WidgetsLogger.d("WidgetSettings", "saveWidgetConfig(widgetId=\(widgetId))")
         var configs = getAllWidgetConfigs()
         configs[widgetId] = config
         saveAllWidgetConfigs(configs)
     }
     
     /// Delete widget configuration and data for specific instance
-    func deleteWidgetConfig(widgetId: String) {
-        print("[WidgetSettings] deleteWidgetConfig(widgetId=\(widgetId))")
+    // func deleteWidgetConfig(widgetId: String) {
+    //     WidgetsLogger.d("WidgetSettings", "deleteWidgetConfig(widgetId=\(widgetId))")
         
-        // Delete instance config
-        var configs = getAllWidgetConfigs()
-        configs.removeValue(forKey: widgetId)
-        saveAllWidgetConfigs(configs)
+    //     // Delete instance config
+    //     var configs = getAllWidgetConfigs()
+    //     configs.removeValue(forKey: widgetId)
+    //     saveAllWidgetConfigs(configs)
         
-        // Delete cached data
-        var dataCache = getWidgetDataCache()
-        dataCache.removeValue(forKey: widgetId)
-        saveWidgetDataCache(dataCache)
+    //     // Delete cached data
+    //     var dataCache = getWidgetDataCache()
+    //     dataCache.removeValue(forKey: widgetId)
+    //     saveWidgetDataCache(dataCache)
         
-        print("[WidgetSettings] Deleted config and cache for widgetId=\(widgetId)")
-    }
+    //     WidgetsLogger.d("WidgetSettings", "Deleted config and cache for widgetId=\(widgetId)")
+    // }
     
     /// Get all widget IDs for a specific kind
     func getInstancesOfKind(widgetKind: String) -> [String] {
         let configs = getAllWidgetConfigs()
         let instances = configs.filter { $0.value.widgetKind == widgetKind }.map { $0.key }
-        print("[WidgetSettings] getInstancesOfKind(\(widgetKind)) -> \(instances.count) instances")
+        WidgetsLogger.d("WidgetSettings", "getInstancesOfKind(\(widgetKind)) -> \(instances.count) instances")
         return instances
     }
     
     // MARK: - Widget Data Cache
     
     /// Get widget data cache
-    func getWidgetDataCache() -> [String: WeatherWidgetData] {
-        guard let data = userDefaults.data(forKey: widgetDataCacheKey),
-              let cache = try? JSONDecoder().decode([String: WeatherWidgetData].self, from: data) else {
-            print("[WidgetSettings] No widget data cache found")
-            return [:]
-        }
-        return cache
-    }
+    // func getWidgetDataCache() -> [String: WeatherWidgetData] {
+    //     guard let data = userDefaults.data(forKey: widgetDataCacheKey),
+    //           let cache = try? JSONDecoder().decode([String: WeatherWidgetData].self, from: data) else {
+    //         WidgetsLogger.d("WidgetSettings", "No widget data cache found")
+    //         return [:]
+    //     }
+    //     return cache
+    // }
     
     /// Save widget data cache
-    func saveWidgetDataCache(_ cache: [String: WeatherWidgetData]) {
-        guard let data = try? JSONEncoder().encode(cache) else {
-            print("[WidgetSettings] Failed to encode widget data cache")
-            return
-        }
-        userDefaults.set(data, forKey: widgetDataCacheKey)
-        print("[WidgetSettings] Saved widget data cache with \(cache.count) entries")
-    }
+    // func saveWidgetDataCache(_ cache: [String: WeatherWidgetData]) {
+    //     guard let data = try? JSONEncoder().encode(cache) else {
+    //         WidgetsLogger.d("WidgetSettings", "Failed to encode widget data cache")
+    //         return
+    //     }
+    //     userDefaults.set(data, forKey: widgetDataCacheKey)
+    //     WidgetsLogger.d("WidgetSettings", "Saved widget data cache with \(cache.count) entries")
+    // }
     
     /// Get cached data for specific widget
-    func getWidgetData(widgetId: String) -> WeatherWidgetData? {
-        let cache = getWidgetDataCache()
-        return cache[widgetId]
-    }
+    // func getWidgetData(widgetId: String) -> WeatherWidgetData? {
+    //     let cache = getWidgetDataCache()
+    //     return cache[widgetId]
+    // }
     
     /// Update cached data for specific widget
-    func updateWidgetData(widgetId: String, data: WeatherWidgetData) {
-        var cache = getWidgetDataCache()
-        cache[widgetId] = data
-        saveWidgetDataCache(cache)
-        print("[WidgetSettings] Updated widget data for \(widgetId)")
-    }
+    // func updateWidgetData(widgetId: String, data: WeatherWidgetData) {
+    //     var cache = getWidgetDataCache()
+    //     cache[widgetId] = data
+    //     saveWidgetDataCache(cache)
+    //     WidgetsLogger.d("WidgetSettings", "Updated widget data for \(widgetId)")
+    // }
     
     /// Clear cached data for specific widget
-    func clearWidgetData(widgetId: String) {
-        var cache = getWidgetDataCache()
-        cache.removeValue(forKey: widgetId)
-        saveWidgetDataCache(cache)
-        print("[WidgetSettings] Cleared widget data for \(widgetId)")
-    }
+    // func clearWidgetData(widgetId: String) {
+    //     var cache = getWidgetDataCache()
+    //     cache.removeValue(forKey: widgetId)
+    //     saveWidgetDataCache(cache)
+    //     WidgetsLogger.d("WidgetSettings", "Cleared widget data for \(widgetId)")
+    // }
     
     // MARK: - Active Widgets
     
@@ -231,7 +233,7 @@ class WidgetSettings {
     /// Save list of active widget IDs
     func saveActiveWidgetIds(_ ids: Set<String>) {
         userDefaults.set(Array(ids), forKey: activeWidgetsKey)
-        print("[WidgetSettings] Saved \(ids.count) active widget IDs")
+        WidgetsLogger.d("WidgetSettings", "Saved \(ids.count) active widget IDs")
     }
     
     /// Add widget to active list
@@ -239,7 +241,7 @@ class WidgetSettings {
         var ids = getActiveWidgetIds()
         if ids.insert(widgetId).inserted {
             saveActiveWidgetIds(ids)
-            print("[WidgetSettings] Added widget \(widgetId) to active list (total=\(ids.count))")
+            WidgetsLogger.d("WidgetSettings", "Added widget \(widgetId) to active list (total=\(ids.count))")
         }
     }
     
@@ -248,7 +250,7 @@ class WidgetSettings {
         var ids = getActiveWidgetIds()
         if ids.remove(widgetId) != nil {
             saveActiveWidgetIds(ids)
-            print("[WidgetSettings] Removed widget \(widgetId) from active list (remaining=\(ids.count))")
+            WidgetsLogger.d("WidgetSettings", "Removed widget \(widgetId) from active list (remaining=\(ids.count))")
         }
     }
     
@@ -263,7 +265,7 @@ class WidgetSettings {
     /// Set update frequency in minutes
     func setUpdateFrequency(_ minutes: Int) {
         userDefaults.set(minutes, forKey: updateFrequencyKey)
-        print("[WidgetSettings] Set update frequency to \(minutes) minutes")
+        WidgetsLogger.d("WidgetSettings", "Set update frequency to \(minutes) minutes")
     }
     
     // MARK: - Helpers
@@ -290,8 +292,8 @@ class WidgetSettings {
     
     /// Reload all widgets (useful after configuration changes)
     func reloadAllWidgets() {
-        WidgetCenter.shared.reloadAllTimelines()
-        print("[WidgetSettings] Reloaded all widget timelines")
+        WidgetUtils.reloadAllTimelines()
+        WidgetsLogger.d("WidgetSettings", "Reloaded all widget timelines")
     }
 }
 
@@ -334,9 +336,9 @@ struct WidgetConfig: Codable {
         
         // Decode settings as [String: Any]
         if let settingsData = try? container.decodeIfPresent(Data.self, forKey: .settings) {
-            settings = try? JSONSerialization.jsonObject(with: settingsData!) as! [String : Any]
+            settings = try? JSONSerialization.jsonObject(with: settingsData) as? [String : Any]
         } else if let settingsDict = try? container.decodeIfPresent([String: AnyCodable].self, forKey: .settings) {
-            settings = settingsDict?.mapValues { $0.value }
+            settings = settingsDict.mapValues { $0.value }
         }
     }
     

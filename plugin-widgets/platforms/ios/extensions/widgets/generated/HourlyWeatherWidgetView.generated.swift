@@ -69,7 +69,7 @@ struct HourlyWeatherWidgetView: View {
 }
 
 // MARK: - Previews
-@available(iOS 14.0, *)
+@available(iOS 17.0, *)
 #Preview ("Preview large", as: .systemLarge) {
     HourlyWeatherWidget()
 } timeline: {
@@ -84,6 +84,7 @@ struct HourlyWeatherWidgetView: View {
     WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemLarge, widgetKind: "HourlyWeatherWidget", config: WidgetConfig())
 }
 
+@available(iOS 17.0, *)
 #Preview ("Preview medium", as: .systemMedium) {
     HourlyWeatherWidget()
 } timeline: {
@@ -98,12 +99,3 @@ struct HourlyWeatherWidgetView: View {
     WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemMedium, widgetKind: "HourlyWeatherWidget", config: WidgetConfig())
 }
 
-#Preview("Error", as: .systemMedium) {
-    HourlyWeatherWidget()
-} timeline: {
-    let errorData = WeatherWidgetData(
-            loadingState: .error,
-            errorMessage: "Unable to fetch weather data"
-    )
-    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "HourlyWeatherWidget", config: WidgetConfig())
-}

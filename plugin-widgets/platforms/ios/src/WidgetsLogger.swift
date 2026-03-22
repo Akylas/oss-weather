@@ -5,34 +5,31 @@ import os.log
  * Simple centralized logger for widgets package. Uses os_log.
  * Logging can be toggled via WidgetsLogger.enabled property.
  */
-@available(iOS 14.0, *)
 struct WidgetsLogger {
     // Default to enabled
     static var enabled: Bool = true
     
-    private static let subsystem = "com.akylas.weather.widgets"
-    
     static func d(_ tag: String, _ message: String) {
         guard enabled else { return }
-        let log = OSLog(subsystem: subsystem, category: tag)
-        os_log("%{public}@", log: log, type: .debug, message)
+        print("CONSOLE DEBUG: [\(tag)] \(message)")
+        // os_log("[%@] %@", log: .default, type: .debug, tag, message)
     }
     
     static func i(_ tag: String, _ message: String) {
-        guard enabled else { return }
-        let log = OSLog(subsystem: subsystem, category: tag)
-        os_log("%{public}@", log: log, type: .info, message)
+        // guard enabled else { return }
+        print("CONSOLE LOG: [\(tag)] \(message)")
+        // os_log("[%@] %@", log: .default, type: .info, tag, message)
     }
     
     static func w(_ tag: String, _ message: String) {
-        guard enabled else { return }
-        let log = OSLog(subsystem: subsystem, category: tag)
-        os_log("%{public}@", log: log, type: .default, message)
+        // guard enabled else { return }
+        print("CONSOLE WARN: [\(tag)] \(message)")
+        // os_log("[%@] %@", log: .default, type: .default, tag, message)
     }
     
     static func e(_ tag: String, _ message: String) {
-        guard enabled else { return }
-        let log = OSLog(subsystem: subsystem, category: tag)
-        os_log("%{public}@", log: log, type: .error, message)
+        // guard enabled else { return }
+        print("CONSOLE ERROR: [\(tag)] \(message)")
+        // os_log("[%@] %@", log: .default, type: .error, tag, message)
     }
 }

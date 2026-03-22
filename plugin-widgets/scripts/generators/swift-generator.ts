@@ -1063,7 +1063,6 @@ function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): stri
     fakeDataLines.push(`            errorMessage: nil`);
 
     lines.push(`\n// MARK: - Previews`);
-    lines.push(`@available(iOS 14.0, *)`);
 
     // Generate preview for each size
     const handledCategories = new Set<string>();
@@ -1072,6 +1071,7 @@ function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): stri
         if (!handledCategories.has(category)) {
             handledCategories.add(category);
             const system = `system${category[0].toUpperCase()}${category.slice(1)}`;
+            lines.push(`@available(iOS 17.0, *)`);
             lines.push(`#Preview ("Preview ${category}", as: .${system}) {`);
             lines.push(`    ${layout.name}()`);
             lines.push(`} timeline: {`);
@@ -1084,15 +1084,15 @@ function generateSwiftPreviewBlock(layout: WidgetLayout, viewName: string): stri
     }
 
     // Error preview
-    lines.push(`#Preview("Error", as: .systemMedium) {`);
-    lines.push(`    ${layout.name}()`);
-    lines.push(`} timeline: {`);
-    lines.push(`    let errorData = WeatherWidgetData(`);
-    lines.push(`            loadingState: .error,`);
-    lines.push(`            errorMessage: "Unable to fetch weather data"`);
-    lines.push(`    )`);
-    lines.push(`    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
-    lines.push(`}`);
+    // lines.push(`#Preview("Error", as: .systemMedium) {`);
+    // lines.push(`    ${layout.name}()`);
+    // lines.push(`} timeline: {`);
+    // lines.push(`    let errorData = WeatherWidgetData(`);
+    // lines.push(`            loadingState: .error,`);
+    // lines.push(`            errorMessage: "Unable to fetch weather data"`);
+    // lines.push(`    )`);
+    // lines.push(`    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "${layout.name}", config: WidgetConfig())`);
+    // lines.push(`}`);
 
     return lines;
 }

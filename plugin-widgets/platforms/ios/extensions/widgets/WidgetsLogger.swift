@@ -1,0 +1,1 @@
+../../src/WidgetsLogger.swift

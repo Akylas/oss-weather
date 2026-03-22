@@ -5,6 +5,7 @@ import WidgetKit
 
 
 @objcMembers
+@objc(WidgetUtils)
 public class WidgetUtils: NSObject {
 	public static let suiteName = "group.com.akylas.weather"
 
@@ -70,11 +71,11 @@ public class WidgetUtils: NSObject {
     public static func saveWidgetConfig(widgetId: String, configJson: String) {
         guard let jsonData = configJson.data(using: .utf8),
               let config = try? JSONDecoder().decode(WidgetConfig.self, from: jsonData) else {
-            print("[WidgetUtils] Failed to decode widget config JSON")
+            WidgetsLogger.d("WidgetUtils", "Failed to decode widget config JSON")
             return
         }
         WidgetSettings.shared.saveWidgetConfig(widgetId: widgetId, config: config)
-        print("[WidgetUtils] Saved widget config for \(widgetId)")
+        WidgetsLogger.d("WidgetUtils", "Saved widget config for \(widgetId)")
     }
     
     /// Load widget configuration for a specific widget instance
@@ -95,11 +96,11 @@ public class WidgetUtils: NSObject {
     public static func saveKindConfig(widgetKind: String, configJson: String) {
         guard let jsonData = configJson.data(using: .utf8),
               let config = try? JSONDecoder().decode(WidgetConfig.self, from: jsonData) else {
-            print("[WidgetUtils] Failed to decode kind config JSON")
+            WidgetsLogger.d("WidgetUtils", "Failed to decode kind config JSON")
             return
         }
         WidgetSettings.shared.saveKindConfig(widgetKind: widgetKind, config: config)
-        print("[WidgetUtils] Saved kind config for \(widgetKind)")
+        WidgetsLogger.d("WidgetUtils", "Saved kind config for \(widgetKind)")
     }
     
     /// Load widget kind default configuration

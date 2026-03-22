@@ -107,7 +107,7 @@ struct DailyWeatherWidgetView: View {
 }
 
 // MARK: - Previews
-@available(iOS 14.0, *)
+@available(iOS 17.0, *)
 #Preview ("Preview large", as: .systemLarge) {
     DailyWeatherWidget()
 } timeline: {
@@ -123,12 +123,3 @@ struct DailyWeatherWidgetView: View {
     WeatherEntry(date: .now, data: fakeData, widgetFamily: .systemLarge, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
 }
 
-#Preview("Error", as: .systemMedium) {
-    DailyWeatherWidget()
-} timeline: {
-    let errorData = WeatherWidgetData(
-            loadingState: .error,
-            errorMessage: "Unable to fetch weather data"
-    )
-    WeatherEntry(date: .now, data: errorData, widgetFamily: .systemMedium, widgetKind: "DailyWeatherWidget", config: WidgetConfig())
-}

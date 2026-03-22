@@ -1,0 +1,1 @@
+../../src/WidgetSettings.swift

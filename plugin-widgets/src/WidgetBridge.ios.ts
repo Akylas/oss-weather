@@ -17,7 +17,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         super();
         this.dataManager = new WidgetDataManager();
         this.setupAppGroupContainer();
-        // this.observeWidgetEvents();
+        this.observeWidgetEvents();
     }
 
     /**
@@ -30,11 +30,13 @@ export class WidgetBridge extends WidgetBridgeBase {
             // Listen for Darwin notifications from widget extension
             this.widgetEventObserver = new interop.Reference<any>(interop.types.void);
             this.widgetEventObserverCallbackFunctionRef = new interop.FunctionReference(observerCallback);
+            // Notification name (CFString)
+            const notificationName = CFStringCreateWithCString(null, 'com.akylas.weather.widgetEvent', CFStringBuiltInEncodings.kCFStringEncodingUTF8);
             CFNotificationCenterAddObserver(
                 CFNotificationCenterGetDarwinNotifyCenter(),
                 this.widgetEventObserver,
                 this.widgetEventObserverCallbackFunctionRef,
-                'com.akylas.weather.widgetEvent',
+                notificationName,
                 null,
                 CFNotificationSuspensionBehavior.DeliverImmediately
             );
@@ -96,9 +98,9 @@ export class WidgetBridge extends WidgetBridgeBase {
      * Update all widgets with latest data
      */
     async updateAllWidgets(onlyDefaults = false) {
-        DEV_LOG && console.log(TAG, `updateAllWidgets called (onlyDefaults=${onlyDefaults})`);
+        DEV_LOG && console.log(TAG, `updateAllWidgets called (onlyDefaults=${onlyDefaults}), activeWidgets:${this.getActiveWidgets()}`);
 
-        const configs = WidgetConfigManager.getAllConfigs();
+        const configs = WidgetConfigManager.getAllConfigs(true);
         const widgetIds = Object.keys(configs);
 
         if (widgetIds.length === 0) {
@@ -144,6 +146,7 @@ export class WidgetBridge extends WidgetBridgeBase {
                 ...widgetData,
                 loadingState: 'loaded'
             });
+            this.reloadWidget(widgetId);
 
             DEV_LOG && console.log(TAG, `Widget ${widgetId} updated successfully`);
         } catch (error) {
@@ -176,7 +179,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      */
     onUpdateFrequencyChanged(frequency: number) {
         try {
-            WidgetUtils.setValueForKey(frequency, 'widget_update_frequency');
+            WidgetUtils.setWithValueForKey(frequency, 'widget_update_frequency');
             // Reload all widget timelines to pick up new frequency
             WidgetUtils.reloadAllTimelines();
 
@@ -235,21 +238,26 @@ export class WidgetBridge extends WidgetBridgeBase {
         this.reloadWidget(widgetId);
     }
 
+    private getActiveWidgets() {
+        const data = WidgetUtils.dataForKey('active_widgets');
+        if (data) {
+            const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
+            DEV_LOG && console.log('getActiveWidgets', data, json);
+            return JSON.parse(json.toString());
+        }
+
+        return [];
+    }
+
     /**
      * Get widget kind from widget ID
      * Widget IDs are generated as "widget_{family}_{kind}.hashValue"
      */
     private getWidgetKind(widgetId: string): string | null {
         try {
-            // Try to get from active widgets stored by WidgetLifecycleManager
-            const data = WidgetUtils.dataForKey('active_widgets');
-            if (data) {
-                const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
-                const activeWidgets = JSON.parse(json.toString());
-
-                if (activeWidgets[widgetId]) {
-                    return activeWidgets[widgetId];
-                }
+            const activeWidgets = this.getActiveWidgets();
+            if (activeWidgets[widgetId]) {
+                return activeWidgets[widgetId];
             }
 
             // Fallback: try to parse from widget ID pattern
@@ -371,9 +379,10 @@ export class WidgetBridge extends WidgetBridgeBase {
             const frequency = WidgetConfigManager.getUpdateFrequency();
             this.scheduleWidgetRefresh(frequency);
         }
-
+        // we ensure config exists
+        const config = this.loadWidgetConfig(widgetId);
         // Update the widget immediately
-        this.updateWidget(widgetId);
+        this.updateWidget(widgetId, config);
     }
 
     /**
@@ -387,7 +396,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
         // If no more widgets, we can't really "cancel" iOS background refresh
         // but we can note it for when handleBackgroundRefresh is called
-        const configs = WidgetConfigManager.getAllConfigs();
+        const configs = WidgetConfigManager.getAllConfigs(true);
         if (Object.keys(configs).length === 0) {
             DEV_LOG && console.log(TAG, 'No more widgets, background refresh will skip updates');
         }
@@ -497,15 +506,15 @@ export class WidgetBridge extends WidgetBridgeBase {
     public saveWidgetConfig(widgetId: string, config: WidgetConfig) {
         try {
             DEV_LOG && console.log(TAG, 'saveWidgetConfig', widgetId, config);
-            
+
             // Save to WidgetConfigManager (TypeScript side)
-            WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
-            
+            // WidgetConfigManager.saveWidgetConfig(parseInt(widgetId, 10), config ? JSON.stringify(config) : null);
+
             // Sync to native iOS WidgetSettings
             if (config) {
                 const configJson = JSON.stringify(config);
-                WidgetUtils.saveWidgetConfig(widgetId, configJson);
-                
+                WidgetUtils.saveWidgetConfigWithWidgetIdConfigJson(widgetId, configJson);
+
                 // Reload the widget to apply new config
                 this.reloadWidget(widgetId);
             }
@@ -513,15 +522,15 @@ export class WidgetBridge extends WidgetBridgeBase {
             console.error(TAG, 'Error saving widget config:', error, error.stack);
         }
     }
-    
+
     public saveKindConfig(widgetKind: string, config: WidgetConfig) {
         try {
             DEV_LOG && console.log(TAG, 'saveKindConfig', widgetKind, config);
-            
+
             if (config) {
                 const configJson = JSON.stringify(config);
-                WidgetUtils.saveKindConfig(widgetKind, configJson);
-                
+                WidgetUtils.saveKindConfigWithWidgetKindConfigJson(widgetKind, configJson);
+
                 // Reload all widgets of this kind
                 this.reloadWidgetTimeline(widgetKind);
             }
@@ -529,10 +538,10 @@ export class WidgetBridge extends WidgetBridgeBase {
             console.error(TAG, 'Error saving kind config:', error, error.stack);
         }
     }
-    
-    public loadWidgetConfig(widgetId: string): WidgetConfig | null {
+
+    public loadWidgetConfig(widgetId: string): WidgetConfig {
         try {
-            const configJson = WidgetUtils.loadWidgetConfig(widgetId);
+            const configJson = WidgetUtils.loadWidgetConfigWithWidgetId(widgetId);
             if (configJson) {
                 return JSON.parse(configJson);
             }
@@ -542,10 +551,10 @@ export class WidgetBridge extends WidgetBridgeBase {
             return null;
         }
     }
-    
-    public loadKindConfig(widgetKind: string): WidgetConfig | null {
+
+    public loadKindConfig(widgetKind: string): WidgetConfig {
         try {
-            const configJson = WidgetUtils.loadKindConfig(widgetKind);
+            const configJson = WidgetUtils.loadKindConfigWithWidgetKind(widgetKind);
             if (configJson) {
                 return JSON.parse(configJson);
             }

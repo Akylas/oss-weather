@@ -47,11 +47,17 @@ struct WeatherTimelineProvider: TimelineProvider {
         // Check if this is first time seeing this widget
         let activeWidgets = WidgetLifecycleManager.shared.getActiveWidgets()
         if activeWidgets[widgetId] == nil {
-            // New widget detected
+            // New widget detected - notify main app
+            // NOTE: If main app is not running, the notification will be persisted
+            // and processed when the user next opens the app. This is an iOS platform
+            // limitation - widget extensions cannot wake the main app.
             WidgetLifecycleManager.shared.notifyWidgetAdded(widgetId: widgetId, widgetKind: widgetKind)
         }
         
         let currentDate = Date()
+        // Load weather data from shared App Group container
+        // If app hasn't run yet or widget is new, this may return nil
+        // Widget will show "Tap to configure" or "No location set" state
         let weatherData = WidgetDataProvider.loadWidgetData(widgetId: widgetId)
         let config = WidgetSettings.shared.loadWidgetConfig(widgetId: widgetId)
         

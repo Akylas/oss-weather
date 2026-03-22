@@ -9,6 +9,36 @@ const groupId = WidgetUtils.suiteName;
 
 /**
  * Bridge between native iOS widgets and JS weather data
+ * 
+ * ARCHITECTURE OVERVIEW:
+ * ======================
+ * iOS widgets run in a separate process and CANNOT wake the main app. This is
+ * an iOS platform limitation for security and battery life.
+ * 
+ * DATA FLOW:
+ * ----------
+ * 1. Widget Added (App Closed):
+ *    - Widget extension calls notifyWidgetAdded()
+ *    - Event persisted to App Group UserDefaults
+ *    - Widget shows "Tap to configure" (no weather data yet)
+ * 
+ * 2. User Opens Main App:
+ *    - checkPendingWidgetEvents() processes pending events
+ *    - onWidgetAdded() fetches weather data
+ *    - Weather data saved to App Group container
+ *    - Widget auto-refreshes with data
+ * 
+ * 3. Ongoing Updates:
+ *    - Main app updates weather data in App Group
+ *    - Widgets reload based on their configured frequency
+ *    - Background refresh keeps data current
+ * 
+ * WHY WIDGETS DON'T FETCH WEATHER DIRECTLY:
+ * ------------------------------------------
+ * - Widget extensions have limited capabilities (no background networking)
+ * - Would require duplicating all weather logic in Swift
+ * - Main app is single source of truth for data
+ * - This is standard architecture for iOS widgets
  */
 export class WidgetBridge extends WidgetBridgeBase {
     private dataManager: WidgetDataManager;

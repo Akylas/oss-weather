@@ -61,6 +61,7 @@ $lang.subscribe((newLang: string) => {
     } catch (err) {
         console.error(lang, `~/i18n/${lang}.json`, File.exists(`~/i18n/${lang}.json`), err, err.stack);
     }
+    Application.notify({ eventName: SETTINGS_LANGUAGE, data: lang });
     globalObservable.notify({ eventName: SETTINGS_LANGUAGE, data: lang });
 });
 function setLang(newLang) {

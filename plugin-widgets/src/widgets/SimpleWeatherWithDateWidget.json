@@ -44,7 +44,15 @@
                 "children": [
                     {
                         "type": "date",
+                        "style": "date",
+                        "platform":"ios",
+                        "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 62],
+                        "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
+                    },
+                    {
+                        "type": "date",
                         "style": "dayMonth",
+                        "platform":"android",
                         "fontSize": ["min", ["*", ["get", "size.width"], 0.17], 62],
                         "fontWeight": ["case", ["==", ["get", "config.settings.clockBold"], true], "bold", "normal"]
                     },
@@ -70,7 +78,7 @@
                         "style": "year",
                         "fontSize": 14,
                         "opacity": 0.5,
-                        "platform": ["android", "nativescript"]
+                        "platform": ["android"]
                     },
                     {
                         "type": "label",

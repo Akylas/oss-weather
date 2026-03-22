@@ -56,7 +56,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
         // Check for pending widget events that occurred while app was not running
         this.checkPendingWidgetEvents();
-        
+
         // Trigger widget detection on startup
         this.triggerWidgetDetection();
 
@@ -69,7 +69,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         } catch (error) {
             console.error(TAG, 'Failed to setup language change listener:', error);
         }
-        
+
         // Listen for app resume to detect widget changes
         try {
             Application.on(Application.resumeEvent, () => {
@@ -80,23 +80,17 @@ export class WidgetBridge extends WidgetBridgeBase {
             console.error(TAG, 'Failed to setup app resume listener:', error);
         }
     }
-    
+
     /**
      * Trigger widget detection using WidgetCenter (iOS 16+)
      * This detects added/removed widgets on the home screen
      */
     private triggerWidgetDetection() {
-        try {
-            if (parseInt(Device.osVersion) >= 16) {
-                // Call Swift WidgetDetector.shared.detect()
-                const WidgetDetector = (WidgetDetector as any).shared();
-                if (WidgetDetector) {
-                    WidgetDetector.detect();
-                    DEV_LOG && console.log(TAG, 'Triggered widget detection');
-                }
-            }
-        } catch (error) {
-            console.error(TAG, 'Error triggering widget detection:', error);
+        // Call Swift WidgetDetector.shared.detect()
+        const WidgetDetector = WidgetDetector.shared();
+        if (WidgetDetector) {
+            WidgetDetector.detect();
+            DEV_LOG && console.log(TAG, 'Triggered widget detection');
         }
     }
 
@@ -366,7 +360,7 @@ export class WidgetBridge extends WidgetBridgeBase {
         const data = WidgetUtils.dataForKey('active_widgets');
         if (data) {
             const json = NSString.alloc().initWithDataEncoding(data, NSUTF8StringEncoding);
-            DEV_LOG && console.log('getActiveWidgets', data, json);
+            DEV_LOG && console.log('getActiveWidgets', json);
             return JSON.parse(json.toString());
         }
 

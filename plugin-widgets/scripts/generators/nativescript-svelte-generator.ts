@@ -676,32 +676,31 @@ function wrapWithPlatformConditional(childMarkup: string, child: BaseLayoutEleme
     if (!child.platform) {
         return childMarkup; // No platform restriction
     }
-    
+
     const platforms = Array.isArray(child.platform) ? child.platform : [child.platform];
-    
+
     // Both platforms = no conditional needed
     if (platforms.includes('ios') && platforms.includes('android')) {
         return childMarkup;
     }
-    
+
     // Only one platform - add conditional
     if (platforms.includes('ios') && !platforms.includes('android')) {
         return `${indent}{#if __IOS__}\n${childMarkup}\n${indent}{/if}`;
     }
-    
+
     if (platforms.includes('android') && !platforms.includes('ios')) {
         return `${indent}{#if __ANDROID__}\n${childMarkup}\n${indent}{/if}`;
     }
-    
+
     // NativeScript-only - shouldn't happen in practice but handle it
     if (platforms.includes('nativescript')) {
         return childMarkup;
     }
-    
+
     // No matching platform
     return '';
 }
-
 
 function generateMarkup(
     widgetName: string,

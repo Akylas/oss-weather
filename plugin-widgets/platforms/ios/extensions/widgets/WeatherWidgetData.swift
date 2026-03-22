@@ -264,4 +264,51 @@ class WidgetDataProvider {
         try? FileManager.default.removeItem(at: dataFile)
         WidgetsLogger.d("WidgetData", "Removed widget data for: \(widgetId)")
     }
+
+
+    
+    // MARK: - Widget Data Cache
+    
+    /// Get widget data cache
+    // func getWidgetDataCache() -> [String: WeatherWidgetData] {
+    //     guard let data = userDefaults.data(forKey: widgetDataCacheKey),
+    //           let cache = try? JSONDecoder().decode([String: WeatherWidgetData].self, from: data) else {
+    //         WidgetsLogger.d("WidgetSettings", "No widget data cache found")
+    //         return [:]
+    //     }
+    //     return cache
+    // }
+    
+    /// Save widget data cache
+    // func saveWidgetDataCache(_ cache: [String: WeatherWidgetData]) {
+    //     guard let data = try? JSONEncoder().encode(cache) else {
+    //         WidgetsLogger.d("WidgetSettings", "Failed to encode widget data cache")
+    //         return
+    //     }
+    //     userDefaults.set(data, forKey: widgetDataCacheKey)
+    //     WidgetsLogger.d("WidgetSettings", "Saved widget data cache with \(cache.count) entries")
+    // }
+    
+    /// Get cached data for specific widget
+    // func getWidgetData(widgetId: String) -> WeatherWidgetData? {
+    //     let cache = getWidgetDataCache()
+    //     return cache[widgetId]
+    // }
+    
+    /// Update cached data for specific widget
+    // func updateWidgetData(widgetId: String, data: WeatherWidgetData) {
+    //     var cache = getWidgetDataCache()
+    //     cache[widgetId] = data
+    //     saveWidgetDataCache(cache)
+    //     WidgetsLogger.d("WidgetSettings", "Updated widget data for \(widgetId)")
+    // }
+    
+    /// Clear cached data for specific widget
+    // func clearWidgetData(widgetId: String) {
+    //     var cache = getWidgetDataCache()
+    //     cache.removeValue(forKey: widgetId)
+    //     saveWidgetDataCache(cache)
+    //     WidgetsLogger.d("WidgetSettings", "Cleared widget data for \(widgetId)")
+    // }
+    
 }

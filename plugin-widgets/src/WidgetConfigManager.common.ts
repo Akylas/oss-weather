@@ -8,10 +8,10 @@ import { getDefaultKindConfig } from './WidgetKindConfigs';
 import { WIDGET_KINDS } from './WidgetKindConfigs';
 import { widgetService } from 'plugin-widgets/WidgetBridge';
 
-const WIDGET_CONFIGS_KEY = 'widget_configs'; // per-instance configs
-const WIDGET_KIND_CONFIGS_KEY = 'widget_kind_configs'; // per-kind default configs
-const UPDATE_FREQUENCY_KEY = 'widget_update_frequency';
-const CACHE_TIMEOUT_KEY = 'widget_cache_timeout';
+export const WIDGET_CONFIGS_KEY = 'widget_configs'; // per-instance configs
+export const WIDGET_KIND_CONFIGS_KEY = 'widget_kind_configs'; // per-kind default configs
+export const UPDATE_FREQUENCY_KEY = 'widget_update_frequency';
+export const CACHE_TIMEOUT_KEY = 'widget_cache_timeout';
 
 const TAG = '[WidgetConfigManager]';
 
@@ -26,11 +26,11 @@ export const WIDGET_NAMES = {
     ForecastWeatherWidget: lc('widget.forecast.name')
 };
 
-export class WidgetConfigManager {
-    private static configs: { [widgetId: string]: WidgetConfig };
-    private static kindConfigs: { [kind: string]: WidgetConfig };
+export class BaseWidgetConfigManager {
+    protected static configs: { [widgetId: string]: WidgetConfig };
+    protected static kindConfigs: { [kind: string]: WidgetConfig };
 
-    private static loadConfigs() {
+    protected static loadConfigs() {
         const data = ApplicationSettings.getString(WIDGET_CONFIGS_KEY);
         DEV_LOG && console.log('loadConfigs', data);
         if (data) {
@@ -44,7 +44,7 @@ export class WidgetConfigManager {
         }
     }
 
-    private static loadKindConfigs() {
+    protected static loadKindConfigs() {
         const data = ApplicationSettings.getString(WIDGET_KIND_CONFIGS_KEY);
         // DEV_LOG && console.log('loadKindConfigs', data);
         if (data) {
@@ -111,7 +111,7 @@ export class WidgetConfigManager {
     /**
      * Save all kind configurations
      */
-    private static saveAllKindConfigs(): void {
+    protected static saveAllKindConfigs(): void {
         ApplicationSettings.setString(WIDGET_KIND_CONFIGS_KEY, JSON.stringify(this.kindConfigs));
         // DEV_LOG && console.log(TAG, 'saveAllKindConfigs', JSON.stringify(this.kindConfigs));
     }
@@ -168,7 +168,7 @@ export class WidgetConfigManager {
     /**
      * Save all instance configurations
      */
-    private static saveAllConfigs(): void {
+    protected static saveAllConfigs(): void {
         ApplicationSettings.setString(WIDGET_CONFIGS_KEY, JSON.stringify(this.configs));
     }
 
@@ -249,7 +249,7 @@ export class WidgetConfigManager {
     /**
      * Get default settings from widget JSON schema
      */
-    private static getDefaultSettings(widgetKind: string): Record<string, any> {
+    protected static getDefaultSettings(widgetKind: string): Record<string, any> {
         // Load widget JSON to get settings schema
         try {
             // Widget JSON files define settings with defaults

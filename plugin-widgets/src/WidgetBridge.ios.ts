@@ -3,13 +3,14 @@ import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager } from './WidgetDataManager';
 import { lang, onLanguageChanged } from '~/helpers/locale';
-import { File } from '@nativescript/core';
+import { Application, File } from '@nativescript/core';
 import { getCurrentLocales } from '@nativescript-community/l';
+import { SETTINGS_LANGUAGE } from '@shared/constants';
 
 const TAG = '[WidgetBridge.iOS]';
 
 const groupId = WidgetUtils.suiteName;
-
+export const widgetsUserDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
 /**
  * Bridge between native iOS widgets and JS weather data
  *
@@ -58,7 +59,7 @@ export class WidgetBridge extends WidgetBridgeBase {
 
         // Listen for language changes
         try {
-            onLanguageChanged((data) => {
+            Application.on(SETTINGS_LANGUAGE, () => {
                 DEV_LOG && console.log(TAG, 'Language changed, syncing translations');
                 this.syncTranslations();
             });
@@ -99,11 +100,11 @@ export class WidgetBridge extends WidgetBridgeBase {
             }
 
             // Save to App Group UserDefaults
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
-            if (userDefaults) {
+
+            if (widgetsUserDefaults) {
                 const data = NSString.stringWithString(JSON.stringify(widgetTranslations)).dataUsingEncoding(NSUTF8StringEncoding);
-                userDefaults.setObjectForKey(data, 'widget_translations');
-                userDefaults.synchronize();
+                widgetsUserDefaults.setObjectForKey(data, 'widget_translations');
+                widgetsUserDefaults.synchronize();
 
                 DEV_LOG && console.log(TAG, `Synced ${Object.keys(widgetTranslations).length} widget translations (${lang})`);
             }
@@ -254,11 +255,10 @@ export class WidgetBridge extends WidgetBridgeBase {
     private syncUpdateFrequency() {
         try {
             const frequency = WidgetConfigManager.getUpdateFrequency();
-            const userDefaults = NSUserDefaults.alloc().initWithSuiteName(groupId);
 
-            if (userDefaults) {
-                userDefaults.setIntegerForKey(frequency, 'widget_update_frequency');
-                userDefaults.synchronize();
+            if (widgetsUserDefaults) {
+                widgetsUserDefaults.setIntegerForKey(frequency, 'widget_update_frequency');
+                widgetsUserDefaults.synchronize();
                 console.log(`WidgetBridge: Synced update frequency to iOS: ${frequency} minutes`);
             }
         } catch (error) {

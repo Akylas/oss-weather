@@ -13,7 +13,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Expression, compileExpression, compilePropertyValue as compilePropValue } from './expression-compiler';
-import { BaseLayoutElement, getSettingKey, getSingleBinding, hasTemplateBinding, isExpression, isSettingReference, toPlatformFontWeight } from './shared-utils';
+import { BaseLayoutElement, getSettingKey, getSingleBinding, hasTemplateBinding, isExpression, isSettingReference, toPlatformFontWeight, filterChildrenByPlatform } from './shared-utils';
 import { DEFAULT_COLOR_MAPS } from './modifier-builders';
 import { compilePropertyValue } from './expression-compiler';
 
@@ -654,8 +654,10 @@ function generateColumn(element: BaseLayoutElement, indent: string, defaultColor
 
     lines.push(`${indent}VStack(alignment: ${alignment}, spacing: ${spacing}) {`);
 
-    if (element.children) {
-        for (const child of element.children) {
+    // Filter children by platform - only render iOS-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'ios');
+    if (children && children.length > 0) {
+        for (const child of children) {
             // flex: 1 child in a column = flexible vertical spacer → Spacer()
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
@@ -685,8 +687,10 @@ function generateRow(element: BaseLayoutElement, indent: string, defaultColor?: 
 
     lines.push(`${indent}HStack(alignment: ${alignment}, spacing: ${spacing}) {`);
 
-    if (element.children) {
-        for (const child of element.children) {
+    // Filter children by platform - only render iOS-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'ios');
+    if (children && children.length > 0) {
+        for (const child of children) {
             // flex: 1 child in a row = flexible horizontal spacer → Spacer()
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
@@ -733,8 +737,10 @@ function generateStack(element: BaseLayoutElement, indent: string, defaultColor?
 
     lines.push(`${indent}ZStack${stackAlignment ? `(${stackAlignment})` : ''} {`);
 
-    if (element.children) {
-        for (const child of element.children) {
+    // Filter children by platform - only render iOS-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'ios');
+    if (children && children.length > 0) {
+        for (const child of children) {
             if (child.type === 'spacer' && child.flex !== undefined) {
                 lines.push(`${indent}    Spacer()`);
             } else {
@@ -845,10 +851,12 @@ function generateScrollView(element: BaseLayoutElement, indent: string, defaultC
 
     lines.push(`${indent}ScrollView(${axis}, showsIndicators: false) {`);
 
-    if (element.children) {
+    // Filter children by platform - only render iOS-compatible elements
+    const children = filterChildrenByPlatform(element.children, 'ios');
+    if (children && children.length > 0) {
         const containerType = element.direction === 'horizontal' ? 'HStack' : 'VStack';
         lines.push(`${indent}    ${containerType}(spacing: 8) {`);
-        for (const child of element.children) {
+        for (const child of children) {
             lines.push(generateElement(child, indent + '        ', defaultColor));
         }
         lines.push(`${indent}    }`);
@@ -947,20 +955,13 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
 
     const lines: string[] = [];
 
-    if (style === 'dayMonth') {
-        lines.push(`${indent}Text({`);
-        lines.push(`${indent}    let f = DateFormatter()`);
-        lines.push(`${indent}    f.setLocalizedDateFormatFromTemplate("MMMd")`);
-        lines.push(`${indent}    return f.string(from: Date())`);
-        lines.push(`${indent}}())`);
-    } else if (style === 'fullDate') {
-        lines.push(`${indent}Text({`);
-        lines.push(`${indent}    let f = DateFormatter()`);
-        lines.push(`${indent}    f.dateStyle = .long`);
-        lines.push(`${indent}    f.timeStyle = .none`);
-        lines.push(`${indent}    return f.string(from: Date())`);
-        lines.push(`${indent}}())`);
+    // Use iOS-native Text(Date(), style:) for common date formats
+    // This respects system locale and date formatting preferences
+    if (style === 'dayMonth' || style === 'date') {
+        // For dayMonth and date, use iOS native .date style which shows localized date
+        lines.push(`${indent}Text(Date(), style: .date)`);
     } else if (style === 'year') {
+        // Year needs custom formatter
         lines.push(`${indent}Text({`);
         lines.push(`${indent}    let f = DateFormatter()`);
         lines.push(`${indent}    f.dateFormat = "yyyy"`);
@@ -972,7 +973,15 @@ function generateDate(element: BaseLayoutElement, indent: string, defaultColor?:
         lines.push(`${indent}    f.dateFormat = "MMMM"`);
         lines.push(`${indent}    return f.string(from: Date())`);
         lines.push(`${indent}}())`);
+    } else if (style === 'fullDate') {
+        lines.push(`${indent}Text({`);
+        lines.push(`${indent}    let f = DateFormatter()`);
+        lines.push(`${indent}    f.dateStyle = .long`);
+        lines.push(`${indent}    f.timeStyle = .none`);
+        lines.push(`${indent}    return f.string(from: Date())`);
+        lines.push(`${indent}}())`);
     } else {
+        // Default: use iOS native .date style
         lines.push(`${indent}Text(Date(), style: .date)`);
     }
     lines.push(`${indent}    .font(.system(size: ${fontSize}, weight: ${fontWeight}))`);

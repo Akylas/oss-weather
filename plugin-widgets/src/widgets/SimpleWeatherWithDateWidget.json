@@ -69,7 +69,8 @@
                         "type": "date",
                         "style": "year",
                         "fontSize": 14,
-                        "opacity": 0.5
+                        "opacity": 0.5,
+                        "platform": ["android", "nativescript"]
                     },
                     {
                         "type": "label",

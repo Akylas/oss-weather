@@ -6,6 +6,7 @@ import { Pollutants, prepareAirQualityData } from '../airQualityData';
 import { WeatherLocation, request } from '../api';
 import { WeatherProps, weatherDataService } from '../weatherData';
 import { AirQualityProvider } from './airqualityprovider';
+import { convertWeatherCodeToIcon } from './omIcons';
 import { Forecast } from './openmeteo';
 import { AirQualityCurrently, AirQualityData, CommonAirQualityData, Currently, DailyData, Hourly, MinutelyData, WeatherData } from './weather';
 import { WeatherProvider } from './weatherprovider';
@@ -238,61 +239,6 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
         }
     }
 
-    private convertWeatherCodeToIcon(code: number) {
-        // const actualCode = code % 100;
-        switch (code) {
-            case 0:
-            case 1:
-                return 800;
-            case 2:
-                return 802;
-            case 3:
-                return 804;
-            case 45:
-            case 48:
-                return 741;
-            case 51:
-            case 56:
-                return 300;
-            case 53:
-            case 57:
-                return 310;
-            case 55:
-                return 321;
-            case 61:
-                return 500;
-            case 63:
-            case 66:
-                return 502;
-            case 65:
-            case 67:
-                return 504;
-            case 80:
-            case 81:
-                return 520;
-            case 82:
-                return 530;
-
-            case 71:
-                return 600;
-            case 73:
-            case 85:
-                return 601;
-            case 75:
-            case 86:
-                return 602;
-            case 77:
-                return 611;
-            case 95:
-                return 200;
-            case 96:
-                return 210;
-            case 97:
-            case 99:
-                return 202;
-        }
-    }
-
     // https://api.open-meteo.com/v1/forecast?latitude=45.18&longitude=5.71&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,snow_depth,weathercode,cloudcover,cloudcover_low,cloudcover_mid,cloudcover_high,windspeed_10m,winddirection_10m,windgusts_10m,uv_index,uv_index_clear_sky&models=best_match&daily=weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,uv_index_max,uv_index_clear_sky_max,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,windspeed_10m_max,windgusts_10m_max,winddirection_10m_dominant&timeformat=unixtime&forecast_days=14&timezone=auto
     private async fetch<T = any>(
         apiName: string = 'forecast',
@@ -392,7 +338,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
             d.time = time * 1000;
             const code = hourly_weathercodes[index];
             d.isDay = !!this.getDataArrayValue(hourly, 'is_day', model, index);
-            d.iconId = this.convertWeatherCodeToIcon(code);
+            d.iconId = convertWeatherCodeToIcon(code);
             d.description = OMProvider.getWeatherCodeDescription(code);
             const apparentTemperature = this.getDataArrayValue(hourly, 'apparent_temperature', model, index);
             if (apparentTemperature !== undefined) {
@@ -501,7 +447,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                           cloudCover: currentData.cloudcover,
                           isDay: !!currentData.is_day,
                           windBearing: currentData.winddirection_10m,
-                          iconId: this.convertWeatherCodeToIcon(currentData.weather_code),
+                          iconId: convertWeatherCodeToIcon(currentData.weather_code),
                           description: OMProvider.getWeatherCodeDescription(currentData.weather_code)
                       } as Currently,
                       WeatherDataType.CURRENT,
@@ -515,7 +461,7 @@ export class OMProvider extends WeatherProvider implements AirQualityProvider {
                         time: time * 1000,
                         description: OMProvider.getWeatherCodeDescription(code),
                         isDay: true,
-                        iconId: this.convertWeatherCodeToIcon(code),
+                        iconId: convertWeatherCodeToIcon(code),
                         apparentTemperatureMax: this.getDataArrayValue(daily, 'apparent_temperature_max', model, index),
                         apparentTemperatureMin: this.getDataArrayValue(daily, 'apparent_temperature_min', model, index),
                         temperatureMax: this.getDataArrayValue(daily, feelsLikeTemperatures ? 'apparent_temperature_max' : 'temperature_2m_max', model, index),

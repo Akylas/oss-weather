@@ -94,12 +94,15 @@
             return null;
         }
         const realIcon = iconService.getIconPath(iconId, isDay, false);
+        if (!realIcon) {
+            return null;
+        }
         let icon = iconCache[realIcon];
         if (icon) {
             return icon;
         }
         icon = loadImage(realIcon, { resizeThreshold: 80 });
-        if (!realIcon.startsWith('android.resource://')) {
+        if (icon && !realIcon.startsWith('android.resource://')) {
             iconCache[realIcon] = icon;
         }
         return icon;

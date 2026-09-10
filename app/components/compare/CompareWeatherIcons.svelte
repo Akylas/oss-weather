@@ -48,7 +48,7 @@
     let iconCache: { [k: string]: ImageSource } = {};
     function getIcon(iconId, isDay): ImageSource {
         const realIcon = iconService.getIconPath(iconId, isDay, false);
-        if (realIcon === null) {
+        if (!realIcon) {
             return null;
         }
         let icon = iconCache[realIcon];
@@ -56,7 +56,7 @@
             return icon;
         }
         icon = loadImage(realIcon, { resizeThreshold: 70 });
-        if (!realIcon.startsWith('android.resource://')) {
+        if (icon && !realIcon.startsWith('android.resource://')) {
             iconCache[realIcon] = icon;
         }
         return icon;

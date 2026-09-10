@@ -10,7 +10,10 @@ export { restartApp } from '@akylas/nativescript-app-utils';
 export const sdkVersion = parseInt(Device.sdkVersion, 10);
 
 export function loadImage(imagePath, options) {
-    if (imagePath?.startsWith('android.resource://')) {
+    if (!imagePath) {
+        return null;
+    }
+    if (imagePath.startsWith('android.resource://')) {
         //@ts-expect-error needs ui-image typings
         const drawable = com.nativescript.image.DrawableUtils.tryLoadExternalDrawable(
             Utils.android.getApplicationContext(),
@@ -18,7 +21,10 @@ export function loadImage(imagePath, options) {
         ) as android.graphics.drawable.BitmapDrawable;
         return drawable ? new ImageSource(drawable.getBitmap()) : null;
     }
-    return loadImageSync(imagePath, options);
+    const image = loadImageSync(imagePath, options);
+    // loadImageSync always returns an ImageSource, even when decoding failed. Such an ImageSource is truthy
+    // but drawing it (canvas.drawBitmap) crashes the app with a native NPE
+    return (__ANDROID__ ? image?.android : image?.ios) ? image : null;
 }
 
 declare module '@nativescript/core/ui/frame' {

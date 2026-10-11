@@ -7,8 +7,8 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
   <group android:pivotX="54" android:pivotY="54" android:scaleX="0.6667" android:scaleY="0.6667">
-    <path android:pathData="M28,54a26,26 0,0 1,52 0z" android:fillColor="#EF9F27"/>
-    <path android:pathData="M20,54h68" android:strokeColor="#378ADD" android:strokeWidth="5" android:strokeLineCap="round"/>
-    <path android:pathData="M34,66h40" android:strokeColor="#85B7EB" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <path android:pathData="M28,59a26,26 0,0 1,52 0z" android:fillColor="#EF9F27"/>
+    <path android:pathData="M20,59h68" android:strokeColor="#378ADD" android:strokeWidth="5" android:strokeLineCap="round"/>
+    <path android:pathData="M34,71h40" android:strokeColor="#85B7EB" android:strokeWidth="5" android:strokeLineCap="round"/>
   </group>
 </vector>

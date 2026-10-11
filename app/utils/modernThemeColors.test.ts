@@ -14,7 +14,11 @@ describe('modernThemeColors', () => {
         const colors = modernThemeColors('#1e1b16', 'light', false);
         expect(colors.colorModernBackground).toBe('#ffffff');
         expect(colors.colorModernCard).toBe(mixColors('#ffffff', '#1e1b16', 0.045));
-        expect(colors.colorModernAccent).toBe('#378add');
+    });
+    it('has no accent of its own: the theme primary color is the accent', () => {
+        const colors = modernThemeColors('#1e1b16', 'light', false);
+        expect(colors).not.toHaveProperty('colorModernAccent');
+        expect(colors).not.toHaveProperty('colorModernOnAccent');
     });
     it('uses near black in dark and pure black in the black theme', () => {
         expect(modernThemeColors('#e6e1e5', 'dark', true).colorModernBackground).toBe('#121212');

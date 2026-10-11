@@ -89,7 +89,7 @@
     let filter: string = null;
 
     // technique for only specific properties to get updated on store change
-    $: ({ colorOnSurface, colorOutline } = $colors);
+    $: ({ colorOnSurface, colorOutline, colorPrimary } = $colors);
     // modern: regular row titles separated by hairlines, the title in the accent weight
     $: modern = $designStyle === 'modern';
     $: rowFontWeight = modern ? 'normal' : fontWeight;
@@ -442,7 +442,7 @@
                 </svelte:component>
             </Template>
             <Template key="modernMenu" let:item>
-                <gridlayout class={modernMenuRowClass(item)} columns="auto,*,auto" rippleColor={colorOnSurface} on:tap={(event) => onTap(item, event)}>
+                <gridlayout class={modernMenuRowClass(item)} columns="auto,*,auto" rippleColor={colorPrimary} on:tap={(event) => onTap(item, event)}>
                     <!-- text icons ("mb") have an iconFontSize: drawn smaller -->
                     <label
                         class={item.iconFontSize ? 'modernMenuIcon modernMenuIconText' : 'modernMenuIcon'}
@@ -466,7 +466,7 @@
             </Template>
             <Template key="modernChoice" let:item>
                 <!-- popover menus have a fixed row height: no dialog padding -->
-                <gridlayout class={modernMenuRowClass(item) + (isMenu ? '' : ' modernChoiceRow')} columns="auto,*,auto" rippleColor={colorOnSurface} on:tap={(event) => onCheckBox?.(item, true, event)}>
+                <gridlayout class={modernMenuRowClass(item) + (isMenu ? '' : ' modernChoiceRow')} columns="auto,*,auto" rippleColor={colorPrimary} on:tap={(event) => onCheckBox?.(item, true, event)}>
                     <label
                         class={item.value ? 'modernMenuIcon modernChoiceIconSelected' : 'modernMenuIcon modernChoiceIcon'}
                         text={item.value ? 'mdi-check-circle-outline' : 'mdi-circle-outline'}
@@ -485,7 +485,7 @@
                 </gridlayout>
             </Template>
             <Template key="modernCheck" let:item>
-                <gridlayout class={modernMenuRowClass(item) + ' modernCheckRow'} columns="auto,*,auto" rippleColor={colorOnSurface} on:tap={(event) => onTap(item, event)}>
+                <gridlayout class={modernMenuRowClass(item) + ' modernCheckRow'} columns="auto,*,auto" rippleColor={colorPrimary} on:tap={(event) => onTap(item, event)}>
                     <label class="modernMenuIcon" color={item.iconColor || item.color} text={item.icon} verticalAlignment="center" visibility={item.icon ? 'visible' : 'collapse'} />
                     <stacklayout col={1} verticalAlignment="center">
                         <label class="modernMenuTitle" text={item.title || item.name} textWrap={true} />
@@ -495,7 +495,7 @@
                 </gridlayout>
             </Template>
             <Template key="modernSwitch" let:item>
-                <gridlayout class={modernMenuRowClass(item) + ' modernSwitchRow'} columns="auto,*,auto" rippleColor={colorOnSurface} on:tap={(event) => onTap(item, event)}>
+                <gridlayout class={modernMenuRowClass(item) + ' modernSwitchRow'} columns="auto,*,auto" rippleColor={colorPrimary} on:tap={(event) => onTap(item, event)}>
                     <label class="modernMenuIcon" text={item.icon} verticalAlignment="center" visibility={item.icon ? 'visible' : 'collapse'} />
                     <label class="modernMenuTitle" col={1} text={item.title || item.name} textWrap={true} verticalAlignment="center" />
                     <switch id="checkbox" checked={item.value} col={2} marginLeft={8} on:loaded={styleModernSwitch} on:checkedChange={(e) => onCheckedChanged(item, e)} />

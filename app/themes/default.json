@@ -23,8 +23,8 @@
             "colorOnError": "#FFFFFF"
     },
     "light": {
-        "colorPrimary": "#FFC82F",
-        "colorOnPrimary": "#3F2E00",
+        "colorPrimary": "#775A00",
+        "colorOnPrimary": "#FFFFFF",
         "colorPrimaryContainer": "#FFDF98",
         "colorOnPrimaryContainer": "#251A00",
         "colorSecondary": "#6A5D3F",

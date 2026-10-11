@@ -19,8 +19,6 @@ export function mixColors(from: string, to: string, ratio: number) {
     );
 }
 
-const MODERN_ACCENT = '#378add';
-
 // modern style colors: a neutral background (white, near black or black) and cards, tiles and lines
 // as opaque tints of the text color over it, so they work on any theme color
 export function modernThemeColors(onSurface: string, theme: string, dark: boolean) {
@@ -33,8 +31,6 @@ export function modernThemeColors(onSurface: string, theme: string, dark: boolea
         colorModernCard: tint(0.045, 0.07),
         colorModernTile: tint(0.09, 0.13),
         colorModernHairline: tint(0.1, 0.14),
-        colorModernHairlineStrong: tint(0.2, 0.26),
-        colorModernAccent: MODERN_ACCENT,
-        colorModernOnAccent: '#ffffff'
+        colorModernHairlineStrong: tint(0.2, 0.26)
     };
 }

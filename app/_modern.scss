@@ -40,17 +40,17 @@ $modernFontFamily: Inter !default;
 
     // controls
     checkbox {
-        fill-color: var(--colorModernAccent);
+        fill-color: var(--colorPrimary);
     }
     slider {
-        color: var(--colorModernAccent);
+        color: var(--colorPrimary);
         background-color: var(--colorModernHairlineStrong);
     }
 
     mdtextfield {
-        stroke-color: var(--colorModernAccent);
+        stroke-color: var(--colorPrimary);
         stroke-inactive-color: var(--colorModernHairlineStrong);
-        floating-color: var(--colorModernAccent);
+        floating-color: var(--colorPrimary);
         font-size: var(--modernTextBody);
     }
 
@@ -146,7 +146,7 @@ $modernFontFamily: Inter !default;
         text-overflow: ellipsis;
     }
     .modernAccent {
-        color: var(--colorModernAccent);
+        color: var(--colorPrimary);
     }
     // popover menu rows (OptionSelect isMenu)
     .modernMenuRow {
@@ -185,7 +185,7 @@ $modernFontFamily: Inter !default;
         color: var(--colorOnSurfaceVariant);
     }
     .modernChoiceIconSelected {
-        color: var(--colorModernAccent);
+        color: var(--colorPrimary);
     }
     .modernSecondary {
         color: var(--colorOnSurfaceVariant);
@@ -194,7 +194,7 @@ $modernFontFamily: Inter !default;
         height: 48;
         border-radius: 24;
         border-width: 1.5;
-        border-color: var(--colorModernAccent);
+        border-color: var(--colorPrimary);
         background-color: var(--colorModernBackground);
     }
     .modernSearchInput {
@@ -335,9 +335,9 @@ $modernFontFamily: Inter !default;
         font-size: var(--modernTextBody);
         font-weight: 500;
         text-transform: none;
-        background-color: var(--colorModernAccent);
-        color: var(--colorModernOnAccent);
-        ripple-color: var(--colorModernOnAccent);
+        background-color: var(--colorPrimary);
+        color: var(--colorOnPrimary);
+        ripple-color: var(--colorOnPrimary);
         elevation: 0;
         dynamic-elevation-offset: 0;
     }
@@ -351,7 +351,7 @@ $modernFontFamily: Inter !default;
         border-width: 1;
         border-color: var(--colorModernHairlineStrong);
         color: var(--colorOnSurface);
-        ripple-color: var(--colorOnSurface);
+        ripple-color: var(--colorPrimary);
         elevation: 0;
         dynamic-elevation-offset: 0;
     }
@@ -363,7 +363,7 @@ $modernFontFamily: Inter !default;
         text-transform: none;
         background-color: transparent;
         color: var(--colorOnSurface);
-        ripple-color: var(--colorOnSurface);
+        ripple-color: var(--colorPrimary);
         elevation: 0;
         dynamic-elevation-offset: 0;
     }

@@ -22,7 +22,6 @@
     import ModernCardTitle from '~/components/common/ModernCardTitle.svelte';
     import { modernDataColor, styledDataIcon } from '~/utils/designStyle';
     import { modelSpread } from '~/utils/modelSpread';
-    import { modernColors } from '~/helpers/modernTheme';
     import { showAlertOptionSelect, showPopoverMenu } from '~/utils/ui';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import ListItemAutoSize from '../common/ListItemAutoSize.svelte';
@@ -324,7 +323,7 @@
                         icon: icon?.icon || ' ',
                         iconFontFamily: $fonts[icon?.fontFamily],
                         iconColor: modernDataColor(data.id),
-                        color: selected ? $modernColors.colorModernAccent : undefined
+                        color: selected ? $colors.colorPrimary : undefined
                     };
                 }),
                 props: { maxHeight: ALERT_OPTION_MAX_HEIGHT, width: 280 * $fontScale },

@@ -311,7 +311,7 @@
             {/each}
             {#if modern}
                 <absolutelayout backgroundColor={$modernColors.colorModernHairlineStrong} colSpan={tabs.length} height={1} verticalAlignment="bottom" />
-                <absolutelayout backgroundColor={$modernColors.colorModernAccent} borderRadius={1} col={tabIndex} height={2} verticalAlignment="bottom" width="60%" />
+                <absolutelayout backgroundColor={colorPrimary} borderRadius={1} col={tabIndex} height={2} verticalAlignment="bottom" width="60%" />
             {:else}
                 <absolutelayout backgroundColor={colorOnSurface} col={tabIndex} height={3} verticalAlignment="bottom" width="50%" />
             {/if}

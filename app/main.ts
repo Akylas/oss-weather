@@ -2,6 +2,8 @@
 // we need to use lat lon
 // first: sets the Mac Catalyst app delegate before plugins create their own
 import { startWindowHelper } from '@shared/utils/window';
+// the default color theme must be stored before the shared theme module reads it
+import '~/helpers/defaultColorTheme';
 import { install as installGestures } from '@nativescript-community/gesturehandler';
 import { setGeoLocationKeys } from '@nativescript-community/gps';
 import { svelteNative } from '@nativescript-community/svelte-native';

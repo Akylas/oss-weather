@@ -1,24 +1,19 @@
 import { MDCAlertControlerOptions, PromptOptions, alert as materialAlert, confirm as materialConfirm, prompt as materialPrompt } from '@nativescript-community/ui-material-dialogs';
 import { showingDialogs } from '@nativescript-community/ui-material-dialogs/dialogs-common';
-import { AlertOptions, Color, ConfirmOptions, Font, Utils } from '@nativescript/core';
+import { AlertOptions, Color, ConfirmOptions, Font } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { modernColors } from '~/helpers/modernTheme';
 import { textFontFamily } from '~/utils/designStyle';
 import { accentFontWeight, colors, designStyle } from '~/variables';
 
 const MODERN_DIALOG_RADIUS = 20;
-const MODERN_DIALOG_INSET = 24;
 const MODERN_DIALOG_TITLE_SIZE = 19;
 
-// modern: the native dialog gets the modern surface, rounder corners, Inter texts and accent buttons
+// modern: the native dialog gets the modern surface, Inter texts and accent buttons
 function styleAndroidDialog(dialog: androidx.appcompat.app.AlertDialog) {
     const { colorModernAccent, colorModernSurface } = get(modernColors);
-    const density = Utils.layout.getDisplayDensity();
-    const background = new android.graphics.drawable.GradientDrawable();
-    background.setColor(new Color(colorModernSurface).android);
-    background.setCornerRadius(MODERN_DIALOG_RADIUS * density);
-    const inset = MODERN_DIALOG_INSET * density;
-    dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.InsetDrawable(background, inset, inset, inset, inset));
+    // tint the material dialog background: replacing it made the whole dialog invisible on some devices
+    dialog.getWindow().getDecorView().getBackground().setTint(new Color(colorModernSurface).android);
     const fontFamily = textFontFamily('modern');
     const titleTypeface = new Font(fontFamily, undefined, undefined, get(accentFontWeight)).getAndroidTypeface();
     const textTypeface = new Font(fontFamily, undefined).getAndroidTypeface();

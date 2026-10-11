@@ -3,7 +3,7 @@ import { MDCAlertControlerOptions } from '@nativescript-community/ui-material-di
 import { alert, confirm } from './dialogs';
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
-import { AlertOptions, Application, GridLayout, View } from '@nativescript/core';
+import { AlertOptions, Application, GridLayout, Screen, View } from '@nativescript/core';
 import { debounce } from '@nativescript/core/utils';
 import { showError } from '@shared/utils/showError';
 import { ComponentInstanceInfo, hideLoading, resolveComponentElement } from '@shared/utils/ui';
@@ -12,6 +12,7 @@ import { ComponentProps } from 'svelte';
 import { get } from 'svelte/store';
 import type OptionSelect__SvelteComponent_ from '~/components/common/OptionSelect.svelte';
 import { ALERT_OPTION_MAX_HEIGHT } from '~/helpers/constants';
+import { dialogListHeight } from '~/utils/dialogHeight';
 import { l, lc } from '~/helpers/locale';
 import { colors, designStyle, fontScale, screenWidthDips } from '~/variables';
 import { modernColors } from '~/helpers/modernTheme';
@@ -30,7 +31,8 @@ export async function showAlertOptionSelect<T>(props?: ComponentProps<OptionSele
                 view.bindingContext.closeCallback(item);
             },
             trackingScrollView: 'collectionView',
-            ...props
+            ...props,
+            height: dialogListHeight(props?.height ?? null, Screen.mainScreen.heightDIPs)
         }) as ComponentInstanceInfo<GridLayout, OptionSelect__SvelteComponent_>;
         const view: View = componentInstanceInfo.element.nativeView;
         const result = await alert({

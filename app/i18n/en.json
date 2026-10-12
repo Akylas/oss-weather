@@ -252,6 +252,8 @@
   "no_results": "No results",
   "no_results_desc": "Nothing found for \"%s\". Check the spelling or try a nearby city.",
   "no_network": "No network",
+  "weather_outdated": "Weather data is outdated",
+  "weather_outdated_desc": "Last updated %s.\nCheck your connection and refresh.",
   "no_particular_vigilance": "No particular vigilance",
   "no_widgets_configured": "No widgets have been added yet. Add a widget from your home screen to configure it here.",
   "non_valid_email": "Non-valid e-mail",

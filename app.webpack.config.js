@@ -594,6 +594,19 @@ module.exports = (env, params = {}) => {
     config.plugins.push(new IgnoreNotFoundExportPlugin());
 
     const nativescriptReplace = '(NativeScript[\\/]dist[\\/]packages[\\/]core|@nativescript/core|@akylas/nativescript)';
+    // shared code (tools/app) uses the app forks of the dialogs and the option select: modern style
+    const sharedForks = {
+        '@nativescript-community/ui-material-dialogs': resolve(__dirname, 'app/utils/ui/dialogs'),
+        '@shared/components/OptionSelect.svelte': resolve(__dirname, 'app/components/common/OptionSelect.svelte')
+    };
+    const sharedPath = resolve(__dirname, 'tools/app');
+    config.plugins.push(
+        new webpack.NormalModuleReplacementPlugin(/^(@nativescript-community\/ui-material-dialogs|@shared\/components\/OptionSelect\.svelte)$/, (resource) => {
+            if (resource.context.startsWith(sharedPath)) {
+                resource.request = sharedForks[resource.request];
+            }
+        })
+    );
     config.plugins.push(
         new webpack.NormalModuleReplacementPlugin(/http/, (resource) => {
             if (resource.context.match(nativescriptReplace) || resource.request === '@nativescript/core/http' || resource.request === '@akylas/nativescript/http') {

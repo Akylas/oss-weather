@@ -6,6 +6,9 @@ import { modernColors } from '~/helpers/modernTheme';
 import { textFontFamily } from '~/utils/designStyle';
 import { accentFontWeight, colors, designStyle } from '~/variables';
 
+// used as is by the shared code (see sharedForks in app.webpack.config.js)
+export { AlertDialog } from '@nativescript-community/ui-material-dialogs';
+
 const MODERN_DIALOG_RADIUS = 20;
 const MODERN_DIALOG_TITLE_SIZE = 19;
 

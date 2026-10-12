@@ -137,6 +137,12 @@
     let { colorOnBackground, colorOnSurfaceVariant, colorPrimary } = $colors;
     $: ({ colorOnBackground, colorOnSurfaceVariant, colorPrimary } = $colors);
     $: modern = $designStyle === 'modern';
+    // the rows depend on the style (segmented theme, section headers): rebuild them when it changes
+    let shownModern = get(designStyle) === 'modern';
+    $: if (modern !== shownModern) {
+        shownModern = modern;
+        refresh();
+    }
     // modern: light tint behind the rows (cards) and the section icons
     $: ({ bottom: windowInsetBottom } = $windowInset);
 
@@ -1657,6 +1663,8 @@
                 ignoreNextReorderTap = true;
             }
             onReordered(items);
+            // the rows keep the card position (first, middle, last) they had before the move
+            setTimeout(refreshCollectionViewVisibleItems, 0);
         } catch (error) {
             showError(error);
         }

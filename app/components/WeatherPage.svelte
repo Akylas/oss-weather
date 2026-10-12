@@ -25,6 +25,7 @@
     import CActionBar from '~/components/common/CActionBar.svelte';
     import {
         DATA_VERSION,
+        NB_DAYS_FORECAST,
         SETTINGS_FEELS_LIKE_TEMPERATURES,
         SETTINGS_SHOW_CURRENT_DAY_DAILY,
         SETTINGS_SHOW_DAILY_IN_CURRENTLY,
@@ -53,9 +54,10 @@
         toggleFavorite
     } from '~/helpers/favorites';
     import { getLocationName } from '~/helpers/formatter';
-    import { formatTime, getEndOfDay, getStartOfDay, l, lc, lu, onLanguageChanged, sl, slc } from '~/helpers/locale';
+    import { formatDate, formatTime, getEndOfDay, getStartOfDay, l, lc, lu, onLanguageChanged, sl, slc } from '~/helpers/locale';
     import { onThemeChanged } from '~/helpers/theme';
     import { NetworkConnectionStateEvent, NetworkConnectionStateEventData, WeatherLocation, geocodeAddress, networkService, prepareItems } from '~/services/api';
+    import { hasEnoughForecast } from '~/utils/forecastCoverage';
     import { gadgetbridgeService } from '~/services/gadgetbridge';
     import { onIconPackChanged } from '~/services/icon';
     import { MFProvider } from '~/services/providers/mf';
@@ -118,6 +120,25 @@
     updateProvider();
 
     let items = [];
+
+    // a cached forecast fetched long ago has no upcoming data left to show
+    function hasEnoughData(data = weatherData, location = weatherLocation) {
+        if (!data || !location) {
+            return true;
+        }
+        const now = Date.now();
+        return hasEnoughForecast(data, now, getStartOfDay(now, location.timezoneOffset).valueOf(), ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST));
+    }
+    let enoughData = hasEnoughData();
+    $: enoughData = hasEnoughData(weatherData, weatherLocation);
+    // at most once in a while: a failing fetch must not retry on every resume
+    let lastAutoRefresh = 0;
+    function refreshIfNotEnoughData() {
+        if (weatherLocation && networkConnected && !loading && Date.now() - lastAutoRefresh > 30000 && !hasEnoughData()) {
+            lastAutoRefresh = Date.now();
+            refreshWeather();
+        }
+    }
 
     const desiredAccuracy = __ANDROID__ ? CoreTypes.Accuracy.high : kCLLocationAccuracyBestForNavigation;
     const timeout = 20000;
@@ -646,17 +667,20 @@
             }
         });
 
+        Application.on(Application.resumeEvent, refreshIfNotEnoughData);
         registerUniversalLinkCallback(onAppUrl);
         const current = getUniversalLink();
         if (current) {
             onAppUrl(current, getUniversalLinkIntent());
         } else if (weatherData) {
             items = prepareItems(weatherLocation, weatherData);
+            refreshIfNotEnoughData();
         } else if (weatherLocation) {
             refreshWeather();
         }
     });
     onDestroy(() => {
+        Application.off(Application.resumeEvent, refreshIfNotEnoughData);
         if (__IOS__) {
             Application.off(Application.orientationChangedEvent, onOrientationChanged);
             Application.off(refreshRequestedEvent, manualRefreshWeather);
@@ -1275,6 +1299,24 @@
         <gridlayout rows="auto,*" prop:mainContent>
             {#if !networkConnected && !weatherData}
                 <label horizontalAlignment="center" row={1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
+            {:else if weatherLocation && weatherData && !enoughData}
+                <stackLayout horizontalAlignment="center" paddingLeft={28} paddingRight={28} row={1} verticalAlignment="middle">
+                    {#if modern}
+                        <label class="modernEmptyIcon" horizontalAlignment="center" text="mdi-clock-outline" verticalTextAlignment="center" />
+                        <label class="modernEmptyTitle" text={lc('weather_outdated')} />
+                        <label class="modernEmptyText" text={$sl('weather_outdated_desc', formatDate(weatherData.time, 'ddd LT', weatherLocation.timezoneOffset))} textWrap={true} />
+                        <mdbutton class="modernButton" isEnabled={!loading} margin="4 0" on:tap={manualRefreshWeather}>
+                            <cspan fontFamily={$fonts.mdi} fontSize={18 * $fontScale} fontWeight="normal" text="mdi-refresh" />
+                            <cspan fontWeight={$accentFontWeight} text={'  ' + $slc('refresh')} />
+                        </mdbutton>
+                    {:else}
+                        <label fontSize={16 * $fontScale} marginBottom={20} text={$sl('weather_outdated_desc', formatDate(weatherData.time, 'ddd LT', weatherLocation.timezoneOffset))} textAlignment="center" textWrap={true} />
+                        <mdbutton isEnabled={!loading} margin="4 0 4 0" textAlignment="center" variant="outline" verticalTextAlignment="center" on:tap={manualRefreshWeather}>
+                            <cspan fontFamily={$fonts.mdi} fontSize={20 * $fontScale} text="mdi-refresh" verticalAlignment="middle" />
+                            <cspan ios:fontSize={16 * $fontScale} text={' ' + $sl('refresh').toUpperCase()} verticalAlignment="middle" />
+                        </mdbutton>
+                    {/if}
+                </stackLayout>
             {:else if weatherLocation}
                 <pullrefresh bind:this={pullRefresh} row={1} on:refresh={onPullToRefresh}>
                     <WeatherComponent {items} {weatherLocation} on:tap={onTap} />

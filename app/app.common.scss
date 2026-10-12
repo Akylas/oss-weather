@@ -5,7 +5,7 @@
     --windowInsetLeft: 0;
     --windowInsetRight: 0;
     --fontScale: 1;
-    --colorPrimary: #FFC82F;
+    --colorPrimary: #EF9F27;
     --colorOnPrimary: #3F2E00;
     --colorPrimaryContainer: #FFDF98;
     --colorOnPrimaryContainer: #251A00;
@@ -80,7 +80,7 @@ mdbutton[variant=outline] {
     // shape: round;
     // padding: 0;
     color: var(--colorOnSurface);
-    ripple-color: var(--colorOnSurface);
+    ripple-color: var(--colorPrimary);
 
     // ripple-color: var(--colorOnBackground);
     // color: var(--colorOnBackground);

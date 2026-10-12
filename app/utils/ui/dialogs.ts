@@ -14,7 +14,7 @@ const MODERN_DIALOG_TITLE_SIZE = 19;
 
 // modern: the native dialog gets the modern surface, Inter texts and accent buttons
 function styleAndroidDialog(dialog: androidx.appcompat.app.AlertDialog) {
-    const { colorModernAccent, colorModernSurface } = get(modernColors);
+    const { colorModernSurface } = get(modernColors);
     // tint the material dialog background: replacing it made the whole dialog invisible on some devices
     dialog.getWindow().getDecorView().getBackground().setTint(new Color(colorModernSurface).android);
     const fontFamily = textFontFamily('modern');
@@ -36,20 +36,19 @@ function styleAndroidDialog(dialog: androidx.appcompat.app.AlertDialog) {
         if (button) {
             button.setTypeface(titleTypeface);
             button.setAllCaps(false);
-            button.setTextColor(new Color(which === android.content.DialogInterface.BUTTON_POSITIVE ? colorModernAccent : get(colors).colorOnSurfaceVariant).android);
+            button.setTextColor(new Color(which === android.content.DialogInterface.BUTTON_POSITIVE ? get(colors).colorPrimary : get(colors).colorOnSurfaceVariant).android);
         }
     }
 }
 
 function modernOptions<T>(options: T): T & MDCAlertControlerOptions {
-    const { colorOnSurface, colorOnSurfaceVariant } = get(colors);
-    const { colorModernAccent } = get(modernColors);
+    const { colorOnSurface, colorOnSurfaceVariant, colorPrimary } = get(colors);
     const fontFamily = textFontFamily('modern');
     return {
         titleColor: new Color(colorOnSurface),
         messageColor: new Color(colorOnSurfaceVariant),
-        buttonTitleColor: new Color(colorModernAccent),
-        buttonInkColor: new Color(colorModernAccent),
+        buttonTitleColor: new Color(colorPrimary),
+        buttonInkColor: new Color(colorPrimary),
         cornerRadius: MODERN_DIALOG_RADIUS,
         titleFont: new Font(fontFamily, 19, undefined, get(accentFontWeight)),
         messageFont: new Font(fontFamily, 15),

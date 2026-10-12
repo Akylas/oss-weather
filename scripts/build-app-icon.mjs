@@ -11,9 +11,9 @@ const BACKGROUND = '#F4F6FA';
 
 // 108 units canvas, the whole canvas is visible (iOS and legacy Android icons)
 const ARTWORK =
-    '<path d="M28 54a26 26 0 0 1 52 0z" fill="#EF9F27"/>' +
-    '<path d="M20 54h68" stroke="#378ADD" stroke-width="5" stroke-linecap="round"/>' +
-    '<path d="M34 66h40" stroke="#85B7EB" stroke-width="5" stroke-linecap="round"/>';
+    '<path d="M28 59a26 26 0 0 1 52 0z" fill="#EF9F27"/>' +
+    '<path d="M20 59h68" stroke="#378ADD" stroke-width="5" stroke-linecap="round"/>' +
+    '<path d="M34 71h40" stroke="#85B7EB" stroke-width="5" stroke-linecap="round"/>';
 
 const BACKGROUNDS = {
     none: '',

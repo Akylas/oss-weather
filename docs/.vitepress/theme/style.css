@@ -1,0 +1,138 @@
+/* Modern app style (app/_modern.scss, app/utils/modernThemeColors.ts): neutral background,
+   cards and lines tinted with the text color, the icon sun orange as the only accent. */
+:root {
+  --ow-accent: #EF9F27;
+  --ow-horizon: #378ADD;
+  --ow-tile: #ebeaea;
+
+  --vp-c-bg: #ffffff;
+  --vp-c-bg-alt: #f5f5f5;
+  --vp-c-bg-elv: #ffffff;
+  --vp-c-bg-soft: #f5f5f5;
+  --vp-c-divider: #e9e8e8;
+  --vp-c-gutter: #e9e8e8;
+  --vp-c-border: #d2d1d0;
+
+  --vp-c-text-1: #1E1B16;
+  --vp-c-text-2: #625f5c;
+
+  /* darkened accent for text on light backgrounds (contrast) */
+  --vp-c-brand-1: #8f5f17;
+  --vp-c-brand-2: #835715;
+  --vp-c-brand-3: var(--ow-accent);
+  --vp-c-brand-soft: #EF9F2724;
+
+  --vp-button-brand-text: #1E1B16;
+  --vp-button-brand-hover-text: #1E1B16;
+  --vp-button-brand-active-text: #1E1B16;
+  --vp-button-brand-bg: var(--ow-accent);
+  --vp-button-brand-hover-bg: #f1ad47;
+  --vp-button-brand-active-bg: #d28c22;
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, var(--ow-accent) 30%, var(--ow-horizon));
+  --vp-home-hero-image-background-image: linear-gradient(-45deg, var(--ow-horizon) 50%, var(--ow-accent) 50%);
+  --vp-home-hero-image-filter: blur(56px);
+}
+
+.dark {
+  --ow-tile: #2e2d2c;
+
+  --vp-c-bg: #121212;
+  --vp-c-bg-alt: #0c0c0c;
+  --vp-c-bg-elv: #1e1e1e;
+  --vp-c-bg-soft: #212020;
+  --vp-c-divider: #302f2e;
+  --vp-c-gutter: #000000;
+  --vp-c-border: #4a4846;
+
+  --vp-c-text-1: #E9E1D9;
+  --vp-c-text-2: #a9a39d;
+
+  --vp-c-brand-1: var(--ow-accent);
+  --vp-c-brand-2: #f1ad47;
+  --vp-c-brand-soft: #EF9F2729;
+
+  --vp-home-hero-image-filter: blur(72px) opacity(0.5);
+}
+
+.vp-doc div[class*='language-'],
+.custom-block {
+  border-radius: 14px;
+}
+
+.vp-doc .vp-code-group .tabs {
+  border-radius: 14px 14px 0 0;
+}
+
+/* home feature cards: ModernCard with a tile icon */
+.VPHome .VPFeatures .VPFeature {
+  border-color: transparent;
+  border-radius: 14px;
+}
+
+.VPHome .VPFeatures .VPFeature .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--ow-tile);
+  margin-bottom: 16px;
+}
+
+.VPHome .VPFeatures .VPFeature .icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.ow-section {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 48px 24px 0;
+  text-align: center;
+}
+
+.ow-section h2 {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.ow-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.vp-doc a.ow-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 22px;
+  background-color: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.25s;
+}
+
+.vp-doc a.ow-chip:hover {
+  background-color: var(--ow-tile);
+}
+
+.ow-chip svg {
+  width: 20px;
+  height: 20px;
+  color: var(--ow-accent);
+}
+
+.ow-note {
+  color: var(--vp-c-text-2);
+  font-size: 0.9em;
+}
+
+.ow-row img {
+  height: 50px;
+}

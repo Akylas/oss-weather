@@ -5,13 +5,13 @@ export default defineConfig({
   description: "Open Source Weather App - Detailed weather data from multiple providers",
   base: '/',
   head: [
-    ['link', { rel: 'icon', href: '/oss-weather/favicon.ico' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
     ['meta', { property: 'og:site_name', content: 'OSS Weather' }],
   ],
   themeConfig: {
-    logo: '/logo.png',
+    logo: '/logo.svg',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Guide', link: '/guide/getting-started' },

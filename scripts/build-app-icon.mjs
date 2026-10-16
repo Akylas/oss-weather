@@ -1,6 +1,6 @@
 // Builds the app icon ("rising sun": half amber disc on a blue horizon) for Android and iOS.
 // The Android adaptive icon is a vector (res/drawable/ic_launcher_foreground.xml), this script
-// renders the bitmaps: legacy Android launchers and the iOS icon set.
+// renders the bitmaps: legacy Android launchers, the iOS icon set and the store icons.
 // usage: node scripts/build-app-icon.mjs
 import { Resvg } from '@resvg/resvg-js';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -51,3 +51,7 @@ for (const image of images) {
     const size = Math.round(parseFloat(image.size) * parseFloat(image.scale));
     render('square', size, join(iosFolder, image.filename));
 }
+
+// Play Store listing icon and root Icon.png (the website copies it, see docs/scripts/copy-assets.js)
+render('square', 512, join(projectRoot, 'fastlane/metadata/android/en-US/images/icon.png'));
+render('square', 1024, join(projectRoot, 'Icon.png'));

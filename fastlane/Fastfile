@@ -471,7 +471,9 @@ platform :ios do
           skip_metadata: true,
           overwrite_screenshots: true,
           force: true,
-          submit_for_review: false
+          submit_for_review: false,
+          # precheck cannot check in-app purchases with an API key and fails the lane
+          run_precheck_before_submit: false
         )
       end
     end

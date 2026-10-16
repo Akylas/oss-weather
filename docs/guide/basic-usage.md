@@ -1,246 +1,106 @@
 # Basic Usage
 
-Learn how to use OSS Weather for daily weather checking.
+A tour of the main screen and the places you reach from it.
 
-## Main Weather View
+<div class="ow-shots">
+  <img class="ow-shot" src="/features/main.webp" alt="Main screen">
+  <img class="ow-shot" src="/features/favorites.webp" alt="Favorites drawer">
+</div>
 
-The main screen shows comprehensive weather information for your current location or selected location.
+## Action bar
 
-### Current Conditions
+From left to right:
 
-At the top of the main screen, you'll see:
-- **Current temperature** and feels-like temperature
-- **Weather condition** (sunny, cloudy, rainy, etc.) with icon
+- **☰ menu icon**: opens the [favorites drawer](#favorites-drawer). You can also swipe from the left edge.
+- **Star**: adds the current location to your favorites, or removes it.
 - **Location name**
-- **Last update time**
+- **Alert icon**: only shown when the provider reports weather alerts. Tap it to read them.
+- **Search**: find a place by name.
+- **⋮ overflow menu** (see below)
 
-### Quick Stats
+### Overflow menu
 
-Below current conditions:
-- **High/Low** - Today's forecasted high and low temperatures
-- **Precipitation** - Chance of rain/snow
-- **Wind** - Wind speed and direction
-- **Humidity** - Current humidity percentage
-- **Pressure** - Atmospheric pressure
-- **UV Index** - Sun exposure level
-- **Visibility** - How far you can see
+- **Refresh**
+- **Chart**: full-page hourly chart
+- **Compare models**: compare providers and Open-Meteo models for this location
+- **Map**: the weather map
+- **meteoblue**: only if enabled in Settings > Providers
+- **Marine Weather Provider**: turn MétéoConsult tides and sea data on or off for this location
+- **BRA**: Meteo France avalanche bulletin, only for locations in France
+- **Select location on map**
+- **Find GPS location** (when location is available)
+- **Preferences**: opens [Settings](/guide/settings)
 
-## Navigating the App
+## Main screen
 
-### Pull to Refresh
+From top to bottom:
 
-Swipe down on the main screen to manually refresh weather data.
+1. **Current weather**: temperature, condition and icon, today's low and high.
+2. **Weather data**: wind, precipitation, cloud cover, UV and more. You choose which values appear and their order in [Settings > Weather data](/guide/settings#weather-data). They are drawn as an aligned grid (default), chips or blocks, set in Settings > Appearance.
+3. **Precipitation for the next hour**: a small chart, when the provider has minute data and rain is expected.
+4. **Sunrise, sunset and moon phase**, and the time of the last update.
+5. **Hourly forecast**: scroll sideways.
+6. **Daily list**: one row per day, with the condition, the low/high range bar and the day's data.
 
-### Scroll for More
+The provider used is shown at the bottom ("Powered by ...").
 
-Scroll down to see:
-1. **Hourly Forecast** - Next 48 hours
-2. **Daily Forecast** - Next 7-14 days
-3. **Astronomy** - Sun and moon information
-4. **Air Quality** - AQI and pollutants
-5. **Additional Details** - More weather metrics
+### Hourly display modes
 
-### Bottom Navigation
+Set in **Settings > Hourly > Main view hourly display mode**:
 
-Access different views:
-- **Home** - Main weather view
-- **Radar** - Weather radar
-- **Map** - Interactive weather map
-- **Compare** - Compare locations
-- **More** - Additional features
+- **Classic** (default): one column per hour with icon, wind, temperature and precipitation.
+- **Chart**: a scrollable chart.
+- **Windy**: a compact layout inspired by Windy.
 
-### Top Menu
+Tap an hour to see all its values in a popup.
 
-Tap the menu icon (☰) to access:
-- **Locations** - Manage saved locations
-- **Settings** - App configuration
-- **About** - App information
-- **Help** - Documentation
+### Daily page
 
-## Managing Locations
+Tap the current weather or a day in the list to open its daily page. Swipe left or right to go to the next or previous day. It shows:
 
-### Adding a Location
+- the hourly forecast for that day
+- the last and next 24 hours (precipitation, snowfall)
+- air quality with pollutants, and pollens when available
+- tides, if a marine provider is on for this location
+- sun and moon: rise and set times, positions and moon phase
 
-1. Tap the menu icon (☰)
-2. Select "Locations"
-3. Tap the "+" button
-4. Search for a location or tap on the map
-5. Confirm the selection
+See [Daily forecasts](/features/daily-forecasts) and [Astronomy](/features/astronomy).
 
-### Switching Locations
+## Refreshing
 
-**Method 1: Swipe**
-- Swipe left/right on the main screen to switch between saved locations
+- **Pull down** on the main screen to refresh. If "Fetch current location when swiping down" is on (Settings > Geolocation), it also updates your GPS position.
+- The app refreshes by itself when cached data no longer covers the coming hours, at start and when you come back to it.
+- If new data cannot be fetched, the screen says **Weather data is outdated**, shows when it was last updated, and offers a **Refresh** button.
+- With no network and no saved data, the screen shows **No network**.
 
-**Method 2: Location Menu**
-1. Tap the current location name
-2. Select from your saved locations
+## Favorites drawer
 
-### Deleting a Location
+Open it with ☰ or by swiping from the left edge.
 
-1. Go to menu → Locations
-2. Swipe left on a location
-3. Tap "Delete"
+- Tap a favorite to show it. The current one is highlighted.
+- Each row shows the place, its region and its local time.
+- **Long press and drag** a row to reorder.
+- The button at the bottom adds a location (search).
 
-### Setting Default Location
+The **⋮** on a row opens its menu:
 
-1. Go to menu → Locations
-2. Long press on a location
-3. Select "Set as Default"
+- **Rename** or **duplicate** the favorite
+- **Provider**, **Open-Meteo model**, **Air Quality Provider**, **Marine Weather Provider**: settings for this location only
+- **Compare models**, **Chart**, **Map**, **meteoblue** (if enabled), **BRA** (France)
+- **Remove** from favorites
 
-## Using Weather Radar
+## Changing provider quickly
 
-1. Tap the "Radar" tab at the bottom
-2. View animated precipitation radar
-3. Use the timeline slider to see past/future precipitation
-4. Pinch to zoom, drag to pan
-5. Tap play button to animate
+With **Settings > Providers > Actionbar swipe gesture** turned on (off by default), swipe left or right on the action bar to show the current location with another provider. Your saved provider does not change.
 
-## Viewing Hourly Forecast
+## Other pages
 
-### On Main Screen
-Scroll down to see the hourly forecast chart with:
-- Temperature line graph
-- Precipitation bars
-- Wind indicators
+- **Chart**: full-page hourly chart. In the modern style, zoom presets (24 h, 48 h, 72 h, All) and legend chips to show or hide each series. See [Hourly charts](/features/hourly-charts).
+- **Compare models**: see [Compare models](/features/weather-comparison).
+- **Map**: radar and satellite layers with a play button and time slider. See [Weather map](/features/weather-map).
 
-### Detailed View
-Tap on any hour to see detailed information:
-- Exact temperature
-- Feels-like temperature
-- Precipitation chance and amount
-- Wind speed and direction
-- Humidity
-- Cloud cover
-- Pressure
+## Need help?
 
-## Checking Daily Forecast
-
-Scroll to the daily forecast section to see:
-- High and low temperatures
-- Weather conditions
-- Precipitation probability
-- Sunrise/sunset times
-
-Tap on any day for more details.
-
-## Weather Comparison
-
-1. Tap "Compare" in bottom navigation
-2. Select locations to compare
-3. View side-by-side comparison of:
-   - Current conditions
-   - Temperatures
-   - Precipitation
-   - Other metrics
-
-## Using Widgets
-
-### Adding a Widget (Android)
-
-1. Long press on your home screen
-2. Select "Widgets"
-3. Find "OSS Weather"
-4. Drag desired widget size to your home screen
-5. Configure the widget
-
-### Adding a Widget (iOS)
-
-1. Long press on your home screen
-2. Tap the "+" icon
-3. Search for "OSS Weather"
-4. Select widget size
-5. Tap "Add Widget"
-6. Configure the widget
-
-## Checking Air Quality
-
-Scroll down on the main screen to the "Air Quality" section to see:
-- Overall AQI (Air Quality Index) with color coding
-- Individual pollutant levels
-- Health recommendations
-
-## Viewing Astronomy Data
-
-Scroll down to the "Astronomy" section to see:
-- Sun position and path visualization
-- Sunrise, sunset, golden hour, blue hour
-- Moon phase and position
-- Moonrise and moonset times
-
-## Switching Weather Providers
-
-1. Go to Settings → Weather Providers
-2. Select a provider:
-   - OpenWeather
-   - Open-Meteo
-   - AccuWeather
-   - Meteo France
-3. Enter API key if required
-4. Tap "Save"
-
-The app will refresh with data from the new provider.
-
-## Customizing Units
-
-1. Go to Settings → Units
-2. Set your preferences for:
-   - Temperature (°C, °F, K)
-   - Wind speed (m/s, km/h, mph, knots)
-   - Pressure (hPa, inHg, mmHg)
-   - Precipitation (mm, inches)
-   - Distance (km, miles)
-
-## Changing Theme
-
-1. Go to Settings → Display
-2. Select theme:
-   - **Auto**: Follow system theme
-   - **Light**: Always light
-   - **Dark**: Always dark
-
-## Tips & Tricks
-
-### Battery Optimization
-- Set update interval to 1 hour or more
-- Disable background updates if not using widgets
-- Use "Manual" refresh mode
-
-### Data Usage
-- The app caches data to minimize API calls
-- Manual refreshes count toward API limits
-- Consider using Open-Meteo (no rate limits)
-
-### Accuracy
-- Compare providers for your location
-- Some providers are better for specific regions
-- Use multiple providers as backups
-
-## Common Actions
-
-### Quick Weather Check
-1. Open app
-2. View current conditions at top
-3. Scroll for hourly/daily forecasts
-
-### Check If It Will Rain
-1. Look at precipitation percentage under current conditions
-2. Scroll to hourly forecast
-3. Check precipitation probability for upcoming hours
-
-### Plan for Tomorrow
-1. Scroll to daily forecast
-2. Tap on tomorrow's forecast
-3. View detailed hourly breakdown
-
-### Compare Vacation Destinations
-1. Add each destination as a location
-2. Go to "Compare" tab
-3. Select the destinations
-4. Compare weather side-by-side
-
-## Need Help?
-
-- Check the [FAQ](/guide/faq)
-- Explore [all features](/features/)
-- Report issues on [GitHub](https://github.com/Akylas/oss-weather/issues)
+- [FAQ](/guide/faq)
+- [All features](/features/)
+- [Report an issue](https://github.com/ossappscollective/oss-weather/issues)

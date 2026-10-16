@@ -1,251 +1,64 @@
 # Air Quality
 
-Monitor air quality and pollutant levels for health and safety.
-
-## Overview
-
-OSS Weather provides Air Quality Index (AQI) data and individual pollutant levels to help you make informed decisions about outdoor activities.
-
-## Air Quality Index (AQI)
-
-### What is AQI?
-
-The Air Quality Index is a standardized indicator of air pollution levels:
-
-- **0-50 (Good)** 🟢 - Air quality is satisfactory
-- **51-100 (Moderate)** 🟡 - Acceptable for most people
-- **101-150 (Unhealthy for Sensitive Groups)** 🟠 - Sensitive people should limit outdoor activity
-- **151-200 (Unhealthy)** 🔴 - Everyone may experience health effects
-- **201-300 (Very Unhealthy)** 🟣 - Health alert, everyone may be affected
-- **301+ (Hazardous)** 🟤 - Health warning, emergency conditions
-
-### AQI Display
-
-The app shows:
-- Overall AQI value
-- AQI category with color coding
-- Health recommendations
-- Trend indicator (improving/worsening)
-
-## Pollutants Monitored
-
-### Particulate Matter
-
-**PM2.5** - Fine particles (2.5 micrometers):
-- Most harmful to health
-- Can penetrate deep into lungs
-- From combustion, wildfires, dust
-
-**PM10** - Coarse particles (10 micrometers):
-- Affects respiratory system
-- From dust, pollen, mold
-- Less harmful than PM2.5
-
-### Gases
-
-**O3 (Ozone)**:
-- Ground-level ozone
-- Respiratory irritant
-- Higher in summer
-- Peak in afternoon
-
-**NO2 (Nitrogen Dioxide)**:
-- From vehicle emissions
-- Industrial processes
-- Respiratory effects
-- Higher in urban areas
-
-**SO2 (Sulfur Dioxide)**:
-- From fossil fuel combustion
-- Industrial emissions
-- Can trigger asthma
-- Acid rain contributor
-
-**CO (Carbon Monoxide)**:
-- Colorless, odorless gas
-- From vehicle exhaust
-- Reduces oxygen delivery
-- Can be dangerous indoors
-
-## Health Recommendations
-
-### Good (0-50)
-✅ **Safe for everyone**
-- Ideal for outdoor activities
-- No restrictions needed
-- Exercise freely
-
-### Moderate (51-100)
-⚠️ **Generally acceptable**
-- Most people can be outdoors
-- Sensitive people may be affected
-- Monitor symptoms
-
-### Unhealthy for Sensitive Groups (101-150)
-⚠️ **Caution for sensitive people**
-- Reduce prolonged outdoor exertion
-- Watch for symptoms
-- People with respiratory issues should limit time outside
-
-### Unhealthy (151-200)
-🚫 **Limit outdoor activities**
-- Everyone should reduce outdoor exertion
-- Sensitive groups avoid outdoor activities
-- Keep windows closed
-
-### Very Unhealthy (201-300)
-🚫 **Avoid outdoor activities**
-- Stay indoors as much as possible
-- Use air purifiers
-- Wear masks if must go out
-- Sensitive groups stay indoors
-
-### Hazardous (301+)
-🚨 **Emergency conditions**
-- Remain indoors
-- Avoid all outdoor activities
-- Use air purifiers
-- Follow local emergency guidelines
-
-## Who is Sensitive?
+An air quality index, pollutant levels and pollen levels for your location.
 
-Sensitive groups include:
-- Children
-- Elderly (65+)
-- People with asthma
-- Heart disease patients
-- Pregnant women
-- People with lung conditions
+<img class="ow-shot" src="/features/air-quality.webp" alt="Air quality and pollen cards">
 
-## Using Air Quality Data
+## Turning it on
 
-### Daily Planning
+Air quality is **off by default**. To enable it:
 
-**Check AQI before**:
-- Outdoor exercise
-- Children's outdoor play
-- Planning events
-- Opening windows
+1. Open Settings > Weather data.
+2. Move **Air Quality Index** from the disabled list to the enabled list.
 
-**If AQI is high**:
-- Exercise indoors
-- Keep windows closed
-- Use air purifiers
-- Limit time outside
+The app then fetches air quality data with each weather update.
 
-### Exercise Planning
+## Where it appears
 
-**Running/Cycling**:
-- Check AQI before heading out
-- Avoid high-traffic areas on poor air days
-- Exercise early morning (often better AQI)
-- Reduce intensity on moderate+ days
+- **Main screen**: the current index with the other weather data, colored by level
+- **Daily list**: the index of each day, when available
+- **Daily page**: an **Air quality** card and a **Pollens** card (tap a day to open it)
 
-**Outdoor Sports**:
-- Check AQI for practice/game times
-- Have indoor alternatives ready
-- Monitor players for symptoms
+On the daily page, the modern style shows each pollutant or pollen with its value, unit and a colored level bar. The air quality card title shows the level and index, for example "Fair · 33".
 
-### Health Management
+## Index and levels
 
-**Asthma/Respiratory Conditions**:
-- Monitor AQI daily
-- Keep medication handy on poor days
-- Adjust activities based on levels
-- Track symptoms vs AQI
+The index is calculated by the app from ozone, nitrogen dioxide, PM10 and PM2.5. It uses six European-style bands:
 
-**General Health**:
-- Limit exposure on poor days
-- Stay hydrated
-- Watch for symptoms
-- Seek medical attention if needed
+| Index | Level |
+|-------|-------|
+| 0 to 19 | Good |
+| 20 to 39 | Fair |
+| 40 to 59 | Moderate |
+| 60 to 79 | Poor |
+| 80 to 99 | Very poor |
+| 100 and above | Extremely poor |
 
-## AQI Patterns
+## Pollutants
 
-### Daily Patterns
+- PM2.5 and PM10 (fine and coarse particles)
+- O3 (ozone)
+- NO2 (nitrogen dioxide)
+- SO2 (sulfur dioxide)
+- CO (carbon monoxide)
 
-- **Morning**: Often better (cooler, less traffic)
-- **Midday**: Can worsen (heat, traffic)
-- **Evening**: May improve or worsen
-- **Night**: Often improves
+## Pollen
 
-### Seasonal Patterns
+With Open-Meteo, the app also shows pollen levels:
 
-- **Summer**: Higher ozone levels
-- **Winter**: Higher PM from heating
-- **Spring**: Pollen contributes
-- **Fall**: Varies by region
+- Alder, birch, grass, mugwort, olive, ragweed
 
-### Weather Effects
+## Air quality providers
 
-**Good for Air Quality**:
-- Rain (washes pollutants)
-- Wind (disperses pollution)
-- Low humidity (less ozone)
+| Provider | What it gives |
+|----------|---------------|
+| Open-Meteo (default) | Hourly pollutants and pollen, for the next days |
+| ATMO Auvergne-Rhône-Alpes | Hourly pollutants for that French region |
+| AccuWeather | Current pollutants only, needs an [API key](/guide/api-keys) |
 
-**Bad for Air Quality**:
-- Stagnant air
-- High heat (more ozone)
-- Wildfires
-- Temperature inversions
+Choose the default in Settings > Providers > **Air Quality Provider**. Each saved location can use its own: in the favorites drawer, tap the menu of a location, then the air quality provider entry.
 
-## Data Sources
+## Next steps
 
-Air quality data comes from:
-- Weather provider API
-- Government monitoring stations
-- Real-time sensors
-- Satellite data
-
-Availability varies by location and provider.
-
-## Limitations
-
-### Coverage
-
-- Not available everywhere
-- Urban areas have better coverage
-- Rural areas may lack data
-- Some countries limited data
-
-### Accuracy
-
-- Based on monitoring stations
-- May not reflect hyperlocal conditions
-- Indoor air quality different
-- Microclimates vary
-
-### Updates
-
-- Data may be 1-2 hours old
-- Update frequency varies
-- Real-time sensors more current
-
-## Improving Indoor Air Quality
-
-When outdoor AQI is poor:
-
-1. **Close windows and doors**
-2. **Use air purifiers** (HEPA filters)
-3. **Avoid indoor pollutants** (no smoking, limit cooking)
-4. **Maintain HVAC filters**
-5. **Use exhaust fans**
-
-## Monitoring Tips
-
-### Check Multiple Times
-
-- AQI changes throughout day
-- Check before outdoor activities
-- Monitor trends
-
-### Compare Sources
-
-- Check multiple weather apps
-- Official government sites
-- Local monitoring stations
-
-## Next Steps
-
-- [View weather data](/features/weather-data)
-- [Check daily forecasts](/features/daily-forecasts)
+- [Weather data](/features/weather-data)
+- [Daily forecasts](/features/daily-forecasts)

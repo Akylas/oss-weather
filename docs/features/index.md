@@ -1,207 +1,31 @@
 # Features Overview
 
-OSS Weather is packed with features to give you the most detailed and accurate weather information.
+OSS Weather shows detailed forecasts from several weather providers, with charts, a radar map, air quality, home screen widgets and smartwatch support. It is free, open source and has no ads.
 
-## Core Features
+The app uses the **modern** design style by default (rounded cards, chips, Tabler icons). A **classic** style is still available in Settings > Appearance.
 
-### 🌤️ Multiple Weather Data Providers
-
-Access weather data from multiple providers and switch between them seamlessly:
-
-- **OpenWeather** - Comprehensive global weather data
-- **Open-Meteo** - Free, high-quality forecasts
-- **AccuWeather** - Detailed forecasts and minute-by-minute precipitation
-- **Meteo France** - High-quality data for French territories
-
-[Learn more about Weather Data →](/features/weather-data)
-
-### 📊 Interactive Charts & Graphs
-
-Beautiful, interactive charts showing:
-- Hourly temperature, feels-like, and dew point
-- Precipitation probability and amount
-- Wind speed and direction
-- Humidity and cloud cover
-- Pressure trends
-- UV index
-
-[Learn more about Hourly Charts →](/features/hourly-charts)
-
-### 🌧️ Weather Radar
-
-Real-time weather radar powered by RainViewer:
-- Animated precipitation radar
-- Storm tracking
-- Multiple time layers
-- Zoom and pan controls
-
-[Learn more about Weather Radar →](/features/weather-radar)
-
-### 🗺️ Interactive Weather Map
-
-Beautiful interactive maps with:
-- Multiple map styles
-- Weather layer overlays
-- Location picker
-- Custom markers
-- MapLibre GL powered
-
-[Learn more about Weather Map →](/features/weather-map)
-
-## Daily & Hourly Forecasts
-
-### Hourly Forecasts
-- Up to 48-hour hourly forecasts
-- Temperature, precipitation, wind
-- Interactive timeline
-- Detailed metrics per hour
-
-### Daily Forecasts
-- 7-14 day forecasts (provider dependent)
-- High/low temperatures
-- Precipitation probability
-- Weather conditions summary
-- Sunrise/sunset times
-
-[Learn more about Daily Forecasts →](/features/daily-forecasts)
-
-## Advanced Features
-
-### 🪐 Astronomy Data
-
-Comprehensive astronomy information:
-- Sun position and path
-- Moon position, phase, and path
-- Sunrise, sunset, golden hour, blue hour
-- Moonrise and moonset
-- Solar noon
-- Eclipse information
-- Civil, nautical, and astronomical twilight
-
-[Learn more about Astronomy →](/features/astronomy)
-
-### 🌬️ Air Quality Index
-
-Monitor air quality for your location:
-- Overall AQI (Air Quality Index)
-- Individual pollutants (PM2.5, PM10, O3, NO2, SO2, CO)
-- Health recommendations
-- Historical trends
-
-[Learn more about Air Quality →](/features/air-quality)
-
-### ⚖️ Weather Comparison
-
-Compare weather between multiple locations side-by-side:
-- Current conditions
-- Temperature comparison
-- Precipitation differences
-- Visual comparisons
-
-[Learn more about Weather Comparison →](/features/weather-comparison)
-
-## Mobile Features
-
-### 📱 Home Widgets
-
-Customizable widgets for your home screen:
-- **iOS**: WidgetKit widgets in multiple sizes
-- **Android**: Home screen widgets and Glance widgets
-- Customizable layouts and data
-- Real-time updates
-- Multiple widget styles
-
-[Learn more about Widgets →](/features/home-widgets)
-
-### ⌚ Smartwatch Support
-
-Integration with smartwatches via Gadget Bridge:
-- Weather data sync
-- Current conditions
-- Forecast data
-- Compatible with various smartwatch brands
-
-[Learn more about Smartwatch Support →](/features/smartwatch)
-
-## Customization & Usability
-
-### 🎨 Themes
-- Light theme
-- Dark theme
-- Auto (follow system)
-
-### 🌍 Multi-language Support
-- 30+ languages supported
-- Community translations via Weblate
-- Contribute your language
-
-### 📐 Units
-Customize all units to your preference:
-- Temperature (°C, °F, K)
-- Wind speed (m/s, km/h, mph, knots)
-- Pressure (hPa, inHg, mmHg)
-- Precipitation (mm, inches)
-- Distance (km, miles)
-
-### 🎯 Precision & Detail
-- Detailed hourly data
-- Comprehensive daily forecasts
-- Historical comparisons
-- Multiple data points per condition
-
-## Privacy & Open Source
-
-### 🔒 Privacy First
-- No tracking or analytics (optional crash reporting)
-- No ads
-- Data stays on your device
-- Only weather providers receive location data
-
-### 📖 Open Source
-- Full source code available on [GitHub](https://github.com/Akylas/oss-weather)
-- MIT License
-- Community contributions welcome
-- Transparent development
-
-## What's Unique About OSS Weather?
-
-1. **Provider Flexibility** - Switch between multiple weather providers, not locked to one
-2. **Rich Visualizations** - Beautiful charts and graphs make data easy to understand
-3. **Comprehensive Data** - More detailed than most weather apps
-4. **Cross-platform Widgets** - Advanced widget system works on iOS and Android
-5. **Privacy Focused** - No tracking, no ads, your data is yours
-6. **Active Development** - Regular updates and improvements
-7. **Community Driven** - Open source with community translations and contributions
-
-## Coming Soon
-
-We're always working on new features! Check out our [GitHub Issues](https://github.com/Akylas/oss-weather/issues) to see what's planned or suggest your own ideas.
-
-## Explore More
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
-  <a href="/features/weather-data" style="padding: 20px; background: #f6f6f7; border-radius: 8px; text-decoration: none; color: inherit;">
-    <strong>🌤️ Weather Data</strong>
-    <p style="margin: 10px 0 0; font-size: 0.9em; color: #666;">Detailed weather information</p>
-  </a>
-  <a href="/features/weather-radar" style="padding: 20px; background: #f6f6f7; border-radius: 8px; text-decoration: none; color: inherit;">
-    <strong>🌧️ Weather Radar</strong>
-    <p style="margin: 10px 0 0; font-size: 0.9em; color: #666;">Real-time precipitation radar</p>
-  </a>
-  <a href="/features/hourly-charts" style="padding: 20px; background: #f6f6f7; border-radius: 8px; text-decoration: none; color: inherit;">
-    <strong>📊 Hourly Charts</strong>
-    <p style="margin: 10px 0 0; font-size: 0.9em; color: #666;">Interactive weather charts</p>
-  </a>
-  <a href="/features/astronomy" style="padding: 20px; background: #f6f6f7; border-radius: 8px; text-decoration: none; color: inherit;">
-    <strong>🪐 Astronomy</strong>
-    <p style="margin: 10px 0 0; font-size: 0.9em; color: #666;">Sun and moon data</p>
-  </a>
-  <a href="/features/home-widgets" style="padding: 20px; background: #f6f6f7; border-radius: 8px; text-decoration: none; color: inherit;">
-    <strong>📱 Widgets</strong>
-    <p style="margin: 10px 0 0; font-size: 0.9em; color: #666;">Home screen widgets</p>
-  </a>
-  <a href="/features/air-quality" style="padding: 20px; background: #f6f6f7; border-radius: 8px; text-decoration: none; color: inherit;">
-    <strong>🌬️ Air Quality</strong>
-    <p style="margin: 10px 0 0; font-size: 0.9em; color: #666;">AQI and pollutants</p>
-  </a>
+<div class="ow-gallery">
+  <a class="ow-gallery-item" href="/features/weather-data"><img src="/features/weather-data.webp" alt="Weather data"><span>Weather data</span><small>Current conditions, hourly and daily forecasts from four providers</small></a>
+  <a class="ow-gallery-item" href="/features/hourly-charts"><img src="/features/hourly-chart.webp" alt="Hourly charts"><span>Hourly charts</span><small>Temperature, precipitation, wind and clouds on one zoomable chart</small></a>
+  <a class="ow-gallery-item" href="/features/daily-forecasts"><img src="/features/daily-forecast.webp" alt="Daily forecasts"><span>Daily forecasts</span><small>Up to 16 days, with a detailed page for each day</small></a>
+  <a class="ow-gallery-item" href="/features/weather-comparison"><img src="/features/compare-models.webp" alt="Compare models"><span>Compare models</span><small>See how providers and weather models disagree</small></a>
+  <a class="ow-gallery-item" href="/features/weather-radar"><img src="/features/weather-map.webp" alt="Weather radar"><span>Weather radar</span><small>Animated radar and satellite layers from LibreWXR</small></a>
+  <a class="ow-gallery-item" href="/features/weather-map"><img src="/screenshots/5_en-US.png" alt="Weather map"><span>Weather map</span><small>The map screen and picking a location on the map</small></a>
+  <a class="ow-gallery-item" href="/features/astronomy"><img src="/features/astronomy.webp" alt="Sun and moon"><span>Sun and moon</span><small>Sun and moon curves, sunrise, sunset and moon phase</small></a>
+  <a class="ow-gallery-item" href="/features/air-quality"><img src="/features/air-quality.webp" alt="Air quality"><span>Air quality</span><small>Air quality index, pollutants and pollen</small></a>
+  <a class="ow-gallery-item" href="/features/home-widgets"><img src="/screenshots/3_en-US.png" alt="Home widgets"><span>Home widgets</span><small>Six widget types for Android and iOS</small></a>
+  <a class="ow-gallery-item" href="/features/smartwatch"><img src="/features/settings.webp" alt="Smartwatch"><span>Smartwatch</span><small>Send weather to your watch through Gadgetbridge (Android)</small></a>
 </div>
+
+## More
+
+All of these are covered in [Settings](/guide/settings):
+
+- **Themes and design style**: Auto, Light, Dark or Black theme, an E-ink color theme, dynamic colors on Android 12+, and the modern or classic design style.
+- **Icon packs**: several weather icon sets, and installed third-party icon packs on Android.
+- **Units**: metric or imperial, or pick each unit yourself.
+- **Languages**: 38 locales, translated by the community on [Weblate](https://hosted.weblate.org/engage/oss-weather/).
+- **Per-location providers**: each saved location can use its own weather, model, air quality and marine provider.
+- **Export and import settings**: back up your settings to a file and restore them.
+
+The source code is on [GitHub](https://github.com/ossappscollective/oss-weather) under the MIT license.

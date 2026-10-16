@@ -1,248 +1,82 @@
 # Weather Data
 
-OSS Weather provides comprehensive weather data from multiple sources.
+The main screen shows the current weather, an hourly forecast and a daily forecast for the selected location.
 
-## Current Weather Conditions
+<div class="ow-shots">
+  <img class="ow-shot" src="/features/main.webp" alt="Main screen">
+  <img class="ow-shot" src="/features/weather-data.webp" alt="Main screen with the air quality chip">
+</div>
 
-The app displays detailed current weather information including:
+## Main screen
 
-### Temperature Metrics
-- **Current Temperature** - The actual air temperature
-- **Feels Like** - How the temperature actually feels (accounting for wind chill and humidity)
-- **Dew Point** - The temperature at which air becomes saturated with moisture
+From top to bottom:
 
-### Precipitation
-- **Precipitation Probability** - Chance of rain/snow in percentage
-- **Precipitation Amount** - Expected rainfall/snowfall amount
-- **Precipitation Type** - Rain, snow, sleet, or mixed
+- **Current weather**: temperature, weather icon and description. In the modern style the feels-like temperature is shown next to the temperature.
+- **Weather data**: wind, precipitation, cloud cover, UV index, gusts and more, shown as blocks, chips or an aligned grid (Settings > Appearance).
+- **Next hour precipitation**: a short chart of the precipitation expected in the next hour, when the provider gives minute data. The modern style adds a summary such as "precipitation starting in 10 min".
+- **Sun line**: sunrise, sunset and moon illumination, plus the last update time.
+- **Hourly forecast**: a scrolling row of hours. Tap an hour to see all its values. Settings > Hourly lets you switch it to a chart or a "windy" view.
+- **Daily forecast**: one row per day. Tap a day to open its [daily page](/features/daily-forecasts).
 
-### Wind Data
-- **Wind Speed** - Current wind speed in your preferred units
-- **Wind Gusts** - Maximum expected wind speed
-- **Wind Direction** - Direction from which wind is blowing (with compass bearing)
+Pull down to refresh. If the saved forecast is too old and cannot be updated, the app says the data is outdated and offers a refresh button.
 
-### Atmospheric Conditions
-- **Humidity** - Relative humidity percentage
-- **Pressure** - Atmospheric pressure with trend indicator (rising, falling, steady)
-- **Cloud Cover** - Percentage of sky covered by clouds
-- **Visibility** - How far you can see
+## Available weather data
 
-### Sun & UV
-- **UV Index** - Sun exposure level with health recommendations
-- **Sunrise/Sunset** - Times for sunrise and sunset
-- **Day Length** - Total daylight hours
+You choose which data is shown, and in which order, in Settings > Weather data:
 
-## Hourly Forecast
+- Wind speed, wind gusts, Beaufort scale
+- Precipitation amount and probability, snow depth
+- Cloud cover, UV index
+- Feels-like temperature, dew point, relative humidity, sea level pressure
+- Freezing level and rain/snow limit (when the provider gives them)
+- Moon phase
+- Air quality index (off by default, see [Air quality](/features/air-quality))
+- Sea temperature, wave height and swell height (with a marine provider)
 
-Detailed hourly forecasts for the next 48 hours:
+## Weather providers
 
-### Available Data Points
-For each hour, you get:
-- Temperature and feels-like temperature
-- Precipitation probability and amount
-- Wind speed and direction
-- Cloud cover percentage
-- Humidity
-- Pressure
-- UV index
+| Provider | API key | Notes |
+|----------|---------|-------|
+| Open-Meteo (default) | Not needed | Up to 16 days, about 50 weather models to choose from, next-hour precipitation |
+| OpenWeather | Your own key | Next-hour precipitation, weather alerts, One Call API 2.5 or 3.0 |
+| Météo-France | Not needed | Next-hour rain, weather warnings |
+| AccuWeather | Your own key | 5 days and 12 hours, alerts on paid plans only |
 
-### Visualization
-- **Interactive Charts** - Line graphs for temperature, bar charts for precipitation
-- **Timeline** - Scroll through hours to see changes
-- **Tap for Details** - Tap any hour for complete information
+Pick the default provider in Settings > Providers. Each saved location can also use its own provider: open the favorites drawer, tap the menu of a location, then **Provider**. With Open-Meteo you can also pick a model per location.
 
-## Daily Forecast
+Check each provider's own site for its usage limits: [Open-Meteo](https://open-meteo.com), [OpenWeather](https://openweathermap.org), [Météo-France](https://meteofrance.com), [AccuWeather](https://accuweather.com). See [API keys](/guide/api-keys) to set up a key.
 
-Extended forecasts for 7-14 days (depending on provider):
+### Extra sources
 
-### Daily Summary
-- **High/Low Temperatures** - Daily temperature range
-- **Weather Condition** - Overall condition (sunny, cloudy, rainy, etc.)
-- **Precipitation Probability** - Chance of precipitation
-- **Weather Icon** - Visual representation of conditions
+- **Marine weather**: choose MétéoConsult from the main menu (Marine Weather Provider) to add sea data and tides.
+- **Avalanche bulletins**: for locations in the French mountains, the main menu shows a **BRA** entry that opens the Météo-France avalanche bulletin (PDF). Its API key is set in Settings > Providers > Météo-France.
+- **meteoblue**: enable it in Settings > Providers to add meteoblue forecast pages (weather, meteogram, all-in-one) to the menus.
 
-### Detailed Daily Data
-Tap on any day to see:
-- Hour-by-hour breakdown
-- Temperature curve throughout the day
-- Precipitation timing
-- Wind patterns
-- Sunrise/sunset times
+## Forecast length
 
-## Weather Providers
+In Settings > Providers you set:
 
-### OpenWeather
+- Days in the forecast: 1 to 16 (default 7)
+- Hours in the hourly forecast: 12 to 384 (default 72)
+- Minutes in the next-hour forecast: 1 to 120 (default 60)
 
-**Coverage:** Global
+The provider can return less than you ask for.
 
-**Data Quality:** Excellent
+## Weather alerts
 
-**Features:**
-- Comprehensive current conditions
-- 48-hour hourly forecast
-- 8-day daily forecast
-- Historical data
-- Weather alerts
-- Detailed precipitation data
+OpenWeather, Météo-France and AccuWeather (paid plans) give weather alerts. When there are alerts, an alert icon appears in the top bar. Tap it to see them.
 
-**Requirements:** API key (free tier available)
+## Updates and saved data
 
-**Best For:** General use worldwide
+- The last forecast is kept on the device and shown at launch.
+- New data is fetched when you pull to refresh or tap **Refresh** in the menu, when you change location or provider, and automatically when the saved forecast no longer covers the coming days.
+- Settings > Geolocation can also update your GPS location when you pull to refresh.
 
-### Open-Meteo
+## Privacy
 
-**Coverage:** Global (European-focused)
+Your location is only sent to the weather services you use. The app has no ads and no tracking. Crash reporting exists only in store builds and can be turned off.
 
-**Data Quality:** Very Good
-
-**Features:**
-- High-resolution forecasts
-- 16-day forecasts
-- Hourly data
-- Multiple weather models
-- No API key required
-- No rate limits
-
-**Requirements:** None
-
-**Best For:** Free usage, European locations
-
-### AccuWeather
-
-**Coverage:** Global
-
-**Data Quality:** Excellent
-
-**Features:**
-- Minute-by-minute precipitation (MinuteCast)
-- 15-day forecasts
-- Detailed severe weather alerts
-- Lifestyle indices
-- Radar data
-
-**Requirements:** API key (limited free tier)
-
-**Best For:** Detailed forecasts, precipitation timing
-
-### Meteo France
-
-**Coverage:** France and French territories primarily
-
-**Data Quality:** Excellent
-
-**Features:**
-- High-quality European data
-- Detailed precipitation forecasts
-- Weather warnings
-- Marine forecasts
-- Mountain weather
-
-**Requirements:** None
-
-**Best For:** French territories, some European areas
-
-## Comparing Providers
-
-Different providers may show different forecasts due to:
-
-1. **Different Weather Models** - Each provider uses their own prediction algorithms
-2. **Update Frequency** - Some update more frequently than others
-3. **Data Sources** - Different ground station networks and satellite data
-4. **Regional Optimization** - Some providers are better for specific regions
-
-### Tips for Best Results
-
-- **Compare Providers** - Check multiple sources for important weather decisions
-- **Regional Providers** - Use Meteo France for France, etc.
-- **Free Options** - Open-Meteo is excellent and has no limits
-- **Update Frequency** - Set reasonable update intervals (1 hour is usually fine)
-
-## Weather Accuracy
-
-Weather forecasts become less accurate further into the future:
-
-- **Current conditions:** Very accurate
-- **Next 24 hours:** Highly accurate
-- **2-3 days:** Good accuracy
-- **4-7 days:** Moderate accuracy
-- **8+ days:** General trends only
-
-## Data Updates
-
-### Automatic Updates
-- Configurable update interval (15 min to 3 hours)
-- Background updates for widgets (optional)
-- Location-based updates
-
-### Manual Updates
-- Pull to refresh on main screen
-- Uses API calls (counts toward limits)
-
-### Caching
-- Weather data is cached locally
-- Reduces API calls
-- Provides offline access to last-fetched data
-
-## Weather Alerts
-
-When available from providers:
-
-- **Severe Weather Warnings** - Storms, hurricanes, etc.
-- **Temperature Extremes** - Heat waves, cold snaps
-- **Precipitation Alerts** - Heavy rain, snow
-- **Wind Warnings** - High winds, gales
-- **Other Hazards** - Fog, ice, etc.
-
-Weather alerts from providers are shown prominently on the main screen.
-
-## Historical Data
-
-Some providers (OpenWeather with paid plan) offer historical weather data:
-- Past weather conditions
-- Historical averages
-- Trends and comparisons
-
-## Data Privacy
-
-**Your weather data is private:**
-
-- Location data only sent to weather provider APIs
-- No data collection by OSS Weather
-- No tracking or analytics (optional crash reporting)
-- Data cached locally on your device
-
-## API Rate Limits
-
-Be aware of provider limits:
-
-| Provider | Free Tier Limit |
-|----------|----------------|
-| OpenWeather | 1,000 calls/day |
-| Open-Meteo | No limit (fair use) |
-| AccuWeather | 50 calls/day |
-| Meteo France | No limit |
-
-**Tip:** Use Open-Meteo as default to avoid rate limits.
-
-## Troubleshooting
-
-### Data Not Loading
-1. Check internet connection
-2. Verify API key (if required)
-3. Check provider status
-4. Try different provider
-
-### Inaccurate Data
-- Compare with other providers
-- Check location accuracy
-- Verify units are set correctly
-
-### Old Data Showing
-- Pull to refresh
-- Check last update time
-- Verify background updates enabled
-
-## Next Steps
+## Next steps
 
 - [Set up API keys](/guide/api-keys)
 - [Learn about weather providers](/guide/weather-providers)

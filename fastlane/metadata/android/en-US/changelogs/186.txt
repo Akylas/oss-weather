@@ -1,0 +1,12 @@
+Features:
+- add modern design style with Tabler icons (#524)
+- Inter font and modern css foundation (#525)
+- modern option selects, menus, dialogs and switches (#526)
+- modern grouped settings (#527)
+- modern favorites drawer, alerts sheet and empty state (#528)
+- modern daily page (#529)
+- modern chart and compare pages (#530)
+- modern search, widget config and meteoblue tabs (#531)
+- new "rising sun" app icon (#534)
+- modern widgets (#535)
+- refresh outdated cached data and show an outdated st

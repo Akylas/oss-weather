@@ -27,7 +27,7 @@ export default defineConfig({
           items: [
             { text: 'Introduction', link: '/guide/getting-started' },
             { text: 'Installation', link: '/guide/installation' },
-            { text: 'Configuration', link: '/guide/configuration' },
+            { text: 'First Steps', link: '/guide/configuration' },
             { text: 'API Keys', link: '/guide/api-keys' }
           ]
         },
@@ -37,7 +37,8 @@ export default defineConfig({
             { text: 'Basic Usage', link: '/guide/basic-usage' },
             { text: 'Weather Providers', link: '/guide/weather-providers' },
             { text: 'Widgets', link: '/guide/widgets' },
-            { text: 'Settings', link: '/guide/settings' }
+            { text: 'Settings', link: '/guide/settings' },
+            { text: 'FAQ', link: '/guide/faq' }
           ]
         }
       ],
@@ -50,9 +51,9 @@ export default defineConfig({
             { text: 'Weather Radar', link: '/features/weather-radar' },
             { text: 'Hourly Charts', link: '/features/hourly-charts' },
             { text: 'Daily Forecasts', link: '/features/daily-forecasts' },
-            { text: 'Weather Comparison', link: '/features/weather-comparison' },
-            { text: 'Astronomy Data', link: '/features/astronomy' },
-            { text: 'Air Quality', link: '/features/air-quality' },
+            { text: 'Compare Models', link: '/features/weather-comparison' },
+            { text: 'Sun and Moon', link: '/features/astronomy' },
+            { text: 'Air Quality and Pollen', link: '/features/air-quality' },
             { text: 'Weather Map', link: '/features/weather-map' },
             { text: 'Home Widgets', link: '/features/home-widgets' },
             { text: 'Smartwatch Support', link: '/features/smartwatch' }

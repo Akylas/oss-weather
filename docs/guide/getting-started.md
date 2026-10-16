@@ -1,66 +1,49 @@
 # Getting Started
 
-Welcome to OSS Weather! This guide will help you get started with the app.
+OSS Weather is a free and open-source weather app for Android and iOS. It shows detailed forecasts from several weather providers, with charts, a weather map and home screen widgets.
 
-## What is OSS Weather?
-
-OSS Weather is a free and open-source weather application that provides detailed weather data from multiple providers including OpenWeather, Open-Meteo, AccuWeather, and Meteo France. The app features beautiful visualizations, interactive charts, weather radar, and much more.
-
-## Key Features
-
-- **Multiple Weather Data Providers** - Choose from OpenWeather, Open-Meteo, AccuWeather, and Meteo France
-- **Weather Radar** - Real-time precipitation radar powered by RainViewer
-- **Interactive Charts** - Hourly and daily weather charts with multiple metrics
-- **Weather Map** - Beautiful interactive maps with weather layers
-- **Astronomy Data** - Sun/moon positions, rise/set times, moon phases, and eclipses
-- **Air Quality** - Monitor air quality index and pollutants
-- **Home Widgets** - Customizable widgets for iOS and Android
-- **Weather Comparison** - Compare weather between multiple locations
-- **Smartwatch Support** - Integration with Gadget Bridge
-- **Privacy First** - No tracking, no ads, your data stays on your device
-
-## Why Choose OSS Weather?
-
-### Open Source & Free
-The app is completely free with no ads or tracking. The source code is available on [GitHub](https://github.com/Akylas/oss-weather) for anyone to inspect, contribute to, or learn from.
-
-### Multiple Data Sources
-Unlike other weather apps that lock you into a single provider, OSS Weather lets you switch between multiple weather data providers to get the most accurate forecast for your location.
-
-### Rich Visualizations
-Beautiful charts and graphs make it easy to understand weather patterns at a glance. From hourly temperature curves to precipitation probability, everything is presented in an intuitive visual format.
-
-### Privacy Focused
-Your weather data and location information never leave your device unless you explicitly choose to use a weather provider's API. No analytics, no tracking, no data collection.
-
-## Next Steps
-
-- [Install the app](/guide/installation) on your device
-- [Configure your preferences](/guide/configuration) 
-- [Set up API keys](/guide/api-keys) for weather providers
-- [Learn about basic usage](/guide/basic-usage)
-
-## Screenshots
-
-<div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0;">
-  <img src="/screenshots/1_en-US.png" alt="Main weather view" style="width: 30%; min-width: 250px;">
-  <img src="/screenshots/2_en-US.png" alt="Hourly forecast" style="width: 30%; min-width: 250px;">
-  <img src="/screenshots/3_en-US.png" alt="Daily forecast" style="width: 30%; min-width: 250px;">
+<div class="ow-shots">
+  <img class="ow-shot" src="/screenshots/1_en-US.png" alt="Main weather view, light theme">
+  <img class="ow-shot" src="/screenshots/2_en-US.png" alt="Main weather view, dark theme">
 </div>
 
-<div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0;">
-  <img src="/screenshots/4_en-US.png" alt="Weather radar" style="width: 30%; min-width: 250px;">
-  <img src="/screenshots/5_en-US.png" alt="Weather map" style="width: 30%; min-width: 250px;">
-  <img src="/screenshots/6_en-US.png" alt="Settings" style="width: 30%; min-width: 250px;">
-</div>
+## Key features
 
-## Need Help?
+- **Several forecast providers**: Open-Meteo (default), Meteo France, OpenWeather and AccuWeather. You can pick one for the whole app or a different one per location.
+- **Open-Meteo weather models**: choose the model you prefer, or let "Best match" pick.
+- **Air quality**: from Open-Meteo, AccuWeather or ATMO Auvergne-Rhône-Alpes.
+- **Marine data and tides**: from MétéoConsult, enabled per location.
+- **Weather alerts**: from the providers that offer them.
+- **Charts**: hourly chart page and a "compare models" page.
+- **Weather map**: radar and satellite layers from LibreWXR (default) or MapTiler.
+- **Astronomy**: sun and moon times, positions and phases.
+- **Home screen widgets**: six widget types (see [Widgets](/guide/widgets)).
+- **Smartwatch**: sends weather data to Gadgetbridge (Android).
+- **Two design styles**: the modern style (default) and the classic style.
+- **Themes**: Auto, Light, Dark and Black, plus an E-Ink color theme.
+- **Many languages**: translated by the community on Weblate.
 
-- [View all features](/features/)
-- [Check the FAQ](/guide/faq)
-- [Report an issue](https://github.com/Akylas/oss-weather/issues)
-- [Contribute translations](https://hosted.weblate.org/engage/oss-weather/)
+## Free and open source
 
-## Support the Project
+The app has no ads and no tracking. The source code is on [GitHub](https://github.com/ossappscollective/oss-weather) under the MIT License.
 
-If you find OSS Weather useful, please consider [supporting its development](https://github.com/sponsors/farfromrefug). Your support helps keep the project maintained and improving!
+Your location is only sent to the weather providers you use, to get the forecast. Some store builds include an option to send crash reports (see [Settings](/guide/settings#about)).
+
+## Next steps
+
+- [Install the app](/guide/installation)
+- [First steps](/guide/configuration): choose a location and a provider
+- [Basic usage](/guide/basic-usage): find your way around the app
+- [Settings](/guide/settings): every option explained
+- [API keys](/guide/api-keys): only needed for OpenWeather, AccuWeather and MapTiler
+
+## Need help?
+
+- [All features](/features/)
+- [FAQ](/guide/faq)
+- [Report an issue](https://github.com/ossappscollective/oss-weather/issues)
+- [Help translate](https://hosted.weblate.org/engage/oss-weather/)
+
+## Support the project
+
+If you find OSS Weather useful, please consider [supporting its development](https://github.com/sponsors/farfromrefug).

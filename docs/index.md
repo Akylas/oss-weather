@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "OSS Weather"
   text: "Open Source Weather App"
-  tagline: Access detailed weather data from OpenWeather, Open-Meteo, and Meteo France with powerful visualizations
+  tagline: Detailed forecasts from Open-Meteo, Météo-France, OpenWeather and AccuWeather, with charts, radar and widgets
   image:
     src: /logo.svg
     alt: OSS Weather
@@ -22,47 +22,47 @@ hero:
 features:
   - icon: '<svg style="color: #378ADD" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h7"/><path d="M14 20h7"/><path d="M10 20a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"/><path d="M12 16v2"/><path d="M8 16.004h-1.343c-2.572 -.004 -4.657 -2.011 -4.657 -4.487c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-2.535"/></svg>'
     title: Multiple Weather Providers
-    details: Access weather data from OpenWeather, Open-Meteo, AccuWeather, and Meteo France. Switch between providers seamlessly.
+    details: Open-Meteo (default, no key needed), Météo-France, OpenWeather and AccuWeather. Pick one globally or per location.
   
   - icon: '<svg style="color: #D85A30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19l16 0"/><path d="M4 15l4 -6l4 2l4 -5l4 4"/></svg>'
     title: Detailed Charts & Graphs
-    details: Interactive hourly and daily weather charts with temperature, precipitation, wind, and more metrics.
+    details: Zoomable hourly chart with temperature, precipitation, cloud cover and wind, plus a next-hour precipitation card.
   
   - icon: '<svg style="color: #00CDE6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12h-8a1 1 0 1 0 -1 1v8a9 9 0 0 0 9 -9"/><path d="M16 9a5 5 0 1 0 -7 7"/><path d="M20.486 9a9 9 0 1 0 -11.482 11.495"/></svg>'
     title: Weather Radar
-    details: Real-time weather radar powered by RainViewer showing precipitation and storm movement.
+    details: Animated radar and satellite layers powered by LibreWXR, with a choice of color schemes.
   
   - icon: '<svg style="color: #5DCAA5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18.5l-3 -1.5l-6 3v-13l6 -3l6 3l6 -3v7.5"/><path d="M9 4v13"/><path d="M15 7v5.5"/><path d="M21.121 20.121a3 3 0 1 0 -4.242 0c.418 .419 1.125 1.045 2.121 1.879c1.051 -.89 1.759 -1.516 2.121 -1.879"/><path d="M19 18v.01"/></svg>'
     title: Interactive Weather Map
-    details: Beautiful interactive maps with weather layers, location picker, and custom overlays.
+    details: Weather layers on a map that follows your theme, and a map to pick any location.
   
   - icon: '<svg style="color: #7F77DD" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/><path d="M17 4a2 2 0 0 0 2 2a2 2 0 0 0 -2 2a2 2 0 0 0 -2 -2a2 2 0 0 0 2 -2"/><path d="M19 11h2m-1 -1v2"/></svg>'
-    title: Astronomy Data
-    details: Sun and moon positions, rise/set times, moon phases, and eclipse information.
+    title: Sun and Moon
+    details: Sun and moon curves for the day, sunrise and sunset, day length and moon phase.
   
   - icon: '<svg style="color: #639922" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h8.5a2.5 2.5 0 1 0 -2.34 -3.24"/><path d="M3 12h15.5a2.5 2.5 0 1 1 -2.34 3.24"/><path d="M4 16h5.5a2.5 2.5 0 1 1 -2.34 3.24"/></svg>'
-    title: Air Quality Index
-    details: Monitor air quality levels and pollutants for your location.
+    title: Air Quality and Pollen
+    details: Air quality index, pollutants and pollen levels from Open-Meteo, Atmo or AccuWeather.
   
   - icon: '<svg style="color: #EF9F27" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5a2 2 0 0 1 2 -2h8a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-8a2 2 0 0 1 -2 -2v-14"/><path d="M11 4h2"/><path d="M12 17v.01"/></svg>'
     title: Home Widgets
-    details: Customizable widgets for iOS and Android home screens with real-time weather updates.
+    details: Six widget kinds for Android and iOS, each with its own location, provider and colors.
   
   - icon: '<svg style="color: #D4537E" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20l10 0"/><path d="M6 6l6 -1l6 1"/><path d="M12 3l0 17"/><path d="M9 12l-3 -6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3 -6l-3 6a3 3 0 0 0 6 0"/></svg>'
-    title: Weather Comparison
-    details: Compare weather conditions side-by-side for multiple locations.
+    title: Compare Models
+    details: Compare forecast models and providers for one location, hourly or daily.
   
   - icon: '<svg style="color: #185FA5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a3 3 0 0 1 3 -3h6a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-6a3 3 0 0 1 -3 -3v-6"/><path d="M9 18v3h6v-3"/><path d="M9 6v-3h6v3"/></svg>'
     title: Smartwatch Support
-    details: Integration with Gadget Bridge for smartwatch weather data sync.
+    details: Send weather to your watch through Gadgetbridge (Android).
   
   - icon: '<svg style="color: #97C459" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.371c0 4.418 -2.239 6.629 -5 6.629"/><path d="M4 6.371h7"/><path d="M5 9c0 2.144 2.252 3.908 6 4"/><path d="M12 20l4 -9l4 9"/><path d="M19.1 18h-6.2"/><path d="M6.694 3l.793 .582"/></svg>'
     title: Multi-language Support
-    details: Available in 30+ languages with community translations via Weblate.
+    details: Translated in more than 30 languages by the community on Weblate.
   
   - icon: '<svg style="color: #888780" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/></svg>'
     title: Privacy Focused
-    details: Open source, no tracking, no ads. Your data stays on your device.
+    details: Open source, no ads, no account. Your locations stay on your device.
 ---
 
 <div class="ow-section">

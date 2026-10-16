@@ -1,279 +1,66 @@
 # Hourly Charts
 
-Interactive charts showing detailed hourly weather forecasts.
+A full-screen chart of the hourly forecast, plus chart views on the main screen and the daily page.
 
-## Overview
+<img class="ow-shot" src="/features/hourly-chart.webp" alt="Hourly chart page">
 
-The hourly charts provide a visual representation of weather conditions for the next 48 hours, making it easy to understand weather patterns at a glance.
+## Opening the chart
 
-## Chart Types
+On the main screen, tap the menu button (top right), then **Chart**. You can also open it for a saved location from its menu in the favorites drawer.
 
-### Temperature Chart
+## What the chart shows
 
-**Line graph** showing:
-- **Current temperature** (solid line)
-- **Feels-like temperature** (dashed line)
-- **Dew point** (if enabled)
+- **Temperature**: a line whose color follows the temperature
+- **Weather icons** along the top
+- **Wind**: wind speed, and arrows for the wind direction
+- **Precipitation**: bars for rain and snow. Paler bars mean a lower probability.
+- **Cloud cover**
 
-Colors indicate temperature ranges (cool to warm).
+Precipitation and cloud cover are shown when they are enabled in Settings > Weather data. If **show feels like temperature** is on (Settings > Weather data), the temperature line uses the feels-like temperature.
 
-### Precipitation Chart
+## Using the chart
 
-**Bar chart** showing:
-- **Precipitation probability** (percentage)
-- **Precipitation amount** (mm or inches)
-- **Precipitation type** (rain, snow, mixed)
+- **Pinch** to zoom in time, **drag** to scroll.
+- **Tap or drag** on the chart to see all the values of an hour.
+- **Legend**: tap an item to hide or show that series.
 
-Colors range from light blue (low chance) to dark blue (high chance).
+In the modern style:
 
-### Combined Chart
+- Zoom presets at the top: **24 h**, **48 h**, **72 h** and **all**
+- A reset button in the top bar to go back to the selected preset
+- The legend is a row of chips under the chart
 
-The default view combines multiple metrics:
-- Temperature line (top)
-- Precipitation bars (middle)
-- Wind indicators (bottom)
-- Cloud cover shading
-- Time labels (x-axis)
+In the classic style, the legend is in a bottom drawer opened with the list button in the top bar.
 
-### Wind Chart
+The chart covers all the hours of the forecast: 72 by default, set in Settings > Providers.
 
-Shows wind data:
-- **Wind speed** (line or bars)
-- **Wind gusts** (dotted line)
-- **Wind direction** (arrows)
+## Hourly views on the main screen
 
-### Additional Metrics
+Settings > Hourly > **main view hourly display mode** changes the hourly row of the main screen:
 
-Other available charts:
-- Humidity
-- Pressure
-- Cloud cover
-- UV index
-- Visibility
+- **Classic**: a scrolling row of hours (default)
+- **Chart**: the same chart as above, in a smaller size
+- **Windy**: rows of hourly values, one row per data
 
-## Interacting with Charts
+Settings > Hourly also sets:
 
-### Tap for Details
+- The weather data shown in the chart and windy views (temperature, icons, wind direction, and any enabled weather data)
+- How many hours the main chart covers, and how many are visible at once (6 to 48)
+- Alternate background colors
 
-Tap any hour on the chart to see:
-- Exact values
-- Time
-- All available metrics
-- Weather condition description
+On the [daily page](/features/daily-forecasts), the modern style has tabs to switch between the three views for that day only.
 
-### Zoom
+## Chart settings
 
-- Pinch to zoom in/out
-- Focus on specific time periods
-- See more detail
+Settings > Charts:
 
-### Scroll
+- **Force charts to show in landscape**
+- **Charts use full height in portrait**
 
-- Swipe left/right to see different hours
-- View full 48-hour forecast
-- Check specific times
+The 12 or 24-hour clock is set in Settings > Language & locales.
 
-### Toggle Metrics
+## Next steps
 
-Tap legend items to:
-- Show/hide specific data
-- Focus on relevant metrics
-- Reduce visual clutter
-
-## Reading the Charts
-
-### Identifying Trends
-
-**Rising Temperature:**
-- Line slopes upward
-- Warming throughout the day
-
-**Precipitation Window:**
-- Bars show when rain is expected
-- Height indicates intensity
-- Width shows duration
-
-**Wind Patterns:**
-- Arrows show direction
-- Size indicates speed
-- Watch for sudden changes
-
-### Planning Activities
-
-**Find best time for outdoor activities:**
-1. Look for no precipitation bars
-2. Check comfortable temperature range
-3. Verify low wind speed
-4. Check UV index for sun exposure
-
-**Prepare for bad weather:**
-1. Note when precipitation starts
-2. Check intensity (bar height)
-3. See how long it lasts
-4. Plan accordingly
-
-## Customization
-
-### Chart Settings
-
-Configure in Settings → Display → Charts:
-- **Metrics to Display** - Choose which data to show
-- **Chart Style** - Line, bar, combined
-- **Color Scheme** - Match theme or custom colors
-- **Time Format** - 12h or 24h
-- **Units** - All your preferred units
-
-### Data Points
-
-Select which information to include:
-- Temperature (always shown)
-- Feels-like temperature
-- Precipitation probability
-- Precipitation amount
-- Wind speed
-- Wind gusts
-- Wind direction
-- Humidity
-- Pressure
-- Cloud cover
-- UV index
-- Dew point
-- Visibility
-
-## Chart Accuracy
-
-### Time Frames
-
-**0-6 hours:** Very accurate
-**6-24 hours:** Highly accurate
-**24-48 hours:** Good accuracy
-
-### Provider Differences
-
-Different weather providers may show:
-- Slightly different temperatures
-- Different precipitation timing
-- Varying wind predictions
-
-Compare providers for important planning.
-
-## Tips & Tricks
-
-### Quick Glance
-
-Look for:
-- **Steep slopes** - Rapid temperature changes
-- **Tall bars** - Heavy precipitation
-- **Gaps in bars** - Rain-free periods
-- **Arrow clusters** - Strong/gusty winds
-
-### Detailed Analysis
-
-For precision:
-- Tap each hour for exact values
-- Check feels-like vs actual temperature
-- Note precipitation probability AND amount
-- Consider wind chill effects
-
-### Comparing Days
-
-Scroll through the chart to:
-- Compare today vs tomorrow
-- Find patterns (rain every afternoon?)
-- Plan multi-day activities
-
-## Common Patterns
-
-### Daily Temperature Curve
-
-- **Morning** - Coldest (lowest point)
-- **Afternoon** - Warmest (peak)
-- **Evening** - Cooling down
-- **Night** - Coolest
-
-### Precipitation Patterns
-
-- **Morning showers** - Early bars
-- **Afternoon storms** - Mid-day peaks
-- **Evening rain** - Late-day bars
-- **Overnight** - May miss in hourly view
-
-### Wind Behavior
-
-- **Calm mornings** - Low wind
-- **Afternoon winds** - Peak gusts
-- **Evening calm** - Winds die down
-
-## Advanced Features
-
-### Pressure Trends
-
-Watch pressure changes:
-- **Rising** - Improving weather
-- **Falling** - Worsening conditions
-- **Stable** - No major changes
-
-### Cloud Cover
-
-Shading indicates clouds:
-- **Light** - Mostly clear
-- **Medium** - Partly cloudy
-- **Dark** - Overcast
-
-### UV Index Over Time
-
-Plan sun exposure:
-- Peak usually midday (11am-3pm)
-- Minimal in morning/evening
-- Use for outdoor safety
-
-## Chart Limitations
-
-### Forecast Uncertainty
-
-- Further in time = less certain
-- Small changes not always predicted
-- Micro-climates may differ
-
-### Update Frequency
-
-- Charts show last-fetched data
-- Pull to refresh for latest
-- Check update timestamp
-
-### Resolution
-
-- Hourly data only
-- Cannot see minute-by-minute
-- For that, use weather radar
-
-## Comparing with Radar
-
-**Charts** - Predicted future weather
-**Radar** - Current actual precipitation
-
-Use both:
-- Radar for "what's happening now"
-- Charts for "what will happen"
-
-## Accessibility
-
-Charts are designed for:
-- Color-blind friendly colors
-- Clear labels and legends
-- Alternative data views
-- Text-based alternatives
-
-## Performance
-
-Charts are optimized for:
-- Smooth scrolling
-- Fast rendering
-- Low battery impact
-- Efficient data loading
-
-## Next Steps
-
-- [View weather radar](/features/weather-radar)
-- [Check daily forecasts](/features/daily-forecasts)
-- [Learn about weather data](/features/weather-data)
+- [Weather radar](/features/weather-radar)
+- [Daily forecasts](/features/daily-forecasts)
+- [Compare models](/features/weather-comparison)

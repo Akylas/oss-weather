@@ -1,289 +1,83 @@
 # Weather Providers
 
-Compare and choose the best weather data provider for your needs.
+OSS Weather gets its data from several providers. You choose them in **Settings > Providers**, and you can override them for each favorite location.
 
-## Available Providers
+## Forecast providers
 
-OSS Weather supports multiple weather data providers, each with unique strengths.
+| | Open-Meteo | Meteo France | OpenWeather | AccuWeather |
+|---|---|---|---|---|
+| Default | Yes | | | |
+| API key | No | No (built-in, optional own key) | Your own key | Your own key |
+| Weather alerts | No | Yes (weather warnings) | Yes | Paid AccuWeather plans only |
+| Precipitation in the next hour | Yes | Yes | Yes | No |
+| Weather models to choose from | Yes | No | No | No |
 
-## Open-Meteo
+The number of days (up to 16), hours and minutes shown is set in **Settings > Providers**. Each provider returns at most what its API offers. With AccuWeather the app fetches 5 days and 12 hours.
 
-**Recommendation: ⭐ Best for free usage**
+### Open-Meteo
 
-### Overview
-- **Coverage**: Global (European-focused)
-- **API Key**: Not required
-- **Cost**: Free, no limits
-- **Update Frequency**: Hourly
+The default provider. No account or key is needed. See [open-meteo.com](https://open-meteo.com).
 
-### Features
-- High-quality forecasts
-- 16-day forecasts
-- Hourly data up to 16 days
-- Multiple weather models
-- No rate limits
-- No registration needed
+Open-Meteo combines many weather models. In **Settings > Providers > Open-Meteo**:
 
-### Pros
-✅ Completely free
-✅ No API key required
-✅ No rate limits
-✅ High quality data
-✅ Excellent for Europe
-✅ Privacy-friendly
+- **Open-Meteo preferred model**: "Best match" (default) or a specific model, such as ECMWF IFS, DWD ICON (Global, EU, D2), NCEP GFS and HRRR, MeteoFrance Arome and Arpege, UK Met Office, GEM, JMA, KNMI, DMI, MeteoSwiss, MET Norway, KMA, and more.
+- **Augment models with Best Match**: when you use another model, the app still asks Best Match to fill in values that model lacks (on by default).
 
-### Cons
-❌ Less detailed than OpenWeather premium
-❌ Fewer data points than some providers
-❌ Limited historical data
+You can also pick a model for a single favorite.
 
-### Best For
-- Users who don't want API keys
-- European locations
-- Privacy-conscious users
-- High-frequency updates
-- Free unlimited usage
+### Meteo France
 
-## OpenWeather
+Works out of the box with a key built into the app. You can enter your own in **Settings > Providers > Meteo France**. See [meteofrance.com](https://meteofrance.com).
 
-**Recommendation: ⭐ Best for comprehensive data**
+For locations in France, the overflow menu also offers the **BRA**, the Meteo France avalanche bulletin of the mountain massif the location is in, as a PDF. Long press the entry to choose a massif yourself.
 
-### Overview
-- **Coverage**: Global
-- **API Key**: Required (free tier available)
-- **Cost**: Free tier: 1,000 calls/day
-- **Update Frequency**: Varies by plan
+### OpenWeather
 
-### Features
-- Comprehensive current conditions
-- 48-hour hourly forecast
-- 8-day daily forecast
-- Weather alerts
-- Historical data (paid)
-- Air quality data
-- UV index
-- Detailed precipitation
+Needs your own API key (see [API keys](/guide/api-keys)). The app uses the One Call API. The **OneCall version** setting picks 3.0 (default) or 2.5. See [openweathermap.org](https://openweathermap.org).
 
-### Pros
-✅ Very comprehensive data
-✅ Excellent global coverage
-✅ Rich API features
-✅ Weather alerts included
-✅ Well-documented API
-✅ Generous free tier
+### AccuWeather
 
-### Cons
-❌ Requires API key
-❌ Rate limits on free tier
-❌ Can be complex for beginners
+Needs your own API key (see [API keys](/guide/api-keys)). Alerts are only returned on paid AccuWeather plans. See [accuweather.com](https://accuweather.com).
 
-### Best For
-- Users wanting detailed data
-- Global locations
-- Weather alerts
-- Professional use
-- Historical data needs
+## Air quality providers
 
-### Getting Started
-1. Sign up at [OpenWeather](https://home.openweathermap.org/users/sign_up)
-2. Get your API key
-3. Add it in OSS Weather settings
-4. See [API Keys guide](/guide/api-keys)
+Set in **Settings > Providers > Air Quality Provider**, or per favorite:
 
-## AccuWeather
+- **Open-Meteo** (default), no key
+- **AccuWeather**: uses your AccuWeather key
+- **ATMO Auvergne-Rhône-Alpes**: the regional air quality agency, for that French region
 
-**Recommendation: 🔸 Best for minute-by-minute precipitation**
+Air quality appears as the "Air Quality Index" value on the main screen (if enabled in [weather data settings](/guide/settings#weather-data)) and in the daily page with pollutants and pollens. See [Air quality](/features/air-quality).
 
-### Overview
-- **Coverage**: Global
-- **API Key**: Required
-- **Cost**: Free tier: 50 calls/day
-- **Update Frequency**: Limited on free tier
+## Marine provider
 
-### Features
-- 15-day forecasts
-- MinuteCast (minute-by-minute precipitation)
-- Severe weather alerts
-- Lifestyle indices
-- Detailed forecasts
-- Tropical weather tracking
+**MétéoConsult** adds tides and sea data (sea temperature, wave and swell height). It is off by default. Turn it on per location: **Marine Weather Provider** in the overflow menu (⋮), or in a favorite's menu. Tides show in the daily page.
 
-### Pros
-✅ MinuteCast for precipitation timing
-✅ Detailed 15-day forecasts
-✅ Excellent severe weather alerts
-✅ Lifestyle indices
-✅ High accuracy
+## Per-location settings
 
-### Cons
-❌ Very limited free tier (50 calls/day)
-❌ Requires API key
-❌ Can exhaust quota quickly
-❌ Registration required
+Each favorite can have its own:
 
-### Best For
-- Precipitation timing (MinuteCast)
-- Severe weather tracking
-- Supplementary provider
-- Low-frequency checking
+- forecast provider
+- Open-Meteo model
+- air quality provider
+- marine provider
 
-### Getting Started
-1. Sign up at [AccuWeather Developer](https://developer.accuweather.com/)
-2. Create an app
-3. Get your API key
-4. Add it in OSS Weather settings
-5. See [API Keys guide](/guide/api-keys)
+Open the favorites drawer and tap the ⋮ on a row. See [Basic usage](/guide/basic-usage#favorites-drawer).
 
-## Meteo France
+## Quick provider switch
 
-**Recommendation: ⭐ Best for France and territories**
+Turn on **Settings > Providers > Actionbar swipe gesture** (off by default). Then swipe left or right on the action bar to show the current location with the next provider. Providers that need a key you haven't set are skipped. This does not change your saved provider.
 
-### Overview
-- **Coverage**: France, French territories, some Europe
-- **API Key**: Not required
-- **Cost**: Free
-- **Update Frequency**: Hourly
+## Compare models
 
-### Features
-- High-quality French data
-- Detailed forecasts
-- Weather warnings
-- Marine forecasts
-- Mountain weather
-- Avalanche information
+**Compare models** in the overflow menu lets you pick providers and Open-Meteo models and compare their forecasts for the current location, as charts and as icons per hour or day. See [Compare models](/features/weather-comparison).
 
-### Pros
-✅ Excellent for France
-✅ No API key needed
-✅ Free with no limits
-✅ Official government data
-✅ Very accurate for covered regions
+## Meteoblue pages
 
-### Cons
-❌ Limited geographic coverage
-❌ Primarily French territories
-❌ Less global data
-❌ Fewer data points than global providers
+Turn on **Settings > Providers > Meteoblue** (off by default) to add a **meteoblue** entry to the menus. It opens the meteoblue weather, meteogram and "all in one" pages for the location.
 
-### Best For
-- Users in France
-- French territories
-- Some European locations
-- Government-quality data
-- Free usage in France
+## Next steps
 
-## Comparison Table
-
-| Feature | Open-Meteo | OpenWeather | AccuWeather | Meteo France |
-|---------|------------|-------------|-------------|--------------|
-| **API Key** | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
-| **Free Tier** | Unlimited | 1,000/day | 50/day | Unlimited |
-| **Coverage** | Global | Global | Global | France+ |
-| **Forecast Days** | 16 | 8 | 15 | 14 |
-| **Hourly Data** | 16 days | 48 hours | Limited | 48 hours |
-| **Weather Alerts** | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Air Quality** | ✅ Yes | ✅ Yes | ✅ Yes | ❌ No |
-| **Historical** | Limited | Paid | Paid | Limited |
-
-## Choosing a Provider
-
-### For Most Users
-**Open-Meteo** - No hassle, unlimited, good quality
-
-### For Detailed Data
-**OpenWeather** - Most comprehensive, generous free tier
-
-### For French Users
-**Meteo France** - Best accuracy for France
-
-### For Precipitation Timing
-**AccuWeather** - MinuteCast feature (if quota allows)
-
-## Using Multiple Providers
-
-You can configure multiple providers and switch between them:
-
-### Strategy 1: Primary + Backup
-- **Primary**: Open-Meteo (unlimited)
-- **Backup**: OpenWeather (when you need more detail)
-
-### Strategy 2: Regional Optimization
-- **Home (France)**: Meteo France
-- **Travel (Global)**: Open-Meteo
-
-### Strategy 3: Comparison
-- Check multiple providers
-- Compare forecasts
-- Choose based on historical accuracy
-
-## Switching Providers
-
-To change your weather provider:
-
-1. Open Settings
-2. Go to Weather Providers
-3. Select provider
-4. Enter API key if required
-5. Save
-
-The app will immediately fetch data from the new provider.
-
-## API Key Management
-
-### Security
-- API keys are stored securely on your device
-- Never shared or sent elsewhere
-- Use unique keys per app
-
-### Rate Limits
-Monitor your usage:
-- Open-Meteo: No limits
-- OpenWeather: 1,000 calls/day (~42 calls/hour evenly distributed)
-- AccuWeather: 50 calls/day (~2 calls/hour evenly distributed)
-- Meteo France: No limits
-
-**Note**: Actual usage patterns may vary. These rates assume continuous even distribution throughout the day.
-
-### Best Practices
-1. Use Open-Meteo when possible (no limits)
-2. Set reasonable update intervals
-3. Don't share API keys publicly
-4. Monitor quota if using paid tiers
-
-## Troubleshooting
-
-### Provider Not Working
-1. Check internet connection
-2. Verify API key (if required)
-3. Check provider status page
-4. Try different provider
-
-### Inaccurate Forecasts
-- Try different provider
-- Check if provider is best for your region
-- Compare multiple sources
-- Report specific issues to provider
-
-### Rate Limit Errors
-- Get your own API key (don't use default)
-- Reduce update frequency
-- Switch to Open-Meteo
-- Use multiple providers
-
-## Provider Status
-
-Check provider status:
-- [OpenWeather Status](https://status.openweathermap.org/)
-- [AccuWeather Status](https://status.accuweather.com/)
-- Open-Meteo: Check website
-- Meteo France: Check website
-
-## Future Providers
-
-OSS Weather may add more providers in the future. Suggestions welcome on [GitHub](https://github.com/Akylas/oss-weather/issues).
-
-## Next Steps
-
-- [Get API keys](/guide/api-keys)
-- [Configure settings](/guide/configuration)
-- [Learn about weather data](/features/weather-data)
+- [API keys](/guide/api-keys)
+- [Settings](/guide/settings)
+- [Weather data](/features/weather-data)

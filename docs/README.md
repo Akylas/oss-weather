@@ -104,7 +104,13 @@ docs/
 ![Alt text](/image.png)
 ```
 
-**Note**: Assets in `docs/public/` are generated during build and should not be committed to git.
+**Note**: Assets copied by `copy-assets.js` are generated during build and should not be committed to git. Assets used only by the website (`logo.svg`, `favicon.svg`, and the feature screenshots in `public/features/`) live in `docs/public/` and are committed.
+
+Feature screenshots are Android captures (modern style, light theme) converted to 540px wide WebP:
+
+```bash
+cwebp -q 82 -resize 540 0 screenshot.png -o public/features/name.webp
+```
 
 ## Build Process
 

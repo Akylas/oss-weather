@@ -1,58 +1,44 @@
 # Weather Map
 
-Interactive weather map with multiple layers and location selection.
+An interactive map showing weather layers around a location, and a map to pick a new location.
 
-## Overview
+<img class="ow-shot" src="/screenshots/5_en-US.png" alt="Weather map">
 
-The weather map provides an interactive visualization of weather conditions with customizable layers and location selection capabilities.
+## The map screen
 
-## Map Features
+Open it from the main screen menu (top right) with **Map**, or from the menu of a saved location in the favorites drawer. The map opens centered on that location, with a marker on it.
 
-### Interactive Map
+- Pinch to zoom and drag to move. Rotation is disabled.
+- The base map is an OpenStreetMap vector map, drawn with [MapLibre](https://maplibre.org). It follows the app's light or dark theme.
+- Map labels use the app language when available.
 
-- **Zoom**: Pinch to zoom in/out
-- **Pan**: Drag to move around
-- **Rotate**: Two-finger rotation (if enabled)
-- **Search**: Find locations by name
+## Weather layers
 
-### Map Styles
+The map shows one weather layer at a time, with an animation timeline at the bottom:
 
-Choose from multiple map styles:
-- Light theme
-- Dark theme
-- Satellite
-- Terrain
+- **LibreWXR** (default, no API key): radar, satellite, or radar + satellite
+- **MapTiler** (needs your own API key): radar, precipitation, wind, temperature or pressure
 
-### Weather Layers
+Choose the source in Settings > Map. See [Weather radar](/features/weather-radar) for layers, color schemes and animation options.
 
-Overlay weather data on the map:
-- Temperature
-- Precipitation
-- Wind speed
-- Cloud cover
-- Pressure
+## Select a location on the map
 
-## Location Selection
+To add a location by pointing at it:
 
-Use the map to:
-- Select new weather locations
-- Save favorite places
-- View weather for any location
-- Plan travel routes
+1. On the main screen, open the menu (top right) and tap **Select location on map**.
+2. Tap the map where you want the weather. A marker appears.
+3. Tap **Select a location** to confirm.
 
-## Map Controls
+The weather for that point opens on the main screen. Tap the star in the top bar to save it as a favorite.
 
-- **Current Location**: Button to center on your position
-- **Layers**: Toggle weather overlays
-- **Search**: Find places by name
-- **Markers**: Tap to see weather details
+This map is also used to choose the location of a home screen widget.
 
-## Powered By
+## Custom tile server
 
-The weather map uses MapLibre GL for high-performance mapping.
+Settings > Map > **custom tile server** lets you use your own vector tile server for the base map. If it cannot be reached, the default map is used.
 
-## Next Steps
+## Next steps
 
-- [Add locations](/guide/basic-usage)
-- [View weather radar](/features/weather-radar)
-- [Compare weather](/features/weather-comparison)
+- [Weather radar](/features/weather-radar)
+- [Basic usage](/guide/basic-usage)
+- [Compare models](/features/weather-comparison)

@@ -1,73 +1,23 @@
-# Weather Widgets
+# Widgets
 
-Learn about customizing and using OSS Weather widgets.
+OSS Weather has six home screen widget types, from a simple current weather tile to hourly and daily forecasts.
 
-## Widget System
+<img class="ow-shot" src="/features/widget-config.webp" alt="Widget configuration">
 
-OSS Weather features an advanced widget system that allows creating customizable weather widgets for both iOS and Android.
+For the list of widgets, how to add them and how to configure them, see [Home widgets](/features/home-widgets).
 
-## Widget Layouts
+## Quick facts
 
-See the detailed guide on [Home Widgets](/features/home-widgets) for:
-- Adding widgets to your home screen
-- Customizing widget appearance
-- Configuring widget data
-- Managing widget updates
+- Each widget has its own location ("My location" or a place), provider, Open-Meteo model and icon pack, plus options like showing data chips.
+- **Settings > Widget settings** (Android) sets defaults for each widget type, the update frequency for all widgets (15 minutes to 24 hours), and whether tapping a widget opens the app.
+- Data chips in widgets follow the app's weather data settings (values, order, intensity).
+- On iOS, widgets require iOS 18 or later.
 
-## Advanced Customization
+## For developers
 
-For developers and advanced users, OSS Weather uses a custom widget layout system defined in JSON.
+Widget layouts are written once in JSON and turned into native code: SwiftUI for iOS (WidgetKit) and Jetpack Glance for Android, plus NativeScript views for the in-app previews. See the [plugin-widgets README](https://github.com/ossappscollective/oss-weather/blob/main/plugin-widgets/README.md) for the layout format, data binding and code generators.
 
-### Widget Layout DSL
+## Next steps
 
-The widget system uses a Domain Specific Language (DSL) for defining layouts:
-- JSON-based configuration
-- Cross-platform widget definitions
-- Multiple renderer support (iOS, Android, NativeScript, HTML)
-- Flexible data binding
-
-### Documentation
-
-See `plugin-widgets/README.md` in the repository for:
-- Widget layout specification
-- Creating custom widgets
-- Renderer documentation
-- Expression language
-- Data binding
-
-## Widget Types
-
-### iOS Widgets
-- WidgetKit integration
-- Small, Medium, Large sizes
-- System integration
-- Dynamic Island support (where available)
-
-### Android Widgets
-- Material Design
-- Glance widgets (Android 12+)
-- Multiple sizes
-- Rich interactions
-
-## Configuration
-
-Widgets can be configured for:
-- Location selection
-- Data display options
-- Visual styling
-- Update frequency
-- Background transparency
-
-## Best Practices
-
-For optimal widget experience:
-- Choose appropriate update intervals
-- Balance information density
-- Consider battery impact
-- Use meaningful locations
-
-## Next Steps
-
-- [Set up home widgets](/features/home-widgets)
-- [Configure settings](/guide/configuration)
-- [Learn about weather data](/features/weather-data)
+- [Home widgets](/features/home-widgets)
+- [Settings](/guide/settings#widget-settings-android)

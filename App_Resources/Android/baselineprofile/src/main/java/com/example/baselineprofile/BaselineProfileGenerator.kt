@@ -1,6 +1,7 @@
 package com.example.baselineprofile
 
 import android.Manifest
+import android.graphics.Point
 import android.util.Log
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.espresso.Espresso
@@ -52,36 +53,95 @@ class BaselineProfileGenerator {
 
     @Test
     fun startup() {
-        // This example works only with the variant with application id `com.akylas.documentscanner`."
+        // This example works only with the variant with application id `com.akylas.weather`."
         rule.collect(
             packageName = PACKAGE_NAME,
 
             // See: https://d.android.com/topic/performance/baselineprofiles/dex-layout-optimizations
             includeInStartupProfile = true
         ) {
-            // This block defines the app's critical user journey. Here we are interested in
-            // optimizing for app startup. But you can also navigate and scroll through your most important UI.
+            // The block is re-run until the profile is stable, so every step must be idempotent:
+            // the location chosen in the first iteration is persisted by the app.
+            fun tapRelative(x: Float, y: Float) {
+                device.click((device.displayWidth * x).toInt(), (device.displayHeight * y).toInt())
+            }
 
-            // Start default activity for your app
+            fun swipeRelative(fromY: Float, toY: Float) {
+                device.swipe(
+                    device.displayWidth / 2, (device.displayHeight * fromY).toInt(),
+                    device.displayWidth / 2, (device.displayHeight * toY).toInt(), 30
+                )
+            }
+
+            fun tapText(text: String) {
+                device.findObject(By.text(text))?.click()
+                device.waitForIdle()
+                Thread.sleep(1_500)
+            }
+
             pressHome()
-            startActivityAndWait()
-            // Waits for content to be visible, which represents time to fully drawn.
-            device.wait(Until.hasObject(By.scrollable(true)), 5_000)
-            val recycler = device.findObject(By.scrollable(true))
-            // Setting a gesture margin is important otherwise gesture nav is triggered.
-            recycler.setGestureMargin(device.displayWidth / 5)
-//            recycler.swipe(Direction.DOWN, 0.8f)
-//            device.waitForIdle()
-
-            // From center we scroll 2/3 of it which is 1/3 of the screen.
-            recycler.drag(Point(0, recycler.visibleCenter.y / 3))
+            // startActivityAndWait() cannot confirm the launch of this app from framestats
+            device.executeShellCommand("am start -W -n $PACKAGE_NAME/.MainActivity")
+            device.wait(Until.hasObject(By.pkg(PACKAGE_NAME).depth(0)), 10_000)
             device.waitForIdle()
+            Thread.sleep(3_000)
+
+            // first run only: pick a location through the search page
+            val searchButton = device.findObject(By.textContains("Search location"))
+            if (searchButton != null) {
+                searchButton.click()
+                device.wait(Until.hasObject(By.clazz("android.widget.EditText")), 5_000)
+                device.findObject(By.clazz("android.widget.EditText"))?.text = "Paris"
+                device.wait(Until.hasObject(By.textContains("Île-de-France")), 15_000)
+                device.findObject(By.textContains("Île-de-France"))?.click()
+                Thread.sleep(8_000)
+            }
+
+            // main page: refresh, hourly popover, scroll
+            swipeRelative(0.25f, 0.6f)
+            Thread.sleep(6_000)
+            tapRelative(0.5f, 0.42f)
+            Thread.sleep(1_500)
+            tapRelative(0.5f, 0.3f)
+            Thread.sleep(500)
+            swipeRelative(0.8f, 0.3f)
+            swipeRelative(0.8f, 0.3f)
+            device.waitForIdle()
+            swipeRelative(0.3f, 0.8f)
+            swipeRelative(0.3f, 0.8f)
+            device.waitForIdle()
+
+            // daily page: hourly modes, sun and moon, neighbouring days
+            tapRelative(0.5f, 0.79f)
+            Thread.sleep(3_000)
+            tapText("Chart")
+            tapText("Windy")
+            tapText("Classic")
+            swipeRelative(0.8f, 0.3f)
+            device.waitForIdle()
+            swipeRelative(0.3f, 0.8f)
+            tapRelative(0.94f, 0.056f)
+            Thread.sleep(2_000)
+            tapRelative(0.94f, 0.056f)
+            Thread.sleep(2_000)
+            tapRelative(0.83f, 0.056f)
+            Thread.sleep(2_000)
             device.pressBack()
+            Thread.sleep(1_500)
+
+            // drawer and overflow menu
+            tapRelative(0.055f, 0.056f)
+            Thread.sleep(1_500)
+            device.pressBack()
+            tapRelative(0.945f, 0.056f)
+            Thread.sleep(1_500)
+            device.pressBack()
+            device.waitForIdle()
         }
     }
 
     companion object {
-        private const val PACKAGE_NAME = "com.akylas.documentscanner"
+        private const val PACKAGE_NAME = "com.akylas.weather"
 
     }
 }

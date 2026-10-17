@@ -48,9 +48,9 @@ class StartupBenchmarks {
         benchmark(CompilationMode.Partial(BaselineProfileMode.Require))
 
     private fun benchmark(compilationMode: CompilationMode) {
-        // This example works only with the variant with application id `com.akylas.documentscanner`."
+        // This example works only with the variant with application id `com.akylas.weather`."
         rule.measureRepeated(
-            packageName = "com.akylas.documentscanner",
+            packageName = "com.akylas.weather",
             metrics = listOf(StartupTimingMetric()),
             compilationMode = compilationMode,
             startupMode = StartupMode.COLD,

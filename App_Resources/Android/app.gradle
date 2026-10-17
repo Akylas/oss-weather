@@ -76,6 +76,14 @@ android {
   // aaptOptions {
   //   additionalParameters "--no-version-vectors"  
   // }  
+  androidResources {
+    // libraries ship ~90 locales; keep the ones the app translates (shrinks resources.arsc)
+    def resDir = file("${getAppResourcesPath()}/Android/src/main/res")
+    def appLocales = (resDir.listFiles() ?: []).collect { it.name }
+        .findAll { it ==~ /values-([a-z]{2,3}(-r[A-Z]{2})?|b\+.+)/ }
+        .collect { it - 'values-' }
+    localeFilters.addAll(["en"] + appLocales)
+  }
   buildTypes { // THIS CAUSES RELEASE MODE ERROR ON APP LAUNCH
     release {
       signingConfig (project.hasProperty('unsignedApk') ? null : signingConfigs.release)

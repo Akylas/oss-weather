@@ -1,9 +1,10 @@
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
 
 project.ext.abiCodes = ['armeabi':1, 'armeabi-v7a':2, 'arm64-v8a':3, 'x86':4, 'x86_64':5]
 def BUILD_TOOLS_PATH = "$rootDir/build-tools"
 
 apply plugin: "androidx.baselineprofile"
-apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "org.jetbrains.kotlin.plugin.compose"  // Add this line
 
 android { 
@@ -140,9 +141,14 @@ android {
   experimentalProperties["android.experimental.r8.dex-startup-optimization"] = true
 }
 
+interface InjectedExecOps {
+    @Inject
+    ExecOperations getExecOps()
+}
+
 def runCreateProguard = {
     println("Running createProguard script")
-    exec {
+    project.objects.newInstance(InjectedExecOps).execOps.exec {
         workingDir "$USER_PROJECT_ROOT"
         println("node tools/scripts/createProguard.js ${rootDir} ${getAppResourcesPath()}")
         commandLine 'node', "tools/scripts/createProguard.js", "${rootDir}", "${getAppResourcesPath()}"

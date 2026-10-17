@@ -32,7 +32,7 @@ module.exports = {
     android: {
         ignoredNativeDependencies: ['@akylas/nativescript-inapp-purchase'],
         runtimePackageName: '@nativescript/android-quickjs-ng',
-        gradleVersion: '8.14.3',
+        gradleVersion: '9.7.1',
         markingMode: 'none',
         codeCache: true,
         enableMultithreadedJavascript: false,
@@ -47,7 +47,7 @@ module.exports = {
     cssParser: 'rework',
     hooks: [
         {
-            type: 'after-prepareNativeApp',
+            type: 'before-prepareNativeApp',
             script: 'tools/scripts/after-prepareNativeApp.js'
         }
     ]

@@ -206,10 +206,6 @@ prefs.on('change', (event: EventData & { key: string }) => {
         case SETTINGS_DATA_INTENSITY:
             dataIntensity.set(ApplicationSettings.getBoolean(SETTINGS_DATA_INTENSITY, DATA_INTENSITY));
             break;
-        case SETTINGS_HOURLY_VIEW_MODE:
-            hourlyViewMode.set(ApplicationSettings.getString(SETTINGS_HOURLY_VIEW_MODE, HOURLY_VIEW_MODE));
-            DEV_LOG && console.log(`key:${SETTINGS_HOURLY_VIEW_MODE}`, get(hourlyViewMode));
-            break;
         case SETTINGS_HOURLY_MAIN_DATA:
             hourlyViewData.set(JSON.parse(ApplicationSettings.getString(SETTINGS_HOURLY_MAIN_DATA, DEFAULT_HOURLYMAIN_DATA)));
             DEV_LOG && console.log(`key:${SETTINGS_HOURLY_MAIN_DATA}`, get(hourlyViewData));
@@ -237,4 +233,10 @@ prefs.on('change', (event: EventData & { key: string }) => {
         default:
             break;
     }
+});
+
+// iOS 'change' events carry no key, only key observers fire there
+prefs.on(`key:${SETTINGS_HOURLY_VIEW_MODE}`, () => {
+    hourlyViewMode.set(ApplicationSettings.getString(SETTINGS_HOURLY_VIEW_MODE, HOURLY_VIEW_MODE));
+    DEV_LOG && console.log(`key:${SETTINGS_HOURLY_VIEW_MODE}`, get(hourlyViewMode));
 });

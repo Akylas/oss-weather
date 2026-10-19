@@ -621,8 +621,13 @@ platform :mac do
           key_content: ENV['APPLE_KEY_CONTENT']
         )
       end
-      fastlane_match(type: 'appstore', platform: 'catalyst', additional_cert_types: ['mac_installer_distribution'], api_key: api_key)
-      appstore_profile = ENV["sigh_#{app_identifier}_appstore_catalyst_profile-name"]
+      # the App Store pkg only runs through TestFlight/App Store, so it is only built to be published
+      build_pkg = options[:publish] != false
+      pkg_path = nil
+      if build_pkg
+        fastlane_match(type: 'appstore', platform: 'catalyst', additional_cert_types: ['mac_installer_distribution'], api_key: api_key)
+        appstore_profile = ENV["sigh_#{app_identifier}_appstore_catalyst_profile-name"]
+      end
       fastlane_match(type: 'developer_id', platform: 'catalyst', api_key: api_key)
       developer_id_profile = ENV["sigh_#{app_identifier}_developer_id_catalyst_profile-name"]
 
@@ -635,30 +640,33 @@ platform :mac do
       # only accepts arm64-only apps targeting macOS 12+ (Catalyst 15.0).
       xcargs = "ARCHS=arm64 SUPPORTS_MACCATALYST=YES DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER=NO IPHONEOS_DEPLOYMENT_TARGET=15.0 MACCATALYST_DEPLOYMENT_TARGET=15.0 ENABLE_HARDENED_RUNTIME=YES"
 
-      prepare(platform:'catalyst', options: options)
-      update_code_signing_settings(
-        use_automatic_signing: false,
-        sdk: "macosx*",
-        code_sign_identity: "Apple Distribution",
-        profile_name: appstore_profile,
-        path: project_path
-      )
-      pkg_path = build_app(
-        catalyst_platform: "macos",
-        destination: "generic/platform=macOS,variant=Mac Catalyst",
-        xcargs: xcargs,
-        archive_path: archive_path,
-        output_directory: "dist",
-        output_name: $ios_scheme,
-        scheme: $ios_scheme,
-        workspace: workspace,
-        export_method: "app-store",
-        export_options: {
-          provisioningProfiles: { app_identifier => appstore_profile }
-        }
-      )
+      if build_pkg
+        prepare(platform:'catalyst', options: options)
+        update_code_signing_settings(
+          use_automatic_signing: false,
+          sdk: "macosx*",
+          code_sign_identity: "Apple Distribution",
+          profile_name: appstore_profile,
+          path: project_path
+        )
+        pkg_path = build_app(
+          catalyst_platform: "macos",
+          destination: "generic/platform=macOS,variant=Mac Catalyst",
+          xcargs: xcargs,
+          archive_path: archive_path,
+          output_directory: "dist",
+          output_name: $ios_scheme,
+          scheme: $ios_scheme,
+          workspace: workspace,
+          export_method: "app-store",
+          export_options: {
+            provisioningProfiles: { app_identifier => appstore_profile }
+          }
+        )
+      end
 
-      if (options[:github] != false)
+      # a build that is not published only has the Developer ID app to test
+      if (options[:github] != false || !build_pkg)
         # the Github build must not be a store build (no in-app purchase), so it is prepared and archived again
         prepare(platform:'catalyst', github: true, options: options)
         update_code_signing_settings(

@@ -2,6 +2,7 @@
 // Android-specific widget bridge using shared logic
 
 import { Utils } from '@nativescript/core';
+import { createUpdateDeduper } from '~/utils/widgetUpdates';
 import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager, isDefaultLocation } from './WidgetDataManager';
@@ -12,7 +13,7 @@ import { WeatherWidgetData, WidgetConfig } from './WidgetTypes';
  */
 export class WidgetBridge extends WidgetBridgeBase {
     private dataManager: WidgetDataManager;
-    private pendingUpdates: Map<string, Promise<WeatherWidgetData>> = new Map();
+    private updates = createUpdateDeduper<WeatherWidgetData>();
     private lastUpdateTime: Map<string, number> = new Map();
     private cacheTimeoutMs: number = 60000; // 1 minute cache by default
 
@@ -117,54 +118,17 @@ export class WidgetBridge extends WidgetBridgeBase {
 
             // Generate cache key based on location to deduplicate requests for same location
             const cacheKey = `${config.locationName}_${config.latitude}_${config.longitude}_${config.provider}_${config.model}`;
-            const now = Date.now();
-            const lastUpdate = this.lastUpdateTime.get(cacheKey) || 0;
 
-            // Check if there's a pending update for this location
-            if (this.pendingUpdates.has(cacheKey)) {
-                // DEV_LOG && console.log(`Reusing pending update for ${cacheKey}`);
-                const widgetData = await this.pendingUpdates.get(cacheKey);
-                this.sendWeatherDataToWidget(parseInt(widgetId, 10), widgetData);
-                return;
-            }
-
-            // Check if we have recent cached data
-            // if (now - lastUpdate < this.cacheTimeoutMs) {
-            //     DEV_LOG && console.log(`Using cached data for ${cacheKey} (${now - lastUpdate}ms old)`);
-            //     return;
-            // }
-
-            // Create update promise
-            const updatePromise = this.performWidgetUpdate(widgetId, config, cacheKey);
-
-            // Store pending update
-            this.pendingUpdates.set(cacheKey, updatePromise);
-
-            // Wait for update to complete
-            await updatePromise;
-
-            // Clean up pending update
-            this.pendingUpdates.delete(cacheKey);
-
-            // Update last update time
+            // Widgets on the same location share one fetch
+            const widgetData = await this.updates.run(cacheKey, () => this.dataManager.getWidgetWeatherData(config));
+            this.sendWeatherDataToWidget(parseInt(widgetId, 10), widgetData);
             this.lastUpdateTime.set(cacheKey, Date.now());
         } catch (error) {
             console.error(`Error updating widget ${widgetId}:`, error, error.stack);
+            // without this the widget stays on its loading state forever
+            const context = Utils.android.getApplicationContext();
+            com.akylas.weather.widgets.WeatherWidgetManager.setWidgetError(context, parseInt(widgetId, 10), error?.message || 'Update failed');
         }
-    }
-
-    /**
-     * Perform the actual widget update
-     */
-    private async performWidgetUpdate(widgetId: string, config: WidgetConfig, cacheKey: string) {
-        // DEV_LOG && console.log(`Fetching weather data for ${cacheKey}`);
-
-        // Fetch and format weather data using shared data manager
-        const widgetData = await this.dataManager.getWidgetWeatherData(config);
-
-        // Send data back to native
-        this.sendWeatherDataToWidget(parseInt(widgetId, 10), widgetData);
-        return widgetData;
     }
 
     /**
@@ -193,7 +157,7 @@ export class WidgetBridge extends WidgetBridgeBase {
      * Cleanup
      */
     public destroy() {
-        this.pendingUpdates.clear();
+        this.updates.clear();
         this.lastUpdateTime.clear();
     }
 }

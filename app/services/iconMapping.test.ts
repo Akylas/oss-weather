@@ -1,7 +1,7 @@
 import { readdirSync } from 'fs';
 import { join } from 'path';
-import { describe, expect, it } from 'vitest';
-import { buildIconMap, resolveIconName } from './iconMapping';
+import { describe, expect, it, vi } from 'vitest';
+import { buildIconMap, fillIconMap, resolveIconName } from './iconMapping';
 import { convertWeatherCodeToIcon } from './providers/omIcons';
 
 const ICON_THEMES_FOLDER = join(__dirname, '../assets/icon_themes');
@@ -39,5 +39,22 @@ describe('resolveIconName', () => {
         const iconIds = Array.from({ length: 100 }, (_, code) => convertWeatherCodeToIcon(code)).filter((iconId) => iconId !== undefined);
         const unresolved = iconIds.filter((iconId) => resolveIconName(iconId, true, mapIds) === null);
         expect(unresolved).toEqual([]);
+    });
+});
+
+describe('fillIconMap', () => {
+    it('fills the map from the folder file names when the folder exists', () => {
+        const map = new Map<number, number>();
+        fillIconMap('/pack/images', map, { exists: () => true, listNames: () => ['800d.png', '701.png'] });
+        expect(map.get(800)).toBe(1);
+        expect(map.get(701)).toBe(0);
+    });
+
+    it('leaves the map empty without listing a folder the pack does not ship', () => {
+        const map = new Map<number, number>([[800, 1]]);
+        const listNames = vi.fn(() => ['800d.png']);
+        fillIconMap('/pack/lottie', map, { exists: () => false, listNames });
+        expect(map.size).toBe(0);
+        expect(listNames).not.toHaveBeenCalled();
     });
 });

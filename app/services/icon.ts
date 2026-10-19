@@ -2,20 +2,19 @@ import { ApplicationSettings, File, Folder, Observable, Utils, knownFolders, pat
 import { prefs } from './preferences';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { ANIMATIONS_ENABLED, PROVIDER_PADDING } from '~/helpers/constants';
-import { WEATHER_CODE_MAPPING, buildIconMap, resolveIconName } from './iconMapping';
+import { WEATHER_CODE_MAPPING, fillIconMap, resolveIconName } from './iconMapping';
 
 export const iconThemesFolder = path.join(knownFolders.currentApp().path, 'assets/icon_themes');
 export const onIconPackChanged = createGlobalEventListener('iconPack');
 export const onIconAnimationsChanged = createGlobalEventListener('iconAnimations');
 
-function fillIconMap(folderPath: string, map: Map<number, number>) {
-    buildIconMap(
+const iconFolders = {
+    exists: (folderPath: string) => Folder.exists(folderPath),
+    listNames: (folderPath: string) =>
         Folder.fromPath(folderPath)
             .getEntitiesSync()
-            .map((e) => e.name),
-        map
-    );
-}
+            .map((entity) => entity.name)
+};
 export class IconService extends Observable {
     getIconConfig(folderPath = this.iconSetFolderPath) {
         if (!this.iconSetConfig) {
@@ -74,8 +73,8 @@ export class IconService extends Observable {
         } else {
             this.iconSetFolderPath = path.join(iconThemesFolder, this.iconSet);
             this.iconSetConfig = null;
-            fillIconMap(path.join(this.iconSetFolderPath, 'images'), this.images);
-            fillIconMap(path.join(this.iconSetFolderPath, 'lottie'), this.lotties);
+            fillIconMap(path.join(this.iconSetFolderPath, 'images'), this.images, iconFolders);
+            fillIconMap(path.join(this.iconSetFolderPath, 'lottie'), this.lotties, iconFolders);
             this.usingLottie = true;
             this.usingProvider = false;
         }

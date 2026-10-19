@@ -80,6 +80,19 @@ export function buildIconMap(fileNames: string[], map: Map<number, number>) {
 }
 
 /**
+ * Fills the map from a pack folder; a folder the pack does not ship (e.g. tabler has no lottie)
+ * yields an empty map, and is never listed: NativeScript's Folder.fromPath would try to create it,
+ * which fails inside a read-only app bundle.
+ */
+export function fillIconMap(folderPath: string, map: Map<number, number>, folders: { exists: (folderPath: string) => boolean; listNames: (folderPath: string) => string[] }) {
+    if (!folders.exists(folderPath)) {
+        map.clear();
+        return map;
+    }
+    return buildIconMap(folders.listNames(folderPath), map);
+}
+
+/**
  * Resolves a weather icon id to the name of an icon actually present in the pack,
  * walking WEATHER_CODE_MAPPING until a match is found.
  * Returns null when no icon of that pack can represent the id.

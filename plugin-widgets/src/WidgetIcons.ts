@@ -1,5 +1,7 @@
 import { Align, Canvas, FontMetrics, Paint } from '@nativescript-community/ui-canvas';
 import { File, Folder, ImageSource, knownFolders, path } from '@nativescript/core';
+import { get } from 'svelte/store';
+import { fonts } from '~/variables';
 import { widgetIconFileName } from '~/utils/widgetIconName';
 
 // data icons (font glyphs) drawn to png files: widgets cannot use the app icon fonts
@@ -43,4 +45,9 @@ export function renderWidgetIcon(glyph: string, fontFamily: string, color: strin
     new ImageSource(canvas.getImage()).saveToFile(filePath, 'png');
     canvas.release();
     return filePath;
+}
+
+// drawn white, the widget tints it with its theme colors
+export function renderWidgetErrorIcon(networkError: boolean) {
+    return renderWidgetIcon(networkError ? 'mdi-cloud-circle' : 'mdi-alert', get(fonts).mdi, '#ffffff');
 }

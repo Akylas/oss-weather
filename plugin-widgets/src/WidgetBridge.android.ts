@@ -2,10 +2,12 @@
 // Android-specific widget bridge using shared logic
 
 import { Utils } from '@nativescript/core';
+import { classifyWidgetError, widgetErrorMessage } from '~/utils/widgetError';
 import { createUpdateDeduper } from '~/utils/widgetUpdates';
 import WidgetBridgeBase from './WidgetBridge.common';
 import { WidgetConfigManager } from './WidgetConfigManager';
 import { WidgetDataManager, isDefaultLocation } from './WidgetDataManager';
+import { renderWidgetErrorIcon } from './WidgetIcons';
 import { WeatherWidgetData, WidgetConfig } from './WidgetTypes';
 
 /**
@@ -125,9 +127,16 @@ export class WidgetBridge extends WidgetBridgeBase {
             this.lastUpdateTime.set(cacheKey, Date.now());
         } catch (error) {
             console.error(`Error updating widget ${widgetId}:`, error, error.stack);
+            const isNetwork = classifyWidgetError(error) === 'network';
+            // a network failure is not worth an error screen while the cached weather is still good enough
+            const staleData = isNetwork && config?.widgetKind ? this.dataManager.getStaleWidgetWeatherData(config) : null;
+            if (staleData) {
+                this.sendWeatherDataToWidget(parseInt(widgetId, 10), staleData);
+                return;
+            }
             // without this the widget stays on its loading state forever
             const context = Utils.android.getApplicationContext();
-            com.akylas.weather.widgets.WeatherWidgetManager.setWidgetError(context, parseInt(widgetId, 10), error?.message || 'Update failed');
+            com.akylas.weather.widgets.WeatherWidgetManager.setWidgetError(context, parseInt(widgetId, 10), widgetErrorMessage(error), isNetwork, renderWidgetErrorIcon(isNetwork));
         }
     }
 

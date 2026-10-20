@@ -61,7 +61,8 @@ class SimpleWeatherWidget : WeatherWidget() {
             GlanceTheme(colors = WidgetTheme.colors) {
                 WidgetComposables.WidgetBackground(
                     enabled = !(widgetConfig.settings?.get("transparent")?.jsonPrimitive?.booleanOrNull ?: false),
-                    color = if (backgroundColor != null) ColorProvider(Color(backgroundColor.toColorIntRgba())) else null
+                    color = if (backgroundColor != null) ColorProvider(Color(backgroundColor.toColorIntRgba())) else null,
+                    staleSince = widgetData?.takeIf { it.stale }?.lastUpdate ?: 0L
                 ) {
                     if (widgetData == null || widgetData!!.loadingState == WidgetLoadingState.NONE) {
                         WidgetComposables.NoDataContent()
@@ -70,7 +71,9 @@ class SimpleWeatherWidget : WeatherWidget() {
                     } else if (widgetData!!.loadingState == WidgetLoadingState.ERROR) {
                         WidgetComposables.NoDataContent(
                             WidgetLoadingState.ERROR,
-                            widgetData!!.errorMessage
+                            widgetData!!.errorMessage,
+                            widgetData!!.networkError,
+                            widgetData!!.iconPath
                         )
                     } else {
                         val size = LocalSize.current

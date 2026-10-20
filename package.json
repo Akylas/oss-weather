@@ -67,7 +67,7 @@
         "@nativescript-community/svelte-native": "1.0.32",
         "@nativescript-community/systemui": "1.1.26",
         "@nativescript-community/text": "1.6.25",
-        "@nativescript-community/ui-canvas": "4.6.55",
+        "@nativescript-community/ui-canvas": "4.6.56",
         "@nativescript-community/ui-canvaslabel": "1.2.58",
         "@nativescript-community/ui-chart": "2.0.30",
         "@nativescript-community/ui-checkbox": "1.0.1",
@@ -136,8 +136,6 @@
     ],
     "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b",
     "resolutions": {
-        "@nativescript-community/gesturehandler": "portal:../gesturehandler/packages/gesturehandler",
-        "@nativescript-community/ui-chart": "portal:../ui-chart/packages/ui-chart",
-        "@nativescript-community/ui-collectionview": "portal:../ui-collectionview/packages/collectionview"
+        "@nativescript-community/ui-canvas": "portal:../ui-canvas/packages/ui-canvas"
     }
 }

@@ -2810,13 +2810,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/gesturehandler@portal:../gesturehandler/packages/gesturehandler::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@nativescript-community/gesturehandler@portal:../gesturehandler/packages/gesturehandler::locator=root-workspace-0b6124%40workspace%3A."
+"@nativescript-community/gesturehandler@npm:2.1.0, @nativescript-community/gesturehandler@npm:^2.0.44, @nativescript-community/gesturehandler@npm:^2.0.8":
+  version: 2.1.0
+  resolution: "@nativescript-community/gesturehandler@npm:2.1.0"
   dependencies:
     "@nativescript-community/observable": "npm:^2.0.10"
+  checksum: 10/58d12164098c37a0f04f07ebb92a8743ec4d8a07b7d99deed2a1aba5d8a131215ff8385af6bc6646ae4dfe1699af55d1624a3bd7b817e767acca8a9f754e42a3
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@nativescript-community/gps@npm:3.1.10":
   version: 3.1.10
@@ -2948,14 +2949,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-canvas@npm:4.6.55, @nativescript-community/ui-canvas@npm:^4.6.46, @nativescript-community/ui-canvas@npm:^4.6.55":
-  version: 4.6.55
-  resolution: "@nativescript-community/ui-canvas@npm:4.6.55"
+"@nativescript-community/ui-canvas@portal:../ui-canvas/packages/ui-canvas::locator=root-workspace-0b6124%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@nativescript-community/ui-canvas@portal:../ui-canvas/packages/ui-canvas::locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
     "@nativescript-community/arraybuffers": "npm:^1.1.5"
-  checksum: 10/bd131df386594e0ea4e70540553673fb316d9a8604f1c40d1083581c16b1e2e1903fcb9d337dd3acdb9d238887eaabaf42728aa43ce167e7429d2d81d0965267
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@nativescript-community/ui-canvaslabel@npm:1.2.58":
   version: 1.2.58
@@ -2967,9 +2967,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-chart@portal:../ui-chart/packages/ui-chart::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@nativescript-community/ui-chart@portal:../ui-chart/packages/ui-chart::locator=root-workspace-0b6124%40workspace%3A."
+"@nativescript-community/ui-chart@npm:2.0.30":
+  version: 2.0.30
+  resolution: "@nativescript-community/ui-chart@npm:2.0.30"
   dependencies:
     "@nativescript-community/additween": "npm:^4.0.9"
     "@nativescript-community/arraybuffers": "npm:^1.1.5"
@@ -2977,8 +2977,9 @@ __metadata:
     "@nativescript-community/ui-canvas": "npm:^4.6.46"
     downsample: "npm:^1.4.0"
     number-format.js: "npm:^2.0.9"
+  checksum: 10/6d07766c63134752bbc07ba36dd9807fba5067ab1112c875c8987fb81f45ade1a2694d6f5edab61f23efe9dda5b48b4183123372cc71e99645a1c6bc95bb685c
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@nativescript-community/ui-checkbox@npm:1.0.1":
   version: 1.0.1
@@ -3000,13 +3001,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/ui-collectionview@portal:../ui-collectionview/packages/collectionview::locator=root-workspace-0b6124%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@nativescript-community/ui-collectionview@portal:../ui-collectionview/packages/collectionview::locator=root-workspace-0b6124%40workspace%3A."
+"@nativescript-community/ui-collectionview@npm:6.0.31, @nativescript-community/ui-collectionview@npm:^6.0.31":
+  version: 6.0.31
+  resolution: "@nativescript-community/ui-collectionview@npm:6.0.31"
   dependencies:
     "@nativescript-community/arraybuffers": "npm:^1.1.5"
+  checksum: 10/41b4274d2a38a1870c108c58c8516f06999586bb6cefcba146ae06e0c11106fb5356505a2be07c34ff89d3a9d9d0eb51da1a24882001a622a8c3d02f81541824
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@nativescript-community/ui-color@npm:1.0.6":
   version: 1.0.6
@@ -13630,7 +13632,7 @@ __metadata:
     "@nativescript-community/svelte-native": "npm:1.0.32"
     "@nativescript-community/systemui": "npm:1.1.26"
     "@nativescript-community/text": "npm:1.6.25"
-    "@nativescript-community/ui-canvas": "npm:4.6.55"
+    "@nativescript-community/ui-canvas": "npm:4.6.56"
     "@nativescript-community/ui-canvaslabel": "npm:1.2.58"
     "@nativescript-community/ui-chart": "npm:2.0.30"
     "@nativescript-community/ui-checkbox": "npm:1.0.1"

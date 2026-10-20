@@ -1,0 +1,2 @@
+Bug fixes:
+- show a generic error on network failures and keep recent data (#568)

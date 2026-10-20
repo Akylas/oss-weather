@@ -1,5 +1,6 @@
 import { Align, Canvas, FontMetrics, Paint } from '@nativescript-community/ui-canvas';
 import { File, Folder, ImageSource, knownFolders, path } from '@nativescript/core';
+import { widgetIconFileName } from '~/utils/widgetIconName';
 
 // data icons (font glyphs) drawn to png files: widgets cannot use the app icon fonts
 const ICON_SIZE = 64;
@@ -28,8 +29,7 @@ export function renderWidgetIcon(glyph: string, fontFamily: string, color: strin
     if (!glyph) {
         return '';
     }
-    const fileName = `${fontFamily}_${glyph.codePointAt(0).toString(16)}_${color.replace('#', '')}.png`;
-    const filePath = path.join(getIconsFolder(), fileName);
+    const filePath = path.join(getIconsFolder(), widgetIconFileName(fontFamily, glyph, color));
     if (File.exists(filePath)) {
         return filePath;
     }

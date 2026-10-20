@@ -1,7 +1,9 @@
 import { Application } from '@nativescript/core';
 import { widgetService } from '../WidgetBridge';
 import { WidgetConfigManager } from '../WidgetConfigManager';
+import { renderWidgetErrorIcon } from '../WidgetIcons';
 import { SDK_VERSION } from '@nativescript/core/utils';
+import { classifyWidgetError, widgetErrorMessage } from '~/utils/widgetError';
 
 /**
  * Native BroadcastReceiver that can be registered in AndroidManifest.xml
@@ -36,7 +38,8 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
                 // Then fetch data and update widget
                 widgetService.updateWidget(widgetId + '').catch((error) => {
                     console.error(`WidgetUpdateReceiver: Error updating widget ${widgetId}:`, error, error.stack);
-                    widgetManager.setWidgetError(context, widgetId, error.message || 'Update failed');
+                    const isNetwork = classifyWidgetError(error) === 'network';
+                    widgetManager.setWidgetError(context, widgetId, widgetErrorMessage(error), isNetwork, renderWidgetErrorIcon(isNetwork));
                 });
             } else if (action === 'com.akylas.weather.WIDGET_ADDED') {
                 const widgetId = intent.getIntExtra('widgetId', -1);

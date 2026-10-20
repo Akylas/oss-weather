@@ -1,0 +1,12 @@
+Features:
+- restyle the website with the modern app design (#546)
+- new feature graphic for the modern design (#550)
+
+Bug fixes:
+- remove unused stale app icon files (#549)
+- regenerate play store and root icons from the new artwork (#551)
+- update hourly view mode on key change (#558)
+- skip icon pack folders the pack does not ship (#561)
+- show error instead of loading forever on failed update (#562)
+- keep clock widget ticking under Doze and on time change (#563)
+- keep font family path out o

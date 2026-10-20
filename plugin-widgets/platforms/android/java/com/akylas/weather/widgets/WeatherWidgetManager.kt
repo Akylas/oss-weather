@@ -732,12 +732,15 @@ object WeatherWidgetManager {
      * Set widget to error state
      */
     @JvmStatic
-    fun setWidgetError(context: Context, widgetId: Int, errorMessage: String) {
-        WidgetsLogger.d(LOG_TAG, "setWidgetError(widgetId=$widgetId, error=$errorMessage)")
+    @JvmOverloads
+    fun setWidgetError(context: Context, widgetId: Int, errorMessage: String, isNetwork: Boolean = false, iconPath: String = "") {
+        WidgetsLogger.d(LOG_TAG, "setWidgetError(widgetId=$widgetId, error=$errorMessage, isNetwork=$isNetwork)")
         
         val errorData = WeatherWidgetData(
             loadingState = WidgetLoadingState.ERROR,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            networkError = isNetwork,
+            iconPath = iconPath
         )
         
         // Update StateFlow - triggers automatic recomposition
@@ -1484,7 +1487,11 @@ data class WeatherWidgetData(
     val forecastData: List<ForecastData> = emptyList(),
     val lastUpdate: Long = System.currentTimeMillis(),
     val loadingState: WidgetLoadingState = WidgetLoadingState.NONE,
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    // the error is a connection / provider failure: shown generically, the message is not worth showing
+    val networkError: Boolean = false,
+    // cached data kept after a failed refresh, lastUpdate is then the time of the data
+    val stale: Boolean = false
 )
 
 @Serializable

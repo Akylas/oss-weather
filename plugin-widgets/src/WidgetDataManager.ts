@@ -2,12 +2,12 @@
 // Shared logic for fetching and formatting widget data (used by both Android and iOS)
 
 import { ApplicationSettings, Color, path } from '@nativescript/core';
-import { ALWAYS_SHOW_PRECIP_PROB, DATA_INTENSITY, SETTINGS_ALWAYS_SHOW_PRECIP_PROB, SETTINGS_DATA_INTENSITY, SETTINGS_WEATHER_LOCATION } from '~/helpers/constants';
+import { ALWAYS_SHOW_PRECIP_PROB, DATA_INTENSITY, NB_DAYS_FORECAST, SETTINGS_ALWAYS_SHOW_PRECIP_PROB, SETTINGS_DATA_INTENSITY, SETTINGS_WEATHER_LOCATION } from '~/helpers/constants';
 import { clock_24, formatDate, formatTime, getStartOfDay, lc } from '~/helpers/locale';
 import { WeatherLocation, prepareItems } from '~/services/api';
 import { iconService, iconThemesFolder } from '~/services/icon';
 import { CommonWeatherData, WeatherData } from '~/services/providers/weather';
-import { getWeather } from '~/services/providers/weatherproviderfactory';
+import { getCachedWeather, getProviderForType, getWeather, getWeatherProvider } from '~/services/providers/weatherproviderfactory';
 import { CommonData, WeatherProps, formatWeatherValue, weatherDataService } from '~/services/weatherData';
 import { modernDataColor, windSpeedColor } from '~/utils/designStyle';
 import { curvePositions, rangePositions } from '~/utils/widgetCurve';
@@ -15,6 +15,7 @@ import { widgetChip } from '~/utils/widgetChips';
 import { upcomingDays } from '~/utils/widgetDays';
 import { precipBars, precipTexts } from '~/utils/widgetPrecip';
 import { splitValueUnit } from '~/utils/valueUnit';
+import { staleForecast } from '~/utils/widgetStale';
 import { renderWidgetIcon } from './WidgetIcons';
 import { ForecastData, WeatherWidgetData, WidgetChip, WidgetConfig } from './WidgetTypes';
 import { queryTimezone } from '~/helpers/favorites';
@@ -26,33 +27,33 @@ export function isDefaultLocation(locationName: string) {
 export class WidgetDataManager {
     constructor() {}
 
+    private resolveLocation(config: WidgetConfig): WeatherLocation {
+        // Create location object
+        let location: WeatherLocation = {
+            name: config.locationName,
+            timezone: config.timezone,
+            timezoneOffset: config.timezoneOffset,
+            coord: {
+                lat: config.latitude,
+                lon: config.longitude
+            }
+        };
+        // Handle "current" location - use app's current selected location
+        if (isDefaultLocation(config.locationName)) {
+            location = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
+            // const timezoneData = await queryTimezone(location);
+            // Object.assign(location, timezoneData)
+        }
+        return location;
+    }
+
     /**
      * Fetch and format weather data for a widget
      */
     async getWidgetWeatherData(config: WidgetConfig): Promise<WeatherWidgetData> {
         // DEV_LOG && console.log('getWidgetWeatherData', JSON.stringify(config));
-        // Get location data
-        const locationName = config.locationName;
-        const latitude = config.latitude;
-        const longitude = config.longitude;
+        const location = this.resolveLocation(config);
         const model = config.model;
-
-        // Create location object
-        let location: WeatherLocation = {
-            name: locationName,
-            timezone: config.timezone,
-            timezoneOffset: config.timezoneOffset,
-            coord: {
-                lat: latitude,
-                lon: longitude
-            }
-        };
-        // Handle "current" location - use app's current selected location
-        if (isDefaultLocation(locationName)) {
-            location = JSON.parse(ApplicationSettings.getString(SETTINGS_WEATHER_LOCATION, DEFAULT_LOCATION || 'null'));
-            // const timezoneData = await queryTimezone(location);
-            // Object.assign(location, timezoneData)
-        }
 
         // Fetch weather data using WeatherProvider.getWeather
         const weatherData = location
@@ -67,6 +68,29 @@ export class WidgetDataManager {
 
         // Format data for widget
         return this.formatWeatherDataForWidget(weatherData, location, config);
+    }
+
+    /**
+     * Last cached weather of a widget for when a refresh failed: only while the app itself would still show it
+     * (enough upcoming forecast), flagged stale with the time of the data
+     */
+    getStaleWidgetWeatherData(config: WidgetConfig): WeatherWidgetData | null {
+        const location = this.resolveLocation(config);
+        if (!location) {
+            return null;
+        }
+        const providerId = (config.provider ? getProviderForType(config.provider) : getWeatherProvider()).id;
+        const cached = getCachedWeather('main', providerId, location, { model: config.model }, 0);
+        if (!cached) {
+            return null;
+        }
+        const now = Date.now();
+        const startOfDay = getStartOfDay(now, location.timezoneOffset ?? -new Date().getTimezoneOffset()).valueOf();
+        const weatherData = staleForecast(cached, now, startOfDay, ApplicationSettings.getNumber('forecast_nb_days', NB_DAYS_FORECAST));
+        if (!weatherData) {
+            return null;
+        }
+        return { ...this.formatWeatherDataForWidget(weatherData, location, config), lastUpdate: cached.time, stale: true };
     }
 
     /**

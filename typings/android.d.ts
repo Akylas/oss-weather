@@ -77,7 +77,7 @@ declare namespace com {
                     static sendWidgetAdded<WidgetConfigActivityCallbacksImplementation extends WidgetConfigActivityCallbacksImplementation>(arg0: this, appWidgetId: number);
                     static addActiveWidget<WidgetConfigActivityCallbacksImplementation extends WidgetConfigActivityCallbacksImplementation>(arg0: this, appWidgetId: number);
                     static loadWidgetConfig<WidgetConfigActivityCallbacksImplementation extends WidgetConfigActivityCallbacksImplementation>(arg0: this, appWidgetId: number, canCreate: boolean);
-                    static setWidgetError(context: globalAndroid.content.Context, widgetId: number, arg2: any);
+                    static setWidgetError(context: globalAndroid.content.Context, widgetId: number, errorMessage: string, isNetwork?: boolean, iconPath?: string);
                     static setWidgetLoading(context: globalAndroid.content.Context, widgetId: number);
                     static updateWidgetData(context: globalAndroid.content.Context, widgetId: number, data: string);
                     static getAllActiveWidgetIds(context: globalAndroid.content.Context): java.util.List<string>;

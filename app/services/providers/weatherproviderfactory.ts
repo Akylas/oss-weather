@@ -179,8 +179,7 @@ export function getCachedWeather(
         // Check if cache is still valid (less than 1 minute old)
         const cacheAge = Date.now() - cachedData.time;
         if (maxAge > 0 && cacheAge > maxAge) {
-            // Cache expired, remove it
-            ApplicationSettings.remove(cacheKey);
+            // kept: the next fetch replaces it and it is still the fallback when that fetch fails
             return null;
         }
 

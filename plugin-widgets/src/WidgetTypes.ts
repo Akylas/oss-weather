@@ -34,6 +34,8 @@ export interface WeatherWidgetData {
     dailyData: DailyData[];
     forecastData: ForecastData[];
     lastUpdate: number;
+    // cached data shown after a failed refresh, lastUpdate is then the time of the data
+    stale?: boolean;
 }
 
 export interface HourlyData {

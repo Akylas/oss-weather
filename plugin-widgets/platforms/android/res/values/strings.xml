@@ -29,5 +29,9 @@
     <string name="widget.loading">Loading\u2026</string>
     <string name="widget.error_loading">Error loading widget data</string>
     <string name="widget.tap_configure">Tap to configure</string>
+    <string name="widget.error_network">Unable to refresh the weather</string>
+    <string name="widget.error_report">Please report this from the app</string>
+    <string name="widget.tap_open_app">Tap to open the app</string>
+    <string name="widget.updated_ago">Updated %s</string>
     <string name="widget.no_location">No location set</string>
 </resources>

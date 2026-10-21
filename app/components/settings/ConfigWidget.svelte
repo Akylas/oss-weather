@@ -19,7 +19,7 @@
 
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionView } from '@nativescript-community/ui-collectionview';
-    import { pickColor } from '@nativescript-community/ui-color';
+    import { pickColor } from '~/utils/ui/pickColor';
     import { confirm } from '~/utils/ui/dialogs';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import { closePopover } from '@nativescript-community/ui-popover/svelte';

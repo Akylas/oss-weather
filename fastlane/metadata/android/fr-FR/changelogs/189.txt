@@ -1,0 +1,5 @@
+Features:
+- add in-app color picker with hex and RGB fields (#572)
+
+Bug fixes:
+- Translations update

@@ -17,6 +17,8 @@ import { ImageViewTraceCategory, initialize } from '@nativescript-community/ui-i
 import { Label } from '@nativescript-community/ui-label';
 import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
 import { installMixins, themer } from '@nativescript-community/ui-material-core';
+import SegmentedBarElement from '@nativescript-community/ui-material-segmentedbar/svelte/SegmentedBarElement';
+import PagerElement from '@nativescript-community/ui-pager/svelte';
 import { Application, ApplicationSettings, Trace, Utils } from '@nativescript/core';
 import { init as sharedInit } from '@shared/index';
 import { startSentry } from '@shared/utils/sentry';
@@ -86,6 +88,8 @@ try {
     DrawerElement.register();
     CollectionViewElement.register();
     SwipeMenuElement.register();
+    PagerElement.register();
+    SegmentedBarElement.register();
     if (__IOS__ && PLAY_STORE_BUILD) {
         import('@shared/utils/inapp-purchase').then((r) => r.init());
     }

@@ -31,6 +31,7 @@ export async function showAlertOptionSelect<T>(props?: ComponentProps<OptionSele
                 view.bindingContext.closeCallback(item);
             },
             trackingScrollView: 'collectionView',
+            titleFontWeight: __IOS__ ? 'bold' : null,
             ...props,
             height: dialogListHeight(props?.height ?? null, Screen.mainScreen.heightDIPs)
         }) as ComponentInstanceInfo<GridLayout, OptionSelect__SvelteComponent_>;

@@ -1,18 +1,13 @@
 package com.akylas.weather.widgets
 
-import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
-import android.os.Bundle
 import android.net.Uri
 import java.util.Calendar
 // import java.util.concurrent.Executors
@@ -183,112 +178,6 @@ class SimpleWeatherWithDateWidgetReceiver : WeatherWidgetGlanceReceiver() {
  */
 class SimpleWeatherWithClockWidgetReceiver : WeatherWidgetGlanceReceiver() {
     override val glanceAppWidget: GlanceAppWidget = SimpleWeatherWithClockWidget()
-
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        if (intent.action == Intent.ACTION_TIME_CHANGED || intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
-            WidgetsLogger.d(LOG_TAG, "System time changed (${intent.action}) - refreshing clock widgets")
-            val updateIntent = createClockUpdateIntent(context)
-            // empty ids would make the base onReceive flag the next weather refresh as no-data
-            if (updateIntent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS)?.isNotEmpty() == true) {
-                context.sendBroadcast(updateIntent)
-            }
-        }
-    }
-
-    override fun onRestored(context: Context, oldWidgetIds: IntArray, newWidgetIds: IntArray) {
-        super.onRestored(context, oldWidgetIds, newWidgetIds)
-        scheduleNextClockUpdate(context)
-    }
-
-    override fun onAppWidgetOptionsChanged(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetId: Int,
-        newOptions: Bundle
-    ) {
-        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-        scheduleNextClockUpdate(context)
-    }
-    override fun onEnabled(context: Context) {
-        WidgetsLogger.i(LOG_TAG, "SimpleWeatherWithClockWidget onEnabled - scheduling clock updates")
-        super.onEnabled(context)
-        scheduleNextClockUpdate(context)
-    }
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        WidgetsLogger.d(LOG_TAG, "SimpleWeatherWithClockWidget onUpdate widgetIds=${appWidgetIds.joinToString(",")}")
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-        scheduleNextClockUpdate(context)
-    }
-
-    override fun onDisabled(context: Context) {
-        super.onDisabled(context)
-        WidgetsLogger.i(LOG_TAG, "SimpleWeatherWithClockWidget last widget removed - canceling clock updates")
-        cancelClockUpdates(context)
-    }
-
-    companion object {
-        private const val CLOCK_UPDATE_REQUEST_CODE = 1002
-        
-        @SuppressLint("ScheduleExactAlarm")
-        fun scheduleNextClockUpdate(context: Context) {
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            WidgetsLogger.d(LOG_TAG, "scheduleNextClockUpdate")
-            
-            val intent = createClockUpdateIntent(context)
-
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                CLOCK_UPDATE_REQUEST_CODE,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            
-            val now = System.currentTimeMillis()
-            val nextMinute = (now / 60000 + 1) * 60000 + 200
-            
-            // Minute-synced like the status bar clock. AllowWhileIdle so Doze does not break the
-            // one-shot chain (Doze still limits it to ~1 alarm / 9 min); without exact-alarm
-            // permission fall back to an inexact alarm.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMinute, pendingIntent)
-            } else {
-                WidgetsLogger.w(LOG_TAG, "Cannot schedule exact alarms - permission not granted. Clock updates will be less accurate.")
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMinute, pendingIntent)
-            }
-
-            WidgetsLogger.d(LOG_TAG, "Scheduled clock update for all widgets at ${nextMinute}")
-        }
-
-        // Intent updating ALL clock widgets at once, without refetching weather data
-        private fun createClockUpdateIntent(context: Context): Intent =
-            Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-                val widgetIds = AppWidgetManager.getInstance(context).getAppWidgetIds(
-                    ComponentName(context, SimpleWeatherWithClockWidgetReceiver::class.java)
-                )
-                putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
-                putExtra("updateData", false)
-            }
-        
-        fun cancelClockUpdates(context: Context) {
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val intent = Intent(context, SimpleWeatherWithClockWidgetReceiver::class.java).apply {
-                action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            }
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                CLOCK_UPDATE_REQUEST_CODE,
-                intent,
-                PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
-            )
-            
-            pendingIntent?.let {
-                alarmManager.cancel(it)
-                it.cancel()
-            }
-        }
-    }
 }
 
 /**

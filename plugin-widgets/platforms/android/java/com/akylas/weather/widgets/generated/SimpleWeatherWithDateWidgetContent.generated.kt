@@ -29,6 +29,8 @@ import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
 import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.WidgetComposables
+import com.akylas.weather.widgets.WidgetTextClock
+import com.akylas.weather.widgets.widgetDatePattern
 import com.akylas.weather.widgets.WidgetModern
 import androidx.glance.text.FontFamily
 import com.akylas.weather.widgets.WidgetLoadingState
@@ -112,9 +114,11 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 Column(
                     modifier = GlanceModifier.defaultWeight(),
                 ) {
-                    Text(
-                        text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
-                        style = TextStyle(fontSize = (max(min((size.width.value * 0.07f), min((size.height.value * 0.25f), 15.0f)), 11.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Medium)
+                    WidgetTextClock(
+                        fontSize = (max(min((size.width.value * 0.07f), min((size.height.value * 0.25f), 15.0f)), 11.0f) * fontScaleFactor).sp,
+                        color = widgetColor,
+                        weight = "medium",
+                        format = widgetDatePattern(context, "date"),
                     )
                     Text(
                         text = data.locationName,
@@ -138,23 +142,18 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                 Column(
                     modifier = GlanceModifier.defaultWeight(),
                 ) {
-                    Text(
-                        text = run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                },
-                        style = TextStyle(fontSize = (max(min(((size.width.value - 128.0f) / 3.4f), min((size.height.value * 0.42f), 56.0f)), 9.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Normal, fontFamily = FontFamily("sans-serif-light"))
+                    WidgetTextClock(
+                        fontSize = (max(min(((size.width.value - 128.0f) / 3.4f), min((size.height.value * 0.42f), 56.0f)), 9.0f) * fontScaleFactor).sp,
+                        color = widgetColor,
+                        weight = "light",
+                        format = widgetDatePattern(context, "dayMonth"),
                     )
                     if (size.height.value >= 80) {
-                        Text(
-                            text = android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date()),
-                            style = TextStyle(fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.13f), 13.0f)), 10.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                        WidgetTextClock(
+                            fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.13f), 13.0f)), 10.0f) * fontScaleFactor).sp,
+                            color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                            weight = "normal",
+                            format = widgetDatePattern(context, "fullDate"),
                         )
                     }
                     else {
@@ -256,18 +255,11 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                         )
                     }
                 }
-                Text(
-                    text = run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                },
-                    style = TextStyle(fontSize = (max(min((size.width.value * 0.14f), min((size.height.value * 0.13f), 15.0f)), 11.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Medium)
+                WidgetTextClock(
+                    fontSize = (max(min((size.width.value * 0.14f), min((size.height.value * 0.13f), 15.0f)), 11.0f) * fontScaleFactor).sp,
+                    color = widgetColor,
+                    weight = "medium",
+                    format = widgetDatePattern(context, "dayMonth"),
                 )
                 Row(
                     modifier = GlanceModifier,
@@ -297,18 +289,11 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                         Column(
                             modifier = GlanceModifier.defaultWeight(),
                         ) {
-                            Text(
-                                text = run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                },
-                                style = TextStyle(fontSize = (max(min(((size.width.value - 80.0f) / 3.4f), min((size.height.value * 0.3f), 34.0f)), 9.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Normal, fontFamily = FontFamily("sans-serif-light"))
+                            WidgetTextClock(
+                                fontSize = (max(min(((size.width.value - 80.0f) / 3.4f), min((size.height.value * 0.3f), 34.0f)), 9.0f) * fontScaleFactor).sp,
+                                color = widgetColor,
+                                weight = "light",
+                                format = widgetDatePattern(context, "dayMonth"),
                             )
                             Text(
                                 text = data.locationName,
@@ -341,22 +326,17 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                     Column(
                         modifier = GlanceModifier.fillMaxSize().padding((12).dp),
                     ) {
-                        Text(
-                            text = run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                },
-                            style = TextStyle(fontSize = (max(min(((size.width.value - 24.0f) / 3.4f), min((size.height.value * 0.2f), 34.0f)), 9.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Normal, fontFamily = FontFamily("sans-serif-light"))
+                        WidgetTextClock(
+                            fontSize = (max(min(((size.width.value - 24.0f) / 3.4f), min((size.height.value * 0.2f), 34.0f)), 9.0f) * fontScaleFactor).sp,
+                            color = widgetColor,
+                            weight = "light",
+                            format = widgetDatePattern(context, "dayMonth"),
                         )
-                        Text(
-                            text = android.text.format.DateFormat.format("yyyy", java.util.Date()).toString(),
-                            style = TextStyle(fontSize = (max(min((size.width.value * 0.08f), min((size.height.value * 0.08f), 12.0f)), 10.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                        WidgetTextClock(
+                            fontSize = (max(min((size.width.value * 0.08f), min((size.height.value * 0.08f), 12.0f)), 10.0f) * fontScaleFactor).sp,
+                            color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                            weight = "normal",
+                            format = widgetDatePattern(context, "year"),
                         )
                         Spacer(modifier = GlanceModifier.defaultWeight())
                         if (size.height.value >= 170) {
@@ -434,22 +414,17 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                             Column(
                                 modifier = GlanceModifier.defaultWeight(),
                             ) {
-                                Text(
-                                    text = run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                },
-                                    style = TextStyle(fontSize = (max(min(((size.width.value - 126.0f) / 3.4f), min((size.height.value * 0.26f), 64.0f)), 9.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Normal, fontFamily = FontFamily("sans-serif-light"))
+                                WidgetTextClock(
+                                    fontSize = (max(min(((size.width.value - 126.0f) / 3.4f), min((size.height.value * 0.26f), 64.0f)), 9.0f) * fontScaleFactor).sp,
+                                    color = widgetColor,
+                                    weight = "light",
+                                    format = widgetDatePattern(context, "dayMonth"),
                                 )
-                                Text(
-                                    text = android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date()),
-                                    style = TextStyle(fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.08f), 15.0f)), 11.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                                WidgetTextClock(
+                                    fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.08f), 15.0f)), 11.0f) * fontScaleFactor).sp,
+                                    color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                                    weight = "normal",
+                                    format = widgetDatePattern(context, "fullDate"),
                                 )
                             }
                             Column(
@@ -714,23 +689,18 @@ fun SimpleWeatherWithDateWidgetContent(config: WidgetConfig, data: WeatherWidget
                         Column(
                             modifier = GlanceModifier.defaultWeight(),
                         ) {
-                            Text(
-                                text = run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\s,./-]*y+[\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                },
-                                style = TextStyle(fontSize = (max(min(((size.width.value - 128.0f) / 3.4f), min((size.height.value * 0.42f), 56.0f)), 9.0f) * fontScaleFactor).sp, color = widgetColor, fontWeight = FontWeight.Normal, fontFamily = FontFamily("sans-serif-light"))
+                            WidgetTextClock(
+                                fontSize = (max(min(((size.width.value - 128.0f) / 3.4f), min((size.height.value * 0.42f), 56.0f)), 9.0f) * fontScaleFactor).sp,
+                                color = widgetColor,
+                                weight = "light",
+                                format = widgetDatePattern(context, "dayMonth"),
                             )
                             if (size.height.value >= 80) {
-                                Text(
-                                    text = android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date()),
-                                    style = TextStyle(fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.13f), 13.0f)), 10.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                                WidgetTextClock(
+                                    fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.13f), 13.0f)), 10.0f) * fontScaleFactor).sp,
+                                    color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                                    weight = "normal",
+                                    format = widgetDatePattern(context, "fullDate"),
                                 )
                             }
                             else {

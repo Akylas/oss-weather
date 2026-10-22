@@ -751,10 +751,9 @@ function generateConditional(element: LayoutElement, indent: string, defaultColo
     return lines;
 }
 
-function generateClock(element: LayoutElement, indent: string, defaultColor?: string): string[] {
-    const lines: string[] = [];
-
-    const fontSizeExpr = compileSpValue(element.fontSize, undefined);
+// Clock and date are self-updating TextClock views: no alarm needed to keep them in sync
+function generateTextClock(element: LayoutElement, indent: string, defaultColor: string | undefined, formatExpr?: string): string[] {
+    const fontSizeExpr = compileSpValue(element.fontSize, '14.sp');
     // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
     let colorExpr: string;
     if (element.color !== undefined && element.color !== null) {
@@ -768,153 +767,44 @@ function generateClock(element: LayoutElement, indent: string, defaultColor?: st
     } else {
         colorExpr = 'GlanceTheme.colors.onSurface';
     }
-
-    // Handle fontWeight with proper expression support and literal transformation
-    const fontWeightExpr = compilePropValue(
-        element.fontWeight,
-        {
+    if (element.opacity !== undefined) {
+        const opacityExpr = compilePropertyValue(element.opacity, {
             platform: 'kotlin',
-            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
-        },
-        undefined
-    );
+            context: 'value',
+            formatter: (v: number) => `${v}f`
+        });
+        colorExpr = `ColorProvider(${colorExpr}.getColor(context).copy(alpha = ${opacityExpr}))`;
+    }
 
-    // Always use locale-aware time format (respects system 24h/12h and AM/PM preference)
-    const timeExpr = `android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date())`;
+    // the weight selects one of the TextClock layouts (RemoteViews cannot change the typeface)
+    const fontWeightExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => JSON.stringify(v.toLowerCase()) }, '"normal"');
 
-    lines.push(`${indent}Text(`);
-    lines.push(`${indent}    text = ${timeExpr},`);
-
-    const styleProps: string[] = [];
-    if (fontSizeExpr) {
-        styleProps.push(`fontSize = ${fontSizeExpr}`);
-    }
-    if (fontWeightExpr) {
-        styleProps.push(`fontWeight = ${fontWeightExpr}`);
-    }
-    if (JSON.stringify(element.fontWeight ?? '').includes('light')) {
-        // Glance has no light weight: the light system family instead
-        const familyExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => (v === 'light' ? 'FontFamily("sans-serif-light")' : 'null') }, 'null');
-        styleProps.push(`fontFamily = ${familyExpr}`);
-    }
-    if (colorExpr) {
-        styleProps.push(`color = ${colorExpr}`);
-    }
+    const alignMap: Record<string, string> = { left: 'TextAlign.Start', center: 'TextAlign.Center', right: 'TextAlign.End' };
+    let textAlignExpr: string | undefined;
     if (element.textAlign !== undefined) {
-        const alignMap: Record<string, string> = { left: 'TextAlign.Start', center: 'TextAlign.Center', right: 'TextAlign.End' };
-        if (isExpression(element.textAlign)) {
-            const textAlignExpr = compileExpr(element.textAlign, { platform: 'kotlin', context: 'value', formatter: (v: string) => alignMap[v] || 'TextAlign.Start' });
-            styleProps.push(`textAlign = ${textAlignExpr}`);
-        } else {
-            styleProps.push(`textAlign = ${alignMap[element.textAlign] || 'TextAlign.Start'}`);
-        }
+        textAlignExpr = isExpression(element.textAlign)
+            ? compileExpr(element.textAlign, { platform: 'kotlin', context: 'value', formatter: (v: string) => alignMap[v] || 'TextAlign.Start' })
+            : alignMap[element.textAlign] || 'TextAlign.Start';
     }
 
-    if (styleProps.length > 0) {
-        lines.push(`${indent}    style = TextStyle(${styleProps.join(', ')})`);
+    const args = [`fontSize = ${fontSizeExpr}`, `color = ${colorExpr}`, `weight = ${fontWeightExpr}`];
+    if (formatExpr) {
+        args.push(`format = ${formatExpr}`);
+    }
+    if (textAlignExpr) {
+        args.push(`textAlign = ${textAlignExpr}`);
     }
 
-    lines.push(`${indent})`);
+    return [`${indent}WidgetTextClock(`, ...args.map((arg) => `${indent}    ${arg},`), `${indent})`];
+}
 
-    return lines;
+function generateClock(element: LayoutElement, indent: string, defaultColor?: string): string[] {
+    return generateTextClock(element, indent, defaultColor);
 }
 
 function generateDate(element: LayoutElement, indent: string, defaultColor?: string): string[] {
-    const lines: string[] = [];
-
-    const fontSizeExpr = compileSpValue(element.fontSize, undefined);
-    // Use element color if defined, otherwise fall back to defaultColor, otherwise use theme default
-    let colorExpr: string;
-    if (element.color !== undefined && element.color !== null) {
-        colorExpr = compilePropValue(element.color, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
-    } else if (defaultColor && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(defaultColor)) {
-        // defaultColor is a simple identifier (variable name) - use directly
-        colorExpr = defaultColor;
-    } else if (defaultColor) {
-        // defaultColor is an expression - compile it
-        colorExpr = compilePropValue(defaultColor, { platform: 'kotlin', formatter: (v: string) => formatColor(v, 'kotlin') }, 'GlanceTheme.colors.onSurface');
-    } else {
-        colorExpr = 'GlanceTheme.colors.onSurface';
-    }
-
-    // Handle fontWeight with proper expression support and literal transformation
-    const fontWeightExpr = compilePropValue(
-        element.fontWeight,
-        {
-            platform: 'kotlin',
-            formatter: (v: string) => toPlatformFontWeight(v, 'glance')
-        },
-        undefined
-    );
-
-    // Determine date expression based on style (use locale-aware formats)
-    let dateExpr: string;
-    if (element.format) {
-        dateExpr = `android.text.format.DateFormat.format("${element.format}", java.util.Date()).toString()`;
-    } else {
-        switch (element.style) {
-            case 'dayMonth':
-                dateExpr = `run {
-                    val mediumFormat = android.text.format.DateFormat.getMediumDateFormat(context)
-                    if (mediumFormat is java.text.SimpleDateFormat) {
-                        var pattern = mediumFormat.toPattern()
-                        pattern = pattern.replace(Regex("[\\\\s,./-]*y+[\\\\s,./-]*"), "").trim()
-                        java.text.SimpleDateFormat(pattern, java.util.Locale.getDefault()).format(java.util.Date())
-                    } else {
-                        mediumFormat.format(java.util.Date())
-                    }
-                }`;
-                break;
-            case 'fullDate':
-                dateExpr = `android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date())`;
-                break;
-            case 'year':
-                dateExpr = `android.text.format.DateFormat.format("yyyy", java.util.Date()).toString()`;
-                break;
-            case 'month':
-                dateExpr = `android.text.format.DateFormat.format("MMMM", java.util.Date()).toString()`;
-                break;
-            case 'date':
-            default:
-                dateExpr = `android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date())`;
-                break;
-        }
-    }
-
-    lines.push(`${indent}Text(`);
-    lines.push(`${indent}    text = ${dateExpr},`);
-
-    const styleProps: string[] = [];
-    if (fontSizeExpr) {
-        styleProps.push(`fontSize = ${fontSizeExpr}`);
-    }
-    if (colorExpr) {
-        if (element.opacity !== undefined) {
-            const opacityExpr = compilePropertyValue(element.opacity, {
-                platform: 'kotlin',
-                context: 'value',
-                formatter: (v: number) => `${v}f`
-            });
-            colorExpr = `ColorProvider(widgetColor.getColor(context).copy(alpha = ${opacityExpr}))`;
-        }
-        styleProps.push(`color = ${colorExpr}`);
-    }
-    if (fontWeightExpr) {
-        styleProps.push(`fontWeight = ${fontWeightExpr}`);
-    }
-    if (JSON.stringify(element.fontWeight ?? '').includes('light')) {
-        // Glance has no light weight: the light system family instead
-        const familyExpr = compilePropValue(element.fontWeight, { platform: 'kotlin', formatter: (v: string) => (v === 'light' ? 'FontFamily("sans-serif-light")' : 'null') }, 'null');
-        styleProps.push(`fontFamily = ${familyExpr}`);
-    }
-
-    if (styleProps.length > 0) {
-        lines.push(`${indent}    style = TextStyle(${styleProps.join(', ')})`);
-    }
-
-    lines.push(`${indent})`);
-
-    return lines;
+    const formatExpr = element.format ? `"${element.format}"` : `widgetDatePattern(context, "${element.style ?? 'date'}")`;
+    return generateTextClock(element, indent, defaultColor, formatExpr);
 }
 
 /**
@@ -1075,6 +965,8 @@ function generateKotlinFile(layout: WidgetLayout): string {
         lines.push('import com.akylas.weather.widgets.DailyData');
     }
     lines.push('import com.akylas.weather.widgets.WidgetComposables');
+    lines.push('import com.akylas.weather.widgets.WidgetTextClock');
+    lines.push('import com.akylas.weather.widgets.widgetDatePattern');
     lines.push('import com.akylas.weather.widgets.WidgetModern');
     lines.push('import androidx.glance.text.FontFamily');
     lines.push('import com.akylas.weather.widgets.WidgetLoadingState');

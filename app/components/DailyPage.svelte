@@ -7,7 +7,7 @@
     import dayjs, { Dayjs } from 'dayjs';
     import AstronomyView from '~/components/astronomy/AstronomyView.svelte';
     import WindyView, { computeWindyViewMinHeight } from '~/components/WindyView.svelte';
-    import { SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY } from '~/helpers/constants';
+    import { SETTINGS_DAILY_PAGE_HOURLY_MODE, SETTINGS_SHOW_CURRENT_DAY_DAILY, SHOW_CURRENT_DAY_DAILY } from '~/helpers/constants';
     import { formatDate, isSameDay, lc } from '~/helpers/locale';
     import { POLLENS_POLLUTANTS_TITLES, Pollutants, getPollutantIndex } from '~/services/airQualityData';
     import { AQI_LEVEL_KEYS, AQI_THRESHOLDS, MODERN_LEVEL_COLORS, POLLEN_THRESHOLDS, levelIndex } from '~/utils/airQualityLevel';
@@ -93,7 +93,12 @@
     const MODERN_SECTION_COLORS = { hourly: '#378ADD', airQuality: '#97C459', tides: '#0288D1', astronomy: '#EF9F27' };
     // modern: the hourly card switches between the views without changing the setting
     const HOURLY_MODES = ['classic', 'chart', 'windy'];
-    let pageHourlyMode: string = null;
+    const storedHourlyMode = ApplicationSettings.getString(SETTINGS_DAILY_PAGE_HOURLY_MODE, null);
+    let pageHourlyMode: string = HOURLY_MODES.includes(storedHourlyMode) ? storedHourlyMode : null;
+    function selectHourlyMode(mode: string) {
+        pageHourlyMode = mode;
+        ApplicationSettings.setString(SETTINGS_DAILY_PAGE_HOURLY_MODE, mode);
+    }
     $: shownHourlyMode = (modern && pageHourlyMode) || $hourlyViewMode;
     // modern air quality and pollens: two columns of values with a level bar (pollutants with an index scale)
     const INDEXED_POLLUTANTS: string[] = [Pollutants.O3, Pollutants.NO2, Pollutants.PM10, Pollutants.PM25, Pollutants.SO2, Pollutants.CO];
@@ -421,7 +426,7 @@
                 {#if item.hourly && item.hourly.length}
                     <gridlayout class={modern ? 'modernCard' : ''} rows="auto,auto">
                         {#if modern}
-                            <!-- title and a view switch (classic list, chart, windy) for this page only -->
+                            <!-- title and a view switch (classic list, chart, windy) for this page only, remembered for the next opening -->
                             <ModernCardTitle icon="mdi-clock-outline" iconColor={MODERN_SECTION_COLORS.hourly} title={lc('hourly')}>
                                 <gridlayout class="modernSegmented" col={2} columns="auto,auto,auto" verticalAlignment="center">
                                     {#each HOURLY_MODES as mode, index}
@@ -429,7 +434,7 @@
                                             class={shownHourlyMode === mode ? 'modernSegment modernSegmentCompact modernSegmentSelected' : 'modernSegment modernSegmentCompact'}
                                             col={index}
                                             text={lc(mode + '_view')}
-                                            on:tap={() => (pageHourlyMode = mode)} />
+                                            on:tap={() => selectHourlyMode(mode)} />
                                     {/each}
                                 </gridlayout>
                             </ModernCardTitle>

@@ -55,7 +55,8 @@ export class IconService extends Observable {
         }
     }
     get animated() {
-        return this.mAnimated;
+        // a pack without lottie files (tabler) has nothing to animate: stay on its images
+        return this.mAnimated && this.usingLottie;
     }
     usingLottie = true;
     usingProvider = false;
@@ -75,7 +76,7 @@ export class IconService extends Observable {
             this.iconSetConfig = null;
             fillIconMap(path.join(this.iconSetFolderPath, 'images'), this.images, iconFolders);
             fillIconMap(path.join(this.iconSetFolderPath, 'lottie'), this.lotties, iconFolders);
-            this.usingLottie = true;
+            this.usingLottie = this.lotties.size > 0;
             this.usingProvider = false;
         }
         this.mappingCache.clear();

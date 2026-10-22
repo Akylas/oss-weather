@@ -5,6 +5,10 @@ describe('widgetChip', () => {
     it('keeps the value and its unit', () => {
         expect(widgetChip({ value: '14', subvalue: 'km/h' }, 'icon.png', true)).toEqual({ iconPath: 'icon.png', value: '14', unit: 'km/h', tint: '', barFraction: 0, barColor: '' });
     });
+    it('splits the unit out of a formatted value', () => {
+        const chip = widgetChip({ value: '7.8 mm', subvalue: '90%', probability: 90, color: '#378ADD' }, 'icon.png', true);
+        expect(chip).toMatchObject({ value: '7.8', unit: 'mm', barFraction: 0.9 });
+    });
     it('tints the chip by the data intensity, as a translucent color', () => {
         const chip = widgetChip({ value: '70', subvalue: '%', tint: { color: '#888780', fraction: 1 } }, 'icon.png', true);
         expect(chip.tint).toBe('#88878050');

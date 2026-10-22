@@ -64,6 +64,8 @@
     export let containerColumns: string = '*';
     export let autoSizeListItem: boolean = false;
     export let fontWeight = 'bold';
+    // the modern title uses the accent weight unless this is set (native iOS alerts have bold titles)
+    export let titleFontWeight: string = null;
     export let options: OptionType[] | ObservableArray<OptionType>;
     export let onClose = null;
     export let selectedIndex = -1;
@@ -256,7 +258,7 @@
     <gridlayout {backgroundColor} {borderRadius} columns={`${width}`} {height} rows="auto,auto,*" {...$$restProps}>
         {#if title}
             {#if modern}
-                <label fontSize={18 * $fontScale} fontWeight={$accentFontWeight} margin="16 18 6 18" text={title} />
+                <label fontSize={18 * $fontScale} fontWeight={titleFontWeight ?? $accentFontWeight} margin="16 18 6 18" text={title} />
             {:else}
                 <label class="actionBarTitle" fontWeight="bold" margin="10 10 0 10" text={title} />
             {/if}

@@ -1,0 +1,6 @@
+// Overrides App_Resources/iOS/build.xcconfig for Mac Catalyst builds
+// SimulatorCamera (SPM) needs AVCaptureVideoDataOutput, Mac Catalyst 14+
+MACOSX_DEPLOYMENT_TARGET = 12.0
+// Mac Catalyst takes its macOS target from the iOS one (iOS 14 = macOS 11.0, iOS 15 = macOS 12.0), and Xcode 27
+// builds nothing under macOS 12.0: the SPM packages (liquid-toasts, NextLevel…) follow this value too
+IPHONEOS_DEPLOYMENT_TARGET = 17.0

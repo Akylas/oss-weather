@@ -13,6 +13,7 @@ import { showAlertOptionSelect } from '~/utils/ui';
 import { createGlobalEventListener, globalObservable } from '@shared/utils/svelte/ui';
 import { ALERT_OPTION_MAX_HEIGHT, DEFAULT_LOCALE, SETTINGS_IMPERIAL, SETTINGS_LANGUAGE } from './constants';
 import { imperialUnits } from '~/variables';
+import { endOfDay, startOfDay } from '~/utils/dayBounds';
 import { getISO3Language } from '@akylas/nativescript-app-utils';
 import { clearCurrentLocale, getCurrentLocale } from '@shared/helpers/lang';
 const supportedLanguages = SUPPORTED_LOCALES;
@@ -138,10 +139,10 @@ export function getLocalTime(timestamp?: number | string | dayjs.Dayjs | Date, t
 }
 
 export function getStartOfDay(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
-    return dayjs.utc(timestamp).utcOffset(timezoneOffset).startOf('d');
+    return startOfDay(timestamp, timezoneOffset);
 }
 export function getEndOfDay(timestamp?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
-    return dayjs.utc(timestamp).utcOffset(timezoneOffset).endOf('d');
+    return endOfDay(timestamp, timezoneOffset);
 }
 export function isSameDay(timestamp1?: number | string | dayjs.Dayjs | Date, timestamp2?: number | string | dayjs.Dayjs | Date, timezoneOffset?: number) {
     return dayjs.utc(timestamp1).utcOffset(timezoneOffset).isSame(dayjs.utc(timestamp2).utcOffset(timezoneOffset), 'd');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { centeredBaseline, gridColumnCount, layoutGrid, rangeBarSpan } from './dataGrid';
+import { centeredBaseline, gridColumnCount, gridMinCellWidth, layoutGrid, rangeBarSpan } from './dataGrid';
 
 describe('gridColumnCount', () => {
     it('fits as many columns as the min cell width allows, up to the max', () => {
@@ -9,6 +9,18 @@ describe('gridColumnCount', () => {
     });
     it('always keeps one column', () => {
         expect(gridColumnCount(50, 100, 3)).toBe(1);
+    });
+});
+
+describe('gridMinCellWidth', () => {
+    it('holds the widest content, both paddings and a gap', () => {
+        expect(gridMinCellWidth(76, [65, 76, 35], 10, 5)).toBe(101);
+    });
+    it('keeps the min cell width when the content is narrow', () => {
+        expect(gridMinCellWidth(76, [20, 30], 10, 5)).toBe(76);
+    });
+    it('keeps the min cell width without content', () => {
+        expect(gridMinCellWidth(76, [], 10, 5)).toBe(76);
     });
 });
 

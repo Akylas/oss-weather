@@ -324,7 +324,7 @@
     // with "show missing values", grid and chips keep a placeholder for data with no value
     $: blockItems = $showEmptyData ? weatherDataService.getIconsSlots({ item, filter: topDataFilter, type: 'currently' }) : topIconsData;
     $: chips = $weatherDataLayout === 'chips' ? prepareChips(blockItems, blockWidth, $designStyle, chipsTheme, $fontScale) : null;
-    $: grid = $weatherDataLayout === 'grid' ? prepareGrid(blockItems, blockWidth - 2 * gridPadding, TOP_GRID_OPTIONS, $fontScale) : null;
+    $: grid = $weatherDataLayout === 'grid' ? prepareGrid(blockItems, blockWidth - 2 * gridPadding, TOP_GRID_OPTIONS, $designStyle, chipsTheme, $fontScale) : null;
     $: blockHeight = chips?.height ?? (grid ? grid.height + 2 * gridPadding : undefined);
     $: chipsExtraHeight =
         blockHeight !== undefined ? Math.max(0, CHIPS_TOP * $fontScale + blockHeight + (hasPrecip ? 6 + MINUTELY_CHART_HEIGHT + 45 * $fontScale : 34 * $fontScale) - $topViewHeight) : 0;

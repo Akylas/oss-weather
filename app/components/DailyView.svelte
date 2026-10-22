@@ -94,7 +94,7 @@
     // with "show missing values", grid and chips keep a placeholder for data with no value
     $: blockItems = $showEmptyData ? weatherDataService.getIconsSlots({ item, filter: [WeatherProps.windBeaufort], type: 'daily' }) : iconsData;
     $: chips = $weatherDataLayout === 'chips' ? prepareChips(blockItems, blockWidth, $designStyle, chipsTheme, $fontScale, chipsAlign) : null;
-    $: grid = $weatherDataLayout === 'grid' ? prepareGrid(blockItems, blockWidth, DAILY_GRID_OPTIONS, $fontScale) : null;
+    $: grid = $weatherDataLayout === 'grid' ? prepareGrid(blockItems, blockWidth, DAILY_GRID_OPTIONS, $designStyle, chipsTheme, $fontScale) : null;
     $: blockHeight = chips?.height ?? grid?.height;
     $: modernDataHeight = blockHeight !== undefined ? blockHeight + 2 * cardPadding + 12 * $fontScale : iconsData.length ? MODERN_BLOCK_HEIGHT * $fontScale : 4 * $fontScale;
     $: rowHeight = modern

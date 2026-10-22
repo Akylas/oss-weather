@@ -128,6 +128,8 @@
     let chartNeedsZoomUpdate = false;
     let iconCache: { [k: string]: ImageSource } = {};
     export let chartInitialized = false;
+    // the first frames lack the plot padding and the gradient: stay hidden until they are applied
+    let chartReady = false;
     let highlightedItem: CommonWeatherData;
     let highlightedMargin: string;
     let highlightedAlignment: CoreTypes.HorizontalAlignmentType;
@@ -957,10 +959,12 @@
                 if (updateGradient()) {
                     chartView?.nativeView.invalidate();
                 }
+                chartReady = true;
             }, 0);
             return;
         }
         updateGradient();
+        chartReady = true;
     }
     function drawNightShading(canvas: Canvas) {
         const chart = chartView?.nativeView;
@@ -1249,6 +1253,7 @@
 <gridlayout {...$$restProps}>
     <combinedchart
         bind:this={chartView}
+        opacity={chartReady ? 1 : 0}
         panGestureOptions={{
             minDist: 50,
             failOffsetYStart: -40,

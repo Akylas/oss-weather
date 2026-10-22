@@ -13,6 +13,7 @@ export const SETTINGS_FONTSCALE = 'fontscale';
 export const SETTINGS_ENABLE_CRASH_REPORT = 'enable_crash_report';
 
 export const SETTINGS_HOURLY_VIEW_MODE = 'hourly_view_mode';
+export const SETTINGS_DAILY_PAGE_HOURLY_MODE = 'daily_page_hourly_mode';
 export const SETTINGS_SWIPE_ACTION_BAR_PROVIDER = 'swipe_actionbar_provider';
 export const SETTINGS_METEOBLUE_ENABLED = 'meteoblue_enabled';
 export const SETTINGS_UNITS = 'units';

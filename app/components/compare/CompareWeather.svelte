@@ -3,7 +3,7 @@
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { showSnack } from '@nativescript-community/ui-material-snackbar';
+    import { showSnack } from '@nativescript-community/ui-snackbar';
     import { PullToRefresh } from '@nativescript-community/ui-pulltorefresh';
     import { ApplicationSettings, NavigatedData, Page, View } from '@nativescript/core';
     import { showError } from '@shared/utils/showError';

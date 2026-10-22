@@ -5,7 +5,7 @@
     import type { NativeViewElementNode } from '@nativescript-community/svelte-native/dom';
     import { CollectionViewWithSwipeMenu } from '@nativescript-community/ui-collectionview-swipemenu';
     import DrawerElement from '@nativescript-community/ui-drawer/svelte';
-    import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import { showBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
     import { confirm, prompt } from '~/utils/ui/dialogs';
     import { showSnack } from '~/utils/ui/snack';
     import { VerticalPosition } from '@nativescript-community/ui-popover';

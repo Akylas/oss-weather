@@ -3,8 +3,8 @@
 <script context="module" lang="ts">
     import { CheckBox } from '@nativescript-community/ui-checkbox';
     import { openFilePicker } from '@nativescript-community/ui-document-picker';
-    import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
-    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { closeBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
+    import { TextField } from '@nativescript-community/ui-textfield';
     import { EventData, File, ObservableArray, Utils, View } from '@nativescript/core';
     import { debounce } from '@nativescript/core/utils';
     import { onDestroy } from 'svelte';

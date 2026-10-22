@@ -15,9 +15,8 @@ import CollectionViewElement from '@nativescript-community/ui-collectionview/sve
 import DrawerElement from '@nativescript-community/ui-drawer/svelte';
 import { ImageViewTraceCategory, initialize } from '@nativescript-community/ui-image';
 import { Label } from '@nativescript-community/ui-label';
-import { install as installBottomSheets } from '@nativescript-community/ui-material-bottomsheet';
-import { installMixins, themer } from '@nativescript-community/ui-material-core';
-import SegmentedBarElement from '@nativescript-community/ui-material-segmentedbar/svelte/SegmentedBarElement';
+import { install as installBottomSheets } from '@nativescript-community/ui-bottomsheet';
+import { installMixins, themer } from '@nativescript-community/ui-core';
 import PagerElement from '@nativescript-community/ui-pager/svelte';
 import { Application, ApplicationSettings, Trace, Utils } from '@nativescript/core';
 import { init as sharedInit } from '@shared/index';
@@ -60,18 +59,18 @@ try {
     // registerNativeViewElement('scrollview', () => NestedScrollView);
     registerNativeViewElement('StackLayout', () => require('@nativescript/core').StackLayout);
     registerNativeViewElement('wraplayout', () => require('@nativescript/core').WrapLayout);
-    registerNativeViewElement('slider', () => require('@nativescript-community/ui-material-slider').Slider, null, {}, { override: true });
+    registerNativeViewElement('slider', () => require('@nativescript-community/ui-slider').Slider, null, {}, { override: true });
     registerNativeViewElement('awebview', () => require('@nativescript-community/ui-webview').AWebView);
     registerNativeViewElement('gesturerootview', () => require('@nativescript-community/gesturehandler').GestureRootView);
 
     registerNativeViewElement('span', () => require('@nativescript/core').Span);
-    registerNativeViewElement('textview', () => require('@nativescript-community/ui-material-textview').TextView, null, {}, { override: true });
-    registerNativeViewElement('textfield', () => require('@nativescript-community/ui-material-textfield').TextField, null, {}, { override: true });
-    registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-material-button').Button);
-    registerNativeViewElement('progress', () => require('@nativescript-community/ui-material-progress').Progress);
-    registerNativeViewElement('Switch', () => require('@nativescript-community/ui-material-switch').Switch);
+    registerNativeViewElement('textview', () => require('@nativescript-community/ui-textview').TextView, null, {}, { override: true });
+    registerNativeViewElement('textfield', () => require('@nativescript-community/ui-textfield').TextField, null, {}, { override: true });
+    registerNativeViewElement('mdbutton', () => require('@nativescript-community/ui-button').Button);
+    registerNativeViewElement('progress', () => require('@nativescript-community/ui-progress').Progress);
+    registerNativeViewElement('Switch', () => require('@nativescript-community/ui-switch').Switch);
     registerNativeViewElement('label', () => Label as any, null, {}, { override: true });
-    registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-material-activityindicator').ActivityIndicator);
+    registerNativeViewElement('activityIndicator', () => require('@nativescript-community/ui-activityindicator').ActivityIndicator);
     registerNativeViewElement('linechart', () => require('@nativescript-community/ui-chart/charts/LineChart').LineChart);
     registerNativeViewElement('scatterchart', () => require('@nativescript-community/ui-chart/charts/ScatterChart').ScatterChart);
     registerNativeViewElement('combinedchart', () => require('@nativescript-community/ui-chart/charts/CombinedChart').CombinedChart);
@@ -89,7 +88,7 @@ try {
     CollectionViewElement.register();
     SwipeMenuElement.register();
     PagerElement.register();
-    SegmentedBarElement.register();
+    registerNativeViewElement('segmentedbar', () => require('@nativescript-community/ui-segmentedbar').SegmentedBar);
     if (__IOS__ && PLAY_STORE_BUILD) {
         import('@shared/utils/inapp-purchase').then((r) => r.init());
     }

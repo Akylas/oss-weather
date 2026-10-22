@@ -47,7 +47,7 @@ The following layout primitives are available:
 | `scrollView` | Scrollable container | ScrollView | LazyRow/Column | ScrollView | overflow: auto |
 | `forEach` | Repeat template | ForEach | forEachIndexed | Loop | map() |
 | `clock` | Current time | Text(.time) | TextClock | Label | span |
-| `date` | Current date | Text(.date) | DateText | Label | span |
+| `date` | Current date | Text(.date) | TextClock (date pattern) | Label | span |
 
 ## Data Binding
 

@@ -1,8 +1,6 @@
 import { Application } from '@nativescript/core';
 import { widgetService } from '../WidgetBridge';
-import { WidgetConfigManager } from '../WidgetConfigManager';
 import { renderWidgetErrorIcon } from '../WidgetIcons';
-import { SDK_VERSION } from '@nativescript/core/utils';
 import { classifyWidgetError, widgetErrorMessage } from '~/utils/widgetError';
 
 /**
@@ -47,30 +45,6 @@ export class WidgetUpdateReceiver extends android.content.BroadcastReceiver {
 
                 widgetService.reloadConfigs();
 
-                // Request SCHEDULE_EXACT_ALARM permission for clock widgets on Android 12+
-                if (widgetId !== -1 && SDK_VERSION >= 31) {
-                    // Android 12+
-                    try {
-                        const config = WidgetConfigManager.getConfig(String(widgetId));
-
-                        if (config && config.widgetKind.indexOf('Clock') !== -1) {
-                            DEV_LOG && console.log(`WidgetUpdateReceiver: Widget clock added, widgetId=${widgetId}`);
-                            const alarmManager = context.getSystemService(android.content.Context.ALARM_SERVICE) as android.app.AlarmManager;
-
-                            if (!alarmManager.canScheduleExactAlarms()) {
-                                console.log('WidgetUpdateReceiver: Clock widget added but SCHEDULE_EXACT_ALARM not granted, opening settings');
-
-                                // Open settings to allow user to grant the permission
-                                const intent = new android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-                                intent.setData(android.net.Uri.parse(`package:${__APP_ID__}`));
-                                const activity = Application.android.startActivity;
-                                activity.startActivity(intent);
-                            }
-                        }
-                    } catch (error) {
-                        console.error('WidgetUpdateReceiver: Error checking clock permission:', error);
-                    }
-                }
                 Application.notify({ eventName: 'widgetAdded', widgetId });
             } else if (action === 'com.akylas.weather.WIDGET_REMOVED') {
                 const widgetId = intent.getIntExtra('widgetId', -1);

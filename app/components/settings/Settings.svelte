@@ -6,11 +6,11 @@
     import { CollectionView } from '@nativescript-community/ui-collectionview';
     import { openFilePicker, saveFile } from '@nativescript-community/ui-document-picker';
     import { Label } from '@nativescript-community/ui-label';
-    import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import { showBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
     import { confirm, prompt } from '~/utils/ui/dialogs';
     import { showSnack } from '~/utils/ui/snack';
-    import { TextField, TextFieldProperties } from '@nativescript-community/ui-material-textfield';
-    import { TextView } from '@nativescript-community/ui-material-textview';
+    import { TextField, TextFieldProperties } from '@nativescript-community/ui-textfield';
+    import { TextView } from '@nativescript-community/ui-textview';
     import { Application, ApplicationSettings, File, ObservableArray, Page, ScrollView, StackLayout, TouchGestureEventData, Utils, View } from '@nativescript/core';
     import { inappItems, presentInAppSponsorBottomsheet } from '@shared/utils/inapp-purchase';
     import { Sentry, startSentry, stopSentry } from '@shared/utils/sentry';

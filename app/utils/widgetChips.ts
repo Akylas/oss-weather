@@ -1,4 +1,5 @@
 import { tintAlpha } from '~/utils/designStyle';
+import { splitValueUnit } from '~/utils/valueUnit';
 
 export interface WidgetChip {
     // the data icon, drawn by the app in its color
@@ -26,11 +27,15 @@ export function widgetChip(data: ChipSource, iconPath: string, intensity: boolea
     // widgets have no theme at data time: the light alpha also reads on dark backgrounds
     const alpha = intensity && data.tint ? tintAlpha(data.tint.fraction, false) : 0;
     const hasBar = data.probability > 0;
+    const hasValue = data.value !== undefined && data.value !== null;
+    // with a probability the subvalue is that probability: drawn as the bar
+    const subvalue = hasBar ? '' : (data.subvalue ?? '');
+    // the unit of a formatted value ("7.8 mm") is drawn apart, like the app does
+    const { amount, unit } = hasValue ? splitValueUnit(data.value, subvalue) : { amount: '', unit: '' };
     return {
         iconPath,
-        value: data.value === undefined || data.value === null ? '' : data.value + '',
-        // with a probability the subvalue is that probability: drawn as the bar
-        unit: hasBar ? '' : (data.subvalue ?? ''),
+        value: amount,
+        unit: unit || subvalue,
         tint: alpha ? data.tint.color + alpha.toString(16).padStart(2, '0').toUpperCase() : '',
         barFraction: hasBar ? data.probability / 100 : 0,
         barColor: hasBar && data.color ? data.color : ''

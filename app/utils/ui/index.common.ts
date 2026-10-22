@@ -1,5 +1,5 @@
 import { restartApp } from '@akylas/nativescript-app-utils';
-import { MDCAlertControlerOptions } from '@nativescript-community/ui-material-dialogs';
+import { MDCAlertControlerOptions } from '@nativescript-community/ui-dialogs';
 import { alert, confirm } from './dialogs';
 import { HorizontalPosition, PopoverOptions, VerticalPosition } from '@nativescript-community/ui-popover';
 import { closePopover, showPopover } from '@nativescript-community/ui-popover/svelte';
@@ -31,6 +31,7 @@ export async function showAlertOptionSelect<T>(props?: ComponentProps<OptionSele
                 view.bindingContext.closeCallback(item);
             },
             trackingScrollView: 'collectionView',
+            titleFontWeight: __IOS__ ? 'bold' : null,
             ...props,
             height: dialogListHeight(props?.height ?? null, Screen.mainScreen.heightDIPs)
         }) as ComponentInstanceInfo<GridLayout, OptionSelect__SvelteComponent_>;

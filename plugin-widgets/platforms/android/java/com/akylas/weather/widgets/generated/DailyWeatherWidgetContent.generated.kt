@@ -30,6 +30,8 @@ import com.akylas.weather.widgets.WidgetConfig
 import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.DailyData
 import com.akylas.weather.widgets.WidgetComposables
+import com.akylas.weather.widgets.WidgetTextClock
+import com.akylas.weather.widgets.widgetDatePattern
 import com.akylas.weather.widgets.WidgetModern
 import androidx.glance.text.FontFamily
 import com.akylas.weather.widgets.WidgetLoadingState

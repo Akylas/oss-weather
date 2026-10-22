@@ -131,8 +131,8 @@ Every widget JSON file (`src/widgets/*.json`) conforms to `schema.json`. Key top
 | `scrollView`  | Scrollable area          | `LazyColumn/Row`| `ScrollView` | merged into collectionview |
 | `forEach`     | Repeat template for list | `.forEach { item ->` | `ForEach` | `collectionview` |
 | `conditional` | If/else branching        | `if (…) { … }` | `if … { … }` | `{#if …}`       |
-| `clock`       | Live clock               | `Text` + DateFormat | `Text(.time)` | `label` + `nowTime()` |
-| `date`        | Current date             | `Text` + DateFormat | `Text(.date)` | `label`       |
+| `clock`       | Live clock               | `TextClock`     | `Text(.time)` | `label` + `nowTime()` |
+| `date`        | Current date             | `TextClock` (date pattern) | `Text(.date)` | `label`       |
 
 ### Common element properties
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import { closeBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
     import { ApplicationSettings, Color, Utils } from '@nativescript/core';
     import { onMount } from 'svelte';
     import CActionBar from '~/components/common/CActionBar.svelte';

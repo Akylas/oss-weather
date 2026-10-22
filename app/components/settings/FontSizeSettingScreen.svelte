@@ -1,6 +1,6 @@
 <script lang="ts">
     import { lc } from '@nativescript-community/l';
-    import { TextField } from '@nativescript-community/ui-material-textfield';
+    import { TextField } from '@nativescript-community/ui-textfield';
     import { ApplicationSettings, PropertyChangeData } from '@nativescript/core';
     import { getNumber } from '@nativescript/core/application-settings';
     import { debounce } from '@nativescript/core/utils';

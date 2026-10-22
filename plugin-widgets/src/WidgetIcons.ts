@@ -37,6 +37,15 @@ export function renderWidgetIcon(glyph: string, fontFamily: string, color: strin
     }
     const canvas = new Canvas(ICON_SIZE, ICON_SIZE);
     paint.setFontFamily(fontFamily);
+    // an unloaded icon font draws a fallback "no glyph" box that would then be cached for good
+    // (e.g. a debug install refreshing widgets before its assets are synced)
+    if (__ANDROID__) {
+        const nativePaint: android.graphics.Paint = paint.getNative();
+        if (!nativePaint.hasGlyph(glyph)) {
+            canvas.release();
+            return '';
+        }
+    }
     paint.setTextSize(ICON_SIZE * 0.85);
     paint.setColor(color);
     paint.getFontMetrics(fontMetrics);

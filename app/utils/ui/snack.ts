@@ -1,4 +1,4 @@
-import { SnackBar, SnackBarOptions } from '@nativescript-community/ui-material-snackbar';
+import { SnackBar, SnackBarOptions } from '@nativescript-community/ui-snackbar';
 import { Color, Font, Utils } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { textFontFamily } from '~/utils/designStyle';
@@ -28,7 +28,7 @@ function styleAndroidSnack(snackbar: com.google.android.material.snackbar.Snackb
     }
 }
 
-// same api as @nativescript-community/ui-material-snackbar showSnack, with the modern style
+// same api as @nativescript-community/ui-snackbar showSnack, with the modern style
 export function showSnack(options: SnackBarOptions) {
     if (get(designStyle) !== 'modern') {
         return new SnackBar().showSnack(options);

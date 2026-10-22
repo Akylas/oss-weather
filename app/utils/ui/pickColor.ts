@@ -1,4 +1,4 @@
-import { showBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+import { showBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
 import { Color, View } from '@nativescript/core';
 import { screenHeightDips } from '~/variables';
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { closeBottomSheet } from '@nativescript-community/ui-material-bottomsheet/svelte';
+    import { closeBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
     import { debounce } from '@nativescript/core/utils';
     import { l, lc } from '~/helpers/locale';
     import { MaptilerProvider } from '~/services/providers/maptiler';

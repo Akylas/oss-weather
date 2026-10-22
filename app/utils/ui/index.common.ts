@@ -79,10 +79,11 @@ export async function showPopoverMenu<T = any>({
         props: {
             borderRadius: modern ? 14 : 10,
             elevation: __IOS__ || modern ? 0 : 3,
-            borderWidth: modern ? 1 : 0,
+            // the native iOS popover already has its own background: no border and no margin around the menu
+            borderWidth: modern && !__IOS__ ? 1 : 0,
             borderColor: modern ? colorModernHairlineStrong : colorOutlineVariant,
             isMenu: true,
-            margin: 4,
+            margin: __IOS__ ? 0 : 4,
             fontWeight: 500,
             backgroundColor,
             containerColumns: 'auto',

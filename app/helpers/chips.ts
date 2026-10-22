@@ -5,9 +5,8 @@ import { get } from 'svelte/store';
 import { DesignStyle, cardBackgroundAlpha, dataTextStyle, tintAlpha } from '~/utils/designStyle';
 import { isDarkTheme } from '~/helpers/theme';
 import { dataIntensity } from '~/variables';
-import { CHIP_HEIGHT, CHIP_PADDING, DataContentOptions, drawDataContent, measureDataContent } from '~/helpers/dataGrid';
+import { CHIP_GAP, CHIP_HEIGHT, CHIP_PADDING, DataContentOptions, drawDataContent, measureDataContent } from '~/helpers/dataGrid';
 
-const CHIP_GAP = 5;
 const CHIP_ICON_GAP = 4;
 const CHIP_ICON_SCALE = 0.95;
 

@@ -2,6 +2,11 @@ export function gridColumnCount(width: number, minCellWidth: number, maxColumns:
     return Math.max(1, Math.min(maxColumns, Math.floor(width / minCellWidth)));
 }
 
+// a tinted item draws a pill spilling one padding left of its cell: the cell holds the content, both paddings and a gap
+export function gridMinCellWidth(minCellWidth: number, contentWidths: number[], padding: number, gap: number) {
+    return Math.max(minCellWidth, ...contentWidths.map((width) => width + 2 * padding + gap));
+}
+
 export function layoutGrid(count: number, columns: number) {
     return {
         rowCount: Math.ceil(count / columns),

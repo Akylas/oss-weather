@@ -1,7 +1,7 @@
 import { Align, Canvas, Paint } from '@nativescript-community/ui-canvas';
 import type { Color } from '@nativescript/core';
 import type { CommonData } from '~/services/weatherData';
-import { centeredBaseline, gridColumnCount, layoutGrid } from '~/utils/dataGrid';
+import { centeredBaseline, gridColumnCount, gridMinCellWidth, layoutGrid } from '~/utils/dataGrid';
 import { get } from 'svelte/store';
 import { DesignStyle, dataTextStyle, textFontFamily, tintAlpha } from '~/utils/designStyle';
 import { isDarkTheme } from '~/helpers/theme';
@@ -16,6 +16,7 @@ const UNIT_GAP = 2;
 // chips size, also used by the grid intensity tint
 export const CHIP_HEIGHT = 26;
 export const CHIP_PADDING = 10;
+export const CHIP_GAP = 5;
 const PROBABILITY_BAR_HEIGHT = 2.5;
 const PROBABILITY_TRACK_ALPHA = 40;
 
@@ -158,23 +159,33 @@ export interface GridOptions {
 
 export interface PreparedGrid {
     items: CommonData[];
+    contentWidths: number[];
     cells: { column: number; row: number }[];
     cellWidth: number;
     options: GridOptions;
     height: number;
 }
 
-export function prepareGrid(items: CommonData[], width: number, options: GridOptions, fontScale: number): PreparedGrid {
-    const columns = gridColumnCount(width, options.minCellWidth * fontScale, options.maxColumns);
+function gridContentOptions(options: GridOptions, fontScale: number): DataContentOptions {
+    return { iconScale: ICON_SCALE, iconGap: ICON_GAP, valueFontSize: options.valueFontSize * fontScale };
+}
+
+export function prepareGrid(items: CommonData[], width: number, options: GridOptions, style: DesignStyle, theme: GridTheme, fontScale: number): PreparedGrid {
+    const contentOptions = gridContentOptions(options, fontScale);
+    const contentWidths = items.map((item) => measureDataContent(item, dataTextStyle(style, item, theme, fontScale).subvalueFontSize, contentOptions, fontScale));
+    // tinted items draw a pill around their content: its paddings and the gap to the next cell must fit
+    const hasPills = items.some((item) => item.tint);
+    const minCellWidth = hasPills ? gridMinCellWidth(options.minCellWidth * fontScale, contentWidths, CHIP_PADDING * fontScale, CHIP_GAP * fontScale) : options.minCellWidth * fontScale;
+    const columns = gridColumnCount(width, minCellWidth, options.maxColumns);
     const { cells, rowCount } = layoutGrid(items.length, columns);
     const height = rowCount ? (rowCount * options.rowHeight + (rowCount - 1) * options.rowGap) * fontScale : 0;
-    return { items, cells, cellWidth: width / columns, options, height };
+    return { items, contentWidths, cells, cellWidth: width / columns, options, height };
 }
 
 export function drawGrid(canvas: Canvas, grid: PreparedGrid, left: number, top: number, style: DesignStyle, theme: GridTheme, fontScale: number) {
     const { cellWidth, options } = grid;
     const rowHeight = options.rowHeight * fontScale;
-    const contentOptions = { iconScale: ICON_SCALE, iconGap: ICON_GAP, valueFontSize: options.valueFontSize * fontScale };
+    const contentOptions = gridContentOptions(options, fontScale);
     const showIntensity = get(dataIntensity);
     grid.items.forEach((item, index) => {
         const { column, row } = grid.cells[index];
@@ -183,8 +194,7 @@ export function drawGrid(canvas: Canvas, grid: PreparedGrid, left: number, top: 
         if (showIntensity && item.tint) {
             // same pill as a chip around the content, spilling left into the card padding so the content keeps its place
             const padding = CHIP_PADDING * fontScale;
-            const contentWidth = measureDataContent(item, dataTextStyle(style, item, theme, fontScale).subvalueFontSize, contentOptions, fontScale);
-            const tintRight = Math.min(cellLeft + contentWidth + padding, cellLeft + cellWidth - padding - 2 * fontScale);
+            const tintRight = cellLeft + grid.contentWidths[index] + padding;
             const chipHeight = CHIP_HEIGHT * fontScale;
             tintPaint.setColor(item.tint.color);
             tintPaint.setAlpha(tintAlpha(item.tint.fraction, isDarkTheme()));

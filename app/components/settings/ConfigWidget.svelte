@@ -513,7 +513,7 @@
                 value: config.settings?.['ignoreFontScale'] ?? false
             }
         );
-        if (previewConfig.settings) {
+        if (previewConfig?.settings) {
             Object.keys(previewConfig.settings).forEach((key) => {
                 const item = previewConfig.settings[key];
                 switch (item.type) {

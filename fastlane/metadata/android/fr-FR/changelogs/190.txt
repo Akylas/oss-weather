@@ -1,0 +1,11 @@
+Bug fixes:
+- fix widget config preview crash (#576)
+- fix data chip padding and missing icons without lottie (#577)
+- remember hourly view and avoid bad chart first frame (#578)
+- draw clock and date with TextClock instead of alarms (#581)
+- do not cache icons drawn without their font (#582)
+- draw the unit of precipitation chips apart from the value (#583)
+- start and end of day for locations without a timezone offset (#585)
+- do not read the preview config before it is loaded (#586)
+
+Code refa

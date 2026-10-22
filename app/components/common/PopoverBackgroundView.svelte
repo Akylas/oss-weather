@@ -12,7 +12,8 @@
 <!-- popovers are separate root views: they do not inherit the root font -->
 <gesturerootview class={$designStyle === 'modern' ? 'ns-modern' : ''} columns="auto" rows="auto">
     {#if $designStyle === 'modern'}
-        <gridlayout class="modernPopover" margin={4} padding={0} {...$$restProps}>
+        <!-- the native iOS popover has its own background: no border and margin around the content -->
+        <gridlayout class="modernPopover" borderWidth={__IOS__ ? 0 : 1} margin={__IOS__ ? 0 : 4} padding={0} {...$$restProps}>
             <slot />
         </gridlayout>
     {:else}

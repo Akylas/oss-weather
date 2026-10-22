@@ -88,7 +88,7 @@ export class IconService extends Observable {
         if (!iconId && iconId !== 0) {
             return null;
         }
-        if (__ANDROID__ && iconSet.startsWith('provider:')) {
+        if (__ANDROID__ && iconSet?.startsWith('provider:')) {
             let realIconId = iconId;
             while (realIconId !== undefined && WEATHER_CODE_MAPPING.get(realIconId)) {
                 realIconId = WEATHER_CODE_MAPPING.get(realIconId);

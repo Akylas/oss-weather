@@ -172,10 +172,21 @@ function collectUsedColorsFromLayout(layout: WidgetLayout, usedColors: Set<strin
     }
 }
 
+// nested item properties (item.wind.value) can be missing: optional chain everything below item.<prop>
+function guardItemPath(path: string): string {
+    const [root, first, ...rest] = path.split('.');
+    return [`${root}.${first}`, ...rest].join('?.');
+}
+
+// iconPath is a file path for real data but a numeric icon id in the fake preview data
+function iconSourceExpression(expr: string): string {
+    return `(typeof ${expr} === 'string' && ${expr}.startsWith('/') ? ${expr} : iconService.getIconPath(${expr}, true, false, config.iconSet))`;
+}
+
 /**
  * Evaluate a Mapbox expression to TypeScript/Svelte expression
  */
-function evaluateMapboxExpression(expr: any, context: string = 'data', usedColors?: Set<string>): string {
+export function evaluateMapboxExpression(expr: any, context: string = 'data', usedColors?: Set<string>): string {
     if (!Array.isArray(expr)) {
         if (typeof expr === 'string') {
             if (expr === 'get') return expr;
@@ -212,9 +223,9 @@ function evaluateMapboxExpression(expr: any, context: string = 'data', usedColor
                 }
                 if (path.startsWith('item.')) {
                     if (path === 'item.iconPath') {
-                        return `(${path}?.startsWith('/') ? ${path} : iconService.getIconPath(${path}, true, false, config.iconSet))`;
+                        return iconSourceExpression(path);
                     }
-                    return path;
+                    return guardItemPath(path);
                 }
                 // Default context
                 return `${context}.${path}`;
@@ -226,7 +237,7 @@ function evaluateMapboxExpression(expr: any, context: string = 'data', usedColor
             const path = args[0];
             if (typeof path === 'string') {
                 if (path.startsWith('item.')) {
-                    return `${path} != null`;
+                    return `${guardItemPath(path)} != null`;
                 }
                 if (path.startsWith('data.')) {
                     return `${path} != null`;
@@ -535,7 +546,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     if (Array.isArray(value)) {
         let expr = evaluateMapboxExpression(value, defaultPrefix, usedColors);
         if (expr === 'data.iconPath') {
-            expr = `(${expr}?.startsWith('/') ? ${expr} : iconService.getIconPath(${expr}, true, false, config.iconSet))`;
+            expr = iconSourceExpression(expr);
         }
         if (Array.isArray(attrName)) {
             return attrName.map((attr) => `${attr}={${expr}}`).join(' ');
@@ -547,7 +558,7 @@ function buildAttribute(widgetName: string, prop: string, value: any, elementPat
     if (typeof value === 'string' && hasTemplateBinding(value)) {
         let expr = convertBindingToSvelteExpr(value, defaultPrefix);
         if (value === '{{item.iconPath}}') {
-            expr = `(${expr}?.startsWith('/') ? ${expr} : iconService.getIconPath(${expr}, true, false, config.iconSet))`;
+            expr = iconSourceExpression(expr);
         }
         if (Array.isArray(attrName)) {
             return attrName.map((attr) => `${attr}={${expr}}`).join(' ');

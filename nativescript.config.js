@@ -19,7 +19,17 @@ module.exports = {
     },
     ios: {
         // runtimePackageName: '@akylas/nativescript-ios-runtime',
-        ignoredNativeDependencies: ['plugin-widgets']
+        ignoredNativeDependencies: ['plugin-widgets'],
+        // ui-snackbar publishes without its nativescript.config.ts (.npmignore *.ts): declare its package here
+        // until a release ships it
+        SPMPackages: [
+            {
+                name: 'liquid-toasts',
+                libs: ['LiquidToasts'],
+                repositoryURL: 'https://github.com/SimplifyJobs/liquid-toasts.git',
+                version: '0.8.1'
+            }
+        ]
         // SPMPackages: [
         //     {
         //         name: 'IQKeyboardManagerSwift',

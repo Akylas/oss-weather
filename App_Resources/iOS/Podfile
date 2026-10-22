@@ -2,9 +2,12 @@ platform :ios, '13.0'
 post_install do |installer|
     installer.pods_project.targets.each do |target|
         target.build_configurations.each do |config|
-            if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] == '8.0'
-                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
-            end
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+            # Mac Catalyst: pods default to macOS 11.0, below the 12.0 minimum of Xcode 27. The app's own
+            # target is 12.0 (App_Resources/Catalyst/build.xcconfig)
+            config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '12.0'
+            # same for Catalyst, whose macOS target comes from the iOS one (15.0 = macOS 12.0)
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]'] = '17.0'
             config.build_settings['DEVELOPMENT_TEAM'] = '3UUB5NM43K'
             # CocoaPods only clears the identity for iOS SDKs: Catalyst pods would need a
             # "Mac Development" cert. Sign them ad-hoc, the embed phase re-signs with the app identity.

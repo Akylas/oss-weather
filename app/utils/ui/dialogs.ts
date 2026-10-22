@@ -1,5 +1,5 @@
-import { MDCAlertControlerOptions, PromptOptions, alert as materialAlert, confirm as materialConfirm, prompt as materialPrompt } from '@nativescript-community/ui-material-dialogs';
-import { showingDialogs } from '@nativescript-community/ui-material-dialogs/dialogs-common';
+import { MDCAlertControlerOptions, PromptOptions, alert as materialAlert, confirm as materialConfirm, prompt as materialPrompt } from '@nativescript-community/ui-dialogs';
+import { showingDialogs } from '@nativescript-community/ui-dialogs/index-common';
 import { AlertOptions, Color, ConfirmOptions, Font } from '@nativescript/core';
 import { get } from 'svelte/store';
 import { modernColors } from '~/helpers/modernTheme';
@@ -7,7 +7,7 @@ import { textFontFamily } from '~/utils/designStyle';
 import { accentFontWeight, colors, designStyle } from '~/variables';
 
 // used as is by the shared code (see sharedForks in app.webpack.config.js)
-export { AlertDialog } from '@nativescript-community/ui-material-dialogs';
+export { AlertDialog } from '@nativescript-community/ui-dialogs';
 
 const MODERN_DIALOG_RADIUS = 20;
 const MODERN_DIALOG_TITLE_SIZE = 19;
@@ -70,7 +70,7 @@ function showModern<T, R>(show: (options: T & MDCAlertControlerOptions) => Promi
     return result;
 }
 
-// same api as @nativescript-community/ui-material-dialogs, with the modern style
+// same api as @nativescript-community/ui-dialogs, with the modern style
 export function alert(options: AlertOptions & MDCAlertControlerOptions) {
     return showModern(materialAlert, options);
 }

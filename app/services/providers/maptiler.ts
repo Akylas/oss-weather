@@ -1,5 +1,5 @@
 import { lc } from '@nativescript-community/l';
-import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
+import { TextFieldProperties } from '@nativescript-community/ui-textfield';
 import { ApplicationSettings } from '@nativescript/core';
 import { WeatherLocation } from '~/services/api';
 import { WeatherData } from '~/services/providers/weather';

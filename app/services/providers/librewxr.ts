@@ -1,5 +1,5 @@
 import { lc } from '@nativescript-community/l';
-import { TextFieldProperties } from '@nativescript-community/ui-material-textfield';
+import { TextFieldProperties } from '@nativescript-community/ui-textfield';
 import { ApplicationSettings } from '@nativescript/core';
 import { SETTINGS_WEATHER_MAP_SHOW_SNOW, WEATHER_MAP_SHOW_SNOW, getLayerTitle } from '~/services/providers/maptiler';
 

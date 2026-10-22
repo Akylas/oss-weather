@@ -596,7 +596,7 @@ module.exports = (env, params = {}) => {
     const nativescriptReplace = '(NativeScript[\\/]dist[\\/]packages[\\/]core|@nativescript/core|@akylas/nativescript)';
     // shared code (tools/app) uses the app forks of the dialogs and the option select: modern style
     const sharedForks = {
-        '@nativescript-community/ui-material-dialogs': resolve(__dirname, 'app/utils/ui/dialogs'),
+        '@nativescript-community/ui-dialogs': resolve(__dirname, 'app/utils/ui/dialogs'),
         '@shared/components/OptionSelect.svelte': resolve(__dirname, 'app/components/common/OptionSelect.svelte')
     };
     const sharedPath = resolve(__dirname, 'tools/app');

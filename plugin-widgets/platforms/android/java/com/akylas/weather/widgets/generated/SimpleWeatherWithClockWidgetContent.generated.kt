@@ -29,6 +29,8 @@ import com.akylas.weather.widgets.WidgetTheme
 import com.akylas.weather.widgets.WidgetConfig
 import com.akylas.weather.widgets.toColorIntRgba
 import com.akylas.weather.widgets.WidgetComposables
+import com.akylas.weather.widgets.WidgetTextClock
+import com.akylas.weather.widgets.widgetDatePattern
 import com.akylas.weather.widgets.WidgetModern
 import androidx.glance.text.FontFamily
 import com.akylas.weather.widgets.WidgetLoadingState
@@ -98,9 +100,10 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
             modifier = GlanceModifier.fillMaxSize().padding(horizontal = (12).dp),
             verticalAlignment = Alignment.Vertical.CenterVertically,
         ) {
-            Text(
-                text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                style = TextStyle(fontSize = (max(min(((size.width.value - 110.0f) / 4.1f), min((size.height.value * 0.55f), 34.0f)), 9.0f) * fontScaleFactor).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, fontFamily = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> null; else -> FontFamily("sans-serif-light") }, color = widgetColor)
+            WidgetTextClock(
+                fontSize = (max(min(((size.width.value - 110.0f) / 4.1f), min((size.height.value * 0.55f), 34.0f)), 9.0f) * fontScaleFactor).sp,
+                color = widgetColor,
+                weight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> "bold"; else -> "light" },
             )
             Spacer(modifier = GlanceModifier.defaultWeight())
             if (data.iconPath.isNotEmpty()) {
@@ -127,9 +130,10 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                 horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
                 verticalAlignment = Alignment.Vertical.CenterVertically,
             ) {
-                Text(
-                    text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                    style = TextStyle(fontSize = (max(min(((size.width.value - 8.0f) / 4.1f), min((size.height.value * 0.3f), 30.0f)), 9.0f) * fontScaleFactor).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, fontFamily = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> null; else -> FontFamily("sans-serif-light") }, color = widgetColor)
+                WidgetTextClock(
+                    fontSize = (max(min(((size.width.value - 8.0f) / 4.1f), min((size.height.value * 0.3f), 30.0f)), 9.0f) * fontScaleFactor).sp,
+                    color = widgetColor,
+                    weight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> "bold"; else -> "light" },
                 )
                 Row(
                     modifier = GlanceModifier,
@@ -160,17 +164,20 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                         modifier = GlanceModifier.fillMaxSize().padding(horizontal = (12).dp),
                         verticalAlignment = Alignment.Vertical.CenterVertically,
                     ) {
-                        Text(
-                            text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                            style = TextStyle(fontSize = (max(min(((size.width.value - 24.0f) / 4.1f), min((size.height.value * 0.38f), 48.0f)), 9.0f) * fontScaleFactor).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, fontFamily = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> null; else -> FontFamily("sans-serif-light") }, color = widgetColor)
+                        WidgetTextClock(
+                            fontSize = (max(min(((size.width.value - 24.0f) / 4.1f), min((size.height.value * 0.38f), 48.0f)), 9.0f) * fontScaleFactor).sp,
+                            color = widgetColor,
+                            weight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> "bold"; else -> "light" },
                         )
                         Row(
                             modifier = GlanceModifier.fillMaxWidth(),
                             verticalAlignment = Alignment.Vertical.CenterVertically,
                         ) {
-                            Text(
-                                text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
-                                style = TextStyle(fontSize = (max(min((size.width.value * 0.08f), min((size.height.value * 0.12f), 13.0f)), 10.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                            WidgetTextClock(
+                                fontSize = (max(min((size.width.value * 0.08f), min((size.height.value * 0.12f), 13.0f)), 10.0f) * fontScaleFactor).sp,
+                                color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                                weight = "normal",
+                                format = widgetDatePattern(context, "date"),
                             )
                             if (data.iconPath.isNotEmpty()) {
                                 WeatherWidgetManager.getIconImageProviderFromPath(data.iconPath, LocalContext.current)?.let { provider ->
@@ -194,13 +201,16 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                     Column(
                         modifier = GlanceModifier.fillMaxSize().padding((12).dp),
                     ) {
-                        Text(
-                            text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                            style = TextStyle(fontSize = (max(min(((size.width.value - 24.0f) / 4.1f), min((size.height.value * 0.3f), 48.0f)), 9.0f) * fontScaleFactor).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, fontFamily = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> null; else -> FontFamily("sans-serif-light") }, color = widgetColor)
+                        WidgetTextClock(
+                            fontSize = (max(min(((size.width.value - 24.0f) / 4.1f), min((size.height.value * 0.3f), 48.0f)), 9.0f) * fontScaleFactor).sp,
+                            color = widgetColor,
+                            weight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> "bold"; else -> "light" },
                         )
-                        Text(
-                            text = android.text.format.DateFormat.getMediumDateFormat(context).format(java.util.Date()),
-                            style = TextStyle(fontSize = (max(min((size.width.value * 0.09f), min((size.height.value * 0.09f), 13.0f)), 10.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                        WidgetTextClock(
+                            fontSize = (max(min((size.width.value * 0.09f), min((size.height.value * 0.09f), 13.0f)), 10.0f) * fontScaleFactor).sp,
+                            color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                            weight = "normal",
+                            format = widgetDatePattern(context, "date"),
                         )
                         Spacer(modifier = GlanceModifier.defaultWeight())
                         if (size.height.value >= 170) {
@@ -278,13 +288,16 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                             Column(
                                 modifier = GlanceModifier.defaultWeight(),
                             ) {
-                                Text(
-                                    text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                                    style = TextStyle(fontSize = (max(min(((size.width.value - 126.0f) / 4.1f), min((size.height.value * 0.3f), 84.0f)), 9.0f) * fontScaleFactor).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, fontFamily = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> null; else -> FontFamily("sans-serif-light") }, color = widgetColor)
+                                WidgetTextClock(
+                                    fontSize = (max(min(((size.width.value - 126.0f) / 4.1f), min((size.height.value * 0.3f), 84.0f)), 9.0f) * fontScaleFactor).sp,
+                                    color = widgetColor,
+                                    weight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> "bold"; else -> "light" },
                                 )
-                                Text(
-                                    text = android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date()),
-                                    style = TextStyle(fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.08f), 17.0f)), 11.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                                WidgetTextClock(
+                                    fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.08f), 17.0f)), 11.0f) * fontScaleFactor).sp,
+                                    color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                                    weight = "normal",
+                                    format = widgetDatePattern(context, "fullDate"),
                                 )
                             }
                             Column(
@@ -549,13 +562,16 @@ fun SimpleWeatherWithClockWidgetContent(config: WidgetConfig, data: WeatherWidge
                         Column(
                             modifier = GlanceModifier.defaultWeight(),
                         ) {
-                            Text(
-                                text = android.text.format.DateFormat.getTimeFormat(context).format(java.util.Date()),
-                                style = TextStyle(fontSize = (max(min(((size.width.value - 128.0f) / 4.1f), min((size.height.value * 0.42f), 60.0f)), 9.0f) * fontScaleFactor).sp, fontWeight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> FontWeight.Bold; else -> FontWeight.Normal }, fontFamily = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> null; else -> FontFamily("sans-serif-light") }, color = widgetColor)
+                            WidgetTextClock(
+                                fontSize = (max(min(((size.width.value - 128.0f) / 4.1f), min((size.height.value * 0.42f), 60.0f)), 9.0f) * fontScaleFactor).sp,
+                                color = widgetColor,
+                                weight = when { config.settings?.get("clockBold")?.jsonPrimitive?.booleanOrNull == true -> "bold"; else -> "light" },
                             )
-                            Text(
-                                text = android.text.format.DateFormat.getLongDateFormat(context).format(java.util.Date()),
-                                style = TextStyle(fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.13f), 13.0f)), 10.0f) * fontScaleFactor).sp, color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)))
+                            WidgetTextClock(
+                                fontSize = (max(min((size.width.value * 0.05f), min((size.height.value * 0.13f), 13.0f)), 10.0f) * fontScaleFactor).sp,
+                                color = ColorProvider(widgetColor.getColor(context).copy(alpha = 0.6f)),
+                                weight = "normal",
+                                format = widgetDatePattern(context, "fullDate"),
                             )
                             if (size.height.value >= 130) {
                                 Column(

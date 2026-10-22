@@ -163,6 +163,7 @@
     {#if modernStyle}
         <gridlayout
             class="modernPopover"
+            borderWidth={__IOS__ ? 0 : 1}
             columns={`${100 * $fontScale},${50 * $fontScale}`}
             {isUserInteractionEnabled}
             rows={`auto,auto,${height}`}

@@ -32,7 +32,7 @@
                     <stacklayout orientation="vertical" col={index}>
                         <label text={item.day} fontSize={13} maxLines={1} fontWeight="500" color={widgetColor} horizontalAlignment="center"></label>
                         <absolutelayout height={2} horizontalAlignment="center"></absolutelayout>
-                        <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={26} height={26} horizontalAlignment="center"></image>
+                        <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={26} height={26} horizontalAlignment="center"></image>
                         <absolutelayout height={2} horizontalAlignment="center"></absolutelayout>
                         <stacklayout orientation="horizontal" horizontalAlignment="center">
                             <label text={item.temperatureLow} fontSize={13} maxLines={1} opacity={0.6} color={widgetColor} verticalAlignment="center"></label>
@@ -61,7 +61,7 @@
                 {#each (data.dailyData?.slice(0, size.height >= 394 ? 8 : size.height >= 351 ? 7 : size.height >= 308 ? 6 : size.height >= 265 ? 5 : size.height >= 222 ? 4 : size.height >= 179 ? 3 : 2) ?? []) as item, index}
                 {#if size.width < 250}
                     <gridlayout paddingTop={3} paddingBottom={3} columns="auto,6,auto,4,*,auto" rows="auto">
-                        <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} col={0} verticalAlignment="center"></image>
+                        <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} col={0} verticalAlignment="center"></image>
                         <absolutelayout width={6} col={1} verticalAlignment="center"></absolutelayout>
                         <label text={item.day} fontSize={13} maxLines={1} fontWeight="500" color={widgetColor} col={2} verticalAlignment="center"></label>
                         <absolutelayout width={4} col={3} verticalAlignment="center"></absolutelayout>
@@ -74,7 +74,7 @@
                     </gridlayout>
                 {:else}
                     <gridlayout paddingTop={4} paddingBottom={4} columns="auto,8,*,auto,5,auto,5,auto" rows="auto">
-                        <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={24} height={24} col={0} verticalAlignment="center"></image>
+                        <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={24} height={24} col={0} verticalAlignment="center"></image>
                         <absolutelayout width={8} col={1} verticalAlignment="center"></absolutelayout>
                         <stacklayout orientation="vertical" col={2} verticalAlignment="center">
                             <stacklayout orientation="horizontal">

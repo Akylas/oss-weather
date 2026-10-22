@@ -53,7 +53,8 @@ export class WidgetDataManager {
     async getWidgetWeatherData(config: WidgetConfig): Promise<WeatherWidgetData> {
         // DEV_LOG && console.log('getWidgetWeatherData', JSON.stringify(config));
         const location = this.resolveLocation(config);
-        const model = config.model;
+        // native config sends null: undefined lets the provider use its default model
+        const model = config.model ?? undefined;
 
         // Fetch weather data using WeatherProvider.getWeather
         const weatherData = location
@@ -80,7 +81,7 @@ export class WidgetDataManager {
             return null;
         }
         const providerId = (config.provider ? getProviderForType(config.provider) : getWeatherProvider()).id;
-        const cached = getCachedWeather('main', providerId, location, { model: config.model }, 0);
+        const cached = getCachedWeather('main', providerId, location, { model: config.model ?? undefined }, 0);
         if (!cached) {
             return null;
         }

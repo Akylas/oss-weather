@@ -32,12 +32,12 @@
                     <stacklayout orientation="vertical" col={index}>
                         <label text={item.hour} fontSize={12} maxLines={1} fontWeight="500" color={widgetColor} horizontalAlignment="center"></label>
                         <absolutelayout height={2} horizontalAlignment="center"></absolutelayout>
-                        <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} horizontalAlignment="center"></image>
+                        <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} horizontalAlignment="center"></image>
                         <absolutelayout height={2} horizontalAlignment="center"></absolutelayout>
                         <stacklayout orientation="horizontal" horizontalAlignment="center">
-                            <image src={item.wind.iconPath} width={11} height={11} visibility={(item.wind.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
+                            <image src={item.wind?.iconPath} width={11} height={11} visibility={(item.wind?.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
                             <absolutelayout width={2} verticalAlignment="center"></absolutelayout>
-                            <label text={item.wind.value} fontSize={11} maxLines={1} color={widgetColor} verticalAlignment="center"></label>
+                            <label text={item.wind?.value} fontSize={11} maxLines={1} color={widgetColor} verticalAlignment="center"></label>
                         </stacklayout>
                     </stacklayout>
                     {/each}
@@ -57,7 +57,7 @@
                     <stacklayout orientation="vertical" col={index}>
                         <label text={item.hour} fontSize={12} maxLines={1} fontWeight="500" color={widgetColor} horizontalAlignment="center"></label>
                         <absolutelayout height={2} horizontalAlignment="center"></absolutelayout>
-                        <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} horizontalAlignment="center"></image>
+                        <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} horizontalAlignment="center"></image>
                         <absolutelayout height={2} horizontalAlignment="center"></absolutelayout>
                         <label text={item.temperature} fontSize={13} maxLines={1} fontWeight="500" color={widgetColor} horizontalAlignment="center"></label>
                     </stacklayout>

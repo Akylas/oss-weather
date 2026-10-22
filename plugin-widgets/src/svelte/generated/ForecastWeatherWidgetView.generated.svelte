@@ -32,7 +32,7 @@
                     <label text={data.temperatureHigh} fontSize={14} maxLines={1} fontWeight="500" color={widgetColor} verticalAlignment="center"></label>
                 </stacklayout>
             </stacklayout>
-            <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 80)) * 1.3)} height={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 80)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={1} verticalAlignment="top"></image>
+            <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 80)) * 1.3)} height={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 80)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={1} verticalAlignment="top"></image>
         </gridlayout>
         <absolutelayout height={6}></absolutelayout>
         {#if config.settings.showChips !== false}
@@ -48,7 +48,7 @@
                             {#each (data.hourlyData?.slice(0, size.width >= 330 ? 6 : 5) ?? []) as item, index}
                             <stacklayout orientation="vertical" col={index}>
                                 <label text={item.hour} fontSize={11} maxLines={1} fontWeight="500" color={widgetColor} horizontalAlignment="center"></label>
-                                <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={20} height={20} horizontalAlignment="center"></image>
+                                <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={20} height={20} horizontalAlignment="center"></image>
                             </stacklayout>
                             {/each}
                         </gridlayout>
@@ -63,7 +63,7 @@
             {#each (data.dailyData?.slice(0, size.height >= 380 ? size.height >= 565 ? 6 : size.height >= 522 ? 5 : size.height >= 479 ? 4 : size.height >= 436 ? 3 : size.height >= 393 ? 2 : 1 : size.height >= 356 ? 4 : size.height >= 313 ? 3 : size.height >= 270 ? 2 : 1) ?? []) as item, index}
             {#if size.width < 250}
                 <gridlayout paddingTop={3} paddingBottom={3} columns="auto,6,auto,4,*,auto" rows="auto">
-                    <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} col={0} verticalAlignment="center"></image>
+                    <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} col={0} verticalAlignment="center"></image>
                     <absolutelayout width={6} col={1} verticalAlignment="center"></absolutelayout>
                     <label text={item.day} fontSize={13} maxLines={1} fontWeight="500" color={widgetColor} col={2} verticalAlignment="center"></label>
                     <absolutelayout width={4} col={3} verticalAlignment="center"></absolutelayout>
@@ -76,7 +76,7 @@
                 </gridlayout>
             {:else}
                 <gridlayout paddingTop={4} paddingBottom={4} columns="auto,8,*,auto,5,auto,5,auto" rows="auto">
-                    <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={24} height={24} col={0} verticalAlignment="center"></image>
+                    <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={24} height={24} col={0} verticalAlignment="center"></image>
                     <absolutelayout width={8} col={1} verticalAlignment="center"></absolutelayout>
                     <stacklayout orientation="vertical" col={2} verticalAlignment="center">
                         <stacklayout orientation="horizontal">

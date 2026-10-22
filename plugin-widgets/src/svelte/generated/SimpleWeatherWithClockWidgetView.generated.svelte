@@ -27,7 +27,7 @@
     {#if size.height < 70}
         <gridlayout paddingLeft={12} paddingRight={12} columns="auto,*,auto,4,auto" rows="auto">
             <label fontSize={Math.max(Math.min(((size.width - 110) / 4.1), Math.min((size.height * 0.55), 34)), 9)} fontWeight={config.settings?.clockBold === true ? "700" : "300"} maxLines={1} color={widgetColor} text={nowTime()} col={0} verticalAlignment="center"></label>
-            <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={Math.min((size.height * 0.5), 28)} height={Math.min((size.height * 0.5), 28)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={2} verticalAlignment="center"></image>
+            <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={Math.min((size.height * 0.5), 28)} height={Math.min((size.height * 0.5), 28)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={2} verticalAlignment="center"></image>
             <absolutelayout width={4} col={3} verticalAlignment="center"></absolutelayout>
             <label text={data.temperature} fontSize={Math.max(Math.min((size.width * 0.12), Math.min((size.height * 0.35), 20)), 13)} maxLines={1} fontWeight="500" color={widgetColor} col={4} verticalAlignment="center"></label>
         </gridlayout>
@@ -36,7 +36,7 @@
             <stacklayout orientation="vertical">
                 <label fontSize={Math.max(Math.min(((size.width - 8) / 4.1), Math.min((size.height * 0.3), 30)), 9)} fontWeight={config.settings?.clockBold === true ? "700" : "300"} maxLines={1} color={widgetColor} text={nowTime()} horizontalAlignment="center" verticalAlignment="center"></label>
                 <stacklayout orientation="horizontal" horizontalAlignment="center" verticalAlignment="center">
-                    <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={Math.min((size.width * 0.22), (size.height * 0.3))} height={Math.min((size.width * 0.22), (size.height * 0.3))} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
+                    <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={Math.min((size.width * 0.22), (size.height * 0.3))} height={Math.min((size.width * 0.22), (size.height * 0.3))} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
                     <absolutelayout width={3} verticalAlignment="center"></absolutelayout>
                     <label text={data.temperature} fontSize={Math.max(Math.min((size.width * 0.13), Math.min((size.height * 0.15), 15)), 11)} maxLines={1} fontWeight="500" color={widgetColor} verticalAlignment="center"></label>
                 </stacklayout>
@@ -48,7 +48,7 @@
                         <label fontSize={Math.max(Math.min(((size.width - 24) / 4.1), Math.min((size.height * 0.38), 48)), 9)} fontWeight={config.settings?.clockBold === true ? "700" : "300"} maxLines={1} color={widgetColor} text={nowTime()} verticalAlignment="center"></label>
                         <gridlayout columns="*,auto,3,auto" rows="auto" verticalAlignment="center">
                             <label fontSize={Math.max(Math.min((size.width * 0.08), Math.min((size.height * 0.12), 13)), 10)} maxLines={1} opacity={0.6} color={widgetColor} text={formatDate(new Date(), 'll')} col={0} verticalAlignment="center"></label>
-                            <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={Math.min((size.height * 0.36), 40)} height={Math.min((size.height * 0.36), 40)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={1} verticalAlignment="center"></image>
+                            <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={Math.min((size.height * 0.36), 40)} height={Math.min((size.height * 0.36), 40)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={1} verticalAlignment="center"></image>
                             <absolutelayout width={3} col={2} verticalAlignment="center"></absolutelayout>
                             <label text={data.temperature} fontSize={Math.max(Math.min((size.width * 0.12), Math.min((size.height * 0.2), 20)), 13)} maxLines={1} color={widgetColor} col={3} verticalAlignment="center"></label>
                         </gridlayout>
@@ -74,7 +74,7 @@
                                 <label text={data.temperature} fontSize={Math.min((size.width * 0.15), Math.min((size.height * 0.15), 24))} maxLines={1} color={widgetColor}></label>
                                 <label text={data.locationName} fontSize={Math.max(Math.min((size.width * 0.08), Math.min((size.height * 0.08), 12)), 10)} maxLines={1} opacity={0.6} color={widgetColor}></label>
                             </stacklayout>
-                            <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 44)) * 1.3)} height={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 44)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={1} verticalAlignment="center"></image>
+                            <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 44)) * 1.3)} height={(Math.min((size.width * 0.26), Math.min((size.height * 0.26), 44)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} col={1} verticalAlignment="center"></image>
                         </gridlayout>
                     </gridlayout>
                 {/if}
@@ -87,7 +87,7 @@
                                 <label fontSize={Math.max(Math.min((size.width * 0.05), Math.min((size.height * 0.08), 17)), 11)} maxLines={1} opacity={0.6} color={widgetColor} text={formatDate(new Date(), 'LL')}></label>
                             </stacklayout>
                             <stacklayout orientation="vertical" col={1} verticalAlignment="top">
-                                <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.16), Math.min((size.height * 0.26), 56)) * 1.3)} height={(Math.min((size.width * 0.16), Math.min((size.height * 0.26), 56)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="right"></image>
+                                <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.16), Math.min((size.height * 0.26), 56)) * 1.3)} height={(Math.min((size.width * 0.16), Math.min((size.height * 0.26), 56)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} horizontalAlignment="right"></image>
                                 <label text={data.temperature} fontSize={Math.min((size.width * 0.1), Math.min((size.height * 0.18), 36))} maxLines={1} fontWeight="300" color={widgetColor} horizontalAlignment="right"></label>
                             </stacklayout>
                         </gridlayout>
@@ -114,7 +114,7 @@
                                             {#each (data.hourlyData?.slice(0, size.width >= 330 ? 6 : 5) ?? []) as item, index}
                                             <stacklayout orientation="vertical" col={index}>
                                                 <label text={item.hour} fontSize={11} maxLines={1} fontWeight="500" color={widgetColor} horizontalAlignment="center"></label>
-                                                <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={20} height={20} horizontalAlignment="center"></image>
+                                                <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={20} height={20} horizontalAlignment="center"></image>
                                             </stacklayout>
                                             {/each}
                                         </gridlayout>
@@ -129,7 +129,7 @@
                             {#each (data.dailyData?.slice(0, config.settings.showHourly === true && size.height >= 300 ? size.height >= 530 ? 4 : size.height >= 487 ? 3 : size.height >= 444 ? 2 : size.height >= 401 ? 1 : 0 : size.height >= 485 ? 6 : size.height >= 442 ? 5 : size.height >= 399 ? 4 : size.height >= 356 ? 3 : size.height >= 313 ? 2 : size.height >= 270 ? 1 : 0) ?? []) as item, index}
                             {#if size.width < 250}
                                 <gridlayout paddingTop={3} paddingBottom={3} columns="auto,6,auto,4,*,auto" rows="auto">
-                                    <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} col={0} verticalAlignment="center"></image>
+                                    <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={22} height={22} col={0} verticalAlignment="center"></image>
                                     <absolutelayout width={6} col={1} verticalAlignment="center"></absolutelayout>
                                     <label text={item.day} fontSize={13} maxLines={1} fontWeight="500" color={widgetColor} col={2} verticalAlignment="center"></label>
                                     <absolutelayout width={4} col={3} verticalAlignment="center"></absolutelayout>
@@ -142,7 +142,7 @@
                                 </gridlayout>
                             {:else}
                                 <gridlayout paddingTop={4} paddingBottom={4} columns="auto,8,*,auto,5,auto,5,auto" rows="auto">
-                                    <image src={(item.iconPath?.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={24} height={24} col={0} verticalAlignment="center"></image>
+                                    <image src={(typeof item.iconPath === 'string' && item.iconPath.startsWith('/') ? item.iconPath : iconService.getIconPath(item.iconPath, true, false, config.iconSet))} width={24} height={24} col={0} verticalAlignment="center"></image>
                                     <absolutelayout width={8} col={1} verticalAlignment="center"></absolutelayout>
                                     <stacklayout orientation="vertical" col={2} verticalAlignment="center">
                                         <stacklayout orientation="horizontal">
@@ -194,7 +194,7 @@
                         </stacklayout>
                         <stacklayout orientation="vertical" col={1} verticalAlignment="center">
                             <stacklayout orientation="horizontal" horizontalAlignment="right">
-                                <image src={(data.iconPath?.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.1), Math.min((size.height * 0.28), 32)) * 1.3)} height={(Math.min((size.width * 0.1), Math.min((size.height * 0.28), 32)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
+                                <image src={(typeof data.iconPath === 'string' && data.iconPath.startsWith('/') ? data.iconPath : iconService.getIconPath(data.iconPath, true, false, config.iconSet))} width={(Math.min((size.width * 0.1), Math.min((size.height * 0.28), 32)) * 1.3)} height={(Math.min((size.width * 0.1), Math.min((size.height * 0.28), 32)) * 1.3)} visibility={(data.iconPath != null) ? 'visible' : 'collapsed'} verticalAlignment="center"></image>
                                 <absolutelayout width={4} verticalAlignment="center"></absolutelayout>
                                 <label text={data.temperature} fontSize={Math.min((size.width * 0.1), Math.min((size.height * 0.25), 28))} maxLines={1} fontWeight="300" color={widgetColor} verticalAlignment="center"></label>
                             </stacklayout>

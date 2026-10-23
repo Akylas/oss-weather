@@ -22,7 +22,8 @@
     import ModernCardTitle from '~/components/common/ModernCardTitle.svelte';
     import { modernDataColor, styledDataIcon } from '~/utils/designStyle';
     import { modelSpread } from '~/utils/modelSpread';
-    import { showAlertOptionSelect, showPopoverMenu } from '~/utils/ui';
+    import { showPopoverMenu } from '~/utils/ui';
+    import { showBottomSheet } from '@nativescript-community/ui-bottomsheet/svelte';
     import { VerticalPosition } from '@nativescript-community/ui-popover';
     import ListItemAutoSize from '../common/ListItemAutoSize.svelte';
     import CompareLineChart from './CompareLineChart.svelte';
@@ -117,10 +118,10 @@
     const models: string[] = JSON.parse(ApplicationSettings.getString('compare_models', '["meteofrance", "openweathermap", "openmeteo:best_match"]')).filter(
         (d) => modelsList.findIndex((m) => m.id === d) !== -1
     );
-    // modern: chips for the compared data, its forecast and the models (copy: the array is mutated)
+    // modern: chips for the compared data, its forecast and the number of models (selecting them all would fill the page)
     $: modern = $designStyle === 'modern';
     $: ({ colorOnSurfaceVariant } = $colors);
-    let modelChips = models.slice();
+    let modelCount = models.length;
     $: dataIcon = styledDataIcon($designStyle, getWeatherDataIcon(dataToCompare.id)) ?? { fontFamily: 'mdi', icon: '' };
     function modelOf(modelId: string) {
         return modelsList.find((model) => model.id === modelId);
@@ -277,7 +278,7 @@
             models.splice(index, 1);
         }
         ApplicationSettings.setString('compare_models', JSON.stringify(models));
-        modelChips = models.slice();
+        modelCount = models.length;
     }
     async function onDataCheckBox(forecast: string, item, event) {
         const value = event.value;
@@ -338,25 +339,19 @@
             showError(error);
         }
     }
-    // modern: the model chips are the chart legend, a tap shows / hides the model
-    let lineChart: CompareLineChart;
     let chartFullscreen = false;
-    let hiddenModels: string[] = [];
-    $: hiddenModels = currentItem?.hidden.slice() ?? [];
-    function toggleModel(modelId: string) {
-        if (!lineChart) {
-            selectModels();
-            return;
-        }
-        lineChart.toggleModel(modelId);
-        hiddenModels = currentItem.hidden.slice();
-    }
+    // modern: a bottom sheet to pick the models
     async function selectModels() {
         try {
             const previousModels = models.join();
-            await showAlertOptionSelect(
-                {
-                    height: Math.min(modelsList.length * 56 * $fontScale, ALERT_OPTION_MAX_HEIGHT),
+            const OptionSelect = (await import('~/components/common/OptionSelect.svelte')).default;
+            await showBottomSheet({
+                parent: null,
+                view: OptionSelect,
+                skipCollapsedState: true,
+                props: {
+                    title: lc('models'),
+                    height: ALERT_OPTION_MAX_HEIGHT,
                     autoSizeListItem: true,
                     options: modelsList.map((model) => ({
                         id: model.id,
@@ -368,9 +363,8 @@
                         subtitle: model.subtitle ? model.name : null
                     })),
                     onCheckBox: (option, value) => onModelCheckBox(modelOf(option.id), { value })
-                },
-                { title: lc('models'), okButtonText: lc('close') }
-            );
+                }
+            });
             if (models.join() !== previousModels) {
                 refreshData();
             }
@@ -433,22 +427,10 @@
                                 on:tap={() => setForecast(forecast)} />
                         {/each}
                     </gridlayout>
-                    {#each modelChips as modelId (modelId)}
-                        <label
-                            class="modernChip"
-                            borderColor={modelOf(modelId)?.color}
-                            borderWidth={1}
-                            margin={3}
-                            opacity={hiddenModels.indexOf(modelId) === -1 ? 1 : 0.45}
-                            verticalAlignment="center"
-                            on:tap={() => toggleModel(modelId)}>
-                            <cspan color={modelOf(modelId)?.color} fontFamily={$fonts.mdi} fontSize={10 * $fontScale} text="mdi-circle" />
-                            <cspan text={' ' + (modelOf(modelId)?.subtitle || modelOf(modelId)?.name || modelId)} />
-                        </label>
-                    {/each}
-                    <label class="modernChip" margin={3} verticalAlignment="center" on:tap={selectModels}>
-                        <cspan fontFamily={$fonts.mdi} fontSize={16 * $fontScale} fontWeight="normal" text="mdi-plus" />
-                        <cspan text={' ' + lc('models')} />
+                    <label class="modernChip modernChipSelected" margin={3} verticalAlignment="center" on:tap={selectModels}>
+                        <cspan fontFamily={$fonts.mdi} fontSize={16 * $fontScale} fontWeight="normal" text="mdi-layers-triple" />
+                        <cspan text={' ' + modelCount + ' ' + lc('models') + ' '} />
+                        <cspan fontFamily={$fonts.mdi} fontSize={16 * $fontScale} fontWeight="normal" text="mdi-chevron-down" />
                     </label>
                 </wraplayout>
             {/if}
@@ -456,7 +438,7 @@
                 <label horizontalAlignment="center" row={modern ? 2 : 1} text={l('no_network').toUpperCase()} verticalAlignment="middle" />
             {:else if currentItem && modern && chartFullscreen && currentItem.chartType !== 'weathericons'}
                 <gridlayout class="modernCard" marginBottom={10} row={2}>
-                    <CompareLineChart bind:this={lineChart} fullscreen item={currentItem} onFullscreen={() => (chartFullscreen = false)} {screenOrientation} {weatherLocation} />
+                    <CompareLineChart fullscreen item={currentItem} onFullscreen={() => (chartFullscreen = false)} {screenOrientation} {weatherLocation} />
                 </gridlayout>
             {:else if currentItem && modern}
                 <!-- the chart, conditions by model, then the spread between models now -->
@@ -468,13 +450,7 @@
                             </gridlayout>
                         {:else}
                             <gridlayout class="modernCard">
-                                <CompareLineChart
-                                    bind:this={lineChart}
-                                    height={screenWidthDips + 56}
-                                    item={currentItem}
-                                    onFullscreen={() => (chartFullscreen = true)}
-                                    {screenOrientation}
-                                    {weatherLocation} />
+                                <CompareLineChart height={screenWidthDips + 56} item={currentItem} onFullscreen={() => (chartFullscreen = true)} {screenOrientation} {weatherLocation} />
                             </gridlayout>
                             <gridlayout class="modernCard">
                                 <CompareWeatherIcons

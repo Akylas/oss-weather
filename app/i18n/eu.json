@@ -287,7 +287,7 @@
     "pressure": "presioa",
     "provider": {
         "accuweather": "AccuWeather",
-        "maptiler": "Maptiler",
+        "maptiler": "MapTiler",
         "meteofrance": "Méteo France",
         "openmeteo": "Open-Meteo",
         "openweathermap": "OpenWeather",

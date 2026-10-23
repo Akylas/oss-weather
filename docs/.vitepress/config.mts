@@ -64,6 +64,7 @@ export default defineConfig({
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/farfromrefug' },
+      { icon: 'discord', link: 'https://discord.gg/28T5vKsbp4' },
       { icon: 'linkedin', link: 'https://www.linkedin.com/in/martinguillon/' },
       {
         icon: {

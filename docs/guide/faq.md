@@ -117,6 +117,7 @@ Check your connection. The default source is LibreWXR. If you switched to MapTil
 ### How can I help?
 
 - Report bugs and request features on [GitHub](https://github.com/ossappscollective/oss-weather/issues)
+- Chat and ask questions on [Discord](https://discord.gg/28T5vKsbp4)
 - Translate on [Weblate](https://hosted.weblate.org/engage/oss-weather/)
 - Contribute code on [GitHub](https://github.com/ossappscollective/oss-weather)
 - [Support the developer](https://github.com/sponsors/farfromrefug)

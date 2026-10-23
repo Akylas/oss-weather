@@ -7,6 +7,7 @@
 [![GitHub License](https://img.shields.io/github/license/ossappscollective/oss-weather)](https://github.com/ossappscollective/oss-weather/blob/master/COPYING)
 [![GitHub All Releases](https://img.shields.io/github/downloads/ossappscollective/oss-weather/total.svg)](https://github.com/ossappscollective/oss-weather/releases/)
 [![GitHub release](https://img.shields.io/github/v/release/ossappscollective/oss-weather?display_name=release)](https://github.com/ossappscollective/oss-weather/releases/latest)
+[![Discord](https://img.shields.io/badge/Discord-Join%20chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/28T5vKsbp4)
 [![Small translation badge](https://hosted.weblate.org/widgets/oss-weather/-/svg-badge.svg)](https://hosted.weblate.org/engage/oss-weather/?utm_source=widget)
 
 </div>

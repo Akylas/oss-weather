@@ -69,3 +69,12 @@ export function nightSpans(entries: { hours: number; isDay?: boolean }[]): { fro
     });
     return spans;
 }
+
+// x value (hours since the first entry) to highlight for a timestamp, null when there is none:
+// the chart searches loop forever on a NaN x
+export function highlightHour(timestamp: number, startTimestamp: number): number | null {
+    if (!Number.isFinite(timestamp) || !Number.isFinite(startTimestamp)) {
+        return null;
+    }
+    return (timestamp - startTimestamp) / (3600 * 1000);
+}

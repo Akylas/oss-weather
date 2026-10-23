@@ -45,7 +45,7 @@
     } from '~/services/weatherData';
     import { ValueRange, computeDataRange, getNaturalRange, makeScaler, pickReferenceProp, resolveRange, visibleHoursScale } from '~/utils/chartScale';
     import { generateGradient, loadImage, tempColor } from '~/utils/utils.common';
-    import { contentGradientRange, extremaIndexes, nightSpans, plotPadding } from '~/utils/chartLabels';
+    import { contentGradientRange, extremaIndexes, highlightHour, nightSpans, plotPadding } from '~/utils/chartLabels';
 
     const highlightPaint = new Paint();
     highlightPaint.setColor('white');
@@ -1070,8 +1070,8 @@
 
     function highlightOnDate(timestamp: number) {
         const chart = chartView?.nativeView;
-        if (chart) {
-            const x = (timestamp - startTimestamp) / (3600 * 1000);
+        const x = highlightHour(timestamp, startTimestamp);
+        if (chart && x !== null) {
             // DEV_LOG && console.log('highlightOnDate', timestamp,  dayjs(timestamp),startTimestamp, x);
             const highlights = chart.getHighlightByXValue(x);
             chart.highlight(highlights);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contentGradientRange, extremaIndexes, nightSpans, plotPadding } from './chartLabels';
+import { contentGradientRange, extremaIndexes, highlightHour, nightSpans, plotPadding } from './chartLabels';
 
 describe('extremaIndexes', () => {
     it('keeps the ends and every local high and low', () => {
@@ -66,5 +66,29 @@ describe('nightSpans', () => {
                 { hours: 1, isDay: true }
             ])
         ).toEqual([{ from: -0.5, to: 0.5 }]);
+    });
+});
+
+describe('highlightHour', () => {
+    const start = 1792756800000;
+
+    it('gives the hours since the start', () => {
+        expect(highlightHour(start + 90 * 60 * 1000, start)).toBe(1.5);
+    });
+
+    it('gives null without a timestamp', () => {
+        expect(highlightHour(undefined, start)).toBeNull();
+        expect(highlightHour(null, start)).toBeNull();
+    });
+
+    it('gives null for a timestamp that is not a number', () => {
+        expect(highlightHour(NaN, start)).toBeNull();
+        expect(highlightHour(Infinity, start)).toBeNull();
+    });
+
+    it('gives null without a usable start of the data', () => {
+        expect(highlightHour(start, NaN)).toBeNull();
+        expect(highlightHour(start, undefined)).toBeNull();
+        expect(highlightHour(start, Infinity)).toBeNull();
     });
 });

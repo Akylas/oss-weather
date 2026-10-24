@@ -48,6 +48,10 @@
     import { generateGradient, loadImage, tempColor } from '~/utils/utils.common';
     import { contentGradientRange, extremaIndexes, highlightHour, nightSpans, plotPadding } from '~/utils/chartLabels';
 
+    const einkBarPaint = new Paint();
+    const einkOutlinePaint = new Paint();
+    einkOutlinePaint.setStyle(Style.STROKE);
+
     const highlightPaint = new Paint();
     highlightPaint.setColor('white');
     highlightPaint.setStrokeWidth(2);
@@ -363,14 +367,12 @@
                         drawBar(c: Canvas, e, dataSet, left: number, top: number, right: number, bottom: number, paint: Paint) {
                             const precipProbability = e.precipProbability;
                             if (isEInk) {
-                                // same pattern and outline as the classic hourly bars
-                                paint.setShader(getEInkShader());
-                                c.drawRect(left, top, right, bottom, paint);
-                                paint.setShader(null);
-                                paint.setStyle(Style.STROKE);
-                                paint.setColor(colorOnSurface);
-                                c.drawRect(left, top, right, bottom, paint);
-                                paint.setStyle(Style.FILL);
+                                // same pattern and outline as the classic hourly bars, with our own paints: the
+                                // chart paint is reused to draw the labels
+                                einkBarPaint.setShader(getEInkShader());
+                                c.drawRect(left, top, right, bottom, einkBarPaint);
+                                einkOutlinePaint.setColor(colorOnSurface);
+                                c.drawRect(left, top, right, bottom, einkOutlinePaint);
                                 return;
                             }
                             if ($designStyle === 'modern' && !hasSnowFall && e.precipColor) {

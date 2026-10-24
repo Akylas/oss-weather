@@ -1649,7 +1649,10 @@
         collectionView?.nativeView?.refreshVisibleItems();
     }
     onFontScaleChanged(refreshCollectionViewVisibleItems);
-    onThemeChanged(refreshCollectionView);
+    // realized cells keep the css variables they were created with (backgrounds stay on the previous
+    // theme): create the list again
+    let themeVersion = 0;
+    onThemeChanged(() => themeVersion++);
     onUnitsChanged(() => {
         if (subSettingsOptions === 'units') {
             refreshCollectionView();
@@ -1687,6 +1690,7 @@
 
 <page bind:this={page} id={title || $slc('settings.title')} actionBarHidden={true}>
     <gridlayout class="pageContent" rows="auto,*">
+        {#key themeVersion}
         <collectionview
             bind:this={collectionView}
             accessibilityValue="settingsCV"
@@ -1840,6 +1844,7 @@
                 <ListItemAutoSize groupPosition={rowGroupPosition(item)} item={rowItem(item)} showBottomLine={false} on:tap={(event) => onTap(item, event)}></ListItemAutoSize>
             </Template>
         </collectionview>
+        {/key}
         <CActionBar canGoBack title={title || $slc('settings.title')}>
             {#each actionBarButtons as button (button.id)}
                 <mdbutton class="actionBarButton" text={button.icon} variant="text" on:tap={(event) => onTap({ id: button.id }, event)} />
